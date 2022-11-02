@@ -72,13 +72,15 @@ Ext.define("NOC.inv.map.Application", {
             handler: me.onSearch
         });
 
-        me.segmentCombo = Ext.create('NOC.inv.networksegment.TreeCombo', {
+        me.segmentCombo = Ext.create('NOC.core.TreeCombo', {
+            restUrl: "/inv/map",
             fieldLabel: __("Segment"),
             labelWidth: 50,
             labelAlign: "left",
             listAlign: "left",
             minWidth: 400,
             emptyText: __("Select segment..."),
+            appId: 'inv.map',
             listeners: {
                 scope: me,
                 select: me.onSelectSegment
