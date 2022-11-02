@@ -103,6 +103,7 @@ class CredentialChecker(object):
         address,
         pool,
         labels: List[str] = None,
+        port: Optional[str] = None,
         logger=None,
         profile: Optional[str] = None,
         raise_privilege: bool = True,
@@ -124,6 +125,7 @@ class CredentialChecker(object):
         """
         self.address = address
         self.pool = pool
+        self.port = port
         self.labels = labels
         self.logger = PrefixLoggerAdapter(
             logger or self.base_logger, "%s][%s" % (self.pool or "", self.address or "")
@@ -380,6 +382,7 @@ class CredentialChecker(object):
                 f"{self.profile}.login",
                 {
                     "cli_protocol": protocol.config.alias,
+                    "cli_port": self.port,
                     "address": self.address,
                     "user": user,
                     "password": password,
