@@ -142,9 +142,9 @@ class Script(GetMetricsScript):
             else:
                 iface = data["name"]
             for field, metric in iface_metric_map.items():
-                if metric.endswith("bytes") and metric in self.scale_x8:
+                if field.endswith("bytes") and metric in self.scale_x8:
                     units = "bit"
-                elif metric.endswith("bytes"):
+                elif field.endswith("bytes"):
                     units = "byte"
                 else:
                     units = "pkt"
@@ -163,7 +163,11 @@ class Script(GetMetricsScript):
                     value=float(radio_metrics[data["radio"]]["tx-power"]),
                     units="dBm",
                 )
-            if "radio" in data and data["radio"] in radio_metrics:
+            if (
+                "radio" in data
+                and data["radio"] in radio_metrics
+                and "channel-util" in radio_metrics[data["radio"]]
+            ):
                 self.set_metric(
                     id=("Radio | Channel | Util", [f"noc::interface::{iface}"]),
                     value=float(radio_metrics[data["radio"]]["channel-util"]),
