@@ -89,7 +89,7 @@ class UptimeCheck(DiscoveryCheck):
                 "name": mo.remote_system.name,
             }
             data["managed_object"]["remote_id"] = str(mo.remote_id)
-        send_message(
+        self.service.send_message(
             data,
             message_type="reboot",
             headers={
