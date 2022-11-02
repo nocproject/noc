@@ -6,7 +6,7 @@
 # ---------------------------------------------------------------------
 
 # NOC modules
-from noc.lib.app.extmodelapplication import ExtModelApplication
+from noc.services.web.app.extmodelapplication import ExtModelApplication
 from noc.sa.models.groupaccess import GroupAccess
 from noc.core.translation import ugettext as _
 

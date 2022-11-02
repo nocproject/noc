@@ -13,7 +13,7 @@ import re
 from django.db.models import Q as d_Q
 
 # NOC modules
-from noc.lib.app.extdocapplication import ExtApplication, view
+from noc.services.web.app.extdocapplication import ExtApplication, view
 from noc.sa.models.managedobject import ManagedObject
 from noc.inv.models.macdb import MACDB
 from noc.sa.interfaces.base import MACAddressParameter

@@ -25,7 +25,7 @@ from noc.inv.models.interfaceprofile import InterfaceProfile
 from noc.inv.models.discoveryid import DiscoveryID
 from noc.sa.models.profile import Profile
 from noc.sa.models.useraccess import UserAccess
-from noc.lib.app.simplereport import SimpleReport, PredefinedReport, SectionRow
+from noc.services.web.app.simplereport import SimpleReport, PredefinedReport, SectionRow
 from noc.core.translation import ugettext as _
 
 

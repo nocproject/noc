@@ -6,7 +6,7 @@
 # ----------------------------------------------------------------------
 
 # NOC modules
-from noc.lib.app.extdocapplication import ExtDocApplication
+from noc.services.web.app.extdocapplication import ExtDocApplication
 from noc.vc.models.l2domainprofile import L2DomainProfile
 from noc.core.translation import ugettext as _
 

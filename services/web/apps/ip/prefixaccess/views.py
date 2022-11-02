@@ -6,7 +6,7 @@
 # ---------------------------------------------------------------------
 
 # NOC modules
-from noc.lib.app.extmodelapplication import ExtModelApplication
+from noc.services.web.app.extmodelapplication import ExtModelApplication
 from noc.ip.models.prefixaccess import PrefixAccess
 from noc.core.translation import ugettext as _
 

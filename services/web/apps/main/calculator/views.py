@@ -9,7 +9,7 @@
 import operator
 
 # NOC modules
-from noc.lib.app.application import Application, HasPerm, view
+from noc.services.web.app.application import Application, HasPerm, view
 from noc.core.translation import ugettext as _
 from .calculators.loader import loader
 

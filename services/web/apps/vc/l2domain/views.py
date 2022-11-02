@@ -9,9 +9,9 @@
 from django.db.models import Count
 
 # NOC modules
-from noc.lib.app.extdocapplication import ExtDocApplication
+from noc.services.web.app.extdocapplication import ExtDocApplication
 from noc.vc.models.l2domain import L2Domain
-from noc.lib.app.decorators.state import state_handler
+from noc.services.web.app.decorators.state import state_handler
 from noc.sa.models.managedobject import ManagedObject
 from noc.core.translation import ugettext as _
 

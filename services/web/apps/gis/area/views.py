@@ -6,7 +6,7 @@
 # ---------------------------------------------------------------------
 
 # NOC modules
-from noc.lib.app.extdocapplication import ExtDocApplication
+from noc.services.web.app.extdocapplication import ExtDocApplication
 from noc.gis.models.area import Area
 from noc.core.translation import ugettext as _
 

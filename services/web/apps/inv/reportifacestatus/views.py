@@ -21,7 +21,7 @@ from bson import ObjectId
 import xlsxwriter
 
 # NOC modules
-from noc.lib.app.extapplication import ExtApplication, view
+from noc.services.web.app.extapplication import ExtApplication, view
 from noc.inv.models.interfaceprofile import InterfaceProfile
 from noc.inv.models.interface import Interface
 from noc.sa.models.managedobject import ManagedObject

@@ -14,7 +14,7 @@ from django import forms
 from django.contrib.admin.widgets import AdminDateWidget
 
 # NOC modules
-from noc.lib.app.simplereport import SimpleReport, PredefinedReport
+from noc.services.web.app.simplereport import SimpleReport, PredefinedReport
 from noc.sa.models.useraccess import UserAccess
 from noc.fm.models.activealarm import ActiveAlarm
 from noc.fm.models.archivedalarm import ArchivedAlarm

@@ -6,7 +6,7 @@
 # ---------------------------------------------------------------------
 
 # NOC modules
-from noc.lib.app.simplereport import SimpleReport
+from noc.services.web.app.simplereport import SimpleReport
 from noc.ip.models.vrf import VRF
 from noc.core.translation import ugettext as _
 

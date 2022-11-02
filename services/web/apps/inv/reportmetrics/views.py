@@ -24,9 +24,9 @@ from noc.inv.models.interfaceprofile import InterfaceProfile
 from noc.inv.models.platform import Platform
 from noc.inv.models.networksegment import NetworkSegment
 from noc.inv.models.resourcegroup import ResourceGroup
-from noc.lib.app.reportdatasources.loader import loader
-from noc.lib.app.reportdatasources.report_container import ReportContainerData
-from noc.lib.app.extapplication import ExtApplication, view
+from noc.services.web.app.reportdatasources.loader import loader
+from noc.services.web.app.reportdatasources.report_container import ReportContainerData
+from noc.services.web.app.extapplication import ExtApplication, view
 from noc.sa.models.useraccess import UserAccess
 from noc.sa.interfaces.base import StringParameter, BooleanParameter
 from noc.sa.models.administrativedomain import AdministrativeDomain

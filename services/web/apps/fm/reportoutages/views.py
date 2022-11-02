@@ -18,7 +18,7 @@ from mongoengine.queryset.visitor import Q
 from noc.fm.models.outage import Outage
 from noc.sa.models.managedobject import ManagedObject
 from noc.sa.models.useraccess import UserAccess
-from noc.lib.app.simplereport import SimpleReport, TableColumn, PredefinedReport
+from noc.services.web.app.simplereport import SimpleReport, TableColumn, PredefinedReport
 from noc.core.translation import ugettext as _
 
 

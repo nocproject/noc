@@ -7,7 +7,7 @@
 
 
 # NOC modules
-from noc.lib.app.extapplication import ExtApplication, view
+from noc.services.web.app.extapplication import ExtApplication, view
 from .dashboards.loader import loader
 from .dashboards.base import BaseDashboard
 from noc.core.translation import ugettext as _

@@ -6,7 +6,7 @@
 # ---------------------------------------------------------------------
 
 # NOC modules
-from noc.lib.app.simplereport import SimpleReport
+from noc.services.web.app.simplereport import SimpleReport
 from noc.fm.models.mib import MIBData
 from noc.core.translation import ugettext as _
 

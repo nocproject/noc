@@ -23,11 +23,11 @@ from pymongo import ReadPreference
 from noc.inv.models.platform import Platform
 from noc.inv.models.networksegment import NetworkSegment
 from noc.inv.models.interfaceprofile import InterfaceProfile
-from noc.lib.app.reportdatasources.report_metrics import ReportInterfaceMetrics
+from noc.services.web.app.reportdatasources.report_metrics import ReportInterfaceMetrics
 from noc.sa.models.managedobject import ManagedObject
-from noc.lib.app.reportdatasources.report_container import ReportContainerData
+from noc.services.web.app.reportdatasources.report_container import ReportContainerData
 from noc.sa.models.useraccess import UserAccess
-from noc.lib.app.extapplication import ExtApplication, view
+from noc.services.web.app.extapplication import ExtApplication, view
 from noc.sa.interfaces.base import StringParameter, BooleanParameter
 from noc.core.comp import smart_text
 from noc.inv.models.resourcegroup import ResourceGroup

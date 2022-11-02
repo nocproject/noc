@@ -10,7 +10,7 @@ import re
 from copy import deepcopy
 
 # NOC modules
-from noc.lib.app.extdocapplication import ExtDocApplication, view
+from noc.services.web.app.extdocapplication import ExtDocApplication, view
 from noc.wf.models.workflow import Workflow
 from noc.wf.models.state import State
 from noc.wf.models.transition import Transition, TransitionVertex

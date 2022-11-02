@@ -6,7 +6,7 @@
 # ---------------------------------------------------------------------
 
 # NOC modules
-from noc.lib.app.simplereport import SimpleReport, TableColumn
+from noc.services.web.app.simplereport import SimpleReport, TableColumn
 from noc.core.translation import ugettext as _
 
 

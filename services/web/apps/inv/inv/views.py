@@ -11,7 +11,7 @@ import os
 from typing import Optional, Dict, List, Any, Tuple
 
 # NOC modules
-from noc.lib.app.extapplication import ExtApplication, view
+from noc.services.web.app.extapplication import ExtApplication, view
 from noc.inv.models.object import Object
 from noc.inv.models.error import ConnectionError
 from noc.inv.models.objectmodel import ObjectModel

@@ -6,7 +6,7 @@
 # ---------------------------------------------------------------------
 
 # NOC modules
-from noc.lib.app.extdocapplication import ExtDocApplication
+from noc.services.web.app.extdocapplication import ExtDocApplication
 from noc.fm.models.alarmclass import AlarmClass
 from noc.fm.models.alarmclasscategory import AlarmClassCategory
 from noc.core.translation import ugettext as _

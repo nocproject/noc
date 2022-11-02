@@ -15,7 +15,7 @@ from django.db.models import get_models
 from django.db.models import Model
 
 # NOC modules
-from noc.lib.app.site import site
+from noc.services.web.app.site import site
 from noc.settings import INSTALLED_APPS
 
 

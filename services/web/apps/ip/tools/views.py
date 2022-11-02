@@ -16,7 +16,7 @@ from django import forms
 from django.http import HttpResponse
 
 # NOC Modules
-from noc.lib.app.application import Application, HasPerm, view
+from noc.services.web.app.application import Application, HasPerm, view
 from noc.core.ip import IP, IPv4, IPv6
 from noc.core.validators import is_ipv4, is_ipv6
 from noc.ip.models.address import Address

@@ -13,8 +13,8 @@ from django.conf import settings
 from django.http import HttpResponse
 
 # NOC modules
-from noc.lib.app.site import site
-from noc.lib.app.extmodelapplication import ExtModelApplication, view
+from noc.services.web.app.site import site
+from noc.services.web.app.extmodelapplication import ExtModelApplication, view
 from noc.aaa.models.permission import Permission
 from noc.sa.interfaces.base import StringParameter
 from noc.core.translation import ugettext as _

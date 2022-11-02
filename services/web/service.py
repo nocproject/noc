@@ -44,7 +44,7 @@ class WebService(FastAPIService):
         AuditTrail.install()
         # Initialize site
         self.logger.info("Registering web applications")
-        from noc.lib.app.site import site
+        from noc.services.web.app.site import site
 
         site.service = self
         site.autodiscover()

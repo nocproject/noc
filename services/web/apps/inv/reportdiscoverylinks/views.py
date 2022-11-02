@@ -9,8 +9,13 @@
 from collections import defaultdict
 
 # NOC modules
-from noc.lib.app.simplereport import SimpleReport, PredefinedReport, SectionRow, TableColumn
-from noc.lib.app.reportdatasources.base import ReportModelFilter
+from noc.services.web.app.simplereport import (
+    SimpleReport,
+    PredefinedReport,
+    SectionRow,
+    TableColumn,
+)
+from noc.services.web.app.reportdatasources.base import ReportModelFilter
 from noc.main.models.pool import Pool
 from noc.sa.models.managedobject import ManagedObject
 from noc.core.translation import ugettext as _

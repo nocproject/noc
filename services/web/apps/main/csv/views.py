@@ -16,7 +16,7 @@ from django.http import HttpResponse
 from noc.core.translation import ugettext as _
 
 # NOC modules
-from noc.lib.app.application import Application, view
+from noc.services.web.app.application import Application, view
 from noc.core.csvutils import csv_export, csv_import, get_model_fields, IR_FAIL, IR_SKIP, IR_UPDATE
 from noc.models import get_model, get_model_id, load_models
 

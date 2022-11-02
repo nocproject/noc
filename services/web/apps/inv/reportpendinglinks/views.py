@@ -15,7 +15,7 @@ from django import forms
 
 # NOC modules
 from noc.core.cache.base import cache
-from noc.lib.app.simplereport import SimpleReport, SectionRow
+from noc.services.web.app.simplereport import SimpleReport, SectionRow
 from noc.core.mongo.connection import get_db
 from pymongo import ReadPreference
 from noc.sa.models.managedobject import ManagedObject

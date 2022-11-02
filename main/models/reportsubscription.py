@@ -19,7 +19,7 @@ from mongoengine.fields import StringField, BooleanField, DateTimeField
 from noc.aaa.models.user import User
 from noc.main.models.notificationgroup import NotificationGroup
 from noc.core.mongo.fields import ForeignKeyField
-from noc.lib.app.site import site
+from noc.services.web.app.site import site
 from noc.core.debug import error_report
 from noc.core.model.decorator import on_save, on_delete
 from noc.core.scheduler.job import Job

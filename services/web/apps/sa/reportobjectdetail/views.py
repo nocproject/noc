@@ -20,15 +20,22 @@ from django.http import HttpResponse
 
 # NOC modules
 from noc.main.models.pool import Pool
-from noc.lib.app.extapplication import ExtApplication, view
-from noc.lib.app.reportdatasources.base import ReportModelFilter
-from noc.lib.app.reportdatasources.report_objectlinkcount import ReportObjectLinkCount
-from noc.lib.app.reportdatasources.report_objectifacestypestat import ReportObjectIfacesTypeStat
-from noc.lib.app.reportdatasources.report_container import ReportContainer, ReportContainerData
-from noc.lib.app.reportdatasources.report_discoveryresult import ReportDiscoveryResult
-from noc.lib.app.reportdatasources.report_objectifacesstatusstat import ReportObjectIfacesStatusStat
-from noc.lib.app.reportdatasources.report_objectconfig import ReportObjectConfig
-from noc.lib.app.reportdatasources.report_objectattributes import ReportObjectAttributes
+from noc.services.web.app.extapplication import ExtApplication, view
+from noc.services.web.app.reportdatasources.base import ReportModelFilter
+from noc.services.web.app.reportdatasources.report_objectlinkcount import ReportObjectLinkCount
+from noc.services.web.app.reportdatasources.report_objectifacestypestat import (
+    ReportObjectIfacesTypeStat,
+)
+from noc.services.web.app.reportdatasources.report_container import (
+    ReportContainer,
+    ReportContainerData,
+)
+from noc.services.web.app.reportdatasources.report_discoveryresult import ReportDiscoveryResult
+from noc.services.web.app.reportdatasources.report_objectifacesstatusstat import (
+    ReportObjectIfacesStatusStat,
+)
+from noc.services.web.app.reportdatasources.report_objectconfig import ReportObjectConfig
+from noc.services.web.app.reportdatasources.report_objectattributes import ReportObjectAttributes
 from noc.sa.interfaces.base import StringParameter, BooleanParameter
 from noc.sa.models.managedobject import ManagedObject
 from noc.sa.models.administrativedomain import AdministrativeDomain

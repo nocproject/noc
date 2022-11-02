@@ -11,7 +11,7 @@ import logging
 from pymongo import ReadPreference
 
 # NOC modules
-from noc.lib.app.extdocapplication import ExtDocApplication
+from noc.services.web.app.extdocapplication import ExtDocApplication
 from noc.main.models.audittrail import AuditTrail
 from noc.core.translation import ugettext as _
 from noc.models import get_object, get_model

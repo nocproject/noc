@@ -6,7 +6,7 @@
 # ---------------------------------------------------------------------
 
 # NOC modules
-from noc.lib.app.extmodelapplication import ExtModelApplication
+from noc.services.web.app.extmodelapplication import ExtModelApplication
 from noc.sa.models.managedobjectprofile import ManagedObjectProfile
 from noc.core.translation import ugettext as _
 from noc.pm.models.metrictype import MetricType

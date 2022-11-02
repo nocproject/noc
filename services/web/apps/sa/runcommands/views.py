@@ -6,8 +6,8 @@
 # ---------------------------------------------------------------------
 
 # NOC modules
-from noc.lib.app.extapplication import ExtApplication
-from noc.lib.app.application import view
+from noc.services.web.app.extapplication import ExtApplication
+from noc.services.web.app.application import view
 from noc.core.translation import ugettext as _
 from noc.sa.models.managedobject import ManagedObject
 from noc.sa.models.commandsnippet import CommandSnippet

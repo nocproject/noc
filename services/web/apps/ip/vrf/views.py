@@ -6,7 +6,7 @@
 # ---------------------------------------------------------------------
 
 # NOC modules
-from noc.lib.app.extmodelapplication import ExtModelApplication, view
+from noc.services.web.app.extmodelapplication import ExtModelApplication, view
 from noc.ip.models.vrfgroup import VRFGroup
 from noc.ip.models.vrf import VRF
 from noc.sa.interfaces.base import (
@@ -19,7 +19,7 @@ from noc.sa.interfaces.base import (
 )
 from noc.core.translation import ugettext as _
 from noc.core.vpn import get_vpn_id
-from noc.lib.app.decorators.state import state_handler
+from noc.services.web.app.decorators.state import state_handler
 
 
 @state_handler

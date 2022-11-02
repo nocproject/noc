@@ -13,7 +13,7 @@ from django.http import HttpResponse
 import mimetypes
 
 # NOC modules
-from noc.lib.app.extmodelapplication import ExtModelApplication, view
+from noc.services.web.app.extmodelapplication import ExtModelApplication, view
 from noc.kb.models.kbentry import KBEntry
 from noc.kb.models.kbentryhistory import KBEntryHistory
 from noc.kb.models.kbentryattachment import KBEntryAttachment

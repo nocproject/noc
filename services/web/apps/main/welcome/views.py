@@ -13,7 +13,7 @@ from jinja2 import Template
 
 # NOC modules
 from noc.config import config
-from noc.lib.app.extapplication import ExtApplication, view
+from noc.services.web.app.extapplication import ExtApplication, view
 from noc.core.translation import ugettext as _
 
 

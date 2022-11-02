@@ -6,11 +6,11 @@
 # ---------------------------------------------------------------------
 
 # NOC modules
-from noc.lib.app.extmodelapplication import ExtModelApplication, view
+from noc.services.web.app.extmodelapplication import ExtModelApplication, view
 from noc.peer.models.peer import Peer
 from noc.core.validators import is_prefix
 from noc.core.ip import IP
-from noc.lib.app.repoinline import RepoInline
+from noc.services.web.app.repoinline import RepoInline
 from noc.sa.interfaces.base import ListOfParameter, ModelParameter
 from noc.core.translation import ugettext as _
 

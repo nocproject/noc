@@ -14,7 +14,7 @@ from noc.core.mongo.connection import connect
 
 class Command(BaseCommand):
     def handle(self, *args, **options):
-        from noc.lib.app.site import site
+        from noc.services.web.app.site import site
 
         connect()
         # Install service stub
