@@ -12,6 +12,7 @@ import asyncio
 # NOC modules
 from noc.core.service.fastapi import FastAPIService
 from noc.core.mx import MX_STREAM
+from noc.core.router.base import Router
 from noc.config import config
 from noc.core.liftbridge.message import Message
 from noc.core.perf import metrics
@@ -20,7 +21,7 @@ from noc.core.perf import metrics
 class MXService(FastAPIService):
     name = "mx"
     use_mongo = True
-    use_router = True
+    use_router = False
 
     if config.features.traefik:
         traefik_backend = "mx"
@@ -34,18 +35,19 @@ class MXService(FastAPIService):
     async def init_api(self):
         # Postpone initialization process until config datastream is fully processed
         self.ready_event = asyncio.Event()
+        self.router = Router()
+        asyncio.get_running_loop().create_task(self.get_mx_routes_config())
         # Set by datastream.on_ready
         await self.ready_event.wait()
         # Process as usual
         await super().init_api()
 
-    async def on_ready(self) -> None:
+    async def on_route_rules_ready(self) -> None:
         # Pass further initialization
         self.ready_event.set()
 
     async def on_activate(self):
-        #     self.router.load()
-        self.logger.info("Loader rules %s", len(self.router.chains))
+        self.logger.info("Loader %s chains: %s", len(self.router.chains), list(self.router.chains))
         self.slot_number, self.total_slots = await self.acquire_slot()
         await self.subscribe_stream(MX_STREAM, self.slot_number, self.on_message, async_cursor=True)
 
