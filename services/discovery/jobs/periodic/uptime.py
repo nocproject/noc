@@ -11,13 +11,7 @@ import datetime
 # NOC modules
 from noc.services.discovery.jobs.base import DiscoveryCheck
 from noc.fm.models.uptime import Uptime
-from noc.core.mx import (
-    send_message,
-    MX_LABELS,
-    MX_PROFILE_ID,
-    MX_ADMINISTRATIVE_DOMAIN_ID,
-    MX_H_VALUE_SPLITTER,
-)
+from noc.core.mx import MX_LABELS, MX_PROFILE_ID, MX_ADMINISTRATIVE_DOMAIN_ID, MX_H_VALUE_SPLITTER
 from noc.config import config
 from noc.core.hash import hash_int
 from noc.core.comp import smart_bytes
