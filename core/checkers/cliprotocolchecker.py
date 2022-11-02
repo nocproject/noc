@@ -36,7 +36,8 @@ class CLIProtocolChecker(ObjectChecker):
         cc = CredentialCheckerScript(
             self.object.address,
             self.object.pool,
-            self.object.effective_labels,
+            labels=self.object.effective_labels,
+            port=self.object.port or None,
             credentials=credential,
             profile=self.object.profile,
             logger=self.logger,
