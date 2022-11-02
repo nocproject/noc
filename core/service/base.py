@@ -937,3 +937,9 @@ class BaseService(object):
 
         dcs = get_dcs()
         return run_sync(partial(dcs.get_slot_limit, slot_name))
+
+    async def on_route_rules_ready(self) -> None:
+        """
+        Called when all Router rules are ready.
+        """
+        return
