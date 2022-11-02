@@ -36,19 +36,19 @@ class EventSummaryReport(SimpleReport):
 
     @staticmethod
     def get_data_db(name):
-        data = list(ActiveEvent._get_collection().aggregate(
-            [{
-                "$group": {
-                    "_id": f"${name}",
-                    "count": {"$sum": 1},
-                },
-            },
-                {
-                    "$sort": {"count": -1, "_id": 1}
-                }
-            ],
-            allowDiskUse=True,
-        )
+        data = list(
+            ActiveEvent._get_collection().aggregate(
+                [
+                    {
+                        "$group": {
+                            "_id": f"${name}",
+                            "count": {"$sum": 1},
+                        },
+                    },
+                    {"$sort": {"count": -1, "_id": 1}},
+                ],
+                allowDiskUse=True,
+            )
         )
         return data
 
