@@ -67,7 +67,7 @@ class Script(BaseScript):
                 {
                     "interfaces": [iface],
                     "mac": chassis,
-                    "type": {"3": "D", "2": "S", "1": "S"}[v[3]],
+                    "type": {"3": "D", "2": "S", "1": "S"}[str(v[3])],
                     "vlan_id": vlan_id,
                 }
             )

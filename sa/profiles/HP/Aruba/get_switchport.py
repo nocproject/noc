@@ -50,7 +50,7 @@ class Script(BaseScript):
 
             s = self.hex_to_bin(untagged)
             un = []
-            for i in range(len(s)):
+            for i in range(len(s) -1 ):
                 if s[i] == "1":
                     if i + 1 < 25:
                         iface = "Ethernet0/" + str(i + 1)

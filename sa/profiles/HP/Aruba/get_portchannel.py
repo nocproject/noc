@@ -14,6 +14,8 @@ class Script(BaseScript):
     name = "HP.Aruba.get_portchannel"
     interface = IGetPortchannel
 
+    always_prefer = "S"
+
     def execute_snmp(self):
         r = []
 
@@ -39,7 +41,7 @@ class Script(BaseScript):
             ports = ["%02x" % ord(c) for c in ports]
             p = ""
             for c in ports:
-                for i in range(len(c)):
+                for i in range(len(c) - 1):
                     p += bin[int(c[i], 16)]
             return p
 
@@ -51,10 +53,10 @@ class Script(BaseScript):
                 ],
                 bulk=True,
             ):
-                oid = "1.3.6.1.2.1.31.1.1.1.1." + v[1]
+                oid = "1.3.6.1.2.1.31.1.1.1.1." + str(v[1])
                 port = self.snmp.get(oid, cached=True)  # IF-MIB
                 if not port:
-                    oid = "1.3.6.1.2.1.2.2.1.2." + v[1]
+                    oid = "1.3.6.1.2.1.2.2.1.2." + str(v[1])
                     port = self.snmp.get(oid, cached=True)
                 s = hex2bin(v[2])
                 members = []
