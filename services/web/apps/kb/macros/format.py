@@ -1,18 +1,31 @@
 # ---------------------------------------------------------------------
 # format macro
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2018 The NOC Project
+# Copyright (C) 2007-2022 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
 # Third-party modules
 from pygments import highlight
+from pygments.formatters import HtmlFormatter
 from pygments.lexers import get_lexer_by_name
 
 # NOC modules
-from noc.lib.highlight import NOCHtmlFormatter
 from noc.core.profile.loader import loader as profile_loader
 from .base import BaseMacro
+
+
+class NOCHtmlFormatter(HtmlFormatter):
+    """
+    HTML Formatter
+    Returns escaped HTML text with neat line numbers
+    """
+
+    name = "NOC HTML"
+
+    def __init__(self, **kwargs):
+        kwargs["linenos"] = "table"
+        super().__init__(**kwargs)
 
 
 class FormatMacro(BaseMacro):
