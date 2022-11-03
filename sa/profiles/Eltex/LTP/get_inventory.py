@@ -1,7 +1,7 @@
 # ---------------------------------------------------------------------
 # Eltex.LTP.get_inventory
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2022 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -26,6 +26,10 @@ class Script(BaseScript):
     )
     rx_pwr = re.compile(r"^\s*Module (?P<num>\d+): (?P<part_no>PM\S+)", re.MULTILINE)
 
+    rx_version = re.compile(
+        r"^Eltex (?P<platform>\S+) software version (?P<version>\S+\s+build\s+\d+)\s*"
+    )
+
     def execute_snmp(self, **kwargs):
         v = self.scripts.get_version()
         r = [{"type": "CHASSIS", "vendor": "ELTEX", "part_no": v["platform"]}]
@@ -47,14 +51,20 @@ class Script(BaseScript):
         except self.CLISyntaxError:
             raise NotImplementedError
         match = self.rx_platform.search(v)
-
+        platform = match.group("part_no")
+        serial = match.group("serial")
+        rev = match.group("revision")
+        ver = self.cli("show version", cached=True)
+        match = self.rx_version.search(ver)
+        if platform:
+            platform = match.group("platform")
         r = [
             {
                 "type": "CHASSIS",
                 "vendor": "ELTEX",
-                "part_no": match.group("part_no"),
-                "serial": match.group("serial"),
-                "revision": match.group("revision"),
+                "part_no": platform,
+                "serial": serial,
+                "revision": rev,
             }
         ]
 
