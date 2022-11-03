@@ -26,6 +26,10 @@ class Script(BaseScript):
     )
     rx_pwr = re.compile(r"^\s*Module (?P<num>\d+): (?P<part_no>PM\S+)", re.MULTILINE)
 
+        rx_version = re.compile(
+        r"^Eltex (?P<platform>\S+) software version (?P<version>\S+\s+build\s+\d+)\s*"
+    )
+
     def execute_snmp(self, **kwargs):
         v = self.scripts.get_version()
         r = [{"type": "CHASSIS", "vendor": "ELTEX", "part_no": v["platform"]}]
@@ -47,7 +51,10 @@ class Script(BaseScript):
         except self.CLISyntaxError:
             raise NotImplementedError
         match = self.rx_platform.search(v)
-
+        ver = self.cli("show version", cached=True)
+        match = self.rx_version.search(ver)
+        if platform:
+            platform = match.group("platform")
         r = [
             {
                 "type": "CHASSIS",

@@ -26,7 +26,7 @@ class Script(BaseScript):
     )
 
     rx_version = re.compile(
-        r"^Eltex (?P<platform>\S+) software version (?P<version>\S+\s+build\s+\d+)\s+"
+        r"^Eltex (?P<platform>\S+) software version (?P<version>\S+\s+build\s+\d+)\s*"
     )
 
     def execute_snmp(self, **kwargs):
