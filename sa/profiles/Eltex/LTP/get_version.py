@@ -1,7 +1,7 @@
 # ---------------------------------------------------------------------
 # Eltex.LTP.get_version
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2020 The NOC Project
+# Copyright (C) 2007-2022 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -26,16 +26,12 @@ class Script(BaseScript):
     )
 
     rx_version = re.compile(
-        r"^Eltex \S+ software version\s+(?P<version>\S+\s+build\s+\d+)", re.MULTILINE
-    )
-
-    rx_snmp_version = re.compile(
-        r"^Eltex (?P<platform>\S+) software version (?P<version>\S+\s+build\s+\d+)\s+"
+        r"^Eltex (?P<platform>\S+) software version (?P<version>\S+\s+build\s+\d+)\s*"
     )
 
     def execute_snmp(self, **kwargs):
         v = self.snmp.get("1.3.6.1.4.1.35265.1.22.1.1.6.0")
-        match = self.rx_snmp_version.search(v)
+        match = self.rx_version.search(v)
         platform = match.group("platform")
         version = match.group("version")
         hardware = self.snmp.get("1.3.6.1.4.1.35265.1.22.1.1.8.0")
@@ -59,6 +55,8 @@ class Script(BaseScript):
 
         ver = self.cli("show version", cached=True)
         match = self.rx_version.search(ver)
+        if platform:
+            platform = match.group("platform")
         version = match.group("version")
 
         return {
