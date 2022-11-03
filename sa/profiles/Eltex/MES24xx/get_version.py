@@ -1,7 +1,7 @@
 # ---------------------------------------------------------------------
 # Eltex.MES24xx.get_version
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2022 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -24,6 +24,7 @@ class Script(BaseScript):
         r"^Firmware Version\s+: (?P<bootprom>\S+)\s*\n"
         r"(^\s*\n)?"
         r"^Hardware Serial Number\s+: (?P<serial>\S+)\s*\n"
+        r"(^Switch Base MAC Address\s+:.+\n)?"
         r"^Software Serial Number\s+:.*\n"
         r"^System Contact\s+:.*\n"
         r"^System Name\s+:.*\n"
