@@ -1,7 +1,7 @@
 # ---------------------------------------------------------------------
 # Event Summary Report
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2020 The NOC Project
+# Copyright (C) 2007-2022 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -35,45 +35,50 @@ class EventSummaryReport(SimpleReport):
     form = ReportForm
 
     @staticmethod
-    def get_by_event_class():
+    def get_data_db(name):
+        data = list(
+            ActiveEvent._get_collection().aggregate(
+                [
+                    {
+                        "$group": {
+                            "_id": f"${name}",
+                            "count": {"$sum": 1},
+                        },
+                    },
+                    {"$sort": {"count": -1, "_id": 1}},
+                ],
+                allowDiskUse=True,
+            )
+        )
+        return data
+
+    def get_by_event_class(self):
         """Summary by event class"""
-        c = ActiveEvent.objects.item_frequencies("event_class")
-        r = []
-        for k, v in c.items():
-            if not k:
-                continue
-            r += [[EventClass.objects.filter(id=k).first(), int(v)]]
-        return sorted(r, key=lambda x: -x[1])
+        data = self.get_data_db("event_class")
+        return ([EventClass.objects.filter(id=x["_id"]).first(), int(x["count"])] for x in data)
 
-    @staticmethod
-    def get_by_object():
+    def get_by_object(self):
         """Summary by managed object"""
-        c = ActiveEvent.objects.item_frequencies("managed_object")
-        r = []
-        for k, v in c.items():
-            if not k:
-                continue
-            r += [[ManagedObject.objects.get(id=k), int(v)]]
-        return sorted(r, key=lambda x: -x[1])
+        data = self.get_data_db("managed_object")
+        return ([ManagedObject.objects.get(id=x["_id"]), int(x["count"])] for x in data)
 
-    @staticmethod
-    def get_by_profile():
+    def get_by_profile(self):
         """Summary by managed object's profile"""
-        c = ActiveEvent.objects.item_frequencies("managed_object")
+        data = self.get_data_db("managed_object")
         pc = {}
         mo_map = {}  # managed object id -> profile name
-        for k, v in c.items():
-            if not k:
+        for x in data:
+            if not x:
                 continue
             try:
-                p = mo_map[k]
+                p = mo_map[x["_id"]]
             except KeyError:
-                p = ManagedObject.objects.get(id=k).profile.name
-                mo_map[k] = p
+                p = ManagedObject.objects.get(id=x["_id"]).profile.name
+                mo_map[x["_id"]] = p
             try:
-                pc[p] += v
+                pc[p] += x["count"]
             except KeyError:
-                pc[p] = v
+                pc[p] = x["count"]
         return sorted(pc.items(), key=lambda x: -x[1])
 
     @staticmethod
