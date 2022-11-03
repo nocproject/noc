@@ -157,9 +157,9 @@ class VLAN(Document):
             l2_domain=l2_domain, vlan__in=list(vlans), state__in=free_states
         ).limit(limit)
         if pool and pool.strategy == "L":
-            free_vlans = free_vlans.order_by("vlan")
-        elif pool and pool.strategy == "F":
             free_vlans = free_vlans.order_by("-vlan")
+        elif pool and pool.strategy == "F":
+            free_vlans = free_vlans.order_by("vlan")
         allocated_count = 0
         # Iter Free VLANs
         for vlan in sorted(free_vlans, reverse=pool and pool.strategy == "L"):
