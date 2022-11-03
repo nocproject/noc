@@ -34,7 +34,6 @@ class EventSummaryReport(SimpleReport):
     title = _("Event Summary")
     form = ReportForm
 
-    @staticmethod
     def get_data_db(name):
         data = list(
             ActiveEvent._get_collection().aggregate(
@@ -52,19 +51,16 @@ class EventSummaryReport(SimpleReport):
         )
         return data
 
-    @staticmethod
     def get_by_event_class(self):
         """Summary by event class"""
         data = self.get_data_db("event_class")
         return ([EventClass.objects.filter(id=x["_id"]).first(), int(x["count"])] for x in data)
 
-    @staticmethod
     def get_by_object(self):
         """Summary by managed object"""
         data = self.get_data_db("managed_object")
         return ([ManagedObject.objects.get(id=x["_id"]), int(x["count"])] for x in data)
 
-    @staticmethod
     def get_by_profile(self):
         """Summary by managed object's profile"""
         data = self.get_data_db("managed_object")
