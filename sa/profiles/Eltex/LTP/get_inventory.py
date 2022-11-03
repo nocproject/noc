@@ -1,7 +1,7 @@
 # ---------------------------------------------------------------------
 # Eltex.LTP.get_inventory
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2022 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -26,19 +26,15 @@ class Script(BaseScript):
     )
     rx_pwr = re.compile(r"^\s*Module (?P<num>\d+): (?P<part_no>PM\S+)", re.MULTILINE)
 
-        rx_version = re.compile(
+    rx_version = re.compile(
         r"^Eltex (?P<platform>\S+) software version (?P<version>\S+\s+build\s+\d+)\s*"
     )
-
     def execute_snmp(self, **kwargs):
         v = self.scripts.get_version()
         r = [{"type": "CHASSIS", "vendor": "ELTEX", "part_no": v["platform"]}]
-        serial = self.capabilities.get("Chassis | Serial Number")
-        if serial:
-            r[-1]["serial"] = serial
-        revision = self.capabilities.get("Chassis | HW Version")
-        if revision:
-            r[-1]["revision"] = revision
+        if "attributes" in v:
+            r[-1]["serial"] = v["attributes"]["Serial Number"]
+            r[-1]["revision"] = v["attributes"]["HW version"]
         pwr_num = self.snmp.get("1.3.6.1.4.1.35265.1.22.1.17.1.2.1")
         pwr_pn = self.snmp.get("1.3.6.1.4.1.35265.1.22.1.17.1.3.1")
         pwr_pn = pwr_pn.split()[0]
@@ -51,6 +47,9 @@ class Script(BaseScript):
         except self.CLISyntaxError:
             raise NotImplementedError
         match = self.rx_platform.search(v)
+        platform = match.group("part_no")
+        serial = match.group("serial")
+        rev = match.group("revision")
         ver = self.cli("show version", cached=True)
         match = self.rx_version.search(ver)
         if platform:
@@ -59,9 +58,9 @@ class Script(BaseScript):
             {
                 "type": "CHASSIS",
                 "vendor": "ELTEX",
-                "part_no": match.group("part_no"),
-                "serial": match.group("serial"),
-                "revision": match.group("revision"),
+                "part_no": platform,
+                "serial": serial,
+                "revision": rev,
             }
         ]
 
