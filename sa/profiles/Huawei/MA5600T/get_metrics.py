@@ -105,6 +105,7 @@ class Script(GetMetricsScript):
                     labels=ipath,
                     value=float(m["temp_c"]),
                     multi=True,
+                    units="C",
                 )
             if m.get("voltage_v", "-") != "-":
                 self.set_metric(
@@ -113,6 +114,7 @@ class Script(GetMetricsScript):
                     labels=ipath,
                     value=float(m["voltage_v"]),
                     multi=True,
+                    units="VDC",
                 )
             if m.get("optical_rx_dbm", "-") != "-":
                 self.set_metric(
@@ -121,6 +123,7 @@ class Script(GetMetricsScript):
                     labels=ipath,
                     value=float(m["optical_rx_dbm"]),
                     multi=True,
+                    units="dBm",
                 )
             if m.get("optical_rx_dbm_cpe", "-") != "-":
                 self.set_metric(
@@ -133,6 +136,7 @@ class Script(GetMetricsScript):
                         else m["optical_rx_dbm_cpe"].split(",")[0]
                     ),
                     multi=True,
+                    units="dBm",
                 )
             if m.get("current_ma", "-") != "-":
                 self.set_metric(
@@ -141,6 +145,7 @@ class Script(GetMetricsScript):
                     labels=ipath,
                     value=float(m["current_ma"]),
                     multi=True,
+                    units="m,A",
                 )
             if m.get("optical_tx_dbm", "-") != "-":
                 self.set_metric(
@@ -149,6 +154,7 @@ class Script(GetMetricsScript):
                     labels=ipath,
                     value=float(m["optical_tx_dbm"]),
                     multi=True,
+                    units="dBm",
                 )
             v = self.cli("display statistics ont-line-quality %s %s" % (port, cpe_id))
             m = parse_kv(self.kv_map, v)
@@ -227,6 +233,7 @@ class Script(GetMetricsScript):
                     labels=ipath,
                     value=float(ont_temp_c),
                     multi=True,
+                    units="C",
                 )
             if ont_current_ma != SNMP_UNKNOWN_VALUE:
                 self.set_metric(
@@ -235,6 +242,7 @@ class Script(GetMetricsScript):
                     labels=ipath,
                     value=float(ont_current_ma),
                     multi=True,
+                    units="m,A",
                 )
             if ont_voltage_v != SNMP_UNKNOWN_VALUE:
                 self.set_metric(
@@ -243,6 +251,7 @@ class Script(GetMetricsScript):
                     labels=ipath,
                     value=float(ont_voltage_v),
                     multi=True,
+                    units="VDC",
                 )
             if ont_optical_tx_dbm != SNMP_UNKNOWN_VALUE:
                 self.set_metric(
@@ -259,6 +268,7 @@ class Script(GetMetricsScript):
                     labels=ipath,
                     value=float(ont_optical_rx_dbm) / 100.0,
                     multi=True,
+                    units="dBm",
                 )
             if optical_rx_dbm_cpe != SNMP_UNKNOWN_VALUE:
                 self.set_metric(
@@ -270,6 +280,7 @@ class Script(GetMetricsScript):
                     ],
                     value=float(optical_rx_dbm_cpe) / 100.0,
                     multi=True,
+                    units="dBm",
                 )
         for (
             ont_index,
