@@ -1,0 +1,26 @@
+{
+    "name": "Huawei | CloudEngine | PDC1000S12-DB",
+    "$collection": "inv.objectmodels",
+    "uuid": "d613defb-0c60-4c9a-aef9-816be171bb19",
+    "vendor__code": "HUAWEI",
+    "description": "Huawei CloudEngine DC Power Supply Unit PDC1000S12-DB",
+    "cr_context": "PWR",
+    "labels": ["noc::inv::psu"],
+    "connections": [
+        {
+            "name": "in",
+            "description": "PSU slot",
+            "direction": "o",
+            "gender": "m",
+            "type__name": "Huawei | CloudEngine | PSU"
+        }
+    ],
+    "data": {
+        "asset": {
+            "part_no": ["PDC1000S12-DB"]
+        },
+        "power": {
+            "power": 1000.0
+        }
+    }
+}
