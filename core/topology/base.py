@@ -34,6 +34,13 @@ class MapItem(object):
     code: Optional[str] = None
 
 
+@dataclass
+class PathItem(object):
+    title: str
+    id: str
+    level: 0
+
+
 class TopologyBase(object):
     """
     Base Class for Map generators. Loaded by name
@@ -321,6 +328,15 @@ class TopologyBase(object):
         :param limit:
         :param start:
         :param page:
+        :return:
+        """
+        ...
+
+    @classmethod
+    def iter_path(cls, gen_id) -> Iterable[PathItem]:
+        """
+        Return map by hierarchy path
+        :param gen_id:
         :return:
         """
         ...

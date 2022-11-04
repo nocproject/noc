@@ -9,7 +9,6 @@
 from collections import defaultdict
 import threading
 from typing import List, Set
-from dataclasses import asdict
 
 # Third-party modules
 from concurrent.futures import ThreadPoolExecutor, as_completed
@@ -112,14 +111,8 @@ class MapApplication(ExtApplication):
         }
         return r
 
-    @view(
-        url=r"^(?P<id>[0-9a-f]{24})/info/managedobject/(?P<mo_id>\d+)/$",
-        method=["GET"],
-        access="read",
-        api=True,
-    )
-    def api_info_managedobject(self, request, id, mo_id):
-        segment = self.get_object_or_404(NetworkSegment, id=id)
+    def inspector_managedobject(self, request, id, mo_id):
+        # segment = self.get_object_or_404(NetworkSegment, id=id)
         object = self.get_object_or_404(ManagedObject, id=int(mo_id))
         s = {1: "telnet", 2: "ssh", 3: "http", 4: "https"}[object.scheme]
         r = {
@@ -129,20 +122,16 @@ class MapApplication(ExtApplication):
             "address": object.address,
             "platform": object.platform.full_name if object.platform else "",
             "profile": object.profile.name,
-            "external": object.segment.id != segment.id,
+            "external": False,
             "external_segment": {"id": str(object.segment.id), "name": object.segment.name},
+            # "external": object.segment.id != segment.id,
+            # "external_segment": {"id": str(object.segment.id), "name": object.segment.name},
             "caps": object.get_caps(),
             "console_url": "%s://%s/" % (s, object.address),
         }
         return r
 
-    @view(
-        url=r"^(?P<id>[0-9a-f]{24})/info/link/(?P<link_id>[0-9a-f]{24})/$",
-        method=["GET"],
-        access="read",
-        api=True,
-    )
-    def api_info_link(self, request, id, link_id):
+    def inspector_link(self, request, id, link_id):
         def q(s):
             if isinstance(s, str):
                 s = s.encode("utf-8")
@@ -198,13 +187,7 @@ class MapApplication(ExtApplication):
                 r["utilisation"] = 0
         return r
 
-    @view(
-        url=r"^(?P<id>[0-9a-f]{24})/info/cloud/(?P<link_id>[0-9a-f]{24})/$",
-        method=["GET"],
-        access="read",
-        api=True,
-    )
-    def api_info_cloud(self, request, id, link_id):
+    def inspector_cloud(self, request, id, link_id):
         self.get_object_or_404(NetworkSegment, id=id)
         link = self.get_object_or_404(Link, id=link_id)
         r = {
@@ -411,6 +394,11 @@ class MapApplication(ExtApplication):
 
     @view(method=["GET"], url=r"^lookup/$", access="lookup", api=True)
     def api_lookup(self, request):
+        """
+        Lookup available map by generator
+        :param request:
+        :return:
+        """
         if request.method == "POST":
             if self.site.is_json(request.META.get("CONTENT_TYPE")):
                 q = self.deserialize(request.body)
@@ -419,14 +407,14 @@ class MapApplication(ExtApplication):
         else:
             q = {str(k): v[0] if len(v) == 1 else v for k, v in request.GET.lists()}
         r = []
-        if self.gen_param not in q:
+        if not q.get(self.gen_param):
             for mi in loader:
                 mi = loader[mi]
                 r.append(
                     {
-                        "id": None,
+                        "id": mi.name,
                         "generator": mi.name,
-                        "title": mi.header or mi.name,
+                        "label": mi.header or mi.name,
                         "has_children": True,
                         "only_container": True,
                     }
@@ -434,16 +422,91 @@ class MapApplication(ExtApplication):
             return r
         gen = loader[q[self.gen_param]]
         if not gen:
-            self.render_json(
+            return self.render_json(
                 {"success": False, "message": f"Unknown generator: {q[self.gen_param]}"},
                 status=self.NOT_FOUND,
             )
+        if gen.name == q.get("parent"):
+            q["parent"] = None
         for mi in gen.iter_maps(
-                parent=q.get("parent"),
-                query=q.get(self.query_param),
-                limit=q.get(self.limit_param),
-                start=q.get(self.start_param),
-                page=q.get(self.page_param),
+            parent=q.get("parent"),
+            query=q.get(self.query_param),
+            limit=int(q.get(self.limit_param, 500)),
+            start=int(q.get(self.start_param, 0)),
+            page=int(q.get(self.page_param, 1)),
         ):
-            r.append(asdict(mi))
+            r.append(
+                {
+                    "label": mi.title,
+                    "generator": mi.generator,
+                    "id": str(mi.id),
+                    "has_children": mi.has_children,
+                    "only_container": mi.only_container,
+                    "code": mi.code,
+                }
+            )
+        return r
+
+    @view(method=["GET"], url=r"^(?P<gen_id>[0-9a-f]{24})/get_path/$", access="lookup", api=True)
+    def api_lookup_maps_get_path(self, request, gen_id):
+        """
+
+        :param request:
+        :param gen_id:
+        :return:
+        """
+        if request.method == "POST":
+            if self.site.is_json(request.META.get("CONTENT_TYPE")):
+                q = self.deserialize(request.body)
+            else:
+                q = {str(k): v[0] if len(v) == 1 else v for k, v in request.POST.lists()}
+        else:
+            q = {str(k): v[0] if len(v) == 1 else v for k, v in request.GET.lists()}
+        if self.gen_param not in q:
+            return
+        gen = loader[q[self.gen_param]]
+        if not gen:
+            return self.render_json(
+                {"success": False, "message": f"Unknown generator: {q[self.gen_param]}"},
+                status=self.NOT_FOUND,
+            )
+        return {
+            "data": [
+                {"level": p.level, "id": str(p.id), "label": p.title} for p in gen.iter_path(gen_id)
+            ]
+        }
+
+    @view(
+        url=r"^info/(?P<inspector>\w+)/(?P<id>[0-9a-f]{24})/$",
+        method=["GET"],
+        access="read",
+        api=True,
+    )
+    def api_info_inspector(self, request, inspector, id):
+        if not hasattr(self, inspector):
+            return
+        hi = getattr(self, f"inspector_{inspector}")
+        return hi(request, id)
+
+    @view(
+        url=r"^info/(?P<inspector>\w+)/(?P<gen_id>[0-9a-f]{24})/(?P<r_id>([0-9a-f]{24}|\d+))/$",
+        method=["GET"],
+        access="read",
+        api=True,
+    )
+    def inspector_gen_segment(self, request, inspector, gen_id, r_id):
+        if not hasattr(self, f"inspector_{inspector}"):
+            self.logger.warning("Unknown inspector: %s", inspector)
+            return
+        hi = getattr(self, f"inspector_{inspector}")
+        return hi(request, gen_id, r_id)
+
+    @view(url=r"^info/segment/(?P<id>[0-9a-f]{24})/$", method=["GET"], access="read", api=True)
+    def api_info_segment_new(self, request, id):
+        segment = self.get_object_or_404(NetworkSegment, id=id)
+        r = {
+            "name": segment.name,
+            "description": segment.description,
+            "objects": segment.managed_objects.count(),
+        }
         return r

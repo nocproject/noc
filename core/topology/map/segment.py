@@ -26,7 +26,7 @@ from noc.inv.models.networksegment import NetworkSegment
 from noc.inv.models.interface import Interface
 from noc.inv.models.link import Link
 from ..types import ShapeOverlay, ShapeOverlayPosition, ShapeOverlayForm
-from ..base import TopologyBase, MapItem
+from ..base import TopologyBase, MapItem, PathItem
 
 logger = logging.getLogger(__name__)
 
@@ -486,7 +486,7 @@ class SegmentTopology(TopologyBase):
             data = data.filter(name__icontains=query)
         # Apply paging
         if limit:
-            data = data[start: start + limit]
+            data = data[start : start + limit]
         for ns in data:
             yield MapItem(
                 title=str(ns.name),
@@ -494,3 +494,12 @@ class SegmentTopology(TopologyBase):
                 id=str(ns.id),
                 has_children=ns.has_children,
             )
+
+    @classmethod
+    def iter_path(cls, gen_id) -> Iterable[PathItem]:
+        o = NetworkSegment.get_by_id(gen_id)
+        if not o:
+            return
+        for level, ns_id in enumerate(o.get_path(), start=1):
+            ns = NetworkSegment.get_by_id(ns_id)
+            yield PathItem(title=str(ns.name), id=str(ns.id), level=level)
