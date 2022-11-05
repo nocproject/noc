@@ -20,7 +20,7 @@ class SlotRule(OIDRule):
         PIC
         FPC
         MIC
-        :param metrics:
+        :param metric:
         :return:
         """
         for i, desc in script.snmp.getnext("1.3.6.1.4.1.2636.3.1.13.1.5"):
@@ -43,7 +43,12 @@ class SlotRule(OIDRule):
                         else f"noc::cpu::{desc}",
                     ]
                 else:
-                    labels = [int(slotid.split(".")[1]) - 1, int(slotid.split(".")[2]) - 1, desc]
+                    # [0,"0","FPC: MPC BUILTIN @ 0/*/*"]
+                    labels = [
+                        f"noc::chassis::{int(slotid.split('.')[1]) - 1}",
+                        f"noc::slot::{int(slotid.split('.')[2]) - 1}",
+                        f"noc::sensor::{desc}",
+                    ]
                 yield oid, self.type, self.scale, self.units, labels
             elif desc.startswith("MIC:"):
                 # Only MS modules return values in this slot
@@ -61,7 +66,11 @@ class SlotRule(OIDRule):
                         else f"noc::cpu::{desc}",
                     ]
                 else:
-                    labels = [int(slotid.split(".")[1]) - 1, slotid.split(".")[2], desc]
+                    labels = [
+                        f"noc::chassis::{int(slotid.split('.')[1]) - 1}",
+                        f"noc::slot::{slotid.split('.')[2]}",
+                        f"noc::sensor::{desc}",
+                    ]
                 yield oid, self.type, self.scale, self.units, labels
             elif "Routing Engine" in desc:
                 if "CPU" in metric.metric or "Environment" in metric.metric:
@@ -76,7 +85,11 @@ class SlotRule(OIDRule):
                         else f"noc::cpu::{desc}",
                     ]
                 else:
-                    labels = [int(slotid.split(".")[1]), int(slotid.split(".")[2]), desc]
+                    labels = [
+                        f"noc::chassis::{int(slotid.split('.')[1])}",
+                        f"noc::slot::{int(slotid.split('.')[2])}",
+                        f"noc::sensor::{desc}",
+                    ]
                 yield oid, self.type, self.scale, self.units, labels
             else:
                 if "Environment" in metric.metric:
