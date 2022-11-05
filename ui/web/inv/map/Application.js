@@ -413,6 +413,7 @@ Ext.define("NOC.inv.map.Application", {
     onSelectSegment: function(combo, record, opts) {
         var me = this;
         if(record) {
+            me.generator = record.get("generator");
             me.loadSegment(record.get("id"));
         }
     },
