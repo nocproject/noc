@@ -31,30 +31,21 @@ class SlotRule(OIDRule):
                     i += 1
         for i in r:
             if self.is_complex:
-                gen = [mib[self.expand(o, {"hwSlotIndex": r[i]})] for o in self.oid]
-                labels = (
-                    ["noc::chassis::0", "noc::slot::0", f"noc::module::{i}"]
-                    if "CPU" in metric.metric
-                    else [
-                        "noc::chassis::0",
-                        f"noc::slot::{i}",
-                        "noc::module::0",
-                        f"noc::cpu::CPU Slot {i}",
-                    ]
-                )
-                if gen:
-                    yield tuple(gen), self.type, self.scale, self.units, labels
+                gen = tuple(mib[self.expand(o, {"hwSlotIndex": r[i]})] for o in self.oid)
             else:
-                oid = mib[self.expand(self.oid, {"hwSlotIndex": r[i]})]
-                labels = (
-                    ["noc::chassis::0", "noc::slot::0", f"noc::module::{i}"]
-                    if "CPU" in metric.metric
-                    else [
-                        "noc::chassis::0",
-                        f"noc::slot::{i}",
-                        "noc::module::0",
-                        f"noc::cpu::CPU Slot {i}",
-                    ]
+                gen = mib[self.expand(self.oid, {"hwSlotIndex": r[i]})]
+            if not gen:
+                continue
+            if "CPU" not in metric.metric:
+                yield gen, self.type, self.scale, self.units, (
+                    "noc::chassis::0",
+                    "noc::slot::0",
+                    f"noc::module::{i}",
                 )
-                if oid:
-                    yield oid, self.type, self.scale, self.units, labels
+            else:
+                yield gen, self.type, self.scale, self.units, (
+                    "noc::chassis::0",
+                    f"noc::slot::{i}",
+                    "noc::module::0",
+                    f"noc::cpu::CPU Slot {i}",
+                )
