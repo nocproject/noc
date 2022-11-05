@@ -22,7 +22,7 @@ from noc.core.service.loader import get_service
 from noc.core.comp import DEFAULT_ENCODING
 from noc.core.perf import metrics
 from noc.core.ioloop.util import run_sync
-from noc.core.liftbridge.base import STREAM_CONFIG
+from noc.core.models.cfgmessagestreams import STREAM_CONFIG
 from .route import Route, DefaultNotificationRoute
 from .action import DROP, DUMP
 
