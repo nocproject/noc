@@ -17,9 +17,7 @@ class SlotRule(OIDRule):
         i = 1
         r = {}
         if script.has_capability("Stack | Member Ids"):
-            ssi = [
-                int(index) for index in script.capabilities["Stack | Member Ids"].split(" | ")
-            ]
+            ssi = [int(index) for index in script.capabilities["Stack | Member Ids"].split(" | ")]
         elif script.has_capability("Stack | Members"):
             ssi = list(range(1, script.capabilities["Stack | Members"] + 1))
         else:

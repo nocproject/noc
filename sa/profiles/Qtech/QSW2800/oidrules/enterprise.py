@@ -18,9 +18,7 @@ class EnterpriseRule(OIDRule):
         if len(self.oid) == 2:
             gen = tuple(
                 mib[
-                    self.expand(
-                        o, {"enterprise": script.capabilities["SNMP | OID | EnterpriseID"]}
-                    )
+                    self.expand(o, {"enterprise": script.capabilities["SNMP | OID | EnterpriseID"]})
                 ]
                 for o in self.oid
             )
