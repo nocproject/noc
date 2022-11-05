@@ -55,8 +55,8 @@ class Command(BaseCommand):
         subscribe_parser.add_argument("--name")
         subscribe_parser.add_argument("--partition", type=int, default=0)
         subscribe_parser.add_argument("--cursor", type=str, default="")
-        subscribe_parser.add_argument("--start-offset", type=int, default=0)
-        subscribe_parser.add_argument("--start-ts", type=self.valid_date, default=0)
+        subscribe_parser.add_argument("--start-offset", type=int, default=None)
+        subscribe_parser.add_argument("--start-ts", type=self.valid_date, default=None)
         # set-cursor
         set_cursor_parser = subparsers.add_parser("set-cursor")
         set_cursor_parser.add_argument("--name")
@@ -148,7 +148,7 @@ class Command(BaseCommand):
         name: str,
         partition: int = 0,
         cursor: str = "",
-        start_offset: int = 0,
+        start_offset: int = None,
         start_ts: int = None,
         *args,
         **kwargs,
@@ -168,7 +168,7 @@ class Command(BaseCommand):
                             msg.subject,
                             msg.partition,
                             msg.offset,
-                            f"{msg.timestamp} ({datetime.datetime.fromtimestamp(msg.timestamp / TS_NS)})",
+                            f"{msg.timestamp} ({datetime.datetime.fromtimestamp(msg.timestamp / LiftBridgeClient.TIMESTAMP_MULTIPLIER)})",
                             msg.key,
                             msg.headers,
                         )
@@ -177,7 +177,7 @@ class Command(BaseCommand):
 
         if start_ts:
             start_offset = None
-            start_ts *= 1000000000
+            start_ts *= LiftBridgeClient.TIMESTAMP_MULTIPLIER
         run_sync(subscribe)
 
     def handle_set_cursor(
