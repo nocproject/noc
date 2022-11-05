@@ -10,11 +10,8 @@ from typing import Iterable
 
 # NOC modules
 from noc.core.management.base import BaseCommand
-from noc.core.liftbridge.base import (
-    LiftBridgeClient,
-    Metadata,
-    STREAM_CONFIG,
-)
+from noc.core.liftbridge.base import LiftBridgeClient
+from noc.core.models.cfgmessagestreams import STREAM_CONFIG
 from noc.core.mongo.connection import connect
 from noc.core.ioloop.util import run_sync
 from noc.core.clickhouse.loader import loader as bi_loader
@@ -43,13 +40,6 @@ class Command(BaseCommand):
             self.print("CHANGED")
         else:
             self.print("OK")
-
-    def get_meta(self) -> Metadata:
-        async def get_meta() -> Metadata:
-            async with LiftBridgeClient() as client:
-                return await client.fetch_metadata()
-
-        return run_sync(get_meta)
 
     def iter_streams(self) -> Iterable[str]:
         connect()
