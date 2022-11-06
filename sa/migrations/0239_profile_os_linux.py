@@ -5,7 +5,10 @@
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
-import copy
+# Third-party modules
+import bson
+import uuid
+from pymongo import InsertOne, DeleteOne
 
 # NOC modules
 from noc.core.migration.base import BaseMigration
@@ -14,33 +17,40 @@ from noc.core.migration.base import BaseMigration
 class Migration(BaseMigration):
     def migrate(self):
         db = self.mongo_db
-        old_linux_profile_id = db.noc.profiles.find(
-            {"name": {"$regex": "^Linux|FreeBSD"}}, {"_id": 1}
-        )
-        oldd = [o["_id"] for o in copy.copy(old_linux_profile_id)]
-        old = ", ".join(map(repr, (str(id["_id"]) for id in old_linux_profile_id)))
-        new_linux_profile_id = db.noc.profiles.find_one({"name": "OS.Linux"}, {"_id": 1})
-        self.db.execute(
-            f"""
-                          UPDATE sa_managedobject
-                          SET version = null
-                          WHERE profile = '{old}'
-                          """
-        )
-        self.db.execute(
-            f"""
-                          UPDATE sa_managedobject
-                          SET profile = '{str(new_linux_profile_id["_id"])}'
-                          WHERE profile in ({old})
-                          """
-        )
-        db.noc.actioncommands.update_many(
-            {"profile": {"$in": oldd}}, {"$set": {"profile": new_linux_profile_id["_id"]}}
-        )
-        db.noc.firmwares.update_many(
-            {"profile": {"$in": oldd}}, {"$set": {"profile": new_linux_profile_id["_id"]}}
-        )
-        db.noc.specs.update_many(
-            {"profile": {"$in": oldd}}, {"$set": {"profile": new_linux_profile_id["_id"]}}
-        )
-        db.noc.profiles.remove({"name": {"$regex": "Linux."}})
+        os_linux_profile_id = bson.ObjectId()
+        bulk = [
+            InsertOne(
+                {
+                    "_id": os_linux_profile_id,
+                    "name": "OS.Linux",
+                    "uuid": uuid.UUID("ffdf0793-da3c-4f5d-9647-b0f40bad6f53"),
+                    "description": None,
+                }
+            )
+        ]
+        old_profiles = set()
+        for profile in db.noc.profiles.find({"name": {"$regex": "^Linux|FreeBSD"}}, {"_id": 1}):
+            profile_id = profile["_id"]
+            bulk += [DeleteOne({"_id": profile_id})]
+            old_profiles.add(profile_id)
+        if old_profiles:
+            old_profiles = list(old_profiles)
+            self.db.execute(
+                """
+                    UPDATE sa_managedobject
+                    SET version = null, SET profile = '%s'
+                    WHERE profile = ANY(ARRAY[%s]::CHAR(24)[])
+                """,
+                [str(os_linux_profile_id), [str(x) for x in old_profiles]],
+            )
+            db.noc.actioncommands.update_many(
+                {"profile": {"$in": old_profiles}}, {"$set": {"profile": os_linux_profile_id}}
+            )
+            db.noc.firmwares.update_many(
+                {"profile": {"$in": old_profiles}}, {"$set": {"profile": os_linux_profile_id}}
+            )
+            db.noc.specs.update_many(
+                {"profile": {"$in": old_profiles}}, {"$set": {"profile": os_linux_profile_id}}
+            )
+        if bulk:
+            db.noc.profiles.bulk_write(bulk)
