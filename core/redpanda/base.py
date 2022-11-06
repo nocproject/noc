@@ -86,6 +86,8 @@ class RedPandaClient(object):
             await self.producer.stop()
             self.producer = None
         if self.consumer:
+            # Workaround for Issue aiokafka/issues/647
+            await asyncio.sleep(0.1)
             await self.consumer.stop()
             self.consumer = None
         # if self.admin_client:
