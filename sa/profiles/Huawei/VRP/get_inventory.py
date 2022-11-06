@@ -1,7 +1,7 @@
 # ---------------------------------------------------------------------
 # Huawei.VRP.get_inventory
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2022 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -183,11 +183,16 @@ class Script(BaseScript):
         if name and name.lower().startswith("port"):
             self.logger.debug("Detect type by by name")
             num = name
-            if self.is_cloud_engine or self.sfp_number.match(name):
+            if self.is_cloud_engine_s5332:
+                # On S5332 Cloud Engine port numbering in Type:
+                # Port_GigabitEthernet0/0/4, Port_XGigabitEthernet0/0/4, Port_40GE0/0/4
+                pass
+            elif self.is_cloud_engine and self.sfp_number.match(name):
                 # Port_10GE1/0/48, Port_10GE2/0/48
-                # Port_GigabitEthernet2/0/19 format
                 num = "%s%s" % self.sfp_number.match(name).groups()
-                num = num.replace("igabitEthernet", "E")
+            elif self.sfp_number.match(name):
+                # Port_GigabitEthernet2/0/19 format
+                num = self.sfp_number.match(name).group("num")
             elif "_" in name:
                 num = name.split("_")[-1]
             return "XCVR", num, part_no
