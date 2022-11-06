@@ -229,7 +229,12 @@ class Script(BaseScript):
         elif (
             not name
             and slot_hints
-            and (part_no.endswith("PWD") or part_no.endswith("PWA") or part_no in ["PDC-350WC-B"])
+            and (
+                part_no.endswith("PWD")
+                or part_no.endswith("PWA")
+                or part_no in ["PDC-350WC-B"]
+                or self.is_cloud_engine_s5332  # PDC1000S12-DB
+            )
         ):
             # 5XX chassis PWR card
             # Try detect slot number by display device, use for 53XX series
