@@ -455,7 +455,7 @@ class RedPandaClient(object):
         stream_meta = meta.metadata[0] if meta.metadata else None
         if stream_meta and len(stream_meta.partitions) == partitions:
             return False
-        elif stream_meta.partitions:
+        elif stream_meta and stream_meta.partitions:
             # Alter settings
             logger.info(
                 "Altering stream %s due to partition/replication factor mismatch (%d -> %d)",
@@ -466,6 +466,6 @@ class RedPandaClient(object):
             # return await self.alter_stream(
             #     stream_meta, new_partitions=partitions, replication_factor=rf
             # )
-        logger.info("Creating stream %s with %s partitions", name, cfg.partitions)
+        logger.info("Creating stream %s with %s partitions", name, partitions)
         await self.create_stream(name, partitions=partitions, subject=name, replication_factor=rf)
         return True
