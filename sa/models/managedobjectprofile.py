@@ -1036,51 +1036,50 @@ def update_diagnostics_alarms(profile_id, box_changed, periodic_changed, alarm_p
                         "$op": "clear",
                     }
                 )
-            if alarm_policy_changed and box_alarm:
-                # Raise access alarms
-                if (SNMP_DIAG in diagnostics and diagnostics[SNMP_DIAG]["state"] == "failed") or (
-                    CLI_DIAG in diagnostics and diagnostics[CLI_DIAG]["state"] == "failed"
-                ):
-                    dispose_msg[fm_pool].append(
+        elif alarm_policy_changed and box_alarm:
+            # Raise access alarms
+            if (SNMP_DIAG in diagnostics and diagnostics[SNMP_DIAG]["state"] == "failed") or (
+                CLI_DIAG in diagnostics and diagnostics[CLI_DIAG]["state"] == "failed"
+            ):
+                dispose_msg[fm_pool].append(
+                    {
+                        "$op": "ensure_group",
+                        "reference": f"dc:Access:{mo_id}",
+                        "alarm_class": "NOC | Managed Object | Access Degraded",
+                        "alarms": [],
+                    }
+                )
+                if SNMP_DIAG in diagnostics and diagnostics[SNMP_DIAG]["state"] == "failed":
+                    dispose_msg[fm_pool][-1]["alarms"].append(
                         {
-                            "$op": "ensure_group",
-                            "reference": f"dc:Access:{mo_id}",
-                            "alarm_class": "NOC | Managed Object | Access Degraded",
-                            "alarms": [],
-                        }
-                    )
-                    if SNMP_DIAG in diagnostics and diagnostics[SNMP_DIAG]["state"] == "failed":
-                        dispose_msg[fm_pool][-1]["alarms"].append(
-                            {
-                                "reference": f"dc:{mo_id}:{SNMP_DIAG}",
-                                "managed_object": mo_id,
-                                "alarm_class": "NOC | Managed Object | Access Lost",
-                                "labels": ["noc::access::method::SNMP"],
-                            }
-                        )
-                    if CLI_DIAG in diagnostics and diagnostics[CLI_DIAG]["state"] == "failed":
-                        dispose_msg[fm_pool][-1]["alarms"].append(
-                            {
-                                "reference": f"dc:{mo_id}:{CLI_DIAG}",
-                                "managed_object": mo_id,
-                                "alarm_class": "NOC | Managed Object | Access Lost",
-                                "labels": ["noc::access::method::CLI"],
-                            }
-                        )
-
-                if (
-                    PROFILE_DIAG in diagnostics
-                    and diagnostics[PROFILE_DIAG]["state"] == DiagnosticState.failed
-                ):
-                    dispose_msg[fm_pool].append(
-                        {
-                            "timestamp": now,
-                            "reference": f"dc:{mo_id}:{PROFILE_DIAG}",
+                            "reference": f"dc:{mo_id}:{SNMP_DIAG}",
                             "managed_object": mo_id,
-                            "alarm_class": "Discovery | Guess | Profile",
-                            "$op": "raise",
+                            "alarm_class": "NOC | Managed Object | Access Lost",
+                            "labels": ["noc::access::method::SNMP"],
                         }
                     )
+                if CLI_DIAG in diagnostics and diagnostics[CLI_DIAG]["state"] == "failed":
+                    dispose_msg[fm_pool][-1]["alarms"].append(
+                        {
+                            "reference": f"dc:{mo_id}:{CLI_DIAG}",
+                            "managed_object": mo_id,
+                            "alarm_class": "NOC | Managed Object | Access Lost",
+                            "labels": ["noc::access::method::CLI"],
+                        }
+                    )
+            if (
+                PROFILE_DIAG in diagnostics
+                and diagnostics[PROFILE_DIAG]["state"] == DiagnosticState.failed
+            ):
+                dispose_msg[fm_pool].append(
+                    {
+                        "timestamp": now,
+                        "reference": f"dc:{mo_id}:{PROFILE_DIAG}",
+                        "managed_object": mo_id,
+                        "alarm_class": "Discovery | Guess | Profile",
+                        "$op": "raise",
+                    }
+                )
     # Reset diagnostics alarm
     svc = get_service()
     for pool in dispose_msg:
@@ -1107,7 +1106,7 @@ def apply_discovery_jobs(profile_id, box_changed, periodic_changed):
     def iter_objects():
         pool_cache = cachetools.LRUCache(maxsize=200)
         pool_cache.__missing__ = lambda x: Pool.objects.get(id=x)
-        for (o_id, is_managed, pool_id) in profile.managedobject_set.values_list(
+        for o_id, is_managed, pool_id in profile.managedobject_set.values_list(
             "id", "is_managed", "pool"
         ):
             yield o_id, is_managed, pool_cache[pool_id]
@@ -1119,7 +1118,6 @@ def apply_discovery_jobs(profile_id, box_changed, periodic_changed):
         profile = ManagedObjectProfile.objects.get(id=profile_id)
     except ManagedObjectProfile.DoesNotExist:
         return
-
     for mo_id, is_managed, pool in iter_objects():
         if box_changed:
             if profile.enable_box_discovery and is_managed:
@@ -1136,7 +1134,6 @@ def apply_discovery_jobs(profile_id, box_changed, periodic_changed):
                     key=mo_id,
                     pool=pool,
                 )
-
         if periodic_changed:
             if profile.enable_periodic_discovery and is_managed:
                 Job.submit(
