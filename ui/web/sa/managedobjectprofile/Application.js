@@ -234,16 +234,36 @@ Ext.define("NOC.sa.managedobjectprofile.Application", {
                                     },
                                 },
                                 {
-                                    name: "style",
-                                    xtype: "main.style.LookupField",
-                                    fieldLabel: __("Style"),
-                                    allowBlank: true
-                                },
-                                {
-                                    name: "shape",
-                                    xtype: "main.ref.stencil.LookupField",
-                                    fieldLabel: __("Shape"),
-                                    allowBlank: true
+                                    xtype: "fieldset",
+                                    title: __("Display Settings"),
+                                    layout: "vbox",
+                                    defaults: {
+                                        labelAlign: "top",
+                                        padding: 4
+                                    },
+                                    items: [
+                                        {
+                                            xtype: "container",
+                                            layout: "hbox",
+                                            defaults: {
+                                                padding: "0 8 0 0"
+                                            },
+                                            items: [
+                                                {
+                                                    name: "style",
+                                                    xtype: "main.style.LookupField",
+                                                    fieldLabel: __("Style"),
+                                                    allowBlank: true
+                                                },
+                                                {
+                                                    name: "shape",
+                                                    xtype: "main.ref.stencil.LookupField",
+                                                    fieldLabel: __("Shape"),
+                                                    allowBlank: true
+                                                }
+                                            ]
+                                        }
+                                    ]
                                 },
                                 {
                                     xtype: "fieldset",
@@ -767,8 +787,27 @@ Ext.define("NOC.sa.managedobjectprofile.Application", {
                                         ["D", __("Disable")]
                                     ],
                                     value: "D",
-                                    allowBlank: false,
+                                    allowBlank: true,
                                     uiStyle: "medium",
+                                    listeners: {
+                                        render: me.addTooltip
+                                    }
+                                },
+                                {
+                                    name: "escalation_policy",
+                                    xtype: "combobox",
+                                    tooltip: __("Enable - allow to escalate alarm for ManagedObject. <br/>" +
+                                        "As Depended - allow to escalate ManagedObject only as depend (not root) on alarm"),
+                                    labelWidth: 150,
+                                    fieldLabel: __("Escalation Policy"),
+                                    allowBlank: true,
+                                    uiStyle: "medium",
+                                    store: [
+                                        ["E", __("Enable")],
+                                        ["D", __("Disable")],
+                                        ["R", __("As Depended")]
+                                    ],
+                                    value: "E",
                                     listeners: {
                                         render: me.addTooltip
                                     }
@@ -868,7 +907,6 @@ Ext.define("NOC.sa.managedobjectprofile.Application", {
                                         }
                                     ]
                                 }
-
                             ]
                         },
                         {
@@ -2653,35 +2691,6 @@ Ext.define("NOC.sa.managedobjectprofile.Application", {
                                     listeners: {
                                         render: me.addTooltip
                                 }
-                                }
-                            ],
-                            listeners: {
-                                render: me.addTooltip
-                            }
-                        },
-                        {
-                            title: __("Escalation"),
-                            tooltip: __("Policy for do managedobject in escalation proccess: " +
-                                "FM -> Setup -> Escalation"),
-                            items: [
-                                {
-                                    name: "escalation_policy",
-                                    xtype: "combobox",
-                                    tooltip: __("Enable - allow escalate alarm for ManagedObject. <br/>" +
-                                        "As Depended - allow escalate ManagedObject only as depend (not root) on alarm"),
-                                    labelWidth: 150,
-                                    fieldLabel: __("Escalation Policy"),
-                                    allowBlank: true,
-                                    uiStyle: "medium",
-                                    store: [
-                                        ["E", __("Enable")],
-                                        ["D", __("Disable")],
-                                        ["R", __("As Depended")]
-                                    ],
-                                    value: "E",
-                                    listeners: {
-                                        render: me.addTooltip
-                                    }
                                 }
                             ],
                             listeners: {
