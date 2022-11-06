@@ -9,6 +9,6 @@ import os
 if os.name == "nt":
     try:
         import pyximport
-    except ImportError:
+    except (ModuleNotFoundError, ImportError):
         raise NotImplementedError("Working on Windows without pyximport not supported")
     pyximport.install()
