@@ -1649,6 +1649,7 @@ class ManagedObject(NOCModel):
             )
         else:
             Job.remove("discovery", self.BOX_DISCOVERY_JOB, key=self.id, pool=self.pool.name)
+            self.reset_diagnostic([PROFILE_DIAG, SNMP_DIAG, CLI_DIAG])
         if self.is_managed and self.object_profile.enable_periodic_discovery:
             Job.submit(
                 "discovery",
