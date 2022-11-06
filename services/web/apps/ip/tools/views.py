@@ -214,8 +214,7 @@ class ToolsAppplication(Application):
             create, change = upload_axfr(data, body["zone"])
             return HttpResponse(
                 _(
-                    "Created: %(create)s and Changed: %(change)s IP addresses uploaded via zone transfer."
+                    f"Created: {create} and Changed: {change} IP addresses uploaded via zone transfer."
                 )
-                % {"create": create, "change": change}
             )
         return HttpResponse("No DNS Zone", status=404)
