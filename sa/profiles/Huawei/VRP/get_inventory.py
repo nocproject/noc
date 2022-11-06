@@ -183,7 +183,7 @@ class Script(BaseScript):
         if name and name.lower().startswith("port"):
             self.logger.debug("Detect type by by name")
             num = name
-            if self.is_cloud_engine_s5332:
+            if self.is_cloud_engine_switch:
                 # On S5332 Cloud Engine port numbering in Type:
                 # Port_GigabitEthernet0/0/4, Port_XGigabitEthernet0/0/4, Port_40GE0/0/4
                 pass
@@ -233,7 +233,7 @@ class Script(BaseScript):
                 part_no.endswith("PWD")
                 or part_no.endswith("PWA")
                 or part_no in ["PDC-350WC-B"]
-                or self.is_cloud_engine_s5332  # PDC1000S12-DB
+                or self.is_cloud_engine_switch  # PDC1000S12-DB
             )
         ):
             # 5XX chassis PWR card
