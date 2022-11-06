@@ -183,7 +183,11 @@ class Script(BaseScript):
         if name and name.lower().startswith("port"):
             self.logger.debug("Detect type by by name")
             num = name
-            if self.is_cloud_engine and self.sfp_number.match(name):
+            if self.is_cloud_engine_switch:
+                # On S5332 Cloud Engine port numbering in Type:
+                # Port_GigabitEthernet0/0/4, Port_XGigabitEthernet0/0/4, Port_40GE0/0/4
+                pass
+            elif self.is_cloud_engine and self.sfp_number.match(name):
                 # Port_10GE1/0/48, Port_10GE2/0/48
                 num = "%s%s" % self.sfp_number.match(name).groups()
             elif self.sfp_number.match(name):
@@ -225,7 +229,12 @@ class Script(BaseScript):
         elif (
             not name
             and slot_hints
-            and (part_no.endswith("PWD") or part_no.endswith("PWA") or part_no in ["PDC-350WC-B"])
+            and (
+                part_no.endswith("PWD")
+                or part_no.endswith("PWA")
+                or part_no in ["PDC-350WC-B"]
+                or self.is_cloud_engine_switch  # PDC1000S12-DB
+            )
         ):
             # 5XX chassis PWR card
             # Try detect slot number by display device, use for 53XX series
