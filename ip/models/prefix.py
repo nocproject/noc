@@ -666,29 +666,31 @@ class Prefix(NOCModel):
 
     @property
     def address_usage(self) -> Optional[float]:
-        if self.is_ipv4:
-            usage = getattr(self, "_address_usage_cache", None)
-            if usage is not None:
-                # Use update_prefixes_usage results
-                return usage
-            size = IPv4(self.prefix).size
-            if not size:
-                return 100.0
-            n_ips = (
-                Address.objects.filter(vrf=self.vrf, afi=self.afi)
-                .extra(where=["address <<= %s"], params=[str(self.prefix)])
+        if not self.is_ipv4:
+            # Fix for ipv6
+            return None
+        usage = getattr(self, "_address_usage_cache", None)
+        if usage is not None:
+            # Use update_prefixes_usage results
+            return usage
+        size = IPv4(self.prefix).size
+        if not size:
+            return 100.0
+        n_ips = (
+            Address.objects.filter(vrf=self.vrf, afi=self.afi)
+            .extra(where=["address <<= %s"], params=[str(self.prefix)])
+            .count()
+        )
+        if not n_ips:
+            return 0.0
+        if self.effective_prefix_special_address == "X":
+            n_pfx = (
+                Prefix.objects.filter(vrf=self.vrf, afi=self.afi)
+                .extra(where=["prefix <<= %s"], params=[str(self.prefix)])
                 .count()
             )
-            if self.effective_prefix_special_address == "X":
-                n_pfx = (
-                    Prefix.objects.filter(vrf=self.vrf, afi=self.afi)
-                    .extra(where=["prefix <<= %s"], params=[str(self.prefix)])
-                    .count()
-                )
-                size -= len(IPv4(self.prefix).special_addresses) * n_pfx
-            return float(n_ips) * 100.0 / float(size) if n_ips else 0.0
-        else:
-            return None
+            size -= len(IPv4(self.prefix).special_addresses) * n_pfx
+        return float(n_ips) * 100.0 / float(size)
 
     @property
     def address_usage_percent(self) -> str:
