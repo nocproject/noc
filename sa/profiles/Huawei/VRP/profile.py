@@ -96,6 +96,7 @@ class Profile(BaseProfile):
         "is_s85xx": {"platform": {"$regex": r"^(S85.+)$"}},
         "is_ar12_93xx": {"platform": {"$regex": r"^(S93..|AR[12].+)$"}},
         "is_cloud_engine": {"platform": {"$regex": r"^CE\S+"}},
+        "is_cloud_engine_switch": {"platform": {"$regex": r"^S(6[37]30-H|5[37]3[1256]-[HLS])\S+"}},
         "is_cx600": {"platform": {"$regex": r"^CX600\S*"}},
         "is_cx300": {"platform": {"$regex": r"^CX300\S*"}},
         "is_cx200X": {"platform": {"$regex": r"^CX200\S*"}},
