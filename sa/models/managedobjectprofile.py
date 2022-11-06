@@ -11,7 +11,7 @@ import operator
 from threading import Lock
 from itertools import chain
 from dataclasses import dataclass
-from typing import Optional, List, Dict
+from typing import Optional, List, Dict, Tuple
 from collections import defaultdict
 
 # Third-party modules
@@ -19,6 +19,7 @@ import cachetools
 import orjson
 from django.contrib.postgres.fields import ArrayField
 from django.db import models
+from django.db.models.query_utils import Q as d_Q
 from pydantic import BaseModel, validator
 
 # NOC modules
@@ -54,7 +55,7 @@ from .authprofile import AuthProfile
 from .capsprofile import CapsProfile
 from noc.vc.models.vlanfilter import VLANFilter
 from noc.core.service.loader import get_service
-from noc.core.wf.diagnostic import PROFILE_DIAG, SNMP_DIAG, CLI_DIAG
+from noc.core.wf.diagnostic import PROFILE_DIAG, SNMP_DIAG, CLI_DIAG, DiagnosticState
 
 metrics_lock = Lock()
 
@@ -817,6 +818,9 @@ class ManagedObjectProfile(NOCModel):
         periodic_changed = (
             self.initial_data["enable_periodic_discovery"] != self.enable_periodic_discovery
         )
+        alarm_policy_changed = (
+            self.initial_data["box_discovery_alarm_policy"] != self.box_discovery_alarm_policy
+        )
         access_changed = (
             (self.initial_data["access_preference"] != self.access_preference)
             or (self.initial_data["cli_privilege_policy"] != self.cli_privilege_policy)
@@ -833,9 +837,18 @@ class ManagedObjectProfile(NOCModel):
                 box_changed=box_changed,
                 periodic_changed=periodic_changed,
             )
+        if box_changed or periodic_changed or alarm_policy_changed:
+            defer(
+                "noc.sa.models.managedobjectprofile.update_diagnostics_alarms",
+                key=self.id,
+                profile_id=self.id,
+                box_changed=box_changed,
+                periodic_changed=periodic_changed,
+                alarm_policy_changed=alarm_policy_changed,
+            )
         if access_changed:
             cache.delete_many(
-                ["cred-%s" % x for x in self.managedobject_set.values_list("id", flat=True)],
+                [f"cred-{x}" for x in self.managedobject_set.values_list("id", flat=True)],
                 version=CREDENTIAL_CACHE_VERSION,
             )
         if (
@@ -943,23 +956,43 @@ class ManagedObjectProfile(NOCModel):
         return r
 
 
-def apply_discovery_jobs(profile_id, box_changed, periodic_changed):
-    from django.db import connection as pg_connection
+def update_diagnostics_alarms(profile_id, box_changed, periodic_changed, alarm_policy_changed):
+    """
+    Update diagnostic statuses
+    * if disable box - cleanup access alarms and reset diagnostic
+    * if alarm_policy disabled - cleanup access alarms
+    * if alarm_policy enabled - raise access alarms
+    :param profile_id:
+    :param box_changed:
+    :param periodic_changed:
+    :param alarm_policy_changed:
+    :return:
+    """
 
-    def iter_objects():
+    def iter_objects() -> Tuple[int, bool, str, Dict[str, str], bool, bool]:
         pool_cache = cachetools.LRUCache(maxsize=200)
         pool_cache.__missing__ = lambda x: Pool.objects.get(id=x)
-        for (
-            o_id,
-            is_managed,
-            pool_id,
-            fm_pool_id,
-            diagnostics,
-        ) in profile.managedobject_set.values_list(
-            "id", "is_managed", "pool", "fm_pool", "diagnostics"
+        for (o_id, is_managed, pool_id, fm_pool_id, diagnostics, box_alarm, periodic_alarm,) in (
+            ManagedObject.objects.filter(is_managed=True, object_profile=profile_id)
+            .filter(
+                d_Q(diagnostics__CLI__state=DiagnosticState.failed.value)
+                | d_Q(diagnostics__SNMP__state=DiagnosticState.failed.value)
+                | d_Q(diagnostics__PROFILE__state=DiagnosticState.failed.value)
+            )
+            .values_list(
+                "id",
+                "is_managed",
+                "pool",
+                "fm_pool",
+                "diagnostics",
+                "object_profile__box_discovery_alarm_policy",
+                "object_profile__periodic_discovery_alarm_policy",
+            )
         ):
-            fm_pool = pool_cache[fm_pool_id] if fm_pool_id else None
-            yield o_id, is_managed, pool_cache[pool_id], fm_pool, diagnostics
+            fm_pool = pool_cache[fm_pool_id] if fm_pool_id else pool_cache[pool_id]
+            yield o_id, is_managed, fm_pool, diagnostics, box_alarm == "E", periodic_alarm == "E"
+
+    from django.db import connection as pg_connection
 
     # No delete, fixed 'ManagedObjectProfile' object has no attribute 'managedobject_set'
     from .managedobject import ManagedObject  # noqa
@@ -968,31 +1001,47 @@ def apply_discovery_jobs(profile_id, box_changed, periodic_changed):
         profile = ManagedObjectProfile.objects.get(id=profile_id)
     except ManagedObjectProfile.DoesNotExist:
         return
+
     reset_diagnostics = set()
     dispose_msg = defaultdict(list)
     now = datetime.datetime.now().replace(microsecond=0)
-    for mo_id, is_managed, pool, fm_pool, diagnostics in iter_objects():
-        if box_changed:
-            if profile.enable_box_discovery and is_managed:
-                Job.submit(
-                    "discovery",
-                    "noc.services.discovery.jobs.box.job.BoxDiscoveryJob",
-                    key=mo_id,
-                    pool=pool,
+    # slots = svc.get_slot_limits(f"dispose-{pool}")
+    # Main Loop
+    for mo_id, is_managed, fm_pool, diagnostics, box_alarm, periodic_alarm in iter_objects():
+        if box_changed and not profile.enable_box_discovery:
+            reset_diagnostics.add(mo_id)
+        if (box_changed and not profile.enable_box_discovery) or (
+            alarm_policy_changed and not box_alarm
+        ):
+            # Cleanup access alarms
+            if (SNMP_DIAG in diagnostics and diagnostics[SNMP_DIAG]["state"] == "failed") or (
+                CLI_DIAG in diagnostics and diagnostics[CLI_DIAG]["state"] == "failed"
+            ):
+                dispose_msg[fm_pool].append(
+                    {
+                        "$op": "ensure_group",
+                        "reference": f"dc:Access:{mo_id}",
+                        "alarm_class": "NOC | Managed Object | Access Degraded",
+                        "alarms": [],
+                    }
                 )
-            else:
-                Job.remove(
-                    "discovery",
-                    "noc.services.discovery.jobs.box.job.BoxDiscoveryJob",
-                    key=mo_id,
-                    pool=pool,
+            if (
+                PROFILE_DIAG in diagnostics
+                and diagnostics[PROFILE_DIAG]["state"] == DiagnosticState.failed
+            ):
+                dispose_msg[fm_pool].append(
+                    {
+                        "timestamp": now,
+                        "reference": f"dc:{mo_id}:{PROFILE_DIAG}",
+                        "$op": "clear",
+                    }
                 )
-                # Cleanup access alarms
+            if alarm_policy_changed and box_alarm:
+                # Raise access alarms
                 if (SNMP_DIAG in diagnostics and diagnostics[SNMP_DIAG]["state"] == "failed") or (
                     CLI_DIAG in diagnostics and diagnostics[CLI_DIAG]["state"] == "failed"
                 ):
-                    reset_diagnostics.add(mo_id)
-                    dispose_msg[fm_pool or pool].append(
+                    dispose_msg[fm_pool].append(
                         {
                             "$op": "ensure_group",
                             "reference": f"dc:Access:{mo_id}",
@@ -1000,31 +1049,38 @@ def apply_discovery_jobs(profile_id, box_changed, periodic_changed):
                             "alarms": [],
                         }
                     )
-                if PROFILE_DIAG in diagnostics and diagnostics["Profile"]["state"] == "failed":
-                    reset_diagnostics.add(mo_id)
-                    dispose_msg[fm_pool or pool].append(
+                    if SNMP_DIAG in diagnostics and diagnostics[SNMP_DIAG]["state"] == "failed":
+                        dispose_msg[fm_pool][-1]["alarms"].append(
+                            {
+                                "reference": f"dc:{mo_id}:{SNMP_DIAG}",
+                                "managed_object": mo_id,
+                                "alarm_class": "NOC | Managed Object | Access Lost",
+                                "labels": ["noc::access::method::SNMP"],
+                            }
+                        )
+                    if CLI_DIAG in diagnostics and diagnostics[CLI_DIAG]["state"] == "failed":
+                        dispose_msg[fm_pool][-1]["alarms"].append(
+                            {
+                                "reference": f"dc:{mo_id}:{CLI_DIAG}",
+                                "managed_object": mo_id,
+                                "alarm_class": "NOC | Managed Object | Access Lost",
+                                "labels": ["noc::access::method::CLI"],
+                            }
+                        )
+
+                if (
+                    PROFILE_DIAG in diagnostics
+                    and diagnostics[PROFILE_DIAG]["state"] == DiagnosticState.failed
+                ):
+                    dispose_msg[fm_pool].append(
                         {
                             "timestamp": now,
                             "reference": f"dc:{mo_id}:{PROFILE_DIAG}",
-                            "$op": "clear",
+                            "managed_object": mo_id,
+                            "alarm_class": "Discovery | Guess | Profile",
+                            "$op": "raise",
                         }
                     )
-
-        if periodic_changed:
-            if profile.enable_periodic_discovery and is_managed:
-                Job.submit(
-                    "discovery",
-                    "noc.services.discovery.jobs.periodic.job.PeriodicDiscoveryJob",
-                    key=mo_id,
-                    pool=pool,
-                )
-            else:
-                Job.remove(
-                    "discovery",
-                    "noc.services.discovery.jobs.periodic.job.PeriodicDiscoveryJob",
-                    key=mo_id,
-                    pool=pool,
-                )
     # Reset diagnostics alarm
     svc = get_service()
     for pool in dispose_msg:
@@ -1045,3 +1101,54 @@ def apply_discovery_jobs(profile_id, box_changed, periodic_changed):
                  WHERE id = ANY(%s::int[])""",
                 ["{%s}" % r for r in removed] + [list(reset_diagnostics)],
             )
+
+
+def apply_discovery_jobs(profile_id, box_changed, periodic_changed):
+    def iter_objects():
+        pool_cache = cachetools.LRUCache(maxsize=200)
+        pool_cache.__missing__ = lambda x: Pool.objects.get(id=x)
+        for (o_id, is_managed, pool_id) in profile.managedobject_set.values_list(
+            "id", "is_managed", "pool"
+        ):
+            yield o_id, is_managed, pool_cache[pool_id]
+
+    # No delete, fixed 'ManagedObjectProfile' object has no attribute 'managedobject_set'
+    from .managedobject import ManagedObject  # noqa
+
+    try:
+        profile = ManagedObjectProfile.objects.get(id=profile_id)
+    except ManagedObjectProfile.DoesNotExist:
+        return
+
+    for mo_id, is_managed, pool in iter_objects():
+        if box_changed:
+            if profile.enable_box_discovery and is_managed:
+                Job.submit(
+                    "discovery",
+                    "noc.services.discovery.jobs.box.job.BoxDiscoveryJob",
+                    key=mo_id,
+                    pool=pool,
+                )
+            else:
+                Job.remove(
+                    "discovery",
+                    "noc.services.discovery.jobs.box.job.BoxDiscoveryJob",
+                    key=mo_id,
+                    pool=pool,
+                )
+
+        if periodic_changed:
+            if profile.enable_periodic_discovery and is_managed:
+                Job.submit(
+                    "discovery",
+                    "noc.services.discovery.jobs.periodic.job.PeriodicDiscoveryJob",
+                    key=mo_id,
+                    pool=pool,
+                )
+            else:
+                Job.remove(
+                    "discovery",
+                    "noc.services.discovery.jobs.periodic.job.PeriodicDiscoveryJob",
+                    key=mo_id,
+                    pool=pool,
+                )
