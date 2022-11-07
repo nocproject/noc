@@ -690,7 +690,7 @@ class Prefix(NOCModel):
                 .count()
             )
             size -= len(IPv4(self.prefix).special_addresses) * n_pfx
-        return float(n_ips) * 100.0 / float(size)
+        return float(n_ips) * 100.0 / float(size) if size else 100.0
 
     @property
     def address_usage_percent(self) -> str:
