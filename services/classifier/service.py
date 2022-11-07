@@ -305,7 +305,7 @@ class ClassifierService(FastAPIService):
             r["administrative_domain"]["remote_id"] = o.administrative_domain.remote_id
         return r
 
-    def register_mx_message(
+    async def register_mx_message(
         self, event: "ActiveEvent", resolved_raws: Optional[List[Dict[str, str]]]
     ):
         """
@@ -342,7 +342,7 @@ class ClassifierService(FastAPIService):
         else:
             msg["data"] = event.raw_vars
         # Register MX message
-        self.send_message(
+        await self.send_message(
             message_type="event",
             data=orjson.dumps(msg),
             sharding_key=int(event.managed_object.id),
@@ -487,7 +487,7 @@ class ClassifierService(FastAPIService):
         # Fill suppress filter
         self.suppress_filter.register(event)
         if config.message.enable_event:
-            self.register_mx_message(event, resoved_raws)
+            await self.register_mx_message(event, resoved_raws)
         # Call handlers
         if self.call_event_handlers(event):
             return
