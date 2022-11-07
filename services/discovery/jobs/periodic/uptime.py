@@ -11,10 +11,16 @@ import datetime
 # NOC modules
 from noc.services.discovery.jobs.base import DiscoveryCheck
 from noc.fm.models.uptime import Uptime
-from noc.core.mx import MX_LABELS, MX_PROFILE_ID, MX_ADMINISTRATIVE_DOMAIN_ID, MX_H_VALUE_SPLITTER
+from noc.core.mx import (
+    send_message,
+    MX_LABELS,
+    MX_PROFILE_ID,
+    MX_ADMINISTRATIVE_DOMAIN_ID,
+    MX_H_VALUE_SPLITTER,
+)
 from noc.config import config
 from noc.core.hash import hash_int
-from noc.core.comp import smart_bytes
+from noc.core.comp import DEFAULT_ENCODING
 
 
 class UptimeCheck(DiscoveryCheck):
@@ -83,13 +89,15 @@ class UptimeCheck(DiscoveryCheck):
                 "name": mo.remote_system.name,
             }
             data["managed_object"]["remote_id"] = str(mo.remote_id)
-        self.service.send_message(
+        send_message(
             data,
             message_type="reboot",
             headers={
-                MX_LABELS: smart_bytes(MX_H_VALUE_SPLITTER.join(mo.effective_labels)),
-                MX_ADMINISTRATIVE_DOMAIN_ID: smart_bytes(mo.administrative_domain.id),
-                MX_PROFILE_ID: smart_bytes(mo.object_profile.id),
+                MX_LABELS: MX_H_VALUE_SPLITTER.join(mo.effective_labels).encode(DEFAULT_ENCODING),
+                MX_ADMINISTRATIVE_DOMAIN_ID: str(mo.administrative_domain.id).encode(
+                    DEFAULT_ENCODING
+                ),
+                MX_PROFILE_ID: str(mo.object_profile.id).encode(DEFAULT_ENCODING),
             },
             sharding_key=hash_int(mo.id) & 0xFFFFFFFF,
         )
