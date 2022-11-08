@@ -22,12 +22,9 @@ class Profile(BaseProfile):
 
     # use default BASH promt PS1='[\u@\h \W]\$ '
     # pattern_prompt = r"^\[\S+@\S+\s\S+](#|\$)\s"
-    # pattern_prompt = rb"(\[\S+@\S+\s\S+](#|\$)\s|\S+@\S+:\S+>)"
-    pattern_prompt = (
-        rb"^(\[?\s*root@(?P<hostname>\S+)\]?(\s+|:)\S+\s*(#|\$)\s*"
-        rb"|\S+:~[>$]\s+"
-        rb"|\[admin@\S+:/root\])"
-    )
+    # Dropbear prompt - '84dfcdf:~$ ', \S+:~[>$]\s+
+    # SSHD prompt - [admin@\S+:/root], \[admin@\S+:/root\]
+    pattern_prompt = rb"(\[\S+@\S+\s\S+](#|\$)\s|\S+@\S+:\S+>|\S+:~[>$]\s+|\[admin@\S+:/root\])"
     pattern_syntax_error = (
         rb"^(bash: \S+: command not found...\r\n|-\w+: \w+: not found|"
         rb"-\w+: \w+: No such file or directory|\w+: \w+: command not found|"
