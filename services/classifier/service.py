@@ -50,6 +50,7 @@ from noc.core.ioloop.timers import PeriodicCallback
 from noc.core.comp import smart_text, DEFAULT_ENCODING
 from noc.core.liftbridge.message import Message
 from noc.core.mx import MX_LABELS, MX_H_VALUE_SPLITTER, MX_ADMINISTRATIVE_DOMAIN_ID
+from noc.core.wf.diagnostic import SNMPTRAP_DIAG, SYSLOG_DIAG, DiagnosticState
 
 # Patterns
 rx_oid = re.compile(r"^(\d+\.){6,}$")
@@ -759,6 +760,28 @@ class ClassifierService(FastAPIService):
         self.logger.info("[%s|%s|%s] Managed object found", event_id, mo.name, mo.address)
         # Process event
         source = data.pop("source", "other")
+        # Check diagnostics
+        if source == E_SRC_SYSLOG and (
+            SYSLOG_DIAG not in mo.diagnostics
+            or mo.diagnostics[SYSLOG_DIAG]["state"] == DiagnosticState.unknown
+        ):
+            mo.set_diagnostic_state(
+                diagnostic=SYSLOG_DIAG,
+                state=True,
+                reason=f"Receive Syslog from address: {data.get('source_address')}",
+                changed_ts=event_ts,
+            )
+        if source == E_SRC_SNMP_TRAP and (
+            SNMPTRAP_DIAG not in mo.diagnostics
+            or mo.diagnostics[SNMPTRAP_DIAG]["state"] == DiagnosticState.unknown
+        ):
+            mo.set_diagnostic_state(
+                diagnostic=SNMPTRAP_DIAG,
+                state=True,
+                reason=f"Receive Syslog from address: {data.get('source_address')}",
+                changed_ts=event_ts,
+            )
+
         event = ActiveEvent(
             id=event_id,
             timestamp=event_ts,
