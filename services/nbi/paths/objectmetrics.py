@@ -90,7 +90,7 @@ class ObjectMetricsAPI(NBIAPI):
                 mo_id = int(mc.object)
                 objects.add(mo_id)
             except ValueError:
-                HTTPException(400, f"Invalid object id: {mc.object}")
+                raise HTTPException(400, f"Invalid object id: {mc.object}")
         #
         if not objects:
             return []
@@ -103,7 +103,9 @@ class ObjectMetricsAPI(NBIAPI):
             id_to_bi[str(mo_id)] = bi_id
             profiles[str(mo_id)] = Profile.get_by_id(profile_id).get_profile()
         if not id_to_bi:
-            HTTPException(404, f"Object(s) id not found: {','.join([str(o) for o in objects])}")
+            raise HTTPException(
+                404, f"Object(s) id not found: {','.join([str(o) for o in objects])}"
+            )
         # Prepare queries
         scopes = {}  # table_name -> ([fields, ..], [where, ..])
         for mc in req.metrics:
@@ -113,7 +115,7 @@ class ObjectMetricsAPI(NBIAPI):
                     sorted(profile.convert_interface_name(i) for i in getattr(mc, "interfaces", []))
                 )
             except ValueError:
-                HTTPException(
+                raise HTTPException(
                     400,
                     f'Invalid interface name: {",".join(getattr(mc, "interfaces", []))} '
                     f"for device: {mc.object}",
@@ -121,7 +123,7 @@ class ObjectMetricsAPI(NBIAPI):
             for mn in mc.metric_types:
                 mt = MetricType.get_by_name(mn)
                 if not mt:
-                    HTTPException(400, f"Invalid metric_type: {mn}")
+                    raise HTTPException(400, f"Invalid metric_type: {mn}")
                 table = mt.scope.table_name
                 q = scopes.get(table)
                 if not q:
