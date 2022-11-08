@@ -103,7 +103,9 @@ class ObjectMetricsAPI(NBIAPI):
             id_to_bi[str(mo_id)] = bi_id
             profiles[str(mo_id)] = Profile.get_by_id(profile_id).get_profile()
         if not id_to_bi:
-            raise HTTPException(404, f"Object(s) id not found: {','.join([str(o) for o in objects])}")
+            raise HTTPException(
+                404, f"Object(s) id not found: {','.join([str(o) for o in objects])}"
+            )
         # Prepare queries
         scopes = {}  # table_name -> ([fields, ..], [where, ..])
         for mc in req.metrics:
