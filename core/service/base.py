@@ -843,7 +843,7 @@ class BaseService(object):
         :param sharding_key: Key for sharding over MX services
         :return:
         """
-        msg = self.router.get_message(data, message_type, headers, sharding_key)
+        msg = Router.get_message(data, message_type, headers, sharding_key)
         self.logger.debug("Send message: %s", msg)
         if self.router and config.message.embedded_router:
             await self.router.route_message(msg)
