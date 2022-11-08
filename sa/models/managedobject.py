@@ -2420,22 +2420,33 @@ class ManagedObject(NOCModel):
             show_in_display=False,
             alarm_class="NOC | Managed Object | Access Degraded",
         )
+        fm_policy = self.get_effective_fm_pool()
+        reason = ""
+        if fm_policy == "d":
+            reason = "Disable by FM policy"
+        elif self.trap_source_type == "d":
+            reason = "Disable by source settings"
         # FM
         yield DiagnosticConfig(
             # Reset if change IP/Policy change
             SNMPTRAP_DIAG,
             display_description="Received SNMP Trap from device",
-            blocked=self.trap_source_type != "d",
+            blocked=self.trap_source_type == "d" or fm_policy == "d",
             run_policy="D",
-            reason="Disable by source settings" if self.trap_source_type != "d" else "",
+            reason=reason,
         )
+        reason = ""
+        if fm_policy == "d":
+            reason = "Disable by FM policy"
+        elif self.syslog_source_type == "d":
+            reason = "Disable by source settings"
         yield DiagnosticConfig(
             # Reset if change IP/Policy change
             SYSLOG_DIAG,
             display_description="Received SYSLOG from device",
-            blocked=self.syslog_source_type != "d",
+            blocked=self.syslog_source_type == "d" or fm_policy == "d",
             run_policy="D",
-            reason="Disable by source settings" if self.syslog_source_type != "d" else "",
+            reason=reason,
         )
         #
         for dc in ObjectDiagnosticConfig.iter_object_diagnostics(self):
