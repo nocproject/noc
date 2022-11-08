@@ -11,6 +11,7 @@ from noc.inv.models.vendor import Vendor
 from noc.inv.models.platform import Platform
 from noc.inv.models.firmware import Firmware
 from noc.inv.models.firmwarepolicy import FirmwarePolicy, FS_DENIED
+from noc.core.wf.diagnostic import SNMPTRAP_DIAG, SYSLOG_DIAG
 
 
 class VersionCheck(DiscoveryCheck):
@@ -62,6 +63,8 @@ class VersionCheck(DiscoveryCheck):
                 self.clear_links()
             # Invalidate neighbor cache
             self.invalidate_neighbor_cache()
+            # Reset diagnostics
+            self.object.reset_diagnostic([SNMPTRAP_DIAG, SYSLOG_DIAG])
         # Sync version
         version = Firmware.ensure_firmware(self.object.profile, vendor, result["version"])
         if not self.object.version or version.id != self.object.version.id:
