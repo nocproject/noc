@@ -105,9 +105,16 @@ class TopologyBase(object):
 
     def load(self):
         """
-        Load objects and links by  id
+        Load objects and links for map
         """
         ...
+
+    def get_uplinks(self) -> List[str]:
+        """
+        Return uplink node for map. Use on tree layout
+        :return:
+        """
+        return []
 
     def add_node(self, o: Any, n_type: str, attrs: Optional[Dict[str, Any]] = None) -> None:
         """
