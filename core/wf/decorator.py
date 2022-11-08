@@ -129,7 +129,7 @@ def document_touch(self, bulk=None):
         self._get_collection().update({"_id": self.pk}, op)
 
 
-def model_set_state(self, state, state_changed: datetime.datetime = None):
+def model_set_state(self, state, state_changed: datetime.datetime = None, bulk=None):
     """
     Set state
 
@@ -140,6 +140,7 @@ def model_set_state(self, state, state_changed: datetime.datetime = None):
     :param self:
     :param state:
     :param state_changed:
+    :param bulk:
     :return:
     """
     # Direct update arguments
