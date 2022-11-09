@@ -478,8 +478,8 @@ class BaseLoader(object):
                 changes[fn] = nv[fn]
                 if fn in self.incremental_change:
                     incremental_changes[fn] = {
-                        "add": list(set(nv[fn]) - set(ov[fn])),
-                        "remove": list(set(ov[fn]) - set(nv[fn])),
+                        "add": list(set(nv[fn]) - set(ov[fn] or [])),
+                        "remove": list(set(ov[fn] or []) - set(nv[fn])),
                     }
         if n.id in self.mappings:
             o = self.change_object(self.mappings[n.id], changes, inc_changes=incremental_changes)

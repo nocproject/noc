@@ -27,6 +27,7 @@ class ManagedObjectLoader(BaseLoader):
     model = ManagedObjectModel
     data_model = ManagedObject
     post_save_fields = {"capabilities"}
+    label_enable_setting = "enable_managedobject"
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
