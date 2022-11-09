@@ -7,3 +7,10 @@
     - has_svc_noc is not defined
   tags:
     - checks
+
+- name: No metrics service is set
+  fail:
+    msg: "No metrics service is set. Please setup at least one. "
+  when: "'svc-metrics-exec' not in groups"
+  tags:
+    - checks
