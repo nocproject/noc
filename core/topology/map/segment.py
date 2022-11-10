@@ -221,33 +221,6 @@ class SegmentTopology(TopologyBase):
         """
         Load all managed objects from segment
         """
-
-        def get_bandwidth(if_list):
-            """
-            Calculate bandwidth for list of interfaces
-            :param if_list:
-            :return: total in bandwidth, total out bandwidth
-            """
-            in_bw = 0
-            out_bw = 0
-            for iface in if_list:
-                bw = iface.get("bandwidth") or 0
-                in_speed = iface.get("in_speed") or 0
-                out_speed = iface.get("out_speed") or 0
-                in_bw += bandwidth(in_speed, bw)
-                out_bw += bandwidth(out_speed, bw)
-            return in_bw, out_bw
-
-        def bandwidth(speed, if_bw):
-            if speed and if_bw:
-                return min(speed, if_bw)
-            elif speed and not if_bw:
-                return speed
-            elif if_bw:
-                return if_bw
-            else:
-                return 0
-
         # Get all links, belonging to segment
         links: List[Link] = list(
             Link.objects.filter(linked_segments__in=[s.id for s in self.segment_siblings])
@@ -257,7 +230,7 @@ class SegmentTopology(TopologyBase):
             itertools.chain.from_iterable(link.interface_ids for link in links)
         )
         # Bulk fetch all interfaces data
-        ifs: Dict["ObjectId", "Interface"] = {
+        self._interface_cache: Dict["ObjectId", "Interface"] = {
             i["_id"]: i
             for i in Interface._get_collection().find(
                 {"_id": {"$in": all_ifaces}},
@@ -274,7 +247,10 @@ class SegmentTopology(TopologyBase):
         # Bulk fetch all managed objects
         segment_mos: Set[int] = set(self.segment.managed_objects.values_list("id", flat=True))
         all_mos: List[int] = list(
-            set(i["managed_object"] for i in ifs.values() if "managed_object" in i) | segment_mos
+            set(
+                i["managed_object"] for i in self._interface_cache.values() if "managed_object" in i
+            )
+            | segment_mos
         )
         mos: Dict[int, "ManagedObject"] = {
             mo.id: mo for mo in ManagedObject.objects.filter(id__in=all_mos)
@@ -289,79 +265,14 @@ class SegmentTopology(TopologyBase):
                 "level": mo.object_profile.level,
             }
             if attrs["role"] == "uplink":
-                attrs["portal"] = {"generator": "segment", "id": self.parent_segment}
+                attrs["portal"] = {"generator": "segment", "id": str(self.parent_segment)}
             elif attrs["role"] == "downlink":
                 attrs["portal"] = {"generator": "segment", "id": str(mo.segment.id)}
-            self.add_node(
-                mo,
-                "managedobject",
-                attrs,
-            )
+            self.add_node(mo, "managedobject", attrs)
             # self.add_object(mo)
         # Process all segment's links
-        pn = 0
         for link in links:
-            if link.is_loop:
-                continue  # Loops are not shown on map
-            # Group interfaces by objects
-            # avoiding non-bulk dereferencing
-            mo_ifaces = defaultdict(list)
-            for if_id in link.interface_ids:
-                iface = ifs[if_id]
-                mo_ifaces[mos[iface["managed_object"]]] += [iface]
-            # Pairs of managed objects are pseudo-links
-            if len(mo_ifaces) == 2:
-                # ptp link
-                pseudo_links = [list(mo_ifaces)]
-                is_pmp = False
-            else:
-                # pmp
-                # Create virtual cloud
-                self.add_node(link, "cloud")
-                # Create virtual links to cloud
-                pseudo_links = [(link, mo) for mo in mo_ifaces]
-                # Create virtual cloud interface
-                mo_ifaces[link] = [{"name": "cloud"}]
-                is_pmp = True
-            # Link all pairs
-            for mo0, mo1 in pseudo_links:
-                mo0_id = str(mo0.id)
-                mo1_id = str(mo1.id)
-                # Create virtual ports for mo0
-                self.G.nodes[mo0_id]["ports"] += [
-                    {"id": pn, "ports": [i["name"] for i in mo_ifaces[mo0]]}
-                ]
-                # Create virtual ports for mo1
-                self.G.nodes[mo1_id]["ports"] += [
-                    {"id": pn + 1, "ports": [i["name"] for i in mo_ifaces[mo1]]}
-                ]
-                # Calculate bandwidth
-                t_in_bw, t_out_bw = get_bandwidth(mo_ifaces[mo0])
-                d_in_bw, d_out_bw = get_bandwidth(mo_ifaces[mo1])
-                in_bw = bandwidth(t_in_bw, d_out_bw) * 1000
-                out_bw = bandwidth(t_out_bw, d_in_bw) * 1000
-                # Add link
-                if is_pmp:
-                    link_id = "%s-%s-%s" % (link.id, pn, pn + 1)
-                else:
-                    link_id = str(link.id)
-                self.add_link(
-                    mo0_id,
-                    mo1_id,
-                    {
-                        "id": link_id,
-                        "type": "link",
-                        "method": link.discovery_method,
-                        "ports": [pn, pn + 1],
-                        # Target to source
-                        "in_bw": in_bw,
-                        # Source to target
-                        "out_bw": out_bw,
-                        # Max bandwidth
-                        "bw": max(in_bw, out_bw),
-                    },
-                )
-                pn += 2
+            self.add_link(link)
 
     @staticmethod
     def q_mo(d):
