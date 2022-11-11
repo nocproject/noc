@@ -199,7 +199,7 @@ def _fruchterman_reingold(
     WBF = config.layout.spring_bubble_force
     # Weighted coefficients
     WA = WEF * A
-    k3 = WPF * (k ** 3)
+    k3 = WPF * (k**3)
     # Prepare cycles calculations
     cp = []
     for c in cycles:
@@ -235,7 +235,7 @@ def _fruchterman_reingold(
         # displacement "force"
         # Propulsion - reverse cubic
         # Attraction - square against optimal length difference
-        displacement = np.einsum("ijk,ij->ik", delta, k3 / distance ** 3 - WA * (distance - k) ** 2)
+        displacement = np.einsum("ijk,ij->ik", delta, k3 / distance**3 - WA * (distance - k) ** 2)
         # Apply bubbling force
         if cycles:
             displacement += WBF * bubble_disp

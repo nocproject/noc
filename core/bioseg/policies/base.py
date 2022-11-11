@@ -15,7 +15,7 @@ from noc.inv.models.networksegment import NetworkSegment
 from noc.inv.models.networksegmentprofile import NetworkSegmentProfile
 from noc.inv.models.link import Link
 from noc.sa.models.managedobject import ManagedObject
-from noc.core.topology.segment import update_uplinks
+from noc.core.topology.uplink import update_uplinks
 
 
 class BaseBioSegPolicy(object):

@@ -1760,7 +1760,7 @@ Ext.define("NOC.sa.managedobject.Application", {
     onShowMap: function() {
         var me = this;
         NOC.launch("inv.map", "history", {
-            args: [me.currentRecord.get("segment"), me.currentRecord.get("id")]
+            args: ["segment", me.currentRecord.get("segment"), me.currentRecord.get("id")]
         });
     },
     //

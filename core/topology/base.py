@@ -1,32 +1,60 @@
 # ----------------------------------------------------------------------
-# BaseTopology class
+# BaseMapTopology class
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2020 The NOC Project
+# Copyright (C) 2007-2022 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
 # Python modules
 import operator
-from typing import Optional, List, Set, Dict, Any
-from dataclasses import asdict
+from typing import Optional, List, Set, Dict, Any, Iterable, Tuple
+from collections import defaultdict
+from dataclasses import asdict, dataclass
 
 # Third-Party modules
 import networkx as nx
 import numpy as np
 import cachetools
+from bson import ObjectId
 
 # NOC modules
 from noc.core.stencil import stencil_registry, Stencil
 from noc.core.text import alnum_key
-from noc.sa.models.managedobject import ManagedObject
 from .layout.ring import RingLayout
 from .layout.spring import SpringLayout
 from .layout.tree import TreeLayout
 from .types import ShapeOverlay, ShapeOverlayPosition, ShapeOverlayForm
 
 
-class BaseTopology(object):
-    CAPS = {"Network | STP"}
+@dataclass
+class MapItem(object):
+    title: str
+    id: str
+    generator: str
+    has_children: bool = False
+    only_container: bool = False
+    code: Optional[str] = None
+
+
+@dataclass
+class PathItem(object):
+    title: str
+    id: str
+    level: 0
+
+
+class TopologyBase(object):
+    """
+    Base Class for Map generators. Loaded by name
+    """
+
+    name: str  # Map Generator Name
+    version: int = 0  # Generator version
+    header: Optional[str] = None
+
+    CAPS: Set[str] = set()
+
+    DEFAULT_LEVEL = 10
     # Top padding for isolated nodes
     ISOLATED_PADDING = 50
     # Minimum width to place isolated nodes
@@ -40,169 +68,296 @@ class BaseTopology(object):
     # Fixed map shifting
     MAP_OFFSET = np.array([50, 20])
 
-    def __init__(self, node_hints=None, link_hints=None, force_spring=False):
-        self.force_spring = force_spring
+    def __init__(
+        self,
+        gen_id: str,
+        node_hints: Optional[Dict[str, Any]] = None,
+        link_hints: Optional[Dict[str, Any]] = None,
+        **kwargs,
+    ):
+        self.gen_id = gen_id
         #
         self.node_hints = node_hints or {}
         self.link_hints = link_hints or {}
+        self.default_stencil = stencil_registry.get(stencil_registry.DEFAULT_STENCIL)
+        #
+        self.pn = 0
         # Caches
         self._rings_cache = {}
         self._isolated_cache = {}
+        self._interface_cache: Dict["ObjectId", Any] = {}
         # Graph
         self.G = nx.Graph()
-        self.caps = set()
-        self.load()
+        self.caps: Set[str] = set()
+        self.options = kwargs or {}
+        self.load()  # Load nodes
 
     def __len__(self):
+        """
+        Map nodel count
+        :return:
+        """
         return len(self.G)
 
     def __contains__(self, item):
         return item.id in self.G
 
-    def load(self):
+    @property
+    def title(self):
         """
-        Load objects and links
+        Map Title
+        :return:
         """
+        return f"{self.gen_id}"
 
-    def get_role(self, mo: ManagedObject) -> Optional[str]:
+    def get_uplinks(self) -> List[str]:
         """
-        Returns managed object's role.
-        None if no role
+        Return uplink node for map. Use on tree layout
+        :return:
         """
-        return None
+        return []
 
-    def add_object(self, mo: ManagedObject, attrs: Optional[Dict[str, Any]] = None):
+    def add_node(self, o: Any, n_type: str, attrs: Optional[Dict[str, Any]] = None) -> None:
         """
-        Add managed object to topology
+        Add node to map
+        :param o: Object
+        :param n_type: Node type
+        :param attrs: Additional attributes
+        :return:
         """
         attrs = attrs or {}
-        mo_id = str(mo.id)
-        if mo_id in self.G.nodes:
+        o_id = str(o.id)
+        if o_id in self.G.nodes:
             # Only update attributes
-            self.G.nodes[mo_id].update(attrs)
+            self.G.nodes[o_id].update(attrs)
             return
-        stencil = self.get_object_stencil(mo)
+        stencil = self.get_node_stencil(o, node_type=n_type)
         # Get capabilities
-        oc = set(mo.get_caps()) & self.CAPS
-        self.caps |= oc
+        oc = set()
+        if hasattr(o, "get_caps"):
+            oc = set(o.get_caps()) & self.CAPS
+            self.caps |= oc
         # Apply node hints
-        attrs.update(self.node_hints.get(mo_id) or {})
+        attrs.update(self.node_hints.get(o_id) or {})
         # Apply default attributes
         attrs.update(
             {
-                "mo": mo,
-                "type": "managedobject",
-                "id": mo_id,
-                "name": mo.name,
-                "address": mo.address,
-                "role": self.get_role(mo),
+                "mo": o,
+                "type": n_type,
+                "id": o_id,
+                "name": o.name,
                 "shape": getattr(stencil, "path", ""),
                 "shape_width": getattr(stencil, "width", 0),
                 "shape_height": getattr(stencil, "height", 0),
-                "shape_overlay": [asdict(x) for x in self.get_object_stencil_overlays(mo)],
-                "level": mo.object_profile.level,
+                "shape_overlay": [asdict(x) for x in self.get_node_stencil_overlays(o)],
                 "ports": [],
                 "caps": list(oc),
             }
         )
-        self.G.add_node(mo_id, **attrs)
+        self.G.add_node(o_id, **attrs)
 
-    def add_cloud(self, link, attrs=None):
-        """
-        Add cloud to topology
-        :param link:
-        :param attrs:
-        :return:
-        """
-        attrs = attrs or {}
-        link_id = str(link.id)
-        if link_id in self.G.nodes:
-            # Only update attributes
-            self.G.nodes[link_id].update(attrs)
-            return
-        stencil = self.get_cloud_stencil(link)
-        # Apply node hints
-        attrs.update(self.node_hints.get(link_id) or {})
-        # Apply default attributes
-        attrs.update(
-            {
-                "link": link,
-                "type": "cloud",
-                "id": link_id,
-                "name": link.name or "",
-                "ports": [],
-                "shape": getattr(stencil, "path", ""),
-                "shape_width": getattr(stencil, "width", 0),
-                "shape_height": getattr(stencil, "height", 0),
-            }
-        )
-        self.G.add_node(link_id, **attrs)
-
-    def add_link(self, o1: str, o2: str, attrs: Optional[Dict[str, Any]] = None):
+    def add_edge(
+        self, o1: str, o2: str, attrs: Optional[Dict[str, Any]] = None, edge_type: str = "link"
+    ):
         """
         Add link between interfaces to topology
         """
         a = {"connector": "normal"}
         if attrs:
             a.update(attrs)
-        a.update({"type": "link"})
+        a.update({"type": edge_type})
         #
         self.G.add_edge(o1, o2, **a)
 
-    @staticmethod
-    def get_object_stencil(mo: ManagedObject) -> Optional[Stencil]:
-        if mo.shape:
+    def add_link(self, link):
+        """
+        Add Link to Graph edge
+        :param link:
+        :return:
+        """
+
+        def get_bandwidth(if_list):
+            """
+            Calculate bandwidth for list of interfaces
+            :param if_list:
+            :return: total in bandwidth, total out bandwidth
+            """
+            in_bw = 0
+            out_bw = 0
+            for iface in if_list:
+                bw = iface.get("bandwidth") or 0
+                in_speed = iface.get("in_speed") or 0
+                out_speed = iface.get("out_speed") or 0
+                in_bw += bandwidth(in_speed, bw)
+                out_bw += bandwidth(out_speed, bw)
+            return in_bw, out_bw
+
+        def bandwidth(speed, if_bw):
+            if speed and if_bw:
+                return min(speed, if_bw)
+            elif speed and not if_bw:
+                return speed
+            elif if_bw:
+                return if_bw
+            else:
+                return 0
+
+        if link.is_loop:
+            return  # Loops are not shown on map
+            # Group interfaces by objects
+            # avoiding non-bulk dereferencing
+        mo_ifaces = defaultdict(list)
+        for if_id in link.interface_ids:
+            iface = self._interface_cache[if_id]
+            mo_ifaces[self.G.nodes[str(iface["managed_object"])]["mo"]] += [iface]
+        # Pairs of managed objects are pseudo-links
+        if len(mo_ifaces) == 2:
+            # ptp link
+            pseudo_links = [list(mo_ifaces)]
+            is_pmp = False
+        else:
+            # pmp
+            # Create virtual cloud
+            self.add_node(link, "cloud")
+            # Create virtual links to cloud
+            pseudo_links = [(link, mo) for mo in mo_ifaces]
+            # Create virtual cloud interface
+            mo_ifaces[link] = [{"name": "cloud"}]
+            is_pmp = True
+        # Link all pairs
+        for mo0, mo1 in pseudo_links:
+            mo0_id = str(mo0.id)
+            mo1_id = str(mo1.id)
+            # Create virtual ports for mo0
+            self.G.nodes[mo0_id]["ports"] += [
+                {"id": self.pn, "ports": [i["name"] for i in mo_ifaces[mo0]]}
+            ]
+            # Create virtual ports for mo1
+            self.G.nodes[mo1_id]["ports"] += [
+                {"id": self.pn + 1, "ports": [i["name"] for i in mo_ifaces[mo1]]}
+            ]
+            # Calculate bandwidth
+            t_in_bw, t_out_bw = get_bandwidth(mo_ifaces[mo0])
+            d_in_bw, d_out_bw = get_bandwidth(mo_ifaces[mo1])
+            in_bw = bandwidth(t_in_bw, d_out_bw) * 1000
+            out_bw = bandwidth(t_out_bw, d_in_bw) * 1000
+            # Add link
+            if is_pmp:
+                link_id = "%s-%s-%s" % (link.id, self.pn, self.pn + 1)
+            else:
+                link_id = str(link.id)
+            self.add_edge(
+                mo0_id,
+                mo1_id,
+                {
+                    "id": link_id,
+                    "type": "link",
+                    "method": link.discovery_method,
+                    "ports": [self.pn, self.pn + 1],
+                    # Target to source
+                    "in_bw": in_bw,
+                    # Source to target
+                    "out_bw": out_bw,
+                    # Max bandwidth
+                    "bw": max(in_bw, out_bw),
+                },
+            )
+            self.pn += 2
+
+    def add_parent(self, parent, child):
+        """
+        Add Child-Parent link
+        :param parent:
+        :param child:
+        :return:
+        """
+        # Create virtual ports
+        if {"id": f"{parent}-children", "ports": ["children"]} not in self.G.nodes[child]["ports"]:
+            self.G.nodes[parent]["ports"] += [{"id": f"{parent}-children", "ports": ["children"]}]
+        self.G.nodes[child]["ports"] += [{"id": f"{child}-parent", "ports": ["parent"]}]
+        self.add_edge(
+            child,
+            parent,
+            {
+                "id": f"{child}-{parent}",
+                "ports": [f"{child}-parent", f"{parent}-children"],
+                "connector": "smooth",
+            },
+            edge_type="parent",
+        )
+
+    def load(self):
+        """
+        Fill nodes and edges on graph
+        :return:
+        """
+        ...
+
+    def get_node_stencil(self, o, node_type: Optional[str] = None) -> Optional[Stencil]:
+        """
+        Return node stencil
+
+        :param o:
+        :param node_type:
+        :return:
+        """
+        if node_type == "cloud":
+            return stencil_registry.get(o.shape or stencil_registry.DEFAULT_CLOUD_STENCIL)
+        if node_type == "managedobject" and o.shape:
             # Use mo's shape, if set
-            return stencil_registry.get(mo.shape)
-        elif mo.object_profile.shape:
+            return stencil_registry.get(o.shape)
+        elif node_type == "managedobject" and o.object_profile.shape:
             # Use profile's shape
-            return stencil_registry.get(mo.object_profile.shape)
+            return stencil_registry.get(o.object_profile.shape)
         return stencil_registry.get(stencil_registry.DEFAULT_STENCIL)
 
-    @staticmethod
-    def get_object_stencil_overlays(mo: ManagedObject) -> List[ShapeOverlay]:
+    def get_node_stencil_overlays(self, o, node_type: Optional[str] = None) -> List[ShapeOverlay]:
+        """
+        Return node Stencil Overlays
+        :param o:
+        :param node_type:
+        :return:
+        """
+        if node_type != "managedobject":
+            return []
         seen: Set[ShapeOverlayPosition] = set()
         r: List[ShapeOverlay] = []
         # ManagedObject
-        if mo.shape_overlay_glyph:
-            pos = mo.shape_overlay_position or ShapeOverlayPosition.NW
+        if o.shape_overlay_glyph:
+            pos = o.shape_overlay_position or ShapeOverlayPosition.NW
             r += [
                 ShapeOverlay(
-                    code=mo.shape_overlay_glyph.code,
+                    code=o.shape_overlay_glyph.code,
                     position=pos,
-                    form=mo.shape_overlay_form or ShapeOverlayForm.Circle,
+                    form=o.shape_overlay_form or ShapeOverlayForm.Circle,
                 )
             ]
             seen.add(pos)
         # Project
-        if mo.project and mo.project.shape_overlay_glyph:
-            pos = mo.project.shape_overlay_position or ShapeOverlayPosition.NW
+        if o.project and o.project.shape_overlay_glyph:
+            pos = o.project.shape_overlay_position or ShapeOverlayPosition.NW
             if pos not in seen:
                 r += [
                     ShapeOverlay(
-                        code=mo.project.shape_overlay_glyph.code,
+                        code=o.project.shape_overlay_glyph.code,
                         position=pos,
-                        form=mo.project.shape_overlay_form or ShapeOverlayForm.Circle,
+                        form=o.project.shape_overlay_form or ShapeOverlayForm.Circle,
                     )
                 ]
                 seen.add(pos)
         # ManagedObjectProfile
-        if mo.object_profile.shape_overlay_glyph:
-            pos = mo.object_profile.shape_overlay_position or ShapeOverlayPosition.NW
+        if o.object_profile.shape_overlay_glyph:
+            pos = o.object_profile.shape_overlay_position or ShapeOverlayPosition.NW
             if pos not in seen:
                 r += [
                     ShapeOverlay(
-                        code=mo.object_profile.shape_overlay_glyph.code,
+                        code=o.object_profile.shape_overlay_glyph.code,
                         position=pos,
-                        form=mo.object_profile.shape_overlay_form or ShapeOverlayForm.Circle,
+                        form=o.object_profile.shape_overlay_form or ShapeOverlayForm.Circle,
                     )
                 ]
                 seen.add(pos)
         return r
-
-    @staticmethod
-    def get_cloud_stencil(link) -> Stencil:
-        return stencil_registry.get(link.shape or stencil_registry.DEFAULT_CLOUD_STENCIL)
 
     def order_nodes(self, uplink, downlinks):
         """
@@ -240,7 +395,9 @@ class BaseTopology(object):
         isolated = set(self.get_isolated())
         return self.G.subgraph([o for o in self.G.nodes if o not in isolated])
 
-    def normalize_pos(self, pos):
+    def normalize_pos(
+        self, pos: Dict[str, Tuple[int, int]]
+    ) -> Tuple[int, int, Dict[str, Tuple[int, int]]]:
         """
         Normalize positions, shift to (0, 0).
         Returns width, height, post
@@ -261,17 +418,25 @@ class BaseTopology(object):
         return s[0], s[1], pos
 
     def get_layout_class(self):
+        """
+        Getting layout module
+        :return:
+        """
         if not len(self.G):
             # Empty graph
             return SpringLayout
-        if not self.force_spring and len(self.get_rings()) == 1:
+        if not self.options.get("force_spring") and len(self.get_rings()) == 1:
             return RingLayout
-        elif not self.force_spring and nx.is_forest(self.G):
+        elif not self.options.get("force_spring") and nx.is_forest(self.G):
             return TreeLayout
         else:
             return SpringLayout
 
     def layout(self):
+        """
+        Fill node coordinates
+        :return:
+        """
         # Use node hints
         dpos = {}
         for p, nh in self.node_hints.items():
@@ -283,7 +448,7 @@ class BaseTopology(object):
             pos.update(dpos)
         else:
             pos = dpos
-        pos = {o: pos[o] for o in pos if o in self.G.nodes}
+        pos: Dict[str, Tuple[int, int]] = {o: pos[o] for o in pos if o in self.G.nodes}
         width, height, pos = self.normalize_pos(pos)
         # Place isolated nodes
         isolated = sorted(
@@ -310,3 +475,64 @@ class BaseTopology(object):
                 # Use existing hints
                 ed.update(self.link_hints)
             # @todo: Calculate new positions
+
+    @staticmethod
+    def q_node(node):
+        """
+        Format graph node
+        :param node:
+        :return:
+        """
+        x = node.copy()
+        if x["type"] == "managedobject":
+            del x["mo"]
+            x["external"] = x.get("role") != "segment"
+        elif node["type"] == "cloud":
+            del x["link"]
+            x["external"] = False
+        return x
+
+    def iter_nodes(self):
+        """
+        Iterate over map Nodes
+        :return:
+        """
+        for n in self.G.nodes.values():
+            yield self.q_node(n)
+
+    def iter_edges(self) -> Iterable[Any]:
+        """
+        Iterate over map Edges
+        :return:
+        """
+        for u, v in self.G.edges():
+            yield self.G[u][v]
+
+    @classmethod
+    def iter_maps(
+        cls,
+        parent: str = None,
+        query: Optional[str] = None,
+        limit: Optional[int] = None,
+        start: Optional[int] = None,
+        page: Optional[int] = None,
+    ) -> Iterable[MapItem]:
+        """
+        Iterator over available maps
+        :param parent:
+        :param query:
+        :param limit:
+        :param start:
+        :param page:
+        :return:
+        """
+        ...
+
+    @classmethod
+    def iter_path(cls, gen_id) -> Iterable[PathItem]:
+        """
+        Return map by hierarchy path
+        :param gen_id:
+        :return:
+        """
+        ...
