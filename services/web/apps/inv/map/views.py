@@ -17,16 +17,10 @@ from concurrent.futures import ThreadPoolExecutor, as_completed
 from noc.lib.app.extapplication import ExtApplication, view
 from noc.inv.models.networksegment import NetworkSegment
 from noc.inv.models.interface import Interface
-from noc.sa.models.managedobject import ManagedObject
+from noc.inv.models.discoveryid import DiscoveryID
 from noc.inv.models.mapsettings import MapSettings
 from noc.inv.models.link import Link
-from noc.sa.models.objectstatus import ObjectStatus
-from noc.fm.models.activealarm import ActiveAlarm
-from noc.core.topology.segment import SegmentTopology
-from noc.inv.models.discoveryid import DiscoveryID
-from noc.maintenance.models.maintenance import Maintenance
-from noc.core.text import alnum_key
-from noc.core.pm.utils import get_interface_metrics
+from noc.sa.models.managedobject import ManagedObject
 from noc.sa.interfaces.base import (
     ListOfParameter,
     IntParameter,
@@ -34,8 +28,14 @@ from noc.sa.interfaces.base import (
     DictListParameter,
     DictParameter,
 )
+from noc.sa.models.objectstatus import ObjectStatus
+from noc.fm.models.activealarm import ActiveAlarm
+from noc.maintenance.models.maintenance import Maintenance
+from noc.core.text import alnum_key
+from noc.core.pm.utils import get_interface_metrics
 from noc.core.translation import ugettext as _
 from noc.core.cache.decorator import cachedmethod
+from noc.core.topology.loader import loader
 
 tags_lock = threading.RLock()
 
@@ -50,6 +50,9 @@ class MapApplication(ExtApplication):
     glyph = "globe"
 
     implied_permissions = {"launch": ["inv:networksegment:lookup"]}
+    lookup_default = [{"id": "Leave unchanged", "label": "Leave unchanged"}]
+    gen_param = "generator"
+    gen_id_param = "generator_id"
 
     # Object statuses
     ST_UNKNOWN = 0  # Object state is unknown
@@ -60,88 +63,47 @@ class MapApplication(ExtApplication):
     ST_MAINTENANCE = 32  # Maintenance bit
 
     @view(r"^(?P<id>[0-9a-f]{24})/data/$", method=["GET"], access="read", api=True)
-    def api_data(self, request, id):
-        def q_mo(d):
-            x = d.copy()
-            if x["type"] == "managedobject":
-                del x["mo"]
-                # x["external"] = x["id"] not in mos if is_view else x.get("role") != "segment"
-                x["external"] = x.get("role") != "segment"
-            elif d["type"] == "cloud":
-                del x["link"]
-                x["external"] = False
-            return x
-
+    def api_data_segment(self, request, id):
         # Find segment
         segment = self.get_object_or_404(NetworkSegment, id=id)
         if segment.managed_objects.count() > segment.max_objects:
             # Too many objects
             return {"id": str(segment.id), "name": segment.name, "error": _("Too many objects")}
-        # if we set selector in segment
-        # is_view = segment.selector
-        # if is_view:
-        #     mos = segment.selector.managed_objects.values_list("id", flat=True)
-        # Load settings
-        settings = MapSettings.objects.filter(segment=id).first()
-        node_hints = {}
-        link_hints = {}
-        if settings:
-            self.logger.info("Using stored positions")
-            for n in settings.nodes:
-                node_hints[n.id] = {"type": n.type, "id": n.id, "x": n.x, "y": n.y}
-            for ll in settings.links:
-                link_hints[ll.id] = {
-                    "connector": ll.connector if len(ll.vertices) else "normal",
-                    "vertices": [{"x": v.x, "y": v.y} for v in ll.vertices],
-                }
-        else:
-            self.logger.info("Generating positions")
-        # Generate topology
-        topology = SegmentTopology(
-            segment, node_hints, link_hints, force_spring=request.GET.get("force") == "spring"
-        )
-        topology.layout()
-        # Build output
-        r = {
-            "id": str(segment.id),
-            "max_links": int(segment.max_shown_downlinks),
-            "name": segment.name,
-            "caps": list(topology.caps),
-            "nodes": [q_mo(x) for x in topology.G.nodes.values()],
-            "links": [topology.G[u][v] for u, v in topology.G.edges()],
-        }
-        # Parent info
-        if segment.parent:
-            r["parent"] = {"id": str(segment.parent.id), "name": segment.parent.name}
-        # Save settings
-        if not settings:
-            self.logger.debug("Saving first-time layout")
-            MapSettings.load_json(
-                {
-                    "id": str(segment.id),
-                    "nodes": [
-                        {"type": n["type"], "id": n["id"], "x": n["x"], "y": n["y"]}
-                        for n in r["nodes"]
-                        if n.get("x") is not None and n.get("y") is not None
-                    ],
-                    "links": [
-                        {
-                            "type": n["type"],
-                            "id": n["id"],
-                            "vertices": n.get("vertices", []),
-                            "connector": n.get("connector", "normal"),
-                        }
-                        for n in r["links"]
-                    ],
-                }
-            )
-        return r
 
-    @view(r"^(?P<id>[0-9a-f]{24})/data/$", method=["POST"], access="write", api=True)
-    def api_save(self, request, id):
-        self.get_object_or_404(NetworkSegment, id=id)
+        return MapSettings.get_map(
+            segment.id, gen_type="segment", force_spring=request.GET.get("force") == "spring"
+        )
+
+    @view(
+        r"^(?P<gen_type>\w+)/(?P<gen_id>[0-9a-f]{24})/data/$",
+        method=["GET"],
+        access="read",
+        api=True,
+    )
+    def api_data(self, request, gen_type, gen_id):
+        # Find segment
+        # segment = self.get_object_or_404(NetworkSegment, id=id)
+        # if segment.managed_objects.count() > segment.max_objects:
+        #     # Too many objects
+        #     return {"id": str(segment.id), "name": segment.name, "error": _("Too many objects")}
+        try:
+            return MapSettings.get_map(
+                gen_id, gen_type=gen_type, force_spring=request.GET.get("force") == "spring"
+            )
+        except ValueError as e:
+            return {"id": gen_id, "name": f"{gen_type}: {gen_id}", "error": str(e)}
+
+    @view(
+        r"^(?P<gen_type>\w+)/(?P<gen_id>[0-9a-f]{24})/data/$",
+        method=["POST"],
+        access="write",
+        api=True,
+    )
+    def api_save(self, request, gen_type, gen_id):
+        # self.get_object_or_404(NetworkSegment, id=id)
         data = self.deserialize(request.body)
-        data["id"] = id
+        data["id"] = gen_id
+        data["gen_type"] = gen_type
         MapSettings.load_json(data, request.user.username)
         return {"status": True}
 
@@ -155,14 +117,8 @@ class MapApplication(ExtApplication):
         }
         return r
 
-    @view(
-        url=r"^(?P<id>[0-9a-f]{24})/info/managedobject/(?P<mo_id>\d+)/$",
-        method=["GET"],
-        access="read",
-        api=True,
-    )
-    def api_info_managedobject(self, request, id, mo_id):
-        segment = self.get_object_or_404(NetworkSegment, id=id)
+    def inspector_managedobject(self, request, id, mo_id):
+        # segment = self.get_object_or_404(NetworkSegment, id=id)
         object = self.get_object_or_404(ManagedObject, id=int(mo_id))
         s = {1: "telnet", 2: "ssh", 3: "http", 4: "https"}[object.scheme]
         r = {
@@ -172,20 +128,16 @@ class MapApplication(ExtApplication):
             "address": object.address,
             "platform": object.platform.full_name if object.platform else "",
             "profile": object.profile.name,
-            "external": object.segment.id != segment.id,
+            "external": False,
             "external_segment": {"id": str(object.segment.id), "name": object.segment.name},
+            # "external": object.segment.id != segment.id,
+            # "external_segment": {"id": str(object.segment.id), "name": object.segment.name},
             "caps": object.get_caps(),
             "console_url": "%s://%s/" % (s, object.address),
         }
         return r
 
-    @view(
-        url=r"^(?P<id>[0-9a-f]{24})/info/link/(?P<link_id>[0-9a-f]{24})/$",
-        method=["GET"],
-        access="read",
-        api=True,
-    )
-    def api_info_link(self, request, id, link_id):
+    def inspector_link(self, request, id, link_id):
         def q(s):
             if isinstance(s, str):
                 s = s.encode("utf-8")
@@ -241,13 +193,7 @@ class MapApplication(ExtApplication):
                 r["utilisation"] = 0
         return r
 
-    @view(
-        url=r"^(?P<id>[0-9a-f]{24})/info/cloud/(?P<link_id>[0-9a-f]{24})/$",
-        method=["GET"],
-        access="read",
-        api=True,
-    )
-    def api_info_cloud(self, request, id, link_id):
+    def inspector_cloud(self, request, id, link_id):
         self.get_object_or_404(NetworkSegment, id=id)
         link = self.get_object_or_404(Link, id=link_id)
         r = {
@@ -404,10 +350,14 @@ class MapApplication(ExtApplication):
 
         return r
 
-    @view(r"^(?P<id>[0-9a-f]{24})/data/$", method=["DELETE"], access="write", api=True)
-    def api_reset(self, request, id):
-        self.get_object_or_404(NetworkSegment, id=id)
-        MapSettings.objects.filter(segment=id).delete()
+    @view(
+        r"^(?P<gen_type>\w+)/(?P<gen_id>[0-9a-f]{24})/data/$",
+        method=["DELETE"],
+        access="write",
+        api=True,
+    )
+    def api_reset(self, request, gen_type, gen_id):
+        MapSettings.objects.filter(gen_type=gen_type, gen_id=gen_id).delete()
         return {"status": True}
 
     @view(
@@ -450,4 +400,112 @@ class MapApplication(ExtApplication):
                     r["blocked"] += blocked
                 except Exception as e:
                     self.logger.error("[stp] Exception: %s", e)
+        return r
+
+    @view(method=["GET"], url=r"^lookup/$", access="lookup", api=True)
+    def api_lookup(self, request):
+        """
+        Lookup available map by generator
+        :param request:
+        :return:
+        """
+        q = {str(k): v[0] if len(v) == 1 else v for k, v in request.GET.lists()}
+        r = []
+        if not q.get(self.gen_param):
+            for mi in loader:
+                mi = loader[mi]
+                r.append(
+                    {
+                        "id": mi.name,
+                        "generator": mi.name,
+                        "label": mi.header or mi.name,
+                        "has_children": True,
+                        "only_container": True,
+                    }
+                )
+            return r
+        gen = loader[q[self.gen_param]]
+        if not gen:
+            return self.render_json(
+                {"success": False, "message": f"Unknown generator: {q[self.gen_param]}"},
+                status=self.NOT_FOUND,
+            )
+        if gen.name == q.get("parent"):
+            q["parent"] = None
+        for mi in gen.iter_maps(
+            parent=q.get("parent"),
+            query=q.get(self.query_param),
+            limit=int(q.get(self.limit_param, 500)),
+            start=int(q.get(self.start_param, 0)),
+            page=int(q.get(self.page_param, 1)),
+        ):
+            r.append(
+                {
+                    "label": mi.title,
+                    "generator": mi.generator,
+                    "id": str(mi.id),
+                    "has_children": mi.has_children,
+                    "only_container": mi.only_container,
+                    "code": mi.code,
+                }
+            )
+        return r
+
+    @view(method=["GET"], url=r"^(?P<gen_id>[0-9a-f]{24})/get_path/$", access="lookup", api=True)
+    def api_lookup_maps_get_path(self, request, gen_id):
+        """
+
+        :param request:
+        :param gen_id:
+        :return:
+        """
+        # Parse params
+        q = {str(k): v[0] if len(v) == 1 else v for k, v in request.GET.lists()}
+        if self.gen_param not in q:
+            return
+        gen = loader[q[self.gen_param]]
+        if not gen:
+            return self.render_json(
+                {"success": False, "message": f"Unknown generator: {q[self.gen_param]}"},
+                status=self.NOT_FOUND,
+            )
+        return {
+            "data": [
+                {"level": p.level, "id": str(p.id), "label": p.title} for p in gen.iter_path(gen_id)
+            ]
+        }
+
+    @view(
+        url=r"^info/(?P<inspector>\w+)/(?P<id>[0-9a-f]{24})/$",
+        method=["GET"],
+        access="read",
+        api=True,
+    )
+    def api_info_inspector(self, request, inspector, id):
+        if not hasattr(self, inspector):
+            return
+        hi = getattr(self, f"inspector_{inspector}")
+        return hi(request, id)
+
+    @view(
+        url=r"^info/(?P<inspector>\w+)/(?P<gen_id>[0-9a-f]{24})/(?P<r_id>([0-9a-f]{24}|\d+))/$",
+        method=["GET"],
+        access="read",
+        api=True,
+    )
+    def inspector_gen_segment(self, request, inspector, gen_id, r_id):
+        if not hasattr(self, f"inspector_{inspector}"):
+            self.logger.warning("Unknown inspector: %s", inspector)
+            return
+        hi = getattr(self, f"inspector_{inspector}")
+        return hi(request, gen_id, r_id)
+
+    @view(url=r"^info/segment/(?P<id>[0-9a-f]{24})/$", method=["GET"], access="read", api=True)
+    def api_info_segment_new(self, request, id):
+        segment = self.get_object_or_404(NetworkSegment, id=id)
+        r = {
+            "name": segment.name,
+            "description": segment.description,
+            "objects": segment.managed_objects.count(),
+        }
         return r

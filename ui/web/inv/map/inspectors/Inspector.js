@@ -18,7 +18,7 @@ Ext.define('NOC.inv.map.inspectors.Inspector', {
 
     getDataURL: function(segmentId, objectId) {
         var me = this;
-        return '/inv/map/' + segmentId + '/info/' + me.inspectorName + '/'
+        return '/inv/map/info/' + me.inspectorName + '/' + segmentId + '/'
     },
 
     preview: function(segmentId, objectId) {

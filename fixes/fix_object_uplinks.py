@@ -11,7 +11,7 @@ import progressbar
 # NOC modules
 from noc.inv.models.networksegment import NetworkSegment
 from noc.sa.models.managedobject import ManagedObject
-from noc.core.topology.segment import SegmentTopology
+from noc.core.topology.map.segment import SegmentTopology
 
 BATCH_SIZE = 5000
 

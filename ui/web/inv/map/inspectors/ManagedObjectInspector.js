@@ -90,7 +90,8 @@ Ext.define("NOC.inv.map.inspectors.ManagedObjectInspector", {
     },
 
     onJumpSegment: function() {
-        this.app.segmentCombo.restoreById(this.externalSegmentId);
+        this.app.generator = this.app.mapPanel.objectNodes[this.currentObjectId].attributes.data.portal.generator;
+        this.app.segmentCombo.restoreById(this.app.mapPanel.objectNodes[this.currentObjectId].attributes.data.portal.id);
     },
 
     onMOCard: function() {

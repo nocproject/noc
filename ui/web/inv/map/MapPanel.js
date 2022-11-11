@@ -258,9 +258,10 @@ Ext.define("NOC.inv.map.MapPanel", {
         me.fireEvent("mapready");
     },
     // Load segment data
-    loadSegment: function(segmentId, forceSpring) {
-        var me = this,
-            url = "/inv/map/" + segmentId + "/data/";
+    loadSegment: function(generator, segmentId, forceSpring) {
+        var me = this, url;
+        me.generator = generator || "segment";
+        url = "/inv/map/" + me.generator + "/" + segmentId + "/data/";
         if(forceSpring) {
             url += "?force=spring"
         }
@@ -395,7 +396,8 @@ Ext.define("NOC.inv.map.MapPanel", {
                 type: data.type,
                 id: data.id,
                 caps: data.caps,
-                isMaintenance: false
+                isMaintenance: false,
+                portal: data.portal
             }
         });
         Ext.each(data.shape_overlay, function(config) {
@@ -678,7 +680,7 @@ Ext.define("NOC.inv.map.MapPanel", {
             r.links.push(lr);
         });
         Ext.Ajax.request({
-            url: "/inv/map/" + me.segmentId + "/data/",
+            url: "/inv/map/" + me.generator + "/" + me.segmentId + "/data/",
             method: "POST",
             jsonData: r,
             scope: me,
@@ -1035,16 +1037,16 @@ Ext.define("NOC.inv.map.MapPanel", {
 
     resetLayout: function(forceSpring) {
         var me = this;
-        if(!me.segmentId) {
+        if(!me.segmentId || !me.generator) {
             return;
         }
         forceSpring = forceSpring || false;
         Ext.Ajax.request({
-            url: "/inv/map/" + me.segmentId + "/data/",
+            url: "/inv/map/" + me.generator + "/" + me.segmentId + "/data/",
             method: "DELETE",
             scope: me,
             success: function(response) {
-                me.loadSegment(me.segmentId, forceSpring);
+                me.loadSegment(me.generator, me.segmentId, forceSpring);
             },
             failure: function() {
                 NOC.error(__("Failed to reset layout"));
