@@ -66,7 +66,12 @@ class LinkSettings(EmbeddedDocument):
 
 
 class MapSettings(Document):
-    meta = {"collection": "noc.mapsettings", "strict": False, "auto_create_index": False}
+    meta = {
+        "collection": "noc.mapsettings",
+        "strict": False,
+        "auto_create_index": False,
+        "indexes": [{"fields": ["gen_type", "gen_id"], "unique": True}],
+    }
 
     # Generator type
     gen_type = StringField()

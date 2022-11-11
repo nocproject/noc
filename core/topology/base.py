@@ -154,14 +154,14 @@ class TopologyBase(object):
         )
         self.G.add_node(o_id, **attrs)
 
-    def add_edge(self, o1: str, o2: str, attrs: Optional[Dict[str, Any]] = None):
+    def add_edge(self, o1: str, o2: str, attrs: Optional[Dict[str, Any]] = None, edge_type: str = "link"):
         """
         Add link between interfaces to topology
         """
         a = {"connector": "normal"}
         if attrs:
             a.update(attrs)
-        a.update({"type": "link"})
+        a.update({"type": edge_type})
         #
         self.G.add_edge(o1, o2, **a)
 
@@ -441,6 +441,32 @@ class TopologyBase(object):
                 },
             )
             self.pn += 2
+
+    def add_parent(self, parent, child):
+        """
+        Add Child-Parent link
+        :param parent:
+        :param child:
+        :return:
+        """
+        # Create virtual ports
+        if {"id": f"{parent}-children", "ports": ["children"]} not in self.G.nodes[child]["ports"]:
+            self.G.nodes[parent]["ports"] += [
+                {"id": f"{parent}-children", "ports": ["children"]}
+            ]
+        self.G.nodes[child]["ports"] += [
+            {"id": f"{child}-parent", "ports": ["parent"]}
+        ]
+        self.add_edge(
+            child,
+            parent,
+            {
+                "id": f"{child}-{parent}",
+                "ports": [f"{child}-parent", f"{parent}-children"],
+                "connector": "smooth",
+            },
+            edge_type="parent",
+        )
 
     def load(self):
         """
