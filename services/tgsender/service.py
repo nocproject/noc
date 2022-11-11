@@ -82,7 +82,7 @@ class TgSenderService(FastAPIService):
             return
         send = {
             "chat_id": address,
-            "text": f"- {subject} --\n\n {body}",
+            "text": f"{subject}\n\n{body}",
             "parse_mode": "Markdown",
         }
         # Text of the message to be sent, 1-4096 characters after entities parsing
