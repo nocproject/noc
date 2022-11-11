@@ -1,5 +1,5 @@
 {
-  "title": "CPU | Load | 1min per CPU",
+  "title": "Memory | Usage | Bytes",
   "aliasColors": {},
   "bars": false,
   "datasource": null,
@@ -10,7 +10,7 @@
     "threshold2": null,
     "threshold2Color": "rgba(234, 112, 112, 0.22)"
   },
-  "id": 1151104820716515,
+  "id": 1522414413515989,
   "legend": {
     "alignAsTable": true,
     "avg": true,
@@ -42,12 +42,12 @@
       "dateLoading": false,
       "tableLoading": false,
       "dateColDataType": "date",
-      "table": "cpu",
       "intervalFactor": 1,
-      "query": "SELECT \n    t, \n    groupArray((name, CPUUsage)) AS groupArr \nFROM (\n    SELECT $timeSeries as t, \n        name, \n        any(load_1min) as `CPUUsage` \n    FROM \n        $table \n    WHERE \n        managed_object=$bi_id \n        and $timeFilter\n    GROUP BY name, t ORDER BY t) \nGROUP BY t \nORDER BY t ASC",
+      "table": "memory",
+      "policy": "default",
+      "query": "SELECT \n    t, \n    groupArray((slot, MemoryUsageBytes)) AS groupArr \nFROM (\n    SELECT $timeSeries as t, \n        arrayStringConcat(labels,'/') as slot, \n        any(usage_bytes) as `MemoryUsageBytes` \n    FROM \n        $table \n    WHERE \n        managed_object=$bi_id \n        and $timeFilter\n    GROUP BY labels, t ORDER BY t) \nGROUP BY t \nORDER BY t ASC",
       "refId": "A",
       "resultFormat": "time_series",
-      "interval": "$discovery_interval"
     }
   ],
   "timeFrom": null,
@@ -66,13 +66,11 @@
   "y-axis": true,
   "yaxes": [
     {
-      "format": "short",
-      "label": null,
       "logBase": 1,
-      "max": null,
-      "min": null,
       "show": true,
-      "decimals": null
+      "format": "bytes",
+      "min": "0",
+      "label": null
     },
     {
       "format": "short",
@@ -80,8 +78,7 @@
       "logBase": 1,
       "max": null,
       "min": null,
-      "show": false
+      "show": true
     }
-  ],
-  "decimals": 2
+  ]
 }

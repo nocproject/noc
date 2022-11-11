@@ -59,6 +59,13 @@ def sum(*args):
     return reduce(lambda x, y: x + y, args)
 
 
+def diff(*args):
+    """
+    Returns diff of all arguments
+    """
+    return reduce(lambda x, y: x - y, args)
+
+
 def subtract(*args):
     """
     Subtract from first arguments

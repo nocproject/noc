@@ -1,23 +1,18 @@
 # -*- coding: utf-8 -*-
 # ---------------------------------------------------------------------
-# OS.Linux.get_fqdn
+# OS.Linux.get_ifindexes
 # ---------------------------------------------------------------------
 # Copyright (C) 2007-2022 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
 # NOC modules
-from noc.sa.profiles.Generic.get_fqdn import Script as BaseScript
-from noc.sa.interfaces.igetfqdn import IGetFQDN
+from noc.sa.profiles.Generic.get_ifindexes import Script as BaseScript
+from noc.sa.interfaces.igetifindexes import IGetIfindexes
 
 
 class Script(BaseScript):
-    name = "OS.Linux.get_fqdn"
-    interface = IGetFQDN
+    name = "OS.Linux.get_ifindexes"
+    interface = IGetIfindexes
 
-    always_prefer = "S"
-
-    def execute_cli(self, **kwargs):
-        v = self.cli("uname -n").strip()
-
-        return v
+    INTERFACE_NAME_OID = "IF-MIB::ifName"
