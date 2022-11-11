@@ -17,7 +17,6 @@ import cachetools
 from bson import ObjectId
 
 # NOC modules
-from noc.core.stencil import stencil_registry, Stencil
 from noc.core.log import PrefixLoggerAdapter
 from noc.core.ip import IP
 from noc.core.graph.nexthop import iter_next_hops
@@ -25,8 +24,7 @@ from noc.sa.models.managedobject import ManagedObject
 from noc.inv.models.networksegment import NetworkSegment
 from noc.inv.models.interface import Interface
 from noc.inv.models.link import Link
-from ..types import ShapeOverlay, ShapeOverlayPosition, ShapeOverlayForm
-from ..base import TopologyBase, MapItem, PathItem
+from noc.core.topology.base import TopologyBase, MapItem, PathItem
 
 logger = logging.getLogger(__name__)
 
@@ -146,76 +144,6 @@ class SegmentTopology(TopologyBase):
             )
         )
         return [s[1]]
-
-    def get_node_stencil(
-        self, o: ManagedObject, node_type: Optional[str] = None
-    ) -> Optional[Stencil]:
-        """
-        Get ManagedObejct Stencil
-
-        :param o: ManagedObject
-        :param node_type:
-        :return:
-        """
-        if node_type == "cloud":
-            return stencil_registry.get(o.shape or stencil_registry.DEFAULT_CLOUD_STENCIL)
-        if o.shape:
-            # Use mo's shape, if set
-            return stencil_registry.get(o.shape)
-        elif o.object_profile.shape:
-            # Use profile's shape
-            return stencil_registry.get(o.object_profile.shape)
-        return stencil_registry.get(stencil_registry.DEFAULT_STENCIL)
-
-    def get_node_stencil_overlays(
-        self, mo: ManagedObject, node_type: Optional[str] = None
-    ) -> List[ShapeOverlay]:
-        """
-
-        :param mo:
-        :param node_type:
-        :return:
-        """
-        if node_type == "cloud":
-            return []
-        seen: Set[ShapeOverlayPosition] = set()
-        r: List[ShapeOverlay] = []
-        # ManagedObject
-        if mo.shape_overlay_glyph:
-            pos = mo.shape_overlay_position or ShapeOverlayPosition.NW
-            r += [
-                ShapeOverlay(
-                    code=mo.shape_overlay_glyph.code,
-                    position=pos,
-                    form=mo.shape_overlay_form or ShapeOverlayForm.Circle,
-                )
-            ]
-            seen.add(pos)
-        # Project
-        if mo.project and mo.project.shape_overlay_glyph:
-            pos = mo.project.shape_overlay_position or ShapeOverlayPosition.NW
-            if pos not in seen:
-                r += [
-                    ShapeOverlay(
-                        code=mo.project.shape_overlay_glyph.code,
-                        position=pos,
-                        form=mo.project.shape_overlay_form or ShapeOverlayForm.Circle,
-                    )
-                ]
-                seen.add(pos)
-        # ManagedObjectProfile
-        if mo.object_profile.shape_overlay_glyph:
-            pos = mo.object_profile.shape_overlay_position or ShapeOverlayPosition.NW
-            if pos not in seen:
-                r += [
-                    ShapeOverlay(
-                        code=mo.object_profile.shape_overlay_glyph.code,
-                        position=pos,
-                        form=mo.object_profile.shape_overlay_form or ShapeOverlayForm.Circle,
-                    )
-                ]
-                seen.add(pos)
-        return r
 
     def load(self):
         """

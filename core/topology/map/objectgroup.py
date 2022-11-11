@@ -74,18 +74,10 @@ class ObjectGroupTopology(TopologyBase):
         mos: Dict[int, "ManagedObject"] = {
             mo.id: mo for mo in ManagedObject.objects.filter(id__in=all_mos)
         }
-        # self.group_objects: Set[int] = set(
-        #     mo_id for mo_id in all_mos if mos[mo_id].segment.id == self.segment.id
-        # )
         for mo in mos.values():
             attrs = {"role": "segment", "address": mo.address, "level": mo.object_profile.level}
-            # if attrs["role"] == "uplink":
-            #     attrs["portal"] = {"generator": "segment", "id": self.parent_segment}
-            # elif attrs["role"] == "downlink":
-            #     attrs["portal"] = {"generator": "segment", "id": str(mo.segment.id)}
             self.add_node(mo, "managedobject", attrs)
-            # self.add_object(mo)
-        # Process all segment's links
+        # Process all links
         for link in links:
             self.add_link(link)
 

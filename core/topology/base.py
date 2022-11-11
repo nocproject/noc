@@ -23,7 +23,7 @@ from noc.core.text import alnum_key
 from .layout.ring import RingLayout
 from .layout.spring import SpringLayout
 from .layout.tree import TreeLayout
-from .types import ShapeOverlay
+from .types import ShapeOverlay, ShapeOverlayPosition, ShapeOverlayForm
 
 
 @dataclass
@@ -154,7 +154,9 @@ class TopologyBase(object):
         )
         self.G.add_node(o_id, **attrs)
 
-    def add_edge(self, o1: str, o2: str, attrs: Optional[Dict[str, Any]] = None, edge_type: str = "link"):
+    def add_edge(
+        self, o1: str, o2: str, attrs: Optional[Dict[str, Any]] = None, edge_type: str = "link"
+    ):
         """
         Add link between interfaces to topology
         """
@@ -165,25 +167,71 @@ class TopologyBase(object):
         #
         self.G.add_edge(o1, o2, **a)
 
-    def get_node_stencil(self, o: Any, node_type: Optional[str] = None) -> Optional[Stencil]:
+    def get_node_stencil(self, o, node_type: Optional[str] = None) -> Optional[Stencil]:
         """
         Return node stencil
+
         :param o:
         :param node_type:
         :return:
         """
-        return self.default_stencil
+        if node_type == "cloud":
+            return stencil_registry.get(o.shape or stencil_registry.DEFAULT_CLOUD_STENCIL)
+        if node_type == "managedobject" and o.shape:
+            # Use mo's shape, if set
+            return stencil_registry.get(o.shape)
+        elif node_type == "managedobject" and o.object_profile.shape:
+            # Use profile's shape
+            return stencil_registry.get(o.object_profile.shape)
+        return stencil_registry.get(stencil_registry.DEFAULT_STENCIL)
 
-    def get_node_stencil_overlays(
-        self, o: Any, node_type: Optional[str] = None
-    ) -> List[ShapeOverlay]:
+    def get_node_stencil_overlays(self, o, node_type: Optional[str] = None) -> List[ShapeOverlay]:
         """
         Return node Stencil Overlays
-        :param o: Object
+        :param o:
         :param node_type:
         :return:
         """
-        return []
+        if node_type != "managedobject":
+            return []
+        seen: Set[ShapeOverlayPosition] = set()
+        r: List[ShapeOverlay] = []
+        # ManagedObject
+        if o.shape_overlay_glyph:
+            pos = o.shape_overlay_position or ShapeOverlayPosition.NW
+            r += [
+                ShapeOverlay(
+                    code=o.shape_overlay_glyph.code,
+                    position=pos,
+                    form=o.shape_overlay_form or ShapeOverlayForm.Circle,
+                )
+            ]
+            seen.add(pos)
+        # Project
+        if o.project and o.project.shape_overlay_glyph:
+            pos = o.project.shape_overlay_position or ShapeOverlayPosition.NW
+            if pos not in seen:
+                r += [
+                    ShapeOverlay(
+                        code=o.project.shape_overlay_glyph.code,
+                        position=pos,
+                        form=o.project.shape_overlay_form or ShapeOverlayForm.Circle,
+                    )
+                ]
+                seen.add(pos)
+        # ManagedObjectProfile
+        if o.object_profile.shape_overlay_glyph:
+            pos = o.object_profile.shape_overlay_position or ShapeOverlayPosition.NW
+            if pos not in seen:
+                r += [
+                    ShapeOverlay(
+                        code=o.object_profile.shape_overlay_glyph.code,
+                        position=pos,
+                        form=o.object_profile.shape_overlay_form or ShapeOverlayForm.Circle,
+                    )
+                ]
+                seen.add(pos)
+        return r
 
     def order_nodes(self, uplink, downlinks):
         """
@@ -451,12 +499,8 @@ class TopologyBase(object):
         """
         # Create virtual ports
         if {"id": f"{parent}-children", "ports": ["children"]} not in self.G.nodes[child]["ports"]:
-            self.G.nodes[parent]["ports"] += [
-                {"id": f"{parent}-children", "ports": ["children"]}
-            ]
-        self.G.nodes[child]["ports"] += [
-            {"id": f"{child}-parent", "ports": ["parent"]}
-        ]
+            self.G.nodes[parent]["ports"] += [{"id": f"{parent}-children", "ports": ["children"]}]
+        self.G.nodes[child]["ports"] += [{"id": f"{child}-parent", "ports": ["parent"]}]
         self.add_edge(
             child,
             parent,
