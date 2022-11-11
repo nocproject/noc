@@ -4,7 +4,7 @@
     "uuid": "73b90e18-45bb-4a20-8733-559756cc8138",
     "scope__name": "CPU",
     "field_name": "load_5min",
-    "field_type": "UInt8",
+    "field_type": "Float32",
     "description": null,
     "measure": "%",
     "units__code": "1",

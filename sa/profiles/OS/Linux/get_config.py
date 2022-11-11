@@ -1,41 +1,33 @@
+# -*- coding: utf-8 -*-
 # ---------------------------------------------------------------------
 # OS.Linux.get_config
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2022 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
 # Python modules
-from noc.core.script.base import BaseScript
 
 # NOC modules
+from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetconfig import IGetConfig
-from noc.core.comp import smart_text, smart_bytes
 
 
 class Script(BaseScript):
     name = "OS.Linux.get_config"
     interface = IGetConfig
 
-    def execute_cli(self, **kwargs):
+    always_prefer = "С"
+
+    def execute(self, **kwargs):
         config = ""
-        for i in self.attrs:
-            if i.startswith("config"):
-                files = {}
-                files["name"] = self.attrs[i]
-                conf = str(self.cli("/bin/cat " + str(self.attrs[i])))
-                files["config"] = conf
-                config.append(files)
-        if not config:
-            config = self.cli("cat /tmp/system.cfg 2>/dev/null")
-        if not config:
-            cmd = "for i in `du -a /etc/ 2>/dev/null |awk '{print $2}' "
-            cmd += "2>/dev/null |grep -v shadow`; do echo ''; echo $i; "
-            cmd += "if [ -f $i ]; then cat $i; fi; done"
-            config = self.cli(cmd)
-        if not config:
-            raise Exception("Not implemented")
-        config = self.cleaned_config(config)
-        if self.encoding:
-            config = smart_bytes(smart_text(config, encoding=self.encoding, errors="ignore"))
+        sstring = "-----BEGIN CONFIG BLOCK-----"
+        estring = "-----END CONFIG BLOCK-----"
+        clicommands = [
+            "rpm -qa | sort",
+            "cat /etc/fstab",
+            'systemctl --all --no-pager | grep -v "session-.*Session"',
+        ]
+        for command in clicommands:
+            config = config + (sstring + "\n" + self.cli(command) + estring + "\n")
         return config

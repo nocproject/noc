@@ -1,0 +1,13 @@
+{
+    "name": "OS | Linux | Debian",
+    "$collection": "sa.profilecheckrules",
+    "uuid": "425dc895-73d9-4f50-809c-85890bca77e8",
+    "description": "",
+    "preference": 1000,
+    "method": "snmp_v2c_get",
+    "param": "SNMPv2-MIB::sysDescr.0",
+    "match_method": "re",
+    "value": "^Linux\\s.*Debian.*",
+    "action": "match",
+    "profile__name": "OS.Linux"
+}

@@ -1,0 +1,12 @@
+{
+    "name": "Memory | Usage | Bytes",
+    "$collection": "pm.metrictypes",
+    "uuid": "2425e2f8-a8b9-4eb9-b78f-34707f101b9c",
+    "scope__name": "Memory",
+    "field_name": "usage_bytes",
+    "field_type": "UInt64",
+    "description": "Memory usage in bytes",
+    "measure": null,
+    "units__code": "byte",
+    "scale__code": "1"
+}

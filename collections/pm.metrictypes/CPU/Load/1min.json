@@ -4,7 +4,7 @@
     "uuid": "aff29f17-ee6d-4ede-9a50-95545173ce4e",
     "scope__name": "CPU",
     "field_name": "load_1min",
-    "field_type": "UInt8",
+    "field_type": "Float32",
     "description": null,
     "measure": "%",
     "units__code": "1",
