@@ -93,11 +93,17 @@ class MapApplication(ExtApplication):
         except ValueError as e:
             return {"id": gen_id, "name": f"{gen_type}: {gen_id}", "error": str(e)}
 
-    @view(r"^(?P<id>[0-9a-f]{24})/data/$", method=["POST"], access="write", api=True)
-    def api_save(self, request, id):
-        self.get_object_or_404(NetworkSegment, id=id)
+    @view(
+        r"^(?P<gen_type>\w+)/(?P<gen_id>[0-9a-f]{24})/data/$",
+        method=["POST"],
+        access="write",
+        api=True,
+    )
+    def api_save(self, request, gen_type, gen_id):
+        # self.get_object_or_404(NetworkSegment, id=id)
         data = self.deserialize(request.body)
-        data["id"] = id
+        data["id"] = gen_id
+        data["gen_type"] = gen_type
         MapSettings.load_json(data, request.user.username)
         return {"status": True}
 
@@ -344,10 +350,14 @@ class MapApplication(ExtApplication):
 
         return r
 
-    @view(r"^(?P<id>[0-9a-f]{24})/data/$", method=["DELETE"], access="write", api=True)
-    def api_reset(self, request, id):
-        self.get_object_or_404(NetworkSegment, id=id)
-        MapSettings.objects.filter(segment=id).delete()
+    @view(
+        r"^(?P<gen_type>\w+)/(?P<gen_id>[0-9a-f]{24})/data/$",
+        method=["DELETE"],
+        access="write",
+        api=True,
+    )
+    def api_reset(self, request, gen_type, gen_id):
+        MapSettings.objects.filter(gen_type=gen_type, gen_id=gen_id).delete()
         return {"status": True}
 
     @view(
@@ -399,13 +409,7 @@ class MapApplication(ExtApplication):
         :param request:
         :return:
         """
-        if request.method == "POST":
-            if self.site.is_json(request.META.get("CONTENT_TYPE")):
-                q = self.deserialize(request.body)
-            else:
-                q = {str(k): v[0] if len(v) == 1 else v for k, v in request.POST.lists()}
-        else:
-            q = {str(k): v[0] if len(v) == 1 else v for k, v in request.GET.lists()}
+        q = {str(k): v[0] if len(v) == 1 else v for k, v in request.GET.lists()}
         r = []
         if not q.get(self.gen_param):
             for mi in loader:
@@ -455,13 +459,8 @@ class MapApplication(ExtApplication):
         :param gen_id:
         :return:
         """
-        if request.method == "POST":
-            if self.site.is_json(request.META.get("CONTENT_TYPE")):
-                q = self.deserialize(request.body)
-            else:
-                q = {str(k): v[0] if len(v) == 1 else v for k, v in request.POST.lists()}
-        else:
-            q = {str(k): v[0] if len(v) == 1 else v for k, v in request.GET.lists()}
+        # Parse params
+        q = {str(k): v[0] if len(v) == 1 else v for k, v in request.GET.lists()}
         if self.gen_param not in q:
             return
         gen = loader[q[self.gen_param]]

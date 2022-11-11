@@ -76,7 +76,7 @@ class MapSettings(Document):
     gen_version = IntField(min_value=0)
     # Change time
     last_change_id = DateTimeField()
-    current_change_id = DateTimeField()
+    current_change_id = DateTimeField(default=datetime.datetime.now())
     # Changing user
     user = StringField()
     # Paper size
@@ -119,27 +119,26 @@ class MapSettings(Document):
                 x
                 y
         """
-        d = MapSettings.objects.filter(gen_type="segment", gen_id=data["id"]).first()
+        d = MapSettings.objects.filter(gen_type=data["gen_type"], gen_id=data["id"]).first()
         if d:
-            logger.info("Updating settings for %s", data["id"])
+            logger.info("[%s|%s] Updating settings for map", data["gen_type"], data["id"])
         else:
-            logger.info("Creating new settings for %s", data["id"])
-            d = MapSettings(gen_type="segment", gen_id=data["id"], nodes=[], links=[])
-        # Update meta
-        if user:
-            d.user = user
-        d.update_settings(data.get("nodes", []), data.get("links", []))
-        d.save()
+            logger.info("[%s|%s] Creating new settings", data["gen_type"], data["id"])
+            d = MapSettings(gen_type=data["gen_type"], gen_id=data["id"], nodes=[], links=[])
+        d.update_settings(data.get("nodes", []), data.get("links", []), user=user)
         return d
 
-    def update_settings(self, nodes, links):
+    def update_settings(self, nodes, links, user: Optional[str] = None):
         """
         Update settings
         :param nodes:
         :param links:
+        :param user:
         :return:
         """
         self.current_change_id = datetime.datetime.now().replace(microsecond=0)
+        if user:
+            self.user = user
         # Update nodes
         new_nodes = {}  # id -> data
         for n in nodes:
@@ -219,30 +218,32 @@ class MapSettings(Document):
                     "connector": ll.connector if len(ll.vertices) else "normal",
                     "vertices": [{"x": v.x, "y": v.y} for v in ll.vertices],
                 }
+            layout = settings.force_layout
         else:
-            logger.info("[%s|%s] Generating positions", gen_type, gen_id)
+            logger.info("[%s|%s] Create new settings", gen_type, gen_id)
+            settings = MapSettings(gen_type=gen_type, gen_id=gen_id, nodes=[], links=[])
+            layout = True
         # Generate topology
         topology: TopologyBase = gen(gen_id, node_hints, link_hints, **kwargs)
-        if not settings or settings.force_layout:
+        if layout:
+            logger.info("[%s|%s] Generating positions", gen_type, gen_id)
             topology.layout()
-            # settings.update_settings(
-            #     nodes=[
-            #         {"type": n["type"], "id": n["id"], "x": n["x"], "y": n["y"]}
-            #         for n in r["nodes"]
-            #         if n.get("x") is not None and n.get("y") is not None
-            #     ],
-            #     links=[
-            #         {
-            #             "type": n["type"],
-            #             "id": n["id"],
-            #             "vertices": n.get("vertices", []),
-            #             "connector": n.get("connector", "normal"),
-            #         }
-            #         for n in r["links"]
-            #     ],
-            # )
-        # if segment.parent:
-        #     r["parent"] = {"id": str(segment.parent.id), "name": segment.parent.name}
+            settings.update_settings(
+                nodes=[
+                    {"type": n["type"], "id": n["id"], "x": n["x"], "y": n["y"]}
+                    for n in topology.G.nodes.values()
+                    if n.get("x") is not None and n.get("y") is not None
+                ],
+                links=[
+                    {
+                        "type": n["type"],
+                        "id": n["id"],
+                        "vertices": n.get("vertices", []),
+                        "connector": n.get("connector", "normal"),
+                    }
+                    for n in topology.G.edges.values()
+                ],
+            )
         return {
             "id": str(gen_id),
             "type": gen_type,
