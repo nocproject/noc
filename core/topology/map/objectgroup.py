@@ -81,21 +81,6 @@ class ObjectGroupTopology(TopologyBase):
         for link in links:
             self.add_link(link)
 
-    @staticmethod
-    def q_mo(d):
-        x = d.copy()
-        if x["type"] == "managedobject":
-            del x["mo"]
-            x["external"] = x.get("role") != "segment"
-        elif d["type"] == "cloud":
-            del x["link"]
-            x["external"] = False
-        return x
-
-    def iter_nodes(self):
-        for n in self.G.nodes.values():
-            yield self.q_mo(n)
-
     @classmethod
     def iter_maps(
         cls,

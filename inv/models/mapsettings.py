@@ -130,15 +130,30 @@ class MapSettings(Document):
         else:
             logger.info("[%s|%s] Creating new settings", data["gen_type"], data["id"])
             d = MapSettings(gen_type=data["gen_type"], gen_id=data["id"], nodes=[], links=[])
-        d.update_settings(data.get("nodes", []), data.get("links", []), user=user)
+        d.update_settings(
+            data.get("nodes", []),
+            data.get("links", []),
+            user=user,
+            width=data.get("width"),
+            height=data.get("height"),
+        )
         return d
 
-    def update_settings(self, nodes, links, user: Optional[str] = None):
+    def update_settings(
+        self,
+        nodes,
+        links,
+        user: Optional[str] = None,
+        width: Optional[float] = None,
+        height: Optional[float] = None,
+    ):
         """
         Update settings
         :param nodes:
         :param links:
         :param user:
+        :param width:
+        :param height:
         :return:
         """
         self.current_change_id = datetime.datetime.now().replace(microsecond=0)
@@ -164,8 +179,8 @@ class MapSettings(Document):
             nn += [NodeSettings(type=nd["type"], id=nd["id"], x=nd["x"], y=nd["y"])]
             mx = max(mx, nd["x"])
             my = max(my, nd["y"])
-        # self.width = data.get("width", mx)
-        # self.height = data.get("height", my)
+        self.width = width or mx
+        self.height = height or my
         self.nodes = sorted(nn, key=lambda x: (x.type, x.id))
         # Update links
         new_links = {}

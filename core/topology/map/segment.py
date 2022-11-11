@@ -202,18 +202,6 @@ class SegmentTopology(TopologyBase):
         for link in links:
             self.add_link(link)
 
-    @staticmethod
-    def q_mo(d):
-        x = d.copy()
-        if x["type"] == "managedobject":
-            del x["mo"]
-            # x["external"] = x["id"] not in mos if is_view else x.get("role") != "segment"
-            x["external"] = x.get("role") != "segment"
-        elif d["type"] == "cloud":
-            del x["link"]
-            x["external"] = False
-        return x
-
     def iter_uplinks(self):
         """
         Yields ObjectUplinks items for segment
@@ -306,10 +294,6 @@ class SegmentTopology(TopologyBase):
                 uplinks=obj_uplinks[mo],
                 rca_neighbors=rca_neighbors,
             )
-
-    def iter_nodes(self):
-        for n in self.G.nodes.values():
-            yield self.q_mo(n)
 
     @classmethod
     def iter_maps(
