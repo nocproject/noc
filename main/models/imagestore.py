@@ -7,11 +7,10 @@
 
 # Third-party modules
 from mongoengine.document import Document
-from mongoengine.fields import StringField, BinaryField, IntField, BooleanField
+from mongoengine.fields import StringField, IntField, BooleanField, FileField
 from mongoengine.errors import ValidationError
 
 # NOC modules
-from noc.config import config
 from noc.core.mime import ContentType
 
 
@@ -29,11 +28,11 @@ def validate_content_type(value: int) -> None:
 class ImageStore(Document):
     meta = {"collection": "avatars", "strict": False, "auto_create_index": False}
 
-    name = StringField(primary_key=True)
-    type = StringField(choices=["background"])
+    name = StringField(unique=True)
+    type = StringField(choices=["background"], default="background")
     is_hidden = BooleanField("Is Hidden", default=False)
     content_type = IntField(validation=validate_content_type)
-    file = BinaryField(max_bytes=1048576)
+    file = FileField(max_bytes=1048576, required=False)
 
     def __str__(self) -> str:
         return f"{self.type}: {self.name}"

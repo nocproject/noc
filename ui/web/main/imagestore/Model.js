@@ -21,11 +21,16 @@ Ext.define("NOC.main.imagestore.Model", {
         },
         {
             name: "type",
-            type: "str",
+            type: "string",
         },
         {
             name: "content_type",
-            type: "str",
+            type: "string",
+            persist: false,
+        },
+        {
+            name: "filename",
+            type: "string",
             persist: false,
         },
         {

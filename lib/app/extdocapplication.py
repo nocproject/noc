@@ -299,6 +299,16 @@ class ExtDocApplication(ExtApplication):
         perm_name = "%s:secret" % (self.get_app_id().replace(".", ":"))
         return perm_name in Permission.get_effective_permissions(get_user())
 
+    def set_file(self, files, o, file_attrs=None):
+        """
+        Proccessed uploaded file
+        :param files:
+        :param o:
+        :param file_attrs:
+        :return:
+        """
+        return True
+
     def has_field_editable(self, field):
         return ModelProtectionProfile.has_editable(get_model_id(self.model), get_user(), field)
 
@@ -428,10 +438,15 @@ class ExtDocApplication(ExtApplication):
 
     @view(method=["POST"], url="^$", access="create", api=True)
     def api_create(self, request):
+        is_json = self.site.is_json(request.META.get("CONTENT_TYPE"))
         try:
-            attrs = self.clean(self.deserialize(request.body))
+            attrs = self.clean(
+                self.deserialize(request.body) if is_json else self.deserialize_form(request)
+            )
         except ValueError as e:
-            self.logger.info("Bad request: %r (%s)", request.body, e)
+            self.logger.info(
+                "Bad request: %r (%s)", request.body if is_json else request.POST.lists(), e
+            )
             return self.response(str(e), status=self.BAD_REQUEST)
         if self.pk in attrs:
             del attrs[self.pk]
@@ -447,6 +462,12 @@ class ExtDocApplication(ExtApplication):
         for k, v in attrs.items():
             if k != self.pk and "__" not in k:
                 setattr(o, k, v)
+        if request.FILES:
+            # Save uploaded file
+            try:
+                self.set_file(request.FILES, o)
+            except ValueError as e:
+                return self.response({"message": str(e)}, status=self.BAD_REQUEST)
         try:
             o.save()
         except ValidationError as e:

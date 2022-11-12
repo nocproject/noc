@@ -13,7 +13,6 @@ Ext.define("NOC.main.imagestore.Application", {
     ],
     model: "NOC.main.imagestore.Model",
     search: true,
-    helpId: "reference-handler",
 
     initComponent: function() {
         var me = this;
@@ -41,9 +40,9 @@ Ext.define("NOC.main.imagestore.Application", {
                 },
                 {
                     name: "content_type",
-                    xtype: "textfield",
+                    xtype: "displayfield",
                     fieldLabel: __("Content Type"),
-                    allowBlank: false,
+                    allowBlank: true,
                     uiStyle: "meduim"
                 },
                 {
@@ -52,7 +51,7 @@ Ext.define("NOC.main.imagestore.Application", {
                     items: [
                         {
                             xtype: "displayfield",
-                            name: "name",
+                            name: "filename",
                             fieldLabel: __("File name"),
                             allowBlank: true,
                             width: 400
@@ -77,5 +76,30 @@ Ext.define("NOC.main.imagestore.Application", {
     setAttachmentName: function(field, value) {
         var filename = value.replace(/(^.*([\\/]))?/, "");
         field.previousSibling().setValue(filename)
+    },
+    onSave: function() {
+        var me = this,
+            data = new FormData();
+        data.append("filename", me.down("[name=filename]").getValue());
+        var file = me.down("[name=file]");
+        if(file.getValue()) {
+            data.append("file", file.fileInputEl.dom.files[0]);
+        }
+        Ext.Ajax.request({
+            method: "POST",
+            url: me.base_url + (me.currentRecord ? me.currentRecord.get([me.idField]) + "/" : ""),
+            rawData: data,
+            headers: {"Content-Type": null},
+            scope: me,
+            success: function() {
+                var me = this;
+                me.showItem(me.ITEM_GRID);
+                me.reloadStore();
+                NOC.info(__("Records has been saved"));
+            },
+            failure: function() {
+                NOC.error(__("Failed"));
+            }
+        });
     },
 });
