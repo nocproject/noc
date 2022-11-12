@@ -25,7 +25,7 @@ class ImageStoreApplication(ExtDocApplication):
         return o.get_content_type()
 
     def field_filename(self, o: ImageStore):
-        return "xxxx" if o.file else None
+        return o.file.filename if o.file else None
 
     def set_file(self, files, o: ImageStore, file_attrs=None):
         if "file" not in files:
@@ -35,7 +35,7 @@ class ImageStoreApplication(ExtDocApplication):
             raise ValueError("Unknown ContentType")
         ct = _R_CONTENT_TYPE[file.content_type]
         o.content_type = ct.value
-        o.file.put(file.read())
+        o.file.put(file.read(), content_type=file.content_type, filename=file_attrs.get("filename"))
         return True
 
     @view("^(?P<id>[0-9a-f]{24})/image/$", access="read", api=True)

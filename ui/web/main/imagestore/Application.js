@@ -80,6 +80,7 @@ Ext.define("NOC.main.imagestore.Application", {
     onSave: function() {
         var me = this,
             data = new FormData();
+        data.append("name", me.down("[name=name]").getValue());
         data.append("filename", me.down("[name=filename]").getValue());
         var file = me.down("[name=file]");
         if(file.getValue()) {
