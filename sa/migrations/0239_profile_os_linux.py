@@ -38,7 +38,7 @@ class Migration(BaseMigration):
             self.db.execute(
                 """
                     UPDATE sa_managedobject
-                    SET version = null, SET profile = '%s'
+                    SET version = null, profile = %s
                     WHERE profile = ANY(ARRAY[%s]::CHAR(24)[])
                 """,
                 [str(os_linux_profile_id), [str(x) for x in old_profiles]],
