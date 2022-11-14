@@ -8,5 +8,6 @@
     "description": "Errors when recieved packets which have CRC checking errors Delta",
     "measure": null,
     "units__code": "1",
-    "scale__code": "1"
+    "scale__code": "1",
+    "is_delta": true
 }
