@@ -35,6 +35,7 @@ class ProbeNodeState(BaseModel):
 
 class ProbeNodeConfig(BaseModel):
     unit: str
+    is_delta: bool = False
     scale: str = "1"
 
 
@@ -124,12 +125,14 @@ class ProbeNode(BaseCDAGNode):
             return None
         if fn.has_time_delta:
             kwargs["time_delta"] = (ts - self.state.lt) // NS  # Always positive
-        if fn.has_delta:
+        if fn.has_delta or self.config.is_delta:
             delta = self.get_delta(x, ts)
             if delta is None:
                 # Malformed data, skip
                 self.set_state(None, None)
                 return None
+            if self.config.is_delta:
+                x = delta
             kwargs["delta"] = delta
         self.set_state(ts, x)
         return self._upscale(fn(**kwargs), scale)

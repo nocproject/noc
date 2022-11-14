@@ -106,6 +106,11 @@ Ext.define("NOC.pm.metrictype.Application", {
                     uiStyle: "medium"
                 },
                 {
+                    name: "is_delta",
+                    xtype: "checkbox",
+                    boxLabel: __("Delta Value")
+                },
+                {
                     xtype: "fieldset",
                     title: __("Measurement Units"),
                     tooltip: __("Field on this use in ETL proccess (sync on external system). <br/>" +

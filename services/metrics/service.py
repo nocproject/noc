@@ -414,6 +414,7 @@ class MetricsService(FastAPIService):
                 continue
             self.metric_configs[(mt.scope.table_name, mt.field_name)] = ProbeNodeConfig(
                 unit=(mt.units.code or "1") if mt.units else "1",
+                is_delta=mt.is_delta,
                 scale=mt.scale.code if mt.scale else "1",
             )
         for ms in MetricScope.objects.all():
