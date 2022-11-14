@@ -62,7 +62,7 @@ class ProbeNode(BaseCDAGNode):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.convert = self.get_convert(self.config.unit)
+        self.convert = self.get_convert(self.config.unit, self.config.is_delta)
         self.base, self.exp = self.get_scale(self.config.scale)
 
     def __str__(self):
@@ -92,7 +92,7 @@ class ProbeNode(BaseCDAGNode):
         else:
             scale = "1"
         # No translation
-        if unit == self.config.unit:
+        if unit == self.config.unit and not self.config.is_delta:
             return self._upscale(x, scale)
         # No conversation. Skipping
         if unit not in self.convert:
@@ -125,15 +125,16 @@ class ProbeNode(BaseCDAGNode):
             return None
         if fn.has_time_delta:
             kwargs["time_delta"] = (ts - self.state.lt) // NS  # Always positive
-        if fn.has_delta or self.config.is_delta:
+        if fn.has_delta:
             delta = self.get_delta(x, ts)
             if delta is None:
                 # Malformed data, skip
                 self.set_state(None, None)
                 return None
-            if self.config.is_delta:
-                x = delta
             kwargs["delta"] = delta
+            if fn.has_x and self.config.is_delta:
+                # For other conversation
+                kwargs["x"] = delta
         self.set_state(ts, x)
         return self._upscale(fn(**kwargs), scale)
 
@@ -178,12 +179,12 @@ class ProbeNode(BaseCDAGNode):
         return d_wrap
 
     @classmethod
-    def get_convert(cls, unit: str) -> Dict[str, Callable]:
+    def get_convert(cls, unit: str, is_delta: bool = False) -> Dict[str, Callable]:
         def q(expr: str) -> Callable:
             fn = get_fn(expr)
             params = inspect.signature(fn).parameters
             fn.has_x = "x" in params
-            fn.has_delta = "delta" in params
+            fn.has_delta = "delta" in params or is_delta
             fn.has_time_delta = "time_delta" in params
             return fn
 
@@ -197,6 +198,8 @@ class ProbeNode(BaseCDAGNode):
                 return cls._conversions[unit]
             # Prepare, while concurrent threads are waiting on lock
             cls._conversions[unit] = {u: q(x) for u, x in cls.iter_conversion(unit)}
+            if is_delta:
+                cls._conversions[unit][unit] = q("delta")
             return cls._conversions[unit]
 
     @classmethod

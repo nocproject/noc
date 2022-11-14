@@ -9,7 +9,7 @@
 # Python modules
 from dataclasses import dataclass
 from collections import defaultdict
-from typing import Any, Dict, Tuple, List, Optional, Set, Iterable, FrozenSet, Literal
+from typing import Any, Dict, Tuple, List, Optional, Set, Iterable, FrozenSet, Literal, Union
 import sys
 import asyncio
 import codecs
@@ -254,7 +254,9 @@ class MetricsService(FastAPIService):
     def __init__(self):
         super().__init__()
         self.scopes: Dict[str, ScopeInfo] = {}
-        self.metric_configs: Dict[Tuple[str, str], ProbeNodeConfig] = {}
+        self.metric_configs: Dict[
+            Tuple[str, str], Union[ProbeNodeConfig, ComposeProbeNodeConfig]
+        ] = {}
         self.compose_inputs: Dict[str, Set] = {}
         self.scope_cdag: Dict[str, CDAG] = {}
         self.cards: Dict[MetricKey, Card] = {}
@@ -408,6 +410,7 @@ class MetricsService(FastAPIService):
             if mt.compose_expression:
                 self.metric_configs[(mt.scope.table_name, mt.field_name)] = ComposeProbeNodeConfig(
                     unit=(mt.units.code or "1") if mt.units else "1",
+                    is_delta=mt.is_delta,
                     expression=mt.compose_expression,
                 )
                 self.compose_inputs[mt.field_name] = {m_t.field_name for m_t in mt.compose_inputs}
