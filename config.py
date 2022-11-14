@@ -689,6 +689,7 @@ class Config(BaseConfig):
         heatmap_lon = StringParameter(default="108.567849")
         heatmap_lat = StringParameter(default="66.050063")
         heatmap_zoom = StringParameter(default="4")
+        max_image_size = BytesParameter(default="2M")
 
     class ui(ConfigSection):
         max_avatar_size = BytesParameter(default="256K")

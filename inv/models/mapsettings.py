@@ -268,6 +268,7 @@ class MapSettings(Document):
             "id": str(gen_id),
             "type": gen_type,
             "max_links": 1000,
+            "background_image": topology.background,
             "name": topology.title,
             "caps": list(topology.caps),
             "nodes": [x for x in topology.iter_nodes()],
