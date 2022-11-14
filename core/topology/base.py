@@ -508,6 +508,14 @@ class TopologyBase(object):
         for u, v in self.G.edges():
             yield self.G[u][v]
 
+    @property
+    def background(self) -> Optional[str]:
+        """
+        Return Background Image for Map
+        :return:
+        """
+        return None
+
     @classmethod
     def iter_maps(
         cls,
