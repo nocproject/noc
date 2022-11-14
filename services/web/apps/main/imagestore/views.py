@@ -30,6 +30,7 @@ class ImageStoreApplication(ExtDocApplication):
     def set_file(self, files, o: ImageStore, file_attrs=None):
         if "file" not in files:
             raise ValueError("File is not set")
+        file_attrs = file_attrs or {}
         file = files["file"]
         if file.content_type not in _R_CONTENT_TYPE:
             raise ValueError("Unknown ContentType")
