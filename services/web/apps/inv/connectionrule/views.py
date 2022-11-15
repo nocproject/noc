@@ -6,7 +6,7 @@
 # ---------------------------------------------------------------------
 
 # NOC modules
-from noc.services.web.app.extdocapplication import ExtDocApplication, view
+from noc.services.web.base.extdocapplication import ExtDocApplication, view
 from noc.inv.models.connectionrule import ConnectionRule
 from noc.sa.interfaces.base import ListOfParameter, DocumentParameter
 from noc.core.prettyjson import to_json

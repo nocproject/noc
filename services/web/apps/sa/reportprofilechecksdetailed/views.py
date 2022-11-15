@@ -10,9 +10,9 @@ from django import forms
 from pymongo import ReadPreference
 
 # NOC modules
-from noc.services.web.app.simplereport import SimpleReport, SectionRow, PredefinedReport
-from noc.services.web.app.reportdatasources.base import ReportModelFilter
-from noc.services.web.app.reportdatasources.report_discoveryresult import ReportDiscoveryResult
+from noc.services.web.base.simplereport import SimpleReport, SectionRow, PredefinedReport
+from noc.services.web.base.reportdatasources.base import ReportModelFilter
+from noc.services.web.base.reportdatasources.report_discoveryresult import ReportDiscoveryResult
 from noc.main.models.pool import Pool
 from noc.sa.models.managedobject import ManagedObject
 from noc.inv.models.resourcegroup import ResourceGroup

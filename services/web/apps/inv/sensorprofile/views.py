@@ -6,7 +6,7 @@
 # ----------------------------------------------------------------------
 
 # NOC modules
-from noc.services.web.app.extdocapplication import ExtDocApplication
+from noc.services.web.base.extdocapplication import ExtDocApplication
 from noc.inv.models.sensorprofile import SensorProfile
 from noc.core.translation import ugettext as _
 

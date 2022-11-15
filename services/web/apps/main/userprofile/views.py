@@ -6,7 +6,7 @@
 # ---------------------------------------------------------------------
 
 # NOC modules
-from noc.services.web.app.extapplication import ExtApplication, view, PermitLogged
+from noc.services.web.base.extapplication import ExtApplication, view, PermitLogged
 from noc.sa.interfaces.base import StringParameter, ListOfParameter, DictParameter, ModelParameter
 from noc.settings import LANGUAGES
 from noc.main.models.timepattern import TimePattern

@@ -6,8 +6,8 @@
 # ---------------------------------------------------------------------
 
 # NOC modules
-from noc.services.web.app.extdocapplication import ExtDocApplication
-from noc.services.web.app.docinline import DocInline
+from noc.services.web.base.extdocapplication import ExtDocApplication
+from noc.services.web.base.docinline import DocInline
 from noc.inv.models.coverage import Coverage
 from noc.inv.models.coveredobject import CoveredObject
 from noc.inv.models.coveredbuilding import CoveredBuilding

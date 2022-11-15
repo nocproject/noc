@@ -8,7 +8,7 @@
 # NOC modules
 from noc.aaa.models.permission import Permission
 from noc.core.service.loader import get_service
-from noc.services.web.app.site import site
+from noc.services.web.base.site import site
 
 
 def test_permissions():

@@ -9,7 +9,7 @@
 import networkx as nx
 
 # NOC modules
-from noc.services.web.app.extdocapplication import ExtDocApplication, view
+from noc.services.web.base.extdocapplication import ExtDocApplication, view
 from noc.fm.models.mib import MIB
 from noc.fm.models.mibdata import MIBData
 from noc.fm.models.syntaxalias import SyntaxAlias

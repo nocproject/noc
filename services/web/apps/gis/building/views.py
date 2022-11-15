@@ -6,8 +6,8 @@
 # ---------------------------------------------------------------------
 
 # NOC modules
-from noc.services.web.app.extdocapplication import ExtDocApplication
-from noc.services.web.app.docinline import DocInline
+from noc.services.web.base.extdocapplication import ExtDocApplication
+from noc.services.web.base.docinline import DocInline
 from noc.gis.models.division import Division
 from noc.gis.models.building import Building
 from noc.gis.models.address import Address

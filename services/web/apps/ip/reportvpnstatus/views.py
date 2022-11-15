@@ -9,7 +9,7 @@
 from noc.core.translation import ugettext as _
 
 # NOC modules
-from noc.services.web.app.simplereport import SimpleReport, SectionRow
+from noc.services.web.base.simplereport import SimpleReport, SectionRow
 from noc.ip.models.vrf import VRF
 from noc.inv.models.forwardinginstance import ForwardingInstance
 from noc.inv.models.subinterface import SubInterface

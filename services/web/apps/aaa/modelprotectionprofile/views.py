@@ -6,7 +6,7 @@
 # ----------------------------------------------------------------------
 
 # NOC modules
-from noc.services.web.app.extdocapplication import ExtDocApplication, view
+from noc.services.web.base.extdocapplication import ExtDocApplication, view
 from noc.aaa.models.modelprotectionprofile import (
     ModelProtectionProfile,
     FieldAccess,

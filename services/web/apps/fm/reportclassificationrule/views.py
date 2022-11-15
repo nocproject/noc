@@ -12,7 +12,7 @@ import re
 from django import forms
 
 # NOC modules
-from noc.services.web.app.simplereport import SimpleReport, SectionRow
+from noc.services.web.base.simplereport import SimpleReport, SectionRow
 from noc.fm.models.eventclassificationrule import EventClassificationRule
 from noc.core.profile.loader import loader as profile_loader
 from noc.core.translation import ugettext as _

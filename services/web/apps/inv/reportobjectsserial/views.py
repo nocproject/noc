@@ -8,7 +8,7 @@
 from django import forms
 
 # NOC modules
-from noc.services.web.app.simplereport import SimpleReport
+from noc.services.web.base.simplereport import SimpleReport
 from noc.sa.models.useraccess import UserAccess
 from noc.sa.models.managedobject import ManagedObject
 from noc.inv.models.object import Object
@@ -16,7 +16,7 @@ from noc.inv.models.platform import Platform
 from noc.inv.models.vendor import Vendor
 from noc.inv.models.firmware import Firmware
 from noc.inv.models.resourcegroup import ResourceGroup
-from noc.services.web.app.reportdatasources.report_objectattributes import ReportObjectAttributes
+from noc.services.web.base.reportdatasources.report_objectattributes import ReportObjectAttributes
 from noc.core.translation import ugettext as _
 
 

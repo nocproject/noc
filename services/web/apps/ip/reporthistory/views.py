@@ -13,7 +13,7 @@ import re
 from django import forms
 
 # NOC modules
-from noc.services.web.app.simplereport import SimpleReport, SectionRow, SafeString
+from noc.services.web.base.simplereport import SimpleReport, SectionRow, SafeString
 from noc.main.models.audittrail import AuditTrail
 from noc.ip.models.prefix import Prefix
 from noc.ip.models.address import Address

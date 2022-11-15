@@ -6,7 +6,7 @@
 # ---------------------------------------------------------------------
 
 # NOC modules
-from noc.services.web.app.extmodelapplication import ExtModelApplication
+from noc.services.web.base.extmodelapplication import ExtModelApplication
 from noc.dns.models.dnszoneprofile import DNSZoneProfile
 from noc.core.translation import ugettext as _
 

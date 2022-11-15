@@ -6,7 +6,7 @@
 # ----------------------------------------------------------------------
 
 # NOC modules
-from noc.services.web.app.extdocapplication import ExtDocApplication
+from noc.services.web.base.extdocapplication import ExtDocApplication
 from noc.inv.models.networksegmentprofile import NetworkSegmentProfile
 from noc.core.translation import ugettext as _
 

@@ -9,7 +9,7 @@
 from django import forms
 
 # NOC modules
-from noc.services.web.app.simplereport import SimpleReport, TableColumn
+from noc.services.web.base.simplereport import SimpleReport, TableColumn
 from noc.config import config
 from noc.core.translation import ugettext as _
 

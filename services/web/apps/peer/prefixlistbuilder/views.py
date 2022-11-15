@@ -6,7 +6,7 @@
 # ---------------------------------------------------------------------
 
 # NOC modules
-from noc.services.web.app.extapplication import ExtApplication, view
+from noc.services.web.base.extapplication import ExtApplication, view
 from noc.peer.models.peeringpoint import PeeringPoint
 from noc.peer.models.whoiscache import WhoisCache
 from noc.sa.interfaces.base import UnicodeParameter, ModelParameter

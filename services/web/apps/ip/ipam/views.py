@@ -14,7 +14,7 @@ from noc.core.translation import ugettext as _
 from noc.core.ip import IP
 
 # NOC modules
-from noc.services.web.app.extapplication import ExtApplication, view
+from noc.services.web.base.extapplication import ExtApplication, view
 from noc.core.validators import is_ipv4, is_ipv4_prefix, is_ipv6, is_ipv6_prefix
 from noc.ip.models.vrf import VRF
 from noc.ip.models.prefixbookmark import PrefixBookmark

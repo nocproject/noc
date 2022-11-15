@@ -12,7 +12,7 @@ import re
 import orjson
 
 # NOC modules
-from noc.services.web.app.extdocapplication import ExtDocApplication, view
+from noc.services.web.base.extdocapplication import ExtDocApplication, view
 from noc.fm.models.activeevent import ActiveEvent
 from noc.fm.models.archivedevent import ArchivedEvent
 from noc.fm.models.failedevent import FailedEvent

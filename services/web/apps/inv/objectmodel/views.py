@@ -6,7 +6,7 @@
 # ---------------------------------------------------------------------
 
 # NOC modules
-from noc.services.web.app.extdocapplication import ExtDocApplication, view
+from noc.services.web.base.extdocapplication import ExtDocApplication, view
 from noc.main.models.doccategory import DocCategory
 from noc.inv.models.objectmodel import ObjectModel
 from noc.inv.models.modelinterface import ModelInterface

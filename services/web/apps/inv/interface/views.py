@@ -9,9 +9,9 @@
 from mongoengine import Q
 
 # NOC modules
-from noc.services.web.app.decorators.state import state_handler
-from noc.services.web.app.extapplication import view
-from noc.services.web.app.extdocapplication import ExtDocApplication
+from noc.services.web.base.decorators.state import state_handler
+from noc.services.web.base.extapplication import view
+from noc.services.web.base.extdocapplication import ExtDocApplication
 from noc.sa.models.managedobject import ManagedObject
 from noc.inv.models.interface import Interface
 from noc.inv.models.subinterface import SubInterface

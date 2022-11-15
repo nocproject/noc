@@ -6,7 +6,7 @@
 # ---------------------------------------------------------------------
 
 # NOC modules
-from noc.services.web.app.simplereport import SimpleReport, TableColumn
+from noc.services.web.base.simplereport import SimpleReport, TableColumn
 from noc.peer.models.peer import Peer
 from noc.peer.models.whoiscache import WhoisCache
 from noc.core.ip import IP

@@ -8,7 +8,7 @@
 from noc.core.translation import ugettext as _
 
 # NOC modules
-from noc.services.web.app.simplereport import SimpleReport, SectionRow, TableColumn
+from noc.services.web.base.simplereport import SimpleReport, SectionRow, TableColumn
 from noc.core.ip import IP
 
 

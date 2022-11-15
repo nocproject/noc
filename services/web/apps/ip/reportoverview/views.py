@@ -9,7 +9,7 @@
 from django.db import connection
 
 # NOC modules
-from noc.services.web.app.reportapplication import ReportApplication
+from noc.services.web.base.reportapplication import ReportApplication
 from noc.main.models.customfield import CustomField
 from noc.ip.models.vrfgroup import VRFGroup
 from noc.ip.models.prefix import Prefix

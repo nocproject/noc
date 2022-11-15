@@ -10,7 +10,7 @@ from django import forms
 from django.db.models import Q
 
 # NOC Modules
-from noc.services.web.app.simplereport import SimpleReport, TableColumn
+from noc.services.web.base.simplereport import SimpleReport, TableColumn
 from noc.core.validators import check_ipv4_prefix, check_ipv6_prefix, ValidationError
 from noc.ip.models.vrf import VRF
 from noc.ip.models.prefix import Prefix

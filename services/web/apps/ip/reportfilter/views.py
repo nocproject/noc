@@ -9,7 +9,7 @@
 from django import forms
 
 # NOC modules
-from noc.services.web.app.simplereport import SimpleReport, TableColumn
+from noc.services.web.base.simplereport import SimpleReport, TableColumn
 from noc.main.models.customfield import CustomField
 from noc.ip.models.vrf import VRF
 from noc.ip.models.prefix import Prefix

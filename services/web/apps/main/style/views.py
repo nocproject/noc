@@ -6,7 +6,7 @@
 # ---------------------------------------------------------------------
 
 # NOC modules
-from noc.services.web.app.extmodelapplication import ExtModelApplication, view
+from noc.services.web.base.extmodelapplication import ExtModelApplication, view
 from noc.main.models.style import Style
 from noc.sa.interfaces.base import ColorParameter
 from noc.core.translation import ugettext as _

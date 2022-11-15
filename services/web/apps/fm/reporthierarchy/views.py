@@ -6,7 +6,7 @@
 # ---------------------------------------------------------------------
 
 # NOC modules
-from noc.services.web.app.reportapplication import ReportApplication
+from noc.services.web.base.reportapplication import ReportApplication
 from noc.fm.models.eventclass import EventClass, EventClassCategory
 from noc.fm.models.alarmclass import AlarmClass, AlarmClassCategory
 from noc.fm.models.eventclassificationrule import EventClassificationRule

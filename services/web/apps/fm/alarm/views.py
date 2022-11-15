@@ -22,7 +22,7 @@ from mongoengine.queryset.visitor import Q
 
 # NOC modules
 from noc.config import config
-from noc.services.web.app.extapplication import ExtApplication, view
+from noc.services.web.base.extapplication import ExtApplication, view
 from noc.inv.models.object import Object
 from noc.inv.models.networksegment import NetworkSegment
 from noc.fm.models.activealarm import ActiveAlarm

@@ -9,7 +9,7 @@
 import re
 
 # NOC modules
-from noc.services.web.app.simplereport import SimpleReport, TableColumn
+from noc.services.web.base.simplereport import SimpleReport, TableColumn
 from noc.fm.models.eventclass import EventClass
 from noc.fm.models.activeevent import ActiveEvent
 from noc.fm.models.mib import MIB

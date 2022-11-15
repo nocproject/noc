@@ -9,7 +9,7 @@
 from django.db import models as django_models
 
 # NOC modules
-from noc.services.web.app.simplereport import SimpleReport
+from noc.services.web.base.simplereport import SimpleReport
 from noc.settings import INSTALLED_APPS
 from noc.core.translation import ugettext as _
 

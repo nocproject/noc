@@ -14,8 +14,8 @@ from django.http import HttpResponse
 from mongoengine import Q
 
 # NOC modules
-from noc.services.web.app.extdocapplication import ExtDocApplication, view
-from noc.services.web.app.decorators.state import state_handler
+from noc.services.web.base.extdocapplication import ExtDocApplication, view
+from noc.services.web.base.decorators.state import state_handler
 from noc.inv.models.subinterface import SubInterface
 from noc.inv.models.resourcepool import ResourcePool
 from noc.sa.models.managedobject import ManagedObject

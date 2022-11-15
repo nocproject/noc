@@ -6,7 +6,7 @@
 # ---------------------------------------------------------------------
 
 # NOC modules
-from noc.services.web.app.simplereport import SimpleReport, TableColumn
+from noc.services.web.base.simplereport import SimpleReport, TableColumn
 from noc.fm.models.eventclass import EventClass
 from noc.fm.models.alarmclass import AlarmClass
 from noc.fm.models.eventclassificationrule import EventClassificationRule

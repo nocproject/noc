@@ -20,7 +20,7 @@ import xlsxwriter
 
 # NOC modules
 from noc.core.mongo.connection import get_db
-from noc.services.web.app.extapplication import ExtApplication, view
+from noc.services.web.base.extapplication import ExtApplication, view
 from noc.main.models.pool import Pool
 from noc.sa.models.managedobject import ManagedObject
 from noc.inv.models.resourcegroup import ResourceGroup

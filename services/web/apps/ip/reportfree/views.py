@@ -10,7 +10,7 @@ from noc.core.translation import ugettext as _
 from django import forms
 
 # NOC Modules
-from noc.services.web.app.simplereport import SimpleReport
+from noc.services.web.base.simplereport import SimpleReport
 from noc.ip.models.vrf import VRF
 from noc.ip.models.prefix import Prefix
 from noc.core.validators import check_ipv4_prefix, check_ipv6_prefix, ValidationError

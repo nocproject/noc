@@ -13,8 +13,8 @@ from django.http import HttpResponse
 
 # NOC modules
 from noc.config import config
-from noc.services.web.app.extapplication import ExtApplication, view
-from noc.services.web.app.access import PermitLogged
+from noc.services.web.base.extapplication import ExtApplication, view
+from noc.services.web.base.access import PermitLogged
 from noc.core.version import version
 from noc.aaa.models.group import Group
 from noc.main.models.userstate import UserState

@@ -6,7 +6,7 @@
 # ----------------------------------------------------------------------
 
 # NOC modules
-from noc.services.web.app.extdocapplication import ExtDocApplication
+from noc.services.web.base.extdocapplication import ExtDocApplication
 from noc.wf.models.wfmigration import WFMigration
 from noc.core.translation import ugettext as _
 

@@ -6,7 +6,7 @@
 # ---------------------------------------------------------------------
 
 # NOC modules
-from noc.services.web.app.extapplication import ExtApplication, view
+from noc.services.web.base.extapplication import ExtApplication, view
 from noc.support.cp import CPClient
 from noc.sa.interfaces.base import StringParameter, REStringParameter
 from noc.core.translation import ugettext as _

@@ -9,7 +9,7 @@ import itertools
 from collections import defaultdict
 
 # NOC modules
-from noc.services.web.app.extdocapplication import ExtDocApplication, view
+from noc.services.web.base.extdocapplication import ExtDocApplication, view
 from noc.inv.models.capability import Capability
 from noc.main.models.doccategory import DocCategory
 from noc.core.translation import ugettext as _

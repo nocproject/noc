@@ -9,7 +9,7 @@
 import re
 
 # NOC modules
-from noc.services.web.app.simplereport import SimpleReport, TableColumn
+from noc.services.web.base.simplereport import SimpleReport, TableColumn
 from noc.core.profile.loader import loader as profile_loader
 from noc.fm.models.eventclassificationrule import EventClassificationRule
 from noc.core.translation import ugettext as _

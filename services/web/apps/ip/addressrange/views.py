@@ -6,7 +6,7 @@
 # ---------------------------------------------------------------------
 
 # NOC modules
-from noc.services.web.app.extmodelapplication import ExtModelApplication
+from noc.services.web.base.extmodelapplication import ExtModelApplication
 from noc.ip.models.addressrange import AddressRange
 from noc.core.ip import IP
 from noc.core.validators import is_ipv4, is_ipv6, is_fqdn

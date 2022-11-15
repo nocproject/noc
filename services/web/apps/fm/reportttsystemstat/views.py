@@ -15,7 +15,7 @@ from django.forms import widgets
 from django.contrib.admin.widgets import AdminDateWidget
 
 # NOC modules
-from noc.services.web.app.simplereport import SimpleReport, PredefinedReport, SectionRow
+from noc.services.web.base.simplereport import SimpleReport, PredefinedReport, SectionRow
 from noc.core.clickhouse.connect import connection
 from noc.sa.models.managedobject import ManagedObject
 from noc.fm.models.archivedalarm import ArchivedAlarm

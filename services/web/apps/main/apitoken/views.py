@@ -6,8 +6,8 @@
 # ---------------------------------------------------------------------
 
 # NOC modules
-from noc.services.web.app.extapplication import ExtApplication, view
-from noc.services.web.app.access import PermitLogged
+from noc.services.web.base.extapplication import ExtApplication, view
+from noc.services.web.base.access import PermitLogged
 from noc.main.models.apitoken import APIToken
 from noc.sa.interfaces.base import StringParameter
 

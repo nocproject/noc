@@ -6,8 +6,8 @@
 # ---------------------------------------------------------------------
 
 # NOC modules
-from noc.services.web.app.extmodelapplication import ExtModelApplication
-from noc.services.web.app.modelinline import ModelInline
+from noc.services.web.base.extmodelapplication import ExtModelApplication
+from noc.services.web.base.modelinline import ModelInline
 from noc.main.models.refbookfield import RefBookField
 from noc.main.models.refbook import RefBook
 from noc.core.translation import ugettext as _
