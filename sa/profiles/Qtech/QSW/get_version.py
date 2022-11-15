@@ -1,7 +1,7 @@
 # ---------------------------------------------------------------------
 # Qtech.QSW.get_version
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2020 The NOC Project
+# Copyright (C) 2007-2022 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -27,6 +27,7 @@ class Script(BaseScript):
     rx_serial = re.compile(r"^product serial number\s+:\s+(?P<serial>\S+)$", re.MULTILINE)
 
     rx_plat1 = re.compile(r"^\s+(?P<platform>QSW-\S+) Device, Compiled on", re.MULTILINE)
+    rx_plat2 = re.compile(r"^\s+Device: (?P<platform>QSW-\S+), sysLocation:", re.MULTILINE)
     rx_soft1 = re.compile(r"^\s+SoftWare( Package)? Version (?P<version>\d\S+)$", re.MULTILINE)
     rx_bootprom1 = re.compile(r"^\s+BootRom Version (?P<bootprom>\d\S+)$", re.MULTILINE)
     rx_hardware1 = re.compile(r"^\s+HardWare Version (?P<hardware>.*?\S+)$", re.MULTILINE)
@@ -82,16 +83,18 @@ class Script(BaseScript):
         if match:
             platform = match.group("platform")
             version = match.group("version")
-            bootprom = self.re_search(self.rx_bootprom, ver)
-            hardware = self.re_search(self.rx_hardware, ver)
-            serial = self.re_search(self.rx_serial, ver)
+            bootprom = self.rx_bootprom.search(ver)
+            hardware = self.rx_hardware.search(ver)
+            serial = self.rx_serial.search(ver)
         else:
-            # match = self.rx_plat1.search(ver)
-            platform = self.re_search(self.rx_plat1, ver).group("platform")
-            version = self.re_search(self.rx_soft1, ver).group("version")
-            bootprom = self.re_search(self.rx_bootprom1, ver)
-            hardware = self.re_search(self.rx_hardware1, ver)
-            serial = self.re_search(self.rx_serial1, ver)
+            match = self.rx_plat1.search(ver)
+            if not match:
+                match = self.rx_plat2.search(ver)
+            platform = match.group("platform")
+            version = self.rx_soft1.search(ver).group("version")
+            bootprom = self.rx_bootprom1.search(ver)
+            hardware = self.rx_hardware1.search(ver)
+            serial = self.rx_serial1.search(ver)
         return {
             "vendor": "Qtech",
             "platform": platform,
