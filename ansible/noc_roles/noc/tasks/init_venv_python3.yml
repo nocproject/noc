@@ -42,7 +42,7 @@
 # If there is a system python with needed family (3.X)
 - name: We'll try to use system's python
   set_fact:
-    noc_init_python_path: system_python3_path
+    noc_init_python_path: "{{ system_python3_path.stat.path }}"
   when:
     - system_python3_version.stdout is defined
     - system_python3_existing_family_version is defined
