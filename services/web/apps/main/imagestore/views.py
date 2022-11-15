@@ -9,7 +9,7 @@
 from django.http import HttpResponse
 
 # NOC modules
-from noc.lib.app.extdocapplication import ExtDocApplication, view
+from noc.services.web.base.extdocapplication import ExtDocApplication, view
 from noc.main.models.imagestore import ImageStore
 from noc.core.translation import ugettext as _
 from noc.core.mime import _R_CONTENT_TYPE
