@@ -8,5 +8,6 @@
     "description": "The delta of topology changes detected by this bridge since the management entity was last collect.",
     "measure": "C",
     "units__code": "1",
-    "scale__code": "1"
+    "scale__code": "1",
+    "is_delta": true
 }

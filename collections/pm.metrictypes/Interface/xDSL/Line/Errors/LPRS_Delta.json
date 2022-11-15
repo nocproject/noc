@@ -8,5 +8,6 @@
     "description": "Count of the number of Loss of Power failures since agent reset.",
     "measure": "count",
     "units__code": "1",
-    "scale__code": "1"
+    "scale__code": "1",
+    "is_delta": true
 }

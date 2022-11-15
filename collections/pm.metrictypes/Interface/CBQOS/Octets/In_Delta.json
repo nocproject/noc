@@ -8,5 +8,6 @@
     "description": "The total number of received octets passed by the interface class-map.",
     "measure": "bytes",
     "units__code": "byte",
-    "scale__code": "1"
+    "scale__code": "1",
+    "is_delta": true
 }

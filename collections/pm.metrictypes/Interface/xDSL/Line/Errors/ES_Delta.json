@@ -8,5 +8,6 @@
     "description": "Count of the number of Errored Seconds since agent reset.  The errored second parameter is a count of one-second intervals containing one or more crc anomalies, or one or more los or sef defects.",
     "measure": "count",
     "units__code": "1",
-    "scale__code": "1"
+    "scale__code": "1",
+    "is_delta": true
 }
