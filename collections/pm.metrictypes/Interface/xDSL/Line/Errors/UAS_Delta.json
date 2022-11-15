@@ -8,5 +8,6 @@
     "description": "The UAS counts the seconds when the port is not in the activating status. For the port which is being activated, ATUR-UAS increases. When the port is in activating and deactivating period, the statistics of unavailable seconds do not increase.",
     "measure": "count",
     "units__code": "s",
-    "scale__code": "1"
+    "scale__code": "1",
+    "is_delta": true
 }

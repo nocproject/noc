@@ -108,8 +108,7 @@ Ext.define("NOC.pm.metrictype.Application", {
                 {
                     xtype: "fieldset",
                     title: __("Measurement Units"),
-                    tooltip: __("Field on this use in ETL proccess (sync on external system). <br/>" +
-                        "Do not Edit field directly!"),
+                    tooltip: __("Set Measurements Unit for MetricType. Used for conversation value"),
                     layout: "vbox",
                     defaults: {
                         labelAlign: "before",
@@ -134,6 +133,11 @@ Ext.define("NOC.pm.metrictype.Application", {
                                   name: "scale",
                                   xtype: "pm.scale.LookupField",
                                   fieldLabel: __("Metric Scale")
+                                },
+                                {
+                                    name: "is_delta",
+                                    xtype: "checkbox",
+                                    boxLabel: __("Delta Value")
                                 }
                             ]
                         }
@@ -145,8 +149,8 @@ Ext.define("NOC.pm.metrictype.Application", {
                 {
                     xtype: "fieldset",
                     title: __("Compose Expression"),
-                    tooltip: __("Field on this use in ETL proccess (sync on external system). <br/>" +
-                        "Do not Edit field directly!"),
+                    tooltip: __("Compose expression for MetricType. Worked only SAME Scope" +
+                        "On expression use MetricType field_name as variable name"),
                     layout: "vbox",
                     defaults: {
                         labelAlign: "top",

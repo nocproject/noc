@@ -8,5 +8,6 @@
     "description": "Indicates the count of downstream frame bit-interleaved parity (BIP) errors",
     "measure": null,
     "units__code": "1",
-    "scale__code": "1"
+    "scale__code": "1",
+    "is_delta": true
 }
