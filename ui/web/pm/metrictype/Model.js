@@ -58,6 +58,10 @@ Ext.define("NOC.pm.metrictype.Model", {
             type: "string"
         },
         {
+            name: "is_delta",
+            type: "boolean"
+        },
+        {
             name: "scale__label",
             type: "string",
             persist: false

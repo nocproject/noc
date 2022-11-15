@@ -8,5 +8,6 @@
     "description": "The total number of sending packets passed by the interface class-map.",
     "measure": "bytes",
     "units__code": "pkt",
-    "scale__code": "1"
+    "scale__code": "1",
+    "is_delta": true
 }

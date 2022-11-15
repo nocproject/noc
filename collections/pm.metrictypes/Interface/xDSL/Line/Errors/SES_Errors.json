@@ -8,5 +8,6 @@
     "description": "Count of seconds during this interval where there was:\nATU-C:(CRC-8 summed over all bearer channels) >=18 OR\nLOS >=1 OR SEF >=1 OR LPR >=1\nATU-R:(FEBE summed over all bearer channels) >=18 OR\nLOS-FE >=1 OR RDI >=1 OR LPR-FE >=1 .\nThis parameter is inhibited during UAS.",
     "measure": "count",
     "units__code": "s",
-    "scale__code": "1"
+    "scale__code": "1",
+    "is_delta": true
 }

@@ -8,5 +8,6 @@
     "description": "Multicast packets on input interface Delta",
     "measure": null,
     "units__code": "1",
-    "scale__code": "1"
+    "scale__code": "1",
+    "is_delta": true
 }
