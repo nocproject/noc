@@ -58,12 +58,12 @@ class Layout(object):
             npos = self.layout_spring()
         # Set link hints
         lpos = {}
-        for l in self.link_ids:
-            c = len(self.link_ids[l])
+        for ll in self.link_ids:
+            c = len(self.link_ids[ll])
             if c == 1:
                 continue
             # Calculate link hints
-            m0, m1 = l
+            m0, m1 = ll
             x0, y0 = npos[m0]
             x1, y1 = npos[m1]
             # Adjust to node sizes
@@ -80,7 +80,7 @@ class Layout(object):
             w = float(self.LINK_SPACING * (c - 1))  # Span width
             xc = (x0 + x1) / 2  # Center of segment
             yc = (y0 + y1) / 2
-            for i, lid in enumerate(self.link_ids[l]):
+            for i, lid in enumerate(self.link_ids[ll]):
                 k = w / 2 - i * w / (c - 1)
                 xi = xc - k * sin_a
                 yi = yc + k * cos_a

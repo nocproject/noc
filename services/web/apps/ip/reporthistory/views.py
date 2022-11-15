@@ -106,29 +106,29 @@ class ReportHistoryApplication(SimpleReport):
                 audit_trail = audit_trail.none()
         if search_user:
             audit_trail = audit_trail.filter(user__iexact=search_user)
-        for l in audit_trail:
-            d = l.timestamp.date()
+        for ll in audit_trail:
+            d = ll.timestamp.date()
             if d != last:
                 last = d
                 r += [SectionRow(d.isoformat())]
-            model = self.MODELS[l.model_id]
-            if l.object:
+            model = self.MODELS[ll.model_id]
+            if ll.object:
                 try:
-                    obj = smart_text(model.objects.get(id=int(l.object)))
+                    obj = smart_text(model.objects.get(id=int(ll.object)))
                 except model.DoesNotExist:
                     obj = "UNKNOWN?"
             else:
                 obj = "?"
             chg = []
-            for c in l.changes:
+            for c in ll.changes:
                 if c.old is None and c.new is None:
                     continue
                 chg += ["%s: %s -> %s" % (c.field, c.old, c.new)]
             r += [
                 (
-                    self.to_json(l.timestamp),
-                    l.user,
-                    {"C": "Create", "U": "Modify", "M": "Modify", "D": "Delete"}[l.op],
+                    self.to_json(ll.timestamp),
+                    ll.user,
+                    {"C": "Create", "U": "Modify", "M": "Modify", "D": "Delete"}[ll.op],
                     obj,
                     self.format_detail("\n".join(chg)),
                 )
