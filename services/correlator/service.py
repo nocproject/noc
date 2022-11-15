@@ -43,7 +43,7 @@ from noc.services.correlator.models.raisereq import RaiseRequest
 from noc.services.correlator.models.ensuregroupreq import EnsureGroupRequest
 from noc.fm.models.eventclass import EventClass
 from noc.fm.models.activeevent import ActiveEvent
-from noc.fm.models.activealarm import ActiveAlarm
+from noc.fm.models.activealarm import ActiveAlarm, ComponentHub
 from noc.fm.models.alarmlog import AlarmLog
 from noc.fm.models.alarmclass import AlarmClass
 from noc.fm.models.alarmtrigger import AlarmTrigger
@@ -82,6 +82,7 @@ class CorrelatorService(FastAPIService):
         self.rca_forward = {}  # alarm_class -> [RCA condition, ..., RCA condititon]
         self.rca_reverse = defaultdict(set)  # alarm_class -> set([alarm_class])
         self.alarm_rule_set = AlarmRuleSet()
+        self.alarm_class_vars = defaultdict(dict)
         #
         self.slot_number = 0
         self.total_slots = 0
@@ -135,6 +136,7 @@ class CorrelatorService(FastAPIService):
         self.load_triggers()
         self.load_rca_rules()
         self.load_alarm_rules()
+        self.load_vars()
 
     def load_rules(self):
         """
@@ -161,6 +163,25 @@ class CorrelatorService(FastAPIService):
                             nbr += 1
                 self.rules[c.id] = r
         self.logger.debug("%d rules are loaded. %d combos", nr, nbr)
+
+    def load_vars(self):
+        self.logger.info("Loading AlarmClass vars")
+        for alarm_class in AlarmClass.objects.all():
+            # Default variables
+            for v in alarm_class.vars:
+                if v.default:
+                    if v.default.startswith("="):
+                        # Expression
+                        # Check component '=component.<name>'
+                        _, c_name, *_ = v.default[1:].split(".", 2)
+                        self.alarm_class_vars[alarm_class.id][v.name] = compile(
+                            f'{v.default[1:]} if "{c_name}" in components else None',
+                            "<string>",
+                            "eval",
+                        )
+                    else:
+                        # Constant
+                        self.alarm_class_vars[alarm_class.id][v.name] = v.default
 
     def load_triggers(self):
         self.logger.info("Loading triggers")
@@ -757,6 +778,13 @@ class CorrelatorService(FastAPIService):
         r_vars = req.vars or {}
         if req.labels:
             r_vars.update(alarm_class.convert_labels_var(req.labels))
+        if alarm_class.id in self.alarm_class_vars:
+            # Calculate dynamic defaults
+            context = {"components": ComponentHub(alarm_class, managed_object, r_vars.copy())}
+            for k, v in self.alarm_class_vars[alarm_class.id].items():
+                x = eval(v, {}, context)
+                if x:
+                    r_vars[k] = str(x)
         try:
             await self.raise_alarm(
                 managed_object=managed_object,
