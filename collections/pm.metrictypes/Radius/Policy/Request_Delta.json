@@ -8,5 +8,6 @@
     "description": "The number of RADIUS request packets transmitted",
     "measure": null,
     "units__code": "1",
-    "scale__code": "1"
+    "scale__code": "1",
+    "is_delta": true
 }

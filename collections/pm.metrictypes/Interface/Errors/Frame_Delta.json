@@ -8,5 +8,6 @@
     "description": "Errors when received frames whose actual length differs with 802.3 Delta",
     "measure": null,
     "units__code": "1",
-    "scale__code": "1"
+    "scale__code": "1",
+    "is_delta": true
 }

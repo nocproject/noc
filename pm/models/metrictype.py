@@ -19,6 +19,7 @@ from mongoengine.fields import (
     ObjectIdField,
     LongField,
     ListField,
+    BooleanField,
     ReferenceField,
     EmbeddedDocumentListField,
 )
@@ -112,6 +113,8 @@ class MetricType(Document):
     )
     # Scale
     scale: "Scale" = PlainReferenceField(Scale, default=Scale.get_default_scale)
+    # Metric is delta scale
+    is_delta = BooleanField(default=False)
     # Measure name, like 'kbit/s'
     # Compatible to Grafana
     measure = StringField()
@@ -160,6 +163,8 @@ class MetricType(Document):
         if self.compose_expression:
             r["compose_expression"] = self.compose_expression
             r["compose_inputs__name"] = [mt.name for mt in self.compose_inputs]
+        if self.is_delta:
+            r["is_delta"] = self.is_delta
         return r
 
     def clean(self):

@@ -21,6 +21,7 @@ from noc.core.expr import get_fn
 class ComposeProbeNodeConfig(BaseModel):
     unit: str
     expression: str
+    is_delta: bool = False
     scale: str = "1"
 
 
