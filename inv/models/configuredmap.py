@@ -14,17 +14,17 @@ from mongoengine.fields import (
     IntField,
     ObjectIdField,
     ReferenceField,
-    EmbeddedDocumentField,
     EmbeddedDocumentListField,
 )
 
 # NOC modules
-from noc.core.mongo.fields import ForeignKeyField, PlainReferenceField
 from noc.core.stencil import stencil_registry
 from noc.main.models.imagestore import ImageStore
 from noc.fm.models.alarmclass import AlarmClass
 from noc.fm.models.alarmseverity import AlarmSeverity
 from noc.sa.models.managedobject import ManagedObject
+from noc.inv.models.resourcegroup import ResourceGroup
+from noc.inv.models.networksegment import NetworkSegment
 from noc.inv.models.link import Link
 
 
@@ -40,11 +40,11 @@ class AlarmFilter(EmbeddedDocument):
 class NodeItem(EmbeddedDocument):
     node_id = ObjectIdField()
     # Generator Config
-    node_type = StringField(choices=["group", "managedobject", "other"])
+    node_type = StringField(choices=["group", "managedobject", "segment", "other"])
     reference_id = StringField()
     add_nested = BooleanField()  # Add nested nodes (if supported) all nodes from group or children
     # Draw block
-    drawtype = StringField(choices=["stencil", "rectangle", "ellipse"])
+    shape = StringField(choices=["stencil", "rectangle", "ellipse"])
     stencil = StringField(choices=stencil_registry)
     # Title
     title = StringField()
@@ -58,6 +58,15 @@ class NodeItem(EmbeddedDocument):
     status_filter = EmbeddedDocumentListField(AlarmFilter)
     # Link to other map
     map_portal = ObjectIdField()
+
+    @property
+    def object(self):
+        if self.node_type == "managedobject":
+            return ManagedObject.get_by_id(int(self.reference_id))
+        if self.node_type == "group":
+            return ResourceGroup.get_by_id(self.reference_id)
+        if self.node_type == "segment":
+            return NetworkSegment.get_by_id(self.reference_id)
 
 
 class LinkItem(EmbeddedDocument):

@@ -21,15 +21,18 @@ Ext.define("NOC.inv.configuredmap.Model", {
         },
         {
             name: "layout",
-            type: "string"
+            type: "string",
+            defaultValue: "manual"
         },
         {
             name: "width",
-            type: "int"
+            type: "int",
+            defaultValue: 0,
         },
         {
             name: "height",
-            type: "int"
+            type: "int",
+            defaultValue: 0
         },
         {
             name: "background_image",
@@ -37,7 +40,8 @@ Ext.define("NOC.inv.configuredmap.Model", {
         },
         {
             name: "add_linked_node",
-            type: "boolean"
+            type: "boolean",
+            defaultValue: false
         },
         {
             name: "enable_node_portal",
