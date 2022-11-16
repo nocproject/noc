@@ -1,7 +1,7 @@
 # ---------------------------------------------------------------------
 # inv.configuredmap application
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2022 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -53,3 +53,11 @@ class ConfiguredMapApplication(ExtDocApplication):
             elif node["node_type"] == "segment":
                 node["reference_id"] = sg
         return super().clean(data)
+
+    @view(r"^(?P<map_id>[0-9a-f]{24})/nodes/$", method=["GET"], access="read", api=True)
+    def get_map_nodes(self, request, map_id):
+        r = []
+        o = ConfiguredMap.objects.filter(id=map_id).first()
+        for node in o.nodes:
+            r.append({"label": node.title, "id": str(node.node_id)})
+        return r

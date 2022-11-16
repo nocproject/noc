@@ -6,6 +6,7 @@
 # ---------------------------------------------------------------------
 
 # Third-party modules
+import bson
 from mongoengine.document import Document, EmbeddedDocument
 from mongoengine.fields import (
     StringField,
@@ -38,7 +39,8 @@ class AlarmFilter(EmbeddedDocument):
 
 
 class NodeItem(EmbeddedDocument):
-    node_id = ObjectIdField()
+    node_id = ObjectIdField(default=bson.ObjectId)
+    parent = ObjectIdField()
     # Generator Config
     node_type = StringField(choices=["group", "managedobject", "segment", "other"])
     reference_id = StringField()
@@ -70,9 +72,10 @@ class NodeItem(EmbeddedDocument):
 
 
 class LinkItem(EmbeddedDocument):
+    type = StringField(choices=["p2p", "cloud", "parent", "aggregate"], default="p2p")
     link = ReferenceField(Link)
-    source_node = StringField()  # node_id
-    target_node = StringField()  # node_id
+    source_node = ObjectIdField()  # node_id
+    target_nodes = ListField(ObjectIdField())  # node_id
     color = IntField()
     drawtype = StringField(choices=["solid", "bold", "dotted", "dashed"])
 
@@ -100,6 +103,8 @@ class ConfiguredMap(Document):
     status_filter = EmbeddedDocumentListField(AlarmFilter)
     # Add linked Node to map
     add_linked_node = BooleanField(default=True)
+    # Add founded system links to map
+    add_topology_links = BooleanField(default=False)
     # Add portals to external nodes
     enable_node_portal = BooleanField(default=True)
     nodes = EmbeddedDocumentListField(NodeItem)

@@ -12,6 +12,7 @@ Ext.define("NOC.inv.configuredmap.Application", {
         "Ext.ux.form.GridField",
         "Ext.ux.form.StringsField",
         "NOC.core.label.LabelField",
+        "NOC.core.tagfield.Tagfield",
         "NOC.core.JSONPreview",
         "NOC.core.ListFormField",
         "NOC.inv.configuredmap.Model",
@@ -19,7 +20,8 @@ Ext.define("NOC.inv.configuredmap.Application", {
         "NOC.sa.managedobject.LookupField",
         "NOC.core.ComboBox",
         "NOC.main.imagestore.LookupField",
-        "NOC.main.ref.stencil.LookupField"
+        "NOC.main.ref.stencil.LookupField",
+        "NOC.inv.configuredmap.NodeLookupField"
     ],
     model: "NOC.inv.configuredmap.Model",
     search: true,
@@ -53,181 +55,237 @@ Ext.define("NOC.inv.configuredmap.Application", {
                     uiStyle: "large"
                 },
                 {
-                    name: "layout",
-                    xtype: "combobox",
-                    fieldLabel: __("Layout"),
-                    allowBlank: false,
-                    uiStyle: "medium",
-                    store: [
-                        ["auto", "auto"],
-                        ["manual", "manual"],
-                        ["spring", "spring"],
-                        ["radial", "radial"]
-                    ]
-                },
-                {
-                    xtype: "fieldset",
-                    title: __("Map settings"),
-                    layout: "hbox",
+                    xtype: "tabpanel",
+                    layout: "fit",
+                    autoScroll: true,
+                    tabPosition: "left",
+                    tabBar: {
+                        tabRotation: 0,
+                        layout: {
+                            align: "stretch"
+                        }
+                    },
+                    anchor: "-0, -50",
                     defaults: {
-                        padding: 4
+                        autoScroll: true,
+                        layout: "anchor",
+                        textAlign: "left",
+                        padding: 10
                     },
                     items: [
                         {
-                            name: "width",
-                            xtype: "numberfield",
-                            fieldLabel: __("Width"),
-                            allowBlank: true,
-                            minValue: 1,
-                            uiStyle: "small"
-                        },
-                        {
-                            name: "height",
-                            xtype: "numberfield",
-                            fieldLabel: __("Height"),
-                            allowBlank: true,
-                            minValue: 1,
-                            uiStyle: "small"
-                        },
-                        {
-                            name: "background_image",
-                            xtype: "main.imagestore.LookupField",
-                            fieldLabel: __("Background Image"),
-                            allowBlank: true
-                        }
-                    ]
-                },
-                {
-                    name: "add_linked_node",
-                    xtype: "checkboxfield",
-                    boxLabel: __("Add Linked Nodes"),
-                    tooltip: __("If check - use Credential Check Rules (Service Activation -> Setup -> Credential Check Rules)<br/>" +
-                        " for suggest credential"),
-                    allowBlank: true,
-                    listeners: {
-                        render: me.addTooltip
-                    }
-                },
-                {
-                    name: "enable_node_portal",
-                    xtype: "checkboxfield",
-                    boxLabel: __("Enable Node Portal"),
-                    tooltip: __("If check - use Credential Check Rules (Service Activation -> Setup -> Credential Check Rules)<br/>" +
-                        " for suggest credential"),
-                    allowBlank: true,
-                    listeners: {
-                        render: me.addTooltip
-                    }
-                },
-                {
-                    name: "nodes",
-                    xtype: "listform",
-                    fieldLabel: __("Nodes"),
-                    rows: 10,
-                    items: [
-                        {
-                            name: "node_type",
-                            xtype: "combobox",
-                            fieldLabel: __("Type"),
-                            allowBlank: false,
-                            uiStyle: "medium",
-                            store: [
-                                ["group", "group"],
-                                ["segment", "segment"],
-                                ["managedobject", "managedobject"],
-                                ["other", "other"]
-                            ]
-                        },
-                        {
-                            xtype: "fieldset",
-                            title: __("Reference"),
-                            layout: "hbox",
-                            defaults: {
-                                padding: 4
-                            },
+                            title: __("Common"),
                             items: [
                                 {
-                                    name: "resource_group",
-                                    xtype: "noc.core.combotree",
-                                    restUrl: "/inv/resourcegroup/",
-                                    fieldLabel: __("Resource Group"),
-                                    listWidth: 1,
-                                    listAlign: 'left',
-                                    labelAlign: "top",
-                                    width: 300
+                                    name: "layout",
+                                    xtype: "combobox",
+                                    fieldLabel: __("Layout"),
+                                    allowBlank: false,
+                                    uiStyle: "medium",
+                                    store: [
+                                        ["auto", "auto"],
+                                        ["manual", "manual"],
+                                        ["spring", "spring"],
+                                        ["radial", "radial"]
+                                    ]
                                 },
                                 {
-                                    xtype: "noc.core.combotree",
-                                    restUrl: "/inv/networksegment/",
-                                    name: "segment",
-                                    fieldLabel: __("Segment"),
+                                    xtype: "fieldset",
+                                    title: __("Map settings"),
+                                    layout: "hbox",
+                                    defaults: {
+                                        padding: 4
+                                    },
+                                    items: [
+                                        {
+                                            name: "width",
+                                            xtype: "numberfield",
+                                            fieldLabel: __("Width"),
+                                            allowBlank: true,
+                                            minValue: 1,
+                                            uiStyle: "small"
+                                        },
+                                        {
+                                            name: "height",
+                                            xtype: "numberfield",
+                                            fieldLabel: __("Height"),
+                                            allowBlank: true,
+                                            minValue: 1,
+                                            uiStyle: "small"
+                                        },
+                                        {
+                                            name: "background_image",
+                                            xtype: "main.imagestore.LookupField",
+                                            fieldLabel: __("Background Image"),
+                                            allowBlank: true
+                                        }
+                                    ]
+                                },
+                                {
+                                    name: "add_linked_node",
+                                    xtype: "checkboxfield",
+                                    boxLabel: __("Add Linked Nodes"),
+                                    tooltip: __("If check - use Credential Check Rules (Service Activation -> Setup -> Credential Check Rules)<br/>" +
+                                        " for suggest credential"),
                                     allowBlank: true,
-                                    labelAlign: "top",
-                                    width: 200,
+                                    listeners: {
+                                        render: me.addTooltip
+                                    }
                                 },
                                 {
-                                    name: "managed_object",
-                                    xtype: "sa.managedobject.LookupField",
-                                    fieldLabel: __("Managed Object"),
-                                    allowBlank: true,
-                                    labelAlign: "top",
-                                    width: 200,
-                                },
-                                {
-                                    name: "add_nested",
-                                    xtype: "checkbox",
-                                    boxLabel: __("Add nested nodes"),
-                                    tooltip: __("Display check state on Object Form"),
+                                    name: "enable_node_portal",
+                                    xtype: "checkboxfield",
+                                    boxLabel: __("Enable Node Portal"),
+                                    tooltip: __("If check - use Credential Check Rules (Service Activation -> Setup -> Credential Check Rules)<br/>" +
+                                        " for suggest credential"),
                                     allowBlank: true,
                                     listeners: {
                                         render: me.addTooltip
                                     }
                                 }
-                           ]
+                            ]
                         },
                         {
-                            xtype: "fieldset",
-                            title: __("Shape"),
-                            layout: "hbox",
-                            defaults: {
-                                padding: 4
-                            },
+                            title: __("Nodes"),
                             items: [
                                 {
-                                    name: "shape",
-                                    xtype: "combobox",
-                                    fieldLabel: __("Type"),
+                                    name: "nodes",
+                                    xtype: "listform",
                                     labelAlign: "top",
-                                    allowBlank: true,
-                                    width: 50,
-                                    uiStyle: "medium",
-                                    store: [
-                                        ["stencil", "stencil"],
-                                        ["rectangle", "rectangle"],
-                                        ["ellipse", "ellipse"]
+                                    rows: 10,
+                                    items: [
+                                        {
+                                            name: "node_type",
+                                            xtype: "combobox",
+                                            fieldLabel: __("Type"),
+                                            allowBlank: false,
+                                            uiStyle: "medium",
+                                            store: [
+                                                ["group", "group"],
+                                                ["segment", "segment"],
+                                                ["managedobject", "managedobject"],
+                                                ["other", "other"]
+                                            ]
+                                        },
+                                        {
+                                            xtype: "fieldset",
+                                            title: __("Reference"),
+                                            layout: "hbox",
+                                            defaults: {
+                                                padding: 4
+                                            },
+                                            items: [
+                                                {
+                                                    name: "resource_group",
+                                                    xtype: "noc.core.combotree",
+                                                    restUrl: "/inv/resourcegroup/",
+                                                    fieldLabel: __("Resource Group"),
+                                                    listWidth: 1,
+                                                    listAlign: 'left',
+                                                    labelAlign: "top",
+                                                    width: 300
+                                                },
+                                                {
+                                                    xtype: "noc.core.combotree",
+                                                    restUrl: "/inv/networksegment/",
+                                                    name: "segment",
+                                                    fieldLabel: __("Segment"),
+                                                    allowBlank: true,
+                                                    labelAlign: "top",
+                                                    width: 200,
+                                                },
+                                                {
+                                                    name: "managed_object",
+                                                    xtype: "sa.managedobject.LookupField",
+                                                    fieldLabel: __("Managed Object"),
+                                                    allowBlank: true,
+                                                    labelAlign: "top",
+                                                    width: 200,
+                                                },
+                                                {
+                                                    name: "add_nested",
+                                                    xtype: "checkbox",
+                                                    boxLabel: __("Add nested nodes"),
+                                                    tooltip: __("Display check state on Object Form"),
+                                                    allowBlank: true,
+                                                    listeners: {
+                                                        render: me.addTooltip
+                                                    }
+                                                }
+                                            ]
+                                        },
+                                        {
+                                            xtype: "fieldset",
+                                            title: __("Shape"),
+                                            layout: "hbox",
+                                            defaults: {
+                                                padding: 4
+                                            },
+                                            items: [
+                                                {
+                                                    name: "shape",
+                                                    xtype: "combobox",
+                                                    fieldLabel: __("Type"),
+                                                    labelAlign: "top",
+                                                    allowBlank: true,
+                                                    width: 50,
+                                                    uiStyle: "medium",
+                                                    store: [
+                                                        ["stencil", "stencil"],
+                                                        ["rectangle", "rectangle"],
+                                                        ["ellipse", "ellipse"]
+                                                    ]
+                                                },
+                                                {
+                                                    name: "stencil",
+                                                    xtype: "main.ref.stencil.LookupField",
+                                                    fieldLabel: __("Shape"),
+                                                    labelAlign: "top",
+                                                    width: 100,
+                                                    allowBlank: true
+                                                },
+                                                {
+                                                    name: "title",
+                                                    xtype: "textfield",
+                                                    fieldLabel: __("Title"),
+                                                    labelAlign: "top",
+                                                    allowBlank: true,
+                                                    width: 200,
+                                                    uiStyle: "large"
+                                                }
+                                            ]
+                                        }
                                     ]
                                 },
+                            ]
+                        },
+                        {
+                            title: __("Links"),
+                            items: [
                                 {
-                                    name: "stencil",
-                                    xtype: "main.ref.stencil.LookupField",
-                                    fieldLabel: __("Shape"),
+                                    name: "links",
+                                    xtype: "listform",
                                     labelAlign: "top",
-                                    width: 100,
-                                    allowBlank: true
-                                },
-                                {
-                                    name: "title",
-                                    xtype: "textfield",
-                                    fieldLabel: __("Title"),
-                                    labelAlign: "top",
-                                    allowBlank: true,
-                                    width: 200,
-                                    uiStyle: "large"
+                                    rows: 10,
+                                    items: [
+                                        {
+                                            xtype: "core.tagfield",
+                                            url: "/inv/configuredmap/" + me.currentId + "/nodes/",
+                                            fieldLabel: __("Target Nodes"),
+                                            tooltip: __("Metric Type inputs to Expression"),
+                                            name: "target_node",
+                                            labelWidth: 150,
+                                            width: 300,
+                                            listeners: {
+                                                render: me.addTooltip
+                                            }
+                                        }
+                                    ]
                                 }
                             ]
                         }
                     ]
-                },
+                }
             ],
             formToolbar: [
                 {
