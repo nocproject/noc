@@ -61,7 +61,7 @@ class ConfiguredTopology(TopologyBase):
 
     @property
     def background(self) -> Optional[str]:
-        return self.cfgmap.background_image.id if self.cfgmap.background_image else None
+        return str(self.cfgmap.background_image.id) if self.cfgmap.background_image else None
 
     def add_objects_links(self, object_ids: List[int]):
         """

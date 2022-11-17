@@ -20,8 +20,7 @@ Ext.define("NOC.inv.configuredmap.Application", {
         "NOC.sa.managedobject.LookupField",
         "NOC.core.ComboBox",
         "NOC.main.imagestore.LookupField",
-        "NOC.main.ref.stencil.LookupField",
-        "NOC.inv.configuredmap.NodeLookupField"
+        "NOC.main.ref.stencil.LookupField"
     ],
     model: "NOC.inv.configuredmap.Model",
     search: true,
