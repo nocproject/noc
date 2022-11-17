@@ -301,15 +301,12 @@ class TopologyBase(object):
         :param node_type:
         :return:
         """
+        stencil = None
         if node_type == "cloud":
             return stencil_registry.get(o.shape or stencil_registry.DEFAULT_CLOUD_STENCIL)
-        if node_type == "managedobject" and o.shape:
-            # Use mo's shape, if set
-            return stencil_registry.get(o.shape)
-        elif node_type == "managedobject" and o.object_profile.shape:
-            # Use profile's shape
-            return stencil_registry.get(o.object_profile.shape)
-        return stencil_registry.get(stencil_registry.DEFAULT_STENCIL)
+        if hasattr(o, "get_stencil"):
+            stencil = o.get_stencil()
+        return stencil or stencil_registry.get(stencil_registry.DEFAULT_STENCIL)
 
     def get_node_stencil_overlays(self, o, node_type: Optional[str] = None) -> List[ShapeOverlay]:
         """

@@ -133,6 +133,17 @@ Ext.define("NOC.inv.configuredmap.Application", {
                                     }
                                 },
                                 {
+                                    name: "add_topology_links",
+                                    xtype: "checkboxfield",
+                                    boxLabel: __("Add Topology links"),
+                                    tooltip: __("If check - use Credential Check Rules (Service Activation -> Setup -> Credential Check Rules)<br/>" +
+                                        " for suggest credential"),
+                                    allowBlank: true,
+                                    listeners: {
+                                        render: me.addTooltip
+                                    }
+                                },
+                                {
                                     name: "enable_node_portal",
                                     xtype: "checkboxfield",
                                     boxLabel: __("Enable Node Portal"),

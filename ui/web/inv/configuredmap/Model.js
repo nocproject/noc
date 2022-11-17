@@ -48,6 +48,10 @@ Ext.define("NOC.inv.configuredmap.Model", {
             type: "boolean"
         },
         {
+            name: "add_topology_links",
+            type: "boolean"
+        },
+        {
             name: "status_filter",
             type: "auto"
         },

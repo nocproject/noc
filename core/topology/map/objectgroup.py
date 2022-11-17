@@ -96,12 +96,12 @@ class ObjectGroupTopology(TopologyBase):
         # Apply paging
         if limit:
             data = data[start : start + limit]
-        for ns in data:
+        for rg in data:
             yield MapItem(
-                title=str(ns.name),
+                title=str(rg.name),
                 generator=cls.name,
-                id=str(ns.id),
-                has_children=ns.has_children,
+                id=str(rg.id),
+                has_children=rg.has_children,
             )
 
     @classmethod

@@ -5,6 +5,9 @@
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
+# Python modules
+from typing import Optional
+
 # Third-party modules
 import bson
 from mongoengine.document import Document, EmbeddedDocument
@@ -47,7 +50,7 @@ class NodeItem(EmbeddedDocument):
     add_nested = BooleanField()  # Add nested nodes (if supported) all nodes from group or children
     # Draw block
     shape = StringField(choices=["stencil", "rectangle", "ellipse"])
-    stencil = StringField(choices=stencil_registry)
+    stencil = StringField(choices=stencil_registry.choices, max_length=128)
     # Title
     title = StringField()
     title_position = StringField()
@@ -61,18 +64,63 @@ class NodeItem(EmbeddedDocument):
     # Link to other map
     map_portal = ObjectIdField()
 
+    NODE_TYPE_MODEL = {
+        "managedobject": ManagedObject,
+        "group": ResourceGroup,
+        "segment": NetworkSegment,
+    }
+
+    def __str__(self):
+        return f"{self.node_type}:{self.reference_id}"
+
+    def __hash__(self):
+        return hash(self.node_id)
+
+    @property
+    def id(self):
+        if self.node_type == "managedobject":
+            return str(self.object.id)
+        return self.node_id
+
+    @property
+    def name(self):
+        return self.title
+
     @property
     def object(self):
+        if (
+            not self.reference_id
+            or self.node_type == "other"
+            or self.node_type not in self.NODE_TYPE_MODEL
+        ):
+            return None
+        ref = self.reference_id
         if self.node_type == "managedobject":
-            return ManagedObject.get_by_id(int(self.reference_id))
+            ref = int(ref)
+        return self.NODE_TYPE_MODEL[self.node_type].get_by_id(ref)
+
+    @property
+    def portal(self):
+        generator = None
         if self.node_type == "group":
-            return ResourceGroup.get_by_id(self.reference_id)
-        if self.node_type == "segment":
-            return NetworkSegment.get_by_id(self.reference_id)
+            generator = "objectgroup"
+        elif self.node_type == "segment":
+            generator = "segment"
+        if not generator:
+            return None
+        return {"generator": generator, "id": str(self.reference_id)}
+
+    def get_stencil(self):
+        if self.stencil:
+            return stencil_registry.get(self.stencil)
+        o = self.object
+        if o:
+            return o.get_stencil()
+        return
 
 
 class LinkItem(EmbeddedDocument):
-    type = StringField(choices=["p2p", "cloud", "parent", "aggregate"], default="p2p")
+    type = StringField(choices=["p2p", "cloud", "aggregate"], default="p2p")
     link = ReferenceField(Link)
     source_node = ObjectIdField()  # node_id
     target_nodes = ListField(ObjectIdField())  # node_id
@@ -110,3 +158,7 @@ class ConfiguredMap(Document):
     nodes = EmbeddedDocumentListField(NodeItem)
     links = EmbeddedDocumentListField(LinkItem)
     # lines
+
+    @classmethod
+    def get_by_id(cls, id) -> Optional["ConfiguredMap"]:
+        return ConfiguredMap.objects.filter(id=id).first()
