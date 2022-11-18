@@ -120,13 +120,14 @@ class Router(object):
             r_type = self.routes[route_id].type
             del self.routes[route_id]
         if r_type:
-            self.rebuild_chains([r_type])
+            self.rebuild_chains([r_type], deleted=True)
 
-    def rebuild_chains(self, r_types: Optional[Iterable[str]] = None):
+    def rebuild_chains(self, r_types: Optional[Iterable[str]] = None, deleted: bool = False):
         """
         Rebuild Router Chains
         Need lock ?
         :param r_types: List types for rebuild chains
+        :param deleted: Route was deleted
         :return:
         """
         chains = defaultdict(list)
@@ -134,6 +135,9 @@ class Router(object):
             if r_types and r.type not in r_types:
                 continue
             chains[r.type].append(r)
+        if deleted:
+            for rt in set(r_types) - set(chains):
+                chains[rt] = []
         for chain in chains:
             logger.info("[%s] Rebuild chain", chain)
             self.chains[chain.encode(encoding=DEFAULT_ENCODING)] = list(
