@@ -15,7 +15,7 @@ from noc.core.profile.base import BaseProfile
 
 class Profile(BaseProfile):
     name = "NAG.SNR"
-    pattern_prompt = rb"^(?P<hostname>\S+)[#>]"
+    pattern_prompt = rb"^(?P<hostname>\S+)(?:\(config[^\)]*\))?[#>]"
     pattern_more = [
         (rb"^ --More-- ", b"\n"),
         (rb"^Confirm to overwrite current startup-config configuration \[Y/N\]:", b"y\n"),
