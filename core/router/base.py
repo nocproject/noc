@@ -136,6 +136,7 @@ class Router(object):
                 continue
             chains[r.type].append(r)
         if deleted:
+            # Remove last route
             for rt in set(r_types) - set(chains):
                 chains[rt] = []
         for chain in chains:
