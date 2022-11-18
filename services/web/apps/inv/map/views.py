@@ -8,7 +8,7 @@
 # Python modules
 from collections import defaultdict
 import threading
-from typing import List, Set
+from typing import List, Set, Dict
 
 # Third-party modules
 from concurrent.futures import ThreadPoolExecutor, as_completed
@@ -224,9 +224,9 @@ class MapApplication(ExtApplication):
         method=["POST"],
         access="read",
         api=True,
-        validate={"objects": ListOfParameter(IntParameter())},
+        validate={"nodes": DictListParameter(attrs={"id": StringParameter(), "node_type": StringParameter()})},
     )
-    def api_objects_statuses(self, request, objects: List[int]):
+    def api_objects_statuses(self, request, nodes: List[Dict[str, int]]):
         def get_alarms(objects: List[int]) -> Set[int]:
             """
             Returns a set of objects with alarms
@@ -245,6 +245,9 @@ class MapApplication(ExtApplication):
             return alarms
 
         # Mark all as unknown
+        objects: List[int] = [o["id"] for o in nodes if o["node_type"] == "managedobject"]
+        groups = [o["id"] for o in nodes if o["node_type"] == "groups"]
+        segments = [o["id"] for o in nodes if o["node_type"] == "segment"]
         r = {o: self.ST_UNKNOWN for o in objects}
         sr = ObjectStatus.get_statuses(objects)
         sa = get_alarms(objects)

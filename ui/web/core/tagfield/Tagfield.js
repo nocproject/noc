@@ -58,6 +58,9 @@ Ext.define("NOC.core.tagfield.Tagfield", {
     ],
     initComponent: function() {
         this.store.proxy.url = this.url;
+        if(Ext.isFunction(this.url)) {
+            this.store.proxy.url = this.url();
+        }
         if(this.lazyLoadTree) {
             this.triggers.picker.cls = "theme-classic fas fa fa-folder-open-o";
             this.treePicker = Ext.create({

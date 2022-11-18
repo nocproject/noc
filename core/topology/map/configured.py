@@ -117,7 +117,7 @@ class ConfiguredTopology(TopologyBase):
         # Extract Nodes
         for nc in self.cfgmap.nodes:
             attrs = {}
-            nodes[nc.id] = nc
+            nodes[nc.node_id] = nc.id
             if nc.node_type == "managedobject":
                 o = nc.object
                 object_mos.append(o.id)
@@ -153,6 +153,9 @@ class ConfiguredTopology(TopologyBase):
             self.add_parent(parent_id, child_id)
         if self.cfgmap.add_topology_links:
             self.add_objects_links(object_mos)
+        # Add Relation
+        for ll in self.cfgmap.links:
+            self.add_parent(nodes[ll.source_node], nodes[ll.target_nodes[0]])
 
     @staticmethod
     def q_node(node):

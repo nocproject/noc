@@ -165,6 +165,11 @@ Ext.define("NOC.inv.configuredmap.Application", {
                                     rows: 10,
                                     items: [
                                         {
+                                            name: "node_id",
+                                            xtype: "displayfield",
+                                            hidden: true
+                                        },
+                                        {
                                             name: "node_type",
                                             xtype: "combobox",
                                             fieldLabel: __("Type"),
@@ -280,10 +285,12 @@ Ext.define("NOC.inv.configuredmap.Application", {
                                     items: [
                                         {
                                             xtype: "core.tagfield",
-                                            url: "/inv/configuredmap/" + me.currentId + "/nodes/",
+                                            url:  function() {
+                                                return "/inv/configuredmap/" + me.currentRecord.id + "/nodes/";
+                                            },
                                             fieldLabel: __("Target Nodes"),
                                             tooltip: __("Metric Type inputs to Expression"),
-                                            name: "target_node",
+                                            name: "target_nodes",
                                             labelWidth: 150,
                                             width: 300,
                                             listeners: {

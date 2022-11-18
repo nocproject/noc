@@ -412,9 +412,7 @@ Ext.define("NOC.inv.map.MapPanel", {
             badges.push(badge);
         });
         me.objectNodes[data.id] = node;
-        if(data.type === "managedobject") {
-            me.objectsList.push(data.id)
-        }
+        me.objectsList.push({"node_type": data.type, "id": data.id})
         return {node: node, badges: badges};
     },
     //
@@ -707,7 +705,7 @@ Ext.define("NOC.inv.map.MapPanel", {
             url: "/inv/map/objects_statuses/",
             method: "POST",
             jsonData: {
-                objects: me.objectsList
+                nodes: me.objectsList
             },
             scope: me,
             success: function(response) {
