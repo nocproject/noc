@@ -245,7 +245,7 @@ class MapApplication(ExtApplication):
             return alarms
 
         # Mark all as unknown
-        objects: List[int] = [o["id"] for o in nodes if o["node_type"] == "managedobject"]
+        objects: List[int] = [int(o["id"]) for o in nodes if o["node_type"] == "managedobject"]
         groups = [o["id"] for o in nodes if o["node_type"] == "groups"]
         segments = [o["id"] for o in nodes if o["node_type"] == "segment"]
         r = {o: self.ST_UNKNOWN for o in objects}
