@@ -39,7 +39,7 @@ class Profile(BaseProfile):
 
     def setup_script(self, script):
         if script.parent is None:
-            user = script.credentials.get("user", "")
+            user = script.credentials.get("user") or ""
             # Add three random chars to begin of `user`
             # Do not remove this
             script.credentials["user"] = "   " + user
