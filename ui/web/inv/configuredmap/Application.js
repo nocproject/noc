@@ -11,6 +11,7 @@ Ext.define("NOC.inv.configuredmap.Application", {
     requires: [
         "Ext.ux.form.GridField",
         "Ext.ux.form.StringsField",
+        "NOC.core.ComboBox",
         "NOC.core.label.LabelField",
         "NOC.core.tagfield.Tagfield",
         "NOC.core.JSONPreview",
@@ -18,9 +19,8 @@ Ext.define("NOC.inv.configuredmap.Application", {
         "NOC.inv.configuredmap.Model",
         "NOC.core.combotree.ComboTree",
         "NOC.sa.managedobject.LookupField",
-        "NOC.core.ComboBox",
         "NOC.main.imagestore.LookupField",
-        "NOC.main.ref.stencil.LookupField"
+        "NOC.main.ref.stencil.LookupField",
     ],
     model: "NOC.inv.configuredmap.Model",
     search: true,
@@ -100,6 +100,7 @@ Ext.define("NOC.inv.configuredmap.Application", {
                                             name: "width",
                                             xtype: "numberfield",
                                             fieldLabel: __("Width"),
+                                            labelAlign: "top",
                                             allowBlank: true,
                                             minValue: 1,
                                             uiStyle: "small"
@@ -108,6 +109,7 @@ Ext.define("NOC.inv.configuredmap.Application", {
                                             name: "height",
                                             xtype: "numberfield",
                                             fieldLabel: __("Height"),
+                                            labelAlign: "top",
                                             allowBlank: true,
                                             minValue: 1,
                                             uiStyle: "small"
@@ -116,6 +118,7 @@ Ext.define("NOC.inv.configuredmap.Application", {
                                             name: "background_image",
                                             xtype: "main.imagestore.LookupField",
                                             fieldLabel: __("Background Image"),
+                                            labelAlign: "top",
                                             allowBlank: true
                                         }
                                     ]
@@ -284,15 +287,26 @@ Ext.define("NOC.inv.configuredmap.Application", {
                                     rows: 10,
                                     items: [
                                         {
+                                            fieldLabel: __("Source Node"),
+                                            labelWidth: 100,
+                                            name: "source_node",
+                                            xtype: "core.combo",
+                                            autoLoadOnValue: true,
+                                            restUrl:  function() {
+                                                return "/inv/configuredmap/" + me.currentRecord.id + "/nodes/";
+                                            },
+                                            width: 400,
+                                            allowBlank: true
+                                        },
+                                        {
+                                            fieldLabel: __("Target Nodes"),
+                                            labelWidth: 100,
+                                            name: "target_nodes",
                                             xtype: "core.tagfield",
                                             url:  function() {
                                                 return "/inv/configuredmap/" + me.currentRecord.id + "/nodes/";
                                             },
-                                            fieldLabel: __("Target Nodes"),
-                                            tooltip: __("Metric Type inputs to Expression"),
-                                            name: "target_nodes",
-                                            labelWidth: 150,
-                                            width: 300,
+                                            width: 400,
                                             listeners: {
                                                 render: me.addTooltip
                                             }

@@ -71,6 +71,10 @@ Ext.define("NOC.core.ComboBox", {
             me = this;
 
         // Calculate restUrl
+        if(Ext.isFunction(me.restUrl)) {
+            me.restUrl = me.restUrl();
+        }
+
         if(!me.restUrl
             && Ext.String.startsWith(me.$className, 'NOC.')
             && Ext.String.endsWith(me.$className, 'LookupField')) {
@@ -177,6 +181,11 @@ Ext.define("NOC.core.ComboBox", {
         var me = this,
             vm,
             params = {};
+
+        if(value === null) {
+            me.callParent([value]);
+            return;
+        }
         if(typeof value === "string" || typeof value === "number") {
             if(value === "" || value === 0) {
                 me.clearValue();
@@ -200,6 +209,9 @@ Ext.define("NOC.core.ComboBox", {
                 }
             });
         } else {
+            if(!value.hasOwnProperty("data")) {
+                value = Ext.create("Ext.data.Model", value);
+            }
             me.callParent([value]);
         }
     },
