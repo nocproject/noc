@@ -35,14 +35,13 @@ class ConfiguredMapApplication(ExtDocApplication):
             "add_linked_node": o.add_linked_node,
             "add_topology_links": o.add_topology_links,
             "enable_node_portal": o.enable_node_portal,
+            "background_image": None,
             "nodes": [],
             "links": [],
         }
         if o.background_image:
-            r["background_image"] = {
-                "io": str(o.background_image.id),
-                "label": o.background_image.name,
-            }
+            r["background_image"] = str(o.background_image.id)
+            r["background_image__label"] = o.background_image.name
         node_map = {}
         for nn in o.nodes:
             node = super().instance_to_dict(nn)
@@ -54,12 +53,12 @@ class ConfiguredMapApplication(ExtDocApplication):
                 title = title or mo.name
             elif nn.node_type == "group":
                 rg = ResourceGroup.get_by_id(node["reference_id"])
-                node["resource_group"] = rg.id
+                node["resource_group"] = str(rg.id)
                 node["resource_group__label"] = rg.name
                 title = title or rg.name
             elif nn.node_type == "group":
                 ns = NetworkSegment.get_by_id(node["reference_id"])
-                node["segment_group"] = ns.id
+                node["segment_group"] = str(ns.id)
                 node["segment__label"] = ns.name
                 title = title or ns.name
             node_map[str(nn.node_id)] = title
@@ -94,7 +93,11 @@ class ConfiguredMapApplication(ExtDocApplication):
     @view(r"^(?P<map_id>[0-9a-f]{24})/nodes/$", method=["GET"], access="read", api=True)
     def get_map_nodes(self, request, map_id):
         r = []
+        rid = request.GET.getlist("id")
         o = ConfiguredMap.get_by_id(map_id)
         for node in o.nodes:
+            if rid and str(node.node_id) not in rid:
+                continue
             r.append({"label": node.title, "id": str(node.node_id)})
         return r
+

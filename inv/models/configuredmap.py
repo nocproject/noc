@@ -80,7 +80,7 @@ class NodeItem(EmbeddedDocument):
     def id(self):
         if self.node_type == "managedobject":
             return str(self.object.id)
-        return self.node_id
+        return str(self.node_id)
 
     @property
     def name(self):
