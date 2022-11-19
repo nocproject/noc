@@ -56,8 +56,8 @@ class ConfiguredTopology(TopologyBase):
 
     @classmethod
     def iter_path(cls, gen_id) -> Iterable[PathItem]:
-        cfg = ConfiguredMap.objects.filter(gen_id)
-        yield PathItem(title=str(cfg.title), id=str(cfg.id), level=1)
+        cfg = ConfiguredMap.get_by_id(gen_id)
+        yield PathItem(title=str(cfg.name), id=str(cfg.id), level=1)
 
     @property
     def background(self) -> Optional[str]:
