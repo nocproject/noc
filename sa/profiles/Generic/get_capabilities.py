@@ -15,6 +15,7 @@ from noc.core.mib import mib
 from noc.core.snmp.version import SNMP_v1, SNMP_v2c, SNMP_v3
 from noc.core.snmp.error import SNMPError
 from noc.core.script.snmp.base import SNMP
+from noc.core.text import filter_non_printable
 
 
 def false_on_cli_error(f):
@@ -333,7 +334,9 @@ class Script(BaseScript):
         """
         if self.credentials.get("snmp_ro"):
             r = self.snmp.get(mib["SNMPv2-MIB::sysDescr", 0], version=version)
-            return r or None
+            if not r:
+                return None
+            return filter_non_printable(r)
 
     def execute_platform_cli(self, caps):
         """
