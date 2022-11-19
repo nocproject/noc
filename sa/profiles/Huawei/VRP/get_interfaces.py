@@ -136,7 +136,10 @@ class Script(BaseScript):
     def get_switchport_cli(self) -> DefaultDict[str, Dict[str, Union[int, list, None]]]:
         result = defaultdict(lambda: {"untagged": None, "tagged": []})
         try:
-            v = self.cli("display vlan", cached=True)
+            if self.is_cloud_engine_switch:
+                v = self.cli("display vlan", cached=True, allow_empty_response=False)
+            else:
+                v = self.cli("display vlan", cached=True)
         except self.CLISyntaxError:
             return result
         if self.rx_vlan_port_check.match(v):
