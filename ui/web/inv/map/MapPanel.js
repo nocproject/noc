@@ -308,11 +308,13 @@ Ext.define("NOC.inv.map.MapPanel", {
         me.currentStpRoots = {};
         me.graph.clear();
         // Set background
-        me.paper.drawBackground({
-            image: '/main/imagestore/' + data.background_image + '/image/',
-            position: 'left top;',
-            opacity: 0.3
-        });
+        if(data.background_image) {
+            me.paper.drawBackground({
+                image: '/main/imagestore/' + data.background_image + '/image/',
+                position: 'left top;',
+                opacity: 0.3
+            });
+        }
         // Create nodes
         Ext.each(data.nodes, function(node) {
             if(!me.app.viewAllNodeButton.pressed && data.links.length > data.max_links && node.external === true) {

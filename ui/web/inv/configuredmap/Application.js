@@ -320,6 +320,12 @@ Ext.define("NOC.inv.configuredmap.Application", {
             ],
             formToolbar: [
                 {
+                    text: __("Show Map"),
+                    glyph: NOC.glyph.globe,
+                    scope: me,
+                    handler: me.onShowMap
+                },
+                {
                     text: __("JSON"),
                     glyph: NOC.glyph.file,
                     tooltip: __("Show JSON"),
@@ -336,5 +342,11 @@ Ext.define("NOC.inv.configuredmap.Application", {
         var me = this;
         me.showItem(me.ITEM_JSON);
         me.jsonPanel.preview(me.currentRecord);
-    }
+    },
+    onShowMap: function() {
+        var me = this;
+        NOC.launch("inv.map", "history", {
+            args: ["configured", me.currentRecord.get("id")]
+        });
+    },
 });
