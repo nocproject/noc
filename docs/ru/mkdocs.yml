@@ -18,6 +18,7 @@ nav:
           - FIAS Codes: user/howto/fias/fias_region_codes.md
           - OKTMO Codes: user/howto/fias/oktmo_region_codes.md
           - Собственный статичный дашборд с графиками устройства в НОКе: user/howto/how-to-create-custom-device-grafana-dash.md
+          - Использование Housekeeper для сбора данных с устройства: user/howto/how-to-use-hk-for-collect-device-data.md
       - Background:
           - Обзор: user/background/index.md
           - Работа с конфигурацией оборудования: user/background/configuration-management/index.md
@@ -311,11 +312,6 @@ nav:
                   - Linksys.VoIP: user/reference/profiles/Linksys/Linksys.VoIP.md
               - Linux:
                   - Overview: user/reference/profiles/Linux/index.md
-                  - Linux.Alt: user/reference/profiles/Linux/Linux.Alt.md
-                  - Linux.Astra: user/reference/profiles/Linux/Linux.Astra.md
-                  - Linux.Debian: user/reference/profiles/Linux/Linux.Debian.md
-                  - Linux.Openwrt: user/reference/profiles/Linux/Linux.Openwrt.md
-                  - Linux.RHEL: user/reference/profiles/Linux/Linux.RHEL.md
               - Lucent:
                   - Overview: user/reference/profiles/Lucent/index.md
                   - Lucent.Stinger: user/reference/profiles/Lucent/Lucent.Stinger.md
