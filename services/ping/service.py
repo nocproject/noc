@@ -38,7 +38,7 @@ class PingService(FastAPIService):
     def __init__(self):
         super().__init__()
         self.mappings_callback = None
-        self.probes = {}  # mo id -> ProbeSetting
+        self.probes: Dict[int, ProbeSetting] = {}  # mo id -> ProbeSetting
         self.ping = None
         self.is_throttled = False
         self.slot_number = 0
@@ -226,9 +226,9 @@ class PingService(FastAPIService):
         if s and not rtt:
             metrics["ping_time_stepbacks"] += 1
         if ps and s != ps.status:
-            if s:
+            if s and ps.status is not None:
                 metrics["down_objects"] -= 1
-            else:
+            elif not s:
                 metrics["down_objects"] += 1
             if config.ping.throttle_threshold:
                 # Process throttling
