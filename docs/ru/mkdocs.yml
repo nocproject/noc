@@ -894,6 +894,7 @@ nav:
           - How to Setup black Formatter in PyCharm: dev/tools/howto-setup-black-in-pycharm.md
           - How to Setup flake8 Check in PyCharm: dev/tools/howto-setup-flake8-in-pycharm.md
           - Инструкция по локализации интерфейса пользователя: dev/tools/howto-language-translation.md
+          - Использование консоли разработчика для настройки системы: dev/tools/howto-noc-shell-example-work-1.md
       - SA:
           - dev/sa/scripts/index.md
           - SA Profile: dev/sa/sa-profiles.md
