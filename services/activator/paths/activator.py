@@ -252,7 +252,9 @@ class ActivatorAPI(JSONRPCAPI):
         return session_id
 
     @api
-    async def bulk_ping(self, addresses: List[str], timeout: int = 5, n: int = 1, tos: Optional[int] = None):
+    async def bulk_ping(
+        self, addresses: List[str], timeout: int = 5, n: int = 1, tos: Optional[int] = None
+    ):
         result = []
         for address in addresses:
             p = Ping(tos=tos, timeout=timeout)
