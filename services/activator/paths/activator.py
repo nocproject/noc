@@ -26,6 +26,9 @@ from noc.config import config
 from noc.core.comp import smart_text
 from ..models.streaming import StreamingConfig
 
+BULK_PING_TIMEOUT = 5
+BULK_PING_INTERVAL = 0.1
+
 router = APIRouter()
 
 
@@ -253,13 +256,18 @@ class ActivatorAPI(JSONRPCAPI):
 
     @api
     async def bulk_ping(
-        self, addresses: List[str], timeout: int = 5, n: int = 1, tos: Optional[int] = None
+        self,
+        addresses: List[str],
+        timeout: Optional[int] = BULK_PING_TIMEOUT,
+        n: int = 1,
+        tos: Optional[int] = None,
     ):
+        timeout = timeout or BULK_PING_TIMEOUT
         result = []
         for address in addresses:
             p = Ping(tos=tos, timeout=timeout)
             rtt_list = []
-            async for rtt in p.iter_rtt(address, interval=0.1, count=n):
+            async for rtt in p.iter_rtt(address, interval=BULK_PING_INTERVAL, count=n):
                 rtt_list += [rtt]
             result += [{"address": address, "rtt": rtt_list}]
         return result
