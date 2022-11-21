@@ -13,6 +13,7 @@ from noc.sa.profiles.Generic.get_interfaces import Script as BaseScript
 from noc.sa.interfaces.igetinterfaces import IGetInterfaces
 from noc.core.text import parse_table
 from noc.core.mib import mib
+from noc.core.validators import is_ipv4, is_ipv6
 
 
 class Script(BaseScript):
@@ -44,11 +45,14 @@ class Script(BaseScript):
         ip_addresses = {}
         c = self.cli("show ip interfaces", cached=True)
         for line in parse_table(c):
-            ip_addresses[line[1]] = line[0]
+            # When type is DHCP, IP address may be '--'
+            if is_ipv4(line[0]):
+                ip_addresses[line[1]] = line[0]
         ipv6_addresses = {}
         c = self.cli("show ipv6 interfaces", cached=True)
         for line in parse_table(c):
-            ipv6_addresses[line[1]] = line[0]
+            if is_ipv6(line[0]):
+                ipv6_addresses[line[1]] = line[0]
         interfaces = []
         c = self.cli("show interfaces status", cached=True)
         # ESR-12V ver.1.0.9 produce random empty lines
