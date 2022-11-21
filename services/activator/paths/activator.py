@@ -6,11 +6,12 @@
 # ---------------------------------------------------------------------
 
 # Python modules
-from typing import Optional, Dict, Any
+from typing import Optional, Dict, Any, List
 
 # Third-party modules
 import orjson
 from fastapi import APIRouter
+from gufo.ping import Ping
 
 
 # NOC modules
@@ -249,6 +250,17 @@ class ActivatorAPI(JSONRPCAPI):
     @staticmethod
     def close_session_get_label(session_id):
         return session_id
+
+    @api
+    async def bulk_ping(self, addresses: List[str], timeout: int = 5, n: int = 1, tos: Optional[int] = None):
+        result = []
+        for address in addresses:
+            p = Ping(tos=tos, timeout=timeout)
+            rtt_list = []
+            async for rtt in p.iter_rtt(address, interval=0.1, count=n):
+                rtt_list += [rtt]
+            result += [{"address": address, "rtt": rtt_list}]
+        return result
 
 
 # Install endpoints
