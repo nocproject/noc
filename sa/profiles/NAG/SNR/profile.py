@@ -15,10 +15,13 @@ from noc.core.profile.base import BaseProfile
 
 class Profile(BaseProfile):
     name = "NAG.SNR"
-    pattern_prompt = rb"^(?P<hostname>\S+)[#>]"
+    pattern_prompt = rb"^(?P<hostname>\S+)(?:\(config[^\)]*\))?[#>]"
     pattern_more = [
         (rb"^ --More-- ", b"\n"),
-        (rb"^Confirm to overwrite current startup-config configuration \[Y/N\]:", b"y\n"),
+        (
+            rb"^Confirm to overwrite (?:current startup-config configuration|the existed destination file\?)\s+\[Y/N\]:",
+            b"y\n",
+        ),
         (rb"^\.\.\.\.press ENTER to next line, Q to quit, other key to next page\.\.\.\.", b" "),
     ]
     pattern_syntax_error = rb"% (?:Unrecognized|Incomplete) command, and error detected at"
