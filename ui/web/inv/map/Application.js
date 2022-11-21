@@ -473,6 +473,9 @@ Ext.define("NOC.inv.map.Application", {
             me.viewMapButton.setPressed(true);
             me.saveButton.setDisabled(true);
             me.setStateMapButtons(false);
+            if(!me.mapPanel.normalize_position) {
+                me.rotateButton.setDisabled(true);
+            }
         } else {
             me.setStateMapButtons(true);
             me.saveButton.setDisabled(true);
