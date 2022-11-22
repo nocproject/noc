@@ -100,4 +100,3 @@ class ConfiguredMapApplication(ExtDocApplication):
                 continue
             r.append({"label": node.title, "id": str(node.node_id)})
         return r
-

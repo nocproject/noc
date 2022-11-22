@@ -224,7 +224,11 @@ class MapApplication(ExtApplication):
         method=["POST"],
         access="read",
         api=True,
-        validate={"nodes": DictListParameter(attrs={"id": StringParameter(), "node_type": StringParameter()})},
+        validate={
+            "nodes": DictListParameter(
+                attrs={"id": StringParameter(), "node_type": StringParameter()}
+            )
+        },
     )
     def api_objects_statuses(self, request, nodes: List[Dict[str, int]]):
         def get_alarms(objects: List[int]) -> Set[int]:
@@ -246,8 +250,8 @@ class MapApplication(ExtApplication):
 
         # Mark all as unknown
         objects: List[int] = [int(o["id"]) for o in nodes if o["node_type"] == "managedobject"]
-        groups = [o["id"] for o in nodes if o["node_type"] == "groups"]
-        segments = [o["id"] for o in nodes if o["node_type"] == "segment"]
+        # groups = [o["id"] for o in nodes if o["node_type"] == "groups"]
+        # segments = [o["id"] for o in nodes if o["node_type"] == "segment"]
         r = {o: self.ST_UNKNOWN for o in objects}
         sr = ObjectStatus.get_statuses(objects)
         sa = get_alarms(objects)
