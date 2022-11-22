@@ -151,9 +151,10 @@ class DatabaseStorage(Storage):
             name += "/"
         ln = len(name)
         name_r = name.replace("'", "\\'")
+        name_r = f"^{name_r}[^/]+/?$"
         cursor.execute(
-            f"SELECT {self.name_field} FROM {self.db_table} "
-            f"WHERE {self.name_field} ~ '^{name_r}[^/]+/?$'"
+            f"SELECT {self.name_field} FROM {self.db_table} WHERE {self.name_field} ~ %s",
+            [name_r],
         )
         return [x[0][ln:] for x in cursor.fetchall()]
 
