@@ -17,7 +17,7 @@ from noc.core.migration.base import BaseMigration
 class Migration(BaseMigration):
     def migrate(self):
         db = self.mongo_db
-        os_linux_profile_id = db.noc.profiles.findone({"name": "OS.Linux"})
+        os_linux_profile_id = db.noc.profiles.find_one({"name": "OS.Linux"})
         bulk = []
         if os_linux_profile_id:
             os_linux_profile_id = os_linux_profile_id["_id"]
