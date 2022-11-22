@@ -13,7 +13,7 @@ from typing import Dict, List, Optional, Iterable, Any
 from bson import ObjectId
 
 # NOC modules
-from noc.core.topology.base import TopologyBase, MapItem, PathItem
+from noc.core.topology.base import TopologyBase, MapItem, PathItem, MapSize
 from noc.inv.models.configuredmap import ConfiguredMap
 from noc.inv.models.link import Link
 from noc.inv.models.interface import Interface
@@ -24,12 +24,16 @@ class ConfiguredTopology(TopologyBase):
 
     name = "configured"
     header = "Configured Map"
+    NORMALIZE_POSITION = False
 
     def __init__(self, gen_id, node_hints=None, link_hints=None, force_spring=False):
         self.cfgmap: ConfiguredMap = ConfiguredMap.get_by_id(gen_id)
         super().__init__(
             gen_id, node_hints=node_hints, link_hints=link_hints, force_spring=force_spring
         )
+
+    def get_size(self) -> Optional[MapSize]:
+        return MapSize(height=self.cfgmap.height, width=self.cfgmap.width)
 
     @classmethod
     def iter_maps(

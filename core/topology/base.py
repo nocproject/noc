@@ -37,6 +37,12 @@ class MapItem(object):
 
 
 @dataclass
+class MapSize(object):
+    width: Optional[int] = None
+    height: Optional[int] = None
+
+
+@dataclass
 class PathItem(object):
     title: str
     id: str
@@ -55,6 +61,8 @@ class TopologyBase(object):
     CAPS: Set[str] = set()
 
     DEFAULT_LEVEL = 10
+    # Allow to normalize position when displayed
+    NORMALIZE_POSITION = True
     # Top padding for isolated nodes
     ISOLATED_PADDING = 50
     # Minimum width to place isolated nodes
@@ -109,6 +117,13 @@ class TopologyBase(object):
         :return:
         """
         return f"{self.gen_id}"
+
+    def get_size(self) -> Optional[MapSize]:
+        """
+        Getting MapSize
+        :return:
+        """
+        return None
 
     def get_uplinks(self) -> List[str]:
         """

@@ -91,7 +91,7 @@ class MapSettings(Document):
     # Gen data
     # get_data =
     # Generator Hints
-    force_layout = BooleanField()  # Always rebuild layout hints
+    force_layout = BooleanField(default=False)  # Always rebuild layout hints
     gen_hints = DictField()
     #
     nodes = ListField(EmbeddedDocumentField(NodeSettings))
@@ -179,8 +179,8 @@ class MapSettings(Document):
             nn += [NodeSettings(type=nd["type"], id=nd["id"], x=nd["x"], y=nd["y"])]
             mx = max(mx, nd["x"])
             my = max(my, nd["y"])
-        self.width = width or mx
-        self.height = height or my
+        self.width = width or mx or 0.0
+        self.height = height or my or 0.0
         self.nodes = sorted(nn, key=lambda x: (x.type, x.id))
         # Update links
         new_links = {}
@@ -245,6 +245,11 @@ class MapSettings(Document):
             layout = True
         # Generate topology
         topology: TopologyBase = gen(gen_id, node_hints, link_hints, **kwargs)
+        size = topology.get_size()
+        if size and settings.width != size.width:
+            settings.width = size.width
+        if size and settings.height != size.height:
+            settings.height = size.height
         if layout:
             logger.info("[%s|%s] Generating positions", gen_type, gen_id)
             topology.layout()
@@ -270,6 +275,9 @@ class MapSettings(Document):
             "max_links": 1000,
             "background_image": topology.background,
             "name": topology.title,
+            "width": settings.width or 0.0,
+            "height": settings.height or 0.0,
+            "normalize_position": topology.NORMALIZE_POSITION,
             "caps": list(topology.caps),
             "nodes": [x for x in topology.iter_nodes()],
             "links": [ll for ll in topology.iter_edges()],
