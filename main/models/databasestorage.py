@@ -11,7 +11,7 @@ from django.db import models
 # NOC modules
 from noc.core.model.base import NOCModel
 from noc.core.model.fields import BinaryField
-from noc.lib.database_storage import DatabaseStorage as DBS
+from noc.core.model.databasestorage import DatabaseStorage as DBS
 
 
 class DatabaseStorage(NOCModel):

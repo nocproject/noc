@@ -1,7 +1,7 @@
 # ---------------------------------------------------------------------
 # Database File Storage (PostgreSQL only)
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2022 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -51,8 +51,7 @@ class DatabaseStorage(Storage):
         """
         cursor = self.get_cursor()
         cursor.execute(
-            "SELECT %s FROM %s WHERE %s=%%s" % (self.data_field, self.db_table, self.name_field),
-            [name],
+            f"SELECT {self.data_field} FROM {self.db_table} WHERE {self.name_field}=%s", [name]
         )
         row = cursor.fetchone()
         if row is None:
@@ -71,26 +70,16 @@ class DatabaseStorage(Storage):
         binary = psycopg2.Binary(binary)
         if self.exists(name):
             cursor.execute(
-                "UPDATE %s SET %s=%%s,%s='now',%s=%%s WHERE %s=%%s"
-                % (
-                    self.db_table,
-                    self.data_field,
-                    self.mtime_field,
-                    self.size_field,
-                    self.name_field,
-                ),
+                f"UPDATE {self.db_table} "
+                f"SET {self.data_field}=%s, {self.mtime_field}='now', {self.size_field}=%s "
+                f"WHERE {self.name_field}=%s",
                 [binary, size, name],
             )
         else:
             cursor.execute(
-                "INSERT INTO %s(%s,%s,%s,%s) VALUES(%%s,'now',%%s,%%s)"
-                % (
-                    self.db_table,
-                    self.name_field,
-                    self.mtime_field,
-                    self.size_field,
-                    self.data_field,
-                ),
+                f"INSERT INTO {self.db_table} "
+                f"({self.name_field}, {self.mtime_field}, {self.size_field}, {self.data_field}) "
+                f"VALUES (%s, 'now', %s, %s)",
                 [name, size, binary],
             )
         return name
@@ -102,9 +91,7 @@ class DatabaseStorage(Storage):
         :return: True if file exists
         """
         cursor = self.get_cursor()
-        cursor.execute(
-            "SELECT COUNT(*) FROM %s WHERE %s=%%s" % (self.db_table, self.name_field), [name]
-        )
+        cursor.execute(f"SELECT COUNT(*) FROM {self.db_table} WHERE {self.name_field}=%s", [name])
         return cursor.fetchone()[0] > 0
 
     def path(self, name):
@@ -125,14 +112,12 @@ class DatabaseStorage(Storage):
         """
         cursor = self.get_cursor()
         cursor.execute(
-            "SELECT %s FROM %s WHERE %s=%%s" % (self.size_field, self.db_table, self.name_field),
-            [name],
+            f"SELECT {self.size_field} FROM {self.db_table} WHERE {self.name_field}=%s", [name]
         )
         row = cursor.fetchone()
         if row:
             return row[0]
-        else:
-            return 0
+        return 0
 
     def url(self, name):
         pass
@@ -144,7 +129,7 @@ class DatabaseStorage(Storage):
         :return:
         """
         cursor = self.get_cursor()
-        cursor.execute("DELETE FROM %s WHERE %s=%%s" % (self.db_table, self.name_field), [name])
+        cursor.execute(f"DELETE FROM {self.db_table} WHERE {self.name_field}=%s", [name])
 
     def get_available_name(self, name):
         """
@@ -165,9 +150,11 @@ class DatabaseStorage(Storage):
         if not name.endswith("/"):
             name += "/"
         ln = len(name)
+        name = name.replace("'", "\\'")
+        regexp = f"^{name}[^/]+/?$"
         cursor.execute(
-            "SELECT %s FROM %s WHERE %s ~ '^%s[^/]+/?$'"
-            % (self.name_field, self.db_table, self.name_field, name.replace("'", "\\'"))
+            f"SELECT {self.name_field} FROM {self.db_table} WHERE {self.name_field} ~ %s",
+            [regexp],
         )
         return [x[0][ln:] for x in cursor.fetchall()]
 
@@ -182,15 +169,14 @@ class DatabaseStorage(Storage):
         """
         cursor = self.get_cursor()
         cursor.execute(
-            "SELECT %s,%s FROM %s WHERE %s=%%s"
-            % (self.size_field, self.mtime_field, self.db_table, self.name_field),
+            f"SELECT {self.size_field}, {self.mtime_field} FROM {self.db_table} "
+            f"WHERE {self.name_field}=%s",
             [name],
         )
         row = cursor.fetchone()
         if row:
             return {"name": "name", "size": row[0], "mtime": row[1]}
-        else:
-            return None
+        return None
 
     def set_mtime(self, name, mtime):
         """
@@ -201,7 +187,6 @@ class DatabaseStorage(Storage):
         """
         cursor = self.get_cursor()
         cursor.execute(
-            "UPDATE %s SET %s=%%s WHERE %s=%%s"
-            % (self.db_table, self.mtime_field, self.name_field),
+            f"UPDATE {self.db_table} SET {self.mtime_field}=%s WHERE {self.name_field}=%s",
             [mtime, name],
         )
