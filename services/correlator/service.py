@@ -190,7 +190,7 @@ class CorrelatorService(FastAPIService):
         cn = 0
         ec = [(c.name, c.id) for c in AlarmClass.objects.all()]
         for t in AlarmTrigger.objects.filter(is_enabled=True):
-            self.logger.debug("Trigger '%s' for classes:" % t.name)
+            self.logger.debug("Trigger '%s' for classes:", t.name)
             for c_name, c_id in ec:
                 if re.search(t.alarm_class_re, c_name, re.IGNORECASE):
                     try:
@@ -198,7 +198,7 @@ class CorrelatorService(FastAPIService):
                     except KeyError:
                         self.triggers[c_id] = [Trigger(t)]
                     cn += 1
-                    self.logger.debug("    %s" % c_name)
+                    self.logger.debug("    %s", c_name)
             n += 1
         self.logger.info("%d triggers has been loaded to %d classes", n, cn)
 
@@ -239,7 +239,7 @@ class CorrelatorService(FastAPIService):
         """
         Write error log and mark event as failed
         """
-        self.logger.error("Failed to process event %s" % str(event.id))
+        self.logger.error("Failed to process event %s", event.id)
         # Prepare traceback
         t, v, tb = sys.exc_info()
         now = datetime.datetime.now()
@@ -746,7 +746,7 @@ class CorrelatorService(FastAPIService):
         Process `raise` message.
         """
         # Fetch timestamp
-        ts = parse_date(req.timestamp) if req.timestamp else datetime.datetime.now()
+        ts = self.parse_timestamp(req.timestamp)
         # Managed Object
         if req.managed_object.startswith("bi_id:"):
             managed_object = ManagedObject.get_by_bi_id(int(req.managed_object[6:]))
@@ -806,12 +806,29 @@ class CorrelatorService(FastAPIService):
                 await self.topo_rca_lock.release()
                 self.topo_rca_lock = None
 
+    def parse_timestamp(self, iso_timestamp: str) -> datetime.datetime:
+        """
+        It takes a string ISO timestamp, converts it to a datetime object, then converts it to local timezone,
+        then removes the timezone info, then returns the datetime object
+
+        :param iso_timestamp: The timestamp of the alarm in ISO format
+        :return: A datetime object
+        """
+        if iso_timestamp:
+            timestamp = parse_date(iso_timestamp)
+            if timestamp.tzinfo:
+                timestamp = timestamp.astimezone(tz=None).replace(tzinfo=None)
+            self.logger.debug("Raw timestamp: %s NOC timestamp: %s", iso_timestamp, timestamp)
+            return timestamp
+        self.logger.debug("Using current time as alarm timestamp")
+        return datetime.datetime.now()
+
     async def on_msg_clear(self, req: ClearRequest) -> None:
         """
         Process `clear` message.
         """
         # Fetch timestamp
-        ts = parse_date(req.timestamp) if req.timestamp else datetime.datetime.now()
+        ts = self.parse_timestamp(req.timestamp)
         await self.clear_by_reference(req.reference, ts)
 
     async def on_msg_clearid(self, req: ClearIdRequest) -> None:
@@ -819,7 +836,7 @@ class CorrelatorService(FastAPIService):
         Process `clearid` message.
         """
         # Fetch timestamp
-        ts = parse_date(req.timestamp) if req.timestamp else datetime.datetime.now()
+        ts = self.parse_timestamp(req.timestamp)
         await self.clear_by_id(req.id, ts=ts, message=req.message, source=req.source)
 
     async def on_msg_ensure_group(self, req: EnsureGroupRequest) -> None:
@@ -843,7 +860,7 @@ class CorrelatorService(FastAPIService):
             mos[ai.managed_object] = mo
             # Timestamp
             if ai.timestamp:
-                tses[ai.timestamp] = parse_date(ai.timestamp)
+                tses[ai.timestamp] = self.parse_timestamp(ai.timestamp)
             # Alarm class
             alarm_class = AlarmClass.get_by_name(ai.alarm_class)
             if not alarm_class:
