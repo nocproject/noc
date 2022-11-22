@@ -6,7 +6,7 @@
 # ---------------------------------------------------------------------
 
 # NOC modules
-from noc.lib.app.extapplication import ExtApplication, view
+from noc.services.web.base.extapplication import ExtApplication, view
 from noc.sa.interfaces.base import UnicodeParameter
 from noc.main.models.textindex import TextIndex
 from noc.models import get_model

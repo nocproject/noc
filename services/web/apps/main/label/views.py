@@ -10,7 +10,7 @@ import re
 from collections import defaultdict
 
 # NOC modules
-from noc.lib.app.extdocapplication import ExtDocApplication, view
+from noc.services.web.base.extdocapplication import ExtDocApplication, view
 from noc.main.models.label import Label
 from noc.core.translation import ugettext as _
 

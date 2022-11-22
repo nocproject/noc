@@ -9,7 +9,7 @@
 from django import forms
 
 # NOC modules
-from noc.lib.app.simplereport import SimpleReport, SectionRow
+from noc.services.web.base.simplereport import SimpleReport, SectionRow
 from noc.inv.models.discoveryid import DiscoveryID
 from noc.sa.models.managedobject import ManagedObject
 from noc.main.models.pool import Pool

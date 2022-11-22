@@ -20,7 +20,7 @@ from django.http import HttpResponse
 # from pymongo import ReadPreference
 
 # NOC modules
-from noc.lib.app.extapplication import ExtApplication, view
+from noc.services.web.base.extapplication import ExtApplication, view
 from noc.sa.interfaces.base import StringParameter
 from noc.fm.models.archivedalarm import ArchivedAlarm
 from noc.fm.models.activealarm import ActiveAlarm

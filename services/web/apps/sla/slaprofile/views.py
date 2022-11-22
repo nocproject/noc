@@ -6,7 +6,7 @@
 # ---------------------------------------------------------------------
 
 # NOC modules
-from noc.lib.app.extdocapplication import ExtDocApplication
+from noc.services.web.base.extdocapplication import ExtDocApplication
 from noc.sla.models.slaprofile import SLAProfile
 from noc.core.translation import ugettext as _
 

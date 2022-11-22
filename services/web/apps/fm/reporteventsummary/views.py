@@ -9,7 +9,7 @@
 from django import forms
 
 # NOC modules
-from noc.lib.app.simplereport import SimpleReport, TableColumn
+from noc.services.web.base.simplereport import SimpleReport, TableColumn
 from noc.sa.models.managedobject import ManagedObject
 from noc.fm.models.activeevent import ActiveEvent
 from noc.fm.models.eventclass import EventClass

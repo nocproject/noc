@@ -9,7 +9,7 @@
 from typing import Tuple, List
 
 # NOC modules
-from noc.lib.app.extdocapplication import ExtDocApplication, view
+from noc.services.web.base.extdocapplication import ExtDocApplication, view
 from noc.inv.models.resourcegroup import ResourceGroup
 from noc.core.comp import smart_text
 from noc.main.models.label import MATCH_BADGES, MATCH_OPS

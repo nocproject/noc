@@ -6,7 +6,7 @@
 # ----------------------------------------------------------------------
 
 # NOC modules
-from noc.lib.app.extdocapplication import ExtDocApplication
+from noc.services.web.base.extdocapplication import ExtDocApplication
 from noc.inv.models.ifdescpatterns import IfDescPatterns
 from noc.core.translation import ugettext as _
 

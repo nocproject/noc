@@ -14,7 +14,7 @@ from django.db import connection
 from django.contrib.admin.widgets import AdminDateWidget
 
 # NOC modules
-from noc.lib.app.simplereport import SimpleReport, TableColumn, PredefinedReport
+from noc.services.web.base.simplereport import SimpleReport, TableColumn, PredefinedReport
 from noc.fm.models.reboot import Reboot
 from noc.sa.models.managedobject import ManagedObject
 from noc.sa.models.useraccess import UserAccess

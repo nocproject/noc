@@ -6,7 +6,7 @@
 # ----------------------------------------------------------------------
 
 # NOC modules
-from noc.lib.app.extdocapplication import ExtDocApplication
+from noc.services.web.base.extdocapplication import ExtDocApplication
 from noc.cm.models.interfacevalidationpolicy import InterfaceValidationPolicy
 from noc.core.translation import ugettext as _
 

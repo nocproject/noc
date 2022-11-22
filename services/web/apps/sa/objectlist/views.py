@@ -9,7 +9,7 @@
 from django.db.models import Q as d_Q
 
 # NOC modules
-from noc.lib.app.extapplication import ExtApplication, view
+from noc.services.web.base.extapplication import ExtApplication, view
 from noc.sa.models.managedobject import ManagedObject
 from noc.sa.models.administrativedomain import AdministrativeDomain
 from noc.inv.models.resourcegroup import ResourceGroup

@@ -6,10 +6,10 @@
 # ---------------------------------------------------------------------
 
 # NOC modules
-from noc.lib.app.extmodelapplication import ExtModelApplication
+from noc.services.web.base.extmodelapplication import ExtModelApplication
 from noc.ip.models.address import Address
 from noc.ip.models.prefixaccess import PrefixAccess
-from noc.lib.app.decorators.state import state_handler
+from noc.services.web.base.decorators.state import state_handler
 
 
 @state_handler

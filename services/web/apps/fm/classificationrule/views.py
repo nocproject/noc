@@ -12,7 +12,7 @@ import re
 from django.template import Template, Context
 
 # NOC modules
-from noc.lib.app.extdocapplication import ExtDocApplication, view
+from noc.services.web.base.extdocapplication import ExtDocApplication, view
 from noc.fm.models.eventclassificationrule import (
     EventClassificationRule,
     EventClassificationRuleCategory,

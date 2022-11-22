@@ -16,7 +16,7 @@ from django.http import HttpResponse, HttpResponseBadRequest, HttpResponseNotFou
 import pandas as pd
 
 # NOC modules
-from noc.lib.app.extapplication import ExtApplication, view
+from noc.services.web.base.extapplication import ExtApplication, view
 from noc.sa.interfaces.base import StringParameter, IntParameter, ObjectIdParameter
 from noc.sa.models.useraccess import UserAccess
 from noc.sa.models.administrativedomain import AdministrativeDomain

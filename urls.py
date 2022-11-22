@@ -11,7 +11,7 @@ from django.http import HttpResponseServerError
 from django.views.i18n import JavaScriptCatalog
 
 # NOC modules
-from noc.lib.app.site import site
+from noc.services.web.base.site import site
 from noc.core.debug import error_report
 
 #

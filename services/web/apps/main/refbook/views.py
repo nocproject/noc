@@ -10,7 +10,7 @@ from django.views.generic.list import ListView
 from django.shortcuts import get_object_or_404
 
 # NOC modules
-from noc.lib.app.application import Application, view
+from noc.services.web.base.application import Application, view
 from noc.aaa.models.permission import Permission
 from noc.main.models.refbook import RefBook
 from noc.main.models.refbookdata import RefBookData

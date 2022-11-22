@@ -8,7 +8,7 @@
 from typing import List, Tuple
 
 # NOC modules
-from noc.lib.app.extdocapplication import ExtDocApplication
+from noc.services.web.base.extdocapplication import ExtDocApplication
 from noc.inv.models.interfaceprofile import InterfaceProfile
 from noc.main.models.label import MATCH_BADGES, MATCH_OPS
 from noc.core.translation import ugettext as _

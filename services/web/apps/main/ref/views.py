@@ -15,8 +15,8 @@ from django.apps import apps
 from mongoengine.base.common import _document_registry
 
 # NOC modules
-from noc.lib.app.extapplication import ExtApplication, view
-from noc.lib.app.site import site
+from noc.services.web.base.extapplication import ExtApplication, view
+from noc.services.web.base.site import site
 from noc.core.interface.loader import loader as interface_loader
 from noc.core.stencil import stencil_registry
 from noc import settings

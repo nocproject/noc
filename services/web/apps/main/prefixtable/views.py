@@ -9,8 +9,8 @@
 from collections import defaultdict
 
 # NOC modules
-from noc.lib.app.extmodelapplication import ExtModelApplication, view
-from noc.lib.app.modelinline import ModelInline
+from noc.services.web.base.extmodelapplication import ExtModelApplication, view
+from noc.services.web.base.modelinline import ModelInline
 from noc.main.models.prefixtable import PrefixTable, PrefixTablePrefix
 from noc.main.models.label import Label
 from noc.sa.interfaces.base import IPParameter, ListOfParameter, ModelParameter

@@ -10,7 +10,7 @@ import os
 import glob
 
 # NOC modules
-from noc.lib.app.simplereport import SimpleReport, TableColumn, SectionRow
+from noc.services.web.base.simplereport import SimpleReport, TableColumn, SectionRow
 from noc import settings
 from noc.core.translation import ugettext as _
 

@@ -6,7 +6,7 @@
 # ---------------------------------------------------------------------
 
 # NOC modules
-from noc.lib.app.simplereport import SimpleReport, SectionRow, TableColumn
+from noc.services.web.base.simplereport import SimpleReport, SectionRow, TableColumn
 from noc.sa.models.managedobject import ManagedObject
 from noc.sa.models.managedobjectprofile import ManagedObjectProfile
 from noc.inv.models.interface import Interface

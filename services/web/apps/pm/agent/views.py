@@ -6,8 +6,8 @@
 # ----------------------------------------------------------------------
 
 # NOC modules
-from noc.lib.app.extdocapplication import ExtDocApplication, view
-from noc.lib.app.decorators.state import state_handler
+from noc.services.web.base.extdocapplication import ExtDocApplication, view
+from noc.services.web.base.decorators.state import state_handler
 from noc.pm.models.agent import Agent
 from noc.core.translation import ugettext as _
 from noc.core.prettyjson import to_json

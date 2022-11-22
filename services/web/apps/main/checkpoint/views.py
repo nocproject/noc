@@ -12,7 +12,7 @@ import datetime
 from django import forms
 
 # NOC modules
-from noc.lib.app.application import Application, view, HasPerm
+from noc.services.web.base.application import Application, view, HasPerm
 from noc.core.forms import NOCForm
 from noc.main.models.checkpoint import Checkpoint
 from noc.core.translation import ugettext as _

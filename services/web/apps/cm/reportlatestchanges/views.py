@@ -14,7 +14,7 @@ from django import forms
 from pymongo import ReadPreference
 
 # NOC modules
-from noc.lib.app.simplereport import SimpleReport, TableColumn
+from noc.services.web.base.simplereport import SimpleReport, TableColumn
 from noc.core.mongo.connection import get_db
 from noc.sa.models.useraccess import UserAccess
 from noc.sa.models.managedobject import ManagedObject
