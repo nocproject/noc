@@ -9,7 +9,7 @@ noc.egg-info/
 bin/*
 etc/**
 include/*
-lib/python*
+lib/
 lib64
 .*
 !/.devcontainer/
@@ -34,13 +34,9 @@ speedup/*.so
 ui/bi/**
 ui/bi2/**
 include
-lib/*.so.*
-lib/*.so
 lib-python/
 lib_pypy/
 site-packages/
-lib/tcl/
-lib/tk/
 rust/Cargo.lock
 rust/target/
 docs/src/en/src/
