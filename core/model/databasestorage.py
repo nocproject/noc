@@ -150,11 +150,11 @@ class DatabaseStorage(Storage):
         if not name.endswith("/"):
             name += "/"
         ln = len(name)
-        name_r = name.replace("'", "\\'")
-        name_r = f"^{name_r}[^/]+/?$"
+        name = name.replace("'", "\\'")
+        regexp = f"^{name}[^/]+/?$"
         cursor.execute(
             f"SELECT {self.name_field} FROM {self.db_table} WHERE {self.name_field} ~ %s",
-            [name_r],
+            [regexp],
         )
         return [x[0][ln:] for x in cursor.fetchall()]
 
