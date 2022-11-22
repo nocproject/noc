@@ -12,7 +12,7 @@ import stat
 import operator
 
 # NOC modules
-from noc.lib.app.simplereport import SimpleReport
+from noc.services.web.base.simplereport import SimpleReport
 from noc.config import config
 from noc.core.translation import ugettext as _
 

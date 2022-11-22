@@ -16,7 +16,7 @@ import cachetools
 from mongoengine.queryset import Q as MQ
 
 # NOC modules
-from noc.lib.app.extmodelapplication import ExtModelApplication, view
+from noc.services.web.base.extmodelapplication import ExtModelApplication, view
 from noc.sa.models.administrativedomain import AdministrativeDomain
 from noc.sa.models.managedobject import ManagedObject, ManagedObjectAttribute
 from noc.sa.models.useraccess import UserAccess
@@ -32,8 +32,8 @@ from noc.inv.models.platform import Platform
 from noc.inv.models.firmware import Firmware
 from noc.inv.models.resourcegroup import ResourceGroup
 from noc.inv.models.object import Object
-from noc.lib.app.modelinline import ModelInline
-from noc.lib.app.repoinline import RepoInline
+from noc.services.web.base.modelinline import ModelInline
+from noc.services.web.base.repoinline import RepoInline
 from noc.project.models.project import Project
 from noc.core.text import alnum_key
 from noc.sa.interfaces.base import (

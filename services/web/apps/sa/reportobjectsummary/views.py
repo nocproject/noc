@@ -9,7 +9,7 @@
 from django import forms
 
 # NOC modules
-from noc.lib.app.simplereport import SimpleReport, TableColumn, PredefinedReport
+from noc.services.web.base.simplereport import SimpleReport, TableColumn, PredefinedReport
 from noc.sa.models.useraccess import UserAccess
 from noc.sa.models.profile import Profile
 from noc.inv.models.platform import Platform

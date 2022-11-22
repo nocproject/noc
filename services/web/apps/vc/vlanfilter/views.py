@@ -9,7 +9,7 @@
 from collections import defaultdict
 
 # NOC modules
-from noc.lib.app.extdocapplication import ExtDocApplication
+from noc.services.web.base.extdocapplication import ExtDocApplication
 from noc.vc.models.vlanfilter import VLANFilter
 from noc.sa.interfaces.base import IntParameter
 from noc.main.models.label import Label

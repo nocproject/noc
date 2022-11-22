@@ -14,7 +14,7 @@ from typing import List, Set
 from concurrent.futures import ThreadPoolExecutor, as_completed
 
 # NOC modules
-from noc.lib.app.extapplication import ExtApplication, view
+from noc.services.web.base.extapplication import ExtApplication, view
 from noc.inv.models.networksegment import NetworkSegment
 from noc.inv.models.interface import Interface
 from noc.inv.models.discoveryid import DiscoveryID

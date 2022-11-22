@@ -12,7 +12,7 @@ import orjson
 from mongoengine.queryset.visitor import Q
 
 # NOC modules
-from noc.lib.app.extdocapplication import ExtDocApplication, view
+from noc.services.web.base.extdocapplication import ExtDocApplication, view
 from noc.maintenance.models.maintenance import (
     Maintenance,
     MaintenanceObject,

@@ -10,7 +10,7 @@ from django import forms
 from pymongo import ReadPreference
 
 # NOC modules
-from noc.lib.app.simplereport import SimpleReport, PredefinedReport, SectionRow
+from noc.services.web.base.simplereport import SimpleReport, PredefinedReport, SectionRow
 from noc.core.mongo.connection import get_db
 from noc.main.models.pool import Pool
 from noc.sa.models.managedobject import ManagedObject

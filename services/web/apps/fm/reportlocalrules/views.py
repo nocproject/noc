@@ -9,7 +9,7 @@
 from django.utils.html import escape
 
 # NOC modules
-from noc.lib.app.reportapplication import ReportApplication
+from noc.services.web.base.reportapplication import ReportApplication
 from noc.fm.models.eventclassificationrule import EventClassificationRule
 from noc.core.text import indent
 from noc.core.translation import ugettext as _

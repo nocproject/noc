@@ -12,8 +12,8 @@ from django.http import HttpResponse
 from django.conf import settings
 
 # NOC modules
-from noc.lib.app.site import site
-from noc.lib.app.extmodelapplication import ExtModelApplication, view
+from noc.services.web.base.site import site
+from noc.services.web.base.extmodelapplication import ExtModelApplication, view
 from noc.aaa.models.group import Group
 from noc.aaa.models.permission import Permission
 from noc.core.cache.decorator import cachedmethod

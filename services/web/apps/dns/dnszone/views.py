@@ -6,9 +6,9 @@
 # ---------------------------------------------------------------------
 
 # NOC modules
-from noc.lib.app.extmodelapplication import ExtModelApplication
-from noc.lib.app.modelinline import ModelInline
-from noc.lib.app.repoinline import RepoInline
+from noc.services.web.base.extmodelapplication import ExtModelApplication
+from noc.services.web.base.modelinline import ModelInline
+from noc.services.web.base.repoinline import RepoInline
 from noc.dns.models.dnszone import DNSZone
 from noc.dns.models.dnszonerecord import DNSZoneRecord
 from noc.core.translation import ugettext as _

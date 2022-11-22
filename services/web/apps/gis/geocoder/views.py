@@ -7,7 +7,7 @@
 
 # NOC modules
 from noc.config import config
-from noc.lib.app.extapplication import ExtApplication, view
+from noc.services.web.base.extapplication import ExtApplication, view
 from noc.core.geocoder.loader import loader
 
 

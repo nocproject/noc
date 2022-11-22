@@ -6,7 +6,7 @@
 # ---------------------------------------------------------------------
 
 # NOC modules
-from noc.lib.app.extmodelapplication import ExtModelApplication
+from noc.services.web.base.extmodelapplication import ExtModelApplication
 from noc.fm.models.ignoreeventrules import IgnoreEventRules
 from noc.sa.interfaces.base import REParameter
 from noc.core.translation import ugettext as _
