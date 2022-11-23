@@ -288,6 +288,7 @@ Ext.define("NOC.inv.map.MapPanel", {
     //
     renderMap: function(data) {
         var me = this,
+            backgroundOpt = {},
             nodes = [],
             badges = [],
             links = [],
@@ -297,9 +298,7 @@ Ext.define("NOC.inv.map.MapPanel", {
                     badges.push(data.badges);
                 }
             };
-
-        me.normalize_position = true;
-        if(data.hasOwnProperty('normalize_position')) {
+        if(data.hasOwnProperty('normalize_position') && data.normalize_position === false) {
             me.normalize_position = data.normalize_position;
             me.bg_width = data.width;
             me.bg_height = data.height;
@@ -315,12 +314,13 @@ Ext.define("NOC.inv.map.MapPanel", {
         me.graph.clear();
         // Set background
         if(data.background_image) {
-            me.paper.drawBackground({
+            backgroundOpt = {
                 image: '/main/imagestore/' + data.background_image + '/image/',
                 position: 'left top;',
                 opacity: 0.3
-            });
+            };
         }
+        me.paper.drawBackground(backgroundOpt);
         // Create nodes
         Ext.each(data.nodes, function(node) {
             if(!me.app.viewAllNodeButton.pressed && data.links.length > data.max_links && node.external === true) {

@@ -389,6 +389,7 @@ Ext.define("NOC.inv.map.Application", {
         me.viewStpButton.setPressed(false);
         me.zoomCombo.setValue(1.0);
         me.mapPanel.setZoom(1.0);
+        me.mapPanel.paper.clearGrid();
     },
 
     onMapReady: function() {
@@ -473,9 +474,6 @@ Ext.define("NOC.inv.map.Application", {
             me.viewMapButton.setPressed(true);
             me.saveButton.setDisabled(true);
             me.setStateMapButtons(false);
-            if(!me.mapPanel.normalize_position) {
-                me.rotateButton.setDisabled(true);
-            }
         } else {
             me.setStateMapButtons(true);
             me.saveButton.setDisabled(true);
@@ -565,6 +563,9 @@ Ext.define("NOC.inv.map.Application", {
         me.newLayoutButton.setDisabled(state);
         me.rotateButton.setDisabled(state);
         me.revertButton.setDisabled(state);
+        if(!me.mapPanel.normalize_position) {
+            me.rotateButton.setDisabled(true);
+        }
     },
 
     searchByText: function(field, e) {
