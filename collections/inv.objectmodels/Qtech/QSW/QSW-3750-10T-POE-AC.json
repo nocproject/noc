@@ -73,6 +73,7 @@
         },
         {
             "description": "Ethernet1/0/9",
+            "combo": "Ethernet1/0/9",
             "direction": "s",
             "gender": "f",
             "name": "Ethernet1/0/9_rj",
@@ -81,6 +82,7 @@
         },
         {
             "description": "Ethernet1/0/9 Fiber",
+            "combo": "Ethernet1/0/9",
             "direction": "i",
             "gender": "f",
             "name": "Ethernet1/0/9_sfp",
@@ -97,6 +99,7 @@
         },
         {
             "description": "Ethernet1/0/10",
+            "combo": "Ethernet1/0/10",
             "direction": "s",
             "gender": "f",
             "name": "Ethernet1/0/10_rj",
@@ -105,6 +108,7 @@
         },
         {
             "description": "Ethernet1/0/10 Fiber",
+            "combo": "Ethernet1/0/10",
             "direction": "i",
             "gender": "f",
             "name": "Ethernet1/0/10_sfp",
