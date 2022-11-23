@@ -27,6 +27,7 @@ class Profile(BaseProfile):
         (rb"Overwrite file \[startup-config\].... \(Y\/N\)", b"Y"),
         (rb"Would you like to continue \? \(Y\/N\)\[N\]", b"Y"),
         (rb"Clear Logging File \? \(Y\/N\)\[N\]", b"Y"),
+        (rb"press ENTER key to retry authentication", b"\n"),
     ]
     pattern_unprivileged_prompt = rb"^(?P<hostname>\S+)>\s*"
     pattern_syntax_error = (
