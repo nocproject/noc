@@ -81,7 +81,7 @@
             "type__name": "Combined"
         },
         {
-            "combo": "",
+            "combo": "1/1/9",
             "description": "gigaethernet 1/1/9 port",
             "direction": "s",
             "gender": "f",
@@ -90,7 +90,7 @@
             "type__name": "Electrical | RJ45"
         },
         {
-            "combo": "",
+            "combo": "1/1/9",
             "description": "gigaethernet 1/1/9 SFP port",
             "direction": "i",
             "gender": "f",
@@ -107,7 +107,7 @@
             "type__name": "Combined"
         },
         {
-            "combo": "",
+            "combo": "1/1/10",
             "description": "gigaethernet 1/1/10 port",
             "direction": "s",
             "gender": "f",
@@ -116,7 +116,7 @@
             "type__name": "Electrical | RJ45"
         },
         {
-            "combo": "",
+            "combo": "1/1/10",
             "description": "gigaethernet 1/1/10 SFP port",
             "direction": "i",
             "gender": "f",

@@ -9,117 +9,117 @@
     "labels": ["noc::inv::chassis", "noc::inv::sup", "noc::inv::psu", "noc::inv::fabric", "noc::inv::fan", "noc::inv::port"],
     "connections": [
         {
+            "name": "-48",
             "description": "-48V",
             "direction": "s",
             "gender": "f",
-            "name": "-48",
             "protocols": [">-48VDC"],
             "type__name": "Power | TB Barrier Screw 2 Pin"
         },
         {
+            "name": "RTN",
             "description": "RTN (+)",
             "direction": "s",
             "gender": "f",
-            "name": "RTN",
             "protocols": [">-48VDC"],
             "type__name": "Power | TB Barrier Screw 2 Pin"
         },
         {
+            "name": "Console",
             "description": "Management Console",
             "direction": "s",
             "gender": "f",
-            "name": "Console",
             "protocols": [">RS232"],
             "type__name": "Electrical | RJ45"
         },
         {
+            "name": "Ethernet0/0/1",
             "description": "Ethernet 0/0/1 port",
             "direction": "s",
             "gender": "f",
-            "name": "Ethernet0/0/1",
             "protocols": ["10BASET", "100BASETX"],
             "type__name": "Electrical | RJ45"
         },
         {
+            "name": "Ethernet0/0/2",
             "description": "Ethernet 0/0/2 port",
             "direction": "s",
             "gender": "f",
-            "name": "Ethernet0/0/2",
             "protocols": ["10BASET", "100BASETX"],
             "type__name": "Electrical | RJ45"
         },
         {
+            "name": "Ethernet0/0/3",
             "description": "Ethernet 0/0/3 port",
             "direction": "s",
             "gender": "f",
-            "name": "Ethernet0/0/3",
             "protocols": ["10BASET", "100BASETX"],
             "type__name": "Electrical | RJ45"
         },
         {
+            "name": "Ethernet0/0/4",
             "description": "Ethernet 0/0/4 port",
             "direction": "s",
             "gender": "f",
-            "name": "Ethernet0/0/4",
             "protocols": ["10BASET", "100BASETX"],
             "type__name": "Electrical | RJ45"
         },
         {
+            "name": "Ethernet0/0/5",
             "description": "Ethernet 0/0/5 port",
             "direction": "s",
             "gender": "f",
-            "name": "Ethernet0/0/5",
             "protocols": ["10BASET", "100BASETX"],
             "type__name": "Electrical | RJ45"
         },
         {
+            "name": "Ethernet0/0/6",
             "description": "Ethernet 0/0/6 port",
             "direction": "s",
             "gender": "f",
-            "name": "Ethernet0/0/6",
             "protocols": ["10BASET", "100BASETX"],
             "type__name": "Electrical | RJ45"
         },
         {
+            "name": "Ethernet0/0/7",
             "description": "Ethernet 0/0/7 port",
             "direction": "s",
             "gender": "f",
-            "name": "Ethernet0/0/7",
             "protocols": ["10BASET", "100BASETX"],
             "type__name": "Electrical | RJ45"
         },
         {
+            "name": "Ethernet0/0/8",
             "description": "Ethernet 0/0/8 port",
             "direction": "s",
             "gender": "f",
-            "name": "Ethernet0/0/8",
             "protocols": ["10BASET", "100BASETX"],
             "type__name": "Electrical | RJ45"
         },
         {
+            "name": "GigabitEthernet0/0/1",
             "description": "GigabitEthernet 0/0/1 port",
             "direction": "s",
             "gender": "s",
-            "name": "GigabitEthernet0/0/1",
             "protocols": ["10BASET", "100BASETX", "1000BASET", "TransEth100M", "TransEth1G"],
             "type__name": "Combined"
         },
         {
-            "combo": "",
+            "name": "GigabitEthernet0/0/1_rj",
             "description": "GigabitEthernet 0/0/1 port",
+            "combo": "GigabitEthernet0/0/1",
             "direction": "s",
             "gender": "f",
-            "name": "GigabitEthernet0/0/1_rj",
             "protocols": ["10BASET", "100BASETX", "1000BASET"],
             "type__name": "Electrical | RJ45"
         },
         {
-            "combo": "",
+            "name": "GigabitEthernet0/0/1_sfp",
             "description": "GigabitEthernet 0/0/1 SFP port",
+            "combo": "GigabitEthernet0/0/1",
             "direction": "i",
             "gender": "f",
             "internal_name": "Port_1",
-            "name": "GigabitEthernet0/0/1_sfp",
             "protocols": ["TransEth100M", "TransEth1G"],
             "type__name": "Transceiver | SFP"
         }
