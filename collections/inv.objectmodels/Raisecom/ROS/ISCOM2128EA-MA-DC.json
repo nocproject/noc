@@ -209,7 +209,7 @@
             "type__name": "Combined"
         },
         {
-            "combo": "",
+            "combo": "25",
             "description": "port 25",
             "direction": "s",
             "gender": "f",
@@ -218,7 +218,7 @@
             "type__name": "Electrical | RJ45"
         },
         {
-            "combo": "",
+            "combo": "25",
             "description": "Fiber port 25",
             "direction": "i",
             "gender": "f",
@@ -235,7 +235,7 @@
             "type__name": "Combined"
         },
         {
-            "combo": "",
+            "combo": "26",
             "description": "port 26",
             "direction": "s",
             "gender": "f",
@@ -244,7 +244,7 @@
             "type__name": "Electrical | RJ45"
         },
         {
-            "combo": "",
+            "combo": "26",
             "description": "Fiber port 26",
             "direction": "i",
             "gender": "f",
@@ -261,7 +261,7 @@
             "type__name": "Combined"
         },
         {
-            "combo": "",
+            "combo": "27",
             "description": "port 27",
             "direction": "s",
             "gender": "f",
@@ -270,7 +270,7 @@
             "type__name": "Electrical | RJ45"
         },
         {
-            "combo": "",
+            "combo": "27",
             "description": "Fiber port 27",
             "direction": "i",
             "gender": "f",
@@ -287,7 +287,7 @@
             "type__name": "Combined"
         },
         {
-            "combo": "",
+            "combo": "28",
             "description": "port 28",
             "direction": "s",
             "gender": "f",
@@ -296,7 +296,7 @@
             "type__name": "Electrical | RJ45"
         },
         {
-            "combo": "",
+            "combo": "28",
             "description": "Fiber port 28",
             "direction": "i",
             "gender": "f",
