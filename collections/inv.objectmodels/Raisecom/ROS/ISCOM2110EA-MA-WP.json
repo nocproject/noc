@@ -81,7 +81,7 @@
             "type__name": "Combined"
         },
         {
-            "combo": "",
+            "combo": "9",
             "description": "port 9",
             "direction": "s",
             "gender": "f",
@@ -90,7 +90,7 @@
             "type__name": "Electrical | RJ45"
         },
         {
-            "combo": "",
+            "combo": "9",
             "description": "Fiber port 9",
             "direction": "i",
             "gender": "f",
@@ -107,7 +107,7 @@
             "type__name": "Combined"
         },
         {
-            "combo": "",
+            "combo": "10",
             "description": "port 10",
             "direction": "s",
             "gender": "f",
@@ -116,7 +116,7 @@
             "type__name": "Electrical | RJ45"
         },
         {
-            "combo": "",
+            "combo": "10",
             "description": "Fiber port 10",
             "direction": "i",
             "gender": "f",

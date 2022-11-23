@@ -235,7 +235,7 @@
             "type__name": "Combined"
         },
         {
-            "combo": "",
+            "combo": "1/1/26",
             "description": "gigaethernet 1/1/26 port",
             "direction": "s",
             "gender": "f",
@@ -244,7 +244,7 @@
             "type__name": "Electrical | RJ45"
         },
         {
-            "combo": "",
+            "combo": "1/1/26",
             "description": "gigaethernet 1/1/26 SFP port",
             "direction": "i",
             "gender": "f",
@@ -261,7 +261,7 @@
             "type__name": "Combined"
         },
         {
-            "combo": "",
+            "combo": "1/1/27",
             "description": "gigaethernet 1/1/27 port",
             "direction": "s",
             "gender": "f",
@@ -270,7 +270,7 @@
             "type__name": "Electrical | RJ45"
         },
         {
-            "combo": "",
+            "combo": "1/1/27",
             "description": "gigaethernet 1/1/27 SFP port",
             "direction": "i",
             "gender": "f",
@@ -287,7 +287,7 @@
             "type__name": "Combined"
         },
         {
-            "combo": "",
+            "combo": "1/1/28",
             "description": "gigaethernet 1/1/28 port",
             "direction": "s",
             "gender": "f",
@@ -296,7 +296,7 @@
             "type__name": "Electrical | RJ45"
         },
         {
-            "combo": "",
+            "combo": "1/1/28",
             "description": "gigaethernet 1/1/28 SFP port",
             "direction": "i",
             "gender": "f",
