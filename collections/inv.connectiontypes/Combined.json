@@ -4,5 +4,28 @@
     "uuid": "f3a6ce28-bdf7-463f-bce5-55b529a31874",
     "description": "Only one connection for multiple ports (ex. switch combo-port)",
     "c_group": [],
-    "genders": "s"
+    "genders": "s",
+    "matchers": [
+        {
+            "protocol": "1000BASET",
+            "scope": "physical"
+        },
+        {
+            "protocol": "1000BASETX",
+            "scope": "physical"
+        },
+        {
+            "protocol": "TransEth100M",
+            "scope": "physical"
+        },
+        {
+            "protocol": "TransEth1G",
+            "scope": "physical"
+        },
+        {
+            "protocol": "TransEth10G",
+            "scope": "physical"
+        }
+    ]
 }
+"GigabitEthernet0/0/14"
