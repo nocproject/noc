@@ -6,6 +6,7 @@
 # ---------------------------------------------------------------------
 
 # Python modules
+import asyncio
 from typing import Optional, Dict, Any, List
 
 # Third-party modules
@@ -24,10 +25,12 @@ from noc.core.http.client import fetch
 from noc.core.perf import metrics
 from noc.config import config
 from noc.core.comp import smart_text
+from noc.core.ioloop.util import setup_asyncio, run_sync
 from ..models.streaming import StreamingConfig
 
 BULK_PING_TIMEOUT = 5
 BULK_PING_INTERVAL = 0.1
+BULK_PING_MAX_JOBS = 6
 
 router = APIRouter()
 
@@ -262,14 +265,35 @@ class ActivatorAPI(JSONRPCAPI):
         n: int = 1,
         tos: Optional[int] = None,
     ):
+        async def runner():
+            nonlocal lock
+            lock = asyncio.Lock()
+            tasks = [
+                asyncio.create_task(ping_worker(), name=f"ping-{i}")
+                for i in range(min(BULK_PING_MAX_JOBS, len(addresses)))
+            ]
+            await asyncio.gather(*tasks)
+
+        async def ping_worker():
+            nonlocal result
+            while True:
+                async with lock:
+                    if not addresses:
+                        break  # Done
+                    address = addresses.pop(0)
+                rtt_list = []
+                async for rtt in ping.iter_rtt(address, interval=BULK_PING_INTERVAL, count=n):
+                    rtt_list += [rtt]
+                print("!", address, rtt_list)
+                result += [{"address": address, "rtt": rtt_list}]
+
+        # Run ping
         timeout = timeout or BULK_PING_TIMEOUT
         result = []
-        for address in addresses:
-            p = Ping(tos=tos, timeout=timeout)
-            rtt_list = []
-            async for rtt in p.iter_rtt(address, interval=BULK_PING_INTERVAL, count=n):
-                rtt_list += [rtt]
-            result += [{"address": address, "rtt": rtt_list}]
+        lock: Optional[asyncio.Lock] = None
+        ping = Ping(tos=tos, timeout=timeout)
+        setup_asyncio()
+        run_sync(runner)
         return result
 
 
