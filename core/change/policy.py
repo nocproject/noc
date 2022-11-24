@@ -171,7 +171,7 @@ class SimpleChangeTrackerPolicy(BaseChangeTrackerPolicy):
             return
         ds_changes = defaultdict(set)
         for ds_name, item_id in datastreams:
-            ds_changes[ds_name].add(item_id)
+            ds_changes[ds_name].add(str(item_id))
         defer(DS_APPLY_HANDLER, key=key, ds_changes={k: list(v) for k, v in ds_changes.items()})
 
 
@@ -208,7 +208,7 @@ class BulkChangeTrackerPolicy(BaseChangeTrackerPolicy):
         t0 = time.time()
         # Changed datastreams
         for ds_name, item_id in datastreams:
-            self.ds_changes[ds_name].add(item_id)
+            self.ds_changes[ds_name].add(str(item_id))
         prev = self.changes.get((model, id))
         if prev is None:
             # First change
