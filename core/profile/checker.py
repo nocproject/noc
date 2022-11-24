@@ -52,6 +52,7 @@ class ProfileChecker(object):
         )
         self.result_cache: Dict[Tuple[str, str], str] = {}  # (method, param) -> result
         self.error: Optional[str] = None
+        self.snmp_check: Optional[bool] = None
         self.snmp_community = snmp_community
         self.calling_service = calling_service
         self.snmp_version = snmp_version or [SNMP_v2c]
@@ -201,26 +202,31 @@ class ProfileChecker(object):
             return None
         for v in self.snmp_version:
             if v == SNMP_v1:
-                r = self.snmp_v1_get(param)
+                r, message = self.snmp_v1_get(param)
             elif v == SNMP_v2c:
-                r = self.snmp_v2c_get(param)
+                r, message = self.snmp_v2c_get(param)
             else:
+                self.snmp_check = self.snmp_check or False
                 raise NOCError(msg="Unsupported SNMP version")
+            if not r and not message:
+                self.snmp_check = self.snmp_check or False
+                return
             if r:
+                self.snmp_check = True
                 return r
 
     def check_http_get(self, param):
         """
         Perform HTTP GET check. Param can be URL path or :<port>/<path>
         """
-        url = "http://%s%s" % (self.address, param)
+        url = f"http://{self.address}{param}"
         return self.http_get(url)
 
     def check_https_get(self, param):
         """
         Perform HTTPS GET check. Param can be URL path or :<port>/<path>
         """
-        url = "https://%s%s" % (self.address, param)
+        url = f"https://{self.address}{param}"
         return self.https_get(url)
 
     def is_match(self, result: str, method: str, value: str) -> bool:
@@ -247,7 +253,7 @@ class ProfileChecker(object):
         try:
             return open_sync_rpc(
                 "activator", pool=self.pool, calling_service=self.calling_service
-            ).snmp_v1_get(self.address, self.snmp_community, param)
+            ).snmp_v1_get(self.address, self.snmp_community, param, 5, True)
         except RPCError as e:
             self.logger.error("RPC Error: %s", e)
             return None
@@ -262,7 +268,7 @@ class ProfileChecker(object):
         try:
             return open_sync_rpc(
                 "activator", pool=self.pool, calling_service=self.calling_service
-            ).snmp_v2c_get(self.address, self.snmp_community, param)
+            ).snmp_v2c_get(self.address, self.snmp_community, param, 5, True)
         except RPCError as e:
             self.logger.error("RPC Error: %s", e)
             return None

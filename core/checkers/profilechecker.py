@@ -10,6 +10,7 @@ from typing import List, Iterable
 
 # NOC modules
 from noc.core.text import filter_non_printable
+from noc.core.snmp.version import SNMP_v1, SNMP_v2c
 from .base import ObjectChecker, CheckResult, ProfileSet
 from ..profile.checker import ProfileChecker as ProfileCheckerProfile
 from ..script.credentialchecker import Protocol
@@ -52,17 +53,25 @@ class ProfileChecker(ObjectChecker):
             snmp_version=snmp_version,
         )
         profile = checker.get_profile()
-        if not profile:
+        if profile:
+            # Skipped
             yield CheckResult(
                 check="PROFILE",
                 status=bool(profile),
-                error=filter_non_printable(checker.get_error())[:200],
+                data={"profile": profile.name},
+                action=ProfileSet(profile=profile.name),
             )
             return
-        # Skipped
         yield CheckResult(
             check="PROFILE",
             status=bool(profile),
-            data={"profile": profile.name},
-            action=ProfileSet(profile=profile.name),
+            error=filter_non_printable(checker.get_error())[:200],
         )
+        # If check SNMP failed - Set SNMP error
+        if not checker.ignoring_snmp and checker.snmp_check is False:
+            for sv in snmp_version:
+                yield CheckResult(
+                    check={SNMP_v1: "SNMPv1", SNMP_v2c: "SNMPv2c"}[sv],
+                    status=False,
+                    error="Not getting OID on Profile Discovery",
+                )

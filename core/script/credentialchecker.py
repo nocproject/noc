@@ -230,7 +230,7 @@ class CredentialChecker(object):
                         snmp,
                         snmp_ro=ap.snmp_ro,
                         snmp_rw=ap.snmp_rw,
-                        check_oids=cc.suggest_snmp_oids or None,
+                        check_oids=tuple(cc.suggest_snmp_oids or []) or None,
                     )
             if cli:
                 for sc in cc.suggest_credential:
@@ -247,14 +247,13 @@ class CredentialChecker(object):
                         snmp,
                         snmp_ro=ss.snmp_ro,
                         snmp_rw=ss.snmp_rw,
-                        check_oids=cc.suggest_snmp_oids or None,
+                        check_oids=tuple(cc.suggest_snmp_oids or []) or None,
                     )
 
     def iter_result(self, protocols: Optional[Iterable[Protocol]] = None) -> List[ProtocolResult]:
         """
         Iterate over suggest result
         :param protocols: List protocols for check
-        :param first_success: Skip other suggest for protocol after first success
         :return:
         """
         unsupported_proto = set()
