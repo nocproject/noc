@@ -13,7 +13,7 @@ from typing import Dict, List, Optional, Iterable, Any
 from bson import ObjectId
 
 # NOC modules
-from noc.core.topology.base import TopologyBase, MapItem, PathItem, MapSize
+from noc.core.topology.base import TopologyBase, MapItem, PathItem, MapSize, BackgroundImage
 from noc.inv.models.configuredmap import ConfiguredMap
 from noc.inv.models.link import Link
 from noc.inv.models.interface import Interface
@@ -66,6 +66,11 @@ class ConfiguredTopology(TopologyBase):
     @property
     def background(self) -> Optional[str]:
         return str(self.cfgmap.background_image.id) if self.cfgmap.background_image else None
+
+    def get_background(self) -> Optional[BackgroundImage]:
+        if self.cfgmap.background_image:
+            return BackgroundImage(image=str(self.cfgmap.background_image.id), opacity=self.cfgmap.background_opacity)
+        return
 
     def add_objects_links(self, object_ids: List[int]):
         """

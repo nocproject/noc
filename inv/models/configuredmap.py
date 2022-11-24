@@ -144,9 +144,10 @@ class ConfiguredMap(Document):
     #
     layout = StringField(choices=["auto", "manual", "spring", "radial"], default="manual")
     # Map size
-    width = IntField()
-    height = IntField()
+    width = IntField(min_value=0)
+    height = IntField(min_value=0)
     background_image = ReferenceField(ImageStore)
+    background_opacity = IntField(min_value=0, max_value=100, default=30)
     # Global status filter, may be changed by MapSettings
     status_filter = EmbeddedDocumentListField(AlarmFilter)
     # Add linked Node to map

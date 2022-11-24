@@ -269,11 +269,13 @@ class MapSettings(Document):
                     for n in topology.G.edges.values()
                 ],
             )
+        background = topology.get_background()
         return {
             "id": str(gen_id),
             "type": gen_type,
             "max_links": 1000,
-            "background_image": topology.background,
+            "background_image": background.image if background else None,
+            "background_opacity": background.opacity if background else None,
             "name": topology.title,
             "width": settings.width or 0.0,
             "height": settings.height or 0.0,

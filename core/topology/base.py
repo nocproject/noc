@@ -43,6 +43,12 @@ class MapSize(object):
 
 
 @dataclass
+class BackgroundImage(object):
+    image: str
+    opacity: int = 30
+
+
+@dataclass
 class PathItem(object):
     title: str
     id: str
@@ -520,8 +526,7 @@ class TopologyBase(object):
         for u, v in self.G.edges():
             yield self.G[u][v]
 
-    @property
-    def background(self) -> Optional[str]:
+    def get_background(self) -> Optional[BackgroundImage]:
         """
         Return Background Image for Map
         :return:
