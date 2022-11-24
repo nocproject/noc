@@ -274,7 +274,6 @@ class ActivatorAPI(JSONRPCAPI):
                 rtt_list = []
                 async for rtt in ping.iter_rtt(address, interval=BULK_PING_INTERVAL, count=n):
                     rtt_list += [rtt]
-                print("!", address, rtt_list)
                 result += [{"address": address, "rtt": rtt_list}]
 
         timeout = timeout or BULK_PING_TIMEOUT
