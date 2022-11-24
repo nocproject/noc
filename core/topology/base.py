@@ -484,11 +484,11 @@ class TopologyBase(object):
         :return:
         """
         x = node.copy()
-        if x["type"] == "managedobject":
+        if "mo" in x:
             del x["mo"]
+        if x["type"] == "managedobject":
             x["external"] = x.get("role") != "segment"
         elif node["type"] == "cloud":
-            del x["link"]
             x["external"] = False
         return x
 
