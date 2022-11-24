@@ -103,7 +103,7 @@ Ext.define("NOC.inv.configuredmap.Application", {
                                             labelAlign: "top",
                                             allowBlank: true,
                                             minValue: 1,
-                                            uiStyle: "small"
+                                            width: 100,
                                         },
                                         {
                                             name: "height",
@@ -112,7 +112,17 @@ Ext.define("NOC.inv.configuredmap.Application", {
                                             labelAlign: "top",
                                             allowBlank: true,
                                             minValue: 1,
-                                            uiStyle: "small"
+                                            width: 100,
+                                        },
+                                        {
+                                            name: "background_opacity",
+                                            xtype: "numberfield",
+                                            fieldLabel: __("Opacity"),
+                                            labelAlign: "top",
+                                            allowBlank: true,
+                                            minValue: 0,
+                                            maxValue: 100,
+                                            width: 90,
                                         },
                                         {
                                             name: "background_image",

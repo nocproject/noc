@@ -35,6 +35,11 @@ Ext.define("NOC.inv.configuredmap.Model", {
             defaultValue: 0
         },
         {
+            name: "background_opacity",
+            type: "int",
+            defaultValue: 30
+        },
+        {
             name: "background_image",
             type: "string"
         },

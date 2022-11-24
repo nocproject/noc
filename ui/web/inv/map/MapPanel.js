@@ -317,7 +317,7 @@ Ext.define("NOC.inv.map.MapPanel", {
             backgroundOpt = {
                 image: '/main/imagestore/' + data.background_image + '/image/',
                 position: 'left top;',
-                opacity: 0.3
+                opacity: data.background_opacity / 100,
             };
         }
         me.paper.drawBackground(backgroundOpt);
