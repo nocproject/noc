@@ -25,7 +25,6 @@ from noc.core.http.client import fetch
 from noc.core.perf import metrics
 from noc.config import config
 from noc.core.comp import smart_text
-from noc.core.ioloop.util import setup_asyncio, run_sync
 from ..models.streaming import StreamingConfig
 
 BULK_PING_TIMEOUT = 5
@@ -265,15 +264,6 @@ class ActivatorAPI(JSONRPCAPI):
         n: int = 1,
         tos: Optional[int] = None,
     ):
-        async def runner():
-            nonlocal lock
-            lock = asyncio.Lock()
-            tasks = [
-                asyncio.create_task(ping_worker(), name=f"ping-{i}")
-                for i in range(min(BULK_PING_MAX_JOBS, len(addresses)))
-            ]
-            await asyncio.gather(*tasks)
-
         async def ping_worker():
             nonlocal result
             while True:
@@ -287,13 +277,15 @@ class ActivatorAPI(JSONRPCAPI):
                 print("!", address, rtt_list)
                 result += [{"address": address, "rtt": rtt_list}]
 
-        # Run ping
         timeout = timeout or BULK_PING_TIMEOUT
         result = []
-        lock: Optional[asyncio.Lock] = None
         ping = Ping(tos=tos, timeout=timeout)
-        setup_asyncio()
-        run_sync(runner)
+        lock = asyncio.Lock()
+        tasks = [
+            asyncio.create_task(ping_worker(), name=f"ping-{i}")
+            for i in range(min(BULK_PING_MAX_JOBS, len(addresses)))
+        ]
+        await asyncio.gather(*tasks)
         return result
 
 
