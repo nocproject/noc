@@ -16,6 +16,17 @@ from typing import Optional, Coroutine
 
 class PeriodicCallback(object):
     def __init__(self, cb: Coroutine, interval: int, delay: int = 0):
+        """
+        This function sets up a timer that will run the coroutine every
+        interval miliseconds, starting after delay seconds
+        
+        :param cb: The coroutine to call
+        :type cb: Coroutine
+        :param interval: The interval in milliseconds between each call of the callback
+        :type interval: int
+        :param delay: The delay before the first call to the callback, defaults to 0
+        :type delay: int (optional)
+        """
         self.cb = cb
         self.interval = float(interval) / 1000.0
         self.delay = float(delay) / 1000.0
@@ -33,7 +44,8 @@ class PeriodicCallback(object):
             self._timer.cancel()
             self._timer = None
 
-    def set_interval(self, interval):
+    def set_interval(self, interval: int):
+        self.interval = float(interval) / 1000.0
         if self._running and self._timer:
             self._timer.cancel()
             self._timer = None
