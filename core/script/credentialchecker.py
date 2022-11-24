@@ -24,11 +24,9 @@ from noc.sa.models.profile import Profile
 from noc.sa.models.credentialcheckrule import CredentialCheckRule
 from noc.core.mib import mib
 
-CHECK_OIDS = [
-    mib["SNMPv2-MIB::sysObjectID.0"],
-    mib["SNMPv2-MIB::sysUpTime.0"],
-    mib["SNMPv2-MIB::sysDescr.0"],
-]
+CHECK_OIDS = [mib["SNMPv2-MIB::sysObjectID.0"]]
+# mib["SNMPv2-MIB::sysUpTime.0"]
+# mib["SNMPv2-MIB::sysDescr.0"]
 
 
 @dataclass(frozen=True)
@@ -286,10 +284,12 @@ class CredentialChecker(object):
         :param cred:
         :return:
         """
-        oid = cred.oids or CHECK_OIDS
-        status, message = self.check_oid(oid[0], cred.snmp_ro, f"{protocol.config.alias}_get")
-        if not status and not message:
-            message = "SNMP Timeout"
+        for oid in cred.oids or CHECK_OIDS:
+            status, message = self.check_oid(oid, cred.snmp_ro, f"{protocol.config.alias}_get")
+            if status:
+                break
+            if not status and not message:
+                message = "SNMP Timeout"
         # self.logger.info(
         #     "Guessed community: %s, version: %d",
         #     config.snmp_ro,
