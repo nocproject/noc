@@ -42,7 +42,7 @@ def on_change(
     # Sensors object
     sensors_changes: DefaultDict[str, Set[str]] = defaultdict(set)
     # Iterate over changes
-    for op, model_id, item_id, changed_fields, ts in changes:
+    for op, model_id, item_id, changed_fields, ts, datastreams in changes:
         # Resolve item
         logger.debug("[%s|%s] Processing change: %s:%s", model_id, item_id, ts, op)
         model_cls = get_model(model_id)

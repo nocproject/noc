@@ -41,16 +41,23 @@ class ChangeTracker(object):
             cv_policy.set(policy)
         return policy
 
-    def register(self, op: str, model: str, id: str, fields: Optional[List] = None) -> None:
+    def register(
+            self,
+            op: str,
+            model: str,
+            id: str,
+            fields: Optional[List] = None,
+            datastreams: Optional[List[Tuple[str, str]]] = None) -> None:
         """
         Register datastream change
         :param op: Operation, either create, update or delete
         :param model: Model id
         :param id: Item id
         :param fields: List of changed fields
+        :param datastreams: List of changed datastream
         :return:
         """
-        self.get_policy().register(op, model, id, fields)
+        self.get_policy().register(op, model, id, fields, datastreams)
 
     @staticmethod
     def push_policy(policy: "BaseChangeTrackerPolicy") -> None:
@@ -115,7 +122,14 @@ class BaseChangeTrackerPolicy(object, metaclass=ABCMeta):
         ...
 
     @abstractmethod
-    def register(self, op: str, model: str, id: str, fields: Optional[List] = None) -> None:
+    def register(
+            self,
+            op: str,
+            model: str,
+            id: str,
+            fields: Optional[List] = None,
+            datastreams: Optional[List[Tuple[str, str]]] = None
+    ) -> None:
         ...
 
 
@@ -124,7 +138,14 @@ class DropChangeTrackerPolicy(BaseChangeTrackerPolicy):
     Drop all changes
     """
 
-    def register(self, op: str, model: str, id: str, fields: Optional[List] = None) -> None:
+    def register(
+            self,
+            op: str,
+            model: str,
+            id: str,
+            fields: Optional[List] = None,
+            datastreams: Optional[List[Tuple[str, str]]] = None
+    ) -> None:
         pass
 
 
@@ -139,10 +160,11 @@ class SimpleChangeTrackerPolicy(BaseChangeTrackerPolicy):
         model: str,
         id: str,
         fields: Optional[List[ChangeField]] = None,
+        datastreams: Optional[List[Tuple[str, str]]] = None,
     ) -> None:
         key = hash_int(id)
         t0 = time.time()
-        defer(CHANGE_HANDLER, key=key, changes=[(op, model, str(id), fields, t0)])
+        defer(CHANGE_HANDLER, key=key, changes=[(op, model, str(id), fields, t0, datastreams)])
 
 
 class BulkChangeTrackerPolicy(BaseChangeTrackerPolicy):
@@ -150,7 +172,7 @@ class BulkChangeTrackerPolicy(BaseChangeTrackerPolicy):
         super().__init__()
         self.changes: Dict[
             Tuple[str, str],
-            Tuple[Literal["create", "delete", "update"], Optional[List[ChangeField]], float],
+            Tuple[Literal["create", "delete", "update"], Optional[List[ChangeField]], float, List[Tuple[str, str]]],
         ] = {}
 
     def register(
@@ -159,10 +181,11 @@ class BulkChangeTrackerPolicy(BaseChangeTrackerPolicy):
         model: str,
         id: str,
         fields: Optional[List[ChangeField]] = None,
+        datastreams: Optional[List[Tuple[str, str]]] = None,
     ) -> None:
         def merge_fields(
             f1: Optional[List[ChangeField]], f2: Optional[List[ChangeField]]
-        ) -> Optional[List[ChangeField]]:
+        ) -> Optional[Tuple[ChangeField]]:
             processed = set()
             r = []
             for x in f1 or []:
@@ -177,12 +200,12 @@ class BulkChangeTrackerPolicy(BaseChangeTrackerPolicy):
         prev = self.changes.get((model, id))
         if prev is None:
             # First change
-            self.changes[model, id] = (op, fields, t0)
+            self.changes[model, id] = (op, fields, t0, datastreams)
             return
         # Series of change
         if op == "delete":
             # Delete overrides any operation
-            self.changes[model, id] = (op, None, t0)
+            self.changes[model, id] = (op, None, t0, datastreams)
             return
         if op == "create":
             raise RuntimeError("create must be first update")
@@ -190,18 +213,18 @@ class BulkChangeTrackerPolicy(BaseChangeTrackerPolicy):
         prev_op = prev[0]
         if prev_op == "create":
             # Create + Update -> Create with merged fields
-            self.changes[model, id] = ("create", merge_fields(prev[1], fields), t0)
+            self.changes[model, id] = ("create", merge_fields(prev[1], fields), t0, list(set(datastreams)))
         elif prev_op == "update":
             # Update + Update -> Update with merged fields
-            self.changes[model, id] = ("update", merge_fields(prev[1], fields), t0)
+            self.changes[model, id] = ("update", merge_fields(prev[1], fields), t0, list(set(datastreams)))
         elif prev_op == "delete":
             raise RuntimeError("Cannot update after delete")
 
     def commit(self) -> None:
         # Split to buckets
         changes = defaultdict(list)
-        for (model_id, item_id), (op, fields, ts) in self.changes.items():
+        for (model_id, item_id), (op, fields, ts, datastreams) in self.changes.items():
             part = 0
-            changes[part].append((op, model_id, item_id, fields, ts))
+            changes[part].append((op, model_id, item_id, fields, ts, datastreams))
         for part, items in changes.items():
             defer(CHANGE_HANDLER, key=part, changes=items)
