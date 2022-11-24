@@ -117,6 +117,7 @@ def _on_document_delete(sender, document, *args, **kwargs):
         model=model_id,
         id=str(document.id),
         fields=None,
+        datastreams=get_datastream(document),
     )
     if not hasattr(document, "get_changed_instance"):
         return
