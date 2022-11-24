@@ -10,7 +10,7 @@ import contextlib
 from contextvars import ContextVar
 import time
 from collections import defaultdict
-from typing import Optional, Tuple, List, Dict, Literal
+from typing import Optional, Tuple, List, Dict, Literal, Set
 from abc import ABCMeta, abstractmethod
 
 
@@ -20,6 +20,7 @@ from noc.core.hash import hash_int
 from .model import ChangeField
 
 CHANGE_HANDLER = "noc.core.change.change.on_change"
+DS_APPLY_HANDLER = "noc.core.change.change.apply_datastream"
 
 
 cv_policy: ContextVar[Optional["BaseChangeTrackerPolicy"]] = ContextVar("cv_policy", default=None)
@@ -42,12 +43,13 @@ class ChangeTracker(object):
         return policy
 
     def register(
-            self,
-            op: str,
-            model: str,
-            id: str,
-            fields: Optional[List] = None,
-            datastreams: Optional[List[Tuple[str, str]]] = None) -> None:
+        self,
+        op: str,
+        model: str,
+        id: str,
+        fields: Optional[List] = None,
+        datastreams: Optional[List[Tuple[str, str]]] = None,
+    ) -> None:
         """
         Register datastream change
         :param op: Operation, either create, update or delete
@@ -123,12 +125,12 @@ class BaseChangeTrackerPolicy(object, metaclass=ABCMeta):
 
     @abstractmethod
     def register(
-            self,
-            op: str,
-            model: str,
-            id: str,
-            fields: Optional[List] = None,
-            datastreams: Optional[List[Tuple[str, str]]] = None
+        self,
+        op: str,
+        model: str,
+        id: str,
+        fields: Optional[List] = None,
+        datastreams: Optional[List[Tuple[str, str]]] = None,
     ) -> None:
         ...
 
@@ -139,12 +141,12 @@ class DropChangeTrackerPolicy(BaseChangeTrackerPolicy):
     """
 
     def register(
-            self,
-            op: str,
-            model: str,
-            id: str,
-            fields: Optional[List] = None,
-            datastreams: Optional[List[Tuple[str, str]]] = None
+        self,
+        op: str,
+        model: str,
+        id: str,
+        fields: Optional[List] = None,
+        datastreams: Optional[List[Tuple[str, str]]] = None,
     ) -> None:
         pass
 
@@ -164,7 +166,13 @@ class SimpleChangeTrackerPolicy(BaseChangeTrackerPolicy):
     ) -> None:
         key = hash_int(id)
         t0 = time.time()
-        defer(CHANGE_HANDLER, key=key, changes=[(op, model, str(id), fields, t0, datastreams)])
+        defer(CHANGE_HANDLER, key=key, changes=[(op, model, str(id), fields, t0)])
+        if not datastreams:
+            return
+        ds_changes = defaultdict(set)
+        for ds_name, item_id in datastreams:
+            ds_changes[ds_name].add(item_id)
+        defer(DS_APPLY_HANDLER, key=key, ds_changes={k: list(v) for k, v in ds_changes.items()})
 
 
 class BulkChangeTrackerPolicy(BaseChangeTrackerPolicy):
@@ -172,8 +180,9 @@ class BulkChangeTrackerPolicy(BaseChangeTrackerPolicy):
         super().__init__()
         self.changes: Dict[
             Tuple[str, str],
-            Tuple[Literal["create", "delete", "update"], Optional[List[ChangeField]], float, List[Tuple[str, str]]],
+            Tuple[Literal["create", "delete", "update"], Optional[List[ChangeField]], float],
         ] = {}
+        self.ds_changes: Dict[str, Set[str]] = defaultdict(set)
 
     def register(
         self,
@@ -197,15 +206,18 @@ class BulkChangeTrackerPolicy(BaseChangeTrackerPolicy):
             return r
 
         t0 = time.time()
+        # Changed datastreams
+        for ds_name, item_id in datastreams:
+            self.ds_changes[ds_name].add(item_id)
         prev = self.changes.get((model, id))
         if prev is None:
             # First change
-            self.changes[model, id] = (op, fields, t0, datastreams)
+            self.changes[model, id] = (op, fields, t0)
             return
         # Series of change
         if op == "delete":
             # Delete overrides any operation
-            self.changes[model, id] = (op, None, t0, datastreams)
+            self.changes[model, id] = (op, None, t0)
             return
         if op == "create":
             raise RuntimeError("create must be first update")
@@ -213,10 +225,10 @@ class BulkChangeTrackerPolicy(BaseChangeTrackerPolicy):
         prev_op = prev[0]
         if prev_op == "create":
             # Create + Update -> Create with merged fields
-            self.changes[model, id] = ("create", merge_fields(prev[1], fields), t0, list(set(datastreams)))
+            self.changes[model, id] = ("create", merge_fields(prev[1], fields), t0)
         elif prev_op == "update":
             # Update + Update -> Update with merged fields
-            self.changes[model, id] = ("update", merge_fields(prev[1], fields), t0, list(set(datastreams)))
+            self.changes[model, id] = ("update", merge_fields(prev[1], fields), t0)
         elif prev_op == "delete":
             raise RuntimeError("Cannot update after delete")
 
@@ -228,3 +240,7 @@ class BulkChangeTrackerPolicy(BaseChangeTrackerPolicy):
             changes[part].append((op, model_id, item_id, fields, ts, datastreams))
         for part, items in changes.items():
             defer(CHANGE_HANDLER, key=part, changes=items)
+        if self.ds_changes:
+            defer(
+                DS_APPLY_HANDLER, key=0, ds_changes={k: list(v) for k, v in self.ds_changes.items()}
+            )

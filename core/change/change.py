@@ -35,14 +35,12 @@ def on_change(
     :param kwargs:
     :return:
     """
-    # Datastream changes
-    ds_changes: DefaultDict[str, Set[str]] = defaultdict(set)
     # BI Dictionary changes
     bi_dict_changes: DefaultDict[str, Set[Tuple[str, float]]] = defaultdict(set)
     # Sensors object
     sensors_changes: DefaultDict[str, Set[str]] = defaultdict(set)
     # Iterate over changes
-    for op, model_id, item_id, changed_fields, ts, datastreams in changes:
+    for op, model_id, item_id, changed_fields, ts in changes:
         # Resolve item
         logger.debug("[%s|%s] Processing change: %s:%s", model_id, item_id, ts, op)
         model_cls = get_model(model_id)
@@ -62,10 +60,6 @@ def on_change(
             changed_fields_old = set(changed_fields)
         else:
             changed_fields_old = {cf["field"]: cf["old"] for cf in changed_fields or []}
-        # Process datastreams
-        if hasattr(item, "iter_changed_datastream"):
-            for ds_name, ds_id in item.iter_changed_datastream(changed_fields=changed_fields_old):
-                ds_changes[ds_name].add(ds_id)
         # Proccess BI Dictionary
         if item:
             bi_dict_changes[model_id].add((item, ts))
@@ -77,10 +71,6 @@ def on_change(
         elif model_id == "inv.Object" and ("data" in changed_fields_old or not changed_fields_old):
             # @todo ManagedObject address change
             sensors_changes[model_id].add(item_id)
-    # Apply datastream changes
-    if ds_changes:
-        apply_datastream(ds_changes)
-    #
     if bi_dict_changes:
         apply_ch_dictionary(bi_dict_changes)
     #
