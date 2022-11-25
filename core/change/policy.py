@@ -169,10 +169,20 @@ class SimpleChangeTrackerPolicy(BaseChangeTrackerPolicy):
         defer(CHANGE_HANDLER, key=key, changes=[(op, model, str(id), fields, t0)])
         if not datastreams:
             return
-        ds_changes = defaultdict(set)
+        ds_changes, ds_deleted = defaultdict(set), defaultdict(set)
         for ds_name, item_id in datastreams:
+            if op == "delete":
+                # Split delete operation for exclude raise-condition with DB Operation
+                # because pre_delete signal
+                ds_deleted[ds_name].add(str(item_id))
+                continue
             ds_changes[ds_name].add(str(item_id))
-        defer(DS_APPLY_HANDLER, key=key, ds_changes={k: list(v) for k, v in ds_changes.items()})
+        defer(
+            DS_APPLY_HANDLER,
+            key=key,
+            ds_changes={k: list(v) for k, v in ds_changes.items()},
+            ds_deleted={k: list(v) for k, v in ds_deleted.items()},
+        )
 
 
 class BulkChangeTrackerPolicy(BaseChangeTrackerPolicy):
@@ -183,6 +193,7 @@ class BulkChangeTrackerPolicy(BaseChangeTrackerPolicy):
             Tuple[Literal["create", "delete", "update"], Optional[List[ChangeField]], float],
         ] = {}
         self.ds_changes: Dict[str, Set[str]] = defaultdict(set)
+        self.ds_deleted: Dict[str, Set[str]] = defaultdict(set)
 
     def register(
         self,
@@ -208,6 +219,11 @@ class BulkChangeTrackerPolicy(BaseChangeTrackerPolicy):
         t0 = time.time()
         # Changed datastreams
         for ds_name, item_id in datastreams:
+            if op == "delete":
+                # Split delete operation for exclude raise-condition with DB Operation
+                # because pre_delete signal
+                self.ds_deleted[ds_name].add(str(item_id))
+                continue
             self.ds_changes[ds_name].add(str(item_id))
         prev = self.changes.get((model, id))
         if prev is None:
@@ -240,7 +256,10 @@ class BulkChangeTrackerPolicy(BaseChangeTrackerPolicy):
             changes[part].append((op, model_id, item_id, fields, ts, datastreams))
         for part, items in changes.items():
             defer(CHANGE_HANDLER, key=part, changes=items)
-        if self.ds_changes:
+        if self.ds_changes or self.ds_deleted:
             defer(
-                DS_APPLY_HANDLER, key=0, ds_changes={k: list(v) for k, v in self.ds_changes.items()}
+                DS_APPLY_HANDLER,
+                key=0,
+                ds_changes={k: list(v) for k, v in self.ds_changes.items()},
+                ds_deleted={k: list(v) for k, v in self.ds_deleted.items()},
             )
