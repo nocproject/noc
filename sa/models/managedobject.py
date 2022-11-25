@@ -16,7 +16,7 @@ from threading import Lock
 import datetime
 import warnings
 from dataclasses import dataclass
-from itertools import chain
+from itertools import chain, product
 from typing import Tuple, Iterable, List, Any, Dict, Set, Optional
 
 # Third-party modules
@@ -123,7 +123,7 @@ from .objectstatus import ObjectStatus
 from .objectdiagnosticconfig import ObjectDiagnosticConfig
 
 # Increase whenever new field added or removed
-MANAGEDOBJECT_CACHE_VERSION = 42
+MANAGEDOBJECT_CACHE_VERSION = 43
 CREDENTIAL_CACHE_VERSION = 5
 
 Credentials = namedtuple(
@@ -2598,29 +2598,43 @@ class ManagedObject(NOCModel):
         # @todo effective labels
         if not diagnostics and not removed:
             return
+        states = [s.value for s in DiagnosticState]
         with pg_connection.cursor() as cursor:
+            removed_labels, add_labels = [], []
             if diagnostics:
                 logger.debug("[%s] Saving changes", list(diagnostics))
+                diags = {}
+                for d in diagnostics:
+                    diags[d.diagnostic] = d
+                    add_labels.append(f"funcs::{d.diagnostic}::{d.state}")
+                    removed_labels += [
+                        f"funcs::{dn}::{s}"
+                        for dn, s in product([d.diagnostic], states)
+                        if s != d.state
+                    ]
                 cursor.execute(
                     """
                      UPDATE sa_managedobject
                      SET diagnostics = diagnostics || %s::jsonb
                      WHERE id = %s""",
-                    [
-                        orjson.dumps(
-                            {d.diagnostic: d for d in diagnostics}, default=default
-                        ).decode("utf-8"),
-                        mo_id,
-                    ],
+                    [orjson.dumps(diags, default=default).decode("utf-8"), mo_id],
                 )
             if removed:
                 logger.debug("[%s] Removed diagnostics", list(removed))
+                removed_labels += [f"funcs::{d}::{s}" for d, s in product(removed, states)]
                 cursor.execute(
                     f"""
                      UPDATE sa_managedobject
                      SET diagnostics = diagnostics {" #- %s " * len(removed)}
                      WHERE id = %s""",
                     ["{%s}" % r for r in removed] + [mo_id],
+                )
+            if add_labels or removed_labels:
+                Label._change_model_labels(
+                    "sa.ManagedObject",
+                    add_labels=add_labels or None,
+                    remove_labels=removed_labels or None,
+                    filter_ids=[mo_id],
                 )
         cls._reset_caches(mo_id)
 
@@ -2639,7 +2653,7 @@ class ManagedObject(NOCModel):
         """
         from django.db import connection as pg_connection
 
-        removed = []
+        removed, states = [], [s.value for s in DiagnosticState]
         ts = datetime.datetime.now()
         for d in diagnostics:
             if d in self.diagnostics:
@@ -2653,13 +2667,18 @@ class ManagedObject(NOCModel):
             return
         logger.debug("[%s] Removed diagnostics", ";".join(removed))
         self.sync_diagnostic_alarm(removed)
+        params = []
+        for r in removed:
+            params.append("{%s}" % r)
+        params += [[f"funcs::{d}::{s}" for d, s in product(removed, states)], self.id]
         with pg_connection.cursor() as cursor:
             cursor.execute(
                 f"""
                  UPDATE sa_managedobject
-                 SET diagnostics = diagnostics {" #- %s " * len(removed)}
+                 SET diagnostics = diagnostics {" #- %s " * len(removed)},
+                 effective_labels = ARRAY (SELECT unnest(effective_labels) EXCEPT SELECT unnest(%s::varchar[]))
                  WHERE id = %s""",
-                ["{%s}" % r for r in removed] + [self.id],
+                params,
             )
         for d in removed:
             # Do after sync-alarm and register_changed

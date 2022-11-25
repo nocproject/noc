@@ -841,9 +841,10 @@ class Label(Document):
             query_set = "(SELECT unnest(effective_labels) EXCEPT SELECT unnest(%s::varchar[]))"
             conditions += [" effective_labels && %s::varchar[] "]
         elif remove_labels and add_labels:
-            params += [add_labels, remove_labels, remove_labels]
+            params += [add_labels, remove_labels]
             query_set = "(SELECT DISTINCT e FROM unnest(effective_labels || %s::varchar[]) AS a(e) EXCEPT SELECT unnest(%s::varchar[]))"
-            conditions += [" effective_labels && %s::varchar[] "]
+            if not filter_ids:
+                conditions += [" effective_labels && %s::varchar[] "]
         # Construct condition
         # Where str,int - WHERE {field} ~ %s
         # Where List[str] - id = ANY (%s::varchar[])
