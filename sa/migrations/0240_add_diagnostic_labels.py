@@ -30,7 +30,7 @@ class Migration(BaseMigration):
     depends_on = [("sa", "0233_managedobject_diagnostics")]
 
     def migrate(self):
-        labels, remove_labels = [], []
+        labels, remove_labels = ["noc::funcs::*"], []
         states = [s.value for s in DiagnosticState]
         # Reset unknown state
         # Cleanup diagnostics label
@@ -43,7 +43,7 @@ class Migration(BaseMigration):
                 SET effective_labels = ARRAY (SELECT unnest(effective_labels) EXCEPT SELECT unnest(%s::varchar[]))
                 WHERE diagnostics != '{}'::jsonb
             """,
-            [labels],
+            [remove_labels],
         )
         # Update Diagnostic labels
         for d, s in product(DIAGNOSTICS, states):
@@ -69,7 +69,17 @@ class Migration(BaseMigration):
             if label in current_labels:
                 bulk += [
                     UpdateOne(
-                        {"_id": current_labels[label]}, {"$set": {"enable_managedobject": True}}
+                        {"_id": current_labels[label]},
+                        {
+                            "$set": {
+                                "bg_color1": 8359053,
+                                "fg_color1": 16777215,
+                                "bg_color2": 8359053,
+                                "fg_color2": 16777215,
+                                "is_protected": True,
+                                "enable_managedobject": True,
+                            }
+                        },
                     )
                 ]
             else:
