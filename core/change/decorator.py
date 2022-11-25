@@ -17,7 +17,7 @@ from .model import ChangeField
 logger = getLogger(__name__)
 
 
-def get_datastream(instance, changed_fields=None):
+def get_datastreams(instance, changed_fields=None):
     if not hasattr(instance, "iter_changed_datastream"):
         return None
     return [item for item in instance.iter_changed_datastream(changed_fields=changed_fields)]
@@ -104,7 +104,7 @@ def _on_document_change(sender, document, created=False, *args, **kwargs):
         model=model_id,
         id=str(document.id),
         fields=changed_fields,
-        datastreams=get_datastream(document),
+        datastreams=get_datastreams(document, changed_fields),
     )
 
 
@@ -117,7 +117,7 @@ def _on_document_delete(sender, document, *args, **kwargs):
         model=model_id,
         id=str(document.id),
         fields=None,
-        datastreams=get_datastream(document),
+        datastreams=get_datastreams(document),
     )
     if not hasattr(document, "get_changed_instance"):
         return
@@ -127,7 +127,7 @@ def _on_document_delete(sender, document, *args, **kwargs):
         model=get_model_id(document),
         id=str(document.id),
         fields=None,
-        datastreams=get_datastream(document),
+        datastreams=get_datastreams(document),
     )
 
 
@@ -166,7 +166,7 @@ def _on_model_change(sender, instance, created=False, *args, **kwargs):
         model=model_id,
         id=str(instance.id),
         fields=changed_fields,
-        datastreams=get_datastream(instance),
+        datastreams=get_datastreams(instance, changed_fields),
     )
 
 
@@ -179,7 +179,7 @@ def _on_model_delete(sender, instance, *args, **kwargs):
         model=model_id,
         id=str(instance.id),
         fields=None,
-        datastreams=get_datastream(instance),
+        datastreams=get_datastreams(instance),
     )
     if not hasattr(instance, "get_changed_instance"):
         return
@@ -189,5 +189,5 @@ def _on_model_delete(sender, instance, *args, **kwargs):
         model=get_model_id(instance),
         id=str(instance.id),
         fields=None,
-        datastreams=get_datastream(instance),
+        datastreams=get_datastreams(instance),
     )
