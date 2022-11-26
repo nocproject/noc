@@ -44,6 +44,7 @@ from noc.config import config
 from noc.core.wf.diagnostic import (
     DiagnosticState,
     DiagnosticConfig,
+    DIAGNOCSTIC_LABEL_SCOPE,
     DIAGNOSTIC_CHECK_STATE,
     PROFILE_DIAG,
     SNMP_DIAG,
@@ -2154,7 +2155,8 @@ class ManagedObject(NOCModel):
             for d in instance.diagnostics:
                 d = instance.get_diagnostic(d)
                 yield Label.ensure_labels(
-                    [f"funcs::{d.diagnostic}::{d.state}"], enable_managedobject=True
+                    [f"{DIAGNOCSTIC_LABEL_SCOPE}::{d.diagnostic}::{d.state}"],
+                    enable_managedobject=True,
                 )
 
     @classmethod
@@ -2420,10 +2422,10 @@ class ManagedObject(NOCModel):
             show_in_display=False,
             alarm_class="NOC | Managed Object | Access Degraded",
         )
-        fm_policy = self.get_effective_fm_pool()
+        fm_policy = self.get_event_processing_policy()
         reason = ""
         if fm_policy == "d":
-            reason = "Disable by FM policy"
+            reason = "Disable by Event Processing policy"
         elif self.trap_source_type == "d":
             reason = "Disable by source settings"
         # FM
@@ -2437,7 +2439,7 @@ class ManagedObject(NOCModel):
         )
         reason = ""
         if fm_policy == "d":
-            reason = "Disable by FM policy"
+            reason = "Disable by Event Processing policy"
         elif self.syslog_source_type == "d":
             reason = "Disable by source settings"
         yield DiagnosticConfig(
@@ -2606,9 +2608,9 @@ class ManagedObject(NOCModel):
                 diags = {}
                 for d in diagnostics:
                     diags[d.diagnostic] = d
-                    add_labels.append(f"funcs::{d.diagnostic}::{d.state}")
+                    add_labels.append(f"{DIAGNOCSTIC_LABEL_SCOPE}::{d.diagnostic}::{d.state}")
                     removed_labels += [
-                        f"funcs::{dn}::{s}"
+                        f"{DIAGNOCSTIC_LABEL_SCOPE}::{dn}::{s}"
                         for dn, s in product([d.diagnostic], states)
                         if s != d.state
                     ]
@@ -2621,7 +2623,9 @@ class ManagedObject(NOCModel):
                 )
             if removed:
                 logger.debug("[%s] Removed diagnostics", list(removed))
-                removed_labels += [f"funcs::{d}::{s}" for d, s in product(removed, states)]
+                removed_labels += [
+                    f"{DIAGNOCSTIC_LABEL_SCOPE}::{d}::{s}" for d, s in product(removed, states)
+                ]
                 cursor.execute(
                     f"""
                      UPDATE sa_managedobject
@@ -2670,7 +2674,10 @@ class ManagedObject(NOCModel):
         params = []
         for r in removed:
             params.append("{%s}" % r)
-        params += [[f"funcs::{d}::{s}" for d, s in product(removed, states)], self.id]
+        params += [
+            [f"{DIAGNOCSTIC_LABEL_SCOPE}::{d}::{s}" for d, s in product(removed, states)],
+            self.id,
+        ]
         with pg_connection.cursor() as cursor:
             cursor.execute(
                 f"""

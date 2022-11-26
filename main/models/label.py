@@ -125,7 +125,7 @@ class Label(Document):
                 "match_vlanfilter.scope",
             ),
             (
-                "match_prefixfilter.vlan_filter",
+                "match_prefixfilter.prefix_table",
                 "match_prefixfilter.condition",
                 "match_prefixfilter.scope",
             ),
