@@ -61,6 +61,33 @@ from .util import NodeCDAG
                 (1621601002_000000000, 3_000, "bit/s", 3_000, None),
             ],
         ),
+        # Delta
+        (
+            "1;D",
+            [
+                (
+                    1621601000_000000000,
+                    1_000,
+                    "1",
+                    None,
+                    {"lt": 1621601000_000000000, "lv": 1_000},
+                ),
+                (
+                    1621601010_000000000,
+                    2_000,
+                    "1",
+                    1_000,
+                    {"lt": 1621601010_000000000, "lv": 2_000},
+                ),
+                (
+                    1621601020_000000000,
+                    3_500,
+                    "1",
+                    1_500,
+                    {"lt": 1621601020_000000000, "lv": 3_500},
+                ),
+            ],
+        ),
         # Counter
         (
             "bit/s",
@@ -155,6 +182,40 @@ from .util import NodeCDAG
                     "byte",
                     1200,
                     {"lt": 1621601020_000000000, "lv": 3_500},
+                ),
+            ],
+        ),
+        # Counter 2
+        (
+            "bit/s",
+            [
+                (
+                    1669309142_000000000,
+                    78831947985355,
+                    "byte",
+                    None,
+                    {"lt": 1669309142_000000000, "lv": 78831947985355},
+                ),
+                (
+                    1669309322_000000000,
+                    78832966236667,
+                    "byte",
+                    45255613.86666667,
+                    {"lt": 1669309322_000000000, "lv": 78832966236667},
+                ),
+                (
+                    1669309502_000000000,
+                    78833845118798,
+                    "byte",
+                    39061428.04444444,
+                    {"lt": 1669309502_000000000, "lv": 78833845118798},
+                ),
+                (
+                    1669309682_000000000,
+                    78834837383263,
+                    "byte",
+                    44100642.88888889,
+                    {"lt": 1669309682_000000000, "lv": 78834837383263},
                 ),
             ],
         ),
@@ -404,11 +465,17 @@ from .util import NodeCDAG
 )
 def test_probe(unit, data):
     state = {}
+    is_delta = False
     if "," in unit:
         scale, unit = unit.split(",")
     else:
         scale = "1"
-    cdag = NodeCDAG("probe", config={"unit": unit, "scale": scale}, state=state)
+    if ";" in unit:
+        unit, _ = unit.split(";")
+        is_delta = True
+    cdag = NodeCDAG(
+        "probe", config={"unit": unit, "scale": scale, "is_delta": is_delta}, state=state
+    )
     for ts, value, m_unit, expected, x_state in data:
         cdag.begin()
         assert cdag.is_activated() is False
@@ -441,6 +508,7 @@ def setup_module(_module):
         {
             # Name -> alias -> expr
             "bit": {"byte": "x * 8"},
+            "1": {"1": "1"},
             "bit/s": {
                 "byte/s": "x * 8",
                 "bit": "delta / time_delta",
