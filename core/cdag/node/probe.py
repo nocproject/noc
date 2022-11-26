@@ -189,18 +189,18 @@ class ProbeNode(BaseCDAGNode):
             return fn
 
         # Lock-free positive case
-        if unit in cls._conversions:
-            return cls._conversions[unit]
+        if (unit, is_delta) in cls._conversions:
+            return cls._conversions[(unit, is_delta)]
         # Not ready, try with lock
         with cls._conv_lock:
             # Already prepared by concurrent thread
-            if unit in cls._conversions:
-                return cls._conversions[unit]
+            if (unit, is_delta) in cls._conversions:
+                return cls._conversions[(unit, is_delta)]
             # Prepare, while concurrent threads are waiting on lock
-            cls._conversions[unit] = {u: q(x) for u, x in cls.iter_conversion(unit)}
+            cls._conversions[(unit, is_delta)] = {u: q(x) for u, x in cls.iter_conversion(unit)}
             if is_delta:
-                cls._conversions[unit][unit] = q("delta")
-            return cls._conversions[unit]
+                cls._conversions[(unit, is_delta)][unit] = q("delta")
+            return cls._conversions[(unit, is_delta)]
 
     @classmethod
     def get_scale(cls, code: str) -> Tuple[int, int]:
