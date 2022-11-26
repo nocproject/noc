@@ -7,7 +7,6 @@
 # ----------------------------------------------------------------------
 
 # Python modules
-import re
 import orjson
 import requests
 import time
@@ -59,20 +58,14 @@ class TgSenderService(FastAPIService):
             msg.offset, orjson.loads(msg.value), dst.decode(encoding=DEFAULT_ENCODING)
         )
 
-    @staticmethod
-    def escape_markdown(text):
-        """Helper function to escape telegram markup symbols"""
-        escape_chars = r"\*_`["
-        return re.sub(r"([%s])" % escape_chars, r"\\\1", text).replace("\\`\\`\\`", "```")
-
     def send_tb(
         self, message_id: int, data: Dict[str, Any], address_to: Optional[str] = None
     ) -> None:
         body_l = 3000
         file_size = 5e7  # 50Mb
         t_type = "/sendMessage"
-        subject = self.escape_markdown(smart_text(data["subject"], errors="ignore"))
-        body = self.escape_markdown(smart_text(data["body"], errors="ignore"))
+        subject = smart_text(data["subject"])
+        body = smart_text(data["body"])
         if "address" in data:
             address = data["address"]
         elif address_to:
@@ -83,14 +76,28 @@ class TgSenderService(FastAPIService):
         send = {
             "chat_id": address,
             "text": f"{subject}\n\n{body}",
-            "parse_mode": "Markdown",
+            "parse_mode": "HTML",
         }
+        # HTML Style
+        """
+        <b>bold</b>, <strong>bold</strong>
+        <i>italic</i>, <em>italic</em>
+        <u>underline</u>, <ins>underline</ins>
+        <s>strikethrough</s>, <strike>strikethrough</strike>, <del>strikethrough</del>
+        <span class="tg-spoiler">spoiler</span>, <tg-spoiler>spoiler</tg-spoiler>
+        <b>bold <i>italic bold <s>italic bold strikethrough <span class="tg-spoiler">italic bold strikethrough spoiler</span></s> <u>underline italic bold</u></i> bold</b>
+        <a href="http://www.example.com/">inline URL</a>
+        <a href="tg://user?id=123456789">inline mention of a user</a>
+        <code>inline fixed-width code</code>
+        <pre>pre-formatted fixed-width code block</pre>
+        <pre><code class="language-python">pre-formatted fixed-width code block written in the Python programming language</code></pre>
+        """
         # Text of the message to be sent, 1-4096 characters after entities parsing
         # Check, if len (body)
         # If len(body) > 4096 use /sendDocument
         # Bots can currently send files of any type of up to 50 MB in size
         if len(body) > body_l:
-            caption = f"- {subject} --\n\n {body[0:500]}..."
+            caption = f"{subject}\n\n{body[0:500]}..."
             t_type = "/sendDocument"
         time.sleep(config.tgsender.retry_timeout)
         if self.url:
