@@ -28,6 +28,8 @@ CLI_DIAG = "CLI"
 HTTP_DIAG = "HTTP"
 SYSLOG_DIAG = "SYSLOG"
 SNMPTRAP_DIAG = "SNMPTRAP"
+#
+DIAGNOCSTIC_LABEL_SCOPE = "diag"
 
 
 class DiagnosticEvent(str, enum.Enum):
