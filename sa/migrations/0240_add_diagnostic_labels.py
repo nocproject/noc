@@ -62,7 +62,7 @@ class Migration(BaseMigration):
         self.sync_labels(labels)
         # Rest SNMP and SYSLOG Diagnostics
         self.db.execute(
-            f"""
+            """
                  UPDATE sa_managedobject
                  SET diagnostics = diagnostics  #- %s  #- %s
                  """,
@@ -75,7 +75,7 @@ class Migration(BaseMigration):
         l_coll = self.mongo_db["labels"]
         current_labels = {ll["name"]: ll["_id"] for ll in l_coll.find()}
         # Scope labels
-        if "{DIAGNOCSTIC_LABEL_SCOPE}::*" not in current_labels:
+        if f"{DIAGNOCSTIC_LABEL_SCOPE}::*" not in current_labels:
             bulk += [
                 InsertOne(
                     {
