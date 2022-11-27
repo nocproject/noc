@@ -453,7 +453,7 @@ class ExtModelApplication(ExtApplication):
             return
         if isinstance(value, str):
             value = [value]
-        q["labels__contains"] = value
+        q[f"{name}__contains"] = value
 
     def update_m2m(self, o, name, values):
         if values is None:
