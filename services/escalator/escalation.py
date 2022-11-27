@@ -718,6 +718,7 @@ class EscalationSequence(BaseSequence):
             self.check_escalated()
             self.alarm.set_escalation_context()
             # Evaluate escalation chain
+            notify = False  # @todo save to escalation doc
             for esc_item in self.iter_escalation_items():
                 # Check global limits
                 # @todo: Move into escalator service
@@ -736,7 +737,7 @@ class EscalationSequence(BaseSequence):
                     self.notify_escalated_consequences()
                 # Send notification
                 if not self.is_under_maintenance():
-                    notify = self.notify(esc_item, ctx)
+                    notify = notify or self.notify(esc_item, ctx)
                 if esc_item.stop_processing:
                     logger.debug("Stopping processing")
                     break
