@@ -35,6 +35,7 @@ nav:
               - Allocation Group: user/reference/concepts/allocation-group/index.md
               - API Key: user/reference/concepts/apikey/index.md
               - Container: user/reference/concepts/container/index.md
+              - Object Diagnostic: user/reference/concepts/object-diagnostic/index.md
               - Dialplan: user/reference/concepts/dialplan/index.md
               - DNS Zone: user/reference/concepts/dns-zone/index.md
               - Dynamic Profile Classification: user/reference/concepts/dynamic-classification-policy/index.md
