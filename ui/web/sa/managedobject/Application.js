@@ -1672,7 +1672,7 @@ Ext.define("NOC.sa.managedobject.Application", {
         },
         {
             title: __("By Labels"),
-            name: "labels",
+            name: "effective_labels",
             ftype: "label",
             filterProtected: false
         }
