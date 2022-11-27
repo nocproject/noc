@@ -82,7 +82,7 @@ services/web/apps/sa/
 При запуске сервиса `web` происходит регистрация приложений в системе. Этот механизм представлен в файле 
 `lib/app/site.py` через метод `autodiscover`:
 
-::: noc.lib.app.site:Site.autodiscover
+::: noc.services.web.base.site:Site.autodiscover
 
 В нём последовательно обходятся все файлы приложений в базовой директории и добавляются в систему.
 
@@ -102,7 +102,7 @@ services/web/apps/sa/
 
 ```python
 # NOC modules
-from noc.lib.app.extapplication import ExtApplication
+from noc.services.web.base.extapplication import ExtApplication
 from noc.core.translation import ugettext as _
 
 
@@ -130,7 +130,7 @@ class KeyOutageApplication(ExtApplication):
 `services/web/apps/sa/administrativedomain/views.py` для работы с `Action`
 
 ```python
-from noc.lib.app.extmodelapplication import ExtModelApplication, view
+from noc.services.web.base.extmodelapplication import ExtModelApplication, view
 from noc.sa.models.administrativedomain import AdministrativeDomain
 from noc.core.comp import smart_text
 from noc.core.translation import ugettext as _
@@ -190,7 +190,7 @@ class AdministrativeDomainApplication(ExtModelApplication):
 достаточно реализовать метод `get_data` формирующий данные для вывода на страницу.
 
 ```python
-from noc.lib.app.simplereport import SimpleReport, SectionRow, PredefinedReport, TableColumn
+from noc.services.web.base.simplereport import SimpleReport, PredefinedReport, TableColumn
 from noc.core.translation import ugettext as _
 
 
