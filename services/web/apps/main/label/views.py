@@ -49,6 +49,8 @@ class LabelApplication(ExtDocApplication):
         if "is_builtin_labels" in q:
             q["name"] = self.builtin_re if q["is_builtin_labels"] == "true" else self.not_builtin_re
             del q["is_builtin_labels"]
+        else:
+            q["name"] = self.not_builtin_re
         if "is_matched" in q:
             q["name"] = self.matched_re if q["is_matched"] == "true" else self.not_matched_re
             del q["is_matched"]
