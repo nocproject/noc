@@ -62,7 +62,7 @@ class Migration(BaseMigration):
         self.sync_labels(labels)
         # Rest SNMP and SYSLOG Diagnostics
         self.db.execute(
-            f"""
+            """
                  UPDATE sa_managedobject
                  SET diagnostics = diagnostics  #- %s  #- %s
                  """,
