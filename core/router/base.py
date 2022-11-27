@@ -255,7 +255,11 @@ class Router(object):
                     self.stream_partitions[stream] = partitions
                 partition = sharding_key % partitions
                 # Single message may be transmuted in zero or more messages
-                body = route.transmute(headers, body)
+                try:
+                    body = route.transmute(headers, body)
+                except Exception as e:
+                    logger.error("[%s] Error when transmute message %s: %s", msg, body, str(e))
+                    continue
                 # for body in route.iter_transmute(headers, msg.value):
                 if not isinstance(body, bytes):
                     # Transmute converts message to an arbitrary structure,
