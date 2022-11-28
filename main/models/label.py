@@ -297,11 +297,22 @@ class Label(Document):
     def iter_changed_datastream(self, changed_fields=None):
         from noc.sa.models.managedobject import ManagedObject
 
-        if self.expose_metric or "expose_metric" in changed_fields:
+        ds_changed = []
+        if (not changed_fields and self.expose_metric) or (
+            changed_fields and "expose_metric" in changed_fields
+        ):
+            ds_changed.append("cfgmetricsources")
+        if (not changed_fields and self.expose_datastream) or (
+            changed_fields and "expose_datastream" in changed_fields
+        ):
+            ds_changed.append("managedobject")
+        if not ds_changed:
+            return
+        for ds in ds_changed:
             for mo_id in ManagedObject.objects.filter(labels__contains=[self.name]).values_list(
                 "id", flat=True
             ):
-                yield "cfgmomapping", mo_id
+                yield ds, mo_id
 
     def clean(self):
         """
