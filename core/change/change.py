@@ -35,8 +35,6 @@ def on_change(
     :param kwargs:
     :return:
     """
-    # Datastream changes
-    ds_changes: DefaultDict[str, Set[str]] = defaultdict(set)
     # BI Dictionary changes
     bi_dict_changes: DefaultDict[str, Set[Tuple[str, float]]] = defaultdict(set)
     # Sensors object
@@ -62,10 +60,6 @@ def on_change(
             changed_fields_old = set(changed_fields)
         else:
             changed_fields_old = {cf["field"]: cf["old"] for cf in changed_fields or []}
-        # Process datastreams
-        if hasattr(item, "iter_changed_datastream"):
-            for ds_name, ds_id in item.iter_changed_datastream(changed_fields=changed_fields_old):
-                ds_changes[ds_name].add(ds_id)
         # Proccess BI Dictionary
         if item:
             bi_dict_changes[model_id].add((item, ts))
@@ -77,10 +71,6 @@ def on_change(
         elif model_id == "inv.Object" and ("data" in changed_fields_old or not changed_fields_old):
             # @todo ManagedObject address change
             sensors_changes[model_id].add(item_id)
-    # Apply datastream changes
-    if ds_changes:
-        apply_datastream(ds_changes)
-    #
     if bi_dict_changes:
         apply_ch_dictionary(bi_dict_changes)
     #
@@ -88,20 +78,32 @@ def on_change(
         apply_sync_sensors(sensors_changes)
 
 
-def apply_datastream(ds_changes: DefaultDict[str, Set[str]]) -> None:
+def apply_datastream(
+    ds_changes: Optional[Dict[str, Set[str]]] = None,
+    ds_deleted: Optional[Dict[str, Set[str]]] = None,
+) -> None:
     """
     Apply datastream changes
-    :param ds_changes:
+    :param ds_changes: Changes Items
+    :param ds_deleted: Deleted Items
     :return:
     """
     from noc.core.datastream.loader import loader
 
+    ds_changes, ds_deleted = ds_changes or {}, ds_deleted or {}
     for ds_name, items in ds_changes.items():
         ds = loader[ds_name]
         if not ds:
             logger.error("Invalid datastream: %s", ds_name)
             continue
         ds.bulk_update(sorted(items))
+    for ds_name, items in ds_deleted.items():
+        ds = loader[ds_name]
+        if not ds:
+            logger.error("Invalid datastream: %s", ds_name)
+            continue
+        for item in items:
+            ds.delete_object(item)
 
 
 def apply_ch_dictionary(bi_dict_changes: DefaultDict[str, Set[Tuple[str, float]]]) -> None:
