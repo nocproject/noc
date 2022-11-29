@@ -24,7 +24,7 @@ class CfgMetricSourcesDataStream(DataStream):
         model = get_model(source_type)
         if not model:
             raise KeyError(f"Unknown metric source: {source_type}")
-        source = model.objects.get(bi_id=sid)
+        source = model.objects.filter(bi_id=sid).first()
         if not source:
             raise KeyError(f"Source {source_type} with id {sid} not found")
         if not source.has_configured_metrics:
