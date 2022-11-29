@@ -7,6 +7,9 @@
 
 # Python modules
 from enum import Enum
+from typing import Optional
+from types import CodeType
+import sys
 
 # Third-party modules
 import cachetools
@@ -48,21 +51,21 @@ class ProbeSetting(object):
 
     def __init__(
         self,
-        id,
-        address,
-        name,
+        id: str,
+        address: str,
+        name: str,
         interval,
-        status=None,
-        policy="f",
+        status: Optional[bool] = None,
+        policy: str = "f",
         size=64,
         count=3,
         timeout=1_000,
-        report_rtt=False,
-        report_attempts=False,
+        report_rtt: bool = False,
+        report_attempts: bool = False,
         time_expr=None,
         expr_policy="D",
-        bi_id=None,
-        fm_pool=None,
+        bi_id: Optional[int] = None,
+        fm_pool: Optional[str] = None,
         *args,
         **kwargs,
     ):
@@ -75,7 +78,7 @@ class ProbeSetting(object):
         self.size = max(size, 64)
         self.count = max(count, 1)
         self.timeout = self._clean_timeout(timeout)
-        self.sent_status = None
+        self.sent_status: Optional[bool] = None
         self.report_rtt = report_rtt
         self.report_attempts = report_attempts
         self.time_expr = time_expr
@@ -83,14 +86,13 @@ class ProbeSetting(object):
         self.expr_policy = expr_policy
         self.task = None
         self.bi_id = bi_id
-        self.fm_pool = fm_pool or config.pool
-        self.stream = None
+        self.fm_pool = sys.intern(fm_pool or config.pool)
+        self.stream = self.get_pool_stream(self.fm_pool)
         self.partition = 0  # Set by set_partition
-        self.set_stream()
 
     @staticmethod
     def get_pool_stream(pool: str) -> str:
-        return "events.%s" % pool
+        return sys.intern(f"dispose.{pool}")
 
     @staticmethod
     def _clean_timeout(timeout: int) -> float:
@@ -102,7 +104,7 @@ class ProbeSetting(object):
             return Policy.CHECK_ALL
         return Policy.CHECK_FIRST
 
-    def set_stream(self):
+    def set_stream(self) -> None:
         self.stream = self.get_pool_stream(self.fm_pool)
 
     def set_partition(self, num_partitions: int) -> None:
@@ -111,8 +113,8 @@ class ProbeSetting(object):
     def update(
         self,
         interval,
-        report_rtt,
-        report_attempts=False,
+        report_rtt: bool,
+        report_attempts: bool = False,
         policy="f",
         size=64,
         count=3,
@@ -151,11 +153,10 @@ class ProbeSetting(object):
 
     @classmethod
     @cachetools.cachedmethod(lambda _: tp_cache)
-    def compile(cls, src):
+    def compile(cls, src: str) -> Optional[CodeType]:
         if src:
             try:
                 return compile(src, "<string>", "eval")
             except SyntaxError:
                 return None
-        else:
-            return None
+        return None
