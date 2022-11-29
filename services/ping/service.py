@@ -34,6 +34,7 @@ class PingService(FastAPIService):
     process_name = "noc-%(name).10s-%(pool).5s"
 
     PING_CLS = {True: "NOC | Managed Object | Ping OK", False: "NOC | Managed Object | Ping Failed"}
+    ALARM_CLS = "NOC | Managed Object | Ping Failed"
 
     def __init__(self):
         super().__init__()
@@ -253,13 +254,37 @@ class PingService(FastAPIService):
             self.logger.info("[%s] Changing status to %s%s", address, s, ts)
             ps.status = s
         if ps and not self.is_throttled and not disable_message and s != ps.sent_status:
-            self.publish(
-                orjson.dumps(
-                    {"ts": t0, "object": ps.id, "data": self.ok_event if s else self.failed_event}
-                ),
-                stream=ps.stream,
-                partition=ps.partition,
-            )
+            # Build dispose message
+            ref = f"p:{ps.id}"
+            ts = datetime.datetime.fromtimestamp(t0).isoformat()
+            if s:
+                # Clear alarm
+                self.publish(
+                    orjson.dumps(
+                        {
+                            "$op": "clear",
+                            "reference": ref,
+                            "timestamp": ts,
+                        }
+                    ),
+                    stream=ps.stream,
+                    partition=ps.partition,
+                )
+            else:
+                # Raise alarm
+                self.publish(
+                    orjson.dumps(
+                        {
+                            "$op": "raise",
+                            "reference": ref,
+                            "timestamp": ts,
+                            "managed_object": ps.id,
+                            "alarm_class": self.ALARM_CLS,
+                        }
+                    ),
+                    stream=ps.stream,
+                    partition=ps.partition,
+                )
             ps.sent_status = s
         self.logger.debug("[%s] status=%s rtt=%s", address, s, rtt)
         # Send RTT and attempts metrics
