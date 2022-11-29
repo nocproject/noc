@@ -18,7 +18,7 @@ class CfgMetricsCollectorDataStream(DataStream):
 
     @classmethod
     def get_object(cls, oid: str) -> Dict[str, Any]:
-        route: "MessageRoute" = MessageRoute.objects.get(id=oid)
+        route: "MessageRoute" = MessageRoute.get_by_id(oid)
         if not route or not route.is_active:
             raise KeyError()
         r = route.get_route_config()
