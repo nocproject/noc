@@ -35,9 +35,10 @@ class Events(Model):
     class Meta(object):
         db_table = "events"
         engine = MergeTree(
-            "ts",
+            "date",
             ("date", "managed_object", "event_class"),
             primary_keys=("date", "managed_object"),
+            partition_function="toYYYYMMDD(ts)",
         )
 
     date = DateField(description=_("Date"))
