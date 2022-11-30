@@ -13,8 +13,10 @@ from noc.core.clickhouse.fields import (
     StringField,
     ReferenceField,
     IPv4Field,
+    MapField,
 )
 from noc.core.clickhouse.engines import MergeTree
+from noc.core.clickhouse.connect import ClickhouseClient
 from noc.core.bi.dictionaries.managedobject import ManagedObject
 from noc.core.bi.dictionaries.vendor import Vendor
 from noc.core.bi.dictionaries.platform import Platform
@@ -24,6 +26,7 @@ from noc.core.bi.dictionaries.administrativedomain import AdministrativeDomain
 from noc.core.bi.dictionaries.eventclass import EventClass
 from noc.core.bi.dictionaries.pool import Pool
 from noc.core.translation import ugettext as _
+from noc.config import config
 from noc.sa.models.useraccess import UserAccess
 from noc.sa.models.administrativedomain import AdministrativeDomain as AdministrativeDomainM
 
@@ -32,7 +35,7 @@ class Events(Model):
     class Meta(object):
         db_table = "events"
         engine = MergeTree(
-            "date",
+            "ts",
             ("date", "managed_object", "event_class"),
             primary_keys=("date", "managed_object"),
         )
@@ -43,10 +46,9 @@ class Events(Model):
     event_id = StringField(description=_("Id"))
     event_class = ReferenceField(EventClass, description=_("Event Class"))
     source = StringField(description=_("Id"), low_cardinality=True)
-    repeat_hash = StringField(description=_("Repeated Hash"))
-    raw_vars = StringField(description=_("Raw Variables"))
-    resolved_vars = StringField(description=_("Resolved Variables"))
-    vars = StringField(description=_("Vars"))
+    raw_vars = MapField(StringField(), description=_("Raw Variables"))
+    resolved_vars = MapField(StringField(), description=_("Resolved Variables"))
+    vars = MapField(StringField(), description=_("Vars"))
     #
     snmp_trap_oid = StringField(description=_("snmp Trap OID"))
     message = StringField(description=_("Syslog Message"))
@@ -81,3 +83,22 @@ class Events(Model):
         else:
             query["filter"] = q
         return query
+
+    @classmethod
+    def check_old_schema(cls, connect: "ClickhouseClient", table_name: str) -> bool:
+        """
+        Check syntax
+        :param connect:
+        :param table_name:
+        :return:
+        """
+        c1 = super().check_old_schema(connect=connect, table_name=table_name)
+        # Check repeat_hash column
+        c2 = connect.execute(
+            f"""
+        SELECT database
+        FROM system.columns
+        WHERE database = '{config.clickhouse.db}' AND table = 'events' AND name = 'repeat_hash'
+        """
+        )
+        return not (bool(c1) or bool(c2))
