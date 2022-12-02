@@ -487,6 +487,7 @@ class ClassifierService(FastAPIService):
         event.expires = event.timestamp + datetime.timedelta(seconds=event.event_class.ttl)
 
         # Send event to clickhouse
+        mo = event.managed_object
         data = {
             "date": event.timestamp.date(),
             "ts": event.timestamp,
@@ -499,14 +500,14 @@ class ClassifierService(FastAPIService):
             "vars": str(event.vars),
             "snmp_trap_oid": event.vars.get("trap_oid", None),
             "message": event.vars.get("message", None),
-            "managed_object": event.managed_object.id,
-            "pool": event.managed_object.pool.bi_id,
-            "ip": struct.unpack("!I", socket.inet_aton(event.managed_object.address))[0],
-            "profile": event.managed_object.profile.bi_id,
-            "vendor": event.managed_object.vendor.bi_id,
-            "platform": event.managed_object.platform.bi_id,
-            "version": event.managed_object.version.bi_id,
-            "administrative_domain": event.managed_object.administrative_domain.bi_id,
+            "managed_object": mo.id,
+            "pool": mo.pool.bi_id,
+            "ip": struct.unpack("!I", socket.inet_aton(mo.address))[0],
+            "profile": mo.profile.bi_id,
+            "vendor": mo.vendor.bi_id if mo.vendor else None,
+            "platform": mo.platform.bi_id if mo.platform else None,
+            "version": mo.version.bi_id if mo.version else None,
+            "administrative_domain": mo.administrative_domain.bi_id,
         }
         self.register_metrics("events", [data])
 
