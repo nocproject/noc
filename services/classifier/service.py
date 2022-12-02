@@ -13,6 +13,8 @@ import os
 from collections import defaultdict
 import operator
 import re
+import socket
+import struct
 from time import perf_counter
 from typing import Optional, Dict, List
 
@@ -483,7 +485,31 @@ class ClassifierService(FastAPIService):
             return
         # Activate event
         event.expires = event.timestamp + datetime.timedelta(seconds=event.event_class.ttl)
-        event.save()
+
+        # Send event to clickhouse
+        data = {
+            "date": event.timestamp.date(),
+            "ts": event.timestamp,
+            "start_ts": event.start_timestamp,
+            "event_id": str(event.id),
+            "event_class": event.event_class.bi_id,
+            "source": event.source,
+            "raw_vars": str(event.raw_vars),
+            "resolved_vars": str(event.resolved_vars),
+            "vars": str(event.vars),
+            "snmp_trap_oid": event.vars.get("trap_oid", None),
+            "message": event.vars.get("message", None),
+            "managed_object": event.managed_object.id,
+            "pool": event.managed_object.pool.bi_id,
+            "ip": struct.unpack("!I", socket.inet_aton(event.managed_object.address))[0],
+            "profile": event.managed_object.profile.bi_id,
+            "vendor": event.managed_object.vendor.bi_id,
+            "platform": event.managed_object.platform.bi_id,
+            "version": event.managed_object.version.bi_id,
+            "administrative_domain": event.managed_object.administrative_domain.bi_id,
+        }
+        self.register_metrics("events", [data])
+
         # Fill deduplication filter
         self.dedup_filter.register(event)
         # Fill suppress filter
