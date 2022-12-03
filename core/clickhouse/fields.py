@@ -346,6 +346,20 @@ class AggregatedField(BaseField):
         # return "{p[function]}Merge({p[field]}_{p[function]})"
 
 
+class MapField(BaseField):
+    def __init__(self, field_type, description=None):
+        super().__init__(description=description)
+        self.field_type = field_type
+
+    def to_json(self, value):
+        if not isinstance(value, dict):
+            raise ValueError("Value for Map Field Must be Dict")
+        return value
+
+    def get_db_type(self, name=None):
+        return f"Map(String, {self.field_type.get_db_type()})"
+
+
 class NestedField(ArrayField):
     db_type = "Nested"
 
