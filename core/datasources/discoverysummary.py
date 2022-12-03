@@ -6,14 +6,14 @@
 # ----------------------------------------------------------------------
 
 # Python Modules
-from typing import Optional, Iterable, Dict, Any
+from typing import Optional, Iterable, Tuple, AsyncIterable
 
 # Third-party modules
-import pandas as pd
 from noc.inv.models.interface import Interface
 from noc.sa.models.managedobject import ManagedObject
 from noc.sa.models.managedobjectprofile import ManagedObjectProfile
 from noc.main.models.pool import Pool
+from noc.inv.models.link import Link
 
 # NOC modules
 from .base import FieldInfo, BaseDataSource
@@ -65,14 +65,9 @@ class ManagedObjectConfigDS(BaseDataSource):
     ]
 
     @classmethod
-    async def query(cls, fields: Optional[Iterable[str]] = None, *args, **kwargs) -> pd.DataFrame:
-        data = [mm async for mm in cls.iter_query(fields)]
-        return pd.DataFrame.from_records(data, index=["pool", "profile"])
-
-    @classmethod
     async def iter_query(
         cls, fields: Optional[Iterable[str]] = None, *args, **kwargs
-    ) -> Iterable[Dict[str, Any]]:
+    ) -> AsyncIterable[Tuple[str, str]]:
         # unmanaged_mos = ManagedObject.objects.filter(is_managed=False)
         icoll = Interface._get_collection()
         metrics = {}
@@ -89,7 +84,7 @@ class ManagedObjectConfigDS(BaseDataSource):
                     "discovered_links": 0,
                     "discovered_metrics": 0,
                 }
-                mos = list(
+                mos = set(
                     ManagedObject.objects.filter(
                         is_managed=True, object_profile=mop, pool=pool
                     ).values_list("id", flat=True)
@@ -98,15 +93,21 @@ class ManagedObjectConfigDS(BaseDataSource):
                     r["discovered_managed_object_periodic"] = len(mos)
                 if mop.enable_box_discovery:
                     r["discovered_managed_object_box"] = len(mos)
-                # r["discovered_interface"] = Interface.objects.filter(managed_object__in=mos).count()
-                # r["discovered_links"] = Link.objects.filter(linked_objects__in=mos).count()
+                if mos:
+                    #     # r["discovered_interface"] = Interface.objects.filter(managed_object__in=mos).count()
+                    r["discovered_links"] = Link.objects.filter(linked_objects__in=mos).count()
                 if mop.report_ping_rtt:
                     r["discovered_metrics"] += 1
                 if mop.report_ping_attempts:
                     r["discovered_metrics"] += 1
                 if mop.enable_periodic_discovery and mop.enable_periodic_discovery_metrics:
                     r["discovered_metrics"] = len(mop.metrics) * len(mos)
-                    for mo_id in mos:
-                        if mo_id in metrics:
-                            r["discovered_metrics"] += metrics[mo_id]
-                yield r
+                    for mo_id in mos.intersection(set(metrics)):
+                        r["discovered_metrics"] += metrics[mo_id]
+                yield "pool", pool.name
+                yield "profile", mop.name
+                yield "discovered_managed_object_box", r["discovered_managed_object_box"]
+                yield "discovered_managed_object_periodic", r["discovered_managed_object_periodic"]
+                yield "discovered_interface", r["discovered_links"]
+                yield "discovered_links", r["discovered_links"]
+                yield "discovered_metrics", r["discovered_metrics"]

@@ -6,10 +6,7 @@
 # ----------------------------------------------------------------------
 
 # Python Modules
-from typing import Optional, Iterable, Dict, Any
-
-# Third-party modules
-import pandas as pd
+from typing import Optional, Iterable, Tuple, Any, AsyncIterable
 
 # NOC modules
 from .base import FieldInfo, BaseDataSource
@@ -30,25 +27,19 @@ def get_labels():
 
 class ManagedObjectLabelsStatDS(BaseDataSource):
     name = "managedobjectlabelsstatds"
+    row_index = "managed_object_id"
 
     fields = [
         FieldInfo(name="managed_object_id", type="int64"),
     ] + [FieldInfo(name=f, type="bool") for f in get_labels()]
 
     @classmethod
-    async def query(cls, fields: Optional[Iterable[str]] = None, *args, **kwargs) -> pd.DataFrame:
-        data = [mm async for mm in cls.iter_query(fields)]
-        return pd.DataFrame.from_records(
-            data, index="managed_object_id", columns=[ff.name for ff in cls.fields]
-        )
-
-    @classmethod
     async def iter_query(
         cls, fields: Optional[Iterable[str]] = None, *args, **kwargs
-    ) -> Iterable[Dict[str, Any]]:
+    ) -> AsyncIterable[Tuple[str, Any]]:
         query_fields = [ff.name for ff in cls.fields[1:]]
         for mo_id, labels in ManagedObject.objects.filter().values_list("id", "labels").iterator():
             labels = set(labels)
-            r = {ff: ff in labels for ff in query_fields}
-            r["managed_object_id"] = mo_id
-            yield r
+            for ff in query_fields:
+                yield ff, ff in labels
+            yield "managed_object_id", mo_id

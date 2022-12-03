@@ -7,10 +7,9 @@
 
 # Python Modules
 import datetime
-from typing import Optional, Iterable, Dict, Any
+from typing import Optional, Iterable, AsyncIterable, Tuple
 
 # Third-party modules
-import pandas as pd
 import orjson
 
 # NOC modules
@@ -39,11 +38,6 @@ class InterfaceMACsStatDS(BaseDataSource):
     ]
 
     @classmethod
-    async def query(cls, fields: Optional[Iterable[str]] = None, *args, **kwargs) -> pd.DataFrame:
-        data = [mm async for mm in cls.iter_query(fields, *args, **kwargs)]
-        return pd.DataFrame.from_records(data, index=["managed_object_id", "interface_name"])
-
-    @classmethod
     async def iter_query(
         cls,
         fields: Optional[Iterable[str]] = None,
@@ -52,7 +46,7 @@ class InterfaceMACsStatDS(BaseDataSource):
         resolve_managedobject_id: bool = True,
         *args,
         **kwargs,
-    ) -> Iterable[Dict[str, Any]]:
+    ) -> AsyncIterable[Tuple[str, str]]:
         """
 
         :param fields:
@@ -71,10 +65,8 @@ class InterfaceMACsStatDS(BaseDataSource):
         )
         for row in result.splitlines():
             row = orjson.loads(row)
-            yield {
-                "managed_object_id": int(row["managed_object_id"])
-                if resolve_managedobject_id
-                else int(row["managed_object"]),
-                "interface_name": row["interface"],
-                "mac_count": int(row["mac_count"]),
-            }
+            yield "managed_object_id", int(
+                row["managed_object_id"]
+            ) if resolve_managedobject_id else int(row["managed_object"])
+            yield "interface_name", row["interface"]
+            yield "mac_count", int(row["mac_count"])

@@ -6,7 +6,7 @@
 # ----------------------------------------------------------------------
 
 # Python Modules
-from typing import Optional, Iterable, Dict, Any
+from typing import Optional, Iterable, Tuple, AsyncIterable
 
 # Third-party modules
 import pandas as pd
@@ -20,6 +20,7 @@ from noc.sa.models.managedobject import ManagedObject
 
 class ManagedObjectLocationDS(BaseDataSource):
     name = "managedobjectlocationds"
+    row_index = "container_id"
 
     fields = [
         FieldInfo(name="managed_object_id", type="int64"),
@@ -35,7 +36,7 @@ class ManagedObjectLocationDS(BaseDataSource):
     @classmethod
     async def iter_query(
         cls, fields: Optional[Iterable[str]] = None, *args, **kwargs
-    ) -> Iterable[Dict[str, Any]]:
+    ) -> AsyncIterable[Tuple[str, str]]:
         match = {"data.interface": "address"}
         value = (
             Object._get_collection()
@@ -104,19 +105,16 @@ class ManagedObjectLocationDS(BaseDataSource):
             if "child_cont" in v and "parent_address" in v and str(v["child_cont"]["_id"]) not in r:
                 # r[str(v["child_cont"]["_id"])] = v["parent_address"].strip()
                 # cont_map[str(v["child_cont"]["_id"])] = v["parent_address"].strip()
-                r = {
-                    "container_id": str(v["child_cont"]["_id"]),
-                    "location_address": v["parent_address"].strip(),
-                }
+                yield "container_id", str(v["child_cont"]["_id"])
+                yield "location_address", v["parent_address"].strip()
                 if r["container_id"] in managed_object_map:
-                    r["managed_object_id"] = managed_object_map[r["container_id"]]
-                yield r
+                    yield "managed_object_id", managed_object_map[r["container_id"]]
             if cid not in r and "parent_address" in v:
                 # r[cid] = v["parent_address"].strip()
-                r = {"container_id": cid, "location_address": v["parent_address"].strip()}
+                yield "container_id", str(v["child_cont"]["_id"])
+                yield "location_address", v["parent_address"].strip()
                 if r["container_id"] in managed_object_map:
-                    r["managed_object_id"] = managed_object_map[r["container_id"]]
-                yield r
+                    yield "managed_object_id", managed_object_map[r["container_id"]]
 
         # for mo_id, container in (
         #         ManagedObject.objects.filter(id__in=self.sync_ids)
