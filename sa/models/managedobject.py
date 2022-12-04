@@ -1507,7 +1507,7 @@ class ManagedObject(NOCModel):
         :param scope: Scope name
         """
 
-        o_label = f"{scope or ''}{self.name}|{source}"
+        o_label = f"{scope or ''}|{self.name}|{source}"
         # Update existing capabilities
         new_caps = []
         seen = set()
@@ -1557,20 +1557,16 @@ class ManagedObject(NOCModel):
                 logger.info("[%s] Unknown capability %s, ignoring", o_label, cn)
                 continue
             logger.info("[%s] Adding capability %s = %s", o_label, cn, caps[cn])
-            new_caps += [{"capability": str(c.id), "value": caps[cn], "source": source}]
+            new_caps += [
+                {"capability": str(c.id), "value": caps[cn], "source": source, "scope": scope or ""}
+            ]
             changed = True
 
         if changed:
             logger.info("[%s] Saving changes", o_label)
-            from django.db import connection
-
             self.caps = new_caps
-            cursor = connection.cursor()
-            cursor.execute(
-                f"""UPDATE {self._meta.db_table} SET caps = %s::jsonb WHERE id = {self.id}""",
-                [smart_text(orjson.dumps(new_caps))],
-            )
-            # self.save()
+            ManagedObject.objects.filter(id=self.id).update(caps=self.caps)
+            self.update_init()
             self._reset_caches(self.id, credential=True)
         caps = {}
         for ci in new_caps:
@@ -1594,6 +1590,9 @@ class ManagedObject(NOCModel):
             self.caps += [
                 {"capability": str(caps.id), "value": value, "source": source, "scope": scope or ""}
             ]
+        ManagedObject.objects.filter(id=self.id).update(caps=self.caps)
+        self.update_init()
+        self._reset_caches(self.id, credential=True)
 
     def disable_discovery(self):
         """
