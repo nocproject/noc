@@ -12,7 +12,7 @@ Ext.define("NOC.fm.alarm.view.grids.GridController", {
     onShowMap: function(grid, rowIndex) {
         var record = grid.store.getAt(rowIndex);
         NOC.launch("inv.map", "history", {
-            args: [record.get("segment"), record.get("managed_object")]
+            args: ["segment", record.get("segment"), record.get("managed_object")]
         });
     },
     //

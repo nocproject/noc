@@ -189,10 +189,10 @@ Ext.define("NOC.inv.configuredmap.Application", {
                                             allowBlank: false,
                                             uiStyle: "medium",
                                             store: [
-                                                ["group", "group"],
-                                                ["segment", "segment"],
-                                                ["managedobject", "managedobject"],
-                                                ["other", "other"]
+                                                ["objectgroup", "Group"],
+                                                ["objectsegment", "Segment"],
+                                                ["managedobject", "Managedobject"],
+                                                ["other", "Other"]
                                             ]
                                         },
                                         {
@@ -259,9 +259,9 @@ Ext.define("NOC.inv.configuredmap.Application", {
                                                     width: 50,
                                                     uiStyle: "medium",
                                                     store: [
-                                                        ["stencil", "stencil"],
-                                                        ["rectangle", "rectangle"],
-                                                        ["ellipse", "ellipse"]
+                                                        ["stencil", "Stencil"],
+                                                        ["rectangle", "Rectangle"],
+                                                        ["ellipse", "Ellipse"]
                                                     ]
                                                 },
                                                 {
