@@ -136,7 +136,7 @@ class ResourceGroup(Document):
 
     _id_cache = cachetools.TTLCache(maxsize=100, ttl=60)
     _bi_id_cache = cachetools.TTLCache(maxsize=100, ttl=60)
-    _nested_cache = cachetools.TTLCache(maxsize=1000, ttl=60)
+    _nested_cache = cachetools.TTLCache(maxsize=1000, ttl=120)
     _lazy_labels_cache = cachetools.TTLCache(maxsize=1000, ttl=60)
 
     def __str__(self):
@@ -181,9 +181,11 @@ class ResourceGroup(Document):
 
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_nested_cache"), lock=lambda _: id_lock)
-    def get_nested_ids(cls, resource_group):
+    def get_nested_ids(cls, resource_group, convert_oid=False):
         """
         Return id of this and all nested segments
+        :param resource_group: ResourceGroup id or instance
+        :param convert_oid: Convert ObjectId to str, for Model checks
         :return:
         """
         if hasattr(resource_group, "id"):
@@ -204,6 +206,8 @@ class ResourceGroup(Document):
             if not wave:
                 break
             seen |= wave
+        if convert_oid:
+            return [str(s) for s in seen]
         return list(seen)
 
     @classmethod
@@ -559,6 +563,15 @@ class ResourceGroup(Document):
                 o = model.objects.get(**q)
                 objects.add(o)
         return list(objects)
+
+    def __contains__(self, item) -> bool:
+        if not hasattr(item, "effective_service_groups"):
+            return False
+        if self.technology.allow_children:
+            rids = ResourceGroup.get_nested_ids(self.id, convert_oid=not is_document(item))
+            return bool(set(item.effective_service_groups).intersection(rids))
+        rid = self.id if is_document(item) else str(self.id)
+        return rid in item.effective_service_groups
 
 
 def invalidate_instance_cache(model_id: str, ids: List[int]):
