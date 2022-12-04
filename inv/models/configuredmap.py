@@ -118,7 +118,7 @@ class NodeItem(EmbeddedDocument):
         if self.stencil:
             return stencil_registry.get(self.stencil)
         o = self.object
-        if o:
+        if o and hasattr(o, "get_stencil"):
             return o.get_stencil()
         return
 

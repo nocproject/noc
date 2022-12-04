@@ -148,6 +148,16 @@ class MapApplication(ExtApplication):
             "external_segment": {},
         }
 
+    def inspector_objectsegment(self, request, id, rg_id):
+        object = self.get_object_or_404(NetworkSegment, id=rg_id)
+        return {
+            "id": str(object.id),
+            "name": object.name,
+            "description": object.description,
+            "external": False,
+            "external_segment": {},
+        }
+
     def inspector_link(self, request, id, link_id):
         def q(s):
             if isinstance(s, str):

@@ -409,6 +409,7 @@ Ext.define("NOC.inv.map.MapPanel", {
             data: {
                 type: data.type,
                 id: data.id,
+                node_id: data.node_id,
                 caps: data.caps,
                 isMaintenance: false,
                 portal: data.portal
@@ -540,7 +541,17 @@ Ext.define("NOC.inv.map.MapPanel", {
                 view.highlight();
                 me.currentHighlight = view;
                 me.app.inspectCloud(data.id);
-                break
+                break;
+            case "objectgroup":
+                view.highlight();
+                me.currentHighlight = view;
+                me.app.inspectObjectGroup(data.node_id);
+                break;
+            case "objectsegment":
+                view.highlight();
+                me.currentHighlight = view;
+                me.app.inspectObjectSegment(data.node_id);
+                break;
         }
     },
 

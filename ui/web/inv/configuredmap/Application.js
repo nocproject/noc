@@ -229,6 +229,7 @@ Ext.define("NOC.inv.configuredmap.Application", {
                                                     allowBlank: true,
                                                     labelAlign: "top",
                                                     width: 200,
+                                                    renderer: NOC.render.Lookup("managed_object"),
                                                 },
                                                 {
                                                     name: "add_nested",
