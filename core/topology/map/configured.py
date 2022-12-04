@@ -69,7 +69,9 @@ class ConfiguredTopology(TopologyBase):
 
     def get_background(self) -> Optional[BackgroundImage]:
         if self.cfgmap.background_image:
-            return BackgroundImage(image=str(self.cfgmap.background_image.id), opacity=self.cfgmap.background_opacity)
+            return BackgroundImage(
+                image=str(self.cfgmap.background_image.id), opacity=self.cfgmap.background_opacity
+            )
         return
 
     def add_objects_links(self, object_ids: List[int]):
@@ -133,21 +135,16 @@ class ConfiguredTopology(TopologyBase):
                 attrs.update(
                     {
                         "role": "segment",
+                        "node_id": o.id,
                         "address": o.address,
                         "level": o.object_profile.level,
                     }
                 )
-            elif nc.node_type == "group":
+            elif nc.node_type in {"objectgroup", "objectsegment"}:
                 attrs.update(
                     {
                         "role": "segment",
-                        "level": self.DEFAULT_LEVEL,
-                    }
-                )
-            elif nc.node_type == "object":
-                attrs.update(
-                    {
-                        "role": "segment",
+                        "node_id": str(nc.object.id),
                         "level": self.DEFAULT_LEVEL,
                     }
                 )

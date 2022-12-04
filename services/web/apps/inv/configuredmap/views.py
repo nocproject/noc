@@ -46,19 +46,20 @@ class ConfiguredMapApplication(ExtDocApplication):
         for nn in o.nodes:
             node = super().instance_to_dict(nn)
             title = node["title"]
-            if nn.node_type == "managedobject":
-                mo = ManagedObject.get_by_id(int(node["reference_id"]))
+            ref_id = node.pop("reference_id", None)
+            if nn.node_type == "managedobject" and ref_id:
+                mo = ManagedObject.get_by_id(int(ref_id))
                 node["managed_object"] = mo.id
                 node["managed_object__label"] = mo.name
                 title = title or mo.name
-            elif nn.node_type == "group":
-                rg = ResourceGroup.get_by_id(node["reference_id"])
+            elif nn.node_type == "objectgroup" and ref_id:
+                rg = ResourceGroup.get_by_id(ref_id)
                 node["resource_group"] = str(rg.id)
                 node["resource_group__label"] = rg.name
                 title = title or rg.name
-            elif nn.node_type == "group":
-                ns = NetworkSegment.get_by_id(node["reference_id"])
-                node["segment_group"] = str(ns.id)
+            elif nn.node_type == "objectsegment" and ref_id:
+                ns = NetworkSegment.get_by_id(ref_id)
+                node["segment"] = str(ns.id)
                 node["segment__label"] = ns.name
                 title = title or ns.name
             node_map[str(nn.node_id)] = title
@@ -84,9 +85,9 @@ class ConfiguredMapApplication(ExtDocApplication):
             sg = node.pop("segment", None)
             if node["node_type"] == "managedobject":
                 node["reference_id"] = str(mo)
-            elif node["node_type"] == "group":
+            elif node["node_type"] == "objectgroup":
                 node["reference_id"] = rg
-            elif node["node_type"] == "segment":
+            elif node["node_type"] == "objectsegment":
                 node["reference_id"] = sg
         return super().clean(data)
 

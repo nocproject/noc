@@ -166,7 +166,7 @@ class TopologyBase(object):
                 "mo": o,
                 "type": n_type,
                 "id": o_id,
-                "name": o.name,
+                "name": o.name or "",
                 "shape": getattr(stencil, "path", ""),
                 "shape_width": getattr(stencil, "width", 0),
                 "shape_height": getattr(stencil, "height", 0),

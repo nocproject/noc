@@ -45,7 +45,7 @@ class NodeItem(EmbeddedDocument):
     node_id = ObjectIdField(default=bson.ObjectId)
     parent = ObjectIdField()
     # Generator Config
-    node_type = StringField(choices=["group", "managedobject", "segment", "other"])
+    node_type = StringField(choices=["objectgroup", "managedobject", "objectsegment", "other"])
     reference_id = StringField()
     add_nested = BooleanField()  # Add nested nodes (if supported) all nodes from group or children
     # Draw block
@@ -66,8 +66,8 @@ class NodeItem(EmbeddedDocument):
 
     NODE_TYPE_MODEL = {
         "managedobject": ManagedObject,
-        "group": ResourceGroup,
-        "segment": NetworkSegment,
+        "objectgroup": ResourceGroup,
+        "objectsegment": NetworkSegment,
     }
 
     def __str__(self):
@@ -84,7 +84,11 @@ class NodeItem(EmbeddedDocument):
 
     @property
     def name(self):
-        return self.title
+        if self.title:
+            return self.title
+        if self.object:
+            return self.object.name
+        return ""
 
     @property
     def object(self):
@@ -102,9 +106,9 @@ class NodeItem(EmbeddedDocument):
     @property
     def portal(self):
         generator = None
-        if self.node_type == "group":
+        if self.node_type == "objectgroup":
             generator = "objectgroup"
-        elif self.node_type == "segment":
+        elif self.node_type == "objectsegment":
             generator = "segment"
         if not generator:
             return None
@@ -163,3 +167,9 @@ class ConfiguredMap(Document):
     @classmethod
     def get_by_id(cls, id) -> Optional["ConfiguredMap"]:
         return ConfiguredMap.objects.filter(id=id).first()
+
+    def get_node_by_id(self, nid) -> Optional[NodeItem]:
+        for n in self.nodes:
+            if n.id == nid:
+                return n
+        return

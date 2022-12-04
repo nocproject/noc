@@ -20,6 +20,7 @@ from noc.inv.models.interface import Interface
 from noc.inv.models.discoveryid import DiscoveryID
 from noc.inv.models.mapsettings import MapSettings
 from noc.inv.models.link import Link
+from noc.inv.models.resourcegroup import ResourceGroup
 from noc.sa.models.managedobject import ManagedObject
 from noc.sa.interfaces.base import (
     ListOfParameter,
@@ -136,6 +137,16 @@ class MapApplication(ExtApplication):
             "console_url": "%s://%s/" % (s, object.address),
         }
         return r
+
+    def inspector_objectgroup(self, request, id, rg_id):
+        object = self.get_object_or_404(ResourceGroup, id=rg_id)
+        return {
+            "id": str(object.id),
+            "name": object.name,
+            "description": object.description,
+            "external": False,
+            "external_segment": {},
+        }
 
     def inspector_link(self, request, id, link_id):
         def q(s):
