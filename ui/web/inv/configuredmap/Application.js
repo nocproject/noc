@@ -191,9 +191,12 @@ Ext.define("NOC.inv.configuredmap.Application", {
                                             store: [
                                                 ["objectgroup", "Group"],
                                                 ["objectsegment", "Segment"],
-                                                ["managedobject", "Managedobject"],
+                                                ["managedobject", "Managed Object"],
                                                 ["other", "Other"]
-                                            ]
+                                            ],
+                                            listeners: {
+                                                change: me.onChangeType
+                                            }
                                         },
                                         {
                                             xtype: "fieldset",
@@ -211,6 +214,7 @@ Ext.define("NOC.inv.configuredmap.Application", {
                                                     listWidth: 1,
                                                     listAlign: 'left',
                                                     labelAlign: "top",
+                                                    disabled: true,
                                                     width: 300
                                                 },
                                                 {
@@ -220,6 +224,7 @@ Ext.define("NOC.inv.configuredmap.Application", {
                                                     fieldLabel: __("Segment"),
                                                     allowBlank: true,
                                                     labelAlign: "top",
+                                                    disabled: true,
                                                     width: 200,
                                                 },
                                                 {
@@ -228,6 +233,7 @@ Ext.define("NOC.inv.configuredmap.Application", {
                                                     fieldLabel: __("Managed Object"),
                                                     allowBlank: true,
                                                     labelAlign: "top",
+                                                    disabled: true,
                                                     width: 200,
                                                     renderer: NOC.render.Lookup("managed_object"),
                                                 },
@@ -360,4 +366,27 @@ Ext.define("NOC.inv.configuredmap.Application", {
             args: ["configured", me.currentRecord.get("id")]
         });
     },
+    onChangeType: function(field, value) {
+        var me = this, field_name;
+        Ext.Array.each(
+          me.up().query('[name/="resource_group|segment|managed_object"]'),
+          function(field) {
+              field.setDisabled(true);
+              field.setValue(null);
+          });
+        switch(value) {
+            case "objectgroup":
+                field_name = "resource_group";
+                break;
+            case "objectsegment":
+                field_name = "segment";
+                break;
+            case "managedobject":
+                field_name = "managed_object";
+                break;
+        }
+        if(field_name) {
+            me.up().query("[name=" + field_name + "]")[0].setDisabled(false);
+        }
+    }
 });
