@@ -139,11 +139,7 @@ class AlarmEscalation(Document):
                 if e_item.min_severity and alarm.severity < e_item.min_severity:
                     continue
                 # Check ResourceGroup
-                if (
-                    e_item.resource_group
-                    and str(e_item.resource_group.id)
-                    not in alarm.managed_object.effective_service_groups
-                ):
+                if e_item.resource_group and alarm.managed_object not in e_item.resource_group:
                     continue
                 logger.debug("[%s] Watch for %s after %s seconds", alarm.id, esc.name, e_item.delay)
                 et = alarm.timestamp + datetime.timedelta(seconds=e_item.delay)
