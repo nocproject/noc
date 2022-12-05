@@ -120,6 +120,7 @@ class MapApplication(ExtApplication):
 
     def inspector_managedobject(self, request, id, mo_id):
         # segment = self.get_object_or_404(NetworkSegment, id=id)
+        segment = NetworkSegment.get_by_id(str(id))
         object = self.get_object_or_404(ManagedObject, id=int(mo_id))
         s = {1: "telnet", 2: "ssh", 3: "http", 4: "https"}[object.scheme]
         r = {
@@ -129,7 +130,7 @@ class MapApplication(ExtApplication):
             "address": object.address,
             "platform": object.platform.full_name if object.platform else "",
             "profile": object.profile.name,
-            "external": False,
+            "external": segment and object.segment.id != segment.id,
             "external_segment": {"id": str(object.segment.id), "name": object.segment.name},
             # "external": object.segment.id != segment.id,
             # "external_segment": {"id": str(object.segment.id), "name": object.segment.name},
