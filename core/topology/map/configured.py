@@ -40,12 +40,15 @@ class ConfiguredTopology(TopologyBase):
             gen_id, node_hints=node_hints, link_hints=link_hints, force_spring=force_spring
         )
 
+    @property
     def meta(self) -> MapMeta:
         return MapMeta(
             title=self.title,
             image=BackgroundImage(
                 image=str(self.cfgmap.background_image.id), opacity=self.cfgmap.background_opacity
-            ),
+            )
+            if self.cfgmap.background_image
+            else None,
             width=self.cfgmap.width,
             height=self.cfgmap.height,
         )
@@ -135,11 +138,7 @@ class ConfiguredTopology(TopologyBase):
                 parent_links.append((nc.id, ni.parent))
                 ni.level -= 5
             if self.cfgmap.enable_node_portal and nc.portal:
-                ni.portal = Portal(generator="configured", id=str(nc.portal))
-            elif self.cfgmap.enable_node_portal and ni.type == "objectgroup":
-                ni.portal = Portal(generator="objectgroup", id=str(nc.reference_id))
-            elif self.cfgmap.enable_node_portal and ni.type == "objectsegment":
-                ni.portal = Portal(generator="segment", id=str(nc.reference_id))
+                ni.portal = nc.portal
             nodes[nc.node_id] = ni.id
             self.add_node(ni)
             if not nc.add_nested:

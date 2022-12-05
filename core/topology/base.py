@@ -119,18 +119,19 @@ class TopologyBase(object):
         """
         attrs = attrs or {}
         o_id = str(n.id)
+        attrs.update(n.attrs or {})
         if o_id in self.G.nodes:
             # Only update attributes
             self.G.nodes[o_id].update(attrs)
             return
-        stencil: Stencil = stencil_registry(n.stencil or stencil_registry.DEFAULT_STENCIL)
+        stencil: Stencil = stencil_registry.get(n.stencil or stencil_registry.DEFAULT_STENCIL)
         # Get capabilities
         oc = set()
         if n.get_caps():
             oc = set(n.get_caps()) & self.CAPS
             self.caps |= oc
         if n.portal:
-            attrs.update(asdict(n.portal))
+            attrs["portal"] = asdict(n.portal)
         # Apply node hints
         attrs.update(self.node_hints.get(o_id) or {})
         # Apply default attributes
@@ -144,7 +145,7 @@ class TopologyBase(object):
                 "shape": getattr(stencil, "path", ""),
                 "shape_width": getattr(stencil, "width", 0),
                 "shape_height": getattr(stencil, "height", 0),
-                "shape_overlay": [asdict(x) for x in n.overlays],
+                "shape_overlay": [asdict(x) for x in n.overlays] if n.overlays else [],
                 "ports": [],
                 "caps": list(oc),
             }

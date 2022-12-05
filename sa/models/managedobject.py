@@ -114,7 +114,12 @@ from noc.core.confdb.tokenizer.loader import loader as tokenizer_loader
 from noc.core.confdb.engine.base import Engine
 from noc.core.comp import smart_text, DEFAULT_ENCODING
 from noc.main.models.glyph import Glyph
-from noc.core.topology.types import ShapeOverlayPosition, ShapeOverlayForm, ShapeOverlay, TopologyNode
+from noc.core.topology.types import (
+    ShapeOverlayPosition,
+    ShapeOverlayForm,
+    ShapeOverlay,
+    TopologyNode,
+)
 from noc.core.models.problem import ProblemItem
 from noc.core.models.cfgmetrics import MetricCollectorConfig, MetricItem
 from .administrativedomain import AdministrativeDomain
@@ -3046,10 +3051,10 @@ class ManagedObject(NOCModel):
     def get_stencil(self) -> Optional[Stencil]:
         if self.shape:
             # Use mo's shape, if set
-            return stencil_registry.get(self.shape)
+            return self.shape
         if self.object_profile.shape:
             # Use profile's shape
-            return stencil_registry.get(self.object_profile.shape)
+            return self.object_profile.shape
         return
 
     def get_shape_overlays(self) -> List[ShapeOverlay]:
@@ -3101,7 +3106,7 @@ class ManagedObject(NOCModel):
             stencil=self.get_stencil(),
             overlays=self.get_shape_overlays(),
             level=self.object_profile.level,
-            attrs={"address": self.address},
+            attrs={"address": self.address, "mo": self},
         )
 
 

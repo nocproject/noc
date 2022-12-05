@@ -23,7 +23,7 @@ from mongoengine.fields import (
 
 # NOC modules
 from noc.core.stencil import stencil_registry
-from noc.core.topology.types import TopologyNode
+from noc.core.topology.types import TopologyNode, Portal
 from noc.main.models.imagestore import ImageStore
 from noc.fm.models.alarmclass import AlarmClass
 from noc.fm.models.alarmseverity import AlarmSeverity
@@ -97,15 +97,17 @@ class NodeItem(EmbeddedDocument):
         return self.NODE_TYPE_MODEL[self.node_type].get_by_id(ref)
 
     @property
-    def portal(self):
+    def portal(self) -> Optional[Portal]:
         generator = None
+        if self.map_portal:
+            return Portal(generator="configured", id=str(self.map_portal))
         if self.node_type == "objectgroup":
             generator = "objectgroup"
         elif self.node_type == "objectsegment":
             generator = "segment"
         if not generator:
             return None
-        return {"generator": generator, "id": str(self.reference_id)}
+        return Portal(generator=generator, id=str(self.reference_id))
 
     def get_topology_node(self) -> TopologyNode:
         if self.object:
