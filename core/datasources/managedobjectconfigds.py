@@ -6,19 +6,19 @@
 # ----------------------------------------------------------------------
 
 # Python Modules
-from typing import Optional, Iterable, Dict, Any
+from typing import Optional, Iterable, Tuple, AsyncIterable
 
 # Third-party modules
-import pandas as pd
-from noc.core.mongo.connection import get_db
 from pymongo.read_preferences import ReadPreference
 
 # NOC modules
 from .base import FieldInfo, BaseDataSource
+from noc.core.mongo.connection import get_db
 
 
 class ManagedObjectConfigDS(BaseDataSource):
     name = "managedobjectconfigds"
+    row_index = "managed_object_id"
 
     # "Up/10G", "Up/1G", "Up/100M", "Up/10M", "Down/-", "-"
     fields = [
@@ -27,18 +27,14 @@ class ManagedObjectConfigDS(BaseDataSource):
     ]
 
     @classmethod
-    async def query(cls, fields: Optional[Iterable[str]] = None, *args, **kwargs) -> pd.DataFrame:
-        data = [mm async for mm in cls.iter_query(fields)]
-        return pd.DataFrame.from_records(data, index="managed_object_id")
-
-    @classmethod
     async def iter_query(
         cls, fields: Optional[Iterable[str]] = None, *args, **kwargs
-    ) -> Iterable[Dict[str, Any]]:
+    ) -> AsyncIterable[Tuple[str, str]]:
         pipeline = [
             {"$group": {"_id": "$object", "last_ts": {"$max": "$ts"}}},
             {"$sort": {"_id": 1}},
         ]
+        row_num = 0
         # if len(self.sync_ids) < 20000:
         #     # @todo Very large list slowest encode, need research
         #     pipeline.insert(0, {"$match": {"object": {"$in": self.sync_ids}}})
@@ -49,4 +45,6 @@ class ManagedObjectConfigDS(BaseDataSource):
         ):
             if not data["_id"]:
                 continue
-            yield {"managed_object_id": data["_id"], "last_changed_ts": data["last_ts"]}
+            row_num += 1
+            yield row_num, "managed_object_id", data["_id"]
+            yield row_num, "last_changed_ts", data["last_ts"]

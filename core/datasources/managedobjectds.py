@@ -6,10 +6,9 @@
 # ----------------------------------------------------------------------
 
 # Python Modules
-from typing import Optional, Iterable, Dict, Any, List, Tuple, Set
+from typing import Optional, Iterable, Dict, Any, List, Tuple, AsyncIterable
 
 # Third-party modules
-import pandas as pd
 from pymongo.read_preferences import ReadPreference
 
 # NOC modules
@@ -25,6 +24,7 @@ from noc.inv.models.vendor import Vendor
 from noc.inv.models.networksegment import NetworkSegment
 from noc.inv.models.discoveryid import DiscoveryID
 from noc.project.models.project import Project
+from noc.core.validators import is_objectid
 
 
 def get_capabilities() -> Iterable[Tuple[str, str]]:
@@ -63,21 +63,25 @@ class ManagedObjectDS(BaseDataSource):
             name="attr_hwversion",
             description="Object HW Version Attribute",
             internal_name="Chassis | HW Version",
+            is_caps=True,
         ),
         FieldInfo(
             name="attr_bootprom",
             description="Object Boot Prom Attribute",
             internal_name="Chassis | Boot PROM",
+            is_caps=True,
         ),
         FieldInfo(
             name="attr_patch",
             description="Object Patch Attribute",
             internal_name="Software | Patch Version",
+            is_caps=True,
         ),
         FieldInfo(
             name="attr_serialnumber",
             description="Object Serial Number Attribute",
             internal_name="Chassis | Serial Number",
+            is_caps=True,
         ),
         # Location Fields
         FieldInfo(
@@ -85,10 +89,10 @@ class ManagedObjectDS(BaseDataSource):
             description="Object Administrative Domain",
             internal_name="administrative_domain__name",
         ),
-        FieldInfo(
-            name="container",
-            description="Object Container Name",
-        ),
+        # FieldInfo(
+        #     name="container",
+        #     description="Object Container Name",
+        # ),
         FieldInfo(
             name="segment",
             description="Object Segment Name",
@@ -113,39 +117,36 @@ class ManagedObjectDS(BaseDataSource):
             description="Object physical interfaces",
             internal_name="DB | Interfaces",
             type="int64",
+            is_caps=True,
         ),
         # Oper fields
         FieldInfo(
             name="avail",
             description="Object Availability Status",
             internal_name="id",
-            type="bool",
+            type="str",
         ),
     ] + [
-        FieldInfo(name=c_name, type=c_type, internal_name=str(c_id))
+        FieldInfo(name=c_name, type=c_type, internal_name=str(c_id), is_caps=True)
         for c_id, c_type, c_name in get_capabilities()
     ]
 
     @classmethod
-    def get_caps(
-        cls, *args: List[Dict[str, Any]], requested_caps: Optional[Set[str]] = None
-    ) -> Dict[str, Any]:
+    async def iter_caps(
+        cls, caps: List[Dict[str, Any]], requested_caps: Dict[str, Any] = None
+    ) -> AsyncIterable[Tuple[str, Any]]:
         """
         Consolidate capabilities list and return resulting dict of
         caps name -> caps value. First appearance of capability
         overrides later ones.
 
-        :param args:
+        :param caps:
         :param requested_caps:
         :return:
         """
-        r: Dict[str, Any] = {}
-        for ci in args[0]:
-            cn = Capability.get_by_id(ci["capability"])
-            if requested_caps and cn.name not in requested_caps:
-                continue
-            r[cn.name] = ci["value"]
-        return r
+        caps = {c["capability"]: c["value"] for c in caps}
+        for cid, (f_name, f_default) in requested_caps.items():
+            yield f_name, caps.get(cid, f_default)
 
     @staticmethod
     def get_caps_default(caps: Capability):
@@ -163,24 +164,28 @@ class ManagedObjectDS(BaseDataSource):
         return False
 
     @classmethod
-    async def query(cls, fields: Optional[Iterable[str]] = None, *args, **kwargs) -> pd.DataFrame:
-        data = [mm async for mm in cls.iter_query(fields, *args, **kwargs)]
-        return pd.DataFrame.from_records(data, index="id")
+    async def get_json(cls, fields: Optional[Iterable[str]] = None, *args, **kwargs):
+        return [mm async for mm in cls.iter_row(fields, *args, **kwargs)]
 
     @classmethod
     async def iter_query(
         cls, fields: Optional[Iterable[str]] = None, *args, **kwargs
-    ) -> Iterable[Dict[str, Any]]:
+    ) -> AsyncIterable[Tuple[str, str]]:
         fields = set(fields or [])
         q_fields, q_caps = [], {}
         # Getting requested fields
         for f in cls.fields:
             if fields and f.name not in fields and f.name != "id":
                 continue
-            if "|" in f.name or (f.internal_name and "|" in f.internal_name) or f.name == "SNMP":
-                c_name = f.name if "|" in f.name else f.internal_name
-                c = Capability.get_by_name(c_name)
-                q_caps[c_name] = cls.get_caps_default(c)
+            if f.is_caps:
+                c = (
+                    Capability.get_by_id(f.internal_name)
+                    if is_objectid(f.internal_name)
+                    else Capability.get_by_name(f.internal_name)
+                )
+                if not c:
+                    continue
+                q_caps[str(c.id)] = (f.name, cls.get_caps_default(c))
             else:
                 q_fields.append(f.internal_name or f.name)
         if q_caps and "caps" not in q_fields:
@@ -205,59 +210,51 @@ class ManagedObjectDS(BaseDataSource):
             }
         if not fields or "avail" in fields:
             avail_map = {
-                val["object"]: val["status"]
+                val["object"]: {True: "yes", False: "no"}[val["status"]]
                 for val in ObjectStatus._get_collection()
                 .with_options(read_preference=ReadPreference.SECONDARY_PREFERRED)
                 .find({"object": {"$exists": 1}}, {"object": 1, "status": 1})
             }
-        # Main loop
-        for mo in mos.values(*q_fields).iterator():
-            mo.update(q_caps)
-            iface_count = 0
-            if "caps" in mo:
-                caps = cls.get_caps(mo.pop("caps"), requested_caps=set(q_caps))
-                mo.update(caps)
-            else:
-                caps = {}
-            if not fields or "attr_hwversion" in fields:
-                mo["attr_hwversion"] = caps.get("Chassis | HW Version", "")
-            if not fields or "attr_bootprom" in fields:
-                mo["attr_bootprom"] = caps.get("Chassis | Boot PROM", "")
-            if not fields or "attr_patch" in fields:
-                mo["attr_patch"] = caps.get("Software | Patch Version", "")
-            if not fields or "attr_serialnumber" in fields:
-                mo["attr_serialnumber"] = caps.get("Chassis | Serial Number", "")
+        print("Start Main Loop")
+        for num, mo in enumerate(mos.values(*q_fields).iterator(), start=1):
+            yield num, "id", mo["id"]
+            if "name" in mo:
+                yield num, "name", mo["name"]
+            if "address" in mo:
+                yield num, "address", mo["address"]
             if "is_managed" in mo:
-                mo["status"] = mo.pop("is_managed")
+                yield num, "status", mo["is_managed"]
             if "links" in mo:
-                links = mo.pop("links")
-                mo["link_count"] = len(links)
-            if not fields or "physical_iface_count" in fields:
-                mo["physical_iface_count"] = caps.get("DB | Interfaces", iface_count)
+                yield num, "link_count", len(mo["links"])
             if "profile" in mo:
-                mo["profile"] = Profile.get_by_id(mo["profile"]).name if mo["profile"] else None
+                yield num, "profile", Profile.get_by_id(mo["profile"]).name if mo[
+                    "profile"
+                ] else None
             if "platform" in mo:
-                platform = mo.pop("platform")
-                mo["model"] = Platform.get_by_id(platform).name if platform else None
+                platform = mo["platform"]
+                yield num, "model", Platform.get_by_id(platform).name if platform else None
             if "sw_version" in mo:
-                sw_version = mo.pop("sw_version")
-                mo["version"] = Firmware.get_by_id(sw_version).version if sw_version else None
+                sw_version = mo["sw_version"]
+                yield num, "version", Firmware.get_by_id(sw_version).version if sw_version else None
             if "vendor" in mo:
-                mo["vendor"] = Vendor.get_by_id(mo["vendor"]).name if mo["vendor"] else None
+                yield num, "vendor", Vendor.get_by_id(mo["vendor"]).name if mo["vendor"] else None
             if hostname_map:
-                mo["hostname"] = hostname_map.get(mo["id"])
+                yield num, "hostname", hostname_map.get(mo["id"])
             if segment_map:
-                mo["segment"] = segment_map.get(mo["segment"])
+                yield num, "segment", segment_map.get(mo["segment"])
             if avail_map:
-                mo["avail"] = avail_map.get(mo["id"])
+                yield num, "avail", avail_map.get(mo["id"], "--")
             if "auth_profile" in mo:
-                mo["auth_profile"] = (
+                yield num, "auth_profile", (
                     AuthProfile.get_by_id(mo["auth_profile"]).name if mo["auth_profile"] else None
                 )
             if "administrative_domain__name" in mo:
-                mo["administrative_domain"] = mo.pop("administrative_domain__name")
+                yield num, "administrativedomain", mo["administrative_domain__name"]
             if "object_profile__name" in mo:
-                mo["object_profile"] = mo.pop("object_profile__name")
+                yield num, "object_profile", mo["object_profile__name"]
             if "project" in mo:
-                mo["project"] = Project.get_by_id(mo["project"]).name if mo["project"] else None
-            yield mo
+                yield num, "project", Project.get_by_id(mo["project"]).name if mo[
+                    "project"
+                ] else None
+            async for c in cls.iter_caps(mo.pop("caps", []), requested_caps=q_caps):
+                yield num, c[0], c[1]

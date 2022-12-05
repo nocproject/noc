@@ -6,10 +6,9 @@
 # ----------------------------------------------------------------------
 
 # Python Modules
-from typing import Optional, Iterable, Dict, Any, List
+from typing import Optional, Iterable, Dict, Tuple, List, AsyncIterable
 
 # Third-party modules
-import pandas as pd
 from pymongo.read_preferences import ReadPreference
 
 # NOC modules
@@ -55,17 +54,13 @@ class InterfacesStatusStatDS(BaseDataSource):
         return r
 
     @classmethod
-    async def query(cls, fields: Optional[Iterable[str]] = None, *args, **kwargs) -> pd.DataFrame:
-        data = [mm async for mm in cls.iter_query(fields)]
-        return pd.DataFrame.from_records(data, index="managed_object_id")
-
-    @classmethod
     async def iter_query(
         cls, fields: Optional[Iterable[str]] = None, *args, **kwargs
-    ) -> Iterable[Dict[str, Any]]:
+    ) -> AsyncIterable[Tuple[str, str]]:
 
         match = {"type": "physical"}
         query_fields = {ff.name: None for ff in cls.fields if not fields or ff.name in fields}
+        row_num = 0
         for data in (
             Interface._get_collection()
             .with_options(read_preference=ReadPreference.SECONDARY_PREFERRED)
@@ -107,6 +102,8 @@ class InterfacesStatusStatDS(BaseDataSource):
                 allowDiskUse=True,
             )
         ):
+            row_num += 1
             r = cls.get_result(query_fields, data["result"])
-            r["managed_object_id"] = data["_id"]
-            yield r
+            yield row_num, "managed_object_id", data["_id"]
+            for k, v in r.items():
+                yield row_num, k, v
