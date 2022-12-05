@@ -20,7 +20,7 @@ logger = getLogger(__name__)
 def get_datastreams(instance, changed_fields=None):
     if not hasattr(instance, "iter_changed_datastream"):
         return None
-    return [item for item in instance.iter_changed_datastream(changed_fields=changed_fields or [])]
+    return [item for item in instance.iter_changed_datastream(changed_fields=changed_fields or {})]
 
 
 def change(model):
@@ -104,7 +104,7 @@ def _on_document_change(sender, document, created=False, *args, **kwargs):
         model=model_id,
         id=str(document.id),
         fields=changed_fields,
-        datastreams=get_datastreams(document, changed_fields),
+        datastreams=get_datastreams(document, {cf.field: cf.old for cf in changed_fields or []}),
     )
 
 
@@ -166,7 +166,7 @@ def _on_model_change(sender, instance, created=False, *args, **kwargs):
         model=model_id,
         id=str(instance.id),
         fields=changed_fields,
-        datastreams=get_datastreams(instance, changed_fields),
+        datastreams=get_datastreams(instance, {cf.field: cf.old for cf in changed_fields or []}),
     )
 
 
