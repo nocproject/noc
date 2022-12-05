@@ -251,9 +251,9 @@ class BulkChangeTrackerPolicy(BaseChangeTrackerPolicy):
     def commit(self) -> None:
         # Split to buckets
         changes = defaultdict(list)
-        for (model_id, item_id), (op, fields, ts, datastreams) in self.changes.items():
+        for (model_id, item_id), (op, fields, ts) in self.changes.items():
             part = 0
-            changes[part].append((op, model_id, item_id, fields, ts, datastreams))
+            changes[part].append((op, model_id, item_id, fields, ts))
         for part, items in changes.items():
             defer(CHANGE_HANDLER, key=part, changes=items)
         if self.ds_changes or self.ds_deleted:
