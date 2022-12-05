@@ -218,7 +218,7 @@ class BulkChangeTrackerPolicy(BaseChangeTrackerPolicy):
 
         t0 = time.time()
         # Changed datastreams
-        for ds_name, item_id in datastreams:
+        for ds_name, item_id in datastreams or []:
             if op == "delete":
                 # Split delete operation for exclude raise-condition with DB Operation
                 # because pre_delete signal
