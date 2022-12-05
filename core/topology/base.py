@@ -9,7 +9,7 @@
 import operator
 from typing import Optional, List, Set, Dict, Any, Iterable, Tuple
 from collections import defaultdict
-from dataclasses import asdict, dataclass
+from dataclasses import asdict
 
 # Third-Party modules
 import networkx as nx
@@ -23,36 +23,7 @@ from noc.core.text import alnum_key
 from .layout.ring import RingLayout
 from .layout.spring import SpringLayout
 from .layout.tree import TreeLayout
-from .types import ShapeOverlay, ShapeOverlayPosition, ShapeOverlayForm
-
-
-@dataclass
-class MapItem(object):
-    title: str
-    id: str
-    generator: str
-    has_children: bool = False
-    only_container: bool = False
-    code: Optional[str] = None
-
-
-@dataclass
-class MapSize(object):
-    width: Optional[int] = None
-    height: Optional[int] = None
-
-
-@dataclass
-class BackgroundImage(object):
-    image: str
-    opacity: int = 30
-
-
-@dataclass
-class PathItem(object):
-    title: str
-    id: str
-    level: 0
+from .types import TopologyNode, MapMeta, MapItem, PathItem
 
 
 class TopologyBase(object):
@@ -124,12 +95,13 @@ class TopologyBase(object):
         """
         return f"{self.gen_id}"
 
-    def get_size(self) -> Optional[MapSize]:
+    @property
+    def meta(self) -> MapMeta:
         """
-        Getting MapSize
+        Return Map settings
         :return:
         """
-        return None
+        return MapMeta(title=self.title)
 
     def get_uplinks(self) -> List[str]:
         """
@@ -138,39 +110,41 @@ class TopologyBase(object):
         """
         return []
 
-    def add_node(self, o: Any, n_type: str, attrs: Optional[Dict[str, Any]] = None) -> None:
+    def add_node(self, n: TopologyNode, attrs: Optional[Dict[str, Any]] = None) -> None:
         """
         Add node to map
-        :param o: Object
-        :param n_type: Node type
+        :param n: Node
         :param attrs: Additional attributes
         :return:
         """
         attrs = attrs or {}
-        o_id = str(o.id)
+        o_id = str(n.id)
         if o_id in self.G.nodes:
             # Only update attributes
             self.G.nodes[o_id].update(attrs)
             return
-        stencil = self.get_node_stencil(o, node_type=n_type)
+        stencil: Stencil = stencil_registry(n.stencil or stencil_registry.DEFAULT_STENCIL)
         # Get capabilities
         oc = set()
-        if hasattr(o, "get_caps"):
-            oc = set(o.get_caps()) & self.CAPS
+        if n.get_caps():
+            oc = set(n.get_caps()) & self.CAPS
             self.caps |= oc
+        if n.portal:
+            attrs.update(asdict(n.portal))
         # Apply node hints
         attrs.update(self.node_hints.get(o_id) or {})
         # Apply default attributes
         attrs.update(
             {
-                "mo": o,
-                "type": n_type,
+                "type": n.type,
                 "id": o_id,
-                "name": o.name or "",
+                "node_id": n.resource_id,
+                "level": n.level,
+                "name": n.title or "",
                 "shape": getattr(stencil, "path", ""),
                 "shape_width": getattr(stencil, "width", 0),
                 "shape_height": getattr(stencil, "height", 0),
-                "shape_overlay": [asdict(x) for x in self.get_node_stencil_overlays(o)],
+                "shape_overlay": [asdict(x) for x in n.overlays],
                 "ports": [],
                 "caps": list(oc),
             }
@@ -239,7 +213,14 @@ class TopologyBase(object):
         else:
             # pmp
             # Create virtual cloud
-            self.add_node(link, "cloud")
+            self.add_node(
+                TopologyNode(
+                    id=str(link.id),
+                    title=str(link),
+                    type="cloud",
+                    stencil=stencil_registry.DEFAULT_CLOUD_STENCIL,
+                )
+            )
             # Create virtual links to cloud
             pseudo_links = [(link, mo) for mo in mo_ifaces]
             # Create virtual cloud interface
@@ -313,69 +294,6 @@ class TopologyBase(object):
         :return:
         """
         ...
-
-    def get_node_stencil(self, o, node_type: Optional[str] = None) -> Optional[Stencil]:
-        """
-        Return node stencil
-
-        :param o:
-        :param node_type:
-        :return:
-        """
-        stencil = None
-        if node_type == "cloud":
-            return stencil_registry.get(o.shape or stencil_registry.DEFAULT_CLOUD_STENCIL)
-        if hasattr(o, "get_stencil"):
-            stencil = o.get_stencil()
-        return stencil or stencil_registry.get(stencil_registry.DEFAULT_STENCIL)
-
-    def get_node_stencil_overlays(self, o, node_type: Optional[str] = None) -> List[ShapeOverlay]:
-        """
-        Return node Stencil Overlays
-        :param o:
-        :param node_type:
-        :return:
-        """
-        if node_type != "managedobject":
-            return []
-        seen: Set[ShapeOverlayPosition] = set()
-        r: List[ShapeOverlay] = []
-        # ManagedObject
-        if o.shape_overlay_glyph:
-            pos = o.shape_overlay_position or ShapeOverlayPosition.NW
-            r += [
-                ShapeOverlay(
-                    code=o.shape_overlay_glyph.code,
-                    position=pos,
-                    form=o.shape_overlay_form or ShapeOverlayForm.Circle,
-                )
-            ]
-            seen.add(pos)
-        # Project
-        if o.project and o.project.shape_overlay_glyph:
-            pos = o.project.shape_overlay_position or ShapeOverlayPosition.NW
-            if pos not in seen:
-                r += [
-                    ShapeOverlay(
-                        code=o.project.shape_overlay_glyph.code,
-                        position=pos,
-                        form=o.project.shape_overlay_form or ShapeOverlayForm.Circle,
-                    )
-                ]
-                seen.add(pos)
-        # ManagedObjectProfile
-        if o.object_profile.shape_overlay_glyph:
-            pos = o.object_profile.shape_overlay_position or ShapeOverlayPosition.NW
-            if pos not in seen:
-                r += [
-                    ShapeOverlay(
-                        code=o.object_profile.shape_overlay_glyph.code,
-                        position=pos,
-                        form=o.object_profile.shape_overlay_form or ShapeOverlayForm.Circle,
-                    )
-                ]
-                seen.add(pos)
-        return r
 
     def order_nodes(self, uplink, downlinks):
         """
@@ -525,13 +443,6 @@ class TopologyBase(object):
         """
         for u, v in self.G.edges():
             yield self.G[u][v]
-
-    def get_background(self) -> Optional[BackgroundImage]:
-        """
-        Return Background Image for Map
-        :return:
-        """
-        return None
 
     @classmethod
     def iter_maps(

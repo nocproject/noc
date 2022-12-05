@@ -8,6 +8,7 @@
 # Python modules
 from enum import Enum
 from dataclasses import dataclass
+from typing import Optional, Dict, Any, List, Literal
 
 
 class ShapeOverlayPosition(str, Enum):
@@ -31,3 +32,71 @@ class ShapeOverlay(object):
     code: str
     position: ShapeOverlayPosition = ShapeOverlayPosition.SE
     form: ShapeOverlayForm = ShapeOverlayForm.Circle
+
+
+@dataclass
+class MapItem(object):
+    title: str
+    id: str
+    generator: str
+    has_children: bool = False
+    only_container: bool = False
+    code: Optional[str] = None
+
+
+@dataclass
+class MapSize(object):
+    width: Optional[int] = None
+    height: Optional[int] = None
+
+
+@dataclass
+class BackgroundImage(object):
+    image: str
+    opacity: int = 30
+
+
+@dataclass
+class PathItem(object):
+    title: str
+    id: str
+    level: 0
+
+
+@dataclass
+class Portal(object):
+    generator: str
+    id: str
+
+
+@dataclass
+class TopologyNode(object):
+    id: str
+    type: Literal["objectgroup", "managedobject", "objectsegment", "other"] = "other"
+    resource_id: Optional[str] = None
+    # Ссылка на node_id группы
+    parent: Optional[str] = None
+    # Подпись
+    title: Optional[str] = ""
+    title_position: Optional[ShapeOverlayPosition] = "S"
+    #
+    stencil: Optional[str] = None
+    overlays: List[ShapeOverlay] = None
+    #
+    portal: Optional[Portal] = None
+    level: int = 25
+    attrs: Optional[Dict[str, Any]] = None
+
+    def get_attr(self) -> Dict[str, Any]:
+        return self.attrs or {}
+
+    def get_caps(self):
+        return {}
+
+
+@dataclass
+class MapMeta(object):
+    title: str
+    image: Optional[BackgroundImage] = None
+    width: int = 0
+    height: int = 0

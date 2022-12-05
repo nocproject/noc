@@ -245,11 +245,10 @@ class MapSettings(Document):
             layout = True
         # Generate topology
         topology: TopologyBase = gen(gen_id, node_hints, link_hints, **kwargs)
-        size = topology.get_size()
-        if size and settings.width != size.width:
-            settings.width = size.width
-        if size and settings.height != size.height:
-            settings.height = size.height
+        if topology.meta.width and settings.width != topology.meta.width:
+            settings.width = topology.meta.width
+        if topology.meta.height and settings.height != topology.meta.height:
+            settings.height = topology.meta.height
         if layout:
             logger.info("[%s|%s] Generating positions", gen_type, gen_id)
             topology.layout()
@@ -269,7 +268,7 @@ class MapSettings(Document):
                     for n in topology.G.edges.values()
                 ],
             )
-        background = topology.get_background()
+        background = topology.meta.image
         return {
             "id": str(gen_id),
             "type": gen_type,

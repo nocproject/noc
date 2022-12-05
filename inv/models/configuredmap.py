@@ -6,7 +6,7 @@
 # ---------------------------------------------------------------------
 
 # Python modules
-from typing import Optional
+from typing import Optional, List
 
 # Third-party modules
 import bson
@@ -23,6 +23,7 @@ from mongoengine.fields import (
 
 # NOC modules
 from noc.core.stencil import stencil_registry
+from noc.core.topology.types import TopologyNode
 from noc.main.models.imagestore import ImageStore
 from noc.fm.models.alarmclass import AlarmClass
 from noc.fm.models.alarmseverity import AlarmSeverity
@@ -83,14 +84,6 @@ class NodeItem(EmbeddedDocument):
         return str(self.node_id)
 
     @property
-    def name(self):
-        if self.title:
-            return self.title
-        if self.object:
-            return self.object.name
-        return ""
-
-    @property
     def object(self):
         if (
             not self.reference_id
@@ -114,13 +107,22 @@ class NodeItem(EmbeddedDocument):
             return None
         return {"generator": generator, "id": str(self.reference_id)}
 
-    def get_stencil(self):
+    def get_topology_node(self) -> TopologyNode:
+        if self.object:
+            n: TopologyNode = self.object.get_topology_node()
+        else:
+            n = TopologyNode(
+                id=str(self.id),
+                title=self.title or "",
+                type=self.node_type,
+            )
         if self.stencil:
-            return stencil_registry.get(self.stencil)
-        o = self.object
-        if o and hasattr(o, "get_stencil"):
-            return o.get_stencil()
-        return
+            n.stencil = self.stencil
+        if self.title:
+            n.title = self.title
+        if self.parent:
+            n.parent = str(self.parent)
+        return n
 
 
 class LinkItem(EmbeddedDocument):
@@ -160,8 +162,8 @@ class ConfiguredMap(Document):
     add_topology_links = BooleanField(default=False)
     # Add portals to external nodes
     enable_node_portal = BooleanField(default=True)
-    nodes = EmbeddedDocumentListField(NodeItem)
-    links = EmbeddedDocumentListField(LinkItem)
+    nodes: List[NodeItem] = EmbeddedDocumentListField(NodeItem)
+    links: List[LinkItem] = EmbeddedDocumentListField(LinkItem)
     # lines
 
     @classmethod

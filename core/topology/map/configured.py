@@ -1,47 +1,31 @@
 # ----------------------------------------------------------------------
 # Configured Map class
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2020 The NOC Project
+# Copyright (C) 2007-2022 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
 # Python modules
 import itertools
-from typing import Dict, List, Optional, Iterable, Any, Literal
-from dataclasses import dataclass
+from typing import Dict, List, Optional, Iterable, Any
 
 # Third-party modules
 from bson import ObjectId
 
 # NOC modules
-from noc.core.topology.base import (
-    TopologyBase,
+from noc.core.topology.base import TopologyBase
+from noc.core.topology.types import (
     MapItem,
     PathItem,
-    MapSize,
     BackgroundImage,
+    Portal,
+    MapMeta,
 )
 from noc.inv.models.configuredmap import ConfiguredMap
-from noc.inv.models.configuredmap import NodeItem as NodeConfigItem
 from noc.inv.models.link import Link
 from noc.inv.models.interface import Interface
 from noc.inv.models.resourcegroup import ResourceGroup
 from noc.sa.models.managedobject import ManagedObject
-
-
-@dataclass
-class NodeItem(object):
-    id: str
-    type: Literal["objectgroup", "managedobject", "objectsegment", "other"] = "other"
-    node_id: Optional[str] = None
-    level: int = 25
-    # Title
-    name: str = ""
-    title_position: str = ""
-    # Size
-    width: Optional[int] = None
-    height: Optional[int] = None
-    attrs: Dict[str, Any] = None
 
 
 class ConfiguredTopology(TopologyBase):
@@ -56,8 +40,15 @@ class ConfiguredTopology(TopologyBase):
             gen_id, node_hints=node_hints, link_hints=link_hints, force_spring=force_spring
         )
 
-    def get_size(self) -> Optional[MapSize]:
-        return MapSize(height=self.cfgmap.height, width=self.cfgmap.width)
+    def meta(self) -> MapMeta:
+        return MapMeta(
+            title=self.title,
+            image=BackgroundImage(
+                image=str(self.cfgmap.background_image.id), opacity=self.cfgmap.background_opacity
+            ),
+            width=self.cfgmap.width,
+            height=self.cfgmap.height,
+        )
 
     @classmethod
     def iter_maps(
@@ -86,17 +77,6 @@ class ConfiguredTopology(TopologyBase):
     def iter_path(cls, gen_id) -> Iterable[PathItem]:
         cfg = ConfiguredMap.get_by_id(gen_id)
         yield PathItem(title=str(cfg.name), id=str(cfg.id), level=1)
-
-    @property
-    def background(self) -> Optional[str]:
-        return str(self.cfgmap.background_image.id) if self.cfgmap.background_image else None
-
-    def get_background(self) -> Optional[BackgroundImage]:
-        if self.cfgmap.background_image:
-            return BackgroundImage(
-                image=str(self.cfgmap.background_image.id), opacity=self.cfgmap.background_opacity
-            )
-        return
 
     def add_objects_links(self, object_ids: List[int]):
         """
@@ -137,39 +117,12 @@ class ConfiguredTopology(TopologyBase):
                 - object_ids
             )
             for mo in ManagedObject.objects.filter(id__in=external_mos):
-                attrs = {"role": "segment", "address": mo.address, "level": mo.object_profile.level}
-                self.add_node(mo, "managedobject", attrs)
+                self.add_node(mo.get_topology_node(), {"role": "segment"})
         # Process all links
         for link in links:
             if not self.cfgmap.add_linked_node and set(link.linked_objects) - object_ids:
                 continue
             self.add_link(link)
-
-    def get_node(self, config: NodeConfigItem) -> NodeItem:
-        ni = NodeItem(
-            id=config.id,
-            type=config.node_type,
-            node_id=config.object.id if config.object else None,
-            level=25,
-            name=config.name,
-        )
-        if config.node_type == "managedobject":
-            ni.attrs = {
-                "role": "segment",
-                "node_id": config.object.id,
-                "address": config.object.address,
-                "level": config.object.object_profile.level,
-            }
-        elif config.node_type in {"objectgroup", "objectsegment"}:
-            ni.attrs = {
-                "role": "segment",
-                "node_id": str(config.object.id),
-                "level": self.DEFAULT_LEVEL,
-            }
-        if self.cfgmap.enable_node_portal and config.portal:
-            ni.attrs["portal"] = config.portal
-
-        return ni
 
     def load(self):
         parent_links = []
@@ -177,14 +130,18 @@ class ConfiguredTopology(TopologyBase):
         nodes: Dict[str, Any] = {}
         # Extract Nodes
         for nc in self.cfgmap.nodes:
-            ni = self.get_node(nc)
-            if nc.node_type == "managedobject":
-                object_mos.add(nc.object.id)
-            if nc.parent:
-                parent_links.append((nc.node_id, nc.parent))
+            ni = nc.get_topology_node()
+            if ni.parent:
+                parent_links.append((nc.id, ni.parent))
                 ni.level -= 5
-            nodes[ni.node_id] = ni.id
-            self.add_node(ni, ni.type, ni.attrs)
+            if self.cfgmap.enable_node_portal and nc.portal:
+                ni.portal = Portal(generator="configured", id=str(nc.portal))
+            elif self.cfgmap.enable_node_portal and ni.type == "objectgroup":
+                ni.portal = Portal(generator="objectgroup", id=str(nc.reference_id))
+            elif self.cfgmap.enable_node_portal and ni.type == "objectsegment":
+                ni.portal = Portal(generator="segment", id=str(nc.reference_id))
+            nodes[nc.node_id] = ni.id
+            self.add_node(ni)
             if not nc.add_nested:
                 continue
             if nc.node_type == "objectgroup" and nc.object:
@@ -196,16 +153,7 @@ class ConfiguredTopology(TopologyBase):
                     set(nc.object.managed_objects.values_list("id", flat=True))
                 )
         for mo in ManagedObject.objects.filter(id__in=list(object_mos)).iterator():
-            self.add_node(
-                mo,
-                "managedobject",
-                {
-                    "role": "segment",
-                    "node_id": mo.id,
-                    "address": mo.address,
-                    "level": mo.object_profile.level,
-                },
-            )
+            self.add_node(mo.get_topology_node(), {"role": "segment"})
         # Add parent links
         for child_id, parent_id in parent_links:
             self.add_parent(parent_id, child_id)
