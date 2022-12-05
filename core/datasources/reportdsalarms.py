@@ -372,7 +372,7 @@ class ReportDsAlarms(BaseDataSource):
                 .values_list("name", "id")
                 .order_by("name")
             ]
-        for aa in cls.iter_data(**kwargs):
+        for row_num, aa in enumerate(cls.iter_data(**kwargs), start=1):
             mo = moss[aa["managed_object"]]
             loc = ""
             if (not fields or "location" in fields) and aa.get("container_path"):
@@ -385,38 +385,38 @@ class ReportDsAlarms(BaseDataSource):
             if mo["version"]:
                 version = Firmware.get_by_id(mo["version"]).version
 
-            yield "alarm_id", str(aa["_id"])
-            yield "root_id", str(aa["root"]) if aa.get("root") else ""
-            yield "from_ts", aa["timestamp"].strftime("%Y-%m-%d %H:%M:%S")
-            yield "to_ts", aa["clear_timestamp"].strftime(
+            yield row_num, "alarm_id", str(aa["_id"])
+            yield row_num, "root_id", str(aa["root"]) if aa.get("root") else ""
+            yield row_num, "from_ts", aa["timestamp"].strftime("%Y-%m-%d %H:%M:%S")
+            yield row_num, "to_ts", aa["clear_timestamp"].strftime(
                 "%Y-%m-%d %H:%M:%S"
             ) if "clear_timestamp" in aa else ""
-            yield "duration_sec", round(aa["duration"])
-            yield "object_name", mo["name"]
-            yield "object_address", mo["address"]
-            yield "object_hostname", mo_hostname.get(aa["managed_object"], "")
-            yield "object_profile", Profile.get_by_id(mo["profile"]).name
-            yield "object_object_profile", mo["object_profile__name"]
-            yield "object_admdomain", mo["administrative_domain__name"]
-            yield "object_platform", platform
-            yield "object_version", version
-            yield "object_project", project
-            yield "alarm_class", AlarmClass.get_by_id(aa["alarm_class"]).name
-            yield "alarm_subject", ""
-            yield "objects", aa["total_objects_sum"]["sum"]
-            yield "subscribers", aa["total_subscribers_sum"]["sum"]
-            yield "tt", aa.get("escalation_tt")
-            yield "escalation_ts", aa["escalation_ts"].strftime(
+            yield row_num, "duration_sec", round(aa["duration"])
+            yield row_num, "object_name", mo["name"]
+            yield row_num, "object_address", mo["address"]
+            yield row_num, "object_hostname", mo_hostname.get(aa["managed_object"], "")
+            yield row_num, "object_profile", Profile.get_by_id(mo["profile"]).name
+            yield row_num, "object_object_profile", mo["object_profile__name"]
+            yield row_num, "object_admdomain", mo["administrative_domain__name"]
+            yield row_num, "object_platform", platform
+            yield row_num, "object_version", version
+            yield row_num, "object_project", project
+            yield row_num, "alarm_class", AlarmClass.get_by_id(aa["alarm_class"]).name
+            yield row_num, "alarm_subject", ""
+            yield row_num, "objects", aa["total_objects_sum"]["sum"]
+            yield row_num, "subscribers", aa["total_subscribers_sum"]["sum"]
+            yield row_num, "tt", aa.get("escalation_tt")
+            yield row_num, "escalation_ts", aa["escalation_ts"].strftime(
                 "%Y-%m-%d %H:%M:%S"
             ) if "escalation_ts" in aa else ""
-            yield "location", loc
-            yield "maintenance", "Yes" if "clear_timestamp" not in aa and aa[
+            yield row_num, "location", loc
+            yield row_num, "maintenance", "Yes" if "clear_timestamp" not in aa and aa[
                 "managed_object"
             ] in maintenance else "No"
 
             for sp_name, sp_id in subscribers_profile:
                 dd = cls.items_to_dict(aa["total_subscribers"])
-                yield f"subsprof_{sp_name}", dd.get(sp_id, "")
+                yield row_num, f"subsprof_{sp_name}", dd.get(sp_id, "")
 
             for field in container_path_fields:
                 _, index = field.split("_")
@@ -425,7 +425,7 @@ class ReportDsAlarms(BaseDataSource):
                     o = Object.get_by_id(aa["container_path"][index])
                     if o:
                         v = o.name
-                yield field, v
+                yield row_num, field, v
 
             for field in segment_path_fields:
                 _, index = field.split("_")
@@ -434,6 +434,6 @@ class ReportDsAlarms(BaseDataSource):
                     o = NetworkSegment.get_by_id(aa["segment_path"][index])
                     if o:
                         v = o.name
-                yield field, v
+                yield row_num, field, v
 
         cls._clear_caches()

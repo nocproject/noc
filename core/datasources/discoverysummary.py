@@ -73,8 +73,10 @@ class ManagedObjectConfigDS(BaseDataSource):
         metrics = {}
         for row in icoll.aggregate(MOS_METRICS_PIPELINE):
             metrics[row["_id"]] = row["metrics"]
+        row_num = 0
         for pool in Pool.objects.filter():
             for mop in ManagedObjectProfile.objects.filter():
+                row_num += 1
                 r = {
                     "pool": pool.name,
                     "profile": mop.name,
@@ -104,10 +106,12 @@ class ManagedObjectConfigDS(BaseDataSource):
                     r["discovered_metrics"] = len(mop.metrics) * len(mos)
                     for mo_id in mos.intersection(set(metrics)):
                         r["discovered_metrics"] += metrics[mo_id]
-                yield "pool", pool.name
-                yield "profile", mop.name
-                yield "discovered_managed_object_box", r["discovered_managed_object_box"]
-                yield "discovered_managed_object_periodic", r["discovered_managed_object_periodic"]
-                yield "discovered_interface", r["discovered_links"]
-                yield "discovered_links", r["discovered_links"]
-                yield "discovered_metrics", r["discovered_metrics"]
+                yield row_num, "pool", pool.name
+                yield row_num, "profile", mop.name
+                yield row_num, "discovered_managed_object_box", r["discovered_managed_object_box"]
+                yield row_num, "discovered_managed_object_periodic", r[
+                    "discovered_managed_object_periodic"
+                ]
+                yield row_num, "discovered_interface", r["discovered_links"]
+                yield row_num, "discovered_links", r["discovered_links"]
+                yield row_num, "discovered_metrics", r["discovered_metrics"]

@@ -45,6 +45,28 @@ class BaseDataSource(object):
         return run_sync(partial(cls.query, fields, *args, **kwargs))
 
     @classmethod
+    def get_columns_dtype(cls, fields: Optional[List[str]] = None):
+        """
+        Return Column Dtype
+        columns=[("col1", pl.Float32), ("col2", pl.Int64)]
+        :return:
+        """
+        c_map = {
+            "string": pl.Object,
+            "str": pl.Object,
+            "int64": pl.Int64,
+            "bool": pl.Boolean,
+            "int": pl.Int32,
+            "float": pl.Float32,
+        }
+        r = {}
+        for f in cls.fields:
+            if fields and f.name not in fields:
+                continue
+            r[f.name] = c_map[f.type]
+        return r
+
+    @classmethod
     async def query(cls, fields: Optional[Iterable[str]] = None, *args, **kwargs) -> pl.DataFrame:
         """
         Method for query report data. Return pandas dataframe.
@@ -54,7 +76,7 @@ class BaseDataSource(object):
         :return:
         """
         r = defaultdict(list)
-        async for f_name, value in cls.iter_query(fields, *args, **kwargs):
+        async for _, f_name, value in cls.iter_query(fields, *args, **kwargs):
             r[f_name].append(value)
         return pl.DataFrame(r)
 
@@ -70,17 +92,17 @@ class BaseDataSource(object):
         :return:
         """
         r = {}
-        c_id = None
-        async for f_name, value in cls.iter_query(fields, *args, **kwargs):
-            if f_name == cls.row_index and value != c_id:
-                c_id = value
+        c_row = 1
+        async for row_num, f_name, value in cls.iter_query(fields, *args, **kwargs):
+            if c_row != row_num:
+                c_row = row_num
                 yield r
             r[f_name] = value
 
     @classmethod
     async def iter_query(
         cls, fields: Optional[Iterable[str]] = None, *args, **kwargs
-    ) -> AsyncIterable[Tuple[str, Union[str, int]]]:
+    ) -> AsyncIterable[Tuple[int, str, Union[str, int]]]:
         """
         Method for query report data. Iterate over field data
         :param fields: list fields for filtered on query

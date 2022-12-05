@@ -85,8 +85,10 @@ class ManagedObjectCapsDS(BaseDataSource):
         query_fields = [ff.name for ff in cls.fields[1:] if not fields or ff.name in fields]
         resolve_caps = {ff.internal_name: ff.name for ff in cls.fields[1:]}
         convert_type_caps = {ff.name: ff.type for ff in cls.fields[1:]}
+        row_num = 0
         for mo_id, caps in ManagedObject.objects.filter().values_list("id", "caps").iterator():
             caps = {resolve_caps[ff["capability"]]: ff["value"] for ff in caps}
+            row_num += 1
             for ff in query_fields:
-                yield ff, cls.clean_value(convert_type_caps[ff], caps.get(ff))
-            yield "managed_object_id", mo_id
+                yield row_num, ff, cls.clean_value(convert_type_caps[ff], caps.get(ff))
+            yield row_num, "managed_object_id", mo_id

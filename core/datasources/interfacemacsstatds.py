@@ -63,10 +63,10 @@ class InterfaceMACsStatDS(BaseDataSource):
         result = ch.execute(
             SQL % (start.date().isoformat(), end.date().isoformat()), return_raw=True
         )
-        for row in result.splitlines():
+        for row_num, row in enumerate(result.splitlines(), start=1):
             row = orjson.loads(row)
-            yield "managed_object_id", int(
+            yield row_num, "managed_object_id", int(
                 row["managed_object_id"]
             ) if resolve_managedobject_id else int(row["managed_object"])
-            yield "interface_name", row["interface"]
-            yield "mac_count", int(row["mac_count"])
+            yield row_num, "interface_name", row["interface"]
+            yield row_num, "mac_count", int(row["mac_count"])

@@ -10,10 +10,11 @@ import datetime
 from io import BytesIO
 from zipfile import ZipFile, ZIP_DEFLATED
 from tempfile import TemporaryFile
+from typing import Optional
 
 # Third-party modules
 from django.http import HttpResponse, HttpResponseBadRequest, HttpResponseNotFound
-import pandas as pd
+import polars as pl
 
 # NOC modules
 from noc.services.web.base.extapplication import ExtApplication, view
@@ -47,12 +48,15 @@ def get_column_width(name):
     return 15
 
 
-def get_col_widths(dataframe: "pd.DataFrame"):
+def get_col_widths(dataframe: "pl.DataFrame", index_filed: Optional[str] = None):
     # First we find the maximum length of the index column
-    idx_max = max([len(str(s)) for s in dataframe.index.values] + [len(str(dataframe.index.name))])
-    # Then, we concatenate this to the max of the lengths of column name and its values for each column, left to right
+    idx_max = 10
+    if index_filed:
+        idx_max = max([len(str(s)) for s in dataframe[index_filed]] + [len(str(index_filed))])
+    # Then, we concatenate this to the max of the lengths
+    # of column name and its values for each column, left to right
     return [idx_max] + [
-        max([len(str(s)) for s in dataframe[col].values] + [len(col)]) for col in dataframe.columns
+        max([len(str(s)) for s in dataframe[col]] + [len(col)]) for col in dataframe.columns
     ]
 
 
@@ -208,14 +212,16 @@ class ReportAlarmDetailApplication(ExtApplication):
             return HttpResponseNotFound(_(f"Report DataSource {report_ds} Not found"))
 
         data = report.query_sync(fields=out_columns, **d_filters)
-        data = data.to_pandas()
         filename = f'alarms_detail_report_{datetime.datetime.now().strftime("%Y%m%d")}'
+        csv_header = ";".join(self.HEADER_ROW.get(cc, cc) for cc in data.columns) + "\n"
         if o_format == "csv":
             response = HttpResponse(
-                data.to_csv(
-                    header=[self.HEADER_ROW.get(cc, cc) for cc in out_columns],
+                csv_header
+                + data.write_csv(
+                    # header=[self.HEADER_ROW.get(cc, cc) for cc in out_columns],
                     sep=";",
-                    quotechar='"',
+                    quote='"',
+                    has_header=False,
                 ),
                 content_type="text/csv",
             )
@@ -226,11 +232,13 @@ class ReportAlarmDetailApplication(ExtApplication):
             f = TemporaryFile(mode="w+b")
             f.write(
                 smart_bytes(
-                    data.to_csv(
-                        header=[self.HEADER_ROW.get(cc, cc) for cc in out_columns],
-                        columns=out_columns,
+                    csv_header
+                    + data.select(out_columns).write_csv(
+                        # header=[self.HEADER_ROW.get(cc, cc) for cc in out_columns],
+                        # columns=out_columns,
                         sep=";",
-                        quotechar='"',
+                        quote='"',
+                        has_header=False,
                     )
                 )
             )
@@ -243,26 +251,24 @@ class ReportAlarmDetailApplication(ExtApplication):
             response["Content-Disposition"] = f'attachment; filename="{filename}.zip"'
             return response
         elif o_format == "xlsx":
+            import xlsxwriter
+
             response = BytesIO()
-            writer = pd.ExcelWriter(response, engine="xlsxwriter")
-            writer.book.add_format({"bottom": 1, "left": 1, "right": 1, "top": 1})
-            data.to_excel(
-                writer,
-                sheet_name="Alarms",
-                header=[self.HEADER_ROW.get(cc, cc) for cc in out_columns],
-                index="alarm_id" in columns,
-                columns=out_columns,
-            )
-            #
-            worksheet = writer.sheets["Alarms"]
+            book = xlsxwriter.Workbook(response)
+            cf1 = book.add_format({"bottom": 1, "left": 1, "right": 1, "top": 1})
+            worksheet = book.add_worksheet("Alarms")
+            for cn, col in enumerate(out_columns):
+                worksheet.write(0, cn, self.HEADER_ROW.get(col, col), cf1)
+            for cn, col in enumerate(out_columns):
+                worksheet.write_column(1, cn, data[col], cf1)
             (max_row, max_col) = data.shape
             worksheet.autofilter(0, 0, max_row, len(out_columns))
             worksheet.freeze_panes(1, 0)
             if enable_autowidth:
-                for i, width in enumerate(get_col_widths(data)):
+                for i, width in enumerate(get_col_widths(data, "alarm_id")):
                     worksheet.set_column(i, i, width)
             #
-            writer.close()
+            book.close()
             response.seek(0)
             response = HttpResponse(response, content_type="application/vnd.ms-excel")
             response["Content-Disposition"] = f'attachment; filename="{filename}.xlsx"'

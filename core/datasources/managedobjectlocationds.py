@@ -100,21 +100,23 @@ class ManagedObjectLocationDS(BaseDataSource):
             container: mo_id
             for mo_id, container in (ManagedObject.objects.filter().values_list("id", "container"))
         }
+        row_num = 0
         for v in value:
             cid = str(v["_id"])
+            row_num += 1
             if "child_cont" in v and "parent_address" in v and str(v["child_cont"]["_id"]) not in r:
                 # r[str(v["child_cont"]["_id"])] = v["parent_address"].strip()
                 # cont_map[str(v["child_cont"]["_id"])] = v["parent_address"].strip()
-                yield "container_id", str(v["child_cont"]["_id"])
-                yield "location_address", v["parent_address"].strip()
+                yield row_num, "container_id", str(v["child_cont"]["_id"])
+                yield row_num, "location_address", v["parent_address"].strip()
                 if r["container_id"] in managed_object_map:
-                    yield "managed_object_id", managed_object_map[r["container_id"]]
+                    yield row_num, "managed_object_id", managed_object_map[r["container_id"]]
             if cid not in r and "parent_address" in v:
                 # r[cid] = v["parent_address"].strip()
-                yield "container_id", str(v["child_cont"]["_id"])
-                yield "location_address", v["parent_address"].strip()
+                yield row_num, "container_id", str(v["child_cont"]["_id"])
+                yield row_num, "location_address", v["parent_address"].strip()
                 if r["container_id"] in managed_object_map:
-                    yield "managed_object_id", managed_object_map[r["container_id"]]
+                    yield row_num, "managed_object_id", managed_object_map[r["container_id"]]
 
         # for mo_id, container in (
         #         ManagedObject.objects.filter(id__in=self.sync_ids)

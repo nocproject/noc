@@ -34,6 +34,7 @@ class ManagedObjectConfigDS(BaseDataSource):
             {"$group": {"_id": "$object", "last_ts": {"$max": "$ts"}}},
             {"$sort": {"_id": 1}},
         ]
+        row_num = 0
         # if len(self.sync_ids) < 20000:
         #     # @todo Very large list slowest encode, need research
         #     pipeline.insert(0, {"$match": {"object": {"$in": self.sync_ids}}})
@@ -44,5 +45,6 @@ class ManagedObjectConfigDS(BaseDataSource):
         ):
             if not data["_id"]:
                 continue
-            yield "managed_object_id", data["_id"]
-            yield "last_changed_ts", data["last_ts"]
+            row_num += 1
+            yield row_num, "managed_object_id", data["_id"]
+            yield row_num, "last_changed_ts", data["last_ts"]

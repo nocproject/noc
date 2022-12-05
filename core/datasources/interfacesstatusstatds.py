@@ -60,6 +60,7 @@ class InterfacesStatusStatDS(BaseDataSource):
 
         match = {"type": "physical"}
         query_fields = {ff.name: None for ff in cls.fields if not fields or ff.name in fields}
+        row_num = 0
         for data in (
             Interface._get_collection()
             .with_options(read_preference=ReadPreference.SECONDARY_PREFERRED)
@@ -101,7 +102,8 @@ class InterfacesStatusStatDS(BaseDataSource):
                 allowDiskUse=True,
             )
         ):
+            row_num += 1
             r = cls.get_result(query_fields, data["result"])
-            yield "managed_object_id", data["_id"]
+            yield row_num, "managed_object_id", data["_id"]
             for k, v in r.items():
-                yield k, v
+                yield row_num, k, v

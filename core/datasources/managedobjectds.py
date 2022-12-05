@@ -89,10 +89,10 @@ class ManagedObjectDS(BaseDataSource):
             description="Object Administrative Domain",
             internal_name="administrative_domain__name",
         ),
-        FieldInfo(
-            name="container",
-            description="Object Container Name",
-        ),
+        # FieldInfo(
+        #     name="container",
+        #     description="Object Container Name",
+        # ),
         FieldInfo(
             name="segment",
             description="Object Segment Name",
@@ -124,7 +124,7 @@ class ManagedObjectDS(BaseDataSource):
             name="avail",
             description="Object Availability Status",
             internal_name="id",
-            type="bool",
+            type="str",
         ),
     ] + [
         FieldInfo(name=c_name, type=c_type, internal_name=str(c_id), is_caps=True)
@@ -210,46 +210,51 @@ class ManagedObjectDS(BaseDataSource):
             }
         if not fields or "avail" in fields:
             avail_map = {
-                val["object"]: val["status"]
+                val["object"]: {True: "yes", False: "no"}[val["status"]]
                 for val in ObjectStatus._get_collection()
                 .with_options(read_preference=ReadPreference.SECONDARY_PREFERRED)
                 .find({"object": {"$exists": 1}}, {"object": 1, "status": 1})
             }
-        for mo in mos.values(*q_fields).iterator():
-            yield "id", mo["id"]
+        print("Start Main Loop")
+        for num, mo in enumerate(mos.values(*q_fields).iterator(), start=1):
+            yield num, "id", mo["id"]
             if "name" in mo:
-                yield "name", mo["name"]
+                yield num, "name", mo["name"]
             if "address" in mo:
-                yield "address", mo["address"]
+                yield num, "address", mo["address"]
             if "is_managed" in mo:
-                yield "status", mo["is_managed"]
+                yield num, "status", mo["is_managed"]
             if "links" in mo:
-                yield "link_count", len(mo["links"])
+                yield num, "link_count", len(mo["links"])
             if "profile" in mo:
-                yield "profile", Profile.get_by_id(mo["profile"]).name if mo["profile"] else None
+                yield num, "profile", Profile.get_by_id(mo["profile"]).name if mo[
+                    "profile"
+                ] else None
             if "platform" in mo:
                 platform = mo["platform"]
-                yield "model", Platform.get_by_id(platform).name if platform else None
+                yield num, "model", Platform.get_by_id(platform).name if platform else None
             if "sw_version" in mo:
                 sw_version = mo["sw_version"]
-                yield "version", Firmware.get_by_id(sw_version).version if sw_version else None
+                yield num, "version", Firmware.get_by_id(sw_version).version if sw_version else None
             if "vendor" in mo:
-                yield "vendor", Vendor.get_by_id(mo["vendor"]).name if mo["vendor"] else None
+                yield num, "vendor", Vendor.get_by_id(mo["vendor"]).name if mo["vendor"] else None
             if hostname_map:
-                yield "hostname", hostname_map.get(mo["id"])
+                yield num, "hostname", hostname_map.get(mo["id"])
             if segment_map:
-                yield "segment", segment_map.get(mo["segment"])
+                yield num, "segment", segment_map.get(mo["segment"])
             if avail_map:
-                yield "avail", avail_map.get(mo["id"])
+                yield num, "avail", avail_map.get(mo["id"], "--")
             if "auth_profile" in mo:
-                yield "auth_profile", (
+                yield num, "auth_profile", (
                     AuthProfile.get_by_id(mo["auth_profile"]).name if mo["auth_profile"] else None
                 )
             if "administrative_domain__name" in mo:
-                yield "administrative_domain", mo["administrative_domain__name"]
+                yield num, "administrativedomain", mo["administrative_domain__name"]
             if "object_profile__name" in mo:
-                yield "object_profile", mo["object_profile__name"]
+                yield num, "object_profile", mo["object_profile__name"]
             if "project" in mo:
-                yield "project", Project.get_by_id(mo["project"]).name if mo["project"] else None
+                yield num, "project", Project.get_by_id(mo["project"]).name if mo[
+                    "project"
+                ] else None
             async for c in cls.iter_caps(mo.pop("caps", []), requested_caps=q_caps):
-                yield c
+                yield num, c[0], c[1]
