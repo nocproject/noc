@@ -7,17 +7,41 @@
 
 # Python modules
 import itertools
-from typing import Dict, List, Optional, Iterable, Any
+from typing import Dict, List, Optional, Iterable, Any, Literal
+from dataclasses import dataclass
 
 # Third-party modules
 from bson import ObjectId
 
 # NOC modules
-from noc.core.topology.base import TopologyBase, MapItem, PathItem, MapSize, BackgroundImage
+from noc.core.topology.base import (
+    TopologyBase,
+    MapItem,
+    PathItem,
+    MapSize,
+    BackgroundImage,
+)
 from noc.inv.models.configuredmap import ConfiguredMap
+from noc.inv.models.configuredmap import NodeItem as NodeConfigItem
 from noc.inv.models.link import Link
 from noc.inv.models.interface import Interface
+from noc.inv.models.resourcegroup import ResourceGroup
 from noc.sa.models.managedobject import ManagedObject
+
+
+@dataclass
+class NodeItem(object):
+    id: str
+    type: Literal["objectgroup", "managedobject", "objectsegment", "other"] = "other"
+    node_id: Optional[str] = None
+    level: int = 25
+    # Title
+    name: str = ""
+    title_position: str = ""
+    # Size
+    width: Optional[int] = None
+    height: Optional[int] = None
+    attrs: Dict[str, Any] = None
 
 
 class ConfiguredTopology(TopologyBase):
@@ -121,46 +145,76 @@ class ConfiguredTopology(TopologyBase):
                 continue
             self.add_link(link)
 
+    def get_node(self, config: NodeConfigItem) -> NodeItem:
+        ni = NodeItem(
+            id=config.id,
+            type=config.node_type,
+            node_id=config.object.id if config.object else None,
+            level=25,
+            name=config.name,
+        )
+        if config.node_type == "managedobject":
+            ni.attrs = {
+                "role": "segment",
+                "node_id": config.object.id,
+                "address": config.object.address,
+                "level": config.object.object_profile.level,
+            }
+        elif config.node_type in {"objectgroup", "objectsegment"}:
+            ni.attrs = {
+                "role": "segment",
+                "node_id": str(config.object.id),
+                "level": self.DEFAULT_LEVEL,
+            }
+        if self.cfgmap.enable_node_portal and config.portal:
+            ni.attrs["portal"] = config.portal
+
+        return ni
+
     def load(self):
         parent_links = []
-        object_mos = []
+        object_mos = set()
         nodes: Dict[str, Any] = {}
         # Extract Nodes
         for nc in self.cfgmap.nodes:
-            attrs = {}
-            nodes[nc.node_id] = nc.id
+            ni = self.get_node(nc)
             if nc.node_type == "managedobject":
-                o = nc.object
-                object_mos.append(o.id)
-                attrs.update(
-                    {
-                        "role": "segment",
-                        "node_id": o.id,
-                        "address": o.address,
-                        "level": o.object_profile.level,
-                    }
-                )
-            elif nc.node_type in {"objectgroup", "objectsegment"}:
-                attrs.update(
-                    {
-                        "role": "segment",
-                        "node_id": str(nc.object.id),
-                        "level": self.DEFAULT_LEVEL,
-                    }
-                )
-            if self.cfgmap.enable_node_portal and nc.portal:
-                attrs["portal"] = nc.portal
+                object_mos.add(nc.object.id)
             if nc.parent:
                 parent_links.append((nc.node_id, nc.parent))
-                attrs["level"] -= 5
-            self.add_node(nc, nc.node_type, attrs)
+                ni.level -= 5
+            nodes[ni.node_id] = ni.id
+            self.add_node(ni, ni.type, ni.attrs)
+            if not nc.add_nested:
+                continue
+            if nc.node_type == "objectgroup" and nc.object:
+                object_mos = object_mos.union(
+                    set(ResourceGroup.get_model_instance_ids("sa.ManagedObject", str(nc.object.id)))
+                )
+            elif nc.node_type == "objectsegment" and nc.object:
+                object_mos = object_mos.union(
+                    set(nc.object.managed_objects.values_list("id", flat=True))
+                )
+        for mo in ManagedObject.objects.filter(id__in=list(object_mos)).iterator():
+            self.add_node(
+                mo,
+                "managedobject",
+                {
+                    "role": "segment",
+                    "node_id": mo.id,
+                    "address": mo.address,
+                    "level": mo.object_profile.level,
+                },
+            )
         # Add parent links
         for child_id, parent_id in parent_links:
             self.add_parent(parent_id, child_id)
         if self.cfgmap.add_topology_links:
-            self.add_objects_links(object_mos)
+            self.add_objects_links(list(object_mos))
         # Add Relation
         for ll in self.cfgmap.links:
+            if ll.source_node not in nodes or ll.target_nodes[0] not in nodes:
+                continue
             self.add_parent(nodes[ll.source_node], nodes[ll.target_nodes[0]])
 
     @staticmethod

@@ -421,7 +421,7 @@ Ext.define("NOC.inv.map.MapPanel", {
             badges.push(badge);
         });
         me.objectNodes[data.id] = node;
-        me.objectsList.push({"node_type": data.type, "id": data.id})
+        me.objectsList.push({"node_type": data.type, "node_id": data.node_id, "id": data.id})
         return {node: node, badges: badges};
     },
     //
