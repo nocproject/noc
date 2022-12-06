@@ -250,7 +250,7 @@ class MetricsService(FastAPIService):
     name = "metrics"
     use_mongo = True
     use_router = True
-    dcs_check_timeout = global_config.metrics.check_interval
+    dcs_check_interval = global_config.metrics.check_interval
     dcs_check_timeout = global_config.metrics.check_timeout
 
     def __init__(self):
