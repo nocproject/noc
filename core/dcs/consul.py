@@ -200,7 +200,6 @@ class ConsulDCS(DCSBase):
         tags = tags[:] if tags else []
         tags += [svc_id]
         self.svc_check_url = f"http://{address}:{port}/health/?service={svc_id}"
-        print("CONSUL Check", check_timeout, check_interval)
         self.health_check_service_id = svc_id
         if config.features.consul_healthchecks:
             checks = consul.Check.http(
