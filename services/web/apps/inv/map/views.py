@@ -12,6 +12,7 @@ from typing import List, Set, Dict
 
 # Third-party modules
 from concurrent.futures import ThreadPoolExecutor, as_completed
+from bson import ObjectId
 
 # NOC modules
 from noc.services.web.base.extapplication import ExtApplication, view
@@ -270,12 +271,33 @@ class MapApplication(ExtApplication):
                 alarms.update(d["_id"] for d in a)
             return alarms
 
+        def get_alarms_segment(segments: List[str]) -> Set[str]:
+            if not segments:
+                return set()
+            coll = ActiveAlarm._get_collection()
+            return {
+                str(sa["_id"])
+                for sa in coll.aggregate(
+                    [
+                        {"$match": {"segment_path": {"$in": [ObjectId(ss) for ss in segments]}}},
+                        {"$unwind": "$segment_path"},
+                        {"$group": {"_id": "$segment_path", "count": {"$sum": 1}}},
+                    ]
+                )
+            }
+
         # Mark all as unknown
         objects: List[int] = [int(o["id"]) for o in nodes if o["node_type"] == "managedobject"]
-        # groups = [o["id"] for o in nodes if o["node_type"] == "groups"]
-        # segments = [o["id"] for o in nodes if o["node_type"] == "segment"]
+        groups = {o["id"] for o in nodes if o["node_type"] == "objectgroup"}
+        segments: List[str] = [str(o["id"]) for o in nodes if o["node_type"] == "objectsegment"]
         r = {o: self.ST_UNKNOWN for o in objects}
         sr = ObjectStatus.get_statuses(objects)
+        mo_group_map = defaultdict(set)
+        for mo_id, mo_groups in ManagedObject.objects.filter(
+            effective_service_groups__overlap=list(groups)
+        ).values_list("id", "effective_service_groups"):
+            objects.append(mo_id)
+            mo_group_map[mo_id] = groups.intersection(set(mo_groups))
         sa = get_alarms(objects)
         mo = Maintenance.currently_affected(objects)
         for o in sr:
@@ -289,6 +311,15 @@ class MapApplication(ExtApplication):
                 r[o] = self.ST_DOWN
             if o in mo:
                 r[o] |= self.ST_MAINTENANCE
+            if o in sa and o in mo_group_map:
+                for g in mo_group_map[o]:
+                    r[g] = self.ST_ALARM
+        sa = get_alarms_segment(segments)
+        for s in segments:
+            if s in sa:
+                r[s] = self.ST_ALARM
+            else:
+                r[s] = self.ST_OK
         return r
 
     @classmethod
