@@ -100,6 +100,9 @@ class BaseService(object):
     require_dcs_health = True
     # Use embedded router for messages
     use_router = False
+    # Use service based consul check timeout
+    dcs_check_interval: Optional[int] = None
+    dcs_check_timeout: Optional[int] = None
 
     LOG_FORMAT = config.log_format
 
@@ -473,6 +476,8 @@ class BaseService(object):
             pool=config.pool if self.pooled else None,
             lock=self.get_leader_lock_name(),
             tags=self.get_register_tags(),
+            check_interval=self.dcs_check_interval,
+            check_timeout=self.dcs_check_timeout,
         )
         if r:
             # Finally call on_activate
