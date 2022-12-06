@@ -48,7 +48,7 @@ def _track_document(model):
 
     logger.debug("[%s] Tracking changes", get_model_id(model))
     signals.post_save.connect(_on_document_change, sender=model)
-    signals.pre_delete.connect(_on_document_delete, sender=model)
+    signals.post_delete.connect(_on_document_delete, sender=model)
 
 
 def _track_model(model):
@@ -61,7 +61,7 @@ def _track_model(model):
 
     logger.debug("[%s] Tracking changes", get_model_id(model))
     signals.post_save.connect(_on_model_change, sender=model)
-    signals.pre_delete.connect(_on_model_delete, sender=model)
+    signals.post_delete.connect(_on_model_delete, sender=model)
 
 
 def _on_document_change(sender, document, created=False, *args, **kwargs):
@@ -111,7 +111,7 @@ def _on_document_change(sender, document, created=False, *args, **kwargs):
 def _on_document_delete(sender, document, *args, **kwargs):
     model_id = get_model_id(document)
     op = "delete"
-    logger.debug("[%s|%s] Change detected: %s", model_id, document.id, op)
+    logger.debug("[%s|%s] Delete detected: %s", model_id, document.id, op)
     change_tracker.register(
         op=op,
         model=model_id,
@@ -173,7 +173,7 @@ def _on_model_change(sender, instance, created=False, *args, **kwargs):
 def _on_model_delete(sender, instance, *args, **kwargs):
     model_id = get_model_id(instance)
     op = "delete"
-    logger.debug("[%s|%s] Change detected: %s", model_id, instance.id, op)
+    logger.debug("[%s|%s] Delete detected: %s", model_id, instance.id, op)
     change_tracker.register(
         op=op,
         model=model_id,
