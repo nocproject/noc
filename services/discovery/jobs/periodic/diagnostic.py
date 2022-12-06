@@ -25,9 +25,10 @@ from noc.core.checkers.base import (
 )
 from noc.core.checkers.loader import loader
 from noc.core.wf.diagnostic import DiagnosticState
+from noc.core.debug import error_report
 from noc.sa.models.profile import Profile
 from noc.pm.models.metrictype import MetricType
-from noc.core.debug import error_report
+from noc.config import config
 
 
 class DiagnosticCheck(DiscoveryCheck):
@@ -129,7 +130,9 @@ class DiagnosticCheck(DiscoveryCheck):
             )
         if bulk:
             self.logger.info("Diagnostic changed: %s", ", ".join(di.diagnostic for di in bulk))
-            self.object.save_diagnostics(self.object.id, bulk)
+            self.object.save_diagnostics(
+                self.object.id, bulk, sync_labels=config.discovery.sync_diagnostic_labels
+            )
             if self.job.can_update_alarms():
                 self.object.sync_diagnostic_alarm([d.diagnostic for d in bulk])
             for di in bulk:

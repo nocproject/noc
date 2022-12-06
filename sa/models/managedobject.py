@@ -2586,12 +2586,14 @@ class ManagedObject(NOCModel):
         mo_id: int,
         diagnostics: Optional[List[DiagnosticItem]] = None,
         removed: Optional[List[str]] = None,
+        sync_labels: bool = True,
     ):
         """
         Update diagnostic on database
         :param mo_id: ManagedObject id
         :param diagnostics: List diagnostics Item for save
         :param removed: List diagnostic name for remove
+        :param sync_labels: Sync diagnostic labels
         :return:
         """
         from django.db import connection as pg_connection
@@ -2632,7 +2634,7 @@ class ManagedObject(NOCModel):
                      WHERE id = %s""",
                     ["{%s}" % r for r in removed] + [mo_id],
                 )
-            if add_labels or removed_labels:
+            if sync_labels and (add_labels or removed_labels):
                 Label._change_model_labels(
                     "sa.ManagedObject",
                     add_labels=add_labels or None,
