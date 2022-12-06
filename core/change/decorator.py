@@ -111,7 +111,7 @@ def _on_document_change(sender, document, created=False, *args, **kwargs):
 def _on_document_delete(sender, document, *args, **kwargs):
     model_id = get_model_id(document)
     op = "delete"
-    logger.debug("[%s|%s] Change detected: %s", model_id, document.id, op)
+    logger.debug("[%s|%s] Delete detected: %s", model_id, document.id, op)
     change_tracker.register(
         op=op,
         model=model_id,
@@ -173,7 +173,7 @@ def _on_model_change(sender, instance, created=False, *args, **kwargs):
 def _on_model_delete(sender, instance, *args, **kwargs):
     model_id = get_model_id(instance)
     op = "delete"
-    logger.debug("[%s|%s] Change detected: %s", model_id, instance.id, op)
+    logger.debug("[%s|%s] Delete detected: %s", model_id, instance.id, op)
     change_tracker.register(
         op=op,
         model=model_id,

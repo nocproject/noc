@@ -171,11 +171,6 @@ class SimpleChangeTrackerPolicy(BaseChangeTrackerPolicy):
             return
         ds_changes = defaultdict(set)
         for ds_name, item_id in datastreams:
-            if op == "delete":
-                # Split delete operation for exclude raise-condition with DB Operation
-                # because pre_delete signal
-                # ds_deleted[ds_name].add(str(item_id))
-                continue
             ds_changes[ds_name].add(str(item_id))
         defer(DS_APPLY_HANDLER, key=key, ds_changes={k: list(v) for k, v in ds_changes.items()})
 
@@ -213,11 +208,6 @@ class BulkChangeTrackerPolicy(BaseChangeTrackerPolicy):
         t0 = time.time()
         # Changed datastreams
         for ds_name, item_id in datastreams or []:
-            # if op == "delete":
-            #     # Split delete operation for exclude raise-condition with DB Operation
-            #     # because pre_delete signal
-            #     self.ds_deleted[ds_name].add(str(item_id))
-            #     continue
             self.ds_changes[ds_name].add(str(item_id))
         prev = self.changes.get((model, id))
         if prev is None:
