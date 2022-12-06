@@ -240,7 +240,9 @@ class Config(BaseConfig):
         proxy_metric = BooleanParameter(
             default=False, help="Send metrics discovery result from self"
         )
-        sync_diagnostic_labels = BooleanParameter(default=True, help="Sync diagnostic labels on Box discovery")
+        sync_diagnostic_labels = BooleanParameter(
+            default=True, help="Sync diagnostic labels on Box discovery"
+        )
         sample = IntParameter(default=0)
 
     class dns(ConfigSection):
