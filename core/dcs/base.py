@@ -75,7 +75,17 @@ class DCSBase(object):
                 r.stop()
             self.resolvers = {}
 
-    async def register(self, name, address, port, pool=None, lock=None, tags=None):
+    async def register(
+        self,
+        name,
+        address,
+        port,
+        pool=None,
+        lock=None,
+        tags=None,
+        check_interval: Optional[int] = None,
+        check_timeout: Optional[int] = None,
+    ):
         """
         Register service
         :param name:
@@ -84,6 +94,8 @@ class DCSBase(object):
         :param pool:
         :param lock:
         :param tags: List of extra tags
+        :param check_interval: DCS Check Interval
+        :param check_timeout: DCS Check Timeout
         :return:
         """
         raise NotImplementedError()
