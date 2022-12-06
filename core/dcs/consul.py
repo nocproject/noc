@@ -192,7 +192,7 @@ class ConsulDCS(DCSBase):
         check_timeout: Optional[int] = None,
     ):
         if pool:
-            name = "%s-%s" % (name, pool)
+            name = f"{name}-{pool}"
         self.name = name
         if lock:
             await self.acquire_lock(lock)
@@ -200,12 +200,13 @@ class ConsulDCS(DCSBase):
         tags = tags[:] if tags else []
         tags += [svc_id]
         self.svc_check_url = f"http://{address}:{port}/health/?service={svc_id}"
+        print("CONSUL Check", check_timeout, check_interval)
         self.health_check_service_id = svc_id
         if config.features.consul_healthchecks:
             checks = consul.Check.http(
                 self.svc_check_url,
-                check_interval or self.check_interval,
-                "%ds" % (check_timeout or self.check_timeout),
+                f"{check_interval or self.check_interval}s",
+                f"{check_timeout or self.check_timeout}s",
             )
             checks["DeregisterCriticalServiceAfter"] = self.release_after
         else:
