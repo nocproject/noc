@@ -886,6 +886,9 @@ class Config(BaseConfig):
         compact_interval = SecondsParameter(default="5M")
         # Metrics
         disable_spool = BooleanParameter(default=False, help="Disable send metrics to Clickhouse")
+        # DCS Client
+        check_interval = SecondsParameter(default="20s")
+        check_timeout = SecondsParameter(default="15s")
         # DataStream request limit
         ds_limit = IntParameter(default=1000)
 
