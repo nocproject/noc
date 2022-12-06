@@ -48,7 +48,7 @@ def _track_document(model):
 
     logger.debug("[%s] Tracking changes", get_model_id(model))
     signals.post_save.connect(_on_document_change, sender=model)
-    signals.pre_delete.connect(_on_document_delete, sender=model)
+    signals.post_delete.connect(_on_document_delete, sender=model)
 
 
 def _track_model(model):
@@ -61,7 +61,7 @@ def _track_model(model):
 
     logger.debug("[%s] Tracking changes", get_model_id(model))
     signals.post_save.connect(_on_model_change, sender=model)
-    signals.pre_delete.connect(_on_model_delete, sender=model)
+    signals.post_delete.connect(_on_model_delete, sender=model)
 
 
 def _on_document_change(sender, document, created=False, *args, **kwargs):
