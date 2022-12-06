@@ -241,4 +241,6 @@ class BulkChangeTrackerPolicy(BaseChangeTrackerPolicy):
         for part, items in changes.items():
             defer(CHANGE_HANDLER, key=part, changes=items)
         if self.ds_changes:
-            defer(DS_APPLY_HANDLER, key=0, ds_changes={k: list(v) for k, v in self.ds_changes.items()})
+            defer(
+                DS_APPLY_HANDLER, key=0, ds_changes={k: list(v) for k, v in self.ds_changes.items()}
+            )
