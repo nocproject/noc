@@ -82,7 +82,7 @@ class ConsulDCS(DCSBase):
     DEFAULT_CONSUL_HOST = config.consul.host
     DEFAULT_CONSUL_PORT = config.consul.port
     DEFAULT_CONSUL_CHECK_INTERVAL = config.consul.check_interval
-    DEFAULT_CONSUL_CHECK_TIMEOUT = config.consul.connect_timeout
+    DEFAULT_CONSUL_CHECK_TIMEOUT = config.consul.check_timeout
     DEFAULT_CONSUL_RELEASE = "".join([str(config.consul.release), "s"])
     DEFAULT_CONSUL_SESSION_TTL = config.consul.session_ttl
     DEFAULT_CONSUL_LOCK_DELAY = config.consul.lock_delay
@@ -180,20 +180,32 @@ class ConsulDCS(DCSBase):
                 pass  # Ignore consul errors
             self.session = None
 
-    async def register(self, name, address, port, pool=None, lock=None, tags=None):
+    async def register(
+        self,
+        name,
+        address,
+        port,
+        pool=None,
+        lock=None,
+        tags=None,
+        check_interval: Optional[int] = None,
+        check_timeout: Optional[int] = None,
+    ):
         if pool:
-            name = "%s-%s" % (name, pool)
+            name = f"{name}-{pool}"
         self.name = name
         if lock:
             await self.acquire_lock(lock)
         svc_id = self.session or str("svc-%s" % uuid.uuid4())
         tags = tags[:] if tags else []
         tags += [svc_id]
-        self.svc_check_url = "http://%s:%s/health/?service=%s" % (address, port, svc_id)
+        self.svc_check_url = f"http://{address}:{port}/health/?service={svc_id}"
         self.health_check_service_id = svc_id
         if config.features.consul_healthchecks:
             checks = consul.Check.http(
-                self.svc_check_url, self.check_interval, "%ds" % self.check_timeout
+                self.svc_check_url,
+                f"{check_interval or self.check_interval}s",
+                f"{check_timeout or self.check_timeout}s",
             )
             checks["DeregisterCriticalServiceAfter"] = self.release_after
         else:
