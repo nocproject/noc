@@ -78,32 +78,21 @@ def on_change(
         apply_sync_sensors(sensors_changes)
 
 
-def apply_datastream(
-    ds_changes: Optional[Dict[str, Set[str]]] = None,
-    ds_deleted: Optional[Dict[str, Set[str]]] = None,
-) -> None:
+def apply_datastream(ds_changes: Optional[Dict[str, Set[str]]] = None) -> None:
     """
     Apply datastream changes
     :param ds_changes: Changes Items
-    :param ds_deleted: Deleted Items
     :return:
     """
     from noc.core.datastream.loader import loader
 
-    ds_changes, ds_deleted = ds_changes or {}, ds_deleted or {}
+    ds_changes = ds_changes or {}
     for ds_name, items in ds_changes.items():
         ds = loader[ds_name]
         if not ds:
             logger.error("Invalid datastream: %s", ds_name)
             continue
         ds.bulk_update(sorted(items))
-    for ds_name, items in ds_deleted.items():
-        ds = loader[ds_name]
-        if not ds:
-            logger.error("Invalid datastream: %s", ds_name)
-            continue
-        for item in items:
-            ds.delete_object(item)
 
 
 def apply_ch_dictionary(bi_dict_changes: DefaultDict[str, Set[Tuple[str, float]]]) -> None:
