@@ -310,7 +310,10 @@ class Model(object, metaclass=ModelBase):
             # Old schema, data table will be move to old_noc db for save data.
             print(f"[{table}] Old Schema Move Data to {OLD_PM_SCHEMA_TABLE}.{raw_table}")
             ch.ensure_db(OLD_PM_SCHEMA_TABLE)
-            ch.rename_table(raw_table, f"{OLD_PM_SCHEMA_TABLE}.{raw_table}")
+            old_table = f"{OLD_PM_SCHEMA_TABLE}.{raw_table}"
+            if ch.has_table(f"{OLD_PM_SCHEMA_TABLE}.{raw_table}"):
+                old_table = f"{OLD_PM_SCHEMA_TABLE}.{raw_table}_v2"
+            ch.rename_table(raw_table, old_table)
         # Ensure raw_* table
         if ch.has_table(raw_table):
             # raw_* table exists, check columns
