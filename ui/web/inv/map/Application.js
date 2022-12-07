@@ -166,6 +166,16 @@ Ext.define("NOC.inv.map.Application", {
             readOnly: me.readOnly
         });
 
+        me.objectGroupInspector = Ext.create("NOC.inv.map.inspectors.ObjectGroupInspector", {
+            app: me,
+            readOnly: me.readOnly
+        });
+
+        me.objectSegmentInspector = Ext.create("NOC.inv.map.inspectors.ObjectSegmentInspector", {
+            app: me,
+            readOnly: me.readOnly
+        });
+
         me.linkInspector = Ext.create("NOC.inv.map.inspectors.LinkInspector", {
             app: me,
             readOnly: me.readOnly
@@ -222,7 +232,9 @@ Ext.define("NOC.inv.map.Application", {
             items: [
                 me.segmentInspector,
                 me.managedObjectInspector,
-                me.linkInspector
+                me.linkInspector,
+                me.objectGroupInspector,
+                me.objectSegmentInspector
             ]
         });
 
@@ -389,6 +401,7 @@ Ext.define("NOC.inv.map.Application", {
         me.viewStpButton.setPressed(false);
         me.zoomCombo.setValue(1.0);
         me.mapPanel.setZoom(1.0);
+        me.mapPanel.paper.clearGrid();
     },
 
     onMapReady: function() {
@@ -455,6 +468,22 @@ Ext.define("NOC.inv.map.Application", {
             me.cloudInspector
         );
         me.cloudInspector.preview(me.currentSegmentId, linkId);
+    },
+
+    inspectObjectGroup: function(objectId) {
+        var me = this;
+        me.inspectorPanel.getLayout().setActiveItem(
+            me.objectGroupInspector
+        );
+        me.objectGroupInspector.preview(me.currentSegmentId, objectId);
+    },
+
+    inspectObjectSegment: function(objectId) {
+        var me = this;
+        me.inspectorPanel.getLayout().setActiveItem(
+            me.objectSegmentInspector
+        );
+        me.objectSegmentInspector.preview(me.currentSegmentId, objectId);
     },
 
     onEdit: function() {
@@ -562,6 +591,9 @@ Ext.define("NOC.inv.map.Application", {
         me.newLayoutButton.setDisabled(state);
         me.rotateButton.setDisabled(state);
         me.revertButton.setDisabled(state);
+        if(!me.mapPanel.normalize_position) {
+            me.rotateButton.setDisabled(true);
+        }
     },
 
     searchByText: function(field, e) {

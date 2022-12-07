@@ -11,6 +11,7 @@ from mongoengine.fields import StringField, IntField, BooleanField, FileField
 from mongoengine.errors import ValidationError
 
 # NOC modules
+from noc.core.model.decorator import on_delete_check
 from noc.core.mime import ContentType
 from noc.config import config
 
@@ -26,6 +27,7 @@ def validate_content_type(value: int) -> None:
         raise ValidationError("Image is required")
 
 
+@on_delete_check(check=[("inv.ConfiguredMap", "background_image")])
 class ImageStore(Document):
     meta = {"collection": "imagestore", "strict": False, "auto_create_index": False}
 

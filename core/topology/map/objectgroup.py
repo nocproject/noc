@@ -75,8 +75,8 @@ class ObjectGroupTopology(TopologyBase):
             mo.id: mo for mo in ManagedObject.objects.filter(id__in=all_mos)
         }
         for mo in mos.values():
-            attrs = {"role": "segment", "address": mo.address, "level": mo.object_profile.level}
-            self.add_node(mo, "managedobject", attrs)
+            n = mo.get_topology_node()
+            self.add_node(n, {"role": "segment"})
         # Process all links
         for link in links:
             self.add_link(link)
@@ -96,12 +96,12 @@ class ObjectGroupTopology(TopologyBase):
         # Apply paging
         if limit:
             data = data[start : start + limit]
-        for ns in data:
+        for rg in data:
             yield MapItem(
-                title=str(ns.name),
+                title=str(rg.name),
                 generator=cls.name,
-                id=str(ns.id),
-                has_children=ns.has_children,
+                id=str(rg.id),
+                has_children=rg.has_children,
             )
 
     @classmethod
