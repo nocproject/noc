@@ -47,7 +47,7 @@ class Script(BaseScript):
         #
         # VRP3 style
         #
-        if self.is_version_3x:
+        if self.is_3x_version:
             for ll in self.cli("display interface").splitlines():
                 if ll.find(" current state :") != -1 and ll.find("Line protocol ") == -1:
                     match_int = rx_ifc_status.match(ll)
