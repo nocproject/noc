@@ -288,6 +288,7 @@ Ext.define("NOC.inv.map.MapPanel", {
     //
     renderMap: function(data) {
         var me = this,
+            backgroundOpt = {},
             nodes = [],
             badges = [],
             links = [],
@@ -297,7 +298,11 @@ Ext.define("NOC.inv.map.MapPanel", {
                     badges.push(data.badges);
                 }
             };
-
+        if(data.hasOwnProperty('normalize_position') && data.normalize_position === false) {
+            me.normalize_position = data.normalize_position;
+            me.bg_width = data.width;
+            me.bg_height = data.height;
+        }
         me.isInteractive = false;
         me.isDirty = false;
         me.currentHighlight = null;
@@ -308,11 +313,14 @@ Ext.define("NOC.inv.map.MapPanel", {
         me.currentStpRoots = {};
         me.graph.clear();
         // Set background
-        me.paper.drawBackground({
-            image: '/main/imagestore/' + data.background_image + '/image/',
-            position: 'left top;',
-            opacity: 0.3
-        });
+        if(data.background_image) {
+            backgroundOpt = {
+                image: '/main/imagestore/' + data.background_image + '/image/',
+                position: 'left top;',
+                opacity: data.background_opacity / 100,
+            };
+        }
+        me.paper.drawBackground(backgroundOpt);
         // Create nodes
         Ext.each(data.nodes, function(node) {
             if(!me.app.viewAllNodeButton.pressed && data.links.length > data.max_links && node.external === true) {
@@ -401,6 +409,7 @@ Ext.define("NOC.inv.map.MapPanel", {
             data: {
                 type: data.type,
                 id: data.id,
+                node_id: data.node_id,
                 caps: data.caps,
                 isMaintenance: false,
                 portal: data.portal
@@ -412,9 +421,7 @@ Ext.define("NOC.inv.map.MapPanel", {
             badges.push(badge);
         });
         me.objectNodes[data.id] = node;
-        if(data.type === "managedobject") {
-            me.objectsList.push(data.id)
-        }
+        me.objectsList.push({"node_type": data.type, "node_id": data.node_id, "id": data.id})
         return {node: node, badges: badges};
     },
     //
@@ -534,7 +541,17 @@ Ext.define("NOC.inv.map.MapPanel", {
                 view.highlight();
                 me.currentHighlight = view;
                 me.app.inspectCloud(data.id);
-                break
+                break;
+            case "objectgroup":
+                view.highlight();
+                me.currentHighlight = view;
+                me.app.inspectObjectGroup(data.node_id);
+                break;
+            case "objectsegment":
+                view.highlight();
+                me.currentHighlight = view;
+                me.app.inspectObjectSegment(data.node_id);
+                break;
         }
     },
 
@@ -647,13 +664,15 @@ Ext.define("NOC.inv.map.MapPanel", {
     //
     save: function() {
         var me = this,
-            bbox = me.paper.getContentBBox(),
             r = {
                 nodes: [],
                 links: [],
-                width: bbox.width - bbox.x,
-                height: bbox.height - bbox.y
             };
+        if(me.normalize_position) {
+            var bbox = me.paper.getContentBBox();
+            r.width = bbox.width - bbox.x;
+            r.height = bbox.height - bbox.y;
+        }
         // Get nodes position
         Ext.each(me.graph.getElements(), function(e) {
             if('wrench' !== e.get('data').type && 'badge' !== e.get('data').type) {
@@ -707,7 +726,7 @@ Ext.define("NOC.inv.map.MapPanel", {
             url: "/inv/map/objects_statuses/",
             method: "POST",
             jsonData: {
-                objects: me.objectsList
+                nodes: me.objectsList
             },
             scope: me,
             success: function(response) {
@@ -1063,7 +1082,7 @@ Ext.define("NOC.inv.map.MapPanel", {
     setZoom: function(zoom) {
         var me = this;
         me.paper.scale(zoom, zoom);
-        me.setPaperDimension();
+        me.setPaperDimension(zoom);
     },
 
     onNodeMenuViewCard: function() {
@@ -1330,10 +1349,10 @@ Ext.define("NOC.inv.map.MapPanel", {
         }
     },
 
-    setPaperDimension: function(offsetX, offsetY) {
+    setPaperDimension: function(zoom) {
         var me = this,
-            paddingX = offsetX || 15,
-            paddingY = offsetY || 15,
+            paddingX = 15,
+            paddingY = 15,
             w = me.getWidth(),
             h = me.getHeight();
 
@@ -1341,9 +1360,14 @@ Ext.define("NOC.inv.map.MapPanel", {
             me.paper.fitToContent();
             var contentBB = me.paper.getContentBBox();
             if(contentBB && contentBB.width && contentBB.height) {
-                w = Ext.Array.max([contentBB.width, me.getWidth()]);
-                h = Ext.Array.max([contentBB.height, me.getHeight()]);
-                me.paper.translate((-1) * contentBB.x + paddingX, (-1) * contentBB.y + paddingY);
+                if(me.normalize_position) {
+                    w = Ext.Array.max([contentBB.width, me.getWidth()]);
+                    h = Ext.Array.max([contentBB.height, me.getHeight()]);
+                    me.paper.translate((-1) * contentBB.x + paddingX, (-1) * contentBB.y + paddingY);
+                } else {
+                    w = me.bg_width * (zoom || 1);
+                    h = me.bg_height * (zoom || 1);
+                }
                 me.paper.setDimensions(w + paddingX * 2, h + paddingY * 2);
             }
         }

@@ -58,6 +58,9 @@ Ext.define("NOC.core.tagfield.Tagfield", {
     ],
     initComponent: function() {
         this.store.proxy.url = this.url;
+        if(Ext.isFunction(this.url)) {
+            this.store.proxy.url = this.url();
+        }
         if(this.lazyLoadTree) {
             this.triggers.picker.cls = "theme-classic fas fa fa-folder-open-o";
             this.treePicker = Ext.create({
@@ -72,8 +75,31 @@ Ext.define("NOC.core.tagfield.Tagfield", {
     },
     setValue: function(value,  add, skipLoad) {
         var me = this;
-        if(value && value.length > 0) {
-            me.store.loadData(value);
+        if(Ext.isArray(value) && value.length > 0) {
+            if(!Ext.isObject(value[0])) {
+                var params = value.map(function(element) {
+                    var obj = {};
+                    obj[me.valueField] = element;
+                    return Ext.Object.toQueryString(obj);
+                }).join("&");
+
+                value = value.map(function(element) {
+                    var obj = {};
+                    obj[me.valueField] = element;
+                    return obj;
+                });
+                Ext.Ajax.request({
+                    url: me.store.proxy.url,
+                    method: "GET",
+                    scope: me,
+                    params: params,
+                    success: function(response) {
+                        me.setValue(Ext.decode(response.responseText));
+                    }
+                });
+            } else {
+                me.store.loadData(value);
+            }
         }
         return me.callParent([value.map(function(element) {
             return element[me.valueField];

@@ -24,7 +24,8 @@ from noc.sa.models.managedobject import ManagedObject
 from noc.inv.models.networksegment import NetworkSegment
 from noc.inv.models.interface import Interface
 from noc.inv.models.link import Link
-from noc.core.topology.base import TopologyBase, MapItem, PathItem
+from noc.core.topology.base import TopologyBase
+from noc.core.topology.types import MapItem, PathItem, Portal
 
 logger = logging.getLogger(__name__)
 
@@ -35,7 +36,9 @@ class SegmentTopology(TopologyBase):
     CAPS: Set[str] = {"Network | STP"}
 
     def __init__(self, gen_id, node_hints=None, link_hints=None, force_spring=False):
-        self.segment = NetworkSegment.get_by_id(gen_id)
+        self.segment = (
+            gen_id if isinstance(gen_id, NetworkSegment) else NetworkSegment.get_by_id(gen_id)
+        )
         self.logger = PrefixLoggerAdapter(logger, self.segment.name)
         self.segment_siblings = self.segment.get_siblings()
         self._uplinks_cache = {}
@@ -187,16 +190,13 @@ class SegmentTopology(TopologyBase):
             mo_id for mo_id in all_mos if mos[mo_id].segment.id == self.segment.id
         )
         for mo in mos.values():
-            attrs = {
-                "role": self.get_role(mo),
-                "address": mo.address,
-                "level": mo.object_profile.level,
-            }
-            if attrs["role"] == "uplink":
-                attrs["portal"] = {"generator": "segment", "id": str(self.parent_segment)}
-            elif attrs["role"] == "downlink":
-                attrs["portal"] = {"generator": "segment", "id": str(mo.segment.id)}
-            self.add_node(mo, "managedobject", attrs)
+            n = mo.get_topology_node()
+            role = self.get_role(mo)
+            if role == "uplink":
+                n.portal = Portal(generator="segment", id=str(self.parent_segment))
+            elif role == "downlink":
+                n.portal = Portal(generator="segment", id=str(mo.segment.id))
+            self.add_node(n, {"role": role})
             # self.add_object(mo)
         # Process all segment's links
         for link in links:

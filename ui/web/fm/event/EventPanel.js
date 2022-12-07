@@ -427,7 +427,7 @@ Ext.define("NOC.fm.event.EventPanel", {
     onShowMap: function() {
         var me = this;
         NOC.launch("inv.map", "history", {
-            args: [me.data.segment_id, me.data.managed_object]
+            args: ["segment", me.data.segment_id, me.data.managed_object]
         });
     }
 });

@@ -325,5 +325,43 @@ Ext.define("NOC.core.combotree.ComboTree", {
     },
     getLookupData: function() {
         return this.getDisplayValue();
+    },
+    setValue: function(value, doSelect) {
+        var me = this,
+          vm,
+          params = {};
+
+        if(value == null) {
+            me.callParent([value]);
+            return;
+        }
+        if(typeof value === "string" || typeof value === "number") {
+            if(value === "" || value === 0) {
+                me.clearValue();
+                return;
+            }
+            params[me.valueField] = value;
+            Ext.Ajax.request({
+                url: me.restUrl + "lookup/",
+                method: "GET",
+                scope: me,
+                params: params,
+                success: function(response) {
+                    var data = Ext.decode(response.responseText);
+                    if(data.length === 1) {
+                        vm = me.store.getModel().create(data[0]);
+                        me.setValue(vm);
+                        if(doSelect) {
+                            me.fireEvent("select", me, vm, {});
+                        }
+                    }
+                }
+            });
+        } else {
+            if(!value.hasOwnProperty("data")) {
+                value = Ext.create("Ext.data.Model", value);
+            }
+            me.callParent([value]);
+        }
     }
 });

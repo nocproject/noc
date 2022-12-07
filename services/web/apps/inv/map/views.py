@@ -8,10 +8,11 @@
 # Python modules
 from collections import defaultdict
 import threading
-from typing import List, Set
+from typing import List, Set, Dict
 
 # Third-party modules
 from concurrent.futures import ThreadPoolExecutor, as_completed
+from bson import ObjectId
 
 # NOC modules
 from noc.services.web.base.extapplication import ExtApplication, view
@@ -20,6 +21,7 @@ from noc.inv.models.interface import Interface
 from noc.inv.models.discoveryid import DiscoveryID
 from noc.inv.models.mapsettings import MapSettings
 from noc.inv.models.link import Link
+from noc.inv.models.resourcegroup import ResourceGroup
 from noc.sa.models.managedobject import ManagedObject
 from noc.sa.interfaces.base import (
     ListOfParameter,
@@ -119,6 +121,7 @@ class MapApplication(ExtApplication):
 
     def inspector_managedobject(self, request, id, mo_id):
         # segment = self.get_object_or_404(NetworkSegment, id=id)
+        segment = NetworkSegment.get_by_id(str(id))
         object = self.get_object_or_404(ManagedObject, id=int(mo_id))
         s = {1: "telnet", 2: "ssh", 3: "http", 4: "https"}[object.scheme]
         r = {
@@ -128,7 +131,7 @@ class MapApplication(ExtApplication):
             "address": object.address,
             "platform": object.platform.full_name if object.platform else "",
             "profile": object.profile.name,
-            "external": False,
+            "external": segment and object.segment.id != segment.id,
             "external_segment": {"id": str(object.segment.id), "name": object.segment.name},
             # "external": object.segment.id != segment.id,
             # "external_segment": {"id": str(object.segment.id), "name": object.segment.name},
@@ -136,6 +139,26 @@ class MapApplication(ExtApplication):
             "console_url": "%s://%s/" % (s, object.address),
         }
         return r
+
+    def inspector_objectgroup(self, request, id, rg_id):
+        object = self.get_object_or_404(ResourceGroup, id=rg_id)
+        return {
+            "id": str(object.id),
+            "name": object.name,
+            "description": object.description,
+            "external": False,
+            "external_segment": {},
+        }
+
+    def inspector_objectsegment(self, request, id, rg_id):
+        object = self.get_object_or_404(NetworkSegment, id=rg_id)
+        return {
+            "id": str(object.id),
+            "name": object.name,
+            "description": object.description,
+            "external": False,
+            "external_segment": {},
+        }
 
     def inspector_link(self, request, id, link_id):
         def q(s):
@@ -224,9 +247,13 @@ class MapApplication(ExtApplication):
         method=["POST"],
         access="read",
         api=True,
-        validate={"objects": ListOfParameter(IntParameter())},
+        validate={
+            "nodes": DictListParameter(
+                attrs={"id": StringParameter(), "node_type": StringParameter()}
+            )
+        },
     )
-    def api_objects_statuses(self, request, objects: List[int]):
+    def api_objects_statuses(self, request, nodes: List[Dict[str, int]]):
         def get_alarms(objects: List[int]) -> Set[int]:
             """
             Returns a set of objects with alarms
@@ -244,9 +271,33 @@ class MapApplication(ExtApplication):
                 alarms.update(d["_id"] for d in a)
             return alarms
 
+        def get_alarms_segment(segments: List[str]) -> Set[str]:
+            if not segments:
+                return set()
+            coll = ActiveAlarm._get_collection()
+            return {
+                str(sa["_id"])
+                for sa in coll.aggregate(
+                    [
+                        {"$match": {"segment_path": {"$in": [ObjectId(ss) for ss in segments]}}},
+                        {"$unwind": "$segment_path"},
+                        {"$group": {"_id": "$segment_path", "count": {"$sum": 1}}},
+                    ]
+                )
+            }
+
         # Mark all as unknown
+        objects: List[int] = [int(o["id"]) for o in nodes if o["node_type"] == "managedobject"]
+        groups = {o["id"] for o in nodes if o["node_type"] == "objectgroup"}
+        segments: List[str] = [str(o["id"]) for o in nodes if o["node_type"] == "objectsegment"]
         r = {o: self.ST_UNKNOWN for o in objects}
         sr = ObjectStatus.get_statuses(objects)
+        mo_group_map = defaultdict(set)
+        for mo_id, mo_groups in ManagedObject.objects.filter(
+            effective_service_groups__overlap=list(groups)
+        ).values_list("id", "effective_service_groups"):
+            objects.append(mo_id)
+            mo_group_map[mo_id] = groups.intersection(set(mo_groups))
         sa = get_alarms(objects)
         mo = Maintenance.currently_affected(objects)
         for o in sr:
@@ -260,6 +311,15 @@ class MapApplication(ExtApplication):
                 r[o] = self.ST_DOWN
             if o in mo:
                 r[o] |= self.ST_MAINTENANCE
+            if o in sa and o in mo_group_map:
+                for g in mo_group_map[o]:
+                    r[g] = self.ST_ALARM
+        sa = get_alarms_segment(segments)
+        for s in segments:
+            if s in sa:
+                r[s] = self.ST_ALARM
+            else:
+                r[s] = self.ST_OK
         return r
 
     @classmethod

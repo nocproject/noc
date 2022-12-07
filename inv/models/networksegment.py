@@ -27,6 +27,7 @@ from pymongo.errors import OperationFailure
 
 # NOC modules
 from noc.core.mongo.fields import PlainReferenceField
+from noc.core.topology.types import TopologyNode
 from noc.main.models.remotesystem import RemoteSystem
 from noc.sa.models.servicesummary import ServiceSummary, SummaryItem, ObjectSummaryItem
 from noc.core.model.decorator import on_delete_check, on_save, tree
@@ -607,3 +608,11 @@ class NetworkSegment(Document):
             # for Mongo less 3.4
             pass
         return services, subscribers, objects
+
+    def get_topology_node(self) -> TopologyNode:
+        return TopologyNode(
+            id=str(self.id),
+            type="objectsegment",
+            resource_id=str(self.id),
+            title=self.name,
+        )

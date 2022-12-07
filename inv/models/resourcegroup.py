@@ -27,6 +27,7 @@ from noc.core.model.decorator import on_delete_check, on_save, tree
 from noc.core.change.decorator import change
 from noc.core.defer import defer
 from noc.core.bi.decorator import bi_sync
+from noc.core.topology.types import TopologyNode
 from noc.main.models.remotesystem import RemoteSystem
 from noc.main.models.label import Label
 from .technology import Technology
@@ -572,6 +573,18 @@ class ResourceGroup(Document):
             return bool(set(item.effective_service_groups).intersection(rids))
         rid = self.id if is_document(item) else str(self.id)
         return rid in item.effective_service_groups
+
+    def get_topology_node(self) -> TopologyNode:
+        """
+        Return TopologyNode for ResourceGroup
+        :return:
+        """
+        return TopologyNode(
+            id=str(self.id),
+            type="objectgroup",
+            resource_id=str(self.id),
+            title=self.name,
+        )
 
 
 def invalidate_instance_cache(model_id: str, ids: List[int]):

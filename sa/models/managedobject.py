@@ -80,7 +80,7 @@ from noc.core.model.fields import (
     PydanticField,
 )
 from noc.core.model.sql import SQL
-from noc.core.stencil import stencil_registry
+from noc.core.stencil import stencil_registry, Stencil
 from noc.core.validators import is_ipv4, is_ipv4_prefix
 from noc.core.ip import IP
 from noc.sa.interfaces.base import MACAddressParameter
@@ -114,7 +114,12 @@ from noc.core.confdb.tokenizer.loader import loader as tokenizer_loader
 from noc.core.confdb.engine.base import Engine
 from noc.core.comp import smart_text, DEFAULT_ENCODING
 from noc.main.models.glyph import Glyph
-from noc.core.topology.types import ShapeOverlayPosition, ShapeOverlayForm
+from noc.core.topology.types import (
+    ShapeOverlayPosition,
+    ShapeOverlayForm,
+    ShapeOverlay,
+    TopologyNode,
+)
 from noc.core.models.problem import ProblemItem
 from noc.core.models.cfgmetrics import MetricCollectorConfig, MetricItem
 from .administrativedomain import AdministrativeDomain
@@ -3044,6 +3049,67 @@ class ManagedObject(NOCModel):
         sensor = Sensor.objects.filter(m_Q(managed_object=self.id) | m_Q(object__in=o)).first()
         config = self.get_metric_config(self)
         return bool(sla_probe or sensor or config.get("metrics") or config.get("items"))
+
+    def get_stencil(self) -> Optional[Stencil]:
+        if self.shape:
+            # Use mo's shape, if set
+            return self.shape
+        if self.object_profile.shape:
+            # Use profile's shape
+            return self.object_profile.shape
+        return
+
+    def get_shape_overlays(self) -> List[ShapeOverlay]:
+        seen: Set[ShapeOverlayPosition] = set()
+        r: List[ShapeOverlay] = []
+        # ManagedObject
+        if self.shape_overlay_glyph:
+            pos = self.shape_overlay_position or ShapeOverlayPosition.NW
+            r += [
+                ShapeOverlay(
+                    code=self.shape_overlay_glyph.code,
+                    position=pos,
+                    form=self.shape_overlay_form or ShapeOverlayForm.Circle,
+                )
+            ]
+            seen.add(pos)
+        # Project
+        if self.project and self.project.shape_overlay_glyph:
+            pos = self.project.shape_overlay_position or ShapeOverlayPosition.NW
+            if pos not in seen:
+                r += [
+                    ShapeOverlay(
+                        code=self.project.shape_overlay_glyph.code,
+                        position=pos,
+                        form=self.project.shape_overlay_form or ShapeOverlayForm.Circle,
+                    )
+                ]
+                seen.add(pos)
+        # ManagedObjectProfile
+        if self.object_profile.shape_overlay_glyph:
+            pos = self.object_profile.shape_overlay_position or ShapeOverlayPosition.NW
+            if pos not in seen:
+                r += [
+                    ShapeOverlay(
+                        code=self.object_profile.shape_overlay_glyph.code,
+                        position=pos,
+                        form=self.object_profile.shape_overlay_form or ShapeOverlayForm.Circle,
+                    )
+                ]
+                seen.add(pos)
+        return r
+
+    def get_topology_node(self) -> TopologyNode:
+        return TopologyNode(
+            id=str(self.id),
+            type="managedobject",
+            resource_id=self.id,
+            title=self.name,
+            stencil=self.get_stencil(),
+            overlays=self.get_shape_overlays(),
+            level=self.object_profile.level,
+            attrs={"address": self.address, "mo": self},
+        )
 
 
 @on_save
