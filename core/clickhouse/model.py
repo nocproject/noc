@@ -7,6 +7,8 @@
 
 # Python modules
 import operator
+import string
+from random import choices
 from time import perf_counter
 
 # NOC modules
@@ -312,7 +314,7 @@ class Model(object, metaclass=ModelBase):
             ch.ensure_db(OLD_PM_SCHEMA_TABLE)
             old_table = f"{OLD_PM_SCHEMA_TABLE}.{raw_table}"
             if ch.has_table(f"{OLD_PM_SCHEMA_TABLE}.{raw_table}"):
-                old_table = f"{OLD_PM_SCHEMA_TABLE}.{raw_table}_v2"
+                old_table = f"{OLD_PM_SCHEMA_TABLE}.{raw_table}_{''.join(choices(string.ascii_letters, k=4))}"
             ch.rename_table(raw_table, old_table)
         # Ensure raw_* table
         if ch.has_table(raw_table):
