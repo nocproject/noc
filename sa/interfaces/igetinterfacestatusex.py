@@ -6,7 +6,13 @@
 # ---------------------------------------------------------------------
 # NOC modules
 from noc.core.interface.base import BaseInterface
-from .base import DictListParameter, InterfaceNameParameter, BooleanParameter, IntParameter
+from .base import (
+    DictListParameter,
+    InterfaceNameParameter,
+    BooleanParameter,
+    IntParameter,
+    StringParameter,
+)
 
 
 class IGetInterfaceStatusEx(BaseInterface):
@@ -16,7 +22,8 @@ class IGetInterfaceStatusEx(BaseInterface):
     """
 
     interfaces = DictListParameter(
-        attrs={"interface": InterfaceNameParameter(), "ifindex": IntParameter()}, required=False
+        attrs={"interface": StringParameter(required=True), "ifindex": IntParameter()},
+        required=False,
     )
     returns = DictListParameter(
         attrs={

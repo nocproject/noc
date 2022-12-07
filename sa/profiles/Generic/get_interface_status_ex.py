@@ -5,6 +5,9 @@
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
+# Python modules
+from typing import Dict, Optional, Iterable, Tuple, List
+
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetinterfacestatusex import IGetInterfaceStatusEx
@@ -24,17 +27,17 @@ class Script(BaseScript):
     def get_max_repetitions(self):
         return self.MAX_REPETITIONS
 
-    def get_getnext_retires(self):
+    def get_getnext_retires(self) -> int:
         return self.MAX_GETNEXT_RETIRES
 
-    def get_snmp_ifstatus_get_timeout(self):
+    def get_snmp_ifstatus_get_timeout(self) -> int:
         """
         Timeout for snmp GET request
         :return:
         """
         return self.profile.snmp_ifstatus_get_timeout
 
-    def get_snmp_ifstatus_get_chunk(self):
+    def get_snmp_ifstatus_get_chunk(self) -> int:
         """
         Aggregate up to *snmp_metrics_get_chunk* oids
         to one SNMP GET request
@@ -42,24 +45,28 @@ class Script(BaseScript):
         """
         return self.profile.snmp_ifstatus_get_chunk
 
-    def get_ifname_oid(self):
+    def get_ifname_oid(self) -> str:
         """
         OID return interface name
         :return:
         """
         return self.IFNAME_OID
 
-    def get_iftable(self, oid, ifindex=None):
+    def get_iftable(
+        self, oid: str, ifindexes: Optional[List[str]] = None
+    ) -> Iterable[Tuple[str, str]]:
         """
         If ifindex - collect information on the given interfaces
         Else - collect information for all interfaces
+        :param oid: IfTable OID
+        :param ifindexes:
         :return:
         """
         if "::" in oid:
             oid = mib[oid]
-        if ifindex:
+        if ifindexes:
             results = self.snmp.get_chunked(
-                oids=["%s.%s" % (oid, i) for i in ifindex],
+                oids=[f"{oid}.{i}" for i in ifindexes],
                 chunk_size=self.get_snmp_ifstatus_get_chunk(),
                 timeout_limits=self.get_snmp_ifstatus_get_timeout(),
             )
@@ -81,23 +88,37 @@ class Script(BaseScript):
             if s:
                 s[name] = f(v)
 
+    def iter_interfaces(
+        self, interfaces: Optional[List[Dict[str, str]]] = None
+    ) -> Iterable[Tuple[str, str]]:
+        """
+        Iterate over requested interfaces. Without requested - getting from iftable
+        :param interfaces: Requested interfaces
+        :return:
+        """
+        for iface in interfaces or []:
+            yield iface["ifindex"], iface["interface"]
+        if interfaces:
+            return
+        for ifindex, name in self.get_iftable(self.get_ifname_oid()):
+            yield ifindex, name
+
     def get_data(self, interfaces=None, raw_speed_value=False):
         # ifIndex -> ifName mapping
         r = {}  # ifindex -> data
         unknown_interfaces = []
-        if interfaces:
-            for i in interfaces:
-                r[i["ifindex"]] = {"interface": i["interface"]}
-        else:
-            for ifindex, name in self.get_iftable(self.get_ifname_oid()):
-                try:
-                    v = self.profile.convert_interface_name(name)
-                except InterfaceTypeError as e:
-                    self.logger.debug("Ignoring unknown interface %s: %s", name, e)
-                    unknown_interfaces += [name]
-                    continue
-                r[ifindex] = {"interface": v}
-        if_index = list(r)
+        for ifindex, ifname in self.iter_interfaces(interfaces):
+            try:
+                v = self.profile.convert_interface_name(ifname)
+            except InterfaceTypeError as e:
+                self.logger.debug("Ignoring unknown interface %s: %s", ifname, e)
+                unknown_interfaces += [ifname]
+                continue
+            r[ifindex] = {"interface": v}
+        if_indexes = list(r)
+        if not if_indexes:
+            self.logger.warning("Nothing interfaces for collected status")
+            return []
         # Apply ifAdminStatus
         self.apply_table(
             r, "IF-MIB::ifAdminStatus", "admin_status", lambda x: x == 1 if x is not None else None
@@ -115,7 +136,7 @@ class Script(BaseScript):
         )
         # Apply ifSpeed
         highspeed = set()
-        for ifindex, s in self.get_iftable("IF-MIB::ifSpeed", if_index):
+        for ifindex, s in self.get_iftable("IF-MIB::ifSpeed", if_indexes):
             ri = r.get(ifindex)
             if ri and s is not None:
                 # s is None if OID is not exists
@@ -129,7 +150,7 @@ class Script(BaseScript):
                     r[ifindex]["out_speed"] = s // 1000
         # Refer to ifHighSpeed if necessary
         if highspeed:
-            for ifindex, s in self.get_iftable("IF-MIB::ifHighSpeed", if_index):
+            for ifindex, s in self.get_iftable("IF-MIB::ifHighSpeed", if_indexes):
                 if ifindex in highspeed and s is not None:  # s is None if OID is not exists
                     s = int(s)
                     if s:
@@ -140,7 +161,7 @@ class Script(BaseScript):
             self.logger.info("%d unknown interfaces has been ignored", len(unknown_interfaces))
         return list(r.values())
 
-    def is_high_speed(self, data, speed):
+    def is_high_speed(self, data, speed) -> bool:
         """
         Detect should we check ifHighSpeed
         :param data: dict with
