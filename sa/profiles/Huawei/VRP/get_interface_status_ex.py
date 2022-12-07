@@ -14,7 +14,7 @@ class Script(BaseScript):
     name = "Huawei.VRP.get_interface_status_ex"
     interface = IGetInterfaceStatusEx
 
-    def get_iftable(self, oid, ifindex=None):
+    def get_iftable(self, oid, ifindexes=None):
         if self.is_cx200X:
-            ifindex = None
-        return super().get_iftable(oid, ifindex=ifindex)
+            ifindexes = None
+        return super().get_iftable(oid, ifindexes)
