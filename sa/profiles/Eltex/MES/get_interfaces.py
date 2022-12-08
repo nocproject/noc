@@ -127,9 +127,9 @@ class Script(BaseScript):
         name_ifindex = {}
         stack_ifindex = set()
         for oid, v in self.snmp.getnext("1.3.6.1.4.1.89.53.23.1.1"):
-            stack_ifindex.add(oid[len("1.3.6.1.4.1.89.53.23.1.1") + 1:])
+            stack_ifindex.add(oid[len("1.3.6.1.4.1.89.53.23.1.1") + 1 :])
         for oid, iface in self.snmp.getnext("1.3.6.1.4.1.89.53.25.1.1"):
-            ifindex = oid[len("1.3.6.1.4.1.89.53.23.1.1") + 1:].split(".")
+            ifindex = oid[len("1.3.6.1.4.1.89.53.23.1.1") + 1 :].split(".")
             if ifindex[1] in stack_ifindex:
                 sname = self.profile.convert_interface_name(
                     f"{iface[0:2]}{ifindex[0]}/0/{iface[-1]}"
@@ -187,7 +187,7 @@ class Script(BaseScript):
             try:
                 for s in self.snmp.getnext("1.3.6.1.2.1.2.2.1.2", max_repetitions=10):
                     n = s[1]
-                    sifindex = s[0][len("1.3.6.1.2.1.2.2.1.2") + 1:]
+                    sifindex = s[0][len("1.3.6.1.2.1.2.2.1.2") + 1 :]
                     if int(sifindex) < 3000:
                         sm = str(self.snmp.get(mib["IF-MIB::ifPhysAddress", int(sifindex)]))
                         smac = MACAddressParameter().clean(sm)
