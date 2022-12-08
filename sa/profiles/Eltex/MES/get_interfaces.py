@@ -1,7 +1,7 @@
 # ---------------------------------------------------------------------
 # Eltex.MES.get_interfaces
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2021 The NOC Project
+# Copyright (C) 2007-2022 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -34,13 +34,10 @@ class Script(BaseScript):
     interface = IGetInterfaces
 
     TIMEOUT = 300
-
     MAX_REPETITIONS = 20
-
     MAX_GETNEXT_RETIRES = 2
-
     BULK = None
-
+    CHUNK_SIZE = 10
     INTERFACE_NAMES = set()
 
     rx_sh_ip_int = re.compile(
