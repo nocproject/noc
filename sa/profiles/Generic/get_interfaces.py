@@ -40,6 +40,7 @@ class Script(BaseScript):
     MAX_GETNEXT_RETIRES = 1
     MAX_TIMEOUT = 20
     INVALID_MTU = 2147483647
+    CHUNK_SIZE = 20
 
     # Replace on get_interface_properties
     # SNMP_NAME_TABLE = "IF-MIB::ifDescr"
@@ -399,7 +400,9 @@ class Script(BaseScript):
         # Partial
         if ifindexes:
             for r_oid, v in self.snmp.get_chunked(
-                [mib[oid, i] for i in ifindexes], timeout_limits=self.get_snmp_timeout()
+                [mib[oid, i] for i in ifindexes],
+                chunk_size=self.get_chunk_size(),
+                timeout_limits=self.get_snmp_timeout(),
             ).items():
                 try:
                     yield key, int(r_oid.rsplit(".", 1)[1]), clean(v)
@@ -427,6 +430,9 @@ class Script(BaseScript):
 
     def get_snmp_timeout(self):
         return self.MAX_TIMEOUT
+
+    def get_chunk_size(self):
+        return self.CHUNK_SIZE
 
     def get_interface_ifindex(self, name: str) -> int:
         """
