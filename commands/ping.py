@@ -17,6 +17,7 @@ from gufo.ping import Ping
 from noc.core.management.base import BaseCommand
 from noc.core.validators import is_ipv4
 from noc.core.ioloop.util import setup_asyncio, run_sync
+from noc.core.perf import metrics
 from noc.config import config
 
 
@@ -46,8 +47,10 @@ class Command(BaseCommand):
                     addr = addr_list.pop(0)
                 rtt = await ping.ping(addr)
                 if rtt is not None:
+                    metrics["address_up"] += 1
                     self.stdout.write(f"{addr} {rtt * 1_000:.2f}ms\n")
                 else:
+                    metrics["address_down"] += 1
                     self.stdout.write(f"{addr} FAIL\n")
 
         # Run ping
@@ -56,6 +59,7 @@ class Command(BaseCommand):
         ping = Ping(tos=config.ping.tos, timeout=1.0)
         setup_asyncio()
         run_sync(runner)
+        self.stdout.write(f"Stat: down - {metrics.get('address_down').value}; up - {metrics.get('address_up').value}")
 
     def get_addresses(self, addresses: Iterable[str], input: Iterable[str]) -> List[str]:
         addresses = {a for a in addresses if is_ipv4(a)}
