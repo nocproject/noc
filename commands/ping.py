@@ -59,7 +59,9 @@ class Command(BaseCommand):
         ping = Ping(tos=config.ping.tos, timeout=1.0)
         setup_asyncio()
         run_sync(runner)
-        self.stdout.write(f"Stat: down - {metrics.get('address_down').value}; up - {metrics.get('address_up').value}")
+        self.stdout.write(
+            f"Stat: down - {metrics.get('address_down').value}; up - {metrics.get('address_up').value}"
+        )
 
     def get_addresses(self, addresses: Iterable[str], input: Iterable[str]) -> List[str]:
         addresses = {a for a in addresses if is_ipv4(a)}
