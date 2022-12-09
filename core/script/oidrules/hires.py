@@ -24,14 +24,16 @@ class HiresRule(object):
     def iter_oids(self, script, metric):
         if script.has_capability("SNMP | IF-MIB | HC"):
             g = self.hires.iter_oids
+            flag = False
         else:
             g = self.normal.iter_oids
-        for r in g(script, metric):
-            yield r
+            flag = True
+        for oid, type, scale, units, labels in g(script, metric):
+            yield oid, type, scale, f"{units}|0" if not flag else units, labels
 
     @classmethod
     def from_json(cls, data):
         for v in ("hires", "normal"):
             if v not in data:
-                raise ValueError("%s is required" % v)
+                raise ValueError(f"{v} is required")
         return HiresRule(hires=load_rule(data["hires"]), normal=load_rule(data["normal"]))
