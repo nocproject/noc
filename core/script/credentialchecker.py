@@ -289,7 +289,7 @@ class CredentialChecker(object):
             if status:
                 break
             if not status and not message:
-                message = "SNMP Timeout"
+                message = "Nothing value in MIB View"
         # self.logger.info(
         #     "Guessed community: %s, version: %d",
         #     config.snmp_ro,
@@ -343,6 +343,8 @@ class CredentialChecker(object):
             result, message = open_sync_rpc(
                 "activator", pool=self.pool, calling_service=self.calling_service
             ).__getattr__(version)(self.address, community, oid, 5, True)
+            if message.startswith("<"):
+                message = message.strip("<>")
             self.logger.info("Result: %s (%s)", result, message)
             return result is not None, message or ""
         except RPCError as e:
