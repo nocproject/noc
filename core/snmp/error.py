@@ -1,9 +1,12 @@
 # ----------------------------------------------------------------------
 # SNMP Error Codes
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2020 The NOC Project
+# Copyright (C) 2007-2022 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
+
+# Python modules
+import enum
 
 # No error occurred. This code is also used in all request PDUs,
 # since they have no error status to report.
@@ -63,6 +66,33 @@ BAD_COMMUNITY = -4
 END_OID_TREE = -5
 
 
+class SNMPErrorCode(enum.Enum):
+    NO_ERROR = 0
+    TOO_BIG = 1
+    NO_SUCH_NAME = 2
+    BAD_VALUE = 3
+    READ_ONLY = 4
+    GEN_ERR = 5
+    NO_ACCESS = 6
+    WRONG_TYPE = 7
+    WRONG_LENGTH = 8
+    WRONG_ENCODING = 9
+    WRONG_VALUE = 10
+    NO_CREATION = 11
+    INCONSISTENT_VALUE = 12
+    RESOURCE_UNAVAILABLE = 13
+    COMMIT_FAILED = 14
+    UNDO_FAILED = 15
+    AUTHORIZATION_ERROR = 16
+    NOT_WRITABLE = 17
+    INCONSISTENT_NAME = 18
+    TIMED_OUT = -1
+    UNREACHABLE = -2
+    BER_ERROR = -3
+    BAD_COMMUNITY = -4
+    END_OID_TREE = -5
+
+
 class SNMPError(Exception):
     def __init__(self, code, oid=None):
         super().__init__()
@@ -70,4 +100,8 @@ class SNMPError(Exception):
         self.oid = oid
 
     def __repr__(self):
-        return "<SNMPError code=%s oid=%s>" % (self.code, self.oid)
+        try:
+            name = SNMPErrorCode(self.code).name
+        except ValueError:
+            name = "UNKNOWN"
+        return f"<SNMPError code={self.code}({name}) oid={self.oid}>"
