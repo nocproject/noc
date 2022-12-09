@@ -157,7 +157,7 @@ class ActivatorAPI(JSONRPCAPI):
             self.logger.debug("SNMP GET %s %s returns %s", address, oid, result)
         except SNMPError as e:
             metrics["error", ("type", "snmp_v1_error")] += 1
-            result, message = None, str(e)
+            result, message = None, repr(e)
             self.logger.debug("SNMP GET %s %s returns error %s", address, oid, e)
         except Exception as e:
             result, message = None, str(e)
@@ -203,7 +203,7 @@ class ActivatorAPI(JSONRPCAPI):
             result = smart_text(result, errors="replace") if result else result
         except SNMPError as e:
             metrics["error", ("type", "snmp_v2_error")] += 1
-            result, message = None, str(e)
+            result, message = None, repr(e)
             self.logger.debug("SNMP GET %s %s returns error %s", address, oid, e)
         except Exception as e:
             result, message = None, str(e)
