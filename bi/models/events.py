@@ -102,4 +102,4 @@ class Events(Model):
         WHERE database = '{config.clickhouse.db}' AND table = 'events' AND name = 'repeat_hash'
         """
         )
-        return not (bool(c1) or bool(c2))
+        return not c2 and c1
