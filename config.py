@@ -893,6 +893,7 @@ class Config(BaseConfig):
         # DCS Client
         check_interval = SecondsParameter(default="20s")
         check_timeout = SecondsParameter(default="15s")
+        session_ttl = SecondsParameter(default="20s")
         # DataStream request limit
         ds_limit = IntParameter(default=1000)
 

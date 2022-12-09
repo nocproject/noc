@@ -103,6 +103,7 @@ class BaseService(object):
     # Use service based consul check timeout
     dcs_check_interval: Optional[int] = None
     dcs_check_timeout: Optional[int] = None
+    dcs_session_ttl: Optional[int] = None
 
     LOG_FORMAT = config.log_format
 
@@ -500,7 +501,7 @@ class BaseService(object):
             name = "%s-%s" % (self.name, config.pool)
         else:
             name = self.name
-        slot_number, total_slots = await self.dcs.acquire_slot(name, config.global_n_instances)
+        slot_number, total_slots = await self.dcs.acquire_slot(name, config.global_n_instances, session_ttl=self.dcs_session_ttl)
         if total_slots <= 0:
             self.die("Service misconfiguration detected: Invalid total_slots")
         return slot_number, total_slots

@@ -112,11 +112,12 @@ class DCSBase(object):
         """
         raise NotImplementedError()
 
-    async def acquire_slot(self, name, limit):
+    async def acquire_slot(self, name, limit, session_ttl: Optional[int] = None):
         """
         Acquire shard slot
         :param name: <service name>-<pool>
         :param limit: Configured limit
+        :param session_ttl: Session TTL (seconds)
         :return: (slot number, number of instances)
         """
         raise NotImplementedError()

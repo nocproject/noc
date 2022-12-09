@@ -252,6 +252,7 @@ class MetricsService(FastAPIService):
     use_router = True
     dcs_check_interval = global_config.metrics.check_interval
     dcs_check_timeout = global_config.metrics.check_timeout
+    dcs_session_ttl = global_config.metrics.session_ttl
 
     def __init__(self):
         super().__init__()

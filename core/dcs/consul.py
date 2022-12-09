@@ -142,7 +142,7 @@ class ConsulDCS(DCSBase):
             elif k == "release_after":
                 self.release_after = v
 
-    async def create_session(self):
+    async def create_session(self, session_ttl: Optional[int] = None):
         """
         Create consul session
         :return:
@@ -156,7 +156,7 @@ class ConsulDCS(DCSBase):
                     checks=checks,
                     behavior="delete",
                     lock_delay=self.DEFAULT_CONSUL_LOCK_DELAY,
-                    ttl=self.DEFAULT_CONSUL_SESSION_TTL,
+                    ttl=session_ttl or self.DEFAULT_CONSUL_SESSION_TTL,
                 )
                 break
             except ConsulRepeatableErrors:
@@ -164,7 +164,7 @@ class ConsulDCS(DCSBase):
                 continue
         self.logger.info("Session id: %s", self.session)
         self.keep_alive_task = PeriodicCallback(
-            self.keep_alive, self.DEFAULT_CONSUL_SESSION_TTL * 1000 / 2
+            self.keep_alive, (session_ttl or self.DEFAULT_CONSUL_SESSION_TTL) * 1000 / 2
         )
         self.keep_alive_task.start()
 
@@ -348,7 +348,7 @@ class ConsulDCS(DCSBase):
                 await asyncio.sleep(self.DEFAULT_CONSUL_RETRY_TIMEOUT)
                 continue
 
-    async def acquire_slot(self, name, limit):
+    async def acquire_slot(self, name, limit, session_ttl: Optional[int] = None):
         """
         Acquire shard slot
         :param name: <service name>-<pool>
@@ -356,13 +356,13 @@ class ConsulDCS(DCSBase):
         :return: (slot number, number of instances)
         """
         if not self.session:
-            await self.create_session()
+            await self.create_session(session_ttl=session_ttl)
         if self.total_slots is not None:
             return self.slot_number, self.total_slots
-        prefix = "%s/slots/%s" % (self.consul_prefix, name)
-        contender_path = "%s/%s" % (prefix, self.session)
+        prefix = f"{self.consul_prefix}/slots/{name}"
+        contender_path = f"{prefix}/{self.session}"
         contender_info = self.session
-        manifest_path = "%s/manifest" % prefix
+        manifest_path = f"{prefix}/manifest"
         self.logger.info("Writing contender slot info into %s", contender_path)
         while True:
             try:
