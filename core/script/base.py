@@ -842,6 +842,7 @@ class BaseScript(object, metaclass=BaseScriptMetaclass):
         :param ignore_errors:
         :param allow_empty_response: Allow empty output. If False - ignore prompt and wait output
         :param nowait:
+        :param labels:
         """
 
         def format_result(result):
@@ -871,7 +872,7 @@ class BaseScript(object, metaclass=BaseScriptMetaclass):
         # Encode submitted command
         submitted_cmd = smart_bytes(cmd, encoding=self.native_encoding) + command_submit
         # Run command
-        stream = self.get_cli_stream(labels=labels)
+        stream = self.get_cli_stream()
         if self.to_track:
             self.cli_tracked_command = cmd
         r = stream.execute(
@@ -881,6 +882,7 @@ class BaseScript(object, metaclass=BaseScriptMetaclass):
             cmd_stop=cmd_stop,
             ignore_errors=ignore_errors,
             allow_empty_response=allow_empty_response,
+            labels=labels,
         )
         if isinstance(r, bytes):
             r = smart_text(r, errors="ignore", encoding=self.native_encoding)
@@ -918,7 +920,7 @@ class BaseScript(object, metaclass=BaseScriptMetaclass):
                 r = r[len(cmd) :]
         return r
 
-    def get_cli_stream(self, labels=None):
+    def get_cli_stream(self):
         if self.parent:
             return self.root.get_cli_stream()
         if not self.cli_stream and self.session:
@@ -934,7 +936,7 @@ class BaseScript(object, metaclass=BaseScriptMetaclass):
         if not self.cli_stream:
             protocol = self.credentials.get("cli_protocol", "telnet")
             self.logger.debug("Open %s CLI", protocol)
-            self.cli_stream = get_handler(self.cli_protocols[protocol])(self, tos=self.tos, labels=labels)
+            self.cli_stream = get_handler(self.cli_protocols[protocol])(self, tos=self.tos)
             # Store to the sessions
             if self.session:
                 self.cli_session_store.put(self.session, self.cli_stream)

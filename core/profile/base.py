@@ -11,7 +11,7 @@ import functools
 import warnings
 
 # Third-party modules
-from typing import Dict, Callable, Union, Optional
+from typing import Dict, Callable, Union, Optional, List, Tuple
 
 # NOC modules
 from noc.core.ip import IPv4
@@ -1081,7 +1081,8 @@ class BaseProfile(object, metaclass=BaseProfileMetaclass):
         """
         Return dict of compiled regular expressions
         """
-        def get_commands(pattern_more):
+
+        def get_commands(pattern_more) -> List[Union[bytes, Dict[Tuple[str, ...], str]]]:
             commands = []
             for x in pattern_more:
                 c = x[1]

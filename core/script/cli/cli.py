@@ -51,10 +51,8 @@ class CLI(BaseCLI):
     class InvalidPagerCommand(Exception):
         pass
 
-    def __init__(self, script, tos=None, labels: Optional[Union[str, Set[str]]] = None):
+    def __init__(self, script, tos=None):
         super().__init__(script, tos)
-        labels = set() if labels is None else {labels} if isinstance(labels, str) else labels
-        self.labels = script.labels | labels
         self.motd = ""
         self.command = None
         self.prompt_stack = []
@@ -71,6 +69,8 @@ class CLI(BaseCLI):
         self.allow_empty_response = None
         self.native_encoding = self.script.native_encoding
         self.prompt_matched = False
+        self.script_labels = script.get_labels()
+        self.labels = None
         # State retries
         self.super_password_retries = self.profile.cli_retries_super_password
         self.cli_retries_unprivileged_mode = self.profile.cli_retries_unprivileged_mode
@@ -87,12 +87,18 @@ class CLI(BaseCLI):
         cmd_stop: Optional[bytes] = None,
         ignore_errors: bool = False,
         allow_empty_response: bool = True,
+        labels: Optional[Union[str, Set[str]]] = None,
     ) -> str:
         self.buffer = b""
         self.command = cmd
         self.error = None
         self.ignore_errors = ignore_errors
         self.allow_empty_response = allow_empty_response
+        # Labels
+        labels = labels or set()
+        if isinstance(labels, str):
+            labels = {labels}
+        self.labels = self.script_labels | labels
         if obj_parser:
             parser = functools.partial(
                 self.parse_object_stream, obj_parser, smart_bytes(cmd_next), smart_bytes(cmd_stop)
