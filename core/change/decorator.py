@@ -71,12 +71,15 @@ def _on_document_change(sender, document, created=False, *args, **kwargs):
         :param field_name:
         :return:
         """
-        ov = None
+        ov, key = None, None
         if hasattr(ov, "pk"):
             ov = str(ov.pk)
         elif hasattr(ov, "_instance"):
             # Embedded field
             ov = [str(x) for x in ov]
+        elif "." in field_name:
+            # Dict Field for key - extra_labels["sa"] = labels
+            field_name, key = field_name.split(".", 1)
         elif ov:
             ov = str(ov)
         nv = getattr(document, field_name)
@@ -85,6 +88,9 @@ def _on_document_change(sender, document, created=False, *args, **kwargs):
         elif hasattr(nv, "_instance"):
             # Embedded field
             nv = [str(x) for x in nv]
+        elif key:
+            # Dict Field for key
+            nv = nv.get(key)
         elif nv:
             nv = str(nv)
         if str(ov or None) == str(nv or None):
