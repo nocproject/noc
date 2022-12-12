@@ -89,8 +89,8 @@ class ProbeNode(BaseCDAGNode):
     def get_value(self, x: ValueType, ts: int, unit: str) -> Optional[ValueType]:
         flag = None
         if "|" in unit:
-            # <unit>,<flag>
-            unit, flag = unit.rsplit("|")
+            # <unit>|<flag>
+            unit, flag = unit.rsplit("|", 1)
             flag = int(flag)
         if "," in unit:
             # <scale>,<unit>
