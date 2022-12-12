@@ -1,7 +1,7 @@
 # ---------------------------------------------------------------------
 # DLink.DxS.get_interfaces
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2021 The NOC Project
+# Copyright (C) 2007-2022 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -9,13 +9,12 @@
 import re
 
 # NOC modules
-from noc.core.script.base import BaseScript
+from noc.sa.profiles.Generic.get_interfaces import Script as BaseScript
 from noc.sa.interfaces.igetinterfaces import IGetInterfaces
 from noc.core.ip import IPv4
 from noc.core.validators import is_int
 from noc.sa.profiles.DLink.DxS.profile import DxS_L2, DGS3120, DGS3420, DGS3620
 from noc.core.mib import mib
-from noc.core.mac import MAC
 from noc.core.snmp.render import render_bin
 
 
@@ -167,6 +166,11 @@ class Script(BaseScript):
         161: "aggregated",  # ieee8023adLag
     }
 
+    def get_max_repetitions(self):
+        if self.is_dgs:
+            return 20
+        return self.MAX_REPETITIONS
+
     def get_iftable(self, oid, transform=True):
         if "::" in oid:
             oid = mib[oid]
@@ -185,83 +189,6 @@ class Script(BaseScript):
             s = r.get(ifindex)
             if s:
                 s[name] = f(v)
-
-    def get_ip_ifaces(self):
-        ipAdEntIfIndex = self.get_iftable(mib["RFC1213-MIB::ipAdEntIfIndex"], False)
-        ipAdEntNetMask = self.get_iftable(mib["RFC1213-MIB::ipAdEntNetMask"], False)
-        ip_iface = {l: ".".join(o.rsplit(".")[-4:]) for o, l in ipAdEntIfIndex}
-        ip_mask = {".".join(o.rsplit(".")[-4:]): l for o, l in ipAdEntNetMask}
-
-        r = {}
-        for ip in ip_iface:
-            r[ip] = (ip_iface[ip], ip_mask[ip_iface[ip]])
-        return r
-
-    def execute_snmp(self, interface=None, last_ifname=None):
-        #
-        # TODO: vlans, portchannel
-        # http://xcme.blogspot.com/2014/10/vlan-snmp.html
-        #
-        index = self.scripts.get_ifindexes()
-        ifaces = {index[i]: {"interface": i} for i in index}
-        self.apply_table(ifaces, "IF-MIB::ifAdminStatus", "admin_status", lambda x: x == 1)
-        self.apply_table(ifaces, "IF-MIB::ifOperStatus", "oper_status", lambda x: x == 1)
-        if self.is_bad_ifmib_snmp:
-            self.apply_table(ifaces, "LLDP-MIB::lldpLocPortId", "mac_address")
-        else:
-            self.apply_table(ifaces, "IF-MIB::ifPhysAddress", "mac_address")
-        self.apply_table(ifaces, "IF-MIB::ifType", "type")
-        self.apply_table(ifaces, "IF-MIB::ifMtu", "mtu")
-        self.apply_table(ifaces, "IF-MIB::ifAlias", "description")
-        ip_ifaces = self.get_ip_ifaces()
-
-        r = []
-        for line in ifaces:
-            iface = ifaces[line]
-            if last_ifname and iface["interface"] not in last_ifname:
-                continue
-            if iface.get("type") is not None:
-                i_type = self.INTERFACE_TYPES.get(iface["type"], "other")
-            else:
-                # Some old switches don't return snmp index
-                # for non-physical interfaces
-                if iface["interface"].startswith("po"):
-                    i_type = "aggregated"
-                elif iface["interface"] == "System":
-                    i_type = "SVI"
-                else:
-                    raise self.NotSupportedError()
-            i = {
-                "name": iface["interface"],
-                "type": i_type,
-                "admin_status": iface.get("admin_status", False),
-                "oper_status": iface.get("oper_status", False),
-                "snmp_ifindex": line,
-                "subinterfaces": [
-                    {
-                        "name": iface["interface"],
-                        "enabled_afi": ["BRIDGE"],
-                        "admin_status": iface.get("admin_status", False),
-                        "oper_status": iface.get("oper_status", False),
-                        "snmp_ifindex": line,
-                    }
-                ],
-            }
-            mtu = iface.get("mtu", 0)
-            if mtu:
-                i["subinterfaces"][0]["mtu"] = mtu
-            description = iface.get("description", "").strip()
-            if description:
-                i["description"] = description
-                i["subinterfaces"][0]["description"] = description
-            if line in ip_ifaces:
-                i["subinterfaces"][0]["ipv4_addresses"] = [IPv4(*ip_ifaces[line])]
-                i["subinterfaces"][0]["enabled_afi"] = ["IPv4"]
-            if iface.get("mac_address") is not None:
-                i["mac"] = MAC(iface["mac_address"])
-                i["subinterfaces"][0]["mac"] = MAC(iface["mac_address"])
-            r += [i]
-        return [{"interfaces": r}]
 
     def parse_ctp(self, s):
         match = self.rx_ctp.search(s)
