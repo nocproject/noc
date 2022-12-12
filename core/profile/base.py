@@ -11,7 +11,7 @@ import functools
 import warnings
 
 # Third-party modules
-from typing import Dict, Callable, Union, Optional
+from typing import Dict, Callable, Union, Optional, List, Tuple
 
 # NOC modules
 from noc.core.ip import IPv4
@@ -75,7 +75,7 @@ class BaseProfileMetaclass(type):
                     "Support for text values will be removed in NOC 20.2" % (n.name, pattern)
                 )
                 pattern = smart_bytes(pattern)
-            if not isinstance(cmd, bytes):
+            if isinstance(cmd, str):
                 warnings.warn(
                     "%s: 'pattern_more' %r command must be of binary type. "
                     "Support for text values will be removed in NOC 20.2" % (n.name, cmd)
@@ -1081,6 +1081,25 @@ class BaseProfile(object, metaclass=BaseProfileMetaclass):
         """
         Return dict of compiled regular expressions
         """
+
+        def get_commands(pattern_more) -> List[Union[bytes, Dict[Tuple[str, ...], str]]]:
+            commands = []
+            for x in pattern_more:
+                c = x[1]
+                if isinstance(c, bytes):
+                    commands += [c]
+                elif isinstance(c, dict):
+                    cnew = {}
+                    for ck, cv in c.items():
+                        if isinstance(ck, str):
+                            cnew[(ck,)] = cv
+                        elif isinstance(ck, tuple):
+                            cnew[ck] = cv
+                        elif ck is None:
+                            cnew[None] = cv
+                    commands += [cnew]
+            return commands
+
         patterns = {
             "username": re.compile(cls.pattern_username, re.DOTALL | re.MULTILINE),
             "password": re.compile(cls.pattern_password, re.DOTALL | re.MULTILINE),
@@ -1098,7 +1117,7 @@ class BaseProfile(object, metaclass=BaseProfileMetaclass):
             patterns["setup"] = re.compile(cls.pattern_start_setup, re.DOTALL | re.MULTILINE)
         # .more_patterns is a list of (pattern, command)
         more_patterns = [x[0] for x in cls.pattern_more]
-        patterns["more_commands"] = [x[1] for x in cls.pattern_more]
+        patterns["more_commands"] = get_commands(cls.pattern_more)
         # Merge pager patterns
         patterns["pager"] = re.compile(
             b"|".join(b"(%s)" % p for p in more_patterns), re.DOTALL | re.MULTILINE

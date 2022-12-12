@@ -10,7 +10,7 @@ import re
 import functools
 from functools import reduce
 import asyncio
-from typing import Optional, Any, Type, Callable, Dict
+from typing import Optional, Any, Type, Callable, Dict, Set, Union
 
 # NOC modules
 from noc.core.text import replace_re_group
@@ -48,6 +48,9 @@ class CLI(BaseCLI):
     class InvalidPagerPattern(Exception):
         pass
 
+    class InvalidPagerCommand(Exception):
+        pass
+
     def __init__(self, script, tos=None):
         super().__init__(script, tos)
         self.motd = ""
@@ -66,6 +69,8 @@ class CLI(BaseCLI):
         self.allow_empty_response = None
         self.native_encoding = self.script.native_encoding
         self.prompt_matched = False
+        self.script_labels = script.get_labels()
+        self.labels = None
         # State retries
         self.super_password_retries = self.profile.cli_retries_super_password
         self.cli_retries_unprivileged_mode = self.profile.cli_retries_unprivileged_mode
@@ -82,12 +87,18 @@ class CLI(BaseCLI):
         cmd_stop: Optional[bytes] = None,
         ignore_errors: bool = False,
         allow_empty_response: bool = True,
+        labels: Optional[Union[str, Set[str]]] = None,
     ) -> str:
         self.buffer = b""
         self.command = cmd
         self.error = None
         self.ignore_errors = ignore_errors
         self.allow_empty_response = allow_empty_response
+        # Labels
+        labels = labels or set()
+        if isinstance(labels, str):
+            labels = {labels}
+        self.labels = self.script_labels | labels
         if obj_parser:
             parser = functools.partial(
                 self.parse_object_stream, obj_parser, smart_bytes(cmd_next), smart_bytes(cmd_stop)
@@ -325,8 +336,24 @@ class CLI(BaseCLI):
         for p, c in self.patterns["more_patterns_commands"]:
             if p.search(pg):
                 self.collected_data += [data]
-                await self.send(c)
-                return
+                if isinstance(c, bytes):
+                    await self.send(c)
+                    return
+                elif isinstance(c, dict):
+                    # handling case if command is dict
+                    default_command = c.get(None)
+                    for ck, cv in c.items():
+                        if isinstance(ck, tuple):
+                            ck = set(ck)
+                            if ck & self.labels == ck:
+                                await self.send(cv)
+                                return
+                    if default_command:
+                        await self.send(default_command)
+                        return
+                    raise self.InvalidPagerCommand("Absent required None key")
+                else:
+                    raise self.InvalidPagerCommand(c)
         raise self.InvalidPagerPattern(pg)
 
     def expect(
