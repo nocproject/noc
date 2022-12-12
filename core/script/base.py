@@ -12,7 +12,7 @@ import itertools
 import operator
 from functools import reduce
 from time import perf_counter
-from typing import Any, Optional
+from typing import Any, Optional, Set, Union
 
 # NOC modules
 from noc.core.log import PrefixLoggerAdapter
@@ -153,6 +153,7 @@ class BaseScript(object, metaclass=BaseScriptMetaclass):
         session=None,
         session_idle_timeout=None,
         streaming=None,
+        labels: Optional[Set[str]] = None,
     ):
         self.service = service
         self.tos = config.activator.tos
@@ -188,6 +189,7 @@ class BaseScript(object, metaclass=BaseScriptMetaclass):
         self.session_idle_timeout = session_idle_timeout or self.SESSION_IDLE_TIMEOUT
         #
         self.streaming = streaming
+        self.labels = labels or set()
         # Cache CLI and SNMP calls, if set
         self.is_cached = False
         # Suitable only when self.parent is None.
@@ -821,6 +823,7 @@ class BaseScript(object, metaclass=BaseScriptMetaclass):
         obj_parser: Any = None,
         cmd_next: Any = None,
         cmd_stop: Any = None,
+        labels: Optional[Union[str, Set[str]]] = None,
     ) -> str:
         """
         Execute CLI command and return result. Initiate cli session
@@ -839,6 +842,7 @@ class BaseScript(object, metaclass=BaseScriptMetaclass):
         :param ignore_errors:
         :param allow_empty_response: Allow empty output. If False - ignore prompt and wait output
         :param nowait:
+        :param labels:
         """
 
         def format_result(result):
@@ -878,6 +882,7 @@ class BaseScript(object, metaclass=BaseScriptMetaclass):
             cmd_stop=cmd_stop,
             ignore_errors=ignore_errors,
             allow_empty_response=allow_empty_response,
+            labels=labels,
         )
         if isinstance(r, bytes):
             r = smart_text(r, errors="ignore", encoding=self.native_encoding)
@@ -1227,6 +1232,18 @@ class BaseScript(object, metaclass=BaseScriptMetaclass):
     @property
     def is_beefed(self):
         return self.credentials.get("cli_protocol") == "beef"
+
+    def get_labels(self) -> Set[str]:
+        return self.labels
+
+    def add_label(self, label: str) -> None:
+        self.labels.add(label)
+
+    def delete_label(self, label: str) -> None:
+        try:
+            self.labels.remove(label)
+        except KeyError:
+            self.logger.warning("Can't remove a label '%s' from labels", label)
 
 
 class ScriptsHub(object):

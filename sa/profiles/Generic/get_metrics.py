@@ -316,7 +316,7 @@ class Script(BaseScript, metaclass=MetricScriptBase):
         # Collected metric ids
         self.seen_ids = set()
         # get_labels_hash(metric type, labels) -> metric config
-        self.labels: Dict[str, List[MetricConfig]] = {}
+        self.metric_labels: Dict[str, List[MetricConfig]] = {}
         #
         self.sla_metrics: Dict[Tuple[str, str], int] = {}
         # metric type -> [metric config]
@@ -415,7 +415,7 @@ class Script(BaseScript, metaclass=MetricScriptBase):
         else:
             raise ValueError("Parameter 'collected' or 'metrics' required")
         # Split by metric types
-        self.labels = {self.get_labels_hash(m.metric, m.labels): m for m in object_metrics}
+        self.metric_labels = {self.get_labels_hash(m.metric, m.labels): m for m in object_metrics}
         for m in object_metrics:
             self.metric_configs[m.metric] += [m]
         # Process metrics collection
@@ -708,7 +708,7 @@ class Script(BaseScript, metaclass=MetricScriptBase):
                 metric = id[0]
             if not labels:
                 labels = id[1]
-            mc = self.labels.get(self.get_labels_hash(*id))
+            mc = self.metric_labels.get(self.get_labels_hash(*id))
             if not mc:
                 # Not requested, ignoring
                 self.logger.info("Not requesting, ignoring")
