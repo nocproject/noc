@@ -44,6 +44,7 @@ from noc.core.error import (
     ERR_CLI_LOW_PRIVILEGES,
     ERR_CLI_SSH_PROTOCOL_ERROR,
     ERR_CLI_CONNECTION_REFUSED,
+    ERR_CLI_PASSWORD_TIMEOUT,
 )
 from noc.core.span import Span
 from noc.core.cache.base import cache
@@ -502,10 +503,12 @@ class DiscoveryCheck(object):
         ERR_CLI_LOW_PRIVILEGES,
         ERR_CLI_CONNECTION_REFUSED,
         ERR_CLI_SSH_PROTOCOL_ERROR,
+        ERR_CLI_PASSWORD_TIMEOUT,
     }
     # Error -> Alarm class mappings
     error_map = {
         ERR_CLI_AUTH_FAILED: "Discovery | Error | Auth Failed",
+        ERR_CLI_PASSWORD_TIMEOUT: "Discovery | Error | Auth Failed",
         ERR_CLI_NO_SUPER_COMMAND: "Discovery | Error | No Super",
         ERR_CLI_LOW_PRIVILEGES: "Discovery | Error | Low Privileges",
         ERR_CLI_CONNECTION_REFUSED: "Discovery | Error | Connection Refused",
