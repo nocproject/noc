@@ -46,14 +46,14 @@ class Command(BaseCommand):
 
         # Configured streams
         for stream in STREAMS:
-            if stream == "ch":
+            if stream.name == "ch":
                 continue
             if not stream.sharded:
                 yield stream.name
                 continue
             # Pooled streams
             for pool in Pool.objects.all():
-                yield f"{stream}.{pool.name}"
+                yield f"{stream.name}.{pool.name}"
         # Metric scopes
         for scope in MetricScope.objects.all():
             yield f"ch.{scope.table_name}"
