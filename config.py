@@ -562,7 +562,6 @@ class Config(BaseConfig):
         max_breadcrumbs = IntParameter(min=1, max=100, default=10)
 
     class msgstream(ConfigSection):
-
         class events(ConfigSection):
             retention_max_age = SecondsParameter(
                 default="24h",
