@@ -16,3 +16,7 @@ class Profile(BaseProfile):
     pattern_prompt = rb"^(?P<hostname>\S+)>"
     # command_more = "a"
     # config_volatile = ["^%.*?$"]
+
+    @classmethod
+    def get_interface_type(cls, name):
+        return "physical"
