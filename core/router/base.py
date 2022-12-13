@@ -248,11 +248,14 @@ class Router(object):
                 # Determine sharding channel
                 sharding_key = int(headers.get(MX_SHARDING_KEY, b"0"))
                 partitions = self.stream_partitions.get(stream)
-                if not partitions:
+                if partitions is None:
                     # Request amount of partitions
                     sc = get_stream(stream)
                     partitions = sc.get_partitions()
                     self.stream_partitions[stream] = partitions
+                if not partitions:
+                    logger.info("[%s] No partition for stream: %s. Skipping...", msg, stream)
+                    continue
                 partition = sharding_key % partitions
                 # Single message may be transmuted in zero or more messages
                 try:
