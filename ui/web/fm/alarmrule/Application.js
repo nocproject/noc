@@ -73,6 +73,16 @@ Ext.define("NOC.fm.alarmrule.Application", {
                             width: 50
                         },
                         {
+                            text: __("Maximum alarms"),
+                            dataIndex: "max_threshold",
+                            editor: {
+                                xtype: "numberfield"
+                            },
+                            minValue: 0,
+                            defaultValue: 1,
+                            width: 50
+                        },
+                        {
                             text: __("Window (sec.)"),
                             dataIndex: "window",
                             editor: {

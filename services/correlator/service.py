@@ -945,7 +945,7 @@ class CorrelatorService(FastAPIService):
         source: Optional[str] = None,
     ) -> None:
         """
-        Clear alarm by reference
+        Clear alarm by id
         """
         ts = ts or datetime.datetime.now()
         # Get alarm
@@ -1267,7 +1267,7 @@ class CorrelatorService(FastAPIService):
                     vars={"name": group.title},
                     reference=group.reference,
                     labels=group.labels,
-                    min_group_size=1,
+                    min_group_size=group.max_threshold,
                 )
                 if g_alarm:
                     # Update cache
