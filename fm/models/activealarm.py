@@ -111,6 +111,8 @@ class ActiveAlarm(Document):
     root = ObjectIdField(required=False)
     # Group alarm references
     groups = ListField(BinaryField())
+    # Minimal group size
+    min_group_size = IntField(min_value=1)
     # Groups waiting to min_threshold quorum
     deferred_groups = ListField(BinaryField())
     # Escalated TT ID in form
