@@ -25,6 +25,7 @@ from noc.core.http.client import fetch
 from noc.core.perf import metrics
 from noc.config import config
 from noc.core.comp import smart_text
+from noc.core.error import NOCError
 from ..models.streaming import StreamingConfig
 
 BULK_PING_TIMEOUT = 5
@@ -110,6 +111,9 @@ class ActivatorAPI(JSONRPCAPI):
         except script.ScriptError as e:
             metrics["error", ("type", "script_error")] += 1
             raise APIError("Script error: %s" % e.__doc__)
+        except SNMPError as e:
+            metrics["error", ("type", "snmp_error")] += 1
+            raise NOCError(msg=repr(e), code=e.code)
         if not streaming or not result:
             return result
         self.service.publish(
