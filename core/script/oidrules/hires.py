@@ -1,7 +1,7 @@
 # ----------------------------------------------------------------------
 # HiresRule
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2018 The NOC Project
+# Copyright (C) 2007-2022 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -22,16 +22,18 @@ class HiresRule(object):
         self.normal = normal
 
     def iter_oids(self, script, metric):
+        flag = False
         if script.has_capability("SNMP | IF-MIB | HC"):
             g = self.hires.iter_oids
         else:
             g = self.normal.iter_oids
-        for r in g(script, metric):
-            yield r
+            flag = True
+        for oid, type, scale, units, labels in g(script, metric):
+            yield oid, type, scale, f"{units}|1" if flag else units, labels
 
     @classmethod
     def from_json(cls, data):
         for v in ("hires", "normal"):
             if v not in data:
-                raise ValueError("%s is required" % v)
+                raise ValueError(f"{v} is required")
         return HiresRule(hires=load_rule(data["hires"]), normal=load_rule(data["normal"]))
