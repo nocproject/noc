@@ -31,6 +31,7 @@ logger = logging.getLogger(__name__)
 class ProbeNodeState(BaseModel):
     lt: Optional[int] = None
     lv: Optional[ValueType] = None
+    flag: Optional[int] = None
 
 
 class ProbeNodeConfig(BaseModel):
@@ -86,6 +87,11 @@ class ProbeNode(BaseCDAGNode):
         return v * (base**exp) * self.base**-self.exp
 
     def get_value(self, x: ValueType, ts: int, unit: str) -> Optional[ValueType]:
+        flag = None
+        if "|" in unit:
+            # <unit>|<flag>
+            unit, flag = unit.rsplit("|", 1)
+            flag = int(flag)
         if "," in unit:
             # <scale>,<unit>
             scale, unit = unit.split(",")
@@ -118,6 +124,12 @@ class ProbeNode(BaseCDAGNode):
         if ts <= self.state.lt:
             # Timer stepback, reset state and exit
             self.set_state(None, None)
+            return None
+        if flag != self.state.flag:
+            # Flag is not equal, values is not compared
+            logger.info("[%s] Reset flag detected. Skipping value: %s|%s", self.node_id, x, ts)
+            self.set_state(None, None)
+            self.state.flag = flag
             return None
         elif (ts - self.state.lt) < NS:
             # Too less timestamp different, Division by zero exception
