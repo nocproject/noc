@@ -22,7 +22,7 @@ from noc.core.service.loader import get_service
 from noc.core.comp import DEFAULT_ENCODING
 from noc.core.perf import metrics
 from noc.core.ioloop.util import run_sync
-from noc.core.liftbridge.base import STREAM_CONFIG
+from noc.core.msgstream.config import get_stream
 from .route import Route, DefaultNotificationRoute
 from .action import DROP, DUMP
 
@@ -248,11 +248,14 @@ class Router(object):
                 # Determine sharding channel
                 sharding_key = int(headers.get(MX_SHARDING_KEY, b"0"))
                 partitions = self.stream_partitions.get(stream)
-                if not partitions:
+                if partitions is None:
                     # Request amount of partitions
-                    sc = STREAM_CONFIG[stream]
+                    sc = get_stream(stream)
                     partitions = sc.get_partitions()
                     self.stream_partitions[stream] = partitions
+                if not partitions:
+                    logger.info("[%s] No partition for stream: %s. Skipping...", msg, stream)
+                    continue
                 partition = sharding_key % partitions
                 # Single message may be transmuted in zero or more messages
                 try:

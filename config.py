@@ -369,79 +369,6 @@ class Config(BaseConfig):
         compression_threshold = IntParameter(default=524288)
         compression_method = StringParameter(choices=["", "zlib", "lzma"], default="zlib")
         enable_http_proxy = BooleanParameter(default=False)
-        #  mx, kafkasender, events, dispose
-        stream_events_retention_max_age = SecondsParameter(
-            default="24h",
-            help="FM events stream retention interval. If 0 use Liftbrdige setting value",
-        )
-        stream_events_retention_max_bytes = BytesParameter(
-            default=0,
-            help="FM events stream retention size (in bytes). If 0 use Liftbrdige setting value",
-        )
-        stream_events_segment_max_age = SecondsParameter(
-            default="1h",
-            help="FM events stream segment interval. Must be less retention age. If 0 use Liftbrdige setting value",
-        )
-        stream_events_segment_max_bytes = BytesParameter(
-            default=0,
-            help="FM events stream segment size. Must be less retention size. If 0 use Liftbrdige setting value",
-        )
-        stream_events_auto_pause_time = SecondsParameter(
-            default=0, help="FM events stream pause time. If 0 use Liftbrdige setting value"
-        )
-        stream_events_auto_pause_disable_if_subscribers = BooleanParameter(default=False)
-        stream_dispose_retention_max_age = SecondsParameter(
-            default="24h",
-            help="FM alarms stream retention interval. If 0 use Liftbrdige setting value",
-        )
-        stream_dispose_retention_max_bytes = BytesParameter(
-            default=0,
-            help="FM alarms stream retention size (in bytes). If 0 use Liftbrdige setting value",
-        )
-        stream_dispose_segment_max_age = SecondsParameter(
-            default="1h",
-            help="FM alarms stream segment interval. Must be less retention age. If 0 use Liftbrdige setting value",
-        )
-        stream_dispose_segment_max_bytes = BytesParameter(
-            default=0,
-            help="FM alarms stream segment size. Must be less retention size. If 0 use Liftbrdige setting value",
-        )
-        stream_dispose_auto_pause_time = SecondsParameter(
-            default=0, help="FM alarms stream pause time. If 0 use Liftbrdige setting value"
-        )
-        stream_dispose_auto_pause_disable_if_subscribers = BooleanParameter(default=False)
-        stream_message_retention_max_age = SecondsParameter(default="1h")
-        stream_message_retention_max_bytes = BytesParameter(default=0)
-        stream_message_segment_max_age = SecondsParameter(default="30M")
-        stream_message_segment_max_bytes = BytesParameter(default=0)
-        stream_message_auto_pause_time = SecondsParameter(default=0)
-        stream_message_auto_pause_disable_if_subscribers = BooleanParameter(default=False)
-        stream_kafkasender_retention_max_age = SecondsParameter(default="1h")
-        stream_kafkasender_retention_max_bytes = BytesParameter(default=0)
-        stream_kafkasender_segment_max_age = SecondsParameter(default="30M")
-        stream_kafkasender_segment_max_bytes = BytesParameter(default=0)
-        stream_kafkasender_auto_pause_time = SecondsParameter(default=0)
-        stream_kafkasender_auto_pause_disable_if_subscribers = BooleanParameter(default=False)
-        stream_ch_retention_max_age = SecondsParameter(default="1h")
-        stream_ch_retention_max_bytes = BytesParameter(default="100M")
-        stream_ch_segment_max_age = SecondsParameter(default="30M")
-        stream_ch_segment_max_bytes = BytesParameter(default="50M")
-        stream_ch_auto_pause_time = SecondsParameter(default=0)
-        stream_ch_auto_pause_disable_if_subscribers = BooleanParameter(default=False)
-        stream_ch_replication_factor = IntParameter(
-            default=1, help="Replicaton factor for clickhouse streams"
-        )
-        stream_metrics_retention_max_age = SecondsParameter(default="1h")
-        stream_metrics_retention_max_bytes = BytesParameter(default=0)
-        stream_metrics_segment_max_age = SecondsParameter(default="30M")
-        stream_metrics_segment_max_bytes = BytesParameter(default=0)
-        stream_metrics_auto_pause_time = SecondsParameter(default=0)
-        stream_metrics_auto_pause_disable_if_subscribers = BooleanParameter(default=False)
-        stream_jobs_retention_max_age = SecondsParameter(default="24h")
-        stream_jobs_retention_max_bytes = BytesParameter(default=0)
-        stream_jobs_segment_max_age = SecondsParameter(default="1h")
-        stream_jobs_segment_max_bytes = BytesParameter(default=0)
-        stream_jobs_auto_pause_time = SecondsParameter(default=0)
         metrics_send_delay = FloatParameter(default=0.25)
 
     listen = StringParameter(default="auto:0")
@@ -633,6 +560,93 @@ class Config(BaseConfig):
         default_integrations = BooleanParameter(default=False)
         debug = BooleanParameter(default=False)
         max_breadcrumbs = IntParameter(min=1, max=100, default=10)
+
+    class msgstream(ConfigSection):
+        class events(ConfigSection):
+            retention_max_age = SecondsParameter(
+                default="24h",
+                help="FM events stream retention interval. If 0 use Liftbrdige setting value",
+            )
+            retention_max_bytes = BytesParameter(
+                default=0,
+                help="FM events stream retention size (in bytes). If 0 use Liftbrdige setting value",
+            )
+            segment_max_age = SecondsParameter(
+                default="1h",
+                help="FM events stream segment interval. Must be less retention age. If 0 use Liftbrdige setting value",
+            )
+            segment_max_bytes = BytesParameter(
+                default=0,
+                help="FM events stream segment size. Must be less retention size. If 0 use Liftbrdige setting value",
+            )
+            auto_pause_time = SecondsParameter(
+                default=0, help="FM events stream pause time. If 0 use Liftbrdige setting value"
+            )
+            auto_pause_disable_if_subscribers = BooleanParameter(default=False)
+
+        class dispose(ConfigSection):
+            retention_max_age = SecondsParameter(
+                default="24h",
+                help="FM alarms stream retention interval. If 0 use Liftbrdige setting value",
+            )
+            retention_max_bytes = BytesParameter(
+                default=0,
+                help="FM alarms stream retention size (in bytes). If 0 use Liftbrdige setting value",
+            )
+            segment_max_age = SecondsParameter(
+                default="1h",
+                help="FM alarms stream segment interval. Must be less retention age. If 0 use Liftbrdige setting value",
+            )
+            segment_max_bytes = BytesParameter(
+                default=0,
+                help="FM alarms stream segment size. Must be less retention size. If 0 use Liftbrdige setting value",
+            )
+            auto_pause_time = SecondsParameter(
+                default=0, help="FM alarms stream pause time. If 0 use Liftbrdige setting value"
+            )
+            auto_pause_disable_if_subscribers = BooleanParameter(default=False)
+
+        class message(ConfigSection):
+            retention_max_age = SecondsParameter(default="1h")
+            retention_max_bytes = BytesParameter(default=0)
+            segment_max_age = SecondsParameter(default="30M")
+            segment_max_bytes = BytesParameter(default=0)
+            auto_pause_time = SecondsParameter(default=0)
+            auto_pause_disable_if_subscribers = BooleanParameter(default=False)
+
+        class ch(ConfigSection):
+            retention_max_age = SecondsParameter(default="1h")
+            retention_max_bytes = BytesParameter(default="100M")
+            segment_max_age = SecondsParameter(default="30M")
+            segment_max_bytes = BytesParameter(default="50M")
+            auto_pause_time = SecondsParameter(default=0)
+            auto_pause_disable_if_subscribers = BooleanParameter(default=False)
+            replication_factor = IntParameter(
+                default=1, help="Replicaton factor for clickhouse streams"
+            )
+
+        class kafkasender(ConfigSection):
+            retention_max_age = SecondsParameter(default="1h")
+            retention_max_bytes = BytesParameter(default=0)
+            segment_max_age = SecondsParameter(default="30M")
+            segment_max_bytes = BytesParameter(default=0)
+            auto_pause_time = SecondsParameter(default=0)
+            auto_pause_disable_if_subscribers = BooleanParameter(default=False)
+
+        class metrics(ConfigSection):
+            retention_max_age = SecondsParameter(default="1h")
+            retention_max_bytes = BytesParameter(default=0)
+            segment_max_age = SecondsParameter(default="30M")
+            segment_max_bytes = BytesParameter(default=0)
+            auto_pause_time = SecondsParameter(default=0)
+            auto_pause_disable_if_subscribers = BooleanParameter(default=False)
+
+        class jobs(ConfigSection):
+            retention_max_age = SecondsParameter(default="24h")
+            retention_max_bytes = BytesParameter(default=0)
+            segment_max_age = SecondsParameter(default="1h")
+            segment_max_bytes = BytesParameter(default=0)
+            auto_pause_time = SecondsParameter(default=0)
 
     class syslogcollector(ConfigSection):
         listen = StringParameter(default="0.0.0.0:514")
