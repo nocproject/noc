@@ -10,11 +10,8 @@ from typing import Iterable
 
 # NOC modules
 from noc.core.management.base import BaseCommand
-from noc.core.liftbridge.base import (
-    LiftBridgeClient,
-    Metadata,
-    STREAM_CONFIG,
-)
+from noc.core.msgstream.config import STREAMS
+from noc.core.liftbridge.base import LiftBridgeClient
 from noc.core.mongo.connection import connect
 from noc.core.ioloop.util import run_sync
 from noc.core.clickhouse.loader import loader as bi_loader
@@ -44,26 +41,19 @@ class Command(BaseCommand):
         else:
             self.print("OK")
 
-    def get_meta(self) -> Metadata:
-        async def get_meta() -> Metadata:
-            async with LiftBridgeClient() as client:
-                return await client.fetch_metadata()
-
-        return run_sync(get_meta)
-
     def iter_streams(self) -> Iterable[str]:
         connect()
 
         # Configured streams
-        for stream in STREAM_CONFIG:
-            if stream == "ch":
+        for stream in STREAMS:
+            if stream.name == "ch":
                 continue
-            if not STREAM_CONFIG[stream].pooled:
-                yield stream
+            if not stream.sharded:
+                yield stream.name
                 continue
             # Pooled streams
             for pool in Pool.objects.all():
-                yield f"{stream}.{pool.name}"
+                yield f"{stream.name}.{pool.name}"
         # Metric scopes
         for scope in MetricScope.objects.all():
             yield f"ch.{scope.table_name}"
