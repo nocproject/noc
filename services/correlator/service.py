@@ -391,6 +391,7 @@ class CorrelatorService(FastAPIService):
         remote_id: Optional[str] = None,
         groups: Optional[List[GroupItem]] = None,
         labels: Optional[List[str]] = None,
+        min_group_size: Optional[int] = None,
     ) -> Optional[ActiveAlarm]:
         """
         Raise alarm
@@ -404,6 +405,7 @@ class CorrelatorService(FastAPIService):
         :param remote_id:
         :param groups:
         :param labels:
+        :param min_group_size: For Group alarm, minimal count alarm on it
         :returns: Alarm, if created, None otherwise
         """
         scope_label = str(event.id) if event else "DIRECT"
@@ -464,6 +466,7 @@ class CorrelatorService(FastAPIService):
             ],
             opening_event=event.id if event else None,
             labels=labels,
+            min_group_size=min_group_size,
             remote_system=remote_system,
             remote_id=remote_id,
         )
@@ -942,7 +945,7 @@ class CorrelatorService(FastAPIService):
         source: Optional[str] = None,
     ) -> None:
         """
-        Clear alarm by reference
+        Clear alarm by id
         """
         ts = ts or datetime.datetime.now()
         # Get alarm
@@ -1264,6 +1267,7 @@ class CorrelatorService(FastAPIService):
                     vars={"name": group.title},
                     reference=group.reference,
                     labels=group.labels,
+                    min_group_size=group.max_threshold,
                 )
                 if g_alarm:
                     # Update cache
@@ -1285,7 +1289,9 @@ class CorrelatorService(FastAPIService):
         """
         # Get groups summary
         r: Dict[bytes, int] = {}
-        for doc in ActiveAlarm._get_collection().aggregate(
+        group_settings: Dict[bytes, int] = {}
+        coll = ActiveAlarm._get_collection()
+        for doc in coll.aggregate(
             [
                 # Filter all active alarms in the selected groups
                 {"$match": {"groups": {"$in": groups}}},
@@ -1298,11 +1304,23 @@ class CorrelatorService(FastAPIService):
             ]
         ):
             r[doc["_id"]] = doc["n"]
+        # Group Settings
+        for doc in coll.find(
+            # Filter all active alarms in the selected groups
+            {"reference": {"$in": groups}},
+            {"reference": 1, "min_group_size": 1},
+        ):
+            group_settings[doc["reference"]] = doc.get("min_group_size", 0)
         left: List[bytes] = []
         for ref in groups:
-            if r.get(ref, 0) == 0:
-                self.logger.info("Clear empty group %r", ref)
+            self.logger.debug("[%s] Check group size: %s", ref, group_settings.get(ref, 0))
+            if r.get(ref, 0) <= group_settings.get(ref, 0):
+                self.logger.info(
+                    "Clear empty group %r, minimal size: %s", ref, group_settings.get(ref, 0)
+                )
                 await self.clear_by_reference(ref, ts=ts)
+                coll.update_many({"groups": {"$in": [ref]}}, {"$pull": {"groups": {"$in": [ref]}}})
+                # @todo Update datastream ?
             else:
                 left.append(ref)
         if left:
