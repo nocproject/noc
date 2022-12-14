@@ -8,7 +8,7 @@
 # Python modules
 import operator
 from threading import Lock
-from typing import Optional
+from typing import Optional, List
 
 # Third-party modules
 import cachetools
@@ -56,9 +56,11 @@ class Group(EmbeddedDocument):
     # Group Title template
     title_template = StringField(default="")
     # Minimum amount of alarms to create the group
-    min_threshold = IntField(default=0)
+    min_threshold = IntField(default=0, min_value=0)
+    # Maximum amount of alarms to create the group
+    max_threshold = IntField(default=1, min_value=0)
     # Correlation window in seconds to check min_threshold
-    window = IntField(default=0)
+    window = IntField(default=0, min_value=0)
     # Labels for set Group Alarm
     labels = ListField(StringField())
 
@@ -103,11 +105,11 @@ class AlarmRule(Document):
     description = StringField()
     is_active = BooleanField(default=True)
     #
-    match = ListField(EmbeddedDocumentField(Match))
+    match: List[Match] = ListField(EmbeddedDocumentField(Match))
     #
-    groups = ListField(EmbeddedDocumentField(Group))
+    groups: List[Group] = ListField(EmbeddedDocumentField(Group))
     #
-    actions = ListField(EmbeddedDocumentField(Action))
+    actions: List[Action] = ListField(EmbeddedDocumentField(Action))
     # BI ID
     bi_id = LongField(unique=True)
 

@@ -37,6 +37,7 @@ class Group(object):
     title_template: Template
     labels: Optional[List[str]] = None
     min_threshold: int = 0
+    max_threshold: int = 0
     window: int = 0
 
 
@@ -47,6 +48,7 @@ class GroupItem(object):
     title: str
     labels: Optional[List[str]] = None
     min_threshold: int = 0
+    max_threshold: int = 0
     window: int = 0
 
 
@@ -83,6 +85,7 @@ class AlarmRule(object):
                     else cls.get_default_alarm_class(),
                     title_template=Template(group.title_template),
                     min_threshold=group.min_threshold or 0,
+                    max_threshold=group.max_threshold or 0,
                     window=group.window or 0,
                     labels=group.labels or [],
                 )
@@ -134,6 +137,7 @@ class AlarmRule(object):
                 title=group.title_template.render(**ctx),
                 labels=group.labels,
                 min_threshold=group.min_threshold,
+                max_threshold=group.max_threshold,
                 window=group.window,
             )
 
