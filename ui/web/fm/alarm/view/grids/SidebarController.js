@@ -50,7 +50,22 @@ Ext.define("NOC.fm.alarm.view.grids.SidebarController", {
     //
     pollingTask: function() {
         var app = this.getView().up("[itemId=fm-alarm]"),
-            gridsContainer = this.getView().up("[itemId=fm-alarm-list]");
+            gridsContainer = this.getView().up("[itemId=fm-alarm-list]"),
+            reloadOptionFn = function() {
+                return {
+                    callback: function(records, operation, success) {
+                        if(!success) {
+                            if(operation.getResponse().responseText.startsWith('<!DOCTYPE')){
+                                NOC.restartReason = "Autologout";
+                                window.location.pathname = Ext.Object.toQueryString("/ui/login/index.html?uri=/");
+                                NOC.restartReason = null;
+                            } else {
+                                NOC.error(__("Failed to fetch data!"));
+                            }
+                        }
+                    }
+                }
+            };
         // lib visibilityJS
         if(!Visibility.hidden()) { // check is user has switched to another tab or minimized browser window
             // Check for new alarms and play sound
@@ -65,9 +80,9 @@ Ext.define("NOC.fm.alarm.view.grids.SidebarController", {
             }
             // Poll only if polling is not locked
             if(this.isNotLocked(gridsContainer)) {
-                gridsContainer.down("[reference=fm-alarm-active]").getStore().reload();
+                gridsContainer.down("[reference=fm-alarm-active]").getStore().reload(reloadOptionFn());
                 if(this.isRecentActive()) {
-                    gridsContainer.down("[reference=fm-alarm-recent]").getStore().reload();
+                    gridsContainer.down("[reference=fm-alarm-recent]").getStore().reload(reloadOptionFn());
                 }
             }
         }
