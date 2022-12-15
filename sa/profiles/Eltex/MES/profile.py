@@ -103,8 +103,10 @@ class Profile(BaseProfile):
         "98": "MES-3508P",
         "112": "MES-2308R",
         "116": "MES-3308F",
+        "117": "MES-3316F",
         "120": "MES-3348F",
         "136": "MES-5316A",
+        "142": "MES-3348F",  # rev.B
         "190": "MES-3324F",  # rev.B
     }
 
