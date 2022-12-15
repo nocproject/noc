@@ -763,3 +763,14 @@ NOC.helpOpener = function(topic) {
         NOC.openHelp(topic)
     }
 };
+
+NOC.reloadCallbackFn = function(records, operation, success) {
+    if(!success) {
+        if(operation.getResponse().responseText.startsWith('<!DOCTYPE')){
+            NOC.restartReason = "Autologout";
+            window.location.pathname = Ext.Object.toQueryString("/ui/login/index.html?uri=/");
+        } else {
+            NOC.error(__("Failed to fetch data!"));
+        }
+    }
+}

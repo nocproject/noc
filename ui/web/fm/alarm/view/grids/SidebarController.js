@@ -53,17 +53,7 @@ Ext.define("NOC.fm.alarm.view.grids.SidebarController", {
             gridsContainer = this.getView().up("[itemId=fm-alarm-list]"),
             reloadOptionFn = function() {
                 return {
-                    callback: function(records, operation, success) {
-                        if(!success) {
-                            if(operation.getResponse().responseText.startsWith('<!DOCTYPE')){
-                                NOC.restartReason = "Autologout";
-                                window.location.pathname = Ext.Object.toQueryString("/ui/login/index.html?uri=/");
-                                NOC.restartReason = null;
-                            } else {
-                                NOC.error(__("Failed to fetch data!"));
-                            }
-                        }
-                    }
+                    callback: NOC.reloadCallbackFn
                 }
             };
         // lib visibilityJS

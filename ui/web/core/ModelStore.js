@@ -95,17 +95,7 @@ Ext.define("NOC.core.ModelStore", {
         var me = this;
         return Ext.apply({
                 params: Ext.apply({}, me.filterParams),
-                callback: function(records, operation, success) {
-                    if(!success) {
-                        if(operation.getResponse().responseText.startsWith('<!DOCTYPE')){
-                            NOC.restartReason = "Autologout";
-                            window.location.pathname = Ext.Object.toQueryString("/ui/login/index.html?uri=/");
-                            NOC.restartReason = null;
-                        } else {
-                            NOC.error(__("Failed to fetch data!"));
-                        }
-                    }
-                }
+                callback: NOC.reloadCallbackFn
             }, config);
     },
 
