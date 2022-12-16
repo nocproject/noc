@@ -89,6 +89,13 @@ Ext.define('NOC.LoginView', {
             }
         }]
     }
+    , initComponent: function() {
+        var param = Ext.urlDecode(location.search);
+        if('msg' in param) {
+            this.items.items[0].value = param.msg + '<br/>' + this.items.items[0].value
+        }
+        this.callParent();
+    }
     , onLoginClick: function() {
         var data = this.getViewModel().getData(),
             params = Ext.encode({

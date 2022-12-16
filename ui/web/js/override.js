@@ -218,10 +218,10 @@ Ext.define('NOC.data.request.Ajax', {
           failure = { success: false, isException: false },
           result, success, response;
 
-        console.log("is redirect : ", xhr.responseURL.includes('/ui/login/index.html'));
         if(xhr.responseURL.includes('/ui/login/index.html')) {
             NOC.restartReason = "Autologout";
-            window.location.pathname = Ext.Object.toQueryString("/ui/login/index.html?uri=/");
+            window.location.pathname = "/ui/login/index.html";
+            window.location.search = "&msg=Session%20Ended.";
         }
         if (!xhr || me.destroyed) {
             return me.result = failure;
