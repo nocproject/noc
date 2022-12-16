@@ -95,7 +95,6 @@ Ext.define("NOC.core.ModelStore", {
         var me = this;
         return Ext.apply({
                 params: Ext.apply({}, me.filterParams),
-                callback: NOC.reloadCallbackFn
             }, config);
     },
 
