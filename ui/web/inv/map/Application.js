@@ -176,6 +176,11 @@ Ext.define("NOC.inv.map.Application", {
             readOnly: me.readOnly
         });
 
+        me.objectPortalInspector = Ext.create("NOC.inv.map.inspectors.ObjectPortalInspector", {
+            app: me,
+            readOnly: me.readOnly
+        });
+
         me.linkInspector = Ext.create("NOC.inv.map.inspectors.LinkInspector", {
             app: me,
             readOnly: me.readOnly
@@ -234,7 +239,8 @@ Ext.define("NOC.inv.map.Application", {
                 me.managedObjectInspector,
                 me.linkInspector,
                 me.objectGroupInspector,
-                me.objectSegmentInspector
+                me.objectSegmentInspector,
+                me.objectPortalInspector,
             ]
         });
 
@@ -396,7 +402,7 @@ Ext.define("NOC.inv.map.Application", {
         me.saveButton.setDisabled(true);
         me.setStateMapButtons(!me.editButton.pressed);
         me.editButton.setPressed(false);
-        me.inspectSegment();
+        // me.inspectSegment();
         me.viewMapButton.setPressed(true);
         me.viewStpButton.setPressed(false);
         me.zoomCombo.setValue(1.0);
@@ -484,6 +490,14 @@ Ext.define("NOC.inv.map.Application", {
             me.objectSegmentInspector
         );
         me.objectSegmentInspector.preview(me.currentSegmentId, objectId);
+    },
+
+    inspectObjectPortal: function(objectId) {
+        var me = this;
+        me.inspectorPanel.getLayout().setActiveItem(
+            me.objectPortalInspector
+        );
+        me.objectPortalInspector.preview(me.currentSegmentId, objectId);
     },
 
     onEdit: function() {

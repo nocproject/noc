@@ -19,16 +19,17 @@ from noc.services.web.base.extapplication import ExtApplication, view
 from noc.services.web.base.site import site
 from noc.core.interface.loader import loader as interface_loader
 from noc.core.stencil import stencil_registry
-from noc import settings
-from noc.main.models.notificationgroup import USER_NOTIFICATION_METHOD_CHOICES
 from noc.core.profile.loader import loader as profile_loader
 from noc.core.script.loader import loader as script_loader
-from noc.services.web.apps.kb.parsers.loader import loader as kbparser_loader
 from noc.core.checkers.loader import loader as checker_loader
 from noc.core.window import wf_choices
 from noc.core.topology.types import ShapeOverlayPosition, ShapeOverlayForm
+from noc.core.topology.loader import loader as topo_loader
 from noc.core.mx import MESSAGE_TYPES, MESSAGE_HEADERS
 from noc.models import iter_model_id
+from noc import settings
+from noc.services.web.apps.kb.parsers.loader import loader as kbparser_loader
+from noc.main.models.notificationgroup import USER_NOTIFICATION_METHOD_CHOICES
 
 
 class RefAppplication(ExtApplication):
@@ -206,6 +207,17 @@ class RefAppplication(ExtApplication):
                 continue
             for check in checker.CHECKS:
                 r += [{"id": check, "label": check}]
+        return r  # list(sorted(r))
+
+    def build_topologygen(self):
+        """
+        Topology Generators name
+        :return:
+        """
+        r = []
+        for name in topo_loader:
+            topo_gen = topo_loader[name]
+            r += [{"id": name, "label": topo_gen.header or name}]
         return r  # list(sorted(r))
 
     @view(url=r"^(?P<ref>\S+)/lookup/$", method=["GET"], access=True, api=True)

@@ -1,15 +1,15 @@
 //---------------------------------------------------------------------
-// Managed object inspector
+// Portal inspector
 //---------------------------------------------------------------------
-// Copyright (C) 2007-2018 The NOC Project
+// Copyright (C) 2007-2022 The NOC Project
 // See LICENSE for details
 //---------------------------------------------------------------------
-console.debug("Defining NOC.inv.map.inspectors.ObjectSegmentInspector");
+console.debug("Defining NOC.inv.map.inspectors.ObjectPortalInspector");
 
-Ext.define("NOC.inv.map.inspectors.ObjectSegmentInspector", {
+Ext.define("NOC.inv.map.inspectors.ObjectPortalInspector", {
     extend: "NOC.inv.map.inspectors.Inspector",
-    title: __("ObjectSegment Inspector"),
-    inspectorName: "objectsegment",
+    title: __("Portal Inspector"),
+    inspectorName: "objectportal",
 
     tpl: [
         '<b>Name:</b>&nbsp;{[Ext.htmlEncode(values.name)]}<br/>',
@@ -20,19 +20,11 @@ Ext.define("NOC.inv.map.inspectors.ObjectSegmentInspector", {
 
     initComponent: function() {
 
-        this.cardButton = Ext.create("Ext.button.Button", {
-            glyph: NOC.glyph.eye,
-            scope: this,
-            tooltip: __("View card"),
-            handler: this.onSegmentCard,
-            disabled: true
-        });
-
-        this.segmentButton = Ext.create("Ext.button.Button", {
+        this.portalButton = Ext.create("Ext.button.Button", {
             glyph: NOC.glyph.location_arrow,
             scope: this,
-            tooltip: __("Jump to Segment"),
-            handler: this.onJumpSegment,
+            tooltip: __("Jump to Portal"),
+            handler: this.onJumpPortal,
             disabled: true
         });
 
@@ -41,31 +33,21 @@ Ext.define("NOC.inv.map.inspectors.ObjectSegmentInspector", {
                 xtype: "toolbar",
                 dock: "top",
                 items: [
-                    this.cardButton,
-                    this.segmentButton,
+                    this.portalButton,
                 ]
             }]
         });
         this.callParent();
     },
 
-    onJumpSegment: function() {
-        this.app.generator = "segment";
+    onJumpPortal: function() {
+        // this.app.generator = "segment";
         this.app.segmentCombo.restoreById(this.currentObjectId);
     },
 
-    onSegmentCard: function() {
-        if(this.currentObjectId) {
-            window.open(
-                "/api/card/view/segment/" + this.currentObjectId + "/"
-            );
-        }
-    },
-
-
     enableButtons: function(data) {
-        this.cardButton.setDisabled(false);
-        this.segmentButton.setDisabled(false);
+        this.portalButton.setDisabled(false);
+        this.app.generator = data.generator
         this.currentObjectId = data.id;
     },
 
@@ -73,5 +55,13 @@ Ext.define("NOC.inv.map.inspectors.ObjectSegmentInspector", {
         var me = this,
             url = me.callParent([segmentId, objectId]);
         return url + objectId + "/";
-    }
+    },
+
+    preview: function(segmentId, date) {
+        var me = this;
+
+        this.update(date);
+        this.enableButtons(date);
+    },
+
 });

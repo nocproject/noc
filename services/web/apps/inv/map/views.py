@@ -531,7 +531,7 @@ class MapApplication(ExtApplication):
             )
         return {
             "data": [
-                {"level": p.level, "id": str(p.id), "label": p.title} for p in gen.iter_path(gen_id)
+                {"level": p.level, "id": str(p.id), "generator": gen.name, "label": p.title} for p in gen.iter_path(gen_id)
             ]
         }
 
