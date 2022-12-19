@@ -318,7 +318,7 @@ class MapApplication(ExtApplication):
                 object_group[mo_id].add(n_id)
         # Mark all as unknown
         objects = list(itertools.chain(nid, object_group))
-        r = {o: self.ST_UNKNOWN for o in itertools.chain(nid.values(), group_nodes.values)}
+        r = {o: self.ST_UNKNOWN for o in itertools.chain(nid.values(), group_nodes.values())}
         sr = ObjectStatus.get_statuses(objects)
         sa = get_alarms(objects)
         mo = Maintenance.currently_affected(objects)
