@@ -66,7 +66,8 @@ class PathItem(object):
 @dataclass
 class Portal(object):
     generator: str
-    id: str
+    id: Optional[str] = None
+    settings: Optional[Dict[str, Any]] = None
 
 
 @dataclass
@@ -86,6 +87,8 @@ class TopologyNode(object):
     portal: Optional[Portal] = None
     level: int = 25
     attrs: Optional[Dict[str, Any]] = None
+    #
+    object_filter: Optional[Dict[str, Any]] = None
 
     def get_attr(self) -> Dict[str, Any]:
         return self.attrs or {}

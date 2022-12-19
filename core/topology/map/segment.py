@@ -35,9 +35,9 @@ class SegmentTopology(TopologyBase):
     header = "Network Segment Schemas"
     CAPS: Set[str] = {"Network | STP"}
 
-    def __init__(self, gen_id, node_hints=None, link_hints=None, force_spring=False):
+    def __init__(self, segment, **settings):
         self.segment = (
-            gen_id if isinstance(gen_id, NetworkSegment) else NetworkSegment.get_by_id(gen_id)
+            segment if isinstance(segment, NetworkSegment) else NetworkSegment.get_by_id(segment)
         )
         self.logger = PrefixLoggerAdapter(logger, self.segment.name)
         self.segment_siblings = self.segment.get_siblings()
@@ -49,9 +49,11 @@ class SegmentTopology(TopologyBase):
         else:
             self.parent_segment = None
             self.ancestor_segments = set()
-        super().__init__(
-            gen_id, node_hints=node_hints, link_hints=link_hints, force_spring=force_spring
-        )
+        super().__init__(**settings)
+
+    @property
+    def gen_id(self) -> Optional[str]:
+        return str(self.segment.id)
 
     @property
     def title(self):

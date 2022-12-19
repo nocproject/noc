@@ -412,7 +412,8 @@ Ext.define("NOC.inv.map.MapPanel", {
                 node_id: data.node_id,
                 caps: data.caps,
                 isMaintenance: false,
-                portal: data.portal
+                portal: data.portal,
+                object_filter: data.object_filter,
             }
         });
         Ext.each(data.shape_overlay, function(config) {
@@ -421,7 +422,9 @@ Ext.define("NOC.inv.map.MapPanel", {
             badges.push(badge);
         });
         me.objectNodes[data.id] = node;
-        me.objectsList.push({"node_type": data.type, "node_id": data.node_id, "id": data.id})
+        me.objectsList.push(
+            {"node_type": data.type, "node_id": data.node_id, "id": data.id, "object_filter": data.object_filter}
+        )
         return {node: node, badges: badges};
     },
     //

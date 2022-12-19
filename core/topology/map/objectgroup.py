@@ -28,12 +28,13 @@ class ObjectGroupTopology(TopologyBase):
     name = "objectgroup"
     header = "Object Group Schemas"
 
-    def __init__(self, gen_id, node_hints=None, link_hints=None, force_spring=False):
-        self.rg = ResourceGroup.get_by_id(gen_id)
+    def __init__(self, resource_group, **settings):
+        self.rg = ResourceGroup.get_by_id(resource_group)
         self.logger = PrefixLoggerAdapter(logger, self.rg.name)
-        super().__init__(
-            gen_id, node_hints=node_hints, link_hints=link_hints, force_spring=force_spring
-        )
+        super().__init__(**settings)
+
+    def gen_id(self) -> Optional[str]:
+        return str(self.rg.id)
 
     def load(self):
         """

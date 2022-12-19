@@ -25,6 +25,7 @@ from mongoengine.fields import (
 # NOC modules
 from noc.core.stencil import stencil_registry
 from noc.core.topology.types import TopologyNode, Portal
+from noc.core.topology.loader import loader as topo_loader
 from noc.core.mongo.fields import ForeignKeyField
 from noc.main.models.imagestore import ImageStore
 from noc.fm.models.alarmclass import AlarmClass
@@ -141,6 +142,8 @@ class NodeItem(EmbeddedDocument):
             n.title = self.title
         if self.parent:
             n.parent = str(self.parent)
+        if self.object_filter:
+            n.object_filter = self.get_generator_settings()
         return n
 
     def get_generator_settings(self) -> Optional[Dict[str, str]]:
@@ -154,8 +157,20 @@ class NodeItem(EmbeddedDocument):
         return r
 
     def clean(self):
+        from noc.inv.models.mapsettings import MapSettings
+
         if self.map_portal:
             self.portal_id = str(self.map_portal)
+        elif self.portal_generator and not self.portal_id:
+            # New settings
+            gen = topo_loader[self.portal_generator](**self.get_generator_settings())
+            self.portal_id = str(gen.gen_id)
+        settings = MapSettings.ensure_settings(
+            self.portal_generator, str(self.portal_id), **self.get_generator_settings()
+        )
+        # if settings.gen_hints != self.get_generator_settings():
+            # changed settings
+        settings.save()
 
 
 class LinkItem(EmbeddedDocument):

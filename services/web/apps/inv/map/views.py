@@ -417,7 +417,12 @@ class MapApplication(ExtApplication):
         api=True,
     )
     def api_reset(self, request, gen_type, gen_id):
-        MapSettings.objects.filter(gen_type=gen_type, gen_id=gen_id).delete()
+        # MapSettings.objects.filter(gen_type=gen_type, gen_id=gen_id).delete()
+        settings = MapSettings.objects.filter(gen_type=gen_type, gen_id=gen_id).first()
+        if settings:
+            settings.nodes = []
+            settings.links = []
+            settings.save()
         return {"status": True}
 
     @view(

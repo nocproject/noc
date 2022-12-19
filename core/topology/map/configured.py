@@ -28,11 +28,13 @@ class ConfiguredTopology(TopologyBase):
     header = "Configured Map"
     NORMALIZE_POSITION = False
 
-    def __init__(self, gen_id, node_hints=None, link_hints=None, force_spring=False):
+    def __init__(self, gen_id, **settings):
         self.cfgmap: ConfiguredMap = ConfiguredMap.get_by_id(gen_id)
-        super().__init__(
-            gen_id, node_hints=node_hints, link_hints=link_hints, force_spring=force_spring
-        )
+        super().__init__(**settings)
+
+    @property
+    def gen_id(self) -> Optional[str]:
+        return str(self.cfgmap.id)
 
     @property
     def meta(self) -> MapMeta:
