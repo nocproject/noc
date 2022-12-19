@@ -226,9 +226,6 @@ Ext.define("NOC.inv.map.MapPanel", {
         me.paper = new joint.dia.Paper({
             el: dom,
             model: me.graph,
-            gridSize: 25,
-            gridWidth: 25,
-            gridHeight: 25,
             preventContextMenu: false,
             async: false,
             guard: function(evt) {
@@ -312,6 +309,7 @@ Ext.define("NOC.inv.map.MapPanel", {
         me.interfaceMetrics = [];
         me.currentStpRoots = {};
         me.graph.clear();
+        me.paper.setGridSize(data.grid_size);
         // Set background
         if(data.background_image) {
             backgroundOpt = {
