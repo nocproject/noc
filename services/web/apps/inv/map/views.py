@@ -6,8 +6,9 @@
 # ---------------------------------------------------------------------
 
 # Python modules
-from collections import defaultdict
+import itertools
 import threading
+from collections import defaultdict
 from typing import List, Set, Dict
 
 # Third-party modules
@@ -286,20 +287,45 @@ class MapApplication(ExtApplication):
                 )
             }
 
+        nid = {}
+        group_nodes = {}  # (segment, group)
+        # Build id -> object_id mapping
+        for o in nodes:
+            if o["node_type"] == "managedobject":
+                nid[o["node_id"]] = o["id"]
+            elif o["node_type"] == "objectgroup":
+                group_nodes[("", o["node_id"])] = o["id"]
+            elif o["node_type"] == "objectsegment":
+                group_nodes[(o["node_id"], "")] = o["id"]
+            elif o["node_type"] == "other" and o.get("object_filter"):
+                group_nodes[
+                    (o["object_filter"]["segment"], o["object_filter"]["resource_group"])
+                ] = o["id"]
+        object_group = defaultdict(set)
+        # Processed groups
+        for (segment, group), n_id in group_nodes.items():
+            if not group:
+                continue
+            if not segment:
+                mos = ManagedObject.objects.filter(
+                    effective_service_groups__overlap=[group]
+                ).values_list("id", flat=True)
+            else:
+                mos = ManagedObject.objects.filter(
+                    effective_service_groups__overlap=[group], segment=segment
+                ).values_list("id", flat=True)
+            for mo_id in mos:
+                object_group[mo_id].add(n_id)
         # Mark all as unknown
-        objects: List[int] = [int(o["id"]) for o in nodes if o["node_type"] == "managedobject"]
-        groups = {o["id"] for o in nodes if o["node_type"] == "objectgroup"}
-        segments: List[str] = [str(o["id"]) for o in nodes if o["node_type"] == "objectsegment"]
-        r = {o: self.ST_UNKNOWN for o in objects}
+        objects = list(itertools.chain(nid, object_group))
+        r = {o: self.ST_UNKNOWN for o in itertools.chain(nid.values(), group_nodes.values)}
         sr = ObjectStatus.get_statuses(objects)
-        mo_group_map = defaultdict(set)
-        for mo_id, mo_groups in ManagedObject.objects.filter(
-            effective_service_groups__overlap=list(groups)
-        ).values_list("id", "effective_service_groups"):
-            objects.append(mo_id)
-            mo_group_map[mo_id] = groups.intersection(set(mo_groups))
         sa = get_alarms(objects)
         mo = Maintenance.currently_affected(objects)
+        for mo_id in sa.intersection(set(object_group)):
+            for n in object_group[mo_id]:
+                r[n] = self.ST_ALARM
+        # Nodes Status
         for o in sr:
             if sr[o]:
                 # Check for alarms
@@ -311,9 +337,7 @@ class MapApplication(ExtApplication):
                 r[o] = self.ST_DOWN
             if o in mo:
                 r[o] |= self.ST_MAINTENANCE
-            if o in sa and o in mo_group_map:
-                for g in mo_group_map[o]:
-                    r[g] = self.ST_ALARM
+        segments = [s for s, g in group_nodes if not g]
         sa = get_alarms_segment(segments)
         for s in segments:
             if s in sa:
@@ -536,7 +560,8 @@ class MapApplication(ExtApplication):
             )
         return {
             "data": [
-                {"level": p.level, "id": str(p.id), "generator": gen.name, "label": p.title} for p in gen.iter_path(gen_id)
+                {"level": p.level, "id": str(p.id), "generator": gen.name, "label": p.title}
+                for p in gen.iter_path(gen_id)
             ]
         }
 
