@@ -91,7 +91,12 @@ class MapSettings(Document):
     # Gen data
     # get_data =
     # Generator Hints
-    force_layout = BooleanField(default=False)  # Always rebuild layout hints
+    layout = StringField(choices=[
+        ("M", "Manual"),
+        ("FA", "Force Auto"),  # Always rebuild layout hints
+        ("A", "Auto"),
+        ("FS", "Force Spring"),
+    ], default="A")
     gen_hints = DictField()
     #
     nodes = ListField(EmbeddedDocumentField(NodeSettings))
@@ -108,6 +113,29 @@ class MapSettings(Document):
         for n in self.nodes:
             nodes[n.node] = n
         return nodes
+
+    def get_generator_hints(self, **kwargs) -> Dict[str, str]:
+        """
+        Return Hints settings for generator
+        :param kwargs: Additional hints
+        :return:
+        """
+        node_hints, link_hints = {}, {}
+        r = kwargs or {}
+        if self.gen_hints:
+            r.update(self.gen_hints)
+        for n in self.nodes:
+            node_hints[n.id] = {"type": n.type, "id": n.id, "x": n.x, "y": n.y}
+        for ll in self.links:
+            link_hints[ll.id] = {
+                "connector": ll.connector if len(ll.vertices) else "normal",
+                "vertices": [{"x": v.x, "y": v.y} for v in ll.vertices],
+            }
+        r["node_hints"] = node_hints
+        r["link_hints"] = link_hints
+        if self.layout == "FS":
+            r["force_spring"] = r.get("force") == "spring"
+        return r
 
     @classmethod
     def load_json(cls, data, user=None):
@@ -174,9 +202,8 @@ class MapSettings(Document):
             nn += [NodeSettings(type=nd["type"], id=nd["id"], x=nd["x"], y=nd["y"])]
             mx = max(mx, nd["x"])
             my = max(my, nd["y"])
-        if width:
+        if self.layout != "M":
             self.width = width or mx or 0.0
-        if height:
             self.height = height or my or 0.0
         self.nodes = sorted(nn, key=lambda x: (x.type, x.id))
         # Update links
@@ -221,6 +248,7 @@ class MapSettings(Document):
         """
         settings = MapSettings.objects.filter(gen_type=gen_type, gen_id=gen_id).first()
         if settings:
+            logger.info("[%s|%s] Using stored positions", gen_type, gen_id)
             return settings
         logger.info("[%s|%s] Create new settings", gen_type, gen_id)
         settings = MapSettings(gen_type=gen_type, gen_id=gen_id, nodes=[], links=[])
@@ -241,28 +269,19 @@ class MapSettings(Document):
         if not gen:
             logger.warning("Unknown generator: %s", gen_type)
             raise ValueError("Unknown Map Type: %s", gen_type)
+        # Getting MAp settings
         settings = cls.ensure_settings(gen_type, gen_id)
-        node_hints, link_hints = {}, {}
-        logger.info("[%s|%s] Using stored positions", gen_type, gen_id)
-        for n in settings.nodes:
-            node_hints[n.id] = {"type": n.type, "id": n.id, "x": n.x, "y": n.y}
-        for ll in settings.links:
-            link_hints[ll.id] = {
-                "connector": ll.connector if len(ll.vertices) else "normal",
-                "vertices": [{"x": v.x, "y": v.y} for v in ll.vertices],
-            }
-        if settings.gen_hints:
-            kwargs.update(settings.gen_hints)
+        # Getting hints
+        hints = settings.get_generator_hints()
         # Generate topology
-        topology: TopologyBase = gen(gen_id, node_hints=node_hints, link_hints=link_hints, **kwargs)
-        width, height = None, None
-        if topology.meta.width and settings.width != topology.meta.width:
-            width = topology.meta.width
-        if topology.meta.height and settings.height != topology.meta.height:
-            height = topology.meta.height
-        if settings.force_layout or not node_hints:
+        topology: TopologyBase = gen(gen_id, **hints)
+        if settings.layout == "FA" or not settings.nodes:
             logger.info("[%s|%s] Generating positions", gen_type, gen_id)
             topology.layout()
+            if not gen.NORMALIZE_POSITION:
+                settings.layout = "M"
+                settings.width = topology.meta.width
+                settings.height = topology.meta.height
             settings.update_settings(
                 nodes=[
                     {"type": n["type"], "id": n["id"], "x": n["x"], "y": n["y"]}
@@ -278,8 +297,6 @@ class MapSettings(Document):
                     }
                     for n in topology.G.edges.values()
                 ],
-                width=width,
-                height=height
             )
         background = topology.meta.image
         return {
@@ -291,6 +308,7 @@ class MapSettings(Document):
             "name": topology.title,
             "width": settings.width or 0.0,
             "height": settings.height or 0.0,
+            "grid_size": 20,
             "normalize_position": topology.NORMALIZE_POSITION,
             "caps": list(topology.caps),
             "nodes": [x for x in topology.iter_nodes()],
