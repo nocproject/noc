@@ -517,6 +517,18 @@ class CorrelatorService(FastAPIService):
         a.save()
         if event:
             event.contribute_to_alarm(a)
+            # Send dispose information to clickhouse
+            data = {
+                "date": event.timestamp.date(),
+                "ts": event.timestamp,
+                "event": event.to_json(),
+                "alarm": a.to_json(),
+                "op": event.event_class.disposition[0].action,
+                "managed_object": managed_object.id,
+                "event_class": event.event_class.bi_id,
+                "alarm_class": alarm_class.bi_id,
+            }
+            self.register_metrics("disposelog", [data])
         self.logger.info(
             "[%s|%s|%s] Raise alarm %s(%s): %r [%s]",
             scope_label,
