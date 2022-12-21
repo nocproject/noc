@@ -20,7 +20,6 @@ from mongoengine.fields import (
     EmbeddedDocumentField,
     IntField,
     DictField,
-    BooleanField,
 )
 
 # NOC modules
@@ -91,12 +90,15 @@ class MapSettings(Document):
     # Gen data
     # get_data =
     # Generator Hints
-    layout = StringField(choices=[
-        ("M", "Manual"),
-        ("FA", "Force Auto"),  # Always rebuild layout hints
-        ("A", "Auto"),
-        ("FS", "Force Spring"),
-    ], default="A")
+    layout = StringField(
+        choices=[
+            ("M", "Manual"),
+            ("FA", "Force Auto"),  # Always rebuild layout hints
+            ("A", "Auto"),
+            ("FS", "Force Spring"),
+        ],
+        default="A",
+    )
     gen_hints = DictField()
     #
     nodes = ListField(EmbeddedDocumentField(NodeSettings))
@@ -275,7 +277,7 @@ class MapSettings(Document):
         hints = settings.get_generator_hints()
         # Generate topology
         topology: TopologyBase = gen(gen_id, **hints)
-        if settings.layout == "FA" or not settings.nodes:
+        if settings.layout == "FA" or len(settings.nodes) != len(topology.G.nodes):
             logger.info("[%s|%s] Generating positions", gen_type, gen_id)
             topology.layout()
             if not gen.NORMALIZE_POSITION:

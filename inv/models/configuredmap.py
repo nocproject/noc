@@ -169,7 +169,7 @@ class NodeItem(EmbeddedDocument):
             self.portal_generator, str(self.portal_id), **self.get_generator_settings()
         )
         # if settings.gen_hints != self.get_generator_settings():
-            # changed settings
+        # changed settings
         settings.save()
 
 

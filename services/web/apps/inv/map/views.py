@@ -56,6 +56,7 @@ class MapApplication(ExtApplication):
     lookup_default = [{"id": "Leave unchanged", "label": "Leave unchanged"}]
     gen_param = "generator"
     gen_id_param = "generator_id"
+    q_parent = "parent"
 
     # Object statuses
     ST_UNKNOWN = 0  # Object state is unknown
@@ -500,7 +501,7 @@ class MapApplication(ExtApplication):
         """
         q = {str(k): v[0] if len(v) == 1 else v for k, v in request.GET.lists()}
         r = []
-        if not q.get(self.gen_param):
+        if not q.get(self.q_parent):
             for mi in loader:
                 mi = loader[mi]
                 r.append(
@@ -519,7 +520,7 @@ class MapApplication(ExtApplication):
                 {"success": False, "message": f"Unknown generator: {q[self.gen_param]}"},
                 status=self.NOT_FOUND,
             )
-        if gen.name == q.get("parent"):
+        if gen.name == q.get(self.q_parent):
             q["parent"] = None
         for mi in gen.iter_maps(
             parent=q.get("parent"),
