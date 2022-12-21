@@ -521,8 +521,8 @@ class CorrelatorService(FastAPIService):
             data = {
                 "date": event.timestamp.date(),
                 "ts": event.timestamp,
-                "event": event.to_json(),
-                "alarm": a.to_json(),
+                "event_id": str(event.id),
+                "alarm_id": str(a.id),
                 "op": event.event_class.disposition[0].action,
                 "managed_object": managed_object.id,
                 "event_class": event.event_class.bi_id,

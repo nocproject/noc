@@ -32,8 +32,8 @@ class DisposeLog(Model):
 
     date = DateField(description=_("Date"))
     ts = DateTimeField(description=_("Created"))
-    event = StringField(description=_("Event"))
-    alarm = StringField(description=_("Alarm"))
+    event_id = StringField(description=_("Event ID"))
+    alarm_id = StringField(description=_("Alarm ID"))
     op = StringField(description=_("Operation"), low_cardinality=True)  # raise, clear, drop, ignore
     managed_object = ReferenceField(ManagedObject, description=_("Object Name"))
     event_class = ReferenceField(EventClass, description=_("Event Class"))
