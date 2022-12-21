@@ -33,7 +33,7 @@ Ext.define("NOC.main.desktop.Application", {
         // initial permissions cache
 
         NOC.permissions$ = new NOC.core.Observable({model: new NOC.core.ObservableModel});
-        me.restartReason = null;
+        NOC.restartReason = null;
         me.templates = NOC.templates["main_desktop"];
         // Setup helpers
         NOC.run = Ext.bind(me.launchTab, me);
@@ -397,7 +397,7 @@ Ext.define("NOC.main.desktop.Application", {
             now = Date.now();
         if(now >= me.idleDeadline) {
             // Deadline reached, logout
-            me.restartReason = "Autologout";
+            NOC.restartReason = "Autologout";
             me.onLogout();
         } else {
             // Schedule next check
@@ -417,7 +417,7 @@ Ext.define("NOC.main.desktop.Application", {
     onUnload: function(e) {
         var me = this,
             msg = "You're trying to close NOC application. Unsaved changes may be lost.";
-        if(me.restartReason) {
+        if(NOC.restartReason) {
             return;
         }
         if(e) {
@@ -431,7 +431,7 @@ Ext.define("NOC.main.desktop.Application", {
     //
     restartApplication: function(reason) {
         var me = this;
-        me.restartReason = reason;
+        NOC.restartReason = reason;
         window.location.reload();
     },
     // Request full-screen mode
