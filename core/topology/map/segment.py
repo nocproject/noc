@@ -25,7 +25,7 @@ from noc.inv.models.networksegment import NetworkSegment
 from noc.inv.models.interface import Interface
 from noc.inv.models.link import Link
 from noc.core.topology.base import TopologyBase
-from noc.core.topology.types import MapItem, PathItem, Portal
+from noc.core.topology.types import MapItem, PathItem, Portal, MapMeta
 
 logger = logging.getLogger(__name__)
 
@@ -58,6 +58,13 @@ class SegmentTopology(TopologyBase):
     @property
     def title(self):
         return self.segment.name
+
+    @property
+    def meta(self) -> MapMeta:
+        return MapMeta(
+            title=self.title,
+            max_links=self.segment.max_shown_downlinks,
+        )
 
     def get_role(self, mo: ManagedObject) -> str:
         if mo.segment in self.segment_siblings:

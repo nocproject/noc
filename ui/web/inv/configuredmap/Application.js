@@ -84,10 +84,10 @@ Ext.define("NOC.inv.configuredmap.Application", {
                                     allowBlank: false,
                                     uiStyle: "medium",
                                     store: [
-                                        ["auto", "auto"],
-                                        ["manual", "manual"],
-                                        ["spring", "spring"],
-                                        ["radial", "radial"]
+                                        ["A", "Auto"],
+                                        ["M", "Manual"],
+                                        ["FS", "Spring"],
+                                        ["FR", "Radial"]
                                     ]
                                 },
                                 {

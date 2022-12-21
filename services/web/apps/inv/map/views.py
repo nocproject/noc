@@ -300,7 +300,10 @@ class MapApplication(ExtApplication):
                 group_nodes[(o["node_id"], "")] = o["id"]
             elif o["node_type"] == "other" and o.get("object_filter"):
                 group_nodes[
-                    (o["object_filter"]["segment"], o["object_filter"]["resource_group"])
+                    (
+                        o["object_filter"].get("segment", ""),
+                        o["object_filter"].get("resource_group", ""),
+                    )
                 ] = o["id"]
         object_group = defaultdict(set)  # mo_id -> groups
         # Processed groups

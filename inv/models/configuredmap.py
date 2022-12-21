@@ -26,6 +26,7 @@ from mongoengine.fields import (
 from noc.core.stencil import stencil_registry
 from noc.core.topology.types import TopologyNode, Portal
 from noc.core.topology.loader import loader as topo_loader
+from noc.core.topology.types import Layout
 from noc.core.mongo.fields import ForeignKeyField
 from noc.main.models.imagestore import ImageStore
 from noc.fm.models.alarmclass import AlarmClass
@@ -196,7 +197,11 @@ class ConfiguredMap(Document):
 
     name = StringField()
     #
-    layout = StringField(choices=["auto", "manual", "spring", "radial"], default="manual")
+    # layout = StringField(choices=["auto", "manual", "spring", "radial"], default="manual")
+    layout = StringField(
+        choices=[(x.value, x.name) for x in Layout],
+        default="M",
+    )
     # Map size
     width = IntField(min_value=0)
     height = IntField(min_value=0)

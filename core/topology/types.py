@@ -11,6 +11,13 @@ from dataclasses import dataclass
 from typing import Optional, Dict, Any, List, Literal
 
 
+class Layout(str, Enum):
+    Manual = "M"
+    Force_Auto = "FA"  # Always rebuild layout hints
+    Auto = "A"
+    Force_Spring = "FS"
+
+
 class ShapeOverlayPosition(str, Enum):
     NW = "NW"
     N = "N"
@@ -103,3 +110,5 @@ class MapMeta(object):
     image: Optional[BackgroundImage] = None
     width: int = 0
     height: int = 0
+    layout: Layout = Layout("A")
+    max_links: int = 1000

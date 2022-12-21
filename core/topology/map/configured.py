@@ -14,7 +14,7 @@ from bson import ObjectId
 
 # NOC modules
 from noc.core.topology.base import TopologyBase
-from noc.core.topology.types import MapItem, PathItem, BackgroundImage, MapMeta
+from noc.core.topology.types import MapItem, PathItem, BackgroundImage, MapMeta, Layout
 from noc.inv.models.configuredmap import ConfiguredMap
 from noc.inv.models.link import Link
 from noc.inv.models.interface import Interface
@@ -47,6 +47,7 @@ class ConfiguredTopology(TopologyBase):
             else None,
             width=self.cfgmap.width,
             height=self.cfgmap.height,
+            layout=Layout(self.cfgmap.layout),
         )
 
     @classmethod

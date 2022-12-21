@@ -707,6 +707,7 @@ class Config(BaseConfig):
         heatmap_lat = StringParameter(default="66.050063")
         heatmap_zoom = StringParameter(default="4")
         max_image_size = BytesParameter(default="2M")
+        topology_map_grid_size = IntParameter(min=5, default=25)
 
     class ui(ConfigSection):
         max_avatar_size = BytesParameter(default="256K")

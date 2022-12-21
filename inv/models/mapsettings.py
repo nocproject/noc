@@ -1,7 +1,7 @@
 # ---------------------------------------------------------------------
 # Map Settings
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2020 The NOC Project
+# Copyright (C) 2007-2022 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -25,6 +25,8 @@ from mongoengine.fields import (
 # NOC modules
 from noc.core.topology.loader import loader as t_loader
 from noc.core.topology.base import TopologyBase
+from noc.core.topology.types import Layout
+from noc.config import config
 
 logger = logging.getLogger(__name__)
 
@@ -91,12 +93,7 @@ class MapSettings(Document):
     # get_data =
     # Generator Hints
     layout = StringField(
-        choices=[
-            ("M", "Manual"),
-            ("FA", "Force Auto"),  # Always rebuild layout hints
-            ("A", "Auto"),
-            ("FS", "Force Spring"),
-        ],
+        choices=[(x.value, x.name) for x in Layout],
         default="A",
     )
     gen_hints = DictField()
@@ -277,13 +274,13 @@ class MapSettings(Document):
         hints = settings.get_generator_hints()
         # Generate topology
         topology: TopologyBase = gen(gen_id, **hints)
-        if settings.layout == "FA" or len(settings.nodes) != len(topology.G.nodes):
+        if topology.meta.layout == Layout("M"):
+            settings.layout = Layout("M").value
+            settings.width = topology.meta.width
+            settings.height = topology.meta.height
+        if topology.meta.layout == Layout("FA") or len(settings.nodes) != len(topology.G.nodes):
             logger.info("[%s|%s] Generating positions", gen_type, gen_id)
             topology.layout()
-            if not gen.NORMALIZE_POSITION:
-                settings.layout = "M"
-                settings.width = topology.meta.width
-                settings.height = topology.meta.height
             settings.update_settings(
                 nodes=[
                     {"type": n["type"], "id": n["id"], "x": n["x"], "y": n["y"]}
@@ -304,13 +301,13 @@ class MapSettings(Document):
         return {
             "id": str(gen_id),
             "type": gen_type,
-            "max_links": 1000,
+            "max_links": topology.meta.max_links,
             "background_image": background.image if background else None,
             "background_opacity": background.opacity if background else None,
             "name": topology.title,
             "width": settings.width or 0.0,
             "height": settings.height or 0.0,
-            "grid_size": 20,
+            "grid_size": config.web.topology_map_grid_size,
             "normalize_position": topology.NORMALIZE_POSITION,
             "caps": list(topology.caps),
             "nodes": [x for x in topology.iter_nodes()],
