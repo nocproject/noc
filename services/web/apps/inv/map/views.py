@@ -302,7 +302,7 @@ class MapApplication(ExtApplication):
                 group_nodes[
                     (o["object_filter"]["segment"], o["object_filter"]["resource_group"])
                 ] = o["id"]
-        object_group = defaultdict(set)
+        object_group = defaultdict(set)  # mo_id -> groups
         # Processed groups
         for (segment, group), n_id in group_nodes.items():
             if not group:
@@ -323,10 +323,8 @@ class MapApplication(ExtApplication):
         sr = ObjectStatus.get_statuses(objects)
         sa = get_alarms(objects)
         mo = Maintenance.currently_affected(objects)
-        for mo_id in sa.intersection(set(object_group)):
-            for n in object_group[mo_id]:
-                r[n] = self.ST_ALARM
         # Nodes Status
+        group_status = defaultdict(set)
         for o in sr:
             if sr[o]:
                 # Check for alarms
@@ -338,6 +336,15 @@ class MapApplication(ExtApplication):
                 r[o] = self.ST_DOWN
             if o in mo:
                 r[o] |= self.ST_MAINTENANCE
+            if o not in object_group:
+                continue
+            for g in object_group[o]:
+                group_status[g].add(r[o])
+        for g, status in group_status.items():
+            if self.ST_ALARM in status or self.ST_DOWN in status:
+                r[g] = self.ST_ALARM
+            elif self.ST_OK in status:
+                r[g] = self.ST_OK
         segments = [s for s, g in group_nodes if not g]
         sa = get_alarms_segment(segments)
         for s in segments:
