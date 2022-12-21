@@ -26,7 +26,6 @@ class ConfigSectionBase(type):
                 cls._params[k] = attrs[k]
                 cls._params[k].name = k
             if isinstance(attrs[k], ConfigSectionBase):
-                print(attrs[k], attrs[k]._params)
                 for pname, attr in attrs[k]._params.items():
                     cls._params[f"{k}.{pname}"] = attr
                     cls._params[f"{k}.{pname}"].name = f"{k}.{pname}"
