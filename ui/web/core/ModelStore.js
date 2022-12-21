@@ -95,11 +95,6 @@ Ext.define("NOC.core.ModelStore", {
         var me = this;
         return Ext.apply({
                 params: Ext.apply({}, me.filterParams),
-                callback: function(records, operation, success) {
-                    if(!success) {
-                        NOC.error(__("Failed to fetch data!"));
-                    }
-                }
             }, config);
     },
 
