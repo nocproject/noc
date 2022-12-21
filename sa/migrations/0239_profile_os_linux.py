@@ -8,7 +8,7 @@
 # Third-party modules
 import bson
 import uuid
-from pymongo import InsertOne, DeleteOne
+from pymongo import InsertOne, DeleteOne, UpdateMany
 
 # NOC modules
 from noc.core.migration.base import BaseMigration
@@ -18,7 +18,7 @@ class Migration(BaseMigration):
     def migrate(self):
         db = self.mongo_db
         os_linux_profile_id = db.noc.profiles.find_one({"name": "OS.Linux"})
-        bulk = []
+        bulk, bulk_pcr, bulk_fw = [], [], []
         if os_linux_profile_id:
             os_linux_profile_id = os_linux_profile_id["_id"]
         else:
@@ -34,9 +34,15 @@ class Migration(BaseMigration):
                 )
             ]
         old_profiles = set()
-        for profile in db.noc.profiles.find({"name": {"$regex": "^Linux|FreeBSD"}}, {"_id": 1}):
+        for profile in db.noc.profiles.find({"name": {"$regex": "^Linux.+"}}, {"_id": 1}):
             profile_id = profile["_id"]
             bulk += [DeleteOne({"_id": profile_id})]
+            bulk_pcr += [
+                UpdateMany({"profile": profile_id}, {"$set": {"profile": os_linux_profile_id}})
+            ]
+            bulk_fw += [
+                UpdateMany({"profile": profile_id}, {"$set": {"profile": os_linux_profile_id}})
+            ]
             old_profiles.add(profile_id)
         if old_profiles:
             old_profiles = list(old_profiles)
@@ -59,3 +65,7 @@ class Migration(BaseMigration):
             )
         if bulk:
             db.noc.profiles.bulk_write(bulk)
+        if bulk_pcr:
+            db.noc.profilecheckrules.bulk_write(bulk_pcr)
+        if bulk_fw:
+            db.noc.firmwares(bulk_fw)
