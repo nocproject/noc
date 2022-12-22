@@ -413,6 +413,20 @@ class CorrelatorService(FastAPIService):
         :param min_group_size: For Group alarm, minimal count alarm on it
         :returns: Alarm, if created, None otherwise
         """
+        def save_to_disposelog(a: ActiveAlarm):
+            # Send dispose information to clickhouse
+            data = {
+                "date": event.timestamp.date(),
+                "ts": event.timestamp,
+                "event_id": str(event.id),
+                "alarm_id": str(a.id),
+                "op": event.event_class.disposition[0].action,
+                "managed_object": managed_object.id,
+                "event_class": event.event_class.bi_id,
+                "alarm_class": alarm_class.bi_id,
+            }
+            self.register_metrics("disposelog", [data])
+
         scope_label = str(event.id) if event else "DIRECT"
         labels = labels or []
         # @todo: Make configurable
@@ -445,6 +459,7 @@ class CorrelatorService(FastAPIService):
                 if event:
                     event.contribute_to_alarm(alarm)
                     metrics["alarm_contribute"] += 1
+                    save_to_disposelog(alarm)
                 self.refresh_alarm(alarm, timestamp)
                 if config.correlator.auto_escalation:
                     AlarmEscalation.watch_escalations(alarm)
@@ -517,18 +532,7 @@ class CorrelatorService(FastAPIService):
         a.save()
         if event:
             event.contribute_to_alarm(a)
-            # Send dispose information to clickhouse
-            data = {
-                "date": event.timestamp.date(),
-                "ts": event.timestamp,
-                "event_id": str(event.id),
-                "alarm_id": str(a.id),
-                "op": event.event_class.disposition[0].action,
-                "managed_object": managed_object.id,
-                "event_class": event.event_class.bi_id,
-                "alarm_class": alarm_class.bi_id,
-            }
-            self.register_metrics("disposelog", [data])
+            save_to_disposelog(a)
         self.logger.info(
             "[%s|%s|%s] Raise alarm %s(%s): %r [%s]",
             scope_label,
