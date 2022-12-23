@@ -102,6 +102,7 @@ Ext.define("NOC.inv.map.Application", {
 
         me.updated = Ext.create("Ext.form.field.Display", {
             value: "0 sec",
+            width: 50,
             listeners: {
               afterrender: function() {
                   Ext.create("Ext.ToolTip", {
