@@ -731,6 +731,7 @@ Ext.define("NOC.inv.map.MapPanel", {
             scope: me,
             success: function(response) {
                 var data = Ext.decode(response.responseText);
+                me.app.startUpdatedTimer();
                 me.applyObjectStatuses(data);
             },
             failure: function() {

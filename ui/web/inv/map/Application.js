@@ -21,6 +21,7 @@ Ext.define("NOC.inv.map.Application", {
         "Ext.ux.form.SearchField"
     ],
     rightWidth: 250,
+    updatedPollingTaskId: null,
     zoomLevels: [
         [0.25, "25%"],
         [0.5, "50%"],
@@ -96,6 +97,20 @@ Ext.define("NOC.inv.map.Application", {
             listeners: {
                 scope: me,
                 select: me.onZoom
+            }
+        });
+
+        me.updated = Ext.create("Ext.form.field.Display", {
+            value: "0 sec",
+            listeners: {
+              afterrender: function() {
+                  Ext.create("Ext.ToolTip", {
+                      target: this.getEl(),
+                      anchor: "top",
+                      trackMouse: true,
+                      html: __("It has been since the last update")
+                  });
+              }
             }
         });
 
@@ -352,6 +367,7 @@ Ext.define("NOC.inv.map.Application", {
                         me.segmentCombo,
                         "-",
                         me.zoomCombo,
+                        me.updated,
                         me.reloadButton,
                         "-",
                         me.searchField,
@@ -668,5 +684,22 @@ Ext.define("NOC.inv.map.Application", {
             me.currentHistoryHash += ":" + me.selectedObjectId;
         }
         Ext.History.setHash(me.currentHistoryHash);
+    },
+
+    startUpdatedTimer: function() {
+        var me = this,
+          interval = 5;
+
+        if(me.updatedPollingTaskId) {
+            Ext.TaskManager.stop(me.updatedPollingTaskId);
+        }
+
+        me.updatedPollingTaskId = Ext.TaskManager.start({
+            run: function(counter) {
+                me.updated.setValue((counter - 1) * interval + " " + __("sec"));
+            },
+            interval: interval * 1000,
+            scope: me
+        });
     }
 });
