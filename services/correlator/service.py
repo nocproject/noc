@@ -1400,7 +1400,7 @@ class CorrelatorService(FastAPIService):
     def get_by_reference(cls, reference: str) -> Optional["ActiveAlarm"]:
         return ActiveAlarm.objects.filter(reference=cls.get_reference_hash(reference)).first()
 
-    def set_status(self, object: int, status: bool, ts: Optional[int] = None) -> None:
+    def set_status(self, object: int, status: bool, ts: Optional[datetime.datetime] = None) -> None:
         """
         Add status changes to
         :param object: ManagedObject Id for setting status
@@ -1423,11 +1423,11 @@ class CorrelatorService(FastAPIService):
             # Count status changes
             count = len(self.status_changes)
             if not count:
-                self.logger.info("Nothing statuses for update")
                 continue
             r = []
             for _ in range(0, count):
                 r.append(self.status_changes.popleft())
+            self.logger.info("Updating %d statuses", len(r))
             ObjectStatus.update_status_bulk(r)
 
 

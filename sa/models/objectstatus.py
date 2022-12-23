@@ -35,7 +35,7 @@ class ObjectStatus(Document):
     last = DateTimeField()
 
     def __str__(self):
-        return "%s: %s" % (self.object, self.status)
+        return f"{self.object}: {self.status}"
 
     @classmethod
     def get_status(cls, object):
@@ -133,7 +133,7 @@ class ObjectStatus(Document):
                 continue
             elif cs[oid]["status"] != status:
                 # Status changed
-                bulk += [UpdateOne({"object": oid}, {"status": status, "last": ts})]
+                bulk += [UpdateOne({"object": oid}, {"$set": {"status": status, "last": ts}})]
                 cs[oid] = {"status": status, "last": ts}
         if bulk:
             coll.bulk_write(bulk, ordered=True)
