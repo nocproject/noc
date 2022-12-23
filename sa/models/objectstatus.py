@@ -8,11 +8,12 @@
 
 # Python modules
 import datetime
+from typing import List, Dict, Tuple, Optional
 
 # Third-party modules
 from mongoengine.document import Document
 from mongoengine.fields import IntField, BooleanField, DateTimeField
-from typing import List, Dict
+from pymongo import UpdateOne, InsertOne
 
 # NOC modules
 from noc.fm.models.outage import Outage
@@ -101,3 +102,38 @@ class ObjectStatus(Document):
             # Status changed
             Outage.register_outage(object, not status, ts=ts)
         return True
+
+    @classmethod
+    def update_status_bulk(cls, statuses: List[Tuple[int, bool, Optional[int]]]):
+        """
+        Update statuses bulk
+        :param statuses:
+        :return:
+        """
+        now = datetime.datetime.now()
+        coll = ObjectStatus._get_collection()
+
+        bulk = []
+        # Getting current status
+        cs = {
+            x["object"]: {"status": x["status"], "last": x.get("last")}
+            for x in coll.find({"object": {"$in": [x[0] for x in statuses]}})
+        }
+        for oid, status, ts in statuses:
+            ts = ts or now
+            if oid not in cs:
+                # Setting status for first time
+                bulk += [InsertOne({"object": oid, "status": status, "last": ts})]
+                cs[oid] = {"status": status, "last": ts}
+                continue
+            if cs[oid]["last"] > ts:
+                # Oops, out-of-order update
+                # Restore correct state
+                # bulk += [UpdateOne({"object": oid}, {"status": cs[oid]["status"], "last": cs[oid]["last"]})]
+                continue
+            elif cs[oid]["status"] != status:
+                # Status changed
+                bulk += [UpdateOne({"object": oid}, {"status": status, "last": ts})]
+                cs[oid] = {"status": status, "last": ts}
+        if bulk:
+            coll.bulk_write(bulk, ordered=True)

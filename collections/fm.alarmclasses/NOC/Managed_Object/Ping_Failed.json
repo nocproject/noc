@@ -7,11 +7,9 @@
     "default_severity__name": "WARNING",
     "vars": [],
     "handlers": [
-        "noc.fm.handlers.alarm.status.set_down",
         "noc.fm.handlers.alarm.segment.set_segment_redundancy"
     ],
     "clear_handlers": [
-        "noc.fm.handlers.alarm.status.set_up",
         "noc.fm.handlers.alarm.segment.check_segment_redundancy"
     ],
     "subject_template": "Ping Failed",

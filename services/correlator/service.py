@@ -10,12 +10,13 @@
 import sys
 import datetime
 import re
-from collections import defaultdict
+from collections import defaultdict, deque
 import threading
 from typing import DefaultDict, Union, Any, Iterable, Optional, Tuple, Dict, List, Set
 import operator
 from itertools import chain
 from hashlib import sha512
+import asyncio
 
 # Third-party modules
 import orjson
@@ -83,6 +84,7 @@ class CorrelatorService(FastAPIService):
         self.rca_reverse = defaultdict(set)  # alarm_class -> set([alarm_class])
         self.alarm_rule_set = AlarmRuleSet()
         self.alarm_class_vars = defaultdict(dict)
+        self.status_changes = deque([])  # Save status changes
         #
         self.slot_number = 0
         self.total_slots = 0
@@ -116,6 +118,7 @@ class CorrelatorService(FastAPIService):
         )
         self.scheduler.correlator = self
         self.scheduler.run()
+        asyncio.create_task(self.update_object_statuses())
         # Subscribe stream, move to separate task to let the on_activate to terminate
         self.loop.create_task(
             self.subscribe_stream(
@@ -964,7 +967,7 @@ class CorrelatorService(FastAPIService):
         )
         alarm.last_update = max(alarm.last_update, ts)
         groups = alarm.groups
-        alarm.clear_alarm(message or "Cleared by id", source=source)
+        alarm.clear_alarm(message or "Cleared by id", ts=ts, source=source)
         metrics["alarm_clear"] += 1
         await self.clear_groups(groups, ts=ts)
 
@@ -999,7 +1002,7 @@ class CorrelatorService(FastAPIService):
         )
         alarm.last_update = max(alarm.last_update, ts)
         groups = alarm.groups
-        alarm.clear_alarm(message or "Cleared by reference")
+        alarm.clear_alarm(message or "Cleared by reference", ts=ts)
         metrics["alarm_clear"] += 1
         await self.clear_groups(groups, ts=ts)
 
@@ -1396,6 +1399,36 @@ class CorrelatorService(FastAPIService):
     @cachetools.cachedmethod(operator.attrgetter("_reference_cache"), lock=lambda _: ref_lock)
     def get_by_reference(cls, reference: str) -> Optional["ActiveAlarm"]:
         return ActiveAlarm.objects.filter(reference=cls.get_reference_hash(reference)).first()
+
+    def set_status(self, object: int, status: bool, ts: Optional[int] = None) -> None:
+        """
+        Add status changes to
+        :param object: ManagedObject Id for setting status
+        :param status: Status True/Flase
+        :param ts: Timestamp when change
+        :return:
+        """
+        self.status_changes.append((object, status, ts))
+
+    async def update_object_statuses(self):
+        """
+        Update object statuses
+        :return:
+        """
+        from noc.sa.models.objectstatus import ObjectStatus
+
+        self.logger.info("Running object status updater")
+        while True:
+            await asyncio.sleep(config.correlator.object_status_update_interval)
+            # Count status changes
+            count = len(self.status_changes)
+            if not count:
+                self.logger.info("Nothing statuses for update")
+                continue
+            r = []
+            for _ in range(0, count):
+                r.append(self.status_changes.popleft())
+            ObjectStatus.update_status_bulk(r)
 
 
 if __name__ == "__main__":
