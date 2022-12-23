@@ -22,6 +22,7 @@ from mongoengine.queryset.visitor import Q
 
 # NOC modules
 from noc.config import config
+from noc.core.clickhouse.connect import connection
 from noc.services.web.base.extapplication import ExtApplication, view
 from noc.inv.models.object import Object
 from noc.inv.models.networksegment import NetworkSegment
@@ -31,6 +32,7 @@ from noc.fm.models.alarmclass import AlarmClass
 from noc.fm.models.alarmseverity import AlarmSeverity
 from noc.fm.models.activeevent import ActiveEvent
 from noc.fm.models.archivedevent import ArchivedEvent
+from noc.fm.models.eventclass import EventClass
 from noc.fm.models.utils import get_alarm
 from noc.sa.models.managedobject import ManagedObject
 from noc.inv.models.resourcegroup import ResourceGroup
@@ -461,20 +463,32 @@ class AlarmApplication(ExtApplication):
             ]
         # Events
         events = []
-        for ec in ActiveEvent, ArchivedEvent:
-            for e in ec.objects.filter(alarms=alarm.id):
-                events += [
-                    {
-                        "id": str(e.id),
-                        "event_class": str(e.event_class.id),
-                        "event_class__label": e.event_class.name,
-                        "timestamp": self.to_json(e.timestamp),
-                        "status": e.status,
-                        "managed_object": e.managed_object.id,
-                        "managed_object__label": e.managed_object.name,
-                        "subject": e.subject,
-                    }
-                ]
+        query = f"""select
+            e.event_id, ec.id as ec_id, ec.name as ec_name, e.ts,
+            e.managed_object, mo.name as mo_name, e.vars
+            from events e
+            join dict_eventclass ec on ec.bi_id=e.event_class
+            join dict_managedobject mo on mo.id=e.managed_object
+            where e.event_id in
+            (select event_id from disposelog where alarm_id='{alarm.id}')
+        """
+        cursor = connection()
+        e_stub = ActiveEvent()
+        for e in cursor.execute(query):
+            e_stub.event_class = EventClass.get_by_id(e[1])
+            e_stub.vars = eval(e[6])
+            events += [
+                {
+                    "id": e[0],
+                    "event_class": e[1],
+                    "event_class__label": e[2],
+                    "timestamp": e[3],
+                    "status": "A",
+                    "managed_object": e[4],
+                    "managed_object__label": e[5],
+                    "subject": e_stub.subject,
+                }
+            ]
         if events:
             d["events"] = events
         # Alarms
