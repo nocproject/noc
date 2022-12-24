@@ -45,6 +45,9 @@ class TreeLayout(LayoutBase):
         # Assign positions
         x0 = 0
         pos = {}
+        if len(top) == len(G.nodes):
+            # No root detected. Mark all nodes as isolated
+            return pos
         for u in top:
             pos.update(self.get_tree_pos(G, u, x0, w))
             x0 += G.nodes[u]["tree_width"]

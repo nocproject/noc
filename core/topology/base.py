@@ -35,6 +35,7 @@ class TopologyBase(object):
     version: int = 0  # Generator version
     header: Optional[str] = None
 
+    PARAMS: Set[str] = set()  # Allowed generator params
     CAPS: Set[str] = set()
 
     DEFAULT_LEVEL = 10
@@ -53,17 +54,10 @@ class TopologyBase(object):
     # Fixed map shifting
     MAP_OFFSET = np.array([50, 20])
 
-    def __init__(
-        self,
-        gen_id: str,
-        node_hints: Optional[Dict[str, Any]] = None,
-        link_hints: Optional[Dict[str, Any]] = None,
-        **kwargs,
-    ):
-        self.gen_id = gen_id
-        #
-        self.node_hints = node_hints or {}
-        self.link_hints = link_hints or {}
+    def __init__(self, **settings):
+        # Hints
+        self.node_hints: Optional[Dict[str, Any]] = settings.get("node_hints") or {}
+        self.link_hints: Optional[Dict[str, Any]] = settings.get("link_hints") or {}
         self.default_stencil = stencil_registry.get(stencil_registry.DEFAULT_STENCIL)
         #
         self.pn = 0
@@ -74,7 +68,7 @@ class TopologyBase(object):
         # Graph
         self.G = nx.Graph()
         self.caps: Set[str] = set()
-        self.options = kwargs or {}
+        self.settings = settings or {}
         self.load()  # Load nodes
 
     def __len__(self):
@@ -86,6 +80,10 @@ class TopologyBase(object):
 
     def __contains__(self, item):
         return item.id in self.G
+
+    @property
+    def gen_id(self) -> Optional[str]:
+        raise NotImplementedError
 
     @property
     def title(self):
@@ -148,6 +146,7 @@ class TopologyBase(object):
                 "shape_overlay": [asdict(x) for x in n.overlays] if n.overlays else [],
                 "ports": [],
                 "caps": list(oc),
+                "object_filter": n.object_filter,
             }
         )
         self.G.add_node(o_id, **attrs)
@@ -362,9 +361,9 @@ class TopologyBase(object):
         if not len(self.G):
             # Empty graph
             return SpringLayout
-        if not self.options.get("force_spring") and len(self.get_rings()) == 1:
+        if not self.settings.get("force_spring") and len(self.get_rings()) == 1:
             return RingLayout
-        elif not self.options.get("force_spring") and nx.is_forest(self.G):
+        elif not self.settings.get("force_spring") and nx.is_forest(self.G):
             return TreeLayout
         else:
             return SpringLayout

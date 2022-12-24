@@ -14,7 +14,7 @@ from bson import ObjectId
 
 # NOC modules
 from noc.core.topology.base import TopologyBase
-from noc.core.topology.types import MapItem, PathItem, BackgroundImage, MapMeta
+from noc.core.topology.types import MapItem, PathItem, BackgroundImage, MapMeta, Layout
 from noc.inv.models.configuredmap import ConfiguredMap
 from noc.inv.models.link import Link
 from noc.inv.models.interface import Interface
@@ -26,13 +26,17 @@ class ConfiguredTopology(TopologyBase):
 
     name = "configured"
     header = "Configured Map"
-    NORMALIZE_POSITION = False
 
-    def __init__(self, gen_id, node_hints=None, link_hints=None, force_spring=False):
+    NORMALIZE_POSITION = False
+    ISOLATED_WIDTH = 600
+
+    def __init__(self, gen_id, **settings):
         self.cfgmap: ConfiguredMap = ConfiguredMap.get_by_id(gen_id)
-        super().__init__(
-            gen_id, node_hints=node_hints, link_hints=link_hints, force_spring=force_spring
-        )
+        super().__init__(**settings)
+
+    @property
+    def gen_id(self) -> Optional[str]:
+        return str(self.cfgmap.id)
 
     @property
     def meta(self) -> MapMeta:
@@ -45,6 +49,7 @@ class ConfiguredTopology(TopologyBase):
             else None,
             width=self.cfgmap.width,
             height=self.cfgmap.height,
+            layout=Layout(self.cfgmap.layout),
         )
 
     @classmethod
