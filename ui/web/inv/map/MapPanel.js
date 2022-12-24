@@ -310,6 +310,7 @@ Ext.define("NOC.inv.map.MapPanel", {
         me.currentStpRoots = {};
         me.graph.clear();
         me.paper.setGridSize(data.grid_size);
+        me.pollingInterval = data.object_status_refresh_interval * 1000 || me.pollingInterval;
         // Set background
         if(data.background_image) {
             backgroundOpt = {
@@ -737,6 +738,7 @@ Ext.define("NOC.inv.map.MapPanel", {
             scope: me,
             success: function(response) {
                 var data = Ext.decode(response.responseText);
+                me.app.startUpdatedTimer();
                 me.applyObjectStatuses(data);
             },
             failure: function() {
