@@ -264,7 +264,7 @@ Ext.define('NOC.data.request.Ajax', {
 
         owner.onRequestComplete(me);
 
-        me.callParent([xdrResult]);
+        me.superclass[arguments.callee.$name].apply(me, xdrResult);
 
         return response;
     },
