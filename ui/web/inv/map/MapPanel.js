@@ -226,9 +226,6 @@ Ext.define("NOC.inv.map.MapPanel", {
         me.paper = new joint.dia.Paper({
             el: dom,
             model: me.graph,
-            gridSize: 25,
-            gridWidth: 25,
-            gridHeight: 25,
             preventContextMenu: false,
             async: false,
             guard: function(evt) {
@@ -312,6 +309,8 @@ Ext.define("NOC.inv.map.MapPanel", {
         me.interfaceMetrics = [];
         me.currentStpRoots = {};
         me.graph.clear();
+        me.paper.setGridSize(data.grid_size);
+        me.pollingInterval = data.object_status_refresh_interval * 1000 || me.pollingInterval;
         // Set background
         if(data.background_image) {
             backgroundOpt = {
@@ -412,7 +411,8 @@ Ext.define("NOC.inv.map.MapPanel", {
                 node_id: data.node_id,
                 caps: data.caps,
                 isMaintenance: false,
-                portal: data.portal
+                portal: data.portal,
+                object_filter: data.object_filter,
             }
         });
         Ext.each(data.shape_overlay, function(config) {
@@ -421,7 +421,9 @@ Ext.define("NOC.inv.map.MapPanel", {
             badges.push(badge);
         });
         me.objectNodes[data.id] = node;
-        me.objectsList.push({"node_type": data.type, "node_id": data.node_id, "id": data.id})
+        me.objectsList.push(
+            {"node_type": data.type, "node_id": data.node_id, "id": data.id, "object_filter": data.object_filter}
+        )
         return {node: node, badges: badges};
     },
     //
@@ -551,6 +553,11 @@ Ext.define("NOC.inv.map.MapPanel", {
                 view.highlight();
                 me.currentHighlight = view;
                 me.app.inspectObjectSegment(data.node_id);
+                break;
+            case "other":
+                view.highlight();
+                me.currentHighlight = view;
+                me.app.inspectObjectPortal(data.portal);
                 break;
         }
     },
@@ -731,6 +738,7 @@ Ext.define("NOC.inv.map.MapPanel", {
             scope: me,
             success: function(response) {
                 var data = Ext.decode(response.responseText);
+                me.app.startUpdatedTimer();
                 me.applyObjectStatuses(data);
             },
             failure: function() {

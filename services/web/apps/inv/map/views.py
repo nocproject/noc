@@ -6,8 +6,9 @@
 # ---------------------------------------------------------------------
 
 # Python modules
-from collections import defaultdict
+import itertools
 import threading
+from collections import defaultdict
 from typing import List, Set, Dict
 
 # Third-party modules
@@ -55,6 +56,7 @@ class MapApplication(ExtApplication):
     lookup_default = [{"id": "Leave unchanged", "label": "Leave unchanged"}]
     gen_param = "generator"
     gen_id_param = "generator_id"
+    q_parent = "parent"
 
     # Object statuses
     ST_UNKNOWN = 0  # Object state is unknown
@@ -90,7 +92,7 @@ class MapApplication(ExtApplication):
         #     return {"id": str(segment.id), "name": segment.name, "error": _("Too many objects")}
         try:
             return MapSettings.get_map(
-                gen_id, gen_type=gen_type, force_spring=request.GET.get("force") == "spring"
+                gen_type=gen_type, gen_id=gen_id, force_spring=request.GET.get("force") == "spring"
             )
         except ValueError as e:
             return {"id": gen_id, "name": f"{gen_type}: {gen_id}", "error": str(e)}
@@ -286,20 +288,46 @@ class MapApplication(ExtApplication):
                 )
             }
 
+        nid = {}
+        group_nodes = {}  # (segment, group)
+        # Build id -> object_id mapping
+        for o in nodes:
+            if o["node_type"] == "managedobject":
+                nid[o["node_id"]] = o["id"]
+            elif o["node_type"] == "objectgroup":
+                group_nodes[("", o["node_id"])] = o["id"]
+            elif o["node_type"] == "objectsegment":
+                group_nodes[(o["node_id"], "")] = o["id"]
+            elif o["node_type"] == "other" and o.get("object_filter"):
+                group_nodes[
+                    (
+                        o["object_filter"].get("segment", ""),
+                        o["object_filter"].get("resource_group", ""),
+                    )
+                ] = o["id"]
+        object_group = defaultdict(set)  # mo_id -> groups
+        # Processed groups
+        for (segment, group), n_id in group_nodes.items():
+            if not group:
+                continue
+            if not segment:
+                mos = ManagedObject.objects.filter(
+                    effective_service_groups__overlap=[group]
+                ).values_list("id", flat=True)
+            else:
+                mos = ManagedObject.objects.filter(
+                    effective_service_groups__overlap=[group], segment=segment
+                ).values_list("id", flat=True)
+            for mo_id in mos:
+                object_group[mo_id].add(n_id)
         # Mark all as unknown
-        objects: List[int] = [int(o["id"]) for o in nodes if o["node_type"] == "managedobject"]
-        groups = {o["id"] for o in nodes if o["node_type"] == "objectgroup"}
-        segments: List[str] = [str(o["id"]) for o in nodes if o["node_type"] == "objectsegment"]
-        r = {o: self.ST_UNKNOWN for o in objects}
+        objects = list(itertools.chain(nid, object_group))
+        r = {o: self.ST_UNKNOWN for o in itertools.chain(nid.values(), group_nodes.values())}
         sr = ObjectStatus.get_statuses(objects)
-        mo_group_map = defaultdict(set)
-        for mo_id, mo_groups in ManagedObject.objects.filter(
-            effective_service_groups__overlap=list(groups)
-        ).values_list("id", "effective_service_groups"):
-            objects.append(mo_id)
-            mo_group_map[mo_id] = groups.intersection(set(mo_groups))
         sa = get_alarms(objects)
         mo = Maintenance.currently_affected(objects)
+        # Nodes Status
+        group_status = defaultdict(set)
         for o in sr:
             if sr[o]:
                 # Check for alarms
@@ -311,9 +339,16 @@ class MapApplication(ExtApplication):
                 r[o] = self.ST_DOWN
             if o in mo:
                 r[o] |= self.ST_MAINTENANCE
-            if o in sa and o in mo_group_map:
-                for g in mo_group_map[o]:
-                    r[g] = self.ST_ALARM
+            if o not in object_group:
+                continue
+            for g in object_group[o]:
+                group_status[g].add(r[o])
+        for g, status in group_status.items():
+            if self.ST_ALARM in status or self.ST_DOWN in status:
+                r[g] = self.ST_ALARM
+            elif self.ST_OK in status:
+                r[g] = self.ST_OK
+        segments = [s for s, g in group_nodes if not g]
         sa = get_alarms_segment(segments)
         for s in segments:
             if s in sa:
@@ -417,7 +452,12 @@ class MapApplication(ExtApplication):
         api=True,
     )
     def api_reset(self, request, gen_type, gen_id):
-        MapSettings.objects.filter(gen_type=gen_type, gen_id=gen_id).delete()
+        # MapSettings.objects.filter(gen_type=gen_type, gen_id=gen_id).delete()
+        settings = MapSettings.objects.filter(gen_type=gen_type, gen_id=gen_id).first()
+        if settings:
+            settings.nodes = []
+            settings.links = []
+            settings.save()
         return {"status": True}
 
     @view(
@@ -471,7 +511,7 @@ class MapApplication(ExtApplication):
         """
         q = {str(k): v[0] if len(v) == 1 else v for k, v in request.GET.lists()}
         r = []
-        if not q.get(self.gen_param):
+        if not q.get(self.q_parent):
             for mi in loader:
                 mi = loader[mi]
                 r.append(
@@ -490,7 +530,7 @@ class MapApplication(ExtApplication):
                 {"success": False, "message": f"Unknown generator: {q[self.gen_param]}"},
                 status=self.NOT_FOUND,
             )
-        if gen.name == q.get("parent"):
+        if gen.name == q.get(self.q_parent):
             q["parent"] = None
         for mi in gen.iter_maps(
             parent=q.get("parent"),
@@ -531,7 +571,8 @@ class MapApplication(ExtApplication):
             )
         return {
             "data": [
-                {"level": p.level, "id": str(p.id), "label": p.title} for p in gen.iter_path(gen_id)
+                {"level": p.level, "id": str(p.id), "generator": gen.name, "label": p.title}
+                for p in gen.iter_path(gen_id)
             ]
         }
 

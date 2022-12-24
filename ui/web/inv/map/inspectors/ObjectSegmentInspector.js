@@ -8,7 +8,7 @@ console.debug("Defining NOC.inv.map.inspectors.ObjectSegmentInspector");
 
 Ext.define("NOC.inv.map.inspectors.ObjectSegmentInspector", {
     extend: "NOC.inv.map.inspectors.Inspector",
-    title: __("ObjectGroup Inspector"),
+    title: __("ObjectSegment Inspector"),
     inspectorName: "objectsegment",
 
     tpl: [
@@ -24,7 +24,7 @@ Ext.define("NOC.inv.map.inspectors.ObjectSegmentInspector", {
             glyph: NOC.glyph.eye,
             scope: this,
             tooltip: __("View card"),
-            handler: this.onMOCard,
+            handler: this.onSegmentCard,
             disabled: true
         });
 
@@ -54,7 +54,7 @@ Ext.define("NOC.inv.map.inspectors.ObjectSegmentInspector", {
         this.app.segmentCombo.restoreById(this.currentObjectId);
     },
 
-    onMOCard: function() {
+    onSegmentCard: function() {
         if(this.currentObjectId) {
             window.open(
                 "/api/card/view/segment/" + this.currentObjectId + "/"

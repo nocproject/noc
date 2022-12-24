@@ -11,6 +11,13 @@ from dataclasses import dataclass
 from typing import Optional, Dict, Any, List, Literal
 
 
+class Layout(str, Enum):
+    Manual = "M"
+    Force_Auto = "FA"  # Always rebuild layout hints
+    Auto = "A"
+    Force_Spring = "FS"
+
+
 class ShapeOverlayPosition(str, Enum):
     NW = "NW"
     N = "N"
@@ -66,7 +73,8 @@ class PathItem(object):
 @dataclass
 class Portal(object):
     generator: str
-    id: str
+    id: Optional[str] = None
+    settings: Optional[Dict[str, Any]] = None
 
 
 @dataclass
@@ -86,6 +94,8 @@ class TopologyNode(object):
     portal: Optional[Portal] = None
     level: int = 25
     attrs: Optional[Dict[str, Any]] = None
+    #
+    object_filter: Optional[Dict[str, Any]] = None
 
     def get_attr(self) -> Dict[str, Any]:
         return self.attrs or {}
@@ -98,5 +108,8 @@ class TopologyNode(object):
 class MapMeta(object):
     title: str
     image: Optional[BackgroundImage] = None
-    width: int = 0
-    height: int = 0
+    width: Optional[int] = None
+    height: Optional[int] = None
+    layout: Layout = Layout("A")
+    object_status_refresh_interval: int = 60
+    max_links: int = 1000

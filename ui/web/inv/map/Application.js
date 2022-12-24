@@ -21,6 +21,7 @@ Ext.define("NOC.inv.map.Application", {
         "Ext.ux.form.SearchField"
     ],
     rightWidth: 250,
+    updatedPollingTaskId: null,
     zoomLevels: [
         [0.25, "25%"],
         [0.5, "50%"],
@@ -96,6 +97,21 @@ Ext.define("NOC.inv.map.Application", {
             listeners: {
                 scope: me,
                 select: me.onZoom
+            }
+        });
+
+        me.updated = Ext.create("Ext.form.field.Display", {
+            value: "0 sec",
+            width: 50,
+            listeners: {
+              afterrender: function() {
+                  Ext.create("Ext.ToolTip", {
+                      target: this.getEl(),
+                      anchor: "top",
+                      trackMouse: true,
+                      html: __("It has been since the last update")
+                  });
+              }
             }
         });
 
@@ -176,6 +192,11 @@ Ext.define("NOC.inv.map.Application", {
             readOnly: me.readOnly
         });
 
+        me.objectPortalInspector = Ext.create("NOC.inv.map.inspectors.ObjectPortalInspector", {
+            app: me,
+            readOnly: me.readOnly
+        });
+
         me.linkInspector = Ext.create("NOC.inv.map.inspectors.LinkInspector", {
             app: me,
             readOnly: me.readOnly
@@ -234,7 +255,8 @@ Ext.define("NOC.inv.map.Application", {
                 me.managedObjectInspector,
                 me.linkInspector,
                 me.objectGroupInspector,
-                me.objectSegmentInspector
+                me.objectSegmentInspector,
+                me.objectPortalInspector,
             ]
         });
 
@@ -352,6 +374,7 @@ Ext.define("NOC.inv.map.Application", {
                         me.segmentCombo,
                         "-",
                         me.zoomCombo,
+                        me.updated,
                         me.reloadButton,
                         "-",
                         me.searchField,
@@ -396,7 +419,7 @@ Ext.define("NOC.inv.map.Application", {
         me.saveButton.setDisabled(true);
         me.setStateMapButtons(!me.editButton.pressed);
         me.editButton.setPressed(false);
-        me.inspectSegment();
+        // me.inspectSegment();
         me.viewMapButton.setPressed(true);
         me.viewStpButton.setPressed(false);
         me.zoomCombo.setValue(1.0);
@@ -484,6 +507,14 @@ Ext.define("NOC.inv.map.Application", {
             me.objectSegmentInspector
         );
         me.objectSegmentInspector.preview(me.currentSegmentId, objectId);
+    },
+
+    inspectObjectPortal: function(objectId) {
+        var me = this;
+        me.inspectorPanel.getLayout().setActiveItem(
+            me.objectPortalInspector
+        );
+        me.objectPortalInspector.preview(me.currentSegmentId, objectId);
     },
 
     onEdit: function() {
@@ -668,5 +699,22 @@ Ext.define("NOC.inv.map.Application", {
             me.currentHistoryHash += ":" + me.selectedObjectId;
         }
         Ext.History.setHash(me.currentHistoryHash);
+    },
+
+    startUpdatedTimer: function() {
+        var me = this,
+          interval = 5;
+
+        if(me.updatedPollingTaskId) {
+            Ext.TaskManager.stop(me.updatedPollingTaskId);
+        }
+
+        me.updatedPollingTaskId = Ext.TaskManager.start({
+            run: function(counter) {
+                me.updated.setValue((counter - 1) * interval + " " + __("sec"));
+            },
+            interval: interval * 1000,
+            scope: me
+        });
     }
 });

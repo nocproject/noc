@@ -17,10 +17,12 @@ Ext.define("NOC.inv.configuredmap.Application", {
         "NOC.core.JSONPreview",
         "NOC.core.ListFormField",
         "NOC.inv.configuredmap.Model",
+        "NOC.inv.configuredmap.LookupField",
         "NOC.core.combotree.ComboTree",
         "NOC.sa.managedobject.LookupField",
         "NOC.main.imagestore.LookupField",
         "NOC.main.ref.stencil.LookupField",
+        "NOC.main.ref.topologygen.LookupField",
     ],
     model: "NOC.inv.configuredmap.Model",
     search: true,
@@ -82,10 +84,10 @@ Ext.define("NOC.inv.configuredmap.Application", {
                                     allowBlank: false,
                                     uiStyle: "medium",
                                     store: [
-                                        ["auto", "auto"],
-                                        ["manual", "manual"],
-                                        ["spring", "spring"],
-                                        ["radial", "radial"]
+                                        ["A", "Auto"],
+                                        ["M", "Manual"],
+                                        ["FS", "Spring"],
+                                        ["FR", "Radial"]
                                     ]
                                 },
                                 {
@@ -289,6 +291,34 @@ Ext.define("NOC.inv.configuredmap.Application", {
                                                     uiStyle: "large"
                                                 }
                                             ]
+                                        },
+                                        {
+                                            xtype: "fieldset",
+                                            title: __("Portal"),
+                                            layout: "hbox",
+                                            collapsible: true,
+                                            collapsed: true,
+                                            defaults: {
+                                                padding: 4
+                                            },
+                                            items: [
+                                                {
+                                                    name: "portal_generator",
+                                                    xtype: "main.ref.topologygen.LookupField",
+                                                    fieldLabel: __("Generator"),
+                                                    labelAlign: "top",
+                                                    width: 100,
+                                                    allowBlank: true
+                                                },
+                                                {
+                                                    name: "map_portal",
+                                                    xtype: "inv.configuredmap.LookupField",
+                                                    fieldLabel: __("Configured Map"),
+                                                    labelAlign: "top",
+                                                    width: 100,
+                                                    allowBlank: true
+                                                },
+                                            ]
                                         }
                                     ]
                                 },
@@ -371,7 +401,7 @@ Ext.define("NOC.inv.configuredmap.Application", {
         Ext.Array.each(
           me.up().query('[name/="resource_group|segment|managed_object"]'),
           function(field) {
-              field.setDisabled(true);
+              field.setDisabled(value !== "other");
               field.setValue(null);
           });
         switch(value) {

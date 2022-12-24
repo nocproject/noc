@@ -7,10 +7,7 @@
 
 # NOC modules
 from noc.services.web.base.extdocapplication import ExtDocApplication, view
-from noc.inv.models.configuredmap import ConfiguredMap
-from noc.sa.models.managedobject import ManagedObject
-from noc.inv.models.resourcegroup import ResourceGroup
-from noc.inv.models.networksegment import NetworkSegment
+from noc.inv.models.configuredmap import ConfiguredMap, ObjectFilter
 from noc.core.translation import ugettext as _
 
 
@@ -25,6 +22,8 @@ class ConfiguredMapApplication(ExtDocApplication):
     query_fields = ["name__icontains"]
 
     def instance_to_dict(self, o: "ConfiguredMap", fields=None, nocustom=False):
+        if isinstance(o, ObjectFilter):
+            return o
         r = {
             "id": str(o.id),
             "name": o.name,
@@ -46,22 +45,22 @@ class ConfiguredMapApplication(ExtDocApplication):
         for nn in o.nodes:
             node = super().instance_to_dict(nn)
             title = node["title"]
-            ref_id = node.pop("reference_id", None)
-            if nn.node_type == "managedobject" and ref_id:
-                mo = ManagedObject.get_by_id(int(ref_id))
-                node["managed_object"] = mo.id
-                node["managed_object__label"] = mo.name
-                title = title or mo.name
-            elif nn.node_type == "objectgroup" and ref_id:
-                rg = ResourceGroup.get_by_id(ref_id)
-                node["resource_group"] = str(rg.id)
-                node["resource_group__label"] = rg.name
-                title = title or rg.name
-            elif nn.node_type == "objectsegment" and ref_id:
-                ns = NetworkSegment.get_by_id(ref_id)
-                node["segment"] = str(ns.id)
-                node["segment__label"] = ns.name
-                title = title or ns.name
+            object_filter = node.pop("object_filter", None)
+            if object_filter and object_filter.managed_object:
+                # mo = ManagedObject.get_by_id(int(ref_id))
+                node["managed_object"] = object_filter.managed_object.id
+                node["managed_object__label"] = object_filter.managed_object.name
+                title = title or object_filter.managed_object.name
+            if object_filter and object_filter.resource_group:
+                # rg = ResourceGroup.get_by_id(ref_id)
+                node["resource_group"] = str(object_filter.resource_group.id)
+                node["resource_group__label"] = object_filter.resource_group.name
+                title = title or object_filter.resource_group.name
+            if object_filter and object_filter.segment:
+                # ns = NetworkSegment.get_by_id(ref_id)
+                node["segment"] = str(object_filter.segment.id)
+                node["segment__label"] = object_filter.segment.name
+                title = title or object_filter.segment.name
             node_map[str(nn.node_id)] = title
             r["nodes"].append(node)
         for ll in o.links:
@@ -83,12 +82,14 @@ class ConfiguredMapApplication(ExtDocApplication):
             mo = node.pop("managed_object", None)
             rg = node.pop("resource_group", None)
             sg = node.pop("segment", None)
-            if node["node_type"] == "managedobject":
-                node["reference_id"] = str(mo)
-            elif node["node_type"] == "objectgroup":
-                node["reference_id"] = rg
-            elif node["node_type"] == "objectsegment":
-                node["reference_id"] = sg
+            object_filter = {}
+            if node["node_type"] in {"managedobject", "other"} and mo:
+                object_filter["managed_object"] = mo
+            if node["node_type"] in {"objectgroup", "other"} and rg:
+                object_filter["resource_group"] = rg
+            if node["node_type"] in {"objectsegment", "other"} and sg:
+                object_filter["segment"] = sg
+            node["object_filter"] = object_filter or None
         return super().clean(data)
 
     @view(r"^(?P<map_id>[0-9a-f]{24})/nodes/$", method=["GET"], access="read", api=True)

@@ -1,7 +1,7 @@
 # ---------------------------------------------------------------------
 # Map Settings
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2020 The NOC Project
+# Copyright (C) 2007-2022 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -20,12 +20,14 @@ from mongoengine.fields import (
     EmbeddedDocumentField,
     IntField,
     DictField,
-    BooleanField,
 )
+from mongoengine.queryset.visitor import Q
 
 # NOC modules
 from noc.core.topology.loader import loader as t_loader
 from noc.core.topology.base import TopologyBase
+from noc.core.topology.types import Layout
+from noc.config import config
 
 logger = logging.getLogger(__name__)
 
@@ -79,6 +81,8 @@ class MapSettings(Document):
     gen_id = StringField()
     # Generator version
     gen_version = IntField(min_value=0)
+    # Generator Params
+    gen_params = DictField()
     # Change time
     last_change_id = DateTimeField()
     current_change_id = DateTimeField(default=datetime.datetime.now())
@@ -87,12 +91,6 @@ class MapSettings(Document):
     # Paper size
     width = FloatField()
     height = FloatField()
-    # Paper image
-    # Gen data
-    # get_data =
-    # Generator Hints
-    force_layout = BooleanField(default=False)  # Always rebuild layout hints
-    gen_hints = DictField()
     #
     nodes = ListField(EmbeddedDocumentField(NodeSettings))
     links = ListField(EmbeddedDocumentField(LinkSettings))
@@ -109,6 +107,27 @@ class MapSettings(Document):
             nodes[n.node] = n
         return nodes
 
+    def get_generator_hints(self, **kwargs) -> Dict[str, str]:
+        """
+        Return Hints settings for generator
+        :param kwargs: Additional hints
+        :return:
+        """
+        node_hints, link_hints = {}, {}
+        r = kwargs or {}
+        if self.gen_params:
+            r.update(self.gen_params)
+        for n in self.nodes:
+            node_hints[n.id] = {"type": n.type, "id": n.id, "x": n.x, "y": n.y}
+        for ll in self.links:
+            link_hints[ll.id] = {
+                "connector": ll.connector if len(ll.vertices) else "normal",
+                "vertices": [{"x": v.x, "y": v.y} for v in ll.vertices],
+            }
+        r["node_hints"] = node_hints
+        r["link_hints"] = link_hints
+        return r
+
     @classmethod
     def load_json(cls, data, user=None):
         """
@@ -124,12 +143,7 @@ class MapSettings(Document):
                 x
                 y
         """
-        d = MapSettings.objects.filter(gen_type=data["gen_type"], gen_id=data["id"]).first()
-        if d:
-            logger.info("[%s|%s] Updating settings for map", data["gen_type"], data["id"])
-        else:
-            logger.info("[%s|%s] Creating new settings", data["gen_type"], data["id"])
-            d = MapSettings(gen_type=data["gen_type"], gen_id=data["id"], nodes=[], links=[])
+        d = cls.ensure_settings(gen_type=data["gen_type"], gen_id=data["id"])
         d.update_settings(
             data.get("nodes", []),
             data.get("links", []),
@@ -179,8 +193,8 @@ class MapSettings(Document):
             nn += [NodeSettings(type=nd["type"], id=nd["id"], x=nd["x"], y=nd["y"])]
             mx = max(mx, nd["x"])
             my = max(my, nd["y"])
-        self.width = width or mx or 0.0
-        self.height = height or my or 0.0
+        self.width = width or mx
+        self.height = height or my
         self.nodes = sorted(nn, key=lambda x: (x.type, x.id))
         # Update links
         new_links = {}
@@ -214,7 +228,49 @@ class MapSettings(Document):
         self.save()
 
     @classmethod
-    def get_map(cls, gen_id: str, gen_type: str, **kwargs) -> Optional[Dict[str, Any]]:
+    def ensure_settings(cls, gen_type: str, gen_id, **kwargs) -> "MapSettings":
+        """
+        Ensure MapSettings Exists and create it if not
+        :param gen_type:
+        :param gen_id:
+        :param kwargs:
+        :return:
+        """
+        settings = MapSettings.objects.filter(
+            Q(gen_type=gen_type, gen_id=gen_id) | Q(gen_type=gen_type, gen_params=kwargs)
+        ).first()
+        if settings:
+            logger.info("[%s|%s|%s] Using stored positions", gen_type, gen_id, kwargs)
+            return settings
+        logger.info("[%s|%s|%s] Create new settings", gen_type, gen_id, kwargs)
+        settings = MapSettings(gen_type=gen_type, gen_id=gen_id, nodes=[], links=[])
+        if kwargs:
+            settings.gen_params = kwargs.copy()
+        return settings
+
+    def is_change_layout(self, topology: TopologyBase) -> bool:
+        """
+        Check rebuild layout needed
+        :param topology:
+        :return:
+        """
+        if topology.meta.layout == Layout("FA"):
+            # Always rebuild layout
+            return True
+        if len(self.nodes) != len(topology.G.nodes):
+            # Change node count
+            return True
+        if (topology.meta.width and self.width != topology.meta.width) or (
+            topology.meta.height and self.height != topology.meta.height
+        ):
+            # Change Map Size
+            return True
+        return False
+
+    @classmethod
+    def get_map(
+        cls, gen_type: str, gen_id: Optional[str] = None, **kwargs
+    ) -> Optional[Dict[str, Any]]:
         """
         Return Map Data
         :param gen_id: Generator Id param
@@ -222,34 +278,21 @@ class MapSettings(Document):
         :param kwargs: generator Hints
         :return:
         """
-        gen = t_loader[gen_type]
+        gen: TopologyBase = t_loader[gen_type]
         if not gen:
             logger.warning("Unknown generator: %s", gen_type)
-            raise ValueError("Unknown Map Type: %s", gen_type)
-        settings: MapSettings = MapSettings.objects.filter(gen_type=gen_type, gen_id=gen_id).first()
-        node_hints = {}
-        link_hints = {}
-        if settings:
-            logger.info("[%s|%s] Using stored positions", gen_type, gen_id)
-            for n in settings.nodes:
-                node_hints[n.id] = {"type": n.type, "id": n.id, "x": n.x, "y": n.y}
-            for ll in settings.links:
-                link_hints[ll.id] = {
-                    "connector": ll.connector if len(ll.vertices) else "normal",
-                    "vertices": [{"x": v.x, "y": v.y} for v in ll.vertices],
-                }
-            layout = settings.force_layout
-        else:
-            logger.info("[%s|%s] Create new settings", gen_type, gen_id)
-            settings = MapSettings(gen_type=gen_type, gen_id=gen_id, nodes=[], links=[])
-            layout = True
+            raise ValueError(f"Unknown Map Type: {gen_type}")
+        params = {k: v for k, v in kwargs.items() if k in gen.PARAMS}
+        if gen.PARAMS and not params and not gen_id:
+            raise ValueError(f"Generator {gen_type} required params: {gen.PARAMS}")
+        # Getting Map settings
+        settings = cls.ensure_settings(gen_type, gen_id, **params)
+        # Getting hints
+        hints = settings.get_generator_hints()
         # Generate topology
-        topology: TopologyBase = gen(gen_id, node_hints, link_hints, **kwargs)
-        if topology.meta.width and settings.width != topology.meta.width:
-            settings.width = topology.meta.width
-        if topology.meta.height and settings.height != topology.meta.height:
-            settings.height = topology.meta.height
-        if layout:
+        logger.debug("[%s] Build topology by param: %s", gen_type, hints)
+        topology: TopologyBase = gen(gen_id, **hints)
+        if settings.is_change_layout(topology):
             logger.info("[%s|%s] Generating positions", gen_type, gen_id)
             topology.layout()
             settings.update_settings(
@@ -267,18 +310,24 @@ class MapSettings(Document):
                     }
                     for n in topology.G.edges.values()
                 ],
+                height=topology.meta.height,
+                width=topology.meta.width,
             )
         background = topology.meta.image
         return {
             "id": str(gen_id),
             "type": gen_type,
-            "max_links": 1000,
+            # Map Params
+            "max_links": topology.meta.max_links,
+            "grid_size": config.web.topology_map_grid_size,
+            "normalize_position": topology.NORMALIZE_POSITION,
+            "object_status_refresh_interval": topology.meta.object_status_refresh_interval,
             "background_image": background.image if background else None,
             "background_opacity": background.opacity if background else None,
+            # Hint params
             "name": topology.title,
             "width": settings.width or 0.0,
             "height": settings.height or 0.0,
-            "normalize_position": topology.NORMALIZE_POSITION,
             "caps": list(topology.caps),
             "nodes": [x for x in topology.iter_nodes()],
             "links": [ll for ll in topology.iter_edges()],
