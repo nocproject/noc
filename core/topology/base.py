@@ -52,7 +52,7 @@ class TopologyBase(object):
     # Maximum spacing between aggregated links
     AGG_LINK_SPACING = 10
     # Fixed map shifting
-    MAP_OFFSET = np.array([50, 20])
+    MAP_OFFSET = np.array([80, 40])
 
     def __init__(self, **settings):
         # Hints
