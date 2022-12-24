@@ -34,6 +34,7 @@ class SegmentTopology(TopologyBase):
     name = "segment"
     header = "Network Segment Schemas"
     CAPS: Set[str] = {"Network | STP"}
+    PARAMS = {"segment"}
 
     def __init__(self, segment, **settings):
         self.segment = (

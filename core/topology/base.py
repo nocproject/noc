@@ -35,6 +35,7 @@ class TopologyBase(object):
     version: int = 0  # Generator version
     header: Optional[str] = None
 
+    PARAMS: Set[str] = set()  # Allowed generator params
     CAPS: Set[str] = set()
 
     DEFAULT_LEVEL = 10

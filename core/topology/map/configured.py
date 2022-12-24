@@ -26,7 +26,9 @@ class ConfiguredTopology(TopologyBase):
 
     name = "configured"
     header = "Configured Map"
+
     NORMALIZE_POSITION = False
+    ISOLATED_WIDTH = 600
 
     def __init__(self, gen_id, **settings):
         self.cfgmap: ConfiguredMap = ConfiguredMap.get_by_id(gen_id)

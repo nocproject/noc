@@ -92,7 +92,7 @@ class MapApplication(ExtApplication):
         #     return {"id": str(segment.id), "name": segment.name, "error": _("Too many objects")}
         try:
             return MapSettings.get_map(
-                gen_id, gen_type=gen_type, force_spring=request.GET.get("force") == "spring"
+                gen_type=gen_type, gen_id=gen_id, force_spring=request.GET.get("force") == "spring"
             )
         except ValueError as e:
             return {"id": gen_id, "name": f"{gen_type}: {gen_id}", "error": str(e)}
