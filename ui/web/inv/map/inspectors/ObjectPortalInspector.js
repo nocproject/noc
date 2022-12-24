@@ -42,13 +42,17 @@ Ext.define("NOC.inv.map.inspectors.ObjectPortalInspector", {
 
     onJumpPortal: function() {
         // this.app.generator = "segment";
-        this.app.segmentCombo.restoreById(this.currentObjectId);
+        this.app.generator = this.gen_type;
+        this.app.segmentCombo.restoreById(this.gen_id);
     },
 
     enableButtons: function(data) {
+        var me = this;
+
+        me.gen_type = data.generator;
+        me.gen_id = data.id;
+
         this.portalButton.setDisabled(false);
-        this.app.generator = data.generator
-        this.currentObjectId = data.id;
     },
 
     getDataURL: function(segmentId, objectId) {
@@ -57,11 +61,10 @@ Ext.define("NOC.inv.map.inspectors.ObjectPortalInspector", {
         return url + objectId + "/";
     },
 
-    preview: function(segmentId, date) {
-        var me = this;
+    preview: function(segmentId, data) {
 
-        this.update(date);
-        this.enableButtons(date);
+        this.update(data);
+        this.enableButtons(data);
     },
 
 });

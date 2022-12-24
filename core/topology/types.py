@@ -108,7 +108,8 @@ class TopologyNode(object):
 class MapMeta(object):
     title: str
     image: Optional[BackgroundImage] = None
-    width: int = 0
-    height: int = 0
+    width: Optional[int] = None
+    height: Optional[int] = None
     layout: Layout = Layout("A")
+    object_status_refresh_interval: int = 60
     max_links: int = 1000

@@ -28,6 +28,8 @@ class ObjectGroupTopology(TopologyBase):
     name = "objectgroup"
     header = "Object Group Schemas"
 
+    PARAMS = {"resource_group"}
+
     def __init__(self, resource_group, **settings):
         self.rg = ResourceGroup.get_by_id(resource_group)
         self.logger = PrefixLoggerAdapter(logger, self.rg.name)
