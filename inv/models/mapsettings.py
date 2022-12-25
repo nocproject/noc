@@ -193,8 +193,8 @@ class MapSettings(Document):
             nn += [NodeSettings(type=nd["type"], id=nd["id"], x=nd["x"], y=nd["y"])]
             mx = max(mx, nd["x"])
             my = max(my, nd["y"])
-        self.width = width or mx
-        self.height = height or my
+        self.width = float(width or mx)  # If not convert float - Validation error as None
+        self.height = float(height or my)  # If convert float - Validation error as None
         self.nodes = sorted(nn, key=lambda x: (x.type, x.id))
         # Update links
         new_links = {}
@@ -236,9 +236,10 @@ class MapSettings(Document):
         :param kwargs:
         :return:
         """
-        settings = MapSettings.objects.filter(
-            Q(gen_type=gen_type, gen_id=gen_id) | Q(gen_type=gen_type, gen_params=kwargs)
-        ).first()
+        q = Q(gen_type=gen_type, gen_id=gen_id)
+        if kwargs:
+            q |= Q(gen_type=gen_type, gen_params=kwargs)
+        settings = MapSettings.objects.filter(q).first()
         if settings:
             logger.info("[%s|%s|%s] Using stored positions", gen_type, gen_id, kwargs)
             return settings
