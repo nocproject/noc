@@ -136,11 +136,10 @@ Ext.define("NOC.sa.managedobject.Application", {
             handler: me.onDashboard
         });
 
-        me.showMapButton = Ext.create("Ext.button.Button", {
+        me.showMapButton = Ext.create("Ext.button.Split", {
             text: __("Show Map"),
             glyph: NOC.glyph.globe,
-            scope: me,
-            handler: me.onShowMap
+            scope: me
         });
 
         me.consoleButton = Ext.create("Ext.button.Button", {
@@ -1589,8 +1588,8 @@ Ext.define("NOC.sa.managedobject.Application", {
                 me.validationSettingsButton,
                 me.capsButton
             ]
-        })
-        ;
+        });
+
         me.callParent();
     },
     filters: [
@@ -1909,6 +1908,47 @@ Ext.define("NOC.sa.managedobject.Application", {
         me.alarmsButton.setDisabled(disabled || !me.currentRecord.get("is_managed"));
         me.maintainceButton.setDisabled(disabled || !me.currentRecord.get("is_managed"));
 
+        if(me.currentRecord && me.currentRecord.get("id")) {
+            me.showMapButton.setDisabled(false);
+            Ext.Ajax.request({
+                url: "/sa/managedobject/" + me.currentRecord.get("id") + "/map_lookup/",
+                method: "GET",
+                scope: me,
+                success: function(response) {
+                    var me = this,
+                      defaultHandler, menu,
+                      data = Ext.decode(response.responseText);
+
+                    defaultHandler = data.filter(function(el) {
+                        return el.is_default
+                    })[0];
+                    me.showMapButton.setHandler(function() {
+                        NOC.launch("inv.map", "history", {
+                            args: defaultHandler.args
+                        });
+                    }, me);
+                    me.showMapButton.setMenu(
+                      data.filter(function(el) {
+                          return !el.is_default
+                      }).map(function(el) {
+                          return {
+                              text: el.label,
+                              handler: function() {
+                                  NOC.launch("inv.map", "history", {
+                                      args: el.args
+                                  })
+                              }
+                          }
+                      })
+                    );
+                },
+                failure: function() {
+                    NOC.error(__("Show Map Button : Failed to get data"));
+                }
+            });
+        } else {
+            me.showMapButton.setDisabled(true);
+        }
     },
     //
     // Possible values
