@@ -216,7 +216,6 @@ class Config(BaseConfig):
         allowed_async_cursor = BooleanParameter(default=False)
         object_status_update_interval = SecondsParameter(default="2s")
 
-
     class customization(ConfigSection):
         favicon_url = StringParameter(default="/ui/web/img/logo_24x24_deep_azure.png")
         logo_url = StringParameter(default="/ui/web/img/logo_white.svg")
