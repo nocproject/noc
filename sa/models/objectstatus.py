@@ -111,10 +111,13 @@ class ObjectStatus(Document):
         :param statuses:
         :return:
         """
+        from noc.sa.models.managedobject import ManagedObject
+
         now = datetime.datetime.now()
         coll = ObjectStatus._get_collection()
 
-        bulk, outages = [], []
+        bulk = []
+        outages: List[Tuple[int, datetime.datetime, datetime.datetime]] = []
         # Getting current status
         cs = {
             x["object"]: {"status": x["status"], "last": x.get("last")}
@@ -129,7 +132,7 @@ class ObjectStatus(Document):
                     )
                 ]
                 if status and oid in cs:
-                    outages.append({"managed_object": oid, "start": cs[oid]["last"], "stop": ts})
+                    outages.append((oid, cs[oid]["last"], ts))
                 cs[oid] = {"status": status, "last": ts}
             elif oid in cs and cs[oid]["last"] > ts:
                 # Oops, out-of-order update
@@ -139,6 +142,22 @@ class ObjectStatus(Document):
             return
         coll.bulk_write(bulk, ordered=True)
         svc = get_service()
+        # Send outages
         for out in outages:
             # Sent outages
-            svc.register_metrics("ch.outages", [out], key=out["managed_object"])
+            oid, start, stop = out
+            mo = ManagedObject.get_by_id(oid)
+            svc.register_metrics(
+                "ch.outages",
+                [
+                    {
+                        "date": now.date().isoformat(),
+                        "ts": now.replace(microsecond=0).isoformat(),
+                        "managed_object": mo.bi_id,
+                        "start": start.replace(microsecond=0).isoformat(),
+                        "stop": stop.replace(microsecond=0).isoformat(),
+                        "administrative_domain": mo.administrative_domain.bi_id,
+                    }
+                ],
+                key=mo.bi_id,
+            )

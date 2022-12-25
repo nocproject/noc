@@ -168,6 +168,8 @@ class AlarmClass(Document):
     # RCA
     root_cause = ListField(EmbeddedDocumentField(AlarmRootCauseCondition))
     topology_rca = BooleanField(default=False)
+    # Status
+    affected_object_status = BooleanField(default=False)
     # List of handlers to be called on alarm raising
     handlers = ListField(StringField())
     # List of handlers to be called on alarm clear

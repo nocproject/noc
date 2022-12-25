@@ -766,6 +766,8 @@ class CorrelatorService(FastAPIService):
         if not alarm_class:
             self.logger.error("Invalid alarm class: %s", req.alarm_class)
             return
+        if alarm_class.affected_object_status:
+            self.set_status(managed_object.id, False, ts)
         # Groups
         if req.groups:
             groups = []
@@ -976,6 +978,8 @@ class CorrelatorService(FastAPIService):
         reference: Union[str, bytes],
         ts: Optional[datetime.datetime] = None,
         message: Optional[str] = None,
+        managed_object: Optional[int] = None,
+        affected_status: bool = False,
     ) -> None:
         """
         Clear alarm by reference
@@ -986,10 +990,13 @@ class CorrelatorService(FastAPIService):
             ref_hash = self.get_reference_hash(reference)
         else:
             ref_hash = reference
+        # Check set status
+        if managed_object and affected_status:
+            self.set_status(managed_object, True, ts)
         # Get alarm
         alarm = ActiveAlarm.objects.filter(reference=ref_hash).first()
         if not alarm:
-            self.logger.info("Alarm '%s' is not found. Skipping", reference)
+            self.logger.info("[%s] Alarm '%s' is not found. Skipping", managed_object, reference)
             return
         # Clear alarm
         self.logger.info(
@@ -1400,15 +1407,15 @@ class CorrelatorService(FastAPIService):
     def get_by_reference(cls, reference: str) -> Optional["ActiveAlarm"]:
         return ActiveAlarm.objects.filter(reference=cls.get_reference_hash(reference)).first()
 
-    def set_status(self, object: int, status: bool, ts: Optional[datetime.datetime] = None) -> None:
+    def set_status(self, oid: int, status: bool, ts: Optional[datetime.datetime] = None) -> None:
         """
         Add status changes to
-        :param object: ManagedObject Id for setting status
+        :param oid: ManagedObject Id for setting status
         :param status: Status True/Flase
         :param ts: Timestamp when change
         :return:
         """
-        self.status_changes.append((object, status, ts))
+        self.status_changes.append((oid, status, ts))
 
     async def update_object_statuses(self):
         """

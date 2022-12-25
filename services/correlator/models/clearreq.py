@@ -17,3 +17,5 @@ class ClearRequest(BaseModel):
     reference: str
     timestamp: Optional[str]
     message: Optional[str] = None
+    managed_object: Optional[int] = None  # Alarm Source
+    affected_status: bool = False

@@ -265,6 +265,8 @@ class PingService(FastAPIService):
                             "$op": "clear",
                             "reference": ref,
                             "timestamp": ts,
+                            "managed_object": ps.id,
+                            "affected_status": True,
                         }
                     ),
                     stream=ps.stream,
