@@ -1023,3 +1023,20 @@ class ManagedObjectApplication(ExtModelApplication):
         if user.is_superuser:
             return True
         return ManagedObject.objects.filter(id=obj.id).filter(UserAccess.Q(user)).exists()
+
+    @view(url=r"^(?P<id>\d+)/map_lookup/$", method=["GET"], access="read", api=True)
+    def api_inventory(self, request, id):
+        o = self.get_object_or_404(ManagedObject, id=id)
+        if not o.has_access(request.user):
+            return self.response_forbidden("Access denied")
+        r = []
+        if o.segment:
+            r += [
+                {
+                    "id": str(o.segment.id),
+                    "label": str(o.segment.name),
+                    "is_default": True,
+                    "args": ["segment", str(o.segment.id), o.id],
+                }
+            ]
+        return r
