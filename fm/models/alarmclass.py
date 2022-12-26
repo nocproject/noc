@@ -168,8 +168,6 @@ class AlarmClass(Document):
     # RCA
     root_cause = ListField(EmbeddedDocumentField(AlarmRootCauseCondition))
     topology_rca = BooleanField(default=False)
-    # Status
-    affected_object_status = BooleanField(default=False)
     # List of handlers to be called on alarm raising
     handlers = ListField(StringField())
     # List of handlers to be called on alarm clear
@@ -301,8 +299,6 @@ class AlarmClass(Document):
             r["root_cause"] = [rr.json_data for rr in self.root_cause]
         if self.topology_rca:
             r["topology_rca"] = True
-        if self.affected_object_status:
-            r["affected_object_status"] = True
         if self.plugins:
             r["plugins"] = [p.json_data for p in self.plugins]
         if self.notification_delay:

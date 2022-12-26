@@ -42,6 +42,7 @@ from noc.services.correlator.models.clearreq import ClearRequest
 from noc.services.correlator.models.clearidreq import ClearIdRequest
 from noc.services.correlator.models.raisereq import RaiseRequest
 from noc.services.correlator.models.ensuregroupreq import EnsureGroupRequest
+from noc.services.correlator.models.setstatusreq import SetStatusRequest
 from noc.fm.models.eventclass import EventClass
 from noc.fm.models.activeevent import ActiveEvent
 from noc.fm.models.activealarm import ActiveAlarm, ComponentHub
@@ -73,6 +74,7 @@ class CorrelatorService(FastAPIService):
     process_name = "noc-%(name).10s-%(pool).5s"
 
     _reference_cache = cachetools.TTLCache(100, ttl=60)
+    AVAIL_CLS = "NOC | Managed Object | Ping Failed"
 
     def __init__(self):
         super().__init__()
@@ -754,20 +756,14 @@ class CorrelatorService(FastAPIService):
         # Fetch timestamp
         ts = self.parse_timestamp(req.timestamp)
         # Managed Object
-        if req.managed_object.startswith("bi_id:"):
-            managed_object = ManagedObject.get_by_bi_id(int(req.managed_object[6:]))
-        else:
-            managed_object = ManagedObject.get_by_id(int(req.managed_object))
+        managed_object = self.parse_object(req.managed_object)
         if not managed_object:
-            self.logger.error("Invalid managed object: %s", req.managed_object)
             return
         # Get alarm class
         alarm_class = AlarmClass.get_by_name(req.alarm_class)
         if not alarm_class:
             self.logger.error("Invalid alarm class: %s", req.alarm_class)
             return
-        if alarm_class.affected_object_status:
-            self.set_status(managed_object.id, False, ts)
         # Groups
         if req.groups:
             groups = []
@@ -830,6 +826,21 @@ class CorrelatorService(FastAPIService):
             return timestamp
         self.logger.debug("Using current time as alarm timestamp")
         return datetime.datetime.now()
+
+    def parse_object(self, oid) -> Optional[ManagedObject]:
+        """
+        Resolve ManagedObject instance from message id
+        :param oid:
+        :return:
+        """
+        if oid.startswith("bi_id:"):
+            managed_object = ManagedObject.get_by_bi_id(int(oid[6:]))
+        else:
+            managed_object = ManagedObject.get_by_id(int(oid))
+        if not managed_object:
+            self.logger.error("Invalid managed object: %s", oid)
+            return
+        return managed_object
 
     async def on_msg_clear(self, req: ClearRequest) -> None:
         """
@@ -942,6 +953,23 @@ class CorrelatorService(FastAPIService):
         for h_ref in set(open_alarms) - seen_refs:
             await self.clear_by_reference(h_ref, ts=now)
 
+    async def on_msg_set_status(self, req: SetStatusRequest) -> None:
+        """
+        Process `ensure_group` message.
+        """
+        ac = AlarmClass.get_by_name(self.AVAIL_CLS)
+        for item in req.statuses:
+            mo = self.parse_object(item.managed_object)
+            if not mo:
+                continue
+            ts = self.parse_timestamp(item.timestamp)
+            self.set_status(mo.id, item.status, ts)
+            try:
+                await self.raise_alarm(managed_object=mo, timestamp=ts, alarm_class=ac, vars={})
+            except Exception:
+                metrics["alarm_dispose_error"] += 1
+                error_report()
+
     async def clear_by_id(
         self,
         id: Union[str, bytes],
@@ -990,9 +1018,6 @@ class CorrelatorService(FastAPIService):
             ref_hash = self.get_reference_hash(reference)
         else:
             ref_hash = reference
-        # Check set status
-        if managed_object and affected_status:
-            self.set_status(managed_object, True, ts)
         # Get alarm
         alarm = ActiveAlarm.objects.filter(reference=ref_hash).first()
         if not alarm:

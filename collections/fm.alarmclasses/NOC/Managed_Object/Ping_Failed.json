@@ -46,6 +46,5 @@
             }
         }
     ],
-    "topology_rca": true,
-    "affected_object_status": true
+    "topology_rca": true
 }

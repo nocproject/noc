@@ -34,7 +34,6 @@ class PingService(FastAPIService):
     process_name = "noc-%(name).10s-%(pool).5s"
 
     PING_CLS = {True: "NOC | Managed Object | Ping OK", False: "NOC | Managed Object | Ping Failed"}
-    ALARM_CLS = "NOC | Managed Object | Ping Failed"
 
     def __init__(self):
         super().__init__()
@@ -262,11 +261,10 @@ class PingService(FastAPIService):
                 self.publish(
                     orjson.dumps(
                         {
-                            "$op": "clear",
-                            "reference": ref,
-                            "timestamp": ts,
-                            "managed_object": ps.id,
-                            "affected_status": True,
+                            "$op": "set_status",
+                            "statuses": [
+                                {"timestamp": ts, "managed_object": ps.id, "status": True}
+                            ],
                         }
                     ),
                     stream=ps.stream,
@@ -277,11 +275,10 @@ class PingService(FastAPIService):
                 self.publish(
                     orjson.dumps(
                         {
-                            "$op": "raise",
-                            "reference": ref,
-                            "timestamp": ts,
-                            "managed_object": ps.id,
-                            "alarm_class": self.ALARM_CLS,
+                            "$op": "set_status",
+                            "statuses": [
+                                {"timestamp": ts, "managed_object": ps.id, "status": False}
+                            ],
                         }
                     ),
                     stream=ps.stream,
