@@ -66,18 +66,6 @@ class MapApplication(ExtApplication):
     ST_DOWN = 4  # Object is down
     ST_MAINTENANCE = 32  # Maintenance bit
 
-    @view(r"^(?P<id>[0-9a-f]{24})/data/$", method=["GET"], access="read", api=True)
-    def api_data_segment(self, request, id):
-        # Find segment
-        segment = self.get_object_or_404(NetworkSegment, id=id)
-        if segment.managed_objects.count() > segment.max_objects:
-            # Too many objects
-            return {"id": str(segment.id), "name": segment.name, "error": _("Too many objects")}
-
-        return MapSettings.get_map(
-            segment.id, gen_type="segment", force_spring=request.GET.get("force") == "spring"
-        )
-
     @view(
         r"^(?P<gen_type>\w+)/(?P<gen_id>[0-9a-f]{24})/data/$",
         method=["GET"],
@@ -85,11 +73,13 @@ class MapApplication(ExtApplication):
         api=True,
     )
     def api_data(self, request, gen_type, gen_id):
-        # Find segment
-        # segment = self.get_object_or_404(NetworkSegment, id=id)
-        # if segment.managed_objects.count() > segment.max_objects:
-        #     # Too many objects
-        #     return {"id": str(segment.id), "name": segment.name, "error": _("Too many objects")}
+        """
+        Return data for render map
+        :param request:
+        :param gen_type:
+        :param gen_id:
+        :return:
+        """
         try:
             return MapSettings.get_map(
                 gen_type=gen_type, gen_id=gen_id, force_spring=request.GET.get("force") == "spring"
@@ -104,22 +94,35 @@ class MapApplication(ExtApplication):
         api=True,
     )
     def api_save(self, request, gen_type, gen_id):
-        # self.get_object_or_404(NetworkSegment, id=id)
+        """
+        Save Manual layout
+        :param request:
+        :param gen_type:
+        :param gen_id:
+        :return:
+        """
         data = self.deserialize(request.body)
         data["id"] = gen_id
         data["gen_type"] = gen_type
         MapSettings.load_json(data, request.user.username)
         return {"status": True}
 
-    @view(url=r"^(?P<id>[0-9a-f]{24})/info/segment/$", method=["GET"], access="read", api=True)
-    def api_info_segment(self, request, id):
-        segment = self.get_object_or_404(NetworkSegment, id=id)
-        r = {
-            "name": segment.name,
-            "description": segment.description,
-            "objects": segment.managed_objects.count(),
-        }
-        return r
+    @view(
+        r"^(?P<gen_type>\w+)/(?P<gen_id>[0-9a-f]{24})/data/$",
+        method=["DELETE"],
+        access="write",
+        api=True,
+    )
+    def api_reset(self, request, gen_type, gen_id):
+        # MapSettings.objects.filter(gen_type=gen_type, gen_id=gen_id).delete()
+        settings = MapSettings.objects.filter(gen_type=gen_type, gen_id=gen_id).first()
+        if settings:
+            settings.nodes = []
+            settings.links = []
+            settings.save()
+        return {"status": True}
+
+    # Inspectors
 
     def inspector_managedobject(self, request, id, mo_id):
         # segment = self.get_object_or_404(NetworkSegment, id=id)
@@ -163,11 +166,13 @@ class MapApplication(ExtApplication):
         }
 
     def inspector_link(self, request, id, link_id):
-        def q(s):
-            if isinstance(s, str):
-                s = s.encode("utf-8")
-            return s
-
+        """
+        Link inpector
+        :param request:
+        :param id:
+        :param link_id:
+        :return:
+        """
         self.get_object_or_404(NetworkSegment, id=id)
         link = self.get_object_or_404(Link, id=link_id)
         r = {
@@ -243,6 +248,101 @@ class MapApplication(ExtApplication):
                 }
             ]
         return r
+
+    @view(
+        url=r"^info/(?P<inspector>\w+)/(?P<gen_id>[0-9a-f]{24})/(?P<r_id>([0-9a-f]{24}|\d+))/$",
+        method=["GET"],
+        access="read",
+        api=True,
+    )
+    def inspector(self, request, inspector, gen_id, r_id):
+        """
+        API for map inspectors
+        :param request:
+        :param inspector: Inspector name (node type)
+        :param gen_id: Generator Id
+        :param r_id: node_id
+        :return:
+        """
+        if not hasattr(self, f"inspector_{inspector}"):
+            self.logger.warning("Unknown inspector: %s", inspector)
+            return
+        hi = getattr(self, f"inspector_{inspector}")
+        return hi(request, gen_id, r_id)
+
+    @view(method=["GET"], url=r"^lookup/$", access="lookup", api=True)
+    def api_lookup(self, request):
+        """
+        Lookup available map by generator
+        :param request:
+        :return:
+        """
+        q = {str(k): v[0] if len(v) == 1 else v for k, v in request.GET.lists()}
+        r = []
+        if not q.get(self.q_parent):
+            for mi in loader:
+                mi = loader[mi]
+                r.append(
+                    {
+                        "id": mi.name,
+                        "generator": mi.name,
+                        "label": mi.header or mi.name,
+                        "has_children": True,
+                        "only_container": True,
+                    }
+                )
+            return r
+        gen = loader[q[self.gen_param]]
+        if not gen:
+            return self.render_json(
+                {"success": False, "message": f"Unknown generator: {q[self.gen_param]}"},
+                status=self.NOT_FOUND,
+            )
+        if gen.name == q.get(self.q_parent):
+            q["parent"] = None
+        for mi in gen.iter_maps(
+            parent=q.get("parent"),
+            query=q.get(self.query_param),
+            limit=int(q.get(self.limit_param, 500)),
+            start=int(q.get(self.start_param, 0)),
+            page=int(q.get(self.page_param, 1)),
+        ):
+            r.append(
+                {
+                    "label": mi.title,
+                    "generator": mi.generator,
+                    "id": str(mi.id),
+                    "has_children": mi.has_children,
+                    "only_container": mi.only_container,
+                    "code": mi.code,
+                }
+            )
+        return r
+
+    @view(method=["GET"], url=r"^(?P<gen_id>[0-9a-f]{24})/get_path/$", access="lookup", api=True)
+    def api_lookup_maps_get_path(self, request, gen_id):
+        """
+
+        :param request:
+        :param gen_id:
+        :return:
+        """
+        # Parse params
+        q = {str(k): v[0] if len(v) == 1 else v for k, v in request.GET.lists()}
+        if self.gen_param not in q:
+            return self.response_bad_request(f"Required {self.gen_param} param on request")
+        gen = loader[q[self.gen_param]]
+        if not gen:
+            return self.render_json(
+                {"success": False, "message": f"Unknown generator: {q[self.gen_param]}"},
+                status=self.NOT_FOUND,
+            )
+        return {
+            "data": [
+                {"level": p.level, "id": str(p.id), "generator": gen.name, "label": p.title}
+                for p in gen.iter_path(gen_id)
+            ]
+        }
 
     @view(
         url=r"^objects_statuses/$",
@@ -446,21 +546,6 @@ class MapApplication(ExtApplication):
         return r
 
     @view(
-        r"^(?P<gen_type>\w+)/(?P<gen_id>[0-9a-f]{24})/data/$",
-        method=["DELETE"],
-        access="write",
-        api=True,
-    )
-    def api_reset(self, request, gen_type, gen_id):
-        # MapSettings.objects.filter(gen_type=gen_type, gen_id=gen_id).delete()
-        settings = MapSettings.objects.filter(gen_type=gen_type, gen_id=gen_id).first()
-        if settings:
-            settings.nodes = []
-            settings.links = []
-            settings.save()
-        return {"status": True}
-
-    @view(
         url=r"^stp/status/$",
         method=["POST"],
         access="read",
@@ -500,113 +585,4 @@ class MapApplication(ExtApplication):
                     r["blocked"] += blocked
                 except Exception as e:
                     self.logger.error("[stp] Exception: %s", e)
-        return r
-
-    @view(method=["GET"], url=r"^lookup/$", access="lookup", api=True)
-    def api_lookup(self, request):
-        """
-        Lookup available map by generator
-        :param request:
-        :return:
-        """
-        q = {str(k): v[0] if len(v) == 1 else v for k, v in request.GET.lists()}
-        r = []
-        if not q.get(self.q_parent):
-            for mi in loader:
-                mi = loader[mi]
-                r.append(
-                    {
-                        "id": mi.name,
-                        "generator": mi.name,
-                        "label": mi.header or mi.name,
-                        "has_children": True,
-                        "only_container": True,
-                    }
-                )
-            return r
-        gen = loader[q[self.gen_param]]
-        if not gen:
-            return self.render_json(
-                {"success": False, "message": f"Unknown generator: {q[self.gen_param]}"},
-                status=self.NOT_FOUND,
-            )
-        if gen.name == q.get(self.q_parent):
-            q["parent"] = None
-        for mi in gen.iter_maps(
-            parent=q.get("parent"),
-            query=q.get(self.query_param),
-            limit=int(q.get(self.limit_param, 500)),
-            start=int(q.get(self.start_param, 0)),
-            page=int(q.get(self.page_param, 1)),
-        ):
-            r.append(
-                {
-                    "label": mi.title,
-                    "generator": mi.generator,
-                    "id": str(mi.id),
-                    "has_children": mi.has_children,
-                    "only_container": mi.only_container,
-                    "code": mi.code,
-                }
-            )
-        return r
-
-    @view(method=["GET"], url=r"^(?P<gen_id>[0-9a-f]{24})/get_path/$", access="lookup", api=True)
-    def api_lookup_maps_get_path(self, request, gen_id):
-        """
-
-        :param request:
-        :param gen_id:
-        :return:
-        """
-        # Parse params
-        q = {str(k): v[0] if len(v) == 1 else v for k, v in request.GET.lists()}
-        if self.gen_param not in q:
-            return
-        gen = loader[q[self.gen_param]]
-        if not gen:
-            return self.render_json(
-                {"success": False, "message": f"Unknown generator: {q[self.gen_param]}"},
-                status=self.NOT_FOUND,
-            )
-        return {
-            "data": [
-                {"level": p.level, "id": str(p.id), "generator": gen.name, "label": p.title}
-                for p in gen.iter_path(gen_id)
-            ]
-        }
-
-    @view(
-        url=r"^info/(?P<inspector>\w+)/(?P<id>[0-9a-f]{24})/$",
-        method=["GET"],
-        access="read",
-        api=True,
-    )
-    def api_info_inspector(self, request, inspector, id):
-        if not hasattr(self, inspector):
-            return
-        hi = getattr(self, f"inspector_{inspector}")
-        return hi(request, id)
-
-    @view(
-        url=r"^info/(?P<inspector>\w+)/(?P<gen_id>[0-9a-f]{24})/(?P<r_id>([0-9a-f]{24}|\d+))/$",
-        method=["GET"],
-        access="read",
-        api=True,
-    )
-    def inspector_gen_segment(self, request, inspector, gen_id, r_id):
-        if not hasattr(self, f"inspector_{inspector}"):
-            self.logger.warning("Unknown inspector: %s", inspector)
-            return
-        hi = getattr(self, f"inspector_{inspector}")
-        return hi(request, gen_id, r_id)
-
-    @view(url=r"^info/segment/(?P<id>[0-9a-f]{24})/$", method=["GET"], access="read", api=True)
-    def api_info_segment_new(self, request, id):
-        segment = self.get_object_or_404(NetworkSegment, id=id)
-        r = {
-            "name": segment.name,
-            "description": segment.description,
-            "objects": segment.managed_objects.count(),
-        }
         return r
