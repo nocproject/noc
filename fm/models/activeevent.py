@@ -205,16 +205,12 @@ class ActiveEvent(Document):
         vars.update({"event": self})
         return vars
 
-    @classmethod
-    def get_subject(cls, subject_template, vars):
-        s = Jinja2Template(subject_template).render(vars)
+    @property
+    def subject(self):
+        s = Jinja2Template(self.event_class.subject_template).render(self.get_template_vars())
         if len(s) >= 255:
             s = s[:125] + " ... " + s[-125:]
         return s
-
-    @property
-    def subject(self):
-        return self.get_subject(self.event_class.subject_template, self.get_template_vars())
 
     @property
     def body(self):
