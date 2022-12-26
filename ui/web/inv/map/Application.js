@@ -21,7 +21,6 @@ Ext.define("NOC.inv.map.Application", {
         "Ext.ux.form.SearchField"
     ],
     rightWidth: 250,
-    updatedPollingTaskId: null,
     zoomLevels: [
         [0.25, "25%"],
         [0.5, "50%"],
@@ -100,24 +99,13 @@ Ext.define("NOC.inv.map.Application", {
             }
         });
 
-        me.updated = Ext.create("Ext.form.field.Display", {
-            value: "0 sec",
-            width: 50,
-            listeners: {
-              afterrender: function() {
-                  Ext.create("Ext.ToolTip", {
-                      target: this.getEl(),
-                      anchor: "top",
-                      trackMouse: true,
-                      html: __("It has been since the last update")
-                  });
-              }
-            }
-        });
-
         me.reloadButton = Ext.create("Ext.button.Button", {
             glyph: NOC.glyph.refresh,
-            tooltip: __("Reload"),
+            iconAlign: "right",
+            textAlign: "right",
+            html: "0 " + __("sec"),
+            width: 95,
+            tooltip: __("Reload and It has been since the last update"),
             scope: me,
             handler: me.onReload
         });
@@ -290,6 +278,15 @@ Ext.define("NOC.inv.map.Application", {
                         me.selectCell(me.mapPanel.objectNodes[me.selectedObjectId]);
                     }
                 },
+                updateTick: function(text) {
+                    var btnInnerEl = me.reloadButton.btnInnerEl,
+                      btnEl = me.reloadButton.btnEl;
+                    if(me.reloadButton.rendered) {
+                        btnInnerEl.setHtml(text || '&#160;');
+                        btnEl[text ? 'addCls' : 'removeCls'](me._textCls);
+                        btnEl[text ? 'removeCls' : 'addCls'](me._noTextCls);
+                    }
+                },
                 onSelectCell: me.selected,
                 onUnselectCell: me.selected
             }
@@ -374,7 +371,6 @@ Ext.define("NOC.inv.map.Application", {
                         me.segmentCombo,
                         "-",
                         me.zoomCombo,
-                        me.updated,
                         me.reloadButton,
                         "-",
                         me.searchField,
@@ -700,21 +696,4 @@ Ext.define("NOC.inv.map.Application", {
         }
         Ext.History.setHash(me.currentHistoryHash);
     },
-
-    startUpdatedTimer: function() {
-        var me = this,
-          interval = 5;
-
-        if(me.updatedPollingTaskId) {
-            Ext.TaskManager.stop(me.updatedPollingTaskId);
-        }
-
-        me.updatedPollingTaskId = Ext.TaskManager.start({
-            run: function(counter) {
-                me.updated.setValue((counter - 1) * interval + " " + __("sec"));
-            },
-            interval: interval * 1000,
-            scope: me
-        });
-    }
 });
