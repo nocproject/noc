@@ -464,28 +464,36 @@ class AlarmApplication(ExtApplication):
         # Events
         events = []
         query = f"""select
-            e.event_id, ec.id as ec_id, ec.name as ec_name, e.ts,
-            e.managed_object, mo.name as mo_name, e.vars
+            e.event_id as id,
+            ec.id as ec_id,
+            ec.name as ec_name,
+            e.ts,
+            e.managed_object,
+            mo.name as mo_name,
+            e.vars
             from events e
             join dict_eventclass ec on ec.bi_id=e.event_class
             join dict_managedobject mo on mo.id=e.managed_object
             where e.event_id in
-            (select event_id from disposelog where alarm_id='{alarm.id}')
+            (select event_id from disposelog where alarm_id=%s)
+            FORMAT JSONEachRow
         """
         cursor = connection()
-        e_stub = ActiveEvent()
-        for e in cursor.execute(query):
-            e_stub.event_class = EventClass.get_by_id(e[1])
-            e_stub.vars = eval(e[6])
+        res = cursor.execute(query, return_raw=True, args=[str(alarm.id)]).decode().split("\n")
+        res = [orjson.loads(r) for r in res if r]
+        for e in res:
+            e_stub = ActiveEvent()
+            e_stub.event_class = EventClass.get_by_id(e["ec_id"])
+            e_stub.vars = e["e.vars"]
             events += [
                 {
-                    "id": e[0],
-                    "event_class": e[1],
-                    "event_class__label": e[2],
-                    "timestamp": e[3],
+                    "id": e["id"],
+                    "event_class": e["ec_id"],
+                    "event_class__label": e["ec_name"],
+                    "timestamp": e["e.ts"],
                     "status": "A",
-                    "managed_object": e[4],
-                    "managed_object__label": e[5],
+                    "managed_object": e["e.managed_object"],
+                    "managed_object__label": e["mo_name"],
                     "subject": e_stub.subject,
                 }
             ]
