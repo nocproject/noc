@@ -329,7 +329,9 @@ class MapApplication(ExtApplication):
             )
         return r
 
-    @view(method=["GET"], url=r"^(?P<gen_id>[0-9a-f]{24}|\d+)/get_path/$", access="lookup", api=True)
+    @view(
+        method=["GET"], url=r"^(?P<gen_id>[0-9a-f]{24}|\d+)/get_path/$", access="lookup", api=True
+    )
     def api_lookup_maps_get_path(self, request, gen_id):
         """
 

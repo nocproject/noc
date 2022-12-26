@@ -18,6 +18,7 @@ from noc.core.log import PrefixLoggerAdapter
 from noc.sa.models.managedobject import ManagedObject
 from noc.inv.models.interface import Interface
 from noc.inv.models.link import Link
+from noc.inv.models.objectmodel import ObjectModel
 from noc.inv.models.object import Object
 from ..base import TopologyBase, MapItem, PathItem
 
@@ -32,6 +33,7 @@ class ObjectContainerTopology(TopologyBase):
     POP_MODEL = "PoP | Access"
     POP_REGIONAL_MODEL = "PoP | Regional"
     PARAMS = {"container"}
+    CONTAINER_MODELS = None
 
     def __init__(self, container, **settings):
         self.container = Object.get_by_id(container)
@@ -50,7 +52,16 @@ class ObjectContainerTopology(TopologyBase):
         start: Optional[int] = None,
         page: Optional[int] = None,
     ) -> Iterable[MapItem]:
-        data = Object.objects.filter(container=parent).order_by("name")
+        if parent == cls.name:
+            parent = None
+        if not cls.CONTAINER_MODELS:
+            cls.CONTAINER_MODELS = list(
+                ObjectModel.objects.filter(data__container__container=True).values_list("id")
+            )
+        data = Object.objects.filter(container=parent, model__in=cls.CONTAINER_MODELS).order_by(
+            "name"
+        )
+        print(parent, cls.CONTAINER_MODELS, data)
         if query:
             data = data.filter(name__icontains=query)
         # Apply paging
@@ -78,7 +89,11 @@ class ObjectContainerTopology(TopologyBase):
         Load all managed objects from Object Group
         """
         # Group objects
-        object_mos: List[int] = list(ManagedObject.objects.filter(container__in=self.container.get_nested_ids()).values_list("id", flat=True))
+        object_mos: List[int] = list(
+            ManagedObject.objects.filter(container__in=self.container.get_nested_ids()).values_list(
+                "id", flat=True
+            )
+        )
         # Get all links, belonging to segment
         links: List[Link] = list(Link.objects.filter(linked_objects__in=object_mos))
         # All linked interfaces from map
