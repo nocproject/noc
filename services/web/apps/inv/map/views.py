@@ -67,7 +67,7 @@ class MapApplication(ExtApplication):
     ST_MAINTENANCE = 32  # Maintenance bit
 
     @view(
-        r"^(?P<gen_type>\w+)/(?P<gen_id>[0-9a-f]{24})/data/$",
+        r"^(?P<gen_type>\w+)/(?P<gen_id>[0-9a-f]{24}|\d+)/data/$",
         method=["GET"],
         access="read",
         api=True,
@@ -270,6 +270,16 @@ class MapApplication(ExtApplication):
         hi = getattr(self, f"inspector_{inspector}")
         return hi(request, gen_id, r_id)
 
+    @view(url=r"^info/segment/(?P<id>[0-9a-f]{24})/$", method=["GET"], access="read", api=True)
+    def api_info_segment(self, request, id):
+        segment = self.get_object_or_404(NetworkSegment, id=id)
+        r = {
+            "name": segment.name,
+            "description": segment.description,
+            "objects": segment.managed_objects.count(),
+        }
+        return r
+
     @view(method=["GET"], url=r"^lookup/$", access="lookup", api=True)
     def api_lookup(self, request):
         """
@@ -319,7 +329,7 @@ class MapApplication(ExtApplication):
             )
         return r
 
-    @view(method=["GET"], url=r"^(?P<gen_id>[0-9a-f]{24})/get_path/$", access="lookup", api=True)
+    @view(method=["GET"], url=r"^(?P<gen_id>[0-9a-f]{24}|\d+)/get_path/$", access="lookup", api=True)
     def api_lookup_maps_get_path(self, request, gen_id):
         """
 

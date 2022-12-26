@@ -278,7 +278,7 @@ Ext.define('NOC.core.TreeCombo', {
                         if(records.length > 0) {
                             me.historyStore.loadData(records, true);
                             me.pathStore.loadData(records, true);
-                            me.panel.byIdQuery(records[records.length - 1].id);
+                            me.panel.byIdQuery(records[records.length - 1].id, false, records[records.length - 1].get("generator"));
                         }
                     }
                 }

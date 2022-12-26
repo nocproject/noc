@@ -1025,11 +1025,18 @@ class ManagedObjectApplication(ExtModelApplication):
         return ManagedObject.objects.filter(id=obj.id).filter(UserAccess.Q(user)).exists()
 
     @view(url=r"^(?P<id>\d+)/map_lookup/$", method=["GET"], access="read", api=True)
-    def api_inventory(self, request, id):
-        o = self.get_object_or_404(ManagedObject, id=id)
+    def api_map_lookup(self, request, id):
+        o: ManagedObject = self.get_object_or_404(ManagedObject, id=id)
         if not o.has_access(request.user):
             return self.response_forbidden("Access denied")
-        r = []
+        r = [
+            {
+                "id": str(o.id),
+                "label": f"Neighbors {o.name}",
+                "is_default": False,
+                "args": ["objectlevelneighbor", str(o.id)],
+            }
+        ]
         if o.segment:
             r += [
                 {
@@ -1037,6 +1044,15 @@ class ManagedObjectApplication(ExtModelApplication):
                     "label": str(o.segment.name),
                     "is_default": True,
                     "args": ["segment", str(o.segment.id), o.id],
+                }
+            ]
+        if o.container:
+            r += [
+                {
+                    "id": str(o.container.id),
+                    "label": str(o.container.name),
+                    "is_default": False,
+                    "args": ["objectcontainer", str(o.container.id), o.id],
                 }
             ]
         return r
