@@ -1027,7 +1027,7 @@ class CorrelatorService(FastAPIService):
         # Get alarm
         alarm = ActiveAlarm.objects.filter(reference=ref_hash).first()
         if not alarm:
-            self.logger.info("[%s] Alarm '%s' is not found. Skipping", managed_object, reference)
+            self.logger.info("Alarm '%s' is not found. Skipping", reference)
             return
         # Clear alarm
         self.logger.info(
