@@ -148,7 +148,7 @@ class ObjectStatus(Document):
             oid, start, stop = out
             mo = ManagedObject.get_by_id(oid)
             svc.register_metrics(
-                "ch.outages",
+                "outages",
                 [
                     {
                         "date": now.date().isoformat(),
