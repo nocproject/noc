@@ -254,7 +254,6 @@ class PingService(FastAPIService):
             ps.status = s
         if ps and not self.is_throttled and not disable_message and s != ps.sent_status:
             # Build dispose message
-            ref = f"p:{ps.id}"
             ts = datetime.datetime.fromtimestamp(t0).isoformat()
             if s:
                 # Clear alarm

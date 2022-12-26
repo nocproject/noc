@@ -958,14 +958,22 @@ class CorrelatorService(FastAPIService):
         Process `ensure_group` message.
         """
         ac = AlarmClass.get_by_name(self.AVAIL_CLS)
+
         for item in req.statuses:
             mo = self.parse_object(item.managed_object)
             if not mo:
                 continue
             ts = self.parse_timestamp(item.timestamp)
             self.set_status(mo.id, item.status, ts)
+            # @todo bulk alarm method
+            ref = f"p:{mo.id}"
             try:
-                await self.raise_alarm(managed_object=mo, timestamp=ts, alarm_class=ac, vars={})
+                if item.status:
+                    await self.clear_by_reference(ref, ts=ts)
+                else:
+                    await self.raise_alarm(
+                        managed_object=mo, timestamp=ts, alarm_class=ac, reference=ref, vars={}
+                    )
             except Exception:
                 metrics["alarm_dispose_error"] += 1
                 error_report()
@@ -1006,8 +1014,6 @@ class CorrelatorService(FastAPIService):
         reference: Union[str, bytes],
         ts: Optional[datetime.datetime] = None,
         message: Optional[str] = None,
-        managed_object: Optional[int] = None,
-        affected_status: bool = False,
     ) -> None:
         """
         Clear alarm by reference
