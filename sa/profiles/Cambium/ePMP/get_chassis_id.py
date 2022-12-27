@@ -27,8 +27,8 @@ class Script(BaseScript):
         # Replace # with @ to prevent prompt matching
         r = {}
         v = self.cli("show dashboard", cached=True).strip()
-        ee = [l.strip().split(" ", 1) for l in v.splitlines()]
-        for e in ee:
+        for e in v.splitlines():
+            e = e.strip().split(" ", 1)
             if len(e) == 2:
                 r[e[0]] = e[1].strip()
             else:
