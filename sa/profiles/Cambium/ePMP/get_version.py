@@ -11,6 +11,7 @@ import re
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetversion import IGetVersion
+from noc.core.mib import mib
 
 
 class Script(BaseScript):
@@ -20,12 +21,29 @@ class Script(BaseScript):
 
     rx_version = re.compile(r"^\S+\.v(?P<version>[^@]+)$")
 
+    def execute_snmp(self, **kwargs):
+        version = self.snmp.get(mib["CAMBIUM-PMP80211-MIB::cambiumCurrentSWInfo", 0])
+        sn = self.snmp.get(mib["CAMBIUM-PMP80211-MIB::cambiumESN", 0])
+        if sn == "N/A":
+            sn = self.snmp.get(mib["CAMBIUM-PMP80211-MIB::cambiumEPMPMSN", 0])
+        # cambiumESN
+        boot_prom = self.snmp.get(mib["CAMBIUM-PMP80211-MIB::cambiumUbootVersion", 0])
+        return {
+            "vendor": "Cambium",
+            "platform": "ePMP1000",
+            "version": version,
+            "attributes": {
+                "Boot PROM": boot_prom,
+                "Serial Number": sn,
+            },
+        }
+
     def execute_cli(self):
         # Replace # with @ to prevent prompt matching
         r = {}
         v = self.cli("show dashboard", cached=True).strip()
-        ee = [l.strip().split(" ", 1) for l in v.splitlines()]
-        for e in ee:
+        for e in v.splitlines():
+            e = e.strip().split(" ", 1)
             if len(e) == 2:
                 r[e[0]] = e[1].strip()
             else:
