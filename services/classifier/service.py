@@ -500,7 +500,7 @@ class ClassifierService(FastAPIService):
             "vars": event.vars,
             "snmp_trap_oid": event.vars.get("trap_oid", None),
             "message": event.vars.get("message", None),
-            "managed_object": mo.id,
+            "managed_object": mo.bi_id,
             "pool": mo.pool.bi_id,
             "ip": struct.unpack("!I", socket.inet_aton(mo.address))[0],
             "profile": mo.profile.bi_id,

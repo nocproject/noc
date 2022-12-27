@@ -56,6 +56,21 @@ from noc.fm.models.alarmescalation import AlarmEscalation
 from noc.core.comp import smart_text
 from noc.core.service.loader import get_service
 
+SQL_EVENTS = f"""select
+    e.event_id,
+    e.ts,
+    dictGet('{config.clickhouse.db_dictionaries}.eventclass', ('id', 'name'), e.event_class) as event_class,
+    dictGet('{config.clickhouse.db_dictionaries}.managedobject', ('id', 'name'), e.managed_object) as managed_object,
+    e.start_ts,
+    e.source,
+    e.raw_vars,
+    e.resolved_vars,
+    e.vars
+    from events e
+    where e.event_id in (select event_id from disposelog where alarm_id=%s)
+    format JSONEachRow
+"""
+
 
 def get_advanced_field(id):
     if "|" in id:
@@ -463,37 +478,30 @@ class AlarmApplication(ExtApplication):
             ]
         # Events
         events = []
-        query = f"""select
-            e.event_id as id,
-            ec.id as ec_id,
-            ec.name as ec_name,
-            e.ts,
-            e.managed_object,
-            mo.name as mo_name,
-            e.vars
-            from events e
-            join dict_eventclass ec on ec.bi_id=e.event_class
-            join dict_managedobject mo on mo.id=e.managed_object
-            where e.event_id in
-            (select event_id from disposelog where alarm_id=%s)
-            FORMAT JSONEachRow
-        """
         cursor = connection()
-        res = cursor.execute(query, return_raw=True, args=[str(alarm.id)]).decode().split("\n")
+        res = cursor.execute(SQL_EVENTS, return_raw=True, args=[str(alarm.id)]).decode().split("\n")
         res = [orjson.loads(r) for r in res if r]
         for e in res:
-            e_stub = ActiveEvent()
-            e_stub.event_class = EventClass.get_by_id(e["ec_id"])
-            e_stub.vars = e["e.vars"]
+            e_stub = ActiveEvent(
+                id=e["event_id"],
+                timestamp=e["ts"],
+                managed_object=ManagedObject.get_by_id(e["managed_object"][0]),
+                event_class=EventClass.get_by_id(e["event_class"][0]),
+                start_timestamp=e["start_ts"],
+                source=e["source"],
+                raw_vars=e["raw_vars"],
+                resolved_vars=e["resolved_vars"],
+                vars=e["vars"],
+            )
             events += [
                 {
-                    "id": e["id"],
-                    "event_class": e["ec_id"],
-                    "event_class__label": e["ec_name"],
-                    "timestamp": e["e.ts"],
+                    "id": e["event_id"],
+                    "event_class": e["event_class"][0],
+                    "event_class__label": e["event_class"][1],
+                    "timestamp": e["ts"],
                     "status": "A",
-                    "managed_object": e["e.managed_object"],
-                    "managed_object__label": e["mo_name"],
+                    "managed_object": e["managed_object"][0],
+                    "managed_object__label": e["managed_object"][1],
                     "subject": e_stub.subject,
                 }
             ]
