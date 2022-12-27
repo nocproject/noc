@@ -12,10 +12,11 @@ Ext.define("NOC.inv.map.MapPanel", {
         "NOC.inv.map.ShapeRegistry"
     ],
     layout: "fit",
-    autoScroll: true,
+    scrollable: true,
     app: null,
     readOnly: false,
     pollingInterval: 180000,
+    updatedPollingTaskId: null,
 
     svgFilters: {
         // Asbestos, #7f8c8d
@@ -738,12 +739,34 @@ Ext.define("NOC.inv.map.MapPanel", {
             scope: me,
             success: function(response) {
                 var data = Ext.decode(response.responseText);
-                me.app.startUpdatedTimer();
+                me.startUpdatedTimer();
                 me.applyObjectStatuses(data);
             },
             failure: function() {
-
+                NOC.error(__("Objects statuses failure!"));
             }
+        });
+    },
+
+    startUpdatedTimer: function() {
+        var me = this,
+          interval = 5;
+
+        if(me.updatedPollingTaskId) {
+            Ext.TaskManager.stop(me.updatedPollingTaskId);
+            me.updatedPollingTaskId = null;
+        }
+
+        me.updatedPollingTaskId = Ext.TaskManager.start({
+            run: function(counter) {
+                var text = (counter - 1) * interval + " " + __("sec");
+                this.fireEvent("updateTick", text);
+            },
+            interval: interval * 1000,
+            onError: function() {
+                console.error('Updated Polling Task!');
+            },
+            scope: me
         });
     },
 

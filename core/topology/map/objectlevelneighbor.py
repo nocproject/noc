@@ -16,37 +16,45 @@ from bson import ObjectId
 # NOC modules
 from noc.core.log import PrefixLoggerAdapter
 from noc.sa.models.managedobject import ManagedObject
-from noc.inv.models.resourcegroup import ResourceGroup
 from noc.inv.models.interface import Interface
 from noc.inv.models.link import Link
 from noc.core.topology.base import TopologyBase
-from noc.core.topology.types import MapItem, PathItem
+from noc.core.topology.types import MapItem, PathItem, Portal
 
 logger = logging.getLogger(__name__)
 
 
-class ObjectGroupTopology(TopologyBase):
-    name = "objectgroup"
-    header = "Object Group Schemas"
+class ObjectLevelNeighborTopology(TopologyBase):
+    name = "objectlevelneighbor"
+    header = "Object Level Neighbor Schemas"
 
-    PARAMS = {"resource_group"}
+    PARAMS = {"mo_id"}
 
-    def __init__(self, resource_group, **settings):
-        self.rg = ResourceGroup.get_by_id(resource_group)
-        self.logger = PrefixLoggerAdapter(logger, self.rg.name)
+    def __init__(self, mo_id, **settings):
+        self.mo = ManagedObject.get_by_id(mo_id)
+        self.logger = PrefixLoggerAdapter(logger, self.mo.name)
         super().__init__(**settings)
 
     def gen_id(self) -> Optional[str]:
-        return str(self.rg.id)
+        return str(self.mo.id)
 
     def load(self):
         """
         Load all managed objects from Object Group
         """
         # Group objects
-        object_mos: List[int] = ResourceGroup.get_model_instance_ids(
-            "sa.ManagedObject", str(self.rg.id)
-        )
+        object_mos: List[int] = self.mo.links[:]
+        level = self.mo.object_profile.level
+        while True:
+            for links, n_level in ManagedObject.objects.filter(id__in=object_mos).values_list(
+                "links", "object_profile__level"
+            ):
+                object_mos += links
+                if n_level > level:
+                    level = n_level
+            if level > self.mo.object_profile.level:
+                break
+
         # Get all links, belonging to segment
         links: List[Link] = list(Link.objects.filter(linked_objects__in=object_mos))
         # All linked interfaces from map
@@ -78,8 +86,11 @@ class ObjectGroupTopology(TopologyBase):
         mos: Dict[int, "ManagedObject"] = {
             mo.id: mo for mo in ManagedObject.objects.filter(id__in=all_mos)
         }
+        o_mos = set(object_mos)
         for mo in mos.values():
             n = mo.get_topology_node()
+            if mo.id not in o_mos:
+                n.portal = Portal(generator=self.name, id=str(mo.id))
             self.add_node(n, {"role": "segment"})
         # Process all links
         for link in links:
@@ -94,7 +105,7 @@ class ObjectGroupTopology(TopologyBase):
         start: Optional[int] = None,
         page: Optional[int] = None,
     ) -> Iterable[MapItem]:
-        data = ResourceGroup.objects.filter(parent=parent).order_by("name")
+        data = ManagedObject.objects.filter().order_by("name")
         if query:
             data = data.filter(name__icontains=query)
         # Apply paging
@@ -105,14 +116,12 @@ class ObjectGroupTopology(TopologyBase):
                 title=str(rg.name),
                 generator=cls.name,
                 id=str(rg.id),
-                has_children=rg.has_children,
+                has_children=False,
             )
 
     @classmethod
     def iter_path(cls, gen_id) -> Iterable[PathItem]:
-        o = ResourceGroup.get_by_id(gen_id)
+        o = ManagedObject.get_by_id(gen_id)
         if not o:
             return
-        for level, ns_id in enumerate(o.get_path(), start=1):
-            ns = ResourceGroup.get_by_id(ns_id)
-            yield PathItem(title=str(ns.name), id=str(ns.id), level=level)
+        yield PathItem(title=str(o.name), id=str(o.id), level=1)
