@@ -1,7 +1,7 @@
 # ----------------------------------------------------------------------
-# PoP Access Map class
+# ObjectGroupTopology class
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2022 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -18,82 +18,43 @@ from noc.core.log import PrefixLoggerAdapter
 from noc.sa.models.managedobject import ManagedObject
 from noc.inv.models.interface import Interface
 from noc.inv.models.link import Link
-from noc.inv.models.objectmodel import ObjectModel
-from noc.inv.models.object import Object
 from noc.core.topology.base import TopologyBase
-from noc.core.topology.types import MapItem, PathItem
+from noc.core.topology.types import MapItem, PathItem, Portal
 
 logger = logging.getLogger(__name__)
 
 
-class ObjectContainerTopology(TopologyBase):
+class ObjectLevelNeighborTopology(TopologyBase):
+    name = "objectlevelneighbor"
+    header = "Object Level Neighbor Schemas"
 
-    name = "objectcontainer"
-    header = "Object Container Map"
-    POP_MODEL = "PoP | Access"
-    POP_REGIONAL_MODEL = "PoP | Regional"
-    PARAMS = {"container"}
-    CONTAINER_MODELS = None
+    PARAMS = {"mo_id"}
 
-    def __init__(self, container, **settings):
-        self.container = Object.get_by_id(container)
-        self.logger = PrefixLoggerAdapter(logger, self.container.name)
+    def __init__(self, mo_id, **settings):
+        self.mo = ManagedObject.get_by_id(mo_id)
+        self.logger = PrefixLoggerAdapter(logger, self.mo.name)
         super().__init__(**settings)
 
     def gen_id(self) -> Optional[str]:
-        return str(self.container.id)
-
-    @classmethod
-    def iter_maps(
-        cls,
-        parent: str = None,
-        query: Optional[str] = None,
-        limit: Optional[int] = None,
-        start: Optional[int] = None,
-        page: Optional[int] = None,
-    ) -> Iterable[MapItem]:
-        if parent == cls.name:
-            parent = None
-        if not cls.CONTAINER_MODELS:
-            cls.CONTAINER_MODELS = list(
-                ObjectModel.objects.filter(data__container__container=True).values_list("id")
-            )
-        data = Object.objects.filter(container=parent, model__in=cls.CONTAINER_MODELS).order_by(
-            "name"
-        )
-        print(parent, cls.CONTAINER_MODELS, data)
-        if query:
-            data = data.filter(name__icontains=query)
-        # Apply paging
-        if limit:
-            data = data[start : start + limit]
-        for cont in data:
-            yield MapItem(
-                title=str(cont.name),
-                generator=cls.name,
-                id=str(cont.id),
-                has_children=cont.has_children,
-            )
-
-    @classmethod
-    def iter_path(cls, gen_id) -> Iterable[PathItem]:
-        o = Object.get_by_id(gen_id)
-        if not o:
-            return
-        for level, ns_id in enumerate(o.get_path(), start=1):
-            cont = Object.get_by_id(ns_id)
-            yield PathItem(title=str(cont.name), id=str(cont.id), level=level)
+        return str(self.mo.id)
 
     def load(self):
         """
         Load all managed objects from Object Group
         """
         # Group objects
-        object_mos: List[int] = list(
-            ManagedObject.objects.filter(container__in=self.container.get_nested_ids()).values_list(
-                "id", flat=True
-            )
-        )
+        object_mos: List[int] = self.mo.links[:]
+        level = self.mo.object_profile.level
+        while True:
+            for links, n_level in ManagedObject.objects.filter(id__in=object_mos).values_list(
+                "links", "object_profile__level"
+            ):
+                object_mos += links
+                if n_level > level:
+                    level = n_level
+            if level > self.mo.object_profile.level:
+                break
+
         # Get all links, belonging to segment
         links: List[Link] = list(Link.objects.filter(linked_objects__in=object_mos))
         # All linked interfaces from map
@@ -125,9 +86,42 @@ class ObjectContainerTopology(TopologyBase):
         mos: Dict[int, "ManagedObject"] = {
             mo.id: mo for mo in ManagedObject.objects.filter(id__in=all_mos)
         }
+        o_mos = set(object_mos)
         for mo in mos.values():
             n = mo.get_topology_node()
+            if mo.id not in o_mos:
+                n.portal = Portal(generator=self.name, id=str(mo.id))
             self.add_node(n, {"role": "segment"})
         # Process all links
         for link in links:
             self.add_link(link)
+
+    @classmethod
+    def iter_maps(
+        cls,
+        parent: str = None,
+        query: Optional[str] = None,
+        limit: Optional[int] = None,
+        start: Optional[int] = None,
+        page: Optional[int] = None,
+    ) -> Iterable[MapItem]:
+        data = ManagedObject.objects.filter().order_by("name")
+        if query:
+            data = data.filter(name__icontains=query)
+        # Apply paging
+        if limit:
+            data = data[start : start + limit]
+        for rg in data:
+            yield MapItem(
+                title=str(rg.name),
+                generator=cls.name,
+                id=str(rg.id),
+                has_children=False,
+            )
+
+    @classmethod
+    def iter_path(cls, gen_id) -> Iterable[PathItem]:
+        o = ManagedObject.get_by_id(gen_id)
+        if not o:
+            return
+        yield PathItem(title=str(o.name), id=str(o.id), level=1)

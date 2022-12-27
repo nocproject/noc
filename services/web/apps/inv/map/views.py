@@ -35,6 +35,7 @@ from noc.sa.models.objectstatus import ObjectStatus
 from noc.fm.models.activealarm import ActiveAlarm
 from noc.maintenance.models.maintenance import Maintenance
 from noc.core.text import alnum_key
+from noc.core.validators import is_objectid
 from noc.core.pm.utils import get_interface_metrics
 from noc.core.translation import ugettext as _
 from noc.core.cache.decorator import cachedmethod
@@ -126,7 +127,12 @@ class MapApplication(ExtApplication):
 
     def inspector_managedobject(self, request, id, mo_id):
         # segment = self.get_object_or_404(NetworkSegment, id=id)
-        segment = NetworkSegment.get_by_id(str(id))
+        if is_objectid(id):
+            segment = NetworkSegment.get_by_id(str(id))
+        else:
+            mo = ManagedObject.get_by_id(id)
+            if mo:
+                segment = mo.segment
         object = self.get_object_or_404(ManagedObject, id=int(mo_id))
         s = {1: "telnet", 2: "ssh", 3: "http", 4: "https"}[object.scheme]
         r = {
@@ -250,7 +256,7 @@ class MapApplication(ExtApplication):
         return r
 
     @view(
-        url=r"^info/(?P<inspector>\w+)/(?P<gen_id>[0-9a-f]{24})/(?P<r_id>([0-9a-f]{24}|\d+))/$",
+        url=r"^info/(?P<inspector>\w+)/(?P<gen_id>[0-9a-f]{24}|\d+)/(?P<r_id>([0-9a-f]{24}|\d+))/$",
         method=["GET"],
         access="read",
         api=True,

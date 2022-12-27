@@ -1032,7 +1032,7 @@ class ManagedObjectApplication(ExtModelApplication):
         r = [
             {
                 "id": str(o.id),
-                "label": f"Neighbors {o.name}",
+                "label": _("Topology Neighbors"),
                 "is_default": False,
                 "args": ["objectlevelneighbor", str(o.id)],
             }
@@ -1041,7 +1041,7 @@ class ManagedObjectApplication(ExtModelApplication):
             r += [
                 {
                     "id": str(o.segment.id),
-                    "label": str(o.segment.name),
+                    "label": _("Segment: ") + str(o.segment.name),
                     "is_default": True,
                     "args": ["segment", str(o.segment.id), o.id],
                 }
@@ -1050,7 +1050,7 @@ class ManagedObjectApplication(ExtModelApplication):
             r += [
                 {
                     "id": str(o.container.id),
-                    "label": str(o.container.name),
+                    "label": _("Container: ") + str(o.container.name),
                     "is_default": False,
                     "args": ["objectcontainer", str(o.container.id), o.id],
                 }

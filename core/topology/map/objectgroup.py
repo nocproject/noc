@@ -19,7 +19,8 @@ from noc.sa.models.managedobject import ManagedObject
 from noc.inv.models.resourcegroup import ResourceGroup
 from noc.inv.models.interface import Interface
 from noc.inv.models.link import Link
-from noc.core.topology.base import TopologyBase, MapItem, PathItem
+from noc.core.topology.base import TopologyBase
+from noc.core.topology.types import MapItem, PathItem
 
 logger = logging.getLogger(__name__)
 
