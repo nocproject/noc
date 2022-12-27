@@ -6,8 +6,9 @@
 # ---------------------------------------------------------------------
 
 # NOC modules
-from noc.core.script.base import BaseScript
+from noc.sa.profiles.Generic.get_chassis_id import Script as BaseScript
 from noc.sa.interfaces.igetchassisid import IGetChassisID
+from noc.core.mib import mib
 
 
 class Script(BaseScript):
@@ -15,12 +16,19 @@ class Script(BaseScript):
     cache = True
     interface = IGetChassisID
 
+    SNMP_GET_OIDS = {
+        "SNMP": [
+            mib["CAMBIUM-PMP80211-MIB::cambiumLANMACAddress", 0],
+            mib["CAMBIUM-PMP80211-MIB::cambiumWirelessMACAddress", 0],
+        ]
+    }
+
     def execute_cli(self, **kwargs):
         # Replace # with @ to prevent prompt matching
         r = {}
         v = self.cli("show dashboard", cached=True).strip()
-        ee = [l.strip().split(" ", 1) for l in v.splitlines()]
-        for e in ee:
+        for e in v.splitlines():
+            e = e.strip().split(" ", 1)
             if len(e) == 2:
                 r[e[0]] = e[1].strip()
             else:
