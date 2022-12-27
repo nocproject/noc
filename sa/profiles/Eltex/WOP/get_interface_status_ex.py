@@ -9,9 +9,10 @@
 import codecs
 
 # NOC modules
-from noc.core.script.base import BaseScript
+from noc.sa.profiles.Generic.get_interface_status_ex import Script as BaseScript
 from noc.sa.interfaces.igetinterfacestatusex import IGetInterfaceStatusEx
 from noc.core.comp import smart_text
+from noc.core.mib import mib
 
 
 class Script(BaseScript):
@@ -21,7 +22,11 @@ class Script(BaseScript):
 
     SPEED = {
         "bg-n": "300000",
+        "bgn": "300000",
         "a-n": "300000",
+        "an": "300000",
+        "anac": "300000",
+        "nac": "300000",
         "a-c": "1300000",
         "b-g": "54000",
         "bg": "54000",
@@ -62,7 +67,7 @@ class Script(BaseScript):
                 "name": value["beacon-interface"],
             }
 
-    def execute(self, interfaces=None):
+    def execute_cli(self, interfaces=None):
         r = {}
         wres = self.get_radio_status()
         c = self.cli("get interface all detail")
@@ -108,3 +113,50 @@ class Script(BaseScript):
                     "out_speed": 100000,
                 }
         return list(r.values())
+
+    def get_radio_status_snmp(self):
+        r = {}
+        ssids = {}
+        # FASTPATH-WLAN-ACCESS-POINT-MIB::apBssIgnoreBcastSsid for detect Broadcast
+        for oid, cfg_name, ssid, bss in self.snmp.get_tables(
+            [
+                mib["FASTPATH-WLAN-ACCESS-POINT-MIB::apIfConfigName"],
+                mib["FASTPATH-WLAN-ACCESS-POINT-MIB::apIfConfigSsid"],
+                mib["FASTPATH-WLAN-ACCESS-POINT-MIB::apIfConfigBss"],
+            ]
+        ):
+            if not bss or not ssid:
+                continue
+            # bss = bytes.fromhex(bss.replace(":", "")).decode("ascii")
+            ssids[cfg_name] = ssid.replace(" ", "")
+        radio_speed = {}
+        for rid, name, mode in self.snmp.get_tables(
+            [
+                mib["FASTPATH-WLAN-ACCESS-POINT-MIB::apRadioName"],
+                mib["FASTPATH-WLAN-ACCESS-POINT-MIB::apRadioMode"],
+            ]
+        ):
+            radio_speed[name] = "300000"
+        for oid, status, beacon in self.snmp.get_tables(
+            [
+                mib["FASTPATH-WLAN-ACCESS-POINT-MIB::apBssStatus"],
+                mib["FASTPATH-WLAN-ACCESS-POINT-MIB::apBssBeaconInterface"],
+            ]
+        ):
+            ssid = ssids[beacon]
+            bss_ifname = f"{beacon}.{ssid}"
+            speed = radio_speed[bss_ifname[:5]]
+            r[bss_ifname] = {
+                "interface": bss_ifname,
+                "admin_status": True,
+                "oper_status": status == 1,
+                "full_duplex": True,
+                "in_speed": speed,
+                "out_speed": speed,
+            }
+        return list(r.values())
+
+    def execute_snmp(self, **kwargs):
+        r = super().execute_snmp()
+        r += self.get_radio_status_snmp()
+        return r

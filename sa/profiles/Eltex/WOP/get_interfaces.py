@@ -7,12 +7,31 @@
 
 # Third-party modules
 import codecs
+import enum
 
 # NOC modules
-from noc.core.script.base import BaseScript
+from noc.sa.profiles.Generic.get_interfaces import Script as BaseScript
 from noc.sa.interfaces.igetinterfaces import IGetInterfaces
 from noc.core.ip import IPv4
 from noc.core.comp import smart_text
+from noc.core.mib import mib
+
+
+class RadioBandwith(enum.Enum):
+    twentyMHz = 1
+    fortyMHz = 2
+    eightyMHz = 3
+
+
+class RadioMode(enum.Enum):
+    a = 1
+    bg = 2
+    an = 3
+    bgn = 4
+    nonlya = 5
+    nonlyg = 6
+    anac = 7
+    nac = 8
 
 
 class Script(BaseScript):
@@ -139,3 +158,83 @@ class Script(BaseScript):
                         ],
                     }
         return [{"interfaces": list(interfaces.values())}]
+
+    def get_radio_config_snmp(self):
+        # Get SSID configs
+        ssids = {}
+        # FASTPATH-WLAN-ACCESS-POINT-MIB::apBssIgnoreBcastSsid for detect Broadcast
+        for oid, cfg_name, ssid, bss in self.snmp.get_tables(
+            [
+                mib["FASTPATH-WLAN-ACCESS-POINT-MIB::apIfConfigName"],
+                mib["FASTPATH-WLAN-ACCESS-POINT-MIB::apIfConfigSsid"],
+                mib["FASTPATH-WLAN-ACCESS-POINT-MIB::apIfConfigBss"],
+            ]
+        ):
+            if not bss or not ssid:
+                continue
+            # bss = bytes.fromhex(bss.replace(":", "")).decode("ascii")
+            ssids[cfg_name] = ssid.replace(" ", "")
+        # Radio Config
+        r_config = {}
+        for rid, name, mode, channel, bandwith, frequence in self.snmp.get_tables(
+            [
+                mib["FASTPATH-WLAN-ACCESS-POINT-MIB::apRadioName"],
+                mib["FASTPATH-WLAN-ACCESS-POINT-MIB::apRadioMode"],
+                mib["FASTPATH-WLAN-ACCESS-POINT-MIB::apRadioChannel"],
+                mib["FASTPATH-WLAN-ACCESS-POINT-MIB::apRadioChannelBandwidth"],
+                mib["FASTPATH-WLAN-ACCESS-POINT-MIB::apRadioFrequency"],
+            ]
+        ):
+            r_config[name] = {
+                "name": name,
+                "ieee_mode": RadioMode(mode),
+                "channelbandwidth": RadioBandwith(bandwith),
+                "freq": frequence,
+                "channel": channel,
+            }
+        interfaces = {}  # BSS Interface Map
+        # Processed BSS
+        radio_map = {1: "wlan0", 2: "wlan1", 3: "wlan2"}
+        for bss_id, status, descr, ifradio, beacon, mac, ibcast in self.snmp.get_tables(
+            [
+                mib["FASTPATH-WLAN-ACCESS-POINT-MIB::apBssStatus"],
+                mib["FASTPATH-WLAN-ACCESS-POINT-MIB::apBssDescr"],
+                mib["FASTPATH-WLAN-ACCESS-POINT-MIB::apBssRadio"],
+                mib["FASTPATH-WLAN-ACCESS-POINT-MIB::apBssBeaconInterface"],
+                mib["FASTPATH-WLAN-ACCESS-POINT-MIB::apBssMac"],
+                mib["FASTPATH-WLAN-ACCESS-POINT-MIB::apBssIgnoreBcastSsid"],
+            ]
+        ):
+            if beacon not in ssids:
+                continue
+            ssid = ssids[beacon]
+            radio = r_config[radio_map[ifradio]]
+            bss_ifname = f"{beacon}.{ssid}"
+            interfaces[bss_ifname] = {
+                "type": "physical",
+                "name": bss_ifname,
+                "mac": mac,
+                "description": self.BSS_DESCRIPTION_TEMPLATE
+                % (
+                    "Enable" if ibcast == 2 else "Disable",
+                    radio["ieee_mode"].name,
+                    radio["channel"],
+                    radio["freq"],
+                    radio["channelbandwidth"].name,
+                ),
+                "subinterfaces": [
+                    {
+                        "name": bss_ifname,
+                        "mac": mac,
+                        "enabled_afi": ["BRIDGE"],
+                    }
+                ],
+            }
+        return list(interfaces.values())
+
+    def execute_snmp(self, **kwargs):
+        r = super().execute_snmp()
+        ri = self.get_radio_config_snmp()
+        r[0]["interfaces"] += ri
+
+        return r
