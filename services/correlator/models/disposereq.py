@@ -14,5 +14,8 @@ from .clearidreq import ClearIdRequest
 from .eventreq import EventRequest
 from .raisereq import RaiseRequest
 from .ensuregroupreq import EnsureGroupRequest
+from .setstatusreq import SetStatusRequest
 
-DisposeRequest = Union[ClearRequest, ClearIdRequest, EventRequest, RaiseRequest, EnsureGroupRequest]
+DisposeRequest = Union[
+    ClearRequest, ClearIdRequest, EventRequest, RaiseRequest, EnsureGroupRequest, SetStatusRequest
+]

@@ -34,7 +34,6 @@ class PingService(FastAPIService):
     process_name = "noc-%(name).10s-%(pool).5s"
 
     PING_CLS = {True: "NOC | Managed Object | Ping OK", False: "NOC | Managed Object | Ping Failed"}
-    ALARM_CLS = "NOC | Managed Object | Ping Failed"
 
     def __init__(self):
         super().__init__()
@@ -255,16 +254,16 @@ class PingService(FastAPIService):
             ps.status = s
         if ps and not self.is_throttled and not disable_message and s != ps.sent_status:
             # Build dispose message
-            ref = f"p:{ps.id}"
             ts = datetime.datetime.fromtimestamp(t0).isoformat()
             if s:
                 # Clear alarm
                 self.publish(
                     orjson.dumps(
                         {
-                            "$op": "clear",
-                            "reference": ref,
-                            "timestamp": ts,
+                            "$op": "set_status",
+                            "statuses": [
+                                {"timestamp": ts, "managed_object": ps.id, "status": True}
+                            ],
                         }
                     ),
                     stream=ps.stream,
@@ -275,11 +274,10 @@ class PingService(FastAPIService):
                 self.publish(
                     orjson.dumps(
                         {
-                            "$op": "raise",
-                            "reference": ref,
-                            "timestamp": ts,
-                            "managed_object": ps.id,
-                            "alarm_class": self.ALARM_CLS,
+                            "$op": "set_status",
+                            "statuses": [
+                                {"timestamp": ts, "managed_object": ps.id, "status": False}
+                            ],
                         }
                     ),
                     stream=ps.stream,
