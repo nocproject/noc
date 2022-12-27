@@ -1,7 +1,7 @@
 # ----------------------------------------------------------------------
-# ObjectGroupTopology class
+# PoP Access Map class
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2020 The NOC Project
+# Copyright (C) 2007-2022 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -16,36 +16,83 @@ from bson import ObjectId
 # NOC modules
 from noc.core.log import PrefixLoggerAdapter
 from noc.sa.models.managedobject import ManagedObject
-from noc.inv.models.resourcegroup import ResourceGroup
 from noc.inv.models.interface import Interface
 from noc.inv.models.link import Link
+from noc.inv.models.objectmodel import ObjectModel
+from noc.inv.models.object import Object
 from noc.core.topology.base import TopologyBase
 from noc.core.topology.types import MapItem, PathItem
 
 logger = logging.getLogger(__name__)
 
 
-class ObjectGroupTopology(TopologyBase):
-    name = "objectgroup"
-    header = "Object Group Schemas"
+class ObjectContainerTopology(TopologyBase):
 
-    PARAMS = {"resource_group"}
+    name = "objectcontainer"
+    header = "Object Container Map"
+    POP_MODEL = "PoP | Access"
+    POP_REGIONAL_MODEL = "PoP | Regional"
+    PARAMS = {"container"}
+    CONTAINER_MODELS = None
 
-    def __init__(self, resource_group, **settings):
-        self.rg = ResourceGroup.get_by_id(resource_group)
-        self.logger = PrefixLoggerAdapter(logger, self.rg.name)
+    def __init__(self, container, **settings):
+        self.container = Object.get_by_id(container)
+        self.logger = PrefixLoggerAdapter(logger, self.container.name)
         super().__init__(**settings)
 
     def gen_id(self) -> Optional[str]:
-        return str(self.rg.id)
+        return str(self.container.id)
+
+    @classmethod
+    def iter_maps(
+        cls,
+        parent: str = None,
+        query: Optional[str] = None,
+        limit: Optional[int] = None,
+        start: Optional[int] = None,
+        page: Optional[int] = None,
+    ) -> Iterable[MapItem]:
+        if parent == cls.name:
+            parent = None
+        if not cls.CONTAINER_MODELS:
+            cls.CONTAINER_MODELS = list(
+                ObjectModel.objects.filter(data__container__container=True).values_list("id")
+            )
+        data = Object.objects.filter(container=parent, model__in=cls.CONTAINER_MODELS).order_by(
+            "name"
+        )
+        print(parent, cls.CONTAINER_MODELS, data)
+        if query:
+            data = data.filter(name__icontains=query)
+        # Apply paging
+        if limit:
+            data = data[start : start + limit]
+        for cont in data:
+            yield MapItem(
+                title=str(cont.name),
+                generator=cls.name,
+                id=str(cont.id),
+                has_children=cont.has_children,
+            )
+
+    @classmethod
+    def iter_path(cls, gen_id) -> Iterable[PathItem]:
+        o = Object.get_by_id(gen_id)
+        if not o:
+            return
+        for level, ns_id in enumerate(o.get_path(), start=1):
+            cont = Object.get_by_id(ns_id)
+            yield PathItem(title=str(cont.name), id=str(cont.id), level=level)
 
     def load(self):
         """
         Load all managed objects from Object Group
         """
         # Group objects
-        object_mos: List[int] = ResourceGroup.get_model_instance_ids(
-            "sa.ManagedObject", str(self.rg.id)
+        object_mos: List[int] = list(
+            ManagedObject.objects.filter(container__in=self.container.get_nested_ids()).values_list(
+                "id", flat=True
+            )
         )
         # Get all links, belonging to segment
         links: List[Link] = list(Link.objects.filter(linked_objects__in=object_mos))
@@ -84,35 +131,3 @@ class ObjectGroupTopology(TopologyBase):
         # Process all links
         for link in links:
             self.add_link(link)
-
-    @classmethod
-    def iter_maps(
-        cls,
-        parent: str = None,
-        query: Optional[str] = None,
-        limit: Optional[int] = None,
-        start: Optional[int] = None,
-        page: Optional[int] = None,
-    ) -> Iterable[MapItem]:
-        data = ResourceGroup.objects.filter(parent=parent).order_by("name")
-        if query:
-            data = data.filter(name__icontains=query)
-        # Apply paging
-        if limit:
-            data = data[start : start + limit]
-        for rg in data:
-            yield MapItem(
-                title=str(rg.name),
-                generator=cls.name,
-                id=str(rg.id),
-                has_children=rg.has_children,
-            )
-
-    @classmethod
-    def iter_path(cls, gen_id) -> Iterable[PathItem]:
-        o = ResourceGroup.get_by_id(gen_id)
-        if not o:
-            return
-        for level, ns_id in enumerate(o.get_path(), start=1):
-            ns = ResourceGroup.get_by_id(ns_id)
-            yield PathItem(title=str(ns.name), id=str(ns.id), level=level)

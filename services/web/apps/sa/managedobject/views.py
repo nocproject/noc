@@ -1023,3 +1023,36 @@ class ManagedObjectApplication(ExtModelApplication):
         if user.is_superuser:
             return True
         return ManagedObject.objects.filter(id=obj.id).filter(UserAccess.Q(user)).exists()
+
+    @view(url=r"^(?P<id>\d+)/map_lookup/$", method=["GET"], access="read", api=True)
+    def api_map_lookup(self, request, id):
+        o: ManagedObject = self.get_object_or_404(ManagedObject, id=id)
+        if not o.has_access(request.user):
+            return self.response_forbidden("Access denied")
+        r = [
+            {
+                "id": str(o.id),
+                "label": _("Topology Neighbors"),
+                "is_default": False,
+                "args": ["objectlevelneighbor", str(o.id)],
+            }
+        ]
+        if o.segment:
+            r += [
+                {
+                    "id": str(o.segment.id),
+                    "label": _("Segment: ") + str(o.segment.name),
+                    "is_default": True,
+                    "args": ["segment", str(o.segment.id), o.id],
+                }
+            ]
+        if o.container:
+            r += [
+                {
+                    "id": str(o.container.id),
+                    "label": _("Container: ") + str(o.container.name),
+                    "is_default": False,
+                    "args": ["objectcontainer", str(o.container.id), o.id],
+                }
+            ]
+        return r

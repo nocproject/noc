@@ -200,12 +200,15 @@ Ext.define('NOC.core.TreePanel', {
         }, this);
     },
 
-    byIdQuery: function(id, isClosePanel) {
+    byIdQuery: function(id, isClosePanel, generator) {
         if('_root_' === id) {
             id = '';
         }
         if(isClosePanel) {
             this.closeSelectWindow();
+        }
+        if(generator) {
+            this.generator = generator
         }
         this.loadList({parent: id});
         this.currentId = id;
