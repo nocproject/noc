@@ -10,12 +10,13 @@
 import sys
 import datetime
 import re
-from collections import defaultdict
+from collections import defaultdict, deque
 import threading
 from typing import DefaultDict, Union, Any, Iterable, Optional, Tuple, Dict, List, Set
 import operator
 from itertools import chain
 from hashlib import sha512
+import asyncio
 
 # Third-party modules
 import orjson
@@ -41,6 +42,7 @@ from noc.services.correlator.models.clearreq import ClearRequest
 from noc.services.correlator.models.clearidreq import ClearIdRequest
 from noc.services.correlator.models.raisereq import RaiseRequest
 from noc.services.correlator.models.ensuregroupreq import EnsureGroupRequest
+from noc.services.correlator.models.setstatusreq import SetStatusRequest
 from noc.fm.models.eventclass import EventClass
 from noc.fm.models.activeevent import ActiveEvent
 from noc.fm.models.activealarm import ActiveAlarm, ComponentHub
@@ -72,6 +74,7 @@ class CorrelatorService(FastAPIService):
     process_name = "noc-%(name).10s-%(pool).5s"
 
     _reference_cache = cachetools.TTLCache(100, ttl=60)
+    AVAIL_CLS = "NOC | Managed Object | Ping Failed"
 
     def __init__(self):
         super().__init__()
@@ -83,6 +86,7 @@ class CorrelatorService(FastAPIService):
         self.rca_reverse = defaultdict(set)  # alarm_class -> set([alarm_class])
         self.alarm_rule_set = AlarmRuleSet()
         self.alarm_class_vars = defaultdict(dict)
+        self.status_changes = deque([])  # Save status changes
         #
         self.slot_number = 0
         self.total_slots = 0
@@ -116,6 +120,7 @@ class CorrelatorService(FastAPIService):
         )
         self.scheduler.correlator = self
         self.scheduler.run()
+        asyncio.create_task(self.update_object_statuses())
         # Subscribe stream, move to separate task to let the on_activate to terminate
         self.loop.create_task(
             self.subscribe_stream(
@@ -751,12 +756,8 @@ class CorrelatorService(FastAPIService):
         # Fetch timestamp
         ts = self.parse_timestamp(req.timestamp)
         # Managed Object
-        if req.managed_object.startswith("bi_id:"):
-            managed_object = ManagedObject.get_by_bi_id(int(req.managed_object[6:]))
-        else:
-            managed_object = ManagedObject.get_by_id(int(req.managed_object))
+        managed_object = self.parse_object(req.managed_object)
         if not managed_object:
-            self.logger.error("Invalid managed object: %s", req.managed_object)
             return
         # Get alarm class
         alarm_class = AlarmClass.get_by_name(req.alarm_class)
@@ -825,6 +826,21 @@ class CorrelatorService(FastAPIService):
             return timestamp
         self.logger.debug("Using current time as alarm timestamp")
         return datetime.datetime.now()
+
+    def parse_object(self, oid) -> Optional[ManagedObject]:
+        """
+        Resolve ManagedObject instance from message id
+        :param oid:
+        :return:
+        """
+        if oid.startswith("bi_id:"):
+            managed_object = ManagedObject.get_by_bi_id(int(oid[6:]))
+        else:
+            managed_object = ManagedObject.get_by_id(int(oid))
+        if not managed_object:
+            self.logger.error("Invalid managed object: %s", oid)
+            return
+        return managed_object
 
     async def on_msg_clear(self, req: ClearRequest) -> None:
         """
@@ -937,6 +953,31 @@ class CorrelatorService(FastAPIService):
         for h_ref in set(open_alarms) - seen_refs:
             await self.clear_by_reference(h_ref, ts=now)
 
+    async def on_msg_set_status(self, req: SetStatusRequest) -> None:
+        """
+        Process `ensure_group` message.
+        """
+        ac = AlarmClass.get_by_name(self.AVAIL_CLS)
+
+        for item in req.statuses:
+            mo = self.parse_object(item.managed_object)
+            if not mo:
+                continue
+            ts = self.parse_timestamp(item.timestamp)
+            self.set_status(mo.id, item.status, ts)
+            # @todo bulk alarm method
+            ref = f"p:{mo.id}"
+            try:
+                if item.status:
+                    await self.clear_by_reference(ref, ts=ts)
+                else:
+                    await self.raise_alarm(
+                        managed_object=mo, timestamp=ts, alarm_class=ac, reference=ref, vars={}
+                    )
+            except Exception:
+                metrics["alarm_dispose_error"] += 1
+                error_report()
+
     async def clear_by_id(
         self,
         id: Union[str, bytes],
@@ -964,7 +1005,7 @@ class CorrelatorService(FastAPIService):
         )
         alarm.last_update = max(alarm.last_update, ts)
         groups = alarm.groups
-        alarm.clear_alarm(message or "Cleared by id", source=source)
+        alarm.clear_alarm(message or "Cleared by id", ts=ts, source=source)
         metrics["alarm_clear"] += 1
         await self.clear_groups(groups, ts=ts)
 
@@ -999,7 +1040,7 @@ class CorrelatorService(FastAPIService):
         )
         alarm.last_update = max(alarm.last_update, ts)
         groups = alarm.groups
-        alarm.clear_alarm(message or "Cleared by reference")
+        alarm.clear_alarm(message or "Cleared by reference", ts=ts)
         metrics["alarm_clear"] += 1
         await self.clear_groups(groups, ts=ts)
 
@@ -1396,6 +1437,36 @@ class CorrelatorService(FastAPIService):
     @cachetools.cachedmethod(operator.attrgetter("_reference_cache"), lock=lambda _: ref_lock)
     def get_by_reference(cls, reference: str) -> Optional["ActiveAlarm"]:
         return ActiveAlarm.objects.filter(reference=cls.get_reference_hash(reference)).first()
+
+    def set_status(self, oid: int, status: bool, ts: Optional[datetime.datetime] = None) -> None:
+        """
+        Add status changes to
+        :param oid: ManagedObject Id for setting status
+        :param status: Status True/Flase
+        :param ts: Timestamp when change
+        :return:
+        """
+        self.status_changes.append((oid, status, ts))
+
+    async def update_object_statuses(self):
+        """
+        Update object statuses
+        :return:
+        """
+        from noc.sa.models.objectstatus import ObjectStatus
+
+        self.logger.info("Running object status updater")
+        while True:
+            await asyncio.sleep(config.correlator.object_status_update_interval)
+            # Count status changes
+            count = len(self.status_changes)
+            if not count:
+                continue
+            r = []
+            for _ in range(0, count):
+                r.append(self.status_changes.popleft())
+            self.logger.info("Updating %d statuses", len(r))
+            ObjectStatus.update_status_bulk(r)
 
 
 if __name__ == "__main__":

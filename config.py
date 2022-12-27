@@ -214,6 +214,7 @@ class Config(BaseConfig):
         rca_lock_dev = FloatParameter(default=0.1)
         rca_lock_expiry = SecondsParameter(default="10s")
         allowed_async_cursor = BooleanParameter(default=False)
+        object_status_update_interval = SecondsParameter(default="2s")
 
     class customization(ConfigSection):
         favicon_url = StringParameter(default="/ui/web/img/logo_24x24_deep_azure.png")

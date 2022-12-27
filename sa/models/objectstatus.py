@@ -2,19 +2,21 @@
 # ObjectStatus
 # Updated by SAE according to ping check changes
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2020 The NOC Project
+# Copyright (C) 2007-2022 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
 # Python modules
 import datetime
+from typing import List, Dict, Tuple, Optional
 
 # Third-party modules
 from mongoengine.document import Document
 from mongoengine.fields import IntField, BooleanField, DateTimeField
-from typing import List, Dict
+from pymongo import UpdateOne
 
 # NOC modules
+from noc.core.service.loader import get_service
 from noc.fm.models.outage import Outage
 
 
@@ -26,7 +28,7 @@ class ObjectStatus(Document):
         "indexes": ["object"],
     }
     # Object id
-    object = IntField(required=True)
+    object = IntField(required=True, unique=True)
     # True - object is Up
     # False - object is Down
     status = BooleanField()
@@ -34,7 +36,7 @@ class ObjectStatus(Document):
     last = DateTimeField()
 
     def __str__(self):
-        return "%s: %s" % (self.object, self.status)
+        return f"{self.object}: {self.status}"
 
     @classmethod
     def get_status(cls, object):
@@ -101,3 +103,61 @@ class ObjectStatus(Document):
             # Status changed
             Outage.register_outage(object, not status, ts=ts)
         return True
+
+    @classmethod
+    def update_status_bulk(cls, statuses: List[Tuple[int, bool, Optional[int]]]):
+        """
+        Update statuses bulk
+        :param statuses:
+        :return:
+        """
+        from noc.sa.models.managedobject import ManagedObject
+
+        now = datetime.datetime.now()
+        coll = ObjectStatus._get_collection()
+
+        bulk = []
+        outages: List[Tuple[int, datetime.datetime, datetime.datetime]] = []
+        # Getting current status
+        cs = {
+            x["object"]: {"status": x["status"], "last": x.get("last")}
+            for x in coll.find({"object": {"$in": [x[0] for x in statuses]}})
+        }
+        for oid, status, ts in statuses:
+            ts = ts or now
+            if oid not in cs or (cs[oid]["status"] != status and cs[oid]["last"] <= ts):
+                bulk += [
+                    UpdateOne(
+                        {"object": oid}, {"$set": {"status": status, "last": ts}}, upsert=True
+                    )
+                ]
+                if status and oid in cs:
+                    outages.append((oid, cs[oid]["last"], ts))
+                cs[oid] = {"status": status, "last": ts}
+            elif oid in cs and cs[oid]["last"] > ts:
+                # Oops, out-of-order update
+                # Restore correct state
+                pass
+        if not bulk:
+            return
+        coll.bulk_write(bulk, ordered=True)
+        svc = get_service()
+        # Send outages
+        for out in outages:
+            # Sent outages
+            oid, start, stop = out
+            mo = ManagedObject.get_by_id(oid)
+            svc.register_metrics(
+                "outages",
+                [
+                    {
+                        "date": now.date().isoformat(),
+                        "ts": now.replace(microsecond=0).isoformat(),
+                        "managed_object": mo.bi_id,
+                        "start": start.replace(microsecond=0).isoformat(),
+                        "stop": stop.replace(microsecond=0).isoformat(),
+                        "administrative_domain": mo.administrative_domain.bi_id,
+                    }
+                ],
+                key=mo.bi_id,
+            )
