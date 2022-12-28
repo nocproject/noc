@@ -495,8 +495,8 @@ class AlarmApplication(ExtApplication):
             )
             events += [
                 {
-                    "id": event.id,
-                    "event_class": event.event_class.id,
+                    "id": str(event.id),
+                    "event_class": str(event.event_class.id),
                     "event_class__label": event.event_class.name,
                     "timestamp": event.timestamp,
                     "status": event.status,
