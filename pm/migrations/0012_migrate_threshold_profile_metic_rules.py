@@ -75,6 +75,8 @@ class ThresholdProfile(object):
         return value, clear_value, inverse
 
     def get_window_config(self):
+        if not self.window_func:
+            return
         func, config = function_map.get(self.window_func)
         if not func:
             return
