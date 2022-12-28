@@ -816,6 +816,8 @@ class MetricsService(FastAPIService):
 
     @staticmethod
     def get_source_config(data):
+        if "$deleted" in data:
+            return
         sc = SourceConfig(
             type=data["type"],
             bi_id=data["bi_id"],
