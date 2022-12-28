@@ -263,6 +263,7 @@ class EventClass(Document):
 
     _id_cache = cachetools.TTLCache(maxsize=100, ttl=60)
     _name_cache = cachetools.TTLCache(maxsize=100, ttl=60)
+    _bi_id_cache = cachetools.TTLCache(maxsize=100, ttl=60)
     _handlers_cache = {}
 
     def __str__(self):
@@ -277,6 +278,11 @@ class EventClass(Document):
     @cachetools.cachedmethod(operator.attrgetter("_name_cache"), lock=lambda _: id_lock)
     def get_by_name(cls, name):
         return EventClass.objects.filter(name=name).first()
+
+    @classmethod
+    @cachetools.cachedmethod(operator.attrgetter("_bi_id_cache"), lock=lambda _: id_lock)
+    def get_by_bi_id(cls, bi_id):
+        return EventClass.objects.filter(bi_id=bi_id).first()
 
     def get_handlers(self):
         @cachetools.cached(self._handlers_cache, key=lambda x: x.id, lock=handlers_lock)

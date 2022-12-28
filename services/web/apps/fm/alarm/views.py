@@ -57,15 +57,9 @@ from noc.core.comp import smart_text
 from noc.core.service.loader import get_service
 
 SQL_EVENTS = f"""select
-    e.event_id,
-    e.ts,
-    dictGet('{config.clickhouse.db_dictionaries}.eventclass', ('id', 'name'), e.event_class) as event_class,
-    dictGet('{config.clickhouse.db_dictionaries}.managedobject', ('id', 'name'), e.managed_object) as managed_object,
-    e.start_ts,
-    e.source,
-    e.raw_vars,
-    e.resolved_vars,
-    e.vars
+    e.event_id, e.ts,
+    e.event_class as event_class_bi_id, e.managed_object as managed_object_bi_id,
+    e.start_ts, e.source, e.raw_vars, e.resolved_vars, e.vars
     from events e
     where e.event_id in (select event_id from disposelog where alarm_id=%s)
     format JSONEachRow
@@ -485,8 +479,8 @@ class AlarmApplication(ExtApplication):
             event = ActiveEvent(
                 id=r["event_id"],
                 timestamp=r["ts"],
-                managed_object=ManagedObject.get_by_id(r["managed_object"][0]),
-                event_class=EventClass.get_by_id(r["event_class"][0]),
+                managed_object=ManagedObject.get_by_bi_id(r["managed_object_bi_id"]),
+                event_class=EventClass.get_by_bi_id(r["event_class_bi_id"]),
                 start_timestamp=r["start_ts"],
                 source=r["source"],
                 raw_vars=r["raw_vars"],
