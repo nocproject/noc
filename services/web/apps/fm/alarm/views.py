@@ -56,7 +56,7 @@ from noc.fm.models.alarmescalation import AlarmEscalation
 from noc.core.comp import smart_text
 from noc.core.service.loader import get_service
 
-SQL_EVENTS = f"""select
+SQL_EVENTS = """select
     e.event_id, e.ts,
     e.event_class as event_class_bi_id, e.managed_object as managed_object_bi_id,
     e.start_ts, e.source, e.raw_vars, e.resolved_vars, e.vars
