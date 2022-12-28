@@ -46,9 +46,10 @@ class StreamItem(object):
 
         # Slot-based streams
         dcs = get_dcs(DEFAULT_DCS)
-        return run_sync(
-            partial(dcs.get_slot_limit, f"{self.slot}-{self.shard}" if self.shard else self.slot)
-        )
+        slot = self.slot or self.name
+        if self.shard:
+            slot = f"{slot}-{self.shard}"
+        return run_sync(partial(dcs.get_slot_limit, slot))
 
     @property
     def cursor_name(self) -> Optional[str]:
