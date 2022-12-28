@@ -7,6 +7,7 @@
 
 # Python modules
 import re
+from typing import Optional, Iterable, Callable, Tuple, Union
 
 # NOC modules
 from noc.sa.profiles.Generic.get_interfaces import Script as BaseScript
@@ -170,6 +171,24 @@ class Script(BaseScript):
         if self.is_dgs:
             return 20
         return self.MAX_REPETITIONS
+
+    def iter_iftable(
+        self, key: str, oid: str, ifindexes: Optional[Iterable[int]] = None, clean: Callable = None
+    ) -> Iterable[Tuple[str, Union[str, int]]]:
+        if key == "mac" and self.is_bad_ifmib_snmp:
+            oid = "LLDP-MIB::lldpLocPortId"
+        return super().iter_iftable(key=key, oid=oid, ifindexes=ifindexes, clean=clean)
+
+    def clean_iftype(self, ifname: str, ifindex: Optional[int] = None) -> str:
+        if not getattr(self, "_iftype_map", None):
+            self._iftype_map = {
+                int(oid.split(".")[-1]): iftype
+                for oid, iftype in self.snmp.getnext(mib["IF-MIB::ifType"])
+            }
+        iftype = self.INTERFACE_TYPES.get(self._iftype_map[ifindex], "other")
+        if iftype is None:
+            return self.profile.get_interface_type(ifname)
+        return iftype
 
     def get_iftable(self, oid, transform=True):
         if "::" in oid:
