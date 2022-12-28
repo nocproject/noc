@@ -413,6 +413,7 @@ class CorrelatorService(FastAPIService):
         :param min_group_size: For Group alarm, minimal count alarm on it
         :returns: Alarm, if created, None otherwise
         """
+
         def save_to_disposelog(a: ActiveAlarm):
             # Send dispose information to clickhouse
             data = {
