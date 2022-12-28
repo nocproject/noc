@@ -495,13 +495,13 @@ class AlarmApplication(ExtApplication):
             )
             events += [
                 {
-                    "id": e["event_id"],
-                    "event_class": e["event_class"][0],
-                    "event_class__label": e["event_class"][1],
-                    "timestamp": e["ts"],
-                    "status": "A",
-                    "managed_object": e["managed_object"][0],
-                    "managed_object__label": e["managed_object"][1],
+                    "id": e_stub.id,
+                    "event_class": e_stub.event_class.id,
+                    "event_class__label": e_stub.event_class.name,
+                    "timestamp": e_stub.timestamp,
+                    "status": e_stub.status,
+                    "managed_object": e_stub.managed_object.id,
+                    "managed_object__label": e_stub.managed_object.name,
                     "subject": e_stub.subject,
                 }
             ]
