@@ -481,28 +481,28 @@ class AlarmApplication(ExtApplication):
         cursor = connection()
         res = cursor.execute(SQL_EVENTS, return_raw=True, args=[str(alarm.id)]).decode().split("\n")
         res = [orjson.loads(r) for r in res if r]
-        for e in res:
-            e_stub = ActiveEvent(
-                id=e["event_id"],
-                timestamp=e["ts"],
-                managed_object=ManagedObject.get_by_id(e["managed_object"][0]),
-                event_class=EventClass.get_by_id(e["event_class"][0]),
-                start_timestamp=e["start_ts"],
-                source=e["source"],
-                raw_vars=e["raw_vars"],
-                resolved_vars=e["resolved_vars"],
-                vars=e["vars"],
+        for r in res:
+            event = ActiveEvent(
+                id=r["event_id"],
+                timestamp=r["ts"],
+                managed_object=ManagedObject.get_by_id(r["managed_object"][0]),
+                event_class=EventClass.get_by_id(r["event_class"][0]),
+                start_timestamp=r["start_ts"],
+                source=r["source"],
+                raw_vars=r["raw_vars"],
+                resolved_vars=r["resolved_vars"],
+                vars=r["vars"],
             )
             events += [
                 {
-                    "id": e_stub.id,
-                    "event_class": e_stub.event_class.id,
-                    "event_class__label": e_stub.event_class.name,
-                    "timestamp": e_stub.timestamp,
-                    "status": e_stub.status,
-                    "managed_object": e_stub.managed_object.id,
-                    "managed_object__label": e_stub.managed_object.name,
-                    "subject": e_stub.subject,
+                    "id": event.id,
+                    "event_class": event.event_class.id,
+                    "event_class__label": event.event_class.name,
+                    "timestamp": event.timestamp,
+                    "status": event.status,
+                    "managed_object": event.managed_object.id,
+                    "managed_object__label": event.managed_object.name,
+                    "subject": event.subject,
                 }
             ]
         if events:
