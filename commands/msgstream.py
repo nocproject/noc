@@ -1,17 +1,14 @@
 # ----------------------------------------------------------------------
-# liftbridge command
+# msgstream command
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2020 The NOC Project
+# Copyright (C) 2007-2022 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
 # Python modules
 import datetime
-import functools
 import argparse
-import random
 from dateutil.parser import parse
-from time import perf_counter
 from typing import Optional
 
 # NOC modules
@@ -19,7 +16,6 @@ from noc.core.management.base import BaseCommand
 from noc.core.ioloop.util import run_sync
 from noc.core.msgstream.client import MessageStreamClient
 from noc.core.msgstream.metadata import Metadata
-from noc.config import config
 from noc.core.text import alnum_key
 
 TS_NS = 1000_0000_00
@@ -27,7 +23,7 @@ TS_NS = 1000_0000_00
 
 class Command(BaseCommand):
     """
-    Manage Liftbridge streams
+    Manage streams
     """
 
     help = "Manage MessageStream Client"
@@ -102,7 +98,7 @@ class Command(BaseCommand):
             self.print("%-20s | %s:%s" % (broker.id, broker.host, broker.port))
         self.print("# Streams")
         for stream in meta.metadata:
-            print("  ## Name: %s Subject: %s" % (stream, ""))
+            print(f"  ## Name: {stream}")
             for p in sorted(meta.metadata[stream]):
                 print(f"    ### Partition: {p}")
                 p_meta = meta.metadata[stream][p]

@@ -6,13 +6,12 @@
 # Python modules
 import logging
 import random
-import asyncio
 from typing import Optional, Dict, AsyncIterable
 from collections import defaultdict
 
 # Third-party modules
 from gufo.liftbridge.client import LiftbridgeClient as GugoLiftbridgeClient
-from gufo.liftbridge.types import StartPosition, AckPolicy
+from gufo.liftbridge.types import StartPosition
 from gufo.liftbridge.error import ErrorNotFound
 from noc.core.liftbridge.message import Message
 

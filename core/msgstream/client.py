@@ -10,11 +10,10 @@ import logging
 from typing import Optional, Dict, AsyncIterable
 
 # NOC modules
-from noc.config import config
 from noc.core.msgstream.liftbridge import LiftBridgeClient
 from noc.core.liftbridge.message import Message
 from .config import get_stream
-from .metadata import Metadata, PartitionMetadata
+from .metadata import Metadata
 
 
 logger = logging.getLogger(__name__)
