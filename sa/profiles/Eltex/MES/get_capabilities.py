@@ -1,7 +1,7 @@
 # ---------------------------------------------------------------------
 # Eltex.MES.get_capabilities
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2021 The NOC Project
+# Copyright (C) 2007-2023 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -92,11 +92,16 @@ class Script(BaseScript):
         """
         r = self.cli("show version", cached=True)
         s = [e[0] for e in parse_table(r)]
-        if not s:  # MES3324
+        if not s:  # MES3324/MES3324F
             r = self.cli("show system", cached=True)
             if "Unit" not in r:  # MES3108F
                 return []
-            s = [e[0] for e in parse_table(r, footer=r"^Unit\s*(?:Main Power|Fans Status)")]
+            s = [
+                e[0]
+                for e in parse_table(
+                    r, footer=r"^Unit\s*(?:Main Power|Fans Status|Redundant Power Supply)"
+                )
+            ]
             while s[-1] == "":
                 del s[-1]
         return s
