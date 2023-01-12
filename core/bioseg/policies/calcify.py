@@ -44,7 +44,7 @@ class CalcifyBioSegPolicy(BaseBioSegPolicy):
         if not self.calcified_profile.is_persistent:
             self.logger.info("Calcified profile must be persistent")
             raise ValueError("Calcified profile must be persistent")
-        self.logger.info("Calcified with profile '%s'" % self.calcified_profile)
+        self.logger.info("Calcified with profile '%s'", self.calcified_profile)
         # Change segment profile to calcified one
         self.attacker.profile = self.calcified_profile
         # Change segment name when necessary

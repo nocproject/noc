@@ -112,6 +112,7 @@ class BioCollisionPolicy(EmbeddedDocument):
             ("eat", "Eat"),
             ("feed", "Feed"),
             ("calcify", "Calcify"),
+            ("split", "Split"),
         ],
         default="keep",
     )
@@ -223,6 +224,8 @@ class NetworkSegmentProfile(Document):
     # Target segment name template on calcification
     # Applied to calcified profile
     calcified_name_template = ForeignKeyField(Template)
+    #
+    calcified_as_new = BooleanField(default=False)
     # Integration with external NRI and TT systems
     # Reference to remote system object has been imported from
     remote_system = PlainReferenceField(RemoteSystem)

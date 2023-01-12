@@ -307,7 +307,8 @@ Ext.define("NOC.inv.networksegmentprofile.Application", {
                                             ["keep", __("Keep")],
                                             ["eat", __("Eat")],
                                             ["feed", __("Feed")],
-                                            ["calcify", __("Calcify")]
+                                            ["calcify", __("Calcify")],
+                                            ["split", __("Split")]
                                         ]
                                     },
                                     renderer: NOC.render.Choices({
