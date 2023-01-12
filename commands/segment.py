@@ -249,7 +249,7 @@ class Command(BaseCommand):
         self, ids, profile=None, allow_persistent=False, *args, **options
     ):
         connect()
-        nsp = NetworkSegmentProfile.objects.fillter(is_persistent=False)
+        nsp = NetworkSegmentProfile.objects.filter(is_persistent=False)
         if profile:
             nsp.filter(name=profile)
         if ids:
