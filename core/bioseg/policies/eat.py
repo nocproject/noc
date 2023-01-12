@@ -21,6 +21,7 @@ class EatBioSegPolicy(BaseBioSegPolicy):
         "eat": "keep",
         "feed": "feed",
         "calcify": "calcify",
+        "split": "split",
     }
     FLOATING_POLICY = {
         "merge": "feed",
@@ -28,6 +29,7 @@ class EatBioSegPolicy(BaseBioSegPolicy):
         "eat": "merge",
         "feed": "feed",
         "calcify": "feed",
+        "split": "keep",
     }
 
     def trial(self) -> str:
