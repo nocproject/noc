@@ -68,11 +68,11 @@ class ConfDBQueryParam(EmbeddedDocument):
 @on_delete_check(
     check=[
         ("cm.InterfaceValidationPolicy", "filter_query"),
-        # ("cm.InterfaceValidationPolicy", "rules.query"),
-        # ("cm.InterfaceValidationPolicy", "rules.filer_query"),
+        ("cm.InterfaceValidationPolicy", "rules.query"),
+        ("cm.InterfaceValidationPolicy", "rules.filter_query"),
         ("cm.ObjectValidationPolicy", "filter_query"),
-        # ("cm.ObjectValidationPolicy", "rules.query"),
-        # ("cm.ObjectValidationPolicy", "rules.filer_query"),
+        ("cm.ObjectValidationPolicy", "rules.query"),
+        ("cm.ObjectValidationPolicy", "rules.filter_query"),
     ]
 )
 class ConfDBQuery(Document):
