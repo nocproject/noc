@@ -149,7 +149,7 @@ class MessageStreamClient(object):
             return await self.client.alter_stream(
                 name, stream_meta, new_partitions=partitions, replication_factor=rf
             )
-        logger.info("Creating stream %s with %s partitions", name, s.config.partitions)
+        logger.info("Creating stream %s with %s partitions", name, partitions)
         await self.create_stream(name, partitions=partitions, replication_factor=rf)
         return True
 
