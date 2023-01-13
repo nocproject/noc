@@ -6,16 +6,22 @@
 # ---------------------------------------------------------------------
 
 # Python modules
+import datetime
 import os
 import inspect
 import re
 import orjson
 
+# Third-party modules
+from django.http import HttpResponse
+
 # NOC modules
+from noc.core.clickhouse.connect import connection
 from noc.services.web.base.extdocapplication import ExtDocApplication, view
 from noc.fm.models.activeevent import ActiveEvent
 from noc.fm.models.archivedevent import ArchivedEvent
 from noc.fm.models.failedevent import FailedEvent
+from noc.fm.models.eventclass import EventClass
 from noc.fm.models.alarmseverity import AlarmSeverity
 from noc.fm.models.mib import MIB
 from noc.fm.models.utils import get_alarm, get_event, get_severity
@@ -67,6 +73,126 @@ class EventApplication(ExtDocApplication):
                     assert o.name
                     self.plugins[o.name] = o(self)
 
+    def list_data(self, request, formatter):
+        """
+        Returns a list of events
+        """
+
+        def make_where_section(query_params):
+            where_list = []
+            for k, v in query_params.items():
+                if k == "timestamp__gte":
+                    where_list += [f"timestamp>='{v}'"]
+                elif k == "timestamp__lte":
+                    where_list += [f"timestamp<='{v}'"]
+                elif k == "managed_object":
+                    where_list += [f"managed_object={v.bi_id}"]
+                elif k == "managed_object__in":
+                    v = [str(id) for id in v]
+                    if v:
+                        where_list += [f"managed_object in ({','.join(v)})"]
+                    else:
+                        where_list += ["managed_object in (-1)"]
+                elif k == "event_class":
+                    where_list += [f"event_class={EventClass.get_by_id(v).bi_id}"]
+            if where_list:
+                return "where " + " and ".join(where_list)
+            else:
+                return ""
+
+        if request.method == "POST":
+            if self.site.is_json(request.META.get("CONTENT_TYPE")):
+                q = self.deserialize(request.body)
+            else:
+                q = {str(k): v[0] if len(v) == 1 else v for k, v in request.POST.lists()}
+        else:
+            q = {str(k): v[0] if len(v) == 1 else v for k, v in request.GET.lists()}
+        # Apply row limit if necessary
+        limit = q.get(self.limit_param, self.unlimited_row_limit)
+        if limit:
+            try:
+                limit = max(int(limit), 0)
+            except ValueError:
+                return HttpResponse(400, "Invalid %s param" % self.limit_param)
+        if limit and limit < 0:
+            return HttpResponse(400, "Invalid %s param" % self.limit_param)
+        start = q.get(self.start_param) or 0
+        if start:
+            try:
+                start = max(int(start), 0)
+            except ValueError:
+                return HttpResponse(400, "Invalid %s param" % self.start_param)
+        elif start and start < 0:
+            return HttpResponse(400, "Invalid %s param" % self.start_param)
+        # Apply row limit if necessary
+        if self.row_limit:
+            limit = min(limit or self.row_limit, self.row_limit + 1)
+        order_list = []
+        if request.is_extjs and self.sort_param in q:
+            for r in self.deserialize(q[self.sort_param]):
+                if r["direction"] == "DESC":
+                    order_list += [f"{r['property']} {r['direction']}"]
+                else:
+                    order_list += [f"{r['property']} {r['direction']}"]
+        order_list = order_list or self.default_ordering
+        if order_list:
+            order_section = "order by " + ", ".join(order_list)
+        else:
+            order_section = ""
+        limit_section = f"limit {limit} offset {start}"
+        q = self.cleaned_query(q)
+        where_section = make_where_section(q)
+        # Execute query to clickhouse
+        sql = f"""select
+            e.event_id as id,
+            e.ts as timestamp,
+            e.event_class as event_class_bi_id,
+            e.managed_object as managed_object_bi_id,
+            e.start_ts as start_timestamp,
+            e.source, e.raw_vars, e.resolved_vars, e.vars
+            from events e
+            {where_section}
+            {order_section}
+            {limit_section}
+            format JSON
+        """
+        cursor = connection()
+        res = orjson.loads(cursor.execute(sql, return_raw=True, args=[]))
+        events = []
+        for r in res["data"]:
+            events += [
+                ActiveEvent(
+                    id=r["id"],
+                    timestamp=datetime.datetime.strptime(r["timestamp"], "%Y-%m-%d %H:%M:%S"),
+                    managed_object=ManagedObject.get_by_bi_id(r["managed_object_bi_id"]),
+                    event_class=EventClass.get_by_bi_id(r["event_class_bi_id"]),
+                    start_timestamp=datetime.datetime.strptime(
+                        r["start_timestamp"], "%Y-%m-%d %H:%M:%S"
+                    ),
+                    source=r["source"],
+                    raw_vars=r["raw_vars"],
+                    resolved_vars=r["resolved_vars"],
+                    vars=r["vars"],
+                )
+            ]
+        # Format data
+        out = [formatter(o) for o in events]
+        if self.row_limit and len(out) > self.row_limit + 1:
+            return self.response(
+                "System records limit exceeded (%d records)" % self.row_limit, status=self.TOO_LARGE
+            )
+        # Bulk update result. Enrich with proper fields
+        out = self.clean_list_data(out)
+        #
+        if request.is_extjs:
+            ld = len(out)
+            if limit and (ld == limit or start > 0):
+                total = res["statistics"]["rows_read"]
+            else:
+                total = ld
+            out = {"total": total, "success": True, "data": out}
+        return self.response(out, status=self.OK)
+
     def cleaned_query(self, q):
         q = super().cleaned_query(q)
         if "administrative_domain" in q:
@@ -74,7 +200,7 @@ class EventApplication(ExtDocApplication):
             q["managed_object__in"] = list(
                 ManagedObject.objects.filter(
                     administrative_domain__in=AdministrativeDomain.get_nested_ids(ad.id)
-                ).values_list("id", flat=True)
+                ).values_list("bi_id", flat=True)
             )
             del q["administrative_domain"]
         if "resource_group" in q:
@@ -82,7 +208,7 @@ class EventApplication(ExtDocApplication):
             s = set(
                 ManagedObject.objects.filter(
                     effective_service_groups__overlap=ResourceGroup.get_nested_ids(rgs)
-                ).values_list("id", flat=True)
+                ).values_list("bi_id", flat=True)
             )
             if "managed_object__in" in q:
                 q["managed_object__in"] = list(set(q["managed_object__in"]).intersection(s))
@@ -294,3 +420,43 @@ class EventApplication(ExtDocApplication):
             "Event reclassification has been requested " "by user %s" % request.user.username
         )
         return True
+
+    @view(
+        method=["GET"],
+        url=r"^(?P<id>[0-9a-f]{24}|\d+|[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})/?$",
+        access="read",
+        api=True,
+    )
+    def api_read(self, request, id):
+        """
+        Returns dict with event's fields and values
+        """
+        sql = """select
+            e.event_id as id,
+            e.ts as timestamp,
+            e.event_class as event_class_bi_id,
+            e.managed_object as managed_object_bi_id,
+            e.start_ts as start_timestamp,
+            e.source, e.raw_vars, e.resolved_vars, e.vars
+            from events e
+            where event_id=%s
+            format JSONEachRow
+        """
+        cursor = connection()
+        res = cursor.execute(sql, return_raw=True, args=[id]).decode().split("\n")
+        if not res:
+            return HttpResponse("", status=self.NOT_FOUND)
+        res = [orjson.loads(r) for r in res if r]
+        r = res[0]
+        o = ActiveEvent(
+            id=r["id"],
+            timestamp=datetime.datetime.strptime(r["timestamp"], "%Y-%m-%d %H:%M:%S"),
+            managed_object=ManagedObject.get_by_bi_id(r["managed_object_bi_id"]),
+            event_class=EventClass.get_by_bi_id(r["event_class_bi_id"]),
+            start_timestamp=datetime.datetime.strptime(r["start_timestamp"], "%Y-%m-%d %H:%M:%S"),
+            source=r["source"],
+            raw_vars=r["raw_vars"],
+            resolved_vars=r["resolved_vars"],
+            vars=r["vars"],
+        )
+        return self.response(self.instance_to_dict(o), status=self.OK)
