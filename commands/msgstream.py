@@ -93,7 +93,7 @@ class Command(BaseCommand):
 
         meta: Metadata = run_sync(get_meta)
         self.print(f"# Brokers ({len(meta.brokers)})")
-        self.print(f"%-20s | %s" % ("ID", "HOST:PORT"))
+        self.print("%-20s | %s" % ("ID", "HOST:PORT"))
         for broker in meta.brokers:
             self.print("%-20s | %s:%s" % (broker.id, broker.host, broker.port))
         self.print("# Streams")
