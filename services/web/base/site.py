@@ -496,7 +496,7 @@ class Site(object):
             return True
         # Complex content-type
         if ";" in content_type:
-            ct, _ = content_type.rsplit(content_type, 1)
+            ct, _ = content_type.rsplit(";", 1)
             return ct.strip() in cls.JSON_CONTENT_TYPES
         return False
 
