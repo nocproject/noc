@@ -203,7 +203,7 @@ class SegmentTopology(TopologyBase):
             n = mo.get_topology_node()
             role = self.get_role(mo)
             if role == "uplink":
-                n.portal = Portal(generator="segment", id=str(self.parent_segment))
+                n.portal = Portal(generator="segment", id=str(self.parent_segment.id))
             elif role == "downlink":
                 n.portal = Portal(generator="segment", id=str(mo.segment.id))
             self.add_node(n, {"role": role})

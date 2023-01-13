@@ -89,7 +89,7 @@ class MapApplication(ExtApplication):
             return {"id": gen_id, "name": f"{gen_type}: {gen_id}", "error": str(e)}
 
     @view(
-        r"^(?P<gen_type>\w+)/(?P<gen_id>[0-9a-f]{24})/data/$",
+        r"^(?P<gen_type>\w+)/(?P<gen_id>[0-9a-f]{24}|\d+)/data/$",
         method=["POST"],
         access="write",
         api=True,
@@ -109,7 +109,7 @@ class MapApplication(ExtApplication):
         return {"status": True}
 
     @view(
-        r"^(?P<gen_type>\w+)/(?P<gen_id>[0-9a-f]{24})/data/$",
+        r"^(?P<gen_type>\w+)/(?P<gen_id>[0-9a-f]{24}|\d+)/data/$",
         method=["DELETE"],
         access="write",
         api=True,
