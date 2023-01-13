@@ -137,7 +137,7 @@ class BaseBioSegPolicy(object):
         :param seg:
         :return:
         """
-        self.logger.info("Try to destroy segment %s" % seg.name)
+        self.logger.info("Try to destroy segment %s", seg.name)
         if seg.profile.is_persistent:
             self.logger.info("Cannot destroy persistent segment. Giving up.")
             return

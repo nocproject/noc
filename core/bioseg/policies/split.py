@@ -33,7 +33,7 @@ class SplitBioSegPolicy(BaseBioSegPolicy):
     }  # Attacker -> Target
     FLOATING_POLICY = {
         "merge": "keep",
-        "keep": "keep",
+        "keep": "split",
         "eat": "eat",
         "feed": "feed",
         "calcify": "calcify",
@@ -59,16 +59,19 @@ class SplitBioSegPolicy(BaseBioSegPolicy):
                 self.logger.info("Cannot split without calcified profile")
                 raise ValueError("Cannot split without calcified profile")
             name = f"Floating segment {mos[0].name}"
-            if self.attacker.profile.calcified_name_template:
-                name = self.attacker.profile.calcified_name_template.render_body(
-                    **self.get_template_context()
+            self.logger.info("Calcified profile: %s", self.calcified_profile)
+            if self.calcified_profile.calcified_name_template:
+                name = self.calcified_profile.calcified_name_template.render_body(
+                    **self.get_template_context(link)
                 )
-            ns = NetworkSegment(
-                name=name,
-                parent=self.attacker,
-                profile=self.calcified_profile,
-            )
-            ns.save()
+            ns = NetworkSegment.objects.filter(name=name).first()
+            if not ns:
+                ns = NetworkSegment(
+                    name=name,
+                    parent=self.attacker,
+                    profile=self.calcified_profile,
+                )
+                ns.save()
             for mo in mos:
                 mo.segment = ns
                 mo.save()
@@ -104,15 +107,14 @@ class SplitBioSegPolicy(BaseBioSegPolicy):
             object_mos |= links
         return list(object_mos)
 
-    def get_template_context(self) -> Dict[str, Any]:
+    def get_template_context(self, link) -> Dict[str, Any]:
         local_interfaces: List[Interface] = []
         remote_interfaces: List[Interface] = []
-        for link in Link.objects.filter(linked_segments=self.attacker.id):
-            for iface in link.interfaces:
-                if iface.managed_object.segment.id == self.attacker.id:
-                    local_interfaces += [iface]
-                else:
-                    remote_interfaces += [iface]
+        for iface in link.interfaces:
+            if iface.managed_object.segment.id == self.attacker.id:
+                local_interfaces += [iface]
+            else:
+                remote_interfaces += [iface]
         return {
             "interfaces": list(sorted(local_interfaces, key=lambda x: alnum_key(x.name))),
             "parent_interfaces": list(sorted(remote_interfaces, key=lambda x: alnum_key(x.name))),
