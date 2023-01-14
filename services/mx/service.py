@@ -14,7 +14,7 @@ from noc.core.service.fastapi import FastAPIService
 from noc.core.mx import MX_STREAM
 from noc.core.router.base import Router
 from noc.config import config
-from noc.core.liftbridge.message import Message
+from noc.core.msgstream.message import Message
 from noc.core.perf import metrics
 
 

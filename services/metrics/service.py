@@ -23,7 +23,7 @@ from pymongo import DESCENDING, ReadPreference
 
 # NOC modules
 from noc.core.service.fastapi import FastAPIService
-from noc.core.liftbridge.message import Message
+from noc.core.msgstream.message import Message
 from noc.core.perf import metrics
 from noc.core.error import NOCError
 from noc.core.mongo.connection_async import connect_async

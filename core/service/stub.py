@@ -1,7 +1,7 @@
 # ----------------------------------------------------------------------
 # Service stub for scripts and commands
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2020 The NOC Project
+# Copyright (C) 2007-2022 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -16,7 +16,7 @@ from functools import partial
 # NOC modules
 from noc.core.dcs.loader import get_dcs, DEFAULT_DCS
 from noc.config import config
-from noc.core.liftbridge.base import LiftBridgeClient
+from noc.core.msgstream.client import MessageStreamClient
 from noc.core.ioloop.util import run_sync
 from noc.core.mx import MX_STREAM
 from noc.core.router.base import Router
@@ -82,7 +82,7 @@ class ServiceStub(object):
         headers: Optional[Dict[str, bytes]] = None,
     ):
         async def wrap():
-            async with LiftBridgeClient() as client:
+            async with MessageStreamClient() as client:
                 await client.publish(
                     value=value,
                     stream=stream,
@@ -120,7 +120,7 @@ class ServiceStub(object):
         :param stream:
         :return:
         """
-        async with LiftBridgeClient() as client:
+        async with MessageStreamClient() as client:
             while True:
                 meta = await client.fetch_metadata()
                 if meta.metadata:

@@ -48,7 +48,7 @@ from noc.core.perf import metrics
 from noc.core.handler import get_handler
 from noc.core.ioloop.timers import PeriodicCallback
 from noc.core.comp import smart_text, DEFAULT_ENCODING
-from noc.core.liftbridge.message import Message
+from noc.core.msgstream.message import Message
 from noc.core.mx import MX_LABELS, MX_H_VALUE_SPLITTER, MX_ADMINISTRATIVE_DOMAIN_ID
 from noc.core.wf.diagnostic import SNMPTRAP_DIAG, SYSLOG_DIAG, DiagnosticState
 

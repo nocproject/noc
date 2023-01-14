@@ -1,21 +1,18 @@
 # ----------------------------------------------------------------------
-# LiftBridge Publisher Queue
+# MsgStream Publisher Queue
 # ----------------------------------------------------------------------
 # Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
 # Python modules
+import asyncio
 from collections import deque
 from threading import Lock
-import asyncio
 from typing import Optional, Dict, Any
 
-# NOC modules
-from .api_pb2 import PublishRequest
 
-
-class LiftBridgeQueue(object):
+class MessageStreamQueue(object):
     def __init__(self, loop: Optional[asyncio.BaseEventLoop] = None):
         self.queue: deque = deque()
         self.lock = Lock()
@@ -32,7 +29,7 @@ class LiftBridgeQueue(object):
         else:
             waiter.set()
 
-    def put(self, req: PublishRequest, fifo: bool = True) -> None:
+    def put(self, req, fifo: bool = True) -> None:
         """
         Put request into queue
         :param req:
@@ -50,7 +47,7 @@ class LiftBridgeQueue(object):
                 return
             self._notify_waiter(self.waiter)
 
-    async def get(self, timeout: Optional[float] = None) -> Optional[PublishRequest]:
+    async def get(self, timeout: Optional[float] = None):
         """
         Get request from queue. Wait forever, if timeout is None,
         of return None if timeout is expired.
@@ -91,7 +88,7 @@ class LiftBridgeQueue(object):
             }
         )
 
-    def shutdown(self) -> bool:
+    def shutdown(self) -> None:
         with self.lock:
             if self.waiter:
                 self._notify_waiter(self.waiter)

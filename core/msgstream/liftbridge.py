@@ -13,7 +13,7 @@ from collections import defaultdict
 from gufo.liftbridge.client import LiftbridgeClient as GugoLiftbridgeClient
 from gufo.liftbridge.types import StartPosition
 from gufo.liftbridge.error import ErrorNotFound
-from noc.core.liftbridge.message import Message
+from .message import Message
 
 # NOC modules
 from noc.config import config

@@ -7,11 +7,14 @@
 
 # Python modules
 import logging
-from typing import Optional, Dict, AsyncIterable
+from typing import Optional, Dict, AsyncIterable, Any
+
+# Third-party modules
+import orjson
 
 # NOC modules
 from noc.core.msgstream.liftbridge import LiftBridgeClient
-from noc.core.liftbridge.message import Message
+from .message import Message
 from .config import get_stream
 from .metadata import Metadata
 
@@ -173,3 +176,29 @@ class MessageStreamClient(object):
         :return:
         """
         await self.client.set_cursor(stream, partition, cursor_id, offset=offset)
+
+    @staticmethod
+    def get_message(
+        data: Any,
+        stream: str,
+        headers: Optional[Dict[str, bytes]] = None,
+        sharding_key: int = 0,
+    ) -> Message:
+        """
+        Build message
+
+        :param data: Data for transmit
+        :param message_type: Message type
+        :param headers: additional message headers
+        :param sharding_key: Key for sharding
+        :return:
+        """
+        if not isinstance(data, bytes):
+            data = orjson.dumps(data)
+        return Message(
+            value=data,
+            stream=stream,
+            headers=headers,
+            # timestamp=time_ns(),
+            key=sharding_key,
+        )
