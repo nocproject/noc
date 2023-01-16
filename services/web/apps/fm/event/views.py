@@ -6,7 +6,6 @@
 # ---------------------------------------------------------------------
 
 # Python modules
-import datetime
 import os
 import inspect
 import re
@@ -16,6 +15,7 @@ import orjson
 from django.http import HttpResponse
 
 # NOC modules
+from noc.config import config
 from noc.core.clickhouse.connect import connection
 from noc.services.web.base.extdocapplication import ExtDocApplication, view
 from noc.fm.models.activeevent import ActiveEvent
@@ -97,8 +97,7 @@ class EventApplication(ExtDocApplication):
                     where_list += [f"event_class={EventClass.get_by_id(v).bi_id}"]
             if where_list:
                 return "where " + " and ".join(where_list)
-            else:
-                return ""
+            return ""
 
         if request.method == "POST":
             if self.site.is_json(request.META.get("CONTENT_TYPE")):
@@ -130,6 +129,9 @@ class EventApplication(ExtDocApplication):
         order_list = []
         if request.is_extjs and self.sort_param in q:
             for r in self.deserialize(q[self.sort_param]):
+                # ignoring sort by those fields
+                if r["property"] in ("subject", "alarms", "repeats", "duration"):
+                    continue
                 if r["direction"] == "DESC":
                     order_list += [f"{r['property']} {r['direction']}"]
                 else:
@@ -148,6 +150,8 @@ class EventApplication(ExtDocApplication):
             e.ts as timestamp,
             e.event_class as event_class_bi_id,
             e.managed_object as managed_object_bi_id,
+            dictGet('{config.clickhouse.db_dictionaries}.eventclass', ('id', 'name'), e.event_class) as event_class,
+            dictGet('{config.clickhouse.db_dictionaries}.managedobject', ('id', 'name'), e.managed_object) as managed_object,
             e.start_ts as start_timestamp,
             e.source, e.raw_vars, e.resolved_vars, e.vars
             from events e
@@ -160,21 +164,7 @@ class EventApplication(ExtDocApplication):
         res = orjson.loads(cursor.execute(sql, return_raw=True, args=[]))
         events = []
         for r in res["data"]:
-            events += [
-                ActiveEvent(
-                    id=r["id"],
-                    timestamp=datetime.datetime.strptime(r["timestamp"], "%Y-%m-%d %H:%M:%S"),
-                    managed_object=ManagedObject.get_by_bi_id(r["managed_object_bi_id"]),
-                    event_class=EventClass.get_by_bi_id(r["event_class_bi_id"]),
-                    start_timestamp=datetime.datetime.strptime(
-                        r["start_timestamp"], "%Y-%m-%d %H:%M:%S"
-                    ),
-                    source=r["source"],
-                    raw_vars=r["raw_vars"],
-                    resolved_vars=r["resolved_vars"],
-                    vars=r["vars"],
-                )
-            ]
+            events += [ActiveEvent.create_from_dict(r)]
         # Format data
         out = [formatter(o) for o in events]
         if self.row_limit and len(out) > self.row_limit + 1:
@@ -447,16 +437,5 @@ class EventApplication(ExtDocApplication):
         if not res:
             return HttpResponse("", status=self.NOT_FOUND)
         res = [orjson.loads(r) for r in res if r]
-        r = res[0]
-        o = ActiveEvent(
-            id=r["id"],
-            timestamp=datetime.datetime.strptime(r["timestamp"], "%Y-%m-%d %H:%M:%S"),
-            managed_object=ManagedObject.get_by_bi_id(r["managed_object_bi_id"]),
-            event_class=EventClass.get_by_bi_id(r["event_class_bi_id"]),
-            start_timestamp=datetime.datetime.strptime(r["start_timestamp"], "%Y-%m-%d %H:%M:%S"),
-            source=r["source"],
-            raw_vars=r["raw_vars"],
-            resolved_vars=r["resolved_vars"],
-            vars=r["vars"],
-        )
+        o = ActiveEvent.create_from_dict(res[0])
         return self.response(self.instance_to_dict(o), status=self.OK)
