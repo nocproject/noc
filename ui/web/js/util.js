@@ -639,7 +639,12 @@ Ext.define("NOC.form.field.VTypes", {
     FQDNRe: /^([a-z0-9\-]+\.)+[a-z0-9\-]+$/i,
     FQDNText: "Not valid FQDN",
 
-    // AS-set check
+    // AS-set check for compatibility whith: 
+    //   https://apps.db.ripe.net/docs/08.Set-Objects/#creating-set-objects
+    //   Valid:
+    //     AS12345:AS-MEGA-2:AS-MEGA-3-SET
+    //   Not valid:
+    //     ASMEGA-2:AS-MEGA-3-SET 
     ASSET: function(val, field) {
         var me = this;
         try {
@@ -648,8 +653,8 @@ Ext.define("NOC.form.field.VTypes", {
             return false;
         }
     },
-    ASSETRe: /^AS(-\w+)+$/i,
-    ASSETText: "Not valid ASSET, must be in form AS-SET or AS-MEGA-SET",
+    ASSETRe: /^(AS-[\w-]+)|(AS\d+(:AS-[\w-]+)+)$/i,
+    ASSETText: "Not valid AS or ASSET, must be in form AS3505, AS-SET, AS-MEGA-SET or AS3245:AS-TEST",
 
     // AS/AS-set check
     ASorASSET: function(val, field) {
