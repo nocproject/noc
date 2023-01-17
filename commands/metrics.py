@@ -16,7 +16,7 @@ from functools import partial
 # NOC modules
 from noc.config import config
 from noc.core.management.base import BaseCommand
-from noc.core.liftbridge.base import LiftBridgeClient
+from noc.core.msgstream.client import MessageStreamClient
 from noc.core.ioloop.util import run_sync
 
 
@@ -39,7 +39,7 @@ class Command(BaseCommand):
         async def upload(table: str, data: List[bytes]):
             CHUNK = 1000
             n_parts = len(config.clickhouse.cluster_topology.split(","))
-            async with LiftBridgeClient() as client:
+            async with MessageStreamClient() as client:
                 while data:
                     chunk, data = data[:CHUNK], data[CHUNK:]
                     await client.publish(
