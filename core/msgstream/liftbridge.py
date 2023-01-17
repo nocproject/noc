@@ -27,7 +27,14 @@ logger = logging.getLogger(__name__)
 class LiftBridgeClient(GugoLiftbridgeClient):
     def __init__(self):
         broker = run_sync(self.resolve_broker)
-        super().__init__([broker])
+        super().__init__(
+            [broker],
+            max_message_size=config.msgstream.max_message_size,
+            compression_method=config.liftbridge.compression_method,
+            compression_threshold=config.liftbridge.compression_threshold,
+            publish_async_ack_timeout=config.liftbridge.publish_async_ack_timeout,
+            enable_http_proxy=config.liftbridge.enable_http_proxy,
+        )
 
     async def resolve_broker(self) -> str:
         # Getting addresses from config directly will block the loop on resolve() method.
@@ -225,7 +232,6 @@ class LiftBridgeClient(GugoLiftbridgeClient):
     ) -> AsyncIterable[Message]:
         if cursor_id:
             start_position = StartPosition.RESUME
-        print("SS", start_position, cursor_id)
         async for msg in super().subscribe(
             stream=stream,
             partition=partition,
