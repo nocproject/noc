@@ -91,7 +91,7 @@ class MessageStreamClient(object):
 
     async def publish_request(self, req: PublishRequest, wait_for_stream: bool = False):
         await self.publish(
-            req.value,
+            req.data,
             stream=req.stream,
             key=req.key,
             partition=req.partition,
