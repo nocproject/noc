@@ -6,11 +6,11 @@
 # ----------------------------------------------------------------------
 
 # Python modules
-import dataclasses
-from typing import Dict
+from dataclasses import dataclass
+from typing import Dict, Optional
 
 
-@dataclasses.dataclass
+@dataclass
 class Message(object):
     value: bytes
     subject: str
@@ -19,3 +19,15 @@ class Message(object):
     key: bytes
     partition: int
     headers: Dict[str, bytes]
+
+
+@dataclass
+class PublishRequest(object):
+    __slots__ = ("stream", "value", "partition", "headers", "key")
+
+    stream: str
+    data: bytes
+    partition: Optional[int]
+    headers: Optional[Dict[str, bytes]]
+    # Meta
+    key: Optional[bytes]

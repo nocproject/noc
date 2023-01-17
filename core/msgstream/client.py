@@ -14,7 +14,7 @@ import orjson
 
 # NOC modules
 from noc.core.msgstream.liftbridge import LiftBridgeClient
-from .message import Message
+from .message import Message, PublishRequest
 from .config import get_stream
 from .metadata import Metadata
 
@@ -88,6 +88,16 @@ class MessageStreamClient(object):
             partition=partition,
             headers=headers,
             ack_policy=ack_policy,
+            wait_for_stream=wait_for_stream,
+        )
+
+    async def publish_request(self, req: PublishRequest, wait_for_stream: bool = False):
+        await self.publish(
+            req.value,
+            stream=req.stream,
+            key=req.key,
+            partition=req.partition,
+            headers=req.headers,
             wait_for_stream=wait_for_stream,
         )
 
@@ -178,27 +188,29 @@ class MessageStreamClient(object):
         await self.client.set_cursor(stream, partition, cursor_id, offset=offset)
 
     @staticmethod
-    def get_message(
+    def get_publish_request(
         data: Any,
         stream: str,
+        partition: Optional[int] = None,
         headers: Optional[Dict[str, bytes]] = None,
         sharding_key: int = 0,
-    ) -> Message:
+    ) -> PublishRequest:
         """
         Build message
 
         :param data: Data for transmit
-        :param message_type: Message type
+        :param stream: Message type
         :param headers: additional message headers
         :param sharding_key: Key for sharding
+        :param partition: Partition for send
         :return:
         """
         if not isinstance(data, bytes):
             data = orjson.dumps(data)
-        return Message(
-            value=data,
+        return PublishRequest(
+            data=data,
             stream=stream,
-            headers=headers,
-            # timestamp=time_ns(),
+            partition=partition,
             key=sharding_key,
+            headers=headers,
         )

@@ -11,6 +11,9 @@ from collections import deque
 from threading import Lock
 from typing import Optional, Dict, Any
 
+# NOC modules
+from .message import PublishRequest
+
 
 class MessageStreamQueue(object):
     def __init__(self, loop: Optional[asyncio.BaseEventLoop] = None):
@@ -29,7 +32,7 @@ class MessageStreamQueue(object):
         else:
             waiter.set()
 
-    def put(self, req, fifo: bool = True) -> None:
+    def put(self, req: PublishRequest, fifo: bool = True) -> None:
         """
         Put request into queue
         :param req:
@@ -47,7 +50,7 @@ class MessageStreamQueue(object):
                 return
             self._notify_waiter(self.waiter)
 
-    async def get(self, timeout: Optional[float] = None):
+    async def get(self, timeout: Optional[float] = None) -> Optional[PublishRequest]:
         """
         Get request from queue. Wait forever, if timeout is None,
         of return None if timeout is expired.
