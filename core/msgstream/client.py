@@ -77,7 +77,6 @@ class MessageStreamClient(object):
         key: Optional[bytes] = None,
         partition: Optional[int] = None,
         headers: Optional[Dict[str, bytes]] = None,
-        ack_policy: int = 1,
         wait_for_stream: bool = False,
     ) -> None:
         # Build message
@@ -87,7 +86,6 @@ class MessageStreamClient(object):
             key=key,
             partition=partition,
             headers=headers,
-            ack_policy=ack_policy,
             wait_for_stream=wait_for_stream,
         )
 
