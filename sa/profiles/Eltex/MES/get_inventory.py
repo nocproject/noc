@@ -137,6 +137,7 @@ class Script(BaseScript):
         return {"type": "PWR", "vendor": "ELTEX", "part_no": part_no, "number": type}
 
     def get_trans(self, ifname):
+        v = ""
         if self.has_detail:
             try:
                 v = self.cli("show fiber-ports optical-transceiver detailed interface %s" % ifname)
