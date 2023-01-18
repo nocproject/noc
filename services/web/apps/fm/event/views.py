@@ -421,21 +421,7 @@ class EventApplication(ExtDocApplication):
         """
         Returns dict with event's fields and values
         """
-        sql = """select
-            e.event_id as id,
-            e.ts as timestamp,
-            e.event_class as event_class_bi_id,
-            e.managed_object as managed_object_bi_id,
-            e.start_ts as start_timestamp,
-            e.source, e.raw_vars, e.resolved_vars, e.vars
-            from events e
-            where event_id=%s
-            format JSONEachRow
-        """
-        cursor = connection()
-        res = cursor.execute(sql, return_raw=True, args=[id]).decode().split("\n")
-        if not res:
+        event = get_event(id)
+        if not event:
             return HttpResponse("", status=self.NOT_FOUND)
-        res = [orjson.loads(r) for r in res if r]
-        o = ActiveEvent.create_from_dict(res[0])
-        return self.response(self.instance_to_dict(o), status=self.OK)
+        return self.response(self.instance_to_dict(event), status=self.OK)
