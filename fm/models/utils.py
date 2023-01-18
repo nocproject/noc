@@ -33,8 +33,8 @@ def get_event(event_id):
     """
     cursor = connection()
     res = cursor.execute(sql, return_raw=True, args=[event_id]).decode().split("\n")
+    res = [orjson.loads(r) for r in res if r]
     if res:
-        res = [orjson.loads(r) for r in res if r]
         return ActiveEvent.create_from_dict(res[0])
     return None
 
