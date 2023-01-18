@@ -1,7 +1,7 @@
 # ---------------------------------------------------------------------
 # Eltex.MES.get_inventory
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2022 The NOC Project
+# Copyright (C) 2007-2023 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -137,6 +137,7 @@ class Script(BaseScript):
         return {"type": "PWR", "vendor": "ELTEX", "part_no": part_no, "number": type}
 
     def get_trans(self, ifname):
+        v = ""
         if self.has_detail:
             try:
                 v = self.cli("show fiber-ports optical-transceiver detailed interface %s" % ifname)
@@ -176,6 +177,8 @@ class Script(BaseScript):
                 part_no = "NoName | Transceiver | 10G | SFP+ LR"
             elif code == "10GBASE-ER":
                 part_no = "NoName | Transceiver | 10G | SFP+ ER"
+            elif code == "100BASE-FX":
+                part_no = "NoName | Transceiver | 100M | SFP FX"
             elif code == "unknown":
                 part_no = "NoName | Transceiver | 1G | SFP"
             else:
