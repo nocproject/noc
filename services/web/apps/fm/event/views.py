@@ -9,10 +9,10 @@
 import os
 import inspect
 import re
-import orjson
 
 # Third-party modules
 from django.http import HttpResponse
+import orjson
 
 # NOC modules
 from noc.config import config

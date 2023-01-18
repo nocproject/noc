@@ -1,7 +1,7 @@
 # ---------------------------------------------------------------------
 # FM models utils
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2020 The NOC Project
+# Copyright (C) 2007-2023 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -10,16 +10,32 @@ from typing import Union
 
 # Third-party modules
 from bson import ObjectId
+import orjson
+
+# NOC modules
+from noc.core.clickhouse.connect import connection
 
 
 def get_event(event_id):
     """
     Get event by event_id
     """
-    for ec in (ActiveEvent, ArchivedEvent, FailedEvent):
-        e = ec.objects.filter(id=event_id).first()
-        if e:
-            return e
+    sql = """select
+        e.event_id as id,
+        e.ts as timestamp,
+        e.event_class as event_class_bi_id,
+        e.managed_object as managed_object_bi_id,
+        e.start_ts as start_timestamp,
+        e.source, e.raw_vars, e.resolved_vars, e.vars
+        from events e
+        where event_id=%s
+        format JSONEachRow
+    """
+    cursor = connection()
+    res = cursor.execute(sql, return_raw=True, args=[event_id]).decode().split("\n")
+    if res:
+        res = [orjson.loads(r) for r in res if r]
+        return ActiveEvent.create_from_dict(res[0])
     return None
 
 
@@ -67,7 +83,5 @@ def get_severity(alarms):
 
 # NOC modules
 from .activeevent import ActiveEvent
-from .archivedevent import ArchivedEvent
-from .failedevent import FailedEvent
 from .activealarm import ActiveAlarm
 from .archivedalarm import ArchivedAlarm
