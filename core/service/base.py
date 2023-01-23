@@ -1,7 +1,7 @@
 # ----------------------------------------------------------------------
 # Base service
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2021 The NOC Project
+# Copyright (C) 2007-2022 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -44,11 +44,11 @@ from noc.core.dcs.loader import get_dcs, DEFAULT_DCS
 from noc.core.threadpool import ThreadPoolExecutor
 from noc.core.span import get_spans, span_to_dict
 from noc.core.tz import setup_timezone
-from noc.core.liftbridge.base import LiftBridgeClient, StartPosition
-from noc.core.liftbridge.error import LiftbridgeError
-from noc.core.liftbridge.queue import LiftBridgeQueue
-from noc.core.liftbridge.queuebuffer import QBuffer
-from noc.core.liftbridge.message import Message
+from noc.core.msgstream.client import MessageStreamClient
+from noc.core.msgstream.queue import MessageStreamQueue
+from noc.core.msgstream.queuebuffer import QBuffer
+from noc.core.msgstream.message import Message
+from noc.core.msgstream.error import MsgStreamError
 from noc.core.router.base import Router
 from noc.core.ioloop.util import setup_asyncio
 from noc.core.ioloop.timers import PeriodicCallback
@@ -140,7 +140,7 @@ class BaseService(object):
         # Can be initialized in subclasses
         self.scheduler = None
         # Liftbridge publisher
-        self.publish_queue: Optional[LiftBridgeQueue] = None
+        self.publish_queue: Optional[MessageStreamQueue] = None
         self.publisher_start_lock = threading.Lock()
         # Metrics publisher buffer
         self.metrics_queue: Optional[QBuffer] = None
@@ -562,7 +562,6 @@ class BaseService(object):
             Awaitable[None],
         ],
         start_timestamp: Optional[float] = None,
-        start_position: StartPosition = StartPosition.RESUME,
         cursor_id: Optional[str] = None,
         auto_set_cursor: bool = True,
         async_cursor: bool = False,
@@ -624,12 +623,11 @@ class BaseService(object):
             set_cursor = None
         # Main subscriber loop
         try:
-            async with LiftBridgeClient() as client:
+            async with MessageStreamClient() as client:
                 self.active_subscribers += 1
                 async for msg in client.subscribe(
                     stream=stream,
                     partition=partition,
-                    start_position=start_position,
                     cursor_id=self.name,
                     start_timestamp=start_timestamp,
                 ):
@@ -655,8 +653,8 @@ class BaseService(object):
         with self.publisher_start_lock:
             if self.publish_queue:
                 return  # Created in concurrent thread
-            self.publish_queue = LiftBridgeQueue(self.loop)
-            self.metrics_queue = QBuffer(max_size=config.liftbridge.max_message_size)
+            self.publish_queue = MessageStreamQueue(self.loop)
+            self.metrics_queue = QBuffer(max_size=config.msgstream.max_message_size)
             self.loop.create_task(self.publisher())
             self.loop.create_task(self.publish_metrics(self.metrics_queue))
 
@@ -679,25 +677,20 @@ class BaseService(object):
         """
         if not self.publish_queue:
             self._init_publisher()
-        req = LiftBridgeClient.get_publish_request(
-            value=value,
-            stream=stream,
-            partition=partition,
-            key=key,
-            headers=headers,
-            auto_compress=bool(config.liftbridge.compression_method),
+        req = MessageStreamClient.get_publish_request(
+            data=value, stream=stream, partition=partition, sharding_key=key, headers=headers
         )
         self.publish_queue.put(req)
 
     async def publisher(self):
-        async with LiftBridgeClient() as client:
+        async with MessageStreamClient() as client:
             while not self.publish_queue.to_shutdown:
                 req = await self.publish_queue.get(timeout=1)
                 if not req:
                     continue  # Timeout or shutdown
                 try:
-                    await client.publish_sync(req, wait_for_stream=True)
-                except LiftbridgeError as e:
+                    await client.publish_request(req, wait_for_stream=True)
+                except MsgStreamError as e:
                     self.logger.error("Failed to publish message: %s", e)
                     self.logger.error("Retry message")
                     await asyncio.sleep(1)
@@ -769,7 +762,7 @@ class BaseService(object):
                         headers={MX_METRICS_SCOPE: table_name.encode(encoding="utf-8")},
                     )
             if not self.publish_queue.to_shutdown:
-                to_sleep = config.liftbridge.metrics_send_delay - (perf_counter() - t0)
+                to_sleep = config.msgstream.metrics_send_delay - (perf_counter() - t0)
                 if to_sleep > 0:
                     await asyncio.sleep(to_sleep)
 
@@ -916,15 +909,14 @@ class BaseService(object):
         :param stream:
         :return:
         """
-        async with LiftBridgeClient() as client:
+        async with MessageStreamClient() as client:
             while True:
                 meta = await client.fetch_metadata()
                 if meta.metadata:
-                    for stream_meta in meta.metadata:
-                        if stream_meta.name == stream:
-                            if stream_meta.partitions:
-                                return len(stream_meta.partitions)
-                            break
+                    if stream in meta.metadata:
+                        if meta.metadata[stream]:
+                            return len(meta.metadata[stream])
+                        break
                 # Cluster election in progress or cluster is misconfigured
                 self.logger.info("Stream '%s' has no active partitions. Waiting" % stream)
                 await asyncio.sleep(1)

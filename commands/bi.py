@@ -1,7 +1,7 @@
 # ----------------------------------------------------------------------
 # BI extract/load commands
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2022 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -29,7 +29,7 @@ from noc.core.etl.bi.extractor.alarmlogs import AlarmLogsExtractor
 from noc.core.etl.bi.extractor.managedobject import ManagedObjectsExtractor
 from noc.core.bi.dictionaries.loader import loader
 from noc.core.clickhouse.model import DictionaryModel
-from noc.core.liftbridge.base import LiftBridgeClient
+from noc.core.msgstream.client import MessageStreamClient
 from noc.config import config
 from noc.core.ioloop.util import run_sync
 from noc.models import get_model, is_document
@@ -86,7 +86,7 @@ class Command(BaseCommand):
 
     def set_last_extract(self, name, ts):
         coll = get_db()["noc.bi_timestamps"]
-        coll.update({"_id": name}, {"$set": {"last_extract": ts}}, upsert=True)
+        coll.update_one({"_id": name}, {"$set": {"last_extract": ts}}, upsert=True)
 
     def handle_extract(self, use_archive=False, *args, **options):
         now = datetime.datetime.now()
@@ -193,7 +193,7 @@ class Command(BaseCommand):
         async def upload(table: str, data: List[bytes]):
             CHUNK = 500
             n_parts = len(config.clickhouse.cluster_topology.split(","))
-            async with LiftBridgeClient() as client:
+            async with MessageStreamClient() as client:
                 while data:
                     chunk, data = data[:CHUNK], data[CHUNK:]
                     for part in range(0, n_parts):
@@ -201,7 +201,6 @@ class Command(BaseCommand):
                             b"\n".join(chunk),
                             stream=f"ch.{table}",
                             partition=part,
-                            auto_compress=bool(config.liftbridge.compression_method),
                         )
 
         t0 = time.time()
@@ -264,14 +263,13 @@ class Command(BaseCommand):
         async def upload(table: str, data: List[bytes]):
             CHUNK = 500
             n_parts = len(config.clickhouse.cluster_topology.split(","))
-            async with LiftBridgeClient() as client:
+            async with MessageStreamClient() as client:
                 while data:
                     chunk, data = data[:CHUNK], data[CHUNK:]
                     await client.publish(
                         b"\n".join(chunk),
                         stream=f"ch.{table}",
                         partition=random.randint(0, n_parts - 1),
-                        auto_compress=bool(config.liftbridge.compression_method),
                     )
 
         for fn in sorted(os.listdir(self.data_prefix)):

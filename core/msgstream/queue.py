@@ -1,21 +1,21 @@
 # ----------------------------------------------------------------------
-# LiftBridge Publisher Queue
+# MsgStream Publisher Queue
 # ----------------------------------------------------------------------
 # Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
 # Python modules
+import asyncio
 from collections import deque
 from threading import Lock
-import asyncio
 from typing import Optional, Dict, Any
 
 # NOC modules
-from .api_pb2 import PublishRequest
+from .message import PublishRequest
 
 
-class LiftBridgeQueue(object):
+class MessageStreamQueue(object):
     def __init__(self, loop: Optional[asyncio.BaseEventLoop] = None):
         self.queue: deque = deque()
         self.lock = Lock()
@@ -91,7 +91,7 @@ class LiftBridgeQueue(object):
             }
         )
 
-    def shutdown(self) -> bool:
+    def shutdown(self) -> None:
         with self.lock:
             if self.waiter:
                 self._notify_waiter(self.waiter)

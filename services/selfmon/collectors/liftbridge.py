@@ -7,11 +7,15 @@
 
 # Python modules
 import functools
+import random
+
+# Third-party modules
+from gufo.liftbridge.client import LiftbridgeClient
+from gufo.liftbridge.types import Metadata, PartitionMetadata
 
 # NOC modules
 from .base import BaseCollector
 from noc.core.ioloop.util import run_sync
-from noc.core.liftbridge.base import LiftBridgeClient, Metadata, PartitionMetadata
 from noc.config import config
 
 
@@ -27,17 +31,25 @@ class LiftbridgeStreamCollector(BaseCollector):
         "metrics": "metrics",
     }
 
+    async def resolve_liftbridge(self):
+        if hasattr(self, "_broker"):
+            return self._broker
+        addresses = await config.find_parameter("liftbridge.addresses").async_get()
+        # Use random broker from seed
+        svc = random.choice(addresses)
+        self._broker = [f"{svc.host}:{svc.port}"]
+
     async def get_meta(self) -> Metadata:
-        async with LiftBridgeClient() as client:
-            return await client.fetch_metadata()
+        async with LiftbridgeClient(self._broker) as client:
+            return await client.get_metadata()
 
     async def get_partition_meta(self, stream, partition) -> PartitionMetadata:
-        async with LiftBridgeClient() as client:
-            return await client.fetch_partition_metadata(stream, partition)
+        async with LiftbridgeClient(self._broker) as client:
+            return await client.get_partition_metadata(stream, partition)
 
     async def fetch_cursor(self, stream, partition, name):
-        async with LiftBridgeClient() as client:
-            return await client.fetch_cursor(stream=stream, partition=partition, cursor_id=name)
+        async with LiftbridgeClient(self._broker) as client:
+            return await client.get_cursor(stream=stream, partition=partition, cursor_id=name)
 
     def iter_ch_cursors(self, stream, partition):
         # Parse

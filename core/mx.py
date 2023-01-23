@@ -14,7 +14,6 @@ from functools import partial
 # NOC services
 from noc.core.service.loader import get_service
 from noc.core.comp import DEFAULT_ENCODING
-from noc.core.liftbridge.base import LiftBridgeClient
 from noc.core.ioloop.util import run_sync
 
 
@@ -111,20 +110,7 @@ def get_mx_partitions() -> int:
     Get number of MX stream partitions
     :return:
     """
+    from noc.core.msgstream.config import get_stream
 
-    async def wrap():
-        async with LiftBridgeClient() as client:
-            r = await client.fetch_metadata(MX_STREAM, wait_for_stream=True)
-            for m in r.metadata:
-                if m.name == MX_STREAM:
-                    return len(m.partitions)
-
-    global _mx_partitions
-
-    if _mx_partitions:
-        return _mx_partitions
-    with _mx_lock:
-        if _mx_partitions:
-            return _mx_partitions  # Set by concurrent thread
-        _mx_partitions = run_sync(wrap)
-        return _mx_partitions
+    cfg = get_stream(MX_STREAM)
+    return cfg.get_partitions()

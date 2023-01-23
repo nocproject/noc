@@ -15,7 +15,7 @@ from jinja2 import Template as JTemplate
 import orjson
 
 # NOC modules
-from noc.core.liftbridge.message import Message
+from noc.core.msgstream.message import Message
 from noc.core.comp import DEFAULT_ENCODING
 from noc.core.mx import (
     MX_LABELS,

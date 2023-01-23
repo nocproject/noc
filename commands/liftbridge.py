@@ -6,17 +6,20 @@
 # ----------------------------------------------------------------------
 
 # Python modules
-from typing import Optional
-from time import perf_counter
 import datetime
 import functools
 import argparse
+import random
 from dateutil.parser import parse
+from time import perf_counter
+from typing import Optional
 
 # NOC modules
 from noc.core.management.base import BaseCommand
 from noc.core.ioloop.util import run_sync
-from noc.core.liftbridge.base import LiftBridgeClient, Metadata, PartitionMetadata
+from gufo.liftbridge.client import LiftbridgeClient, Metadata, PartitionMetadata
+from gufo.liftbridge.types import StartPosition
+from noc.config import config
 from noc.core.text import alnum_key
 
 TS_NS = 1000_0000_00
@@ -80,17 +83,24 @@ class Command(BaseCommand):
         benchmark_subscriber_parser.add_argument("--name")
         benchmark_subscriber_parser.add_argument("--cursor")
 
+    async def resolve_liftbridge(self):
+        addresses = await config.find_parameter("liftbridge.addresses").async_get()
+        # Use random broker from seed
+        svc = random.choice(addresses)
+        self._broker = [f"{svc.host}:{svc.port}"]
+
     def handle(self, cmd, *args, **options):
+        run_sync(self.resolve_liftbridge)
         return getattr(self, "handle_%s" % cmd.replace("-", "_"))(*args, **options)
 
     def handle_show_metadata(self, *args, **options):
         async def get_meta() -> Metadata:
-            async with LiftBridgeClient() as client:
-                return await client.fetch_metadata()
+            async with LiftbridgeClient(self._broker) as client:
+                return await client.get_metadata()
 
         async def get_partition_meta(stream, partition) -> PartitionMetadata:
-            async with LiftBridgeClient() as client:
-                return await client.fetch_partition_metadata(stream, partition)
+            async with LiftbridgeClient(self._broker) as client:
+                return await client.get_partition_metadata(stream, partition)
 
         meta: Metadata = run_sync(get_meta)
         self.print("# Brokers (%d)" % len(meta.brokers))
@@ -125,7 +135,7 @@ class Command(BaseCommand):
         **kwargs,
     ):
         async def create():
-            async with LiftBridgeClient() as client:
+            async with LiftbridgeClient(self._broker) as client:
                 await client.create_stream(
                     name=name,
                     subject=subject,
@@ -138,7 +148,7 @@ class Command(BaseCommand):
 
     def handle_delete_stream(self, name: str, *args, **kwargs):
         async def delete():
-            async with LiftBridgeClient() as client:
+            async with LiftbridgeClient(self._broker) as client:
                 await client.delete_stream(name)
 
         run_sync(delete)
@@ -148,15 +158,16 @@ class Command(BaseCommand):
         name: str,
         partition: int = 0,
         cursor: str = "",
-        start_offset: int = 0,
+        start_offset: int = None,
         start_ts: int = None,
         *args,
         **kwargs,
     ):
         async def subscribe():
-            async with LiftBridgeClient() as client:
+            async with LiftbridgeClient(self._broker) as client:
                 async for msg in client.subscribe(
                     stream=name,
+                    start_position=StartPosition.NEW_ONLY if not cursor else StartPosition.RESUME,
                     partition=partition,
                     start_offset=start_offset,
                     cursor_id=cursor or None,
@@ -184,7 +195,7 @@ class Command(BaseCommand):
         self, name: str, stream: str, partition: int = 0, offset: int = 0, *args, **kwargs
     ):
         async def set_cursor():
-            async with LiftBridgeClient() as client:
+            async with LiftbridgeClient(self._broker) as client:
                 await client.set_cursor(
                     stream=stream, partition=partition, cursor_id=name, offset=offset
                 )
@@ -193,10 +204,8 @@ class Command(BaseCommand):
 
     def handle_fetch_cursor(self, name: str, stream: str, partition: int = 0, *args, **kwargs):
         async def fetch_cursor():
-            async with LiftBridgeClient() as client:
-                cursor = await client.fetch_cursor(
-                    stream=stream, partition=partition, cursor_id=name
-                )
+            async with LiftbridgeClient(self._broker) as client:
+                cursor = await client.get_cursor(stream=stream, partition=partition, cursor_id=name)
                 print(cursor)
 
         run_sync(fetch_cursor)
@@ -212,19 +221,17 @@ class Command(BaseCommand):
         **kwargs,
     ):
         async def publisher():
-            async with LiftBridgeClient() as client:
+            async with LiftbridgeClient(self._broker) as client:
                 payload = b" " * payload_size
                 t0 = perf_counter()
                 for _ in self.progress(range(num_messages), num_messages):
                     await client.publish(payload, stream=name, wait_for_stream=wait_for_stream)
                 dt = perf_counter() - t0
-            self.print("%d messages sent in %.2fms" % (num_messages, dt * 1000))
-            self.print(
-                "%d msg/sec, %d bytes/sec" % (num_messages / dt, num_messages * payload_size / dt)
-            )
+            self.print(f"{num_messages} messages sent in {dt * 1000:.2f}ms")
+            self.print(f"{num_messages / dt} msg/sec, {num_messages * payload_size / dt} bytes/sec")
 
         async def batch_publisher():
-            async with LiftBridgeClient() as client:
+            async with LiftbridgeClient(self._broker) as client:
                 payload = b" " * payload_size
                 t0 = perf_counter()
                 out = []
@@ -232,18 +239,16 @@ class Command(BaseCommand):
                 for _ in self.progress(range(num_messages), num_messages):
                     out += [client.get_publish_request(payload, stream=name)]
                     if len(out) == batch:
-                        async for ack in client.publish_async(out):
+                        async for ack in client.publish_bulk(out):
                             n_acks += 1
                         out = []
                 if out:
-                    async for _ in client.publish_async(out):
+                    async for _ in client.publish_bulk(out):
                         n_acks += 1
                     out = []
                 dt = perf_counter() - t0
-            self.print("%d messages sent in %.2fms (%d acks)" % (num_messages, dt * 1000, n_acks))
-            self.print(
-                "%d msg/sec, %d bytes/sec" % (num_messages / dt, num_messages * payload_size / dt)
-            )
+            self.print(f"{num_messages} messages sent in {dt * 1000:.2f}ms ({n_acks} acks)")
+            self.print(f"{num_messages / dt} msg/sec, {num_messages * payload_size / dt} bytes/sec")
 
         if batch == 1:
             run_sync(publisher)
@@ -253,7 +258,7 @@ class Command(BaseCommand):
 
     def handle_benchmark_subscriber(self, name: str, cursor: Optional[str] = None, *args, **kwargs):
         async def subscriber():
-            async with LiftBridgeClient() as client:
+            async with LiftbridgeClient(self._broker) as client:
                 report_interval = 1.0
                 t0 = perf_counter()
                 total_msg = last_msg = 0
@@ -265,8 +270,8 @@ class Command(BaseCommand):
                     dt = t - t0
                     if dt >= report_interval:
                         self.print(
-                            "%d msg/sec, %d bytes/sec"
-                            % ((total_msg - last_msg) / dt, (total_size - last_size) / dt)
+                            f"{(total_msg - last_msg) / dt} msg/sec, "
+                            f"{(total_size - last_size) / dt} bytes/sec"
                         )
                         t0 = t
                         last_msg = total_msg

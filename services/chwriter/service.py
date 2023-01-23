@@ -21,7 +21,7 @@ from noc.config import config
 from noc.core.perf import metrics
 from noc.services.chwriter.channel import Channel
 from noc.core.ioloop.timers import PeriodicCallback
-from noc.core.liftbridge.base import LiftBridgeClient, StartPosition
+from noc.core.msgstream.client import MessageStreamClient
 
 
 class CHWriterService(FastAPIService):
@@ -63,13 +63,13 @@ class CHWriterService(FastAPIService):
         Yields CH stream names
         :return:
         """
-        async with LiftBridgeClient() as client:
+        async with MessageStreamClient() as client:
             while True:
                 meta = await client.fetch_metadata()
                 if meta.metadata:
-                    for stream_meta in meta.metadata:
-                        if stream_meta.name.startswith("ch."):
-                            yield stream_meta.name
+                    for stream in meta.metadata:
+                        if stream.startswith("ch."):
+                            yield stream
                     break
                 # Cluster election in progress or cluster is misconfigured
                 self.logger.info("Cluster has no active partitions. Waiting")
@@ -93,11 +93,11 @@ class CHWriterService(FastAPIService):
         channel = Channel(self, table)
         self.channels[table] = channel
         cursor_id = self.get_cursor_id()
-        async with LiftBridgeClient() as client:
+        async with MessageStreamClient() as client:
             async for msg in client.subscribe(
                 stream=stream,
                 partition=config.chwriter.shard_id,
-                start_position=StartPosition.RESUME,
+                # start_position=StartPosition.RESUME,
                 cursor_id=cursor_id,
             ):
                 await channel.feed(msg)
@@ -107,7 +107,7 @@ class CHWriterService(FastAPIService):
         Flush data
         :return:
         """
-        async with LiftBridgeClient() as client:
+        async with MessageStreamClient() as client:
             cursor_id = self.get_cursor_id()
             partition_id = config.chwriter.shard_id
             while not self.stopping:

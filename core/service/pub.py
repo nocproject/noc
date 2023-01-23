@@ -2,7 +2,7 @@
 # ----------------------------------------------------------------------
 # Liftbridge Publish API
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2021 The NOC Project
+# Copyright (C) 2007-2022 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -13,7 +13,7 @@ import logging
 from typing import Optional, Dict
 
 # NOC modules
-from noc.core.liftbridge.base import LiftBridgeClient
+from noc.core.msgstream.client import MessageStreamClient
 from noc.core.ioloop.util import run_sync
 
 logger = logging.getLogger(__name__)
@@ -27,7 +27,7 @@ def publish(
     headers: Optional[Dict[str, bytes]] = None,
 ):
     async def wrap():
-        async with LiftBridgeClient() as client:
+        async with MessageStreamClient() as client:
             await client.publish(
                 value=value, stream=stream, partition=partition, key=key, headers=headers
             )
