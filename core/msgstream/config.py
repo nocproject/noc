@@ -53,7 +53,10 @@ class StreamItem(object):
 
     @property
     def cursor_name(self) -> Optional[str]:
-        return self.cursor or self.shard
+        name = self.slot or self.name
+        if self.shard:
+            return f"{name}.{self.shard}"
+        return name
 
     def __str__(self):
         return self.name

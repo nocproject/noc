@@ -365,12 +365,10 @@ class Config(BaseConfig):
 
     class liftbridge(ConfigSection):
         addresses = ServiceParameter(service="liftbridge", wait=True, near=True, full_result=False)
-        max_message_size = IntParameter(default=921600, help="Max message size for GRPC client")
         publish_async_ack_timeout = IntParameter(default=10)
         compression_threshold = IntParameter(default=524288)
         compression_method = StringParameter(choices=["", "zlib", "lzma"], default="zlib")
         enable_http_proxy = BooleanParameter(default=False)
-        metrics_send_delay = FloatParameter(default=0.25)
 
     listen = StringParameter(default="auto:0")
 
@@ -563,6 +561,9 @@ class Config(BaseConfig):
         max_breadcrumbs = IntParameter(min=1, max=100, default=10)
 
     class msgstream(ConfigSection):
+        metrics_send_delay = FloatParameter(default=0.25)
+        max_message_size = IntParameter(default=921600, help="Max message size for GRPC client")
+
         class events(ConfigSection):
             retention_max_age = SecondsParameter(
                 default="24h",

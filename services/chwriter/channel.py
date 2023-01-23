@@ -16,7 +16,7 @@ from typing import Optional, List
 
 # NOC modules
 from noc.config import config
-from noc.core.liftbridge.message import Message
+from noc.core.msgstream.message import Message
 
 
 class Channel(object):

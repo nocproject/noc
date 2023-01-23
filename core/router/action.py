@@ -14,7 +14,7 @@ from collections import defaultdict
 import orjson
 
 # NOC modules
-from noc.core.liftbridge.message import Message
+from noc.core.msgstream.message import Message
 from noc.core.comp import DEFAULT_ENCODING
 from noc.core.mx import MX_MESSAGE_TYPE, NOTIFICATION_METHODS, MX_METRICS_SCOPE, MX_SHARDING_KEY
 from noc.config import config

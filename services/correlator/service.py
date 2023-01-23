@@ -60,7 +60,7 @@ from noc.core.debug import format_frames, get_traceback_frames, error_report
 from noc.services.correlator import utils
 from noc.core.perf import metrics
 from noc.core.fm.enum import RCA_RULE, RCA_TOPOLOGY, RCA_DOWNLINK_MERGE
-from noc.core.liftbridge.message import Message
+from noc.core.msgstream.message import Message
 from noc.services.correlator.rcalock import RCALock
 from noc.services.correlator.alarmrule import GroupItem
 

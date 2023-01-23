@@ -15,7 +15,7 @@ from io import StringIO
 
 # NOC modules
 from noc.core.service.fastapi import FastAPIService
-from noc.core.liftbridge.message import Message
+from noc.core.msgstream.message import Message
 from noc.core.mx import MX_TO
 from noc.core.perf import metrics
 from noc.config import config

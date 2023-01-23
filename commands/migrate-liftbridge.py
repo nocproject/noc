@@ -11,13 +11,13 @@ from typing import Iterable
 # NOC modules
 from noc.core.management.base import BaseCommand
 from noc.core.msgstream.config import STREAMS
-from noc.core.liftbridge.base import LiftBridgeClient
+from noc.core.msgstream.client import MessageStreamClient
 from noc.core.mongo.connection import connect
 from noc.core.ioloop.util import run_sync
 from noc.core.clickhouse.loader import loader as bi_loader
 from noc.core.bi.dictionaries.loader import loader as bi_dict_loader
-from noc.main.models.pool import Pool
 from noc.pm.models.metricscope import MetricScope
+from noc.main.models.pool import Pool
 
 
 class Command(BaseCommand):
@@ -71,7 +71,7 @@ class Command(BaseCommand):
 
     def apply_stream_settings(self, stream: str, partitions: int) -> bool:
         async def ensure_stream() -> bool:
-            async with LiftBridgeClient() as client:
+            async with MessageStreamClient() as client:
                 return await client.ensure_stream(stream, partitions=partitions)
 
         return run_sync(ensure_stream)
