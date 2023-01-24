@@ -86,11 +86,13 @@ class RedPandaClient(object):
         s_meta = defaultdict(dict)
         req_parts = []
         r = await client.fetch_all_metadata()
-        for stream_m in r._partitions:
-            for p, p_meta in stream_m.partitions.items():
-                req_parts.append(TopicPartition(topic=stream_m, partition=p))
-                s_meta[stream_m.name][p] = PartitionMetadata(
-                    topic=stream_m.name,
+        for stream_n, stream_m in r._partitions.items():
+            if stream and stream_n != stream:
+                continue
+            for p, p_meta in stream_m.items():
+                req_parts.append(TopicPartition(topic=stream_n, partition=p))
+                s_meta[stream_n][p] = PartitionMetadata(
+                    topic=stream_n,
                     partition=p,
                     leader=p_meta.leader,
                     replicas=list(p_meta.replicas),
@@ -99,12 +101,12 @@ class RedPandaClient(object):
         # Fetch newest offset
         con = await self.get_consumer()
         # await con.start()
-        offsets = await con.end_offsets(req_parts)
-        for tp, offset in offsets.items():
-            s_meta[tp.topic][tp.partition].newest_offset = offset
-            s_meta[tp.topic][tp.partition].high_watermark = offset
+        # offsets = await con.end_offsets(req_parts)
+        # for tp, offset in offsets.items():
+        #     s_meta[tp.topic][tp.partition].newest_offset = offset
+        #     s_meta[tp.topic][tp.partition].high_watermark = offset
         return Metadata(
-            brokers=[Broker(id=b.id, host=b.host, port=b.port) for b in r.brokers],
+            brokers=[Broker(id=b.nodeId, host=b.host, port=b.port) for b in r.brokers()],
             metadata=s_meta,
         )
 
