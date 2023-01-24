@@ -509,6 +509,21 @@ class Config(BaseConfig):
         db = IntParameter(default=0)
         default_ttl = SecondsParameter(default="1d")
 
+    class redpanda(ConfigSection):
+        addresses = ServiceParameter(service="redpanda", wait=False, near=True, full_result=False)
+        bootstrap_servers = StringParameter()
+        username = StringParameter()
+        password = SecretParameter()
+        sasl_mechanism = StringParameter(
+            choices=["PLAIN", "GSSAPI", "SCRAM-SHA-256", "SCRAM-SHA-512"], default="PLAIN"
+        )
+        security_protocol = StringParameter(
+            choices=["PLAINTEXT", "SASL_PLAINTEXT", "SSL", "SASL_SSL"], default="PLAINTEXT"
+        )
+        max_batch_size = BytesParameter(
+            default=16384, help="Maximum size of buffered data per partition"
+        )
+
     class rpc(ConfigSection):
         retry_timeout = StringParameter(default="0.1,0.5,1,3,10,30")
         sync_connect_timeout = SecondsParameter(default="20s")
@@ -563,6 +578,7 @@ class Config(BaseConfig):
     class msgstream(ConfigSection):
         metrics_send_delay = FloatParameter(default=0.25)
         max_message_size = IntParameter(default=921600, help="Max message size for GRPC client")
+        client_class = StringParameter(default="noc.core.msgstream.liftbridge.LiftBridgeClient")
 
         class events(ConfigSection):
             retention_max_age = SecondsParameter(
