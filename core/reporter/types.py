@@ -35,11 +35,11 @@ class ReportBand(object):
 @dataclass
 class Template(object):
     output_type: OutputType
-    code: str = "DEFAULT" # ReportTemplate.DEFAULT_TEMPLATE_CODE;
+    code: str = "DEFAULT"  # ReportTemplate.DEFAULT_TEMPLATE_CODE;
     # documentPath: str
     content: Optional[bytes] = None
     output_name_pattern: Optional[str] = "report.html"
-    handler: Optional[str] = None # For custom code
+    handler: Optional[str] = None  # For custom code
     custom: bool = False
 
 
