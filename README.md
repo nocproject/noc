@@ -42,6 +42,10 @@ Feel free to check [issues page](https://code.getnoc.com/noc/noc/issues/).
 * Telegram group:  https://t.me/nocproject
 * Official site: https://getnoc.com
 
+## Documentation:
+* En: https://docs.getnoc.com/master/en/
+* Ru: https://docs.getnoc.com/master/ru/
+
 ##  License
 
 This project is [BSD 3-Clause License](https://choosealicense.com/licenses/bsd-3-clause/) licensed.
