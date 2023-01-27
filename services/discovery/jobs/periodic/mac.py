@@ -32,13 +32,21 @@ class MACCheck(DiscoveryCheck):
 
     def handler(self):
         # Build filter policy
-        if self.object.object_profile.box_discovery_mac_filter_policy == "A":
+        if (self.is_box and self.object.object_profile.box_discovery_mac_filter_policy == "A") or (
+            self.is_periodic
+            and self.object.object_profile.periodic_discovery_mac_filter_policy == "A"
+        ):
             mf = self.filter_all
         else:
             mf = []
             self.allowed_vlans = set()
             # Filter by interface profile
-            if self.object.object_profile.box_discovery_mac_filter_policy == "I":
+            if (
+                self.is_box and self.object.object_profile.box_discovery_mac_filter_policy == "I"
+            ) or (
+                self.is_periodic
+                and self.object.object_profile.periodic_discovery_mac_filter_policy == "I"
+            ):
                 mf += [self.filter_interface_profile]
             # Filter by VC Filter (not implemented yet)
             if self.object.object_profile.mac_collect_vlanfilter:
