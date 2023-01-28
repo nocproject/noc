@@ -39,8 +39,8 @@ Ext.define('NOC.sa.monitor.FilterController', {
     },
 
     cleanAllFilters: function() {
-        this.lookupReference('s-btn').setPressed(false);
-        this.lookupReference('W-btn').setPressed(false);
+        this.lookupReference('sbtn').setPressed(false);
+        this.lookupReference('wbtn').setPressed(false);
         this.callParent();
     }
 });

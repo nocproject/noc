@@ -100,8 +100,8 @@ Ext.define('NOC.sa.runcommands.Controller', {
 
         grid.getSelectionModel().select(
             grid.getSelectionModel()
-            .getSelection()
-            .concat(checkedRecord)
+                .getSelection()
+                .concat(checkedRecord)
         );
         this.getStore('selectedStore').add(checkedRecord);
         // this.viewModel.notify();
@@ -270,7 +270,7 @@ Ext.define('NOC.sa.runcommands.Controller', {
             case 'commands': {
                 commandForm.add({
                     xtype: 'textareafield',
-                    reference: 'sa-run-commands-command-field',
+                    reference: 'saRunCommandsCommandField',
                     name: 'cmd',
                     fieldLabel: __('Commands'),
                     labelAlign: 'top',
@@ -292,11 +292,11 @@ Ext.define('NOC.sa.runcommands.Controller', {
     //
     onRun: function() {
         var me = this;
-        var mode = this.lookupReference('sa-run-commands-mode').getValue();
+        var mode = this.lookupReference('saRunCommandsMode').getValue();
         var makeRequest = function(mode) {
             var objects = [];
             var config = me.lookupReference('sa-run-commands-command-form').getValues();
-            var ignore_cli_errors = JSON.stringify(me.lookupReference('ignore-cli-errors').getValue());
+            var ignore_cli_errors = JSON.stringify(me.lookupReference('ignoreCliErrors').getValue());
 
             me.getStore('selectedStore').each(function(record) {
                 objects.push(record.get('id'));
@@ -358,7 +358,7 @@ Ext.define('NOC.sa.runcommands.Controller', {
                     'args': {
                         'commands': this.lookupReference('sa-run-commands-command-form').getValues().cmd.split('\n'),
                         'include_commands': 'true',
-                        'ignore_cli_errors': JSON.stringify(this.lookupReference('ignore-cli-errors').getValue())
+                        'ignore_cli_errors': JSON.stringify(this.lookupReference('ignoreCliErrorss').getValue())
                     }
                 });
                 break;
@@ -598,7 +598,7 @@ Ext.define('NOC.sa.runcommands.Controller', {
                     selectionGrid.unmask();
                     selectionGrid.getSelectionModel().selectRange(params.__start, params.__start + params.__limit - 1);
                     me.lookupReference('sa-run-commands-selected-grid-1').getStore()
-                    .insert(0, Ext.decode(response.responseText));
+                        .insert(0, Ext.decode(response.responseText));
                 },
                 failure: function() {
                     selectionGrid.unmask();

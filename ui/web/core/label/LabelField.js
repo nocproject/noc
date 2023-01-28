@@ -264,7 +264,6 @@ Ext.define("NOC.core.label.LabelField", {
     },
 
     setValue: function(value, add, skipLoad) {
-        console.log('setValue : ', value);
         var me = this,
             valueStore = me.valueStore,
             valueField = me.valueField,
@@ -357,7 +356,6 @@ Ext.define("NOC.core.label.LabelField", {
                 }
             }
         });
-        console.log('onChange setValue : ', newVal);
         labelField.setValue(newVal);
         me.inputEl.dom.value = '';
     },

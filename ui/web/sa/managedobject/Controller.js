@@ -280,7 +280,7 @@ Ext.define('NOC.sa.managedobject.Controller', {
             case 'commands': {
                 commandForm.add({
                     xtype: 'textareafield',
-                    reference: 'sa-managedobject-command-field',
+                    reference: 'saManagedobjectCommandField',
                     name: 'cmd',
                     fieldLabel: __('Commands'),
                     labelAlign: 'top',
@@ -302,11 +302,11 @@ Ext.define('NOC.sa.managedobject.Controller', {
     //
     onRun: function() {
         var me = this;
-        var mode = this.lookupReference('sa-managedobject-mode').getValue();
+        var mode = this.lookupReference('saManagedobjectMode').getValue();
         var makeRequest = function(mode) {
             var objects = [];
             var config = me.lookupReference('sa-managedobject-command-form').getValues();
-            var ignore_cli_errors = JSON.stringify(me.lookupReference('ignore-cli-errors').getValue());
+            var ignore_cli_errors = JSON.stringify(me.lookupReference('ignoreCliErrors').getValue());
 
             me.getStore('selectedStore').each(function(record) {
                 objects.push(record.get('id'));
@@ -368,7 +368,7 @@ Ext.define('NOC.sa.managedobject.Controller', {
                     'args': {
                         'commands': this.lookupReference('sa-managedobject-command-form').getValues().cmd.split('\n'),
                         'include_commands': 'true',
-                        'ignore_cli_errors': JSON.stringify(this.lookupReference('ignore-cli-errors').getValue())
+                        'ignore_cli_errors': JSON.stringify(this.lookupReference('ignoreCliErrors').getValue())
                     }
                 });
                 break;
@@ -675,14 +675,12 @@ Ext.define('NOC.sa.managedobject.Controller', {
                             return;
                         }
                         if(!Ext.isEmpty(data[v])) {
-                            if(!['effective_service_groups', 'labels'].includes(v)) {
-                                console.log(v, data[v]);
+                            if(!['effective_service_groups'].includes(v)) {
                                 r[v] = data[v];
                             }
                         }
                     });
                     // 
-                    console.log(r);
                     form.reset();
                     form.setValues(r);
                     view.setHistoryHash(data.id);

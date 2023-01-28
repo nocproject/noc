@@ -302,13 +302,13 @@ Ext.define('NOC.sa.managedobject.Application', {
                             items: [
                                 {
                                     xtype: 'checkboxfield',
-                                    reference: 'ignore-cli-errors',
+                                    reference: 'ignoreCliErrors',
                                     boxLabel: __('Ignore CLI errors'),
                                     checked: true
                                 },
                                 {
                                     xtype: 'combo',
-                                    reference: 'sa-managedobject-mode',
+                                    reference: 'saManagedobjectMode',
                                     fieldLabel: __('Mode'),
                                     labelWidth: 50,
                                     queryMode: 'local',

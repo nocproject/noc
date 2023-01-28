@@ -24,7 +24,7 @@ Ext.define('NOC.sa.monitor.Filter', {
                             toggleGroup: 'status',
                             text: __('Suspend'),
                             value: 's',
-                            reference: 's-btn',
+                            reference: 'sbtn',
                             handler: 'setFilter'
                         },
                         {
@@ -32,7 +32,7 @@ Ext.define('NOC.sa.monitor.Filter', {
                             toggleGroup: 'status',
                             text: __('Wait'),
                             value: 'W',
-                            reference: 'W-btn',
+                            reference: 'wbtn',
                             handler: 'setFilter'
                         },
                         {
@@ -40,7 +40,7 @@ Ext.define('NOC.sa.monitor.Filter', {
                             toggleGroup: 'status',
                             text: __('Run'),
                             value: 'R',
-                            reference: 'R-btn',
+                            reference: 'rbtn',
                             handler: 'setFilter'
                         },
                         {
@@ -48,7 +48,7 @@ Ext.define('NOC.sa.monitor.Filter', {
                             toggleGroup: 'status',
                             text: __('Disabled'),
                             value: 'D',
-                            reference: 'D-btn',
+                            reference: 'dbtn',
                             handler: 'setFilter'
                         }
                     ]

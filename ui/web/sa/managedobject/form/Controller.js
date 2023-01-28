@@ -16,4 +16,5 @@ Ext.define('NOC.sa.managedobject.form.Controller', {
         mainView.getLayout().setActiveItem('managedobject-select');
         mainView.setHistoryHash();
     },
+    onChange: Ext.emptyFn,
 });
