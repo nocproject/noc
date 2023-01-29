@@ -9,7 +9,12 @@
 import logging
 from typing import Dict, Any
 
+# Third-party modules
+import orjson
+
 # NOC modules
+from noc.core.datasources.loader import loader as ds_loader
+from noc.core.reporter.formatter.loader import df_loader
 from .types import Template, OutputType, RunParams, Report
 from .report import BandData
 
@@ -45,6 +50,7 @@ class ReportEngine(object):
 
     def generate_report(
         self,
+        report: Report,
         template: Template,
         output_type: OutputType,
         output_stream: bytes,
@@ -56,6 +62,9 @@ class ReportEngine(object):
         :return:
         """
         #
+        formatter = df_loader[output_type.value]
+        formatter(band_data, template, output_type, output_stream)
+        formatter.renderDocument()
 
     def clean_param(self, report: Report, params: Dict[str, Any]):
         """
@@ -75,11 +84,29 @@ class ReportEngine(object):
     def load_data(self, report: Report, params: Dict[str, Any]) -> BandData:
         """
         Load report data from band
+        1. Create root DataBand
+        2. Extract data from report band
+        3. Merge root DataBand and Extract Data
+            1. If not queries - from params
+            2. If queries - get parent band params and execute query
         :return:
         """
         r = BandData(BandData.ROOT_BAND_NAME)
         r.set_data(params)
-        r.datasource = report.root_band.query
+        # Extract data
+        rb = report.get_root_band()
+        for cb in rb.iter_children():
+            bd = BandData(cb.name, r, cb.orientation)
+            for c in cb.queries:
+                if c.datasource:
+                    data = ds_loader[c.datasource]
+                    bd.rows = data.run_sync(**r.data)
+                    # Parse Query
+                if c.json:
+                    bd.rows = orjson.loads(c.data)
+            if bd.rows:
+                bd.set_data(bd.rows[0])
+            r.add_child(bd)
         return r
 
     def resolve_output_filename(self) -> str:

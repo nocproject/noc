@@ -1,9 +1,17 @@
-from dataclasses import dataclass, field
-from typing import Dict, List, Optional, Any
+# ----------------------------------------------------------------------
+# Report Engine Base Class
+# ----------------------------------------------------------------------
+# Copyright (C) 2007-2022 The NOC Project
+# See LICENSE for details
+# ----------------------------------------------------------------------
+
+# Python modules
 import enum
+from dataclasses import dataclass
+from typing import Dict, List, Optional, Any, Iterable
 
 
-class BandOrientation(enum.StrEnum):
+class BandOrientation(enum.Enum):
     HORIZONTAL = "H"
     VERTICAL = "V"
     CROSS = "C"
@@ -24,12 +32,39 @@ class ReportField(object):
 
 
 @dataclass
+class ReportQuery(object):
+    name: str
+    datasource: Optional[str] = None
+    sql: Optional[str] = None
+    json: Optional[str] = None
+    data: Optional[str] = None
+    params: Dict[str, Any] = None
+    groovy: Optional[str] = None
+
+
+@dataclass
 class ReportBand(object):
     name: str
-    orientation: BandOrientation = "H"  # Relevant only for xlsx template
-    children: List["ReportBand"] = field(default_factory=list)
-    query: List[str] = field(default_factory=list)  # datasources
+    queries: Optional[List[ReportQuery]] = None
     parent: Optional["ReportBand"] = None
+    orientation: BandOrientation = "H"  # Relevant only for xlsx template
+    children: Optional[List["ReportBand"]] = None
+
+    def __post_init__(self):
+        queries = []
+        for q in self.queries or []:
+            if isinstance(q, dict):
+                queries.append(ReportQuery(**q))
+        self.queries = queries
+        children = []
+        for c in self.children or []:
+            if isinstance(c, dict):
+                children.append(ReportBand(**c))
+        self.children = children
+
+    def iter_children(self) -> Iterable["ReportBand"]:
+        for c in self.children:
+            yield c
 
 
 @dataclass
@@ -64,7 +99,10 @@ class Report(object):
     root_band: ReportBand
     templates: Dict[str, Template]  # template_code -> template
     parameters: List[Parameter]
-    # field_format: List[ReportField]
+    field_format: List[ReportField]
+
+    def get_root_band(self) -> ReportBand:
+        return self.root_band
 
 
 @dataclass
