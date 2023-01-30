@@ -5,7 +5,6 @@
 
 console.debug('Defining NOC.sa.managedobject.form.View');
 Ext.define('NOC.sa.managedobject.form.View', {
-    // extend: 'NOC.core.ModelApplication',
     extend: 'Ext.form.Panel',
     mixins: [
         'NOC.core.ModelApplication'
@@ -15,6 +14,8 @@ Ext.define('NOC.sa.managedobject.form.View', {
         'NOC.core.label.LabelDisplay',
         'NOC.core.status.StatusField',
         'NOC.core.combotree.ComboTree',
+        'NOC.core.InlineGrid',
+        'NOC.core.InlineModelStore',
         'NOC.main.ref.stencil.LookupField',
         'NOC.main.pool.LookupField',
         'NOC.main.glyph.LookupField',
@@ -30,58 +31,41 @@ Ext.define('NOC.sa.managedobject.form.View', {
         'NOC.ip.vrf.LookupField',
         'NOC.fm.ttsystem.LookupField',
         'NOC.project.project.LookupField',
-        'NOC.sa.managedobjectprofile.LookupField',
         'NOC.sa.profile.LookupField',
+        'NOC.sa.managedobjectprofile.LookupField',
+        'NOC.sa.managedobject.AttributesModel',
+        'NOC.sa.managedobject.CapabilitiesModel',
         'NOC.sa.managedobject.form.Controller',
-        'NOC.sa.administrativedomain.LookupField',
-        'NOC.sa.managedobject.SchemeLookupField',
-        'NOC.sa.authprofile.LookupField',
         'NOC.sa.managedobject.LookupField',
+        'NOC.sa.managedobject.SchemeLookupField',
+        'NOC.sa.administrativedomain.LookupField',
+        'NOC.sa.authprofile.LookupField',
         'NOC.vc.l2domain.LookupField',
     ],
     alias: 'widget.managedobject.form',
     controller: 'managedobject.form',
-    formMinWidth: 800,
-    formMaxWidth: 1000,
+    region: 'center',
+    layout: 'form',
     scrollable: true,
-    height: 10000,
-    initComponent: function() {
-        this.callParent();
-    },
-    fieldSetDefaults: {
-        xtype: "container",
-        padding: 10,
-        layout: "form",
-        columnWidth: 0.5
-    },
-
     defaults: {
-        // anchor: "100%",
-        // minWidth: 800,
-        // maxWidth: 1000,
-        enableKeyEvents: true,
-        // listeners: {
-        //     specialkey: {
-        //         scope: me,
-        //         fn: me.onFormSpecialKey
-        //     }
-        // }
+        minWidth: 800,
+        maxWidth: 1000,
     },
     items: [
         {
+            xtype: "container",
+            html: "Title",
+            itemId: "formTitle",
+            padding: "0 0 4 0"
+        },
+        {
             xtype: "fieldset",
             layout: "column",
-            defaults: this.fieldSetDefaults,
-            // defaults: {
-            // xtype: "container",
-            // padding: 10,
-            // layout: "form",
-            // columnWidth: 0.5
-            // },
+            minWidth: 800,
+            maxWidth: 1000,
             border: false,
             items: [
                 {
-                    xtype: "container",
                     items: [ // first column
                         {
                             name: "name",
@@ -96,6 +80,7 @@ Ext.define('NOC.sa.managedobject.form.View', {
                             xtype: "textarea",
                             fieldLabel: __("Description"),
                             allowBlank: true,
+                            tabIndex: 20,
                             groupEdit: true
                         },
                         {
@@ -103,6 +88,7 @@ Ext.define('NOC.sa.managedobject.form.View', {
                             xtype: "checkboxfield",
                             fieldLabel: __("Is Managed?"),
                             allowBlank: true,
+                            tabIndex: 30,
                             groupEdit: true
                         },
                         {
@@ -113,7 +99,6 @@ Ext.define('NOC.sa.managedobject.form.View', {
                         }
                     ]
                 }, {
-                    xtype: "container",
                     items: [ // second column
                         {
                             name: "diagnostics",
@@ -126,6 +111,7 @@ Ext.define('NOC.sa.managedobject.form.View', {
                             fieldLabel: __("Labels"),
                             xtype: "labelfield",
                             allowBlank: true,
+                            tabIndex: 40,
                             query: {
                                 "enable_managedobject": true
                             }
@@ -137,13 +123,6 @@ Ext.define('NOC.sa.managedobject.form.View', {
         {
             xtype: "fieldset",
             title: __("Effective Labels"),
-            defaults: this.fieldSetDefaults,
-            // defaults: {
-            // xtype: "container",
-            // padding: 10,
-            // layout: "form",
-            // columnWidth: 0.5
-            // },
             collapsible: true,
             collapsed: true,
             items: [
@@ -164,13 +143,8 @@ Ext.define('NOC.sa.managedobject.form.View', {
             xtype: "fieldset",
             title: __("Role"),
             layout: "column",
-            defaults: this.fieldSetDefaults,
-            // defaults: {
-            //     xtype: "container",
-            //     padding: 10,
-            //     layout: "form",
-            //     columnWidth: 0.5
-            // },
+            minWidth: 800,
+            maxWidth: 1000,
             collapsible: true,
             items: [
                 {
@@ -186,7 +160,7 @@ Ext.define('NOC.sa.managedobject.form.View', {
                             ),
                             itemId: "object_profile",
                             allowBlank: false,
-                            tabIndex: 20,
+                            tabIndex: 50,
                             groupEdit: true,
                             // listeners: {
                             //     render: this.addTooltip
@@ -229,13 +203,6 @@ Ext.define('NOC.sa.managedobject.form.View', {
             xtype: "fieldset",
             title: __("Platform"),
             layout: "column",
-            // defaults: this.fieldSetDefaults,
-            // defaults: {
-            //     xtype: "container",
-            //     padding: 10,
-            //     layout: "form",
-            //     columnWidth: 0.5
-            // },
             collapsible: true,
             items: [
                 {
@@ -250,7 +217,7 @@ Ext.define('NOC.sa.managedobject.form.View', {
                                 "!! Auto detect profile by SNMP if Object Profile -> Box -> Profile is set. <br/>"
                             ),
                             allowBlank: false,
-                            tabIndex: 30,
+                            tabIndex: 60,
                             groupEdit: true,
                             // listeners: {
                             //     render: this.addTooltip
@@ -301,13 +268,6 @@ Ext.define('NOC.sa.managedobject.form.View', {
             xtype: "fieldset",
             title: __("Access"),
             layout: "column",
-            // defaults: this.fieldSetDefaults,
-            // defaults: {
-            //     xtype: "container",
-            //     padding: 10,
-            //     layout: "form",
-            //     columnWidth: 0.5
-            // },
             collapsible: true,
             items: [
                 {
@@ -318,7 +278,7 @@ Ext.define('NOC.sa.managedobject.form.View', {
                             xtype: "sa.managedobject.SchemeLookupField",
                             fieldLabel: __("Scheme"),
                             allowBlank: false,
-                            tabIndex: 40,
+                            tabIndex: 70,
                             groupEdit: true
                         },
                         {
@@ -326,7 +286,7 @@ Ext.define('NOC.sa.managedobject.form.View', {
                             xtype: "textfield",
                             fieldLabel: __("Address"),
                             allowBlank: false,
-                            tabIndex: 50,
+                            tabIndex: 80,
                             groupEdit: true,
                             vtype: "IPv4"
                         },
@@ -438,7 +398,7 @@ Ext.define('NOC.sa.managedobject.form.View', {
                             name: "user",
                             xtype: "textfield",
                             fieldLabel: __("User"),
-                            tabIndex: 61,
+                            tabIndex: 70,
                             allowBlank: true,
                             groupEdit: true
                         },
@@ -446,7 +406,7 @@ Ext.define('NOC.sa.managedobject.form.View', {
                             name: "password",
                             xtype: "password",
                             fieldLabel: __("Password"),
-                            tabIndex: 62,
+                            tabIndex: 80,
                             allowBlank: true,
                             inputType: "password",
                             groupEdit: true
@@ -463,7 +423,7 @@ Ext.define('NOC.sa.managedobject.form.View', {
                             name: "snmp_ro",
                             xtype: "password",
                             fieldLabel: __("RO Community"),
-                            tabIndex: 63,
+                            tabIndex: 90,
                             allowBlank: true,
                             groupEdit: true
                         },
@@ -471,7 +431,7 @@ Ext.define('NOC.sa.managedobject.form.View', {
                             name: "snmp_rw",
                             xtype: "password",
                             fieldLabel: __("RW Community"),
-                            tabIndex: 64,
+                            tabIndex: 100,
                             allowBlank: true,
                             groupEdit: true
                         },
@@ -523,13 +483,6 @@ Ext.define('NOC.sa.managedobject.form.View', {
             xtype: "fieldset",
             title: __("Location"),
             layout: "column",
-            // defaults: this.fieldSetDefaults,
-            // defaults: {
-            //     xtype: "container",
-            //     padding: 10,
-            //     layout: "form",
-            //     columnWidth: 0.5
-            // },
             collapsible: true,
             items: [
                 {
@@ -545,7 +498,7 @@ Ext.define('NOC.sa.managedobject.form.View', {
                                 "Permission on Activaton -> Setup -> Group Access/User Access.<br/>"
                             ),
                             allowBlank: false,
-                            tabIndex: 90,
+                            tabIndex: 110,
                             groupEdit: true,
                             // listeners: {
                             // render: this.addTooltip
@@ -557,7 +510,7 @@ Ext.define('NOC.sa.managedobject.form.View', {
                             restUrl: "/inv/networksegment/",
                             fieldLabel: __("Segment"),
                             allowBlank: false,
-                            tabIndex: 100,
+                            tabIndex: 120,
                             groupEdit: true
                         },
                         {
@@ -569,7 +522,7 @@ Ext.define('NOC.sa.managedobject.form.View', {
                                 "Create and Set on Tower<br/>"
                             ),
                             allowBlank: false,
-                            tabIndex: 110,
+                            tabIndex: 130,
                             groupEdit: true,
                             // listeners: {
                             // render: this.addTooltip
@@ -580,7 +533,7 @@ Ext.define('NOC.sa.managedobject.form.View', {
                             xtype: "project.project.LookupField",
                             fieldLabel: __("Project"),
                             allowBlank: true,
-                            tabIndex: 111,
+                            tabIndex: 140,
                             groupEdit: true,
                             // listeners: {
                             // render: this.addTooltip
@@ -597,7 +550,7 @@ Ext.define('NOC.sa.managedobject.form.View', {
                             ),
                             allowBlank: true,
                             uiStyle: "medium",
-                            tabIndex: 120,
+                            tabIndex: 150,
                             // listeners: {
                             // render: this.addTooltip
                             // }
@@ -665,13 +618,6 @@ Ext.define('NOC.sa.managedobject.form.View', {
             xtype: "fieldset",
             title: __("Discovery"),
             layout: "column",
-            // defaults: this.fieldSetDefaults,
-            // defaults: {
-            //     xtype: "container",
-            //     padding: 10,
-            //     layout: "form",
-            //     columnWidth: 0.5
-            // },
             collapsible: true,
             items: [
                 {
@@ -759,13 +705,6 @@ Ext.define('NOC.sa.managedobject.form.View', {
             xtype: "fieldset",
             title: __("ConfDB"),
             layout: "column",
-            // defaults: this.fieldSetDefaults,
-            // defaults: {
-            //     xtype: "container",
-            //     padding: 10,
-            //     layout: "form",
-            //     columnWidth: 0.5
-            // },
             collapsible: true,
             items: [
                 {
@@ -786,13 +725,6 @@ Ext.define('NOC.sa.managedobject.form.View', {
             xtype: "fieldset",
             title: __("Event Sources"),
             layout: "column",
-            // defaults: this.fieldSetDefaults,
-            // defaults: {
-            //     xtype: "container",
-            //     padding: 10,
-            //     layout: "form",
-            //     columnWidth: 0.5
-            // },
             collapsible: true,
             items: [
                 {
@@ -806,7 +738,7 @@ Ext.define('NOC.sa.managedobject.form.View', {
                                 "Use to override pool for events processing"
                             ),
                             allowBlank: true,
-                            tabIndex: 130,
+                            tabIndex: 160,
                             groupEdit: true,
                             // listeners: {
                             // render: this.addTooltip
@@ -912,14 +844,10 @@ Ext.define('NOC.sa.managedobject.form.View', {
         {
             xtype: "fieldset",
             title: __("Resource Groups"),
-            layout: "column",
-            // defaults: this.fieldSetDefaults,
-            // defaults: {
-            //     xtype: "container",
-            //     padding: 10,
-            //     layout: "form",
-            //     columnWidth: 0.5
-            // },
+            layout: {
+                type: 'vbox',
+                align: 'stretch',
+            },
             collapsible: true,
             collapsed: false,
             items: [
@@ -1002,13 +930,6 @@ Ext.define('NOC.sa.managedobject.form.View', {
             xtype: "fieldset",
             title: __("CPE"),
             layout: "column",
-            // defaults: this.fieldSetDefaults,
-            // defaults: {
-            //     xtype: "container",
-            //     padding: 10,
-            //     layout: "form",
-            //     columnWidth: 0.5
-            // },
             collapsible: true,
             collapsed: true,
             items: [
@@ -1051,13 +972,6 @@ Ext.define('NOC.sa.managedobject.form.View', {
             xtype: "fieldset",
             title: __("Rules"),
             layout: "column",
-            // defaults: this.fieldSetDefaults,
-            // defaults: {
-            //     xtype: "container",
-            //     padding: 10,
-            //     layout: "form",
-            //     columnWidth: 0.5
-            // },
             collapsible: true,
             collapsed: true,
             items: [
@@ -1104,13 +1018,6 @@ Ext.define('NOC.sa.managedobject.form.View', {
             xtype: "fieldset",
             title: __("Integration"),
             layout: "column",
-            // defaults: this.fieldSetDefaults,
-            // defaults: {
-            //     xtype: "container",
-            //     padding: 10,
-            //     layout: "form",
-            //     columnWidth: 0.5
-            // },
             collapsible: true,
             collapsed: true,
             items: [
@@ -1139,13 +1046,6 @@ Ext.define('NOC.sa.managedobject.form.View', {
             xtype: "fieldset",
             title: __("Escalation"),
             layout: "column",
-            // defaults: this.fieldSetDefaults,
-            // defaults: {
-            //     xtype: "container",
-            //     padding: 10,
-            //     layout: "form",
-            //     columnWidth: 0.5
-            // },
             collapsible: true,
             collapsed: true,
             items: [
@@ -1196,13 +1096,6 @@ Ext.define('NOC.sa.managedobject.form.View', {
             xtype: "fieldset",
             title: __("Discovery Alarm"),
             layout: "column",
-            // defaults: this.fieldSetDefaults,
-            // defaults: {
-            //     xtype: "container",
-            //     padding: 10,
-            //     layout: "form",
-            //     columnWidth: 0.5
-            // },
             collapsible: true,
             collapsed: true,
             items: [
@@ -1262,13 +1155,6 @@ Ext.define('NOC.sa.managedobject.form.View', {
             xtype: "fieldset",
             title: __("Telemetry"),
             layout: "column",
-            // defaults: this.fieldSetDefaults,
-            // defaults: {
-            //     xtype: "container",
-            //     padding: 10,
-            //     layout: "form",
-            //     columnWidth: 0.5
-            // },
             collapsible: true,
             collapsed: true,
             items: [
@@ -1314,6 +1200,90 @@ Ext.define('NOC.sa.managedobject.form.View', {
                             fieldLabel: __("Periodic Sample"),
                             groupEdit: true
                         }]
+                }
+            ]
+        },
+        {
+            xtype: "fieldset",
+            anchor: "100%",
+            minHeight: 130,
+            title: __("Attributes"),
+            collapsible: true,
+            collapsed: true,
+            items: [
+                {
+                    xtype: "inlinegrid",
+                    itemId: "sa-managedobject-attr-inline",
+                    // store: {
+                    // type: "inlinestore",
+                    model: "NOC.sa.managedobject.AttributesModel",
+                    // },
+                    columns: [
+                        {
+                            text: __("Key"),
+                            dataIndex: "key",
+                            width: 100,
+                            editor: "textfield"
+                        },
+                        {
+                            text: __("Value"),
+                            dataIndex: "value",
+                            editor: "textfield",
+                            flex: 1
+                        }
+                    ]
+                },
+            ],
+        },
+        {
+            xtype: "fieldset",
+            anchor: "100%",
+            minHeight: 130,
+            title: __("Capabilities"),
+            collapsible: true,
+            collapsed: false,
+            items: [
+                {
+                    xtype: "inlinegrid",
+                    itemId: "sa-managedobject-caps-inline",
+                    // store: {
+                    // type: "inlinestore",
+                    model: "NOC.sa.managedobject.CapabilitiesModel",
+                    // },
+                    columns: [
+                        {
+                            text: __("Capability"),
+                            dataIndex: "capability",
+                            width: 300
+                        },
+                        {
+                            text: __("Value"),
+                            dataIndex: "value",
+                            width: 100,
+                            renderer: function(v) {
+                                if((v === true) || (v === false)) {
+                                    return NOC.render.Bool(v);
+                                } else {
+                                    return v;
+                                }
+                            }
+                        },
+                        {
+                            text: __("Scope"),
+                            dataIndex: "scope",
+                            width: 50
+                        },
+                        {
+                            text: __("Source"),
+                            dataIndex: "source",
+                            width: 100
+                        },
+                        {
+                            text: __("Description"),
+                            dataIndex: "description",
+                            flex: 1
+                        }
+                    ]
                 }
             ]
         },

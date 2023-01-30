@@ -7,15 +7,15 @@ console.debug('Defining NOC.sa.managedobject.Controller');
 Ext.define('NOC.sa.managedobject.Controller', {
     extend: 'Ext.app.ViewController',
     requires: [
-        "Ext.ux.grid.column.GlyphAction"
+        "Ext.ux.grid.column.GlyphAction",
     ],
     alias: 'controller.managedobject',
 
     init: function(app) {
-        var selectionGrid = app.lookupReference('sa-managedobject-selection-grid');
-        var selectedGrid1 = app.lookupReference('sa-managedobject-selected-grid-1');
-        var selectedGrid2 = app.lookupReference('sa-managedobject-selected-grid-2');
-        var selectedGrid3 = app.lookupReference('sa-managedobject-selected-grid-3');
+        var selectionGrid = app.lookupReference('saManagedobjectSelectionGrid');
+        var selectedGrid1 = app.lookupReference('saManagedobjectSelectedGrid1');
+        var selectedGrid2 = app.lookupReference('saManagedobjectSelectedGrid2');
+        var selectedGrid3 = app.lookupReference('saManagedobjectSelectedGrid3');
         var defaultCols = [
             {
                 xtype: 'glyphactioncolumn',
@@ -57,6 +57,7 @@ Ext.define('NOC.sa.managedobject.Controller', {
         if(action && action.args && action.args.length === 1) {
             this.editManagedObject(undefined, action.args[0]);
         }
+        app.setActiveItem(0);
         // page 1 init selection grid
         Ext.Array.each(defaultCols, function(col, index) {
             selectionGrid.headerCt.insert(index + 1, col);
@@ -102,7 +103,7 @@ Ext.define('NOC.sa.managedobject.Controller', {
         });
         selectedGrid3.getView().refresh();
 
-        app.lookupReference('filter-panel').appId = 'sa.managedobject';
+        app.lookupReference('filterPanel').appId = 'sa.managedobject';
     },
     //
     onAddObject: function(grid, rowIndex) {
@@ -126,11 +127,11 @@ Ext.define('NOC.sa.managedobject.Controller', {
     },
     //
     collapseFilter: function() {
-        this.lookupReference('filter-panel').toggleCollapse();
+        this.lookupReference('filterPanel').toggleCollapse();
     },
     //
     toggleBasket: function() {
-        this.lookupReference('sa-managedobject-selected-grid-1').toggleCollapse();
+        this.lookupReference('saManagedobjectSelectedGrid1').toggleCollapse();
     },
     //
     setRowClass: function(grid) {
@@ -170,7 +171,7 @@ Ext.define('NOC.sa.managedobject.Controller', {
     },
     //
     onSelectionRefresh: function() {
-        this.lookupReference('sa-managedobject-selection-grid').getStore().reload();
+        this.lookupReference('saManagedobjectSelectionGrid').getStore().reload();
     },
     //
     onSelectionChange: function(element, selected) {
@@ -186,11 +187,11 @@ Ext.define('NOC.sa.managedobject.Controller', {
 
         switch(record.get('cmd')) {
             case 'SCREEN': {
-                selectionGrid = this.lookupReference('sa-managedobject-selection-grid');
+                selectionGrid = this.lookupReference('saManagedobjectSelectionGrid');
                 renderPlugin = selectionGrid.findPlugin('bufferedrenderer');
                 selectionGrid.getSelectionModel().selectRange(0, renderPlugin.getLastVisibleRowIndex());
-                this.lookupReference('sa-managedobject-selected-grid-1').getStore().loadData(
-                    this.lookupReference('sa-managedobject-selection-grid').getSelection()
+                this.lookupReference('saManagedobjectSelectedGrid1').getStore().loadData(
+                    this.lookupReference('saManagedobjectSelectionGrid').getSelection()
                 );
                 return;
             }
@@ -218,18 +219,18 @@ Ext.define('NOC.sa.managedobject.Controller', {
     },
     //
     onSelectionUnselectAll: function() {
-        this.lookupReference('sa-managedobject-selection-grid').getSelectionModel().deselectAll();
+        this.lookupReference('saManagedobjectSelectionGrid').getSelectionModel().deselectAll();
     },
     //
     onSelectionAddChecked: function() {
-        this.lookupReference('sa-managedobject-selected-grid-1').getStore().add(
-            this.lookupReference('sa-managedobject-selection-grid').getSelection()
+        this.lookupReference('saManagedobjectSelectedGrid1').getStore().add(
+            this.lookupReference('saManagedobjectSelectionGrid').getSelection()
         );
         this.getViewModel().set('total.selected', this.getStore('selectedStore').getCount());
     },
     //
     onSelectedRemoveChecked: function() {
-        var selectedGrid = this.lookupReference('sa-managedobject-selected-grid-1');
+        var selectedGrid = this.lookupReference('saManagedobjectSelectedGrid1');
 
         selectedGrid.getStore().remove(
             selectedGrid.getSelectionModel().getSelection()
@@ -237,15 +238,15 @@ Ext.define('NOC.sa.managedobject.Controller', {
     },
     //
     onSelectedRemoveAll: function() {
-        this.lookupReference('sa-managedobject-selected-grid-1').getStore().removeAll();
+        this.lookupReference('saManagedobjectSelectedGrid1').getStore().removeAll();
     },
     //
     onSelectedDblClick: function(grid, record, item, rowIndex) {
-        this.lookupReference('sa-managedobject-selected-grid-1').getStore().removeAt(rowIndex);
+        this.lookupReference('saManagedobjectSelectedGrid1').getStore().removeAt(rowIndex);
     },
     //
     onConfigModeChange: function(field, mode) {
-        var commandForm = this.lookupReference('sa-managedobject-command-form');
+        var commandForm = this.lookupReference('saManagedobjectCommandForm');
 
         commandForm.removeAll();
         switch(mode) {
@@ -305,7 +306,7 @@ Ext.define('NOC.sa.managedobject.Controller', {
         var mode = this.lookupReference('saManagedobjectMode').getValue();
         var makeRequest = function(mode) {
             var objects = [];
-            var config = me.lookupReference('sa-managedobject-command-form').getValues();
+            var config = me.lookupReference('saManagedobjectCommandForm').getValues();
             var ignore_cli_errors = JSON.stringify(me.lookupReference('ignoreCliErrors').getValue());
 
             me.getStore('selectedStore').each(function(record) {
@@ -358,7 +359,7 @@ Ext.define('NOC.sa.managedobject.Controller', {
         };
 
         // Reset state
-        this.lookupReference('sa-managedobject-selected-grid-3').getSelectionModel().deselectAll();
+        this.lookupReference('saManagedobjectSelectedGrid3').getSelectionModel().deselectAll();
         this.getViewModel().set('resultOutput', '');
 
         switch(mode) {
@@ -366,7 +367,7 @@ Ext.define('NOC.sa.managedobject.Controller', {
                 this.sendCommands('commands', {
                     'script': 'commands',
                     'args': {
-                        'commands': this.lookupReference('sa-managedobject-command-form').getValues().cmd.split('\n'),
+                        'commands': this.lookupReference('saManagedobjectCommandForm').getValues().cmd.split('\n'),
                         'include_commands': 'true',
                         'ignore_cli_errors': JSON.stringify(this.lookupReference('ignoreCliErrors').getValue())
                     }
@@ -385,7 +386,7 @@ Ext.define('NOC.sa.managedobject.Controller', {
     },
     //
     onReportClick: function() {
-        this.lookupReference('sa-run-command-report-panel').setHtml(this.buildReport());
+        this.lookupReference('saRunCommandReportPanel').setHtml(this.buildReport());
         this.toNext();
     },
     //
@@ -434,7 +435,7 @@ Ext.define('NOC.sa.managedobject.Controller', {
 
                 success: function(response) {
                     var obj = Ext.decode(response.responseText);
-                    var commandForm = me.lookupReference('sa-managedobject-command-form');
+                    var commandForm = me.lookupReference('saManagedobjectCommandForm');
 
                     Ext.Array.each(commandForm.items.items.slice(), function(item) {
                         if(!item.reference) {
@@ -592,13 +593,13 @@ Ext.define('NOC.sa.managedobject.Controller', {
     //
     getNRows: function(m, n) {
         var params, me = this,
-            selectionGrid = this.lookupReference('sa-managedobject-selection-grid'),
+            selectionGrid = this.lookupReference('saManagedobjectSelectionGrid'),
             limit = Number.parseInt(n),
             start = Number.parseInt(m);
         if(Number.isInteger(limit) && Number.isInteger(start)) {
             params = Ext.Object.merge(
                 {},
-                Ext.clone(this.lookupReference('sa-managedobject-selection-grid').getStore().filterParams),
+                Ext.clone(this.lookupReference('saManagedobjectSelectionGrid').getStore().filterParams),
                 {
                     __limit: limit,
                     __start: start
@@ -607,7 +608,7 @@ Ext.define('NOC.sa.managedobject.Controller', {
 
             selectionGrid.mask(__('Loading'));
             Ext.Ajax.request({
-                url: this.lookupReference('sa-managedobject-selection-grid').getStore().rest_url,
+                url: this.lookupReference('saManagedobjectSelectionGrid').getStore().rest_url,
                 method: 'POST',
                 jsonData: params,
                 scope: me,
@@ -615,7 +616,7 @@ Ext.define('NOC.sa.managedobject.Controller', {
                     var params = Ext.decode(response.request.requestOptions.data);
                     selectionGrid.unmask();
                     selectionGrid.getSelectionModel().selectRange(params.__start, params.__start + params.__limit - 1);
-                    me.lookupReference('sa-managedobject-selected-grid-1').getStore()
+                    me.lookupReference('saManagedobjectSelectedGrid1').getStore()
                         .insert(0, Ext.decode(response.responseText));
                 },
                 failure: function() {
@@ -628,12 +629,12 @@ Ext.define('NOC.sa.managedobject.Controller', {
     },
     //
     onDownload: function() {
-        var text = $($.parseHTML(this.lookupReference('sa-run-command-report-panel').html)).text(),
+        var text = $($.parseHTML(this.lookupReference('saRunCommandReportPanel').html)).text(),
             blob = new Blob([text], {type: "text/plain;charset=utf-8"});
         saveAs(blob, 'result.txt');
     },
     onEdit: function(gridView, rowIndex, colIndex, item, e, record) {
-        this.editManagedObject(gridView, record.id);
+        this.editManagedObject(gridView.up('[itemId=sa-managedobject]'), record.id);
     },
     //
     editManagedObject: function(gridView, id) {
@@ -651,9 +652,15 @@ Ext.define('NOC.sa.managedobject.Controller', {
                 if(response.status === 200) {
                     var field,
                         r = {},
-                        form = view.queryById('managedobject-form-panel').getForm(),
+                        formPanel,
+                        form,
                         data = Ext.decode(response.responseText);
 
+                    if(!gridView) { // restore by url
+                        gridView = this.getView();
+                    }
+                    formPanel = gridView.down('[itemId=managedobject-form-panel]');
+                    form = formPanel.getForm();
                     Ext.iterate(data, function(v) {
                         if(v.indexOf("__") !== -1) {
                             return
@@ -675,16 +682,16 @@ Ext.define('NOC.sa.managedobject.Controller', {
                             return;
                         }
                         if(!Ext.isEmpty(data[v])) {
-                            if(!['effective_service_groups'].includes(v)) {
-                                r[v] = data[v];
-                            }
+                            r[v] = data[v];
                         }
                     });
                     // 
                     form.reset();
                     form.setValues(r);
+                    this.loadInlineStore(formPanel, data.id);
                     view.setHistoryHash(data.id);
                     view.getLayout().setActiveItem('managedobject-form');
+                    this.setFormTitle(formPanel.changeTitle, data.id);
                 }
                 if(gridView) {
                     gridView.unmask();
@@ -697,5 +704,28 @@ Ext.define('NOC.sa.managedobject.Controller', {
                 NOC.error(__("Failed get MO detail"));
             }
         });
-    }
+    },
+    // Set form title
+    setFormTitle: function(tpl, itemId) {
+        var t = "<b>" + Ext.String.format(tpl, this.view.appTitle) + "</b>",
+            formTitle = this.view.down('[itemId=formTitle]');
+        if(itemId !== "NEW" && itemId !== "CLONE") {
+            itemId = "<b>ID:</b>" + itemId;
+        } else {
+            itemId = "<b>" + itemId + "</b>";
+        }
+        t += "<span style='float:right'>" + itemId + "</span>";
+        formTitle.update(t);
+    },
+    loadInlineStore(formPanel, id) {
+        Ext.each(formPanel.query("[itemId$=-inline]"),
+            function(gridField) {
+                var store = new Ext.create("NOC.core.InlineModelStore", {
+                    model: gridField.model
+                });
+                gridField.setStore(store);
+                store.setParent(id);
+                store.load();
+            }, this);
+    },
 });

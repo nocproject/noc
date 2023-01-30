@@ -5,11 +5,8 @@
 
 console.debug('Defining NOC.sa.managedobject.Application');
 Ext.define('NOC.sa.managedobject.Application', {
+    itemId: "sa-managedobject",
     extend: 'NOC.core.Application',
-    // extend: "Ext.panel.Panel",
-    // mixins: [
-    // 'NOC.core.ModelApplication',
-    // ],
     xtype: 'layout-card',
     layout: 'card',
     alias: 'widget.managedobject',
@@ -37,7 +34,7 @@ Ext.define('NOC.sa.managedobject.Application', {
     },
     items: [
         {
-            id: 'managedobject-select',
+            itemId: 'managedobject-select',
             activeItem: 0,
             items: [
                 {   // device panel
@@ -49,9 +46,7 @@ Ext.define('NOC.sa.managedobject.Application', {
                     items: [
                         {
                             xtype: 'grid', // selection grid
-                            reference: 'sa-managedobject-selection-grid',
-                            // stateId: 'sa-managedobject-selection-grid',
-                            // stateful: true,
+                            reference: 'saManagedobjectSelectionGrid',
                             region: 'center',
                             width: '50%',
                             resizable: true,
@@ -151,9 +146,7 @@ Ext.define('NOC.sa.managedobject.Application', {
                             }
                         }, {
                             xtype: 'grid', // selected grid
-                            reference: 'sa-managedobject-selected-grid-1',
-                            // stateId: 'sa-managedobject-selected-grid-1',
-                            // stateful: true,
+                            reference: 'saManagedobjectSelectedGrid1',
                             region: 'east',
                             width: '50%',
 
@@ -215,7 +208,7 @@ Ext.define('NOC.sa.managedobject.Application', {
                     ]
                 }, {
                     xtype: 'NOC.Filter',
-                    reference: 'filter-panel',
+                    reference: 'filterPanel',
                     region: 'west',
                     width: 300,
                     collapsed: true,
@@ -264,12 +257,12 @@ Ext.define('NOC.sa.managedobject.Application', {
             }]
         },
         {
-            id: 'managedobject-config',
+            itemId: 'managedobject-config',
             activeItem: 1,
             items: [
                 {
                     xtype: 'grid',
-                    reference: 'sa-managedobject-selected-grid-2',
+                    reference: 'saManagedobjectSelectedGrid2',
                     region: 'center',
                     width: '50%',
                     border: false,
@@ -333,7 +326,7 @@ Ext.define('NOC.sa.managedobject.Application', {
                         },
                         {
                             xtype: 'form',
-                            reference: 'sa-managedobject-command-form',
+                            reference: 'saManagedobjectCommandForm',
                             width: '100%',
                             border: false,
                             defaults: {
@@ -380,12 +373,12 @@ Ext.define('NOC.sa.managedobject.Application', {
             }]
         },
         {
-            id: 'run-command-progress',
+            itemId: 'run-command-progress',
             activeItem: 2,
             items: [
                 {
                     xtype: 'grid',
-                    reference: 'sa-managedobject-selected-grid-3',
+                    reference: 'saManagedobjectSelectedGrid3',
                     region: 'center',
                     width: '50%',
                     border: false,
@@ -492,10 +485,10 @@ Ext.define('NOC.sa.managedobject.Application', {
             }]
         },
         {
-            id: 'run-command-report',
+            itemId: 'run-command-report',
             activeItem: 3,
             xtype: 'panel',
-            reference: 'sa-run-command-report-panel',
+            reference: 'saRunCommandReportPanel',
             html: '',
             scrollable: true,
             bodyPadding: 4,
@@ -524,13 +517,14 @@ Ext.define('NOC.sa.managedobject.Application', {
         },
         {
             activeItem: 4,
-            id: 'managedobject-form',
+            itemId: 'managedobject-form',
             items: [
                 {
                     xtype: 'managedobject.form',
-                    id: 'managedobject-form-panel',
+                    itemId: 'managedobject-form-panel',
                 }
             ]
         }
     ],
+    destroy: Ext.emptyFn,
 });

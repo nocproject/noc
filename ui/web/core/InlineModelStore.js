@@ -14,6 +14,7 @@ Ext.define("NOC.core.InlineModelStore", {
     remoteSort: true,
     remoteFilter: true,
     autoLoad: false,
+    alias: "store.inlinestore",
 
     constructor: function(config) {
         var me = this,
@@ -25,7 +26,7 @@ Ext.define("NOC.core.InlineModelStore", {
         me.parentField = model.parentField;
         me.restUrl = model.rest_url;
         me.isLocal = model.isLocal;
-        for(var i=0; i < fields.length; i++) {
+        for(var i = 0; i < fields.length; i++) {
             var field = fields[i],
                 dv = field.defaultValue;
             if(dv !== undefined) {
@@ -86,8 +87,8 @@ Ext.define("NOC.core.InlineModelStore", {
     load: function(config) {
         var me = this;
         config = Ext.Object.merge({
-                params: Ext.Object.merge({}, me.filterParams)
-            }, config);
+            params: Ext.Object.merge({}, me.filterParams)
+        }, config);
         // Override callback
         // @todo: Call original callback
         config = Ext.Object.merge(config, {

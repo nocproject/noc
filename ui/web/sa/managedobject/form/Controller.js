@@ -12,8 +12,11 @@ Ext.define('NOC.sa.managedobject.form.Controller', {
     alias: 'controller.managedobject.form',
 
     toMain: function() {
-        var mainView = this.getView().up('[appId=sa.managedobject]');
-        mainView.getLayout().setActiveItem('managedobject-select');
+        // var mainView = this.getView().up('[itemId=sa.managedobject]');
+        // var mainView = Ext.ComponentQuery.query('[itemId=sa-managedobject]')[0];
+        var mainView = this.getView().up().up();
+        mainView.setActiveItem('managedobject-select');
+        this.getView().up().up().setActiveItem('managedobject-select');
         mainView.setHistoryHash();
     },
     onChange: Ext.emptyFn,

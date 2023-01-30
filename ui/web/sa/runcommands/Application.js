@@ -213,7 +213,7 @@ Ext.define('NOC.sa.runcommands.Application', {
                     ]
                 }, {
                     xtype: 'NOC.Filter',
-                    reference: 'filter-panel',
+                    reference: 'filterPanel',
                     region: 'west',
                     width: 300,
                     collapsed: true,

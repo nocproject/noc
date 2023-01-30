@@ -92,7 +92,7 @@ Ext.define('NOC.sa.runcommands.Controller', {
         });
         selectedGrid3.getView().refresh();
 
-        app.lookupReference('filter-panel').appId = 'sa.runcommands';
+        app.lookupReference('filterPanel').appId = 'sa.runcommands';
     },
     //
     onAddObject: function(grid, rowIndex) {
@@ -116,7 +116,7 @@ Ext.define('NOC.sa.runcommands.Controller', {
     },
     //
     collapseFilter: function() {
-        this.lookupReference('filter-panel').toggleCollapse();
+        this.lookupReference('filterPanel').toggleCollapse();
     },
     //
     toggleBasket: function() {

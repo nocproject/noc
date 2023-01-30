@@ -217,8 +217,7 @@ Ext.define("NOC.sa.managedobject.L1Panel", {
         });
     },
 
-    onCellClick: function(view, cell, cellIndex, record, row,
-                          rowIndex, e) {
+    onCellClick: function(view, cell, cellIndex, record, row, rowIndex, e) {
         var me = this;
         if(e.target.tagName === "A") {
             var header = view.panel.headerCt.getHeaderAtIndex(cellIndex);
