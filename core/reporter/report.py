@@ -36,6 +36,16 @@ class BandData(object):
         self.rows: Optional[DataFrame] = None
         self.report_field_format: Dict[str, ReportField] = {}
 
+    def __str__(self):
+        return self.name
+
+    def __repr__(self):
+        return f"{self.name} ({self.parent})"
+
+    @property
+    def is_root(self) -> bool:
+        return self.name == self.ROOT_BAND_NAME
+
     def iter_children_bands(self) -> Iterable["BandData"]:
         """
         Itarate over children bands
@@ -46,9 +56,14 @@ class BandData(object):
 
     @property
     def full_name(self):
-        if not self.parent:
+        if not self.parent or self.is_root:
             return self.name
-        return f"{self.parent.name}.{self.name}"
+        path = [self.name]
+        parent = self.parent
+        while parent and not parent.is_root:
+            path.append(parent.name)
+            parent = parent.parent
+        return ".".join(reversed(path))
 
     def add_children(self, bands: List["BandData"]):
         for b in bands:
@@ -60,3 +75,42 @@ class BandData(object):
 
     def set_data(self, data: Dict[str, Any]):
         self.data.update(data.copy())
+
+    def get_data(self):
+        return self.data or {}
+
+    def get_children_by_name(self, name: str) -> List["BandData"]:
+        """
+
+        :param name:
+        :return:
+        """
+        return self.children_bands.get(name, [])
+
+    def get_child_by_name(self, name: str) -> "BandData":
+        """
+
+        :param name:
+        :return:
+        """
+        if name not in self.children_bands:
+            return None
+        return self.children_bands[name]
+
+    def iter_all_bands(self) -> Iterable["BandData"]:
+        for b in self.children_bands.values():
+            yield b
+            yield from b.iter_all_bands()
+
+    def find_band_recursively(self, name: str) -> "BandData":
+        """
+
+        :param name:
+        :return:
+        """
+        if self.name == name:
+            return self
+        for b in self.iter_all_bands():
+            if b.name == name:
+                return b
+        return None

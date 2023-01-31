@@ -10,6 +10,7 @@ from io import BytesIO
 
 # NOC modules
 from ..types import ReportBand, Template, OutputType
+from noc.core.reporter.report import BandData
 
 
 class DataFormatter(object):
@@ -18,11 +19,17 @@ class DataFormatter(object):
     Create result document by setted format
     """
 
-    def __init__(self, root_band: ReportBand, template: Template, output_type: OutputType):
+    def __init__(
+        self,
+        root_band: BandData,
+        template: Template,
+        output_type: OutputType,
+        output_stream: BytesIO,
+    ):
         self.root_band = root_band
         self.report_template = template
         self.output_type = output_type
-        self.output_stream = b""
+        self.output_stream: BytesIO = output_stream or BytesIO()
 
     def render_document(self):
         """

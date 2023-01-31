@@ -7,15 +7,17 @@
 
 # Python modules
 import logging
-from typing import Dict, Any
+from typing import Dict, Any, Optional
 
 # Third-party modules
 import orjson
+import polars as pl
+from jinja2 import Template as Jinja2Template
 
 # NOC modules
 from noc.core.datasources.loader import loader as ds_loader
-from noc.core.reporter.formatter.loader import df_loader
-from .types import Template, OutputType, RunParams, Report
+from noc.core.reporter.formatter.loader import loader as df_loader
+from .types import Template, OutputType, RunParams, Report, ReportQuery
 from .report import BandData
 
 
@@ -39,13 +41,14 @@ class ReportEngine(object):
         """
         # Handler param
         report = r_params.report
-        template = r_params.report_template
+        template = r_params.get_template()
         out_type = r_params.output_type or template.output_type
-        cleaned_param = self.clean_param(report, r_params.params)
+        cleaned_param = self.clean_param(report, r_params.get_params())
         self.logger.info("[%s] Running report with parameter: %s", report, cleaned_param)
         data = self.load_data(report, cleaned_param)
-        self.generate_report(template, out_type, out, cleaned_param, data)
+        self.generate_report(report, template, out_type, out, cleaned_param, data)
         self.logger.info("[%s] Finished report with parameter: %s", report, cleaned_param)
+        output_name = self.resolve_output_filename(run_params=r_params, root_band=data)
         return out
 
     def generate_report(
@@ -63,8 +66,8 @@ class ReportEngine(object):
         """
         #
         formatter = df_loader[output_type.value]
-        formatter(band_data, template, output_type, output_stream)
-        formatter.renderDocument()
+        fmt = formatter(band_data, template, output_type, output_stream)
+        fmt.render_document()
 
     def clean_param(self, report: Report, params: Dict[str, Any]):
         """
@@ -74,7 +77,7 @@ class ReportEngine(object):
         :return:
         """
         clean_params = params.copy()
-        for p in report.parameters:
+        for p in report.parameters or []:
             name = p.alias
             value = params.get(name)
             if value is None and p.required:
@@ -91,26 +94,54 @@ class ReportEngine(object):
             2. If queries - get parent band params and execute query
         :return:
         """
-        r = BandData(BandData.ROOT_BAND_NAME)
-        r.set_data(params)
+        root = BandData(BandData.ROOT_BAND_NAME)
+        root.set_data(params)
+        ctxs = {}
         # Extract data
-        rb = report.get_root_band()
-        for cb in rb.iter_children():
-            bd = BandData(cb.name, r, cb.orientation)
-            for c in cb.queries:
-                if c.datasource:
-                    data = ds_loader[c.datasource]
-                    bd.rows = data.run_sync(**r.data)
-                    # Parse Query
-                if c.json:
-                    bd.rows = orjson.loads(c.data)
-            if bd.rows:
-                bd.set_data(bd.rows[0])
-            r.add_child(bd)
-        return r
+        report_band = report.get_root_band()
+        for rb in report_band.iter_nester():
+            if rb.parent.name == BandData.ROOT_BAND_NAME:
+                bd_root = root
+            else:
+                bd_root = ctxs[rb.parent.name]
+            bd = BandData(rb.name, bd_root, rb.orientation)
+            bd.set_data(bd_root.get_data())
+            ctxs[bd.name] = bd
+            for q in rb.queries:
+                data = self.get_rows(q, bd.get_data())
+                if data is None:
+                    continue
+                bd.rows = data
+                bd.set_data(dict(zip(data.columns, data.row(0))))
+            root.add_child(bd)
+        return root
 
-    def resolve_output_filename(self) -> str:
+    def get_rows(self, query: "ReportQuery", ctx: Dict[str, Any]) -> Optional[pl.DataFrame]:
+        """
+
+        :param query:
+        :param ctx:
+        :return:
+        """
+        if query.json:
+            return pl.DataFrame(orjson.loads(query.json))
+        if not query.datasource:
+            return None
+        ds = ds_loader[query.datasource]
+        if not ds:
+            raise ValueError(f"Unknown Datasource: {query.datasource}")
+        params = query.params or {}
+        params.update(ctx)
+        if query.fields:
+            params["fields"] = query.fields
+        return ds.query_sync(**params)
+
+    def resolve_output_filename(self, run_params: RunParams, root_band: BandData) -> str:
         """
         Return document filename by
         :return:
         """
+        template = run_params.get_template()
+        output_name = template.get_document_name()
+        ctx = root_band.get_data()
+        return Jinja2Template(output_name).render(ctx)

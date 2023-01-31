@@ -23,6 +23,7 @@ class OutputType(enum.Enum):
     XLSX = "xlsx"
     CUSTOM = "custom"
     TABLE = "table"
+    CSV = "csv"
 
 
 @dataclass
@@ -34,12 +35,11 @@ class ReportField(object):
 @dataclass
 class ReportQuery(object):
     name: str
-    datasource: Optional[str] = None
-    sql: Optional[str] = None
-    json: Optional[str] = None
-    data: Optional[str] = None
+    datasource: Optional[str] = None  # DataSource Name
+    query: Optional[str] = None  # DataFrame query
+    fields: Optional[List[str]] = None  # DataSource Fields for query
     params: Dict[str, Any] = None
-    groovy: Optional[str] = None
+    json: Optional[str] = None
 
 
 @dataclass
@@ -59,12 +59,14 @@ class ReportBand(object):
         children = []
         for c in self.children or []:
             if isinstance(c, dict):
+                c["parent"] = self
                 children.append(ReportBand(**c))
         self.children = children
 
-    def iter_children(self) -> Iterable["ReportBand"]:
+    def iter_nester(self) -> Iterable["ReportBand"]:
         for c in self.children:
             yield c
+            yield from c.children
 
 
 @dataclass
@@ -76,6 +78,9 @@ class Template(object):
     output_name_pattern: Optional[str] = "report.html"
     handler: Optional[str] = None  # For custom code
     custom: bool = False
+
+    def get_document_name(self):
+        return self.output_name_pattern
 
 
 @dataclass
@@ -90,7 +95,7 @@ class Parameter(object):
 @dataclass
 class ReportField(object):
     name: str
-    output_format: str
+    output_format: str  # Jinja template
 
 
 @dataclass
@@ -98,17 +103,35 @@ class Report(object):
     name: str
     root_band: ReportBand
     templates: Dict[str, Template]  # template_code -> template
-    parameters: List[Parameter]
-    field_format: List[ReportField]
+    parameters: Optional[List[Parameter]] = None
+    field_format: Optional[List[ReportField]] = None
 
     def get_root_band(self) -> ReportBand:
         return self.root_band
+
+    def get_template(self, code: str) -> "Template":
+        code = code or "DEFAULT"
+        try:
+            return self.templates[code]
+        except KeyError:
+            raise ValueError(f"Report template not found for code [{code}]")
 
 
 @dataclass
 class RunParams(object):
     report: Report
-    report_template: Template
-    output_type: OutputType
-    params: Dict[str, Any]
-    output_name_pattern: str
+    report_template: Optional[str] = None  # Report Template Code
+    output_type: Optional[OutputType] = None
+    params: Optional[Dict[str, Any]] = None
+    output_name_pattern: Optional[str] = None
+
+    def get_template(self) -> "Template":
+        return self.report.get_template(self.report_template)
+
+    def get_params(self) -> Dict[str, Any]:
+        r = {}
+        if self.report.parameters:
+            r.update(self.report.parameters)
+        if self.params:
+            r.update(self.params)
+        return r
