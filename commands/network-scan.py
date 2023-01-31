@@ -2,7 +2,7 @@
 # ----------------------------------------------------------------------
 # network-scan command
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2022 The NOC Project
+# Copyright (C) 2007-2023 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -12,6 +12,7 @@ import asyncio
 import datetime
 from io import BytesIO
 import logging
+import socket
 
 # Third-party modules
 import xlsxwriter
@@ -26,12 +27,14 @@ from noc.core.mib import mib
 from noc.core.snmp.version import SNMP_v1, SNMP_v2c
 from noc.sa.models.managedobject import ManagedObject, ManagedObjectProfile
 from noc.sa.models.authprofile import AuthProfile
+from noc.sa.models.credentialcheckrule import CredentialCheckRule
 from noc.sa.models.managedobject import AdministrativeDomain
 from noc.inv.models.networksegment import NetworkSegment
 from noc.main.models.pool import Pool
 from noc.sa.models.profile import Profile
 from noc.inv.models.platform import Platform
 from noc.services.mailsender.service import MailSenderService
+from noc.main.models.notificationgroup import NotificationGroup
 from noc.core.comp import smart_text
 from noc.core.mongo.connection import connect
 from noc.config import config
@@ -39,7 +42,7 @@ from noc.config import config
 
 # example
 # ./noc network-scan 10.0.0.0/24
-# ./noc network-scan --autoadd test --email example@example.org --format xlsx 10.0.0.0/24
+# ./noc network-scan --autoadd test --email example@example.org --formats xlsx 10.0.0.0/24
 # ./noc network-scan --in /opt/net/nets --exclude /opt/net/exclude
 
 
@@ -51,7 +54,7 @@ class Command(BaseCommand):
     SNMP_VERSION = {0: "SNMP_v1", 1: "SNMP_v2c"}
 
     def add_arguments(self, parser):
-        parser.add_argument("--in", action="append", dest="input", help="File with addresses")
+        parser.add_argument("--in", action="append", dest="inputs", help="File with addresses")
         parser.add_argument(
             "--import", action="append", dest="imports", help="File to import into NOC"
         )
@@ -67,16 +70,19 @@ class Command(BaseCommand):
         parser.add_argument("--timeout", type=int, default=1, help="SNMP GET timeout")
         parser.add_argument("--convert", type=bool, default=False, help="convert mac address")
         parser.add_argument("--version", type=int, help="version snmp check")
-        parser.add_argument("--auth", help="auth profile")
+        # parser.add_argument("--auth", help="auth profile")
+        parser.add_argument("--credential", help="credential profile")
         parser.add_argument("--pool", help="name pool", default="default")
         parser.add_argument("--autoadd", help="add object", default="")
         parser.add_argument("--mail", help="mail notification_group name")
         parser.add_argument("--email", action="append", help="mailbox list")
-        parser.add_argument("--format", default="csv", help="Format file (csv or xlsx)")
+        parser.add_argument("--formats", default="csv", help="Format file (csv or xlsx)")
+        parser.add_argument("--resolve-name-snmp", action="store_true", help="hostname->name")
+        parser.add_argument("--resolve-name-dns", action="store_true", help="ptr dns->name")
 
     def handle(
         self,
-        input,
+        inputs,
         imports,
         exclude,
         addresses,
@@ -86,12 +92,15 @@ class Command(BaseCommand):
         timeout,
         convert,
         version,
-        auth,
+        # auth,
+        credential,
         pool,
         autoadd,
         mail,
         email,
-        format,
+        formats,
+        resolve_name_snmp,
+        resolve_name_dns,
         *args,
         **options,
     ):
@@ -101,7 +110,7 @@ class Command(BaseCommand):
                 asyncio.create_task(self.ping_worker(queue))
             # Read exclude addresses from files
             """
-            file format example
+            file example
             10.0.0.1
             10.1.1.0/24
             10.1.2.1
@@ -146,13 +155,13 @@ class Command(BaseCommand):
 
             # Read addresses from files
             """
-            file format example
+            file example
             10.0.0.1
             10.1.1.0/24
             10.1.2.1
             """
-            if input:
-                for fn in input:
+            if inputs:
+                for fn in inputs:
                     try:
                         with open(fn) as f:
                             for line in f:
@@ -245,27 +254,25 @@ class Command(BaseCommand):
         try:
             self.pool = Pool.objects.get(name=pool)
         except Pool.DoesNotExist:
-            self.die("Invalid pool-%s" % (pool))
+            self.die("Invalid pool-%s" % pool)
         # snmp community
         if not community:
             community = []
-            if auth:
+            if credential:
                 try:
-                    self.auth = AuthProfile.objects.get(name=auth)
-                    if self.auth.enable_suggest:
-                        for ro, rw in self.auth.iter_snmp():
-                            community.append(ro)
+                    self.cred = CredentialCheckRule.objects.get(name=credential)
                 except AuthProfile.DoesNotExist:
-                    self.die("Invalid authprofile-%s" % (auth))
-            elif pool:
-                auth = f"TG.{pool}"
+                    self.die("Invalid credential profile-%s" % credential)
+                for snmp in self.cred.suggest_snmp:
+                    community.append(snmp.snmp_ro)
+            elif pool and pool != "default":
+                credential = f"TG.{pool}"
                 try:
-                    self.auth = AuthProfile.objects.get(name=auth)
-                    if self.auth.enable_suggest:
-                        for ro, rw in self.auth.iter_snmp():
-                            community.append(ro)
+                    self.cred = CredentialCheckRule.objects.get(name=credential)
                 except AuthProfile.DoesNotExist:
-                    self.die("Invalid authprofile-%s" % (auth))
+                    self.die("Invalid credential profile-%s" % credential)
+                for snmp in self.cred.suggest_snmp:
+                    community.append(snmp.snmp_ro)
             else:
                 community = [self.DEFAULT_COMMUNITY]
 
@@ -274,7 +281,7 @@ class Command(BaseCommand):
             try:
                 self.object_profile = ManagedObjectProfile.objects.get(name=autoadd)
             except ManagedObjectProfile.DoesNotExist:
-                self.die("Invalid object profile-%s" % (autoadd))
+                self.die("Invalid object profile-%s" % autoadd)
 
         # создание списка наличия мо в noc
         moall = ManagedObject.objects.filter(is_managed=True)
@@ -307,29 +314,44 @@ class Command(BaseCommand):
         self.ping = Ping(tos=config.ping.tos)
         self.jobs = jobs
         asyncio.run(ping_task())
-        print("ver.12")
+        print("ver.16")
         print("enable_ping ", len(self.enable_ping))
         # snmp
         asyncio.run(snmp_task())
         print("enable_snmp ", len(self.enable_snmp))
-
-        data = "IP;Доступен по ICMP;IP есть;is_managed;SMNP sysname;SNMP sysObjectId;Vendor;Model;Имя;pool;labels\n"
+        print(f"{resolve_name_dns=}  {resolve_name_snmp=}")
+        data = "IP;Available via ICMP;IP enable;is_managed;suggest name;SMNP sysname;SNMP sysObjectId;Vendor;Model;Имя;pool;labels\n"
         # столбцы x1,x2,x3,x4,x5,x6,x7,x8,x9,x10,x11,x12
         for ipx in self.enable_ping:
-            x2 = "Да"
-            x4 = x5 = x6 = x7 = x8 = x9 = x11 = "Не определено"
+            x2 = "True"
+            x12 = ipx
+            if resolve_name_dns:
+                if self.get_domain_name(ipx):
+                    x12 = self.get_domain_name(ipx)
+            if resolve_name_snmp:
+                if ipx in self.enable_snmp and "1.3.6.1.2.1.1.5.0" in self.snmp[ipx]:
+                    x12 = self.snmp[ipx]["1.3.6.1.2.1.1.5.0"]
+            x4 = x5 = x6 = x7 = x8 = x9 = x11 = "None"
             if ipx in self.hosts_enable:
-                x3 = "Да"
+                x3 = "True"
                 x8 = self.mo[ipx]["name"]
                 x11 = str(self.mo[ipx]["is_managed"])
                 if self.mo[ipx]["labels"]:
                     x9 = ",".join(self.mo[ipx]["labels"] if self.mo[ipx]["labels"] else [])
             else:
                 if autoadd:
+                    name = ipx
+                    if resolve_name_dns:
+                        if self.get_domain_name(ipx):
+                            name = self.get_domain_name(ipx)
+                    if resolve_name_snmp:
+                        if ipx in self.enable_snmp:
+                            if "1.3.6.1.2.1.1.5.0" in self.snmp[ipx]:
+                                name = self.snmp[ipx]["1.3.6.1.2.1.1.5.0"]
                     m = ManagedObject(
-                        name=ipx,
+                        name=name,
                         is_managed=is_managed,
-                        auth_profile=self.auth,
+                        # auth_profile=self.auth,
                         administrative_domain=AdministrativeDomain.objects.get(
                             name=administrative_domain
                         ),
@@ -343,7 +365,7 @@ class Command(BaseCommand):
                         pool=Pool.objects.get(name=pool),
                     )
                     m.save()
-                x3 = "Нет"
+                x3 = "False"
             if ipx in self.enable_snmp:
                 # ['1.3.6.1.2.1.1.2.0', '1.3.6.1.2.1.1.5.0']
                 if "1.3.6.1.2.1.1.2.0" in self.snmp[ipx]:
@@ -353,24 +375,25 @@ class Command(BaseCommand):
                             x6 = p.vendor
                             x7 = p.name
                 else:
-                    x5 = "Не определено"
+                    x5 = "None"
 
                 if "1.3.6.1.2.1.1.5.0" in self.snmp[ipx]:
                     sysname = self.snmp[ipx]["1.3.6.1.2.1.1.5.0"]
                     x4 = sysname
                 else:
-                    x4 = "Не определено"
+                    x4 = "None"
                     # try:
                     #    sysname = self.snmp[ipx]["1.3.6.1.2.1.1.5.0"]
                     #    x4 = sysname
                     # except:
-                    #    x4 = "Не определено"
+                    #    x4 = "None"
             s = ";".join(
                 [
                     smart_text(ipx),
                     smart_text(x2),
                     smart_text(x3),
                     smart_text(x11),
+                    smart_text(x12),
                     smart_text(x4),
                     smart_text(x5),
                     smart_text(x6),
@@ -386,16 +409,25 @@ class Command(BaseCommand):
         file = open(fn, "w")
         file.write(data)
         file.close()
+        # mail in notification_group
+        if mail:
+            if not email:
+                email = []
+            g = NotificationGroup.get_by_name(mail)
+            for method, params, lang in g.active_members:
+                if "mail" in method:
+                    email.append(params)
+
         # output in csv or mail
         if email:
             bodymessage = "Отчет во вложении.\n\nОтсканированы сети:\n"
             for adr in self.nets:
                 bodymessage += adr + "\n"
             filename = "found_ip_%s" % (datetime.datetime.now().strftime("%Y%m%d"))
-            if format == "csv":
+            if formats == "csv":
                 f = "%s.csv" % filename
                 attach = [{"filename": f, "data": data}]
-            elif format == "xlsx":
+            elif formats == "xlsx":
                 f = "%s.xlsx" % filename
                 response = BytesIO()
                 wb = xlsxwriter.Workbook(response)
@@ -417,6 +449,18 @@ class Command(BaseCommand):
                 response.close()
             ms = MailSenderService()
             ms.logger = logging.getLogger("network_scan")
+            self.i = 1
+            for boxmail in email:
+                # ms.send_mail(str(self.i), boxmail, "Отчет о расхождениях (%s)" % pool, bodymessage, attachments=attach)
+                self.i += 1
+                msg = {
+                    "address": boxmail,
+                    "subject": "Отчет о расхождениях (%s)" % pool,
+                    "body": bodymessage,
+                    "attachments": attach,
+                }
+                ms.send_mail(self.i, msg)
+            """
             msg = {
                 "address": email,
                 "subject": "Отчет о расхождениях (%s)" % pool,
@@ -424,6 +468,7 @@ class Command(BaseCommand):
                 "attachments": attach,
             }
             ms.send_mail("11", msg)
+            """
         else:
             print(data)
 
@@ -486,6 +531,14 @@ class Command(BaseCommand):
                             self.r = str(e)
                             break
             queue.task_done()
+
+    @staticmethod
+    def get_domain_name(ip_address):
+        try:
+            result = socket.gethostbyaddr(ip_address)
+        except Exception:
+            return
+        return list(result)[0]
 
 
 if __name__ == "__main__":
