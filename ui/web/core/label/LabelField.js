@@ -303,8 +303,8 @@ Ext.define("NOC.core.label.LabelField", {
                     }
                 }
             }
-            me.callParent([value, add]);
         }
+        me.callParent([value, add]);
     },
 
     toClipboard: function(btn) {

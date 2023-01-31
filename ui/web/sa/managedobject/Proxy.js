@@ -14,9 +14,6 @@ Ext.define("NOC.sa.managedobject.Proxy", {
         create: 'POST',
         read: 'GET',
         update: 'PUT',
-        destroy: 'POST'
-    },
-    appendId: function(id) {
-        this.url += id + '/';
+        destroy: 'DELETE'
     }
 });

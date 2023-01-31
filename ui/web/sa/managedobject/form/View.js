@@ -1321,7 +1321,22 @@ Ext.define('NOC.sa.managedobject.form.View', {
                 glyph: NOC.glyph.copy,
                 disabled: true,
                 handler: "onCloneRecord"
-            }
+            },
+            {
+                itemId: "deleteBtn",
+                text: __("Delete"),
+                tooltip: __("Delete object"),
+                glyph: NOC.glyph.times,
+                disabled: true,
+                handler: 'onDeleteRecord'
+            },
+            {
+                itemId: "resetBtn",
+                text: __("Reset"),
+                tooltip: __("Reset to default values"),
+                glyph: NOC.glyph.undo,
+                handler: 'onResetRecord'
+            },
         ]
     }],
 });

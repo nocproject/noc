@@ -34,15 +34,53 @@ Ext.define('NOC.sa.managedobject.form.Controller', {
 
     },
     onNewRecord: function() {
-        console.log('form handler : onNewRecord');
+        this.newRecord();
     },
     onCloneRecord: function() {
         var view = this.getView();
-        view.up('[itemId=sa-managedobject]').getController().setFormTitle(__("Clone") + " {0}", __("CLONE"));
+        view.up('[itemId=sa-managedobject]').getController().setFormTitle(__("Clone") + " {0}", "CLONE");
         view.getForm().setValues({bi_id: null});
         view.recordId = undefined;
-        // view.down('[itemId=cloneBtn]').setDisabled(true);
         Ext.Array.each(view.query('[itemId$=-inline]'), function(grid) {return grid.getStore().cloneData()});
+        // view.down('[itemId=cloneBtn]').setDisabled(true);
+        view.down('[itemId=createBtn]').setDisabled(true);
+        view.down('[itemId=deleteBtn]').setDisabled(true);
+    },
+    onDeleteRecord: function() {
+        var me = this;
+        Ext.Msg.show({
+            title: __("Delete record?"),
+            msg: __("Do you wish to delete record? This operation cannot be undone!"),
+            buttons: Ext.Msg.YESNO,
+            icon: Ext.window.MessageBox.QUESTION,
+            modal: true,
+            fn: function(button) {
+                if(button == "yes")
+                    me.deleteRecord();
+            }
+        });
+    },
+    onResetRecord: function() {
+        this.getView().getForm().reset();
+        this.getView().up('[itemId=sa-managedobject]').getController().resetInlineStore(this.getView());
+    },
+    newRecord: function(defaults) {
+        var defaultValues = {},
+            view = this.getView(),
+            fieldsWithDefaultValue = Ext.Array.filter(Ext.create("NOC.sa.managedobject.Model").fields,
+                function(field) {return !Ext.isEmpty(field.defaultValue)});
+
+        Ext.Array.each(fieldsWithDefaultValue, function(field) {
+            defaultValues[field.name] = field.defaultValue;
+        });
+        view.up('[itemId=sa-managedobject]').getController().setFormTitle(__("Create") + " {0}", "NEW");
+        view.recordId = undefined;
+        view.getForm().reset();
+        view.getForm().setValues(defaultValues);
+        view.up('[itemId=sa-managedobject]').getController().resetInlineStore(view, defaults);
+        view.down('[itemId=cloneBtn]').setDisabled(true);
+        view.down('[itemId=createBtn]').setDisabled(true);
+        view.down('[itemId=deleteBtn]').setDisabled(true);
     },
     saveRecord: function(data) {
         var me = this,
@@ -68,6 +106,7 @@ Ext.define('NOC.sa.managedobject.form.Controller', {
             success: function(record, operation) {
                 me.getView().unmask();
                 me.getView().setHistoryHash();
+                me.reloadSelectionGrid();
                 me.toMain();
                 NOC.msg.complete(__("Saved"));
             },
@@ -83,6 +122,39 @@ Ext.define('NOC.sa.managedobject.form.Controller', {
                 me.getView().unmask();
             },
         });
+    },
+    deleteRecord: function() {
+        var me = this,
+            record = Ext.create("NOC.sa.managedobject.Model");
+
+        record.self.setProxy({type: "managedobject"});
+        if(this.getView().recordId) {
+            this.getView().mask(__("Deleting ..."));
+            Ext.Ajax.request({
+                url: "/sa/managedobject/" + this.getView().recordId + "/",
+                method: "DELETE",
+                scope: this,
+                success: function(response) {
+                    // Process result
+                    this.reloadSelectionGrid();
+                    this.toMain()
+                    this.getView().unmask();
+                },
+                failure: function(response) {
+                    var message;
+                    try {
+                        message = Ext.decode(response.responseText).message;
+                    } catch(err) {
+                        message = "Internal error";
+                    }
+                    NOC.error(message);
+                    this.unmask();
+                }
+            });
+        }
+    },
+    reloadSelectionGrid: function() {
+        this.getView().up().up().down('[reference=saManagedobjectSelectionGrid]').getStore().reload();
     },
     // Workaround labelField
     onChange: Ext.emptyFn,

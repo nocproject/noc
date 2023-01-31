@@ -638,7 +638,9 @@ Ext.define('NOC.sa.managedobject.Controller', {
     },
     //
     onNewRecord: function() {
-        this.getView().down('[itemId=managedobject-form-panel]').getController().onNewRecord();
+        var view = this.getView();
+        view.down('[itemId=managedobject-form-panel]').getController().onNewRecord();
+        view.getLayout().setActiveItem('managedobject-form');
     },
     editManagedObject: function(gridView, id) {
         var url = '/sa/managedobject/' + id + '/',
@@ -722,6 +724,23 @@ Ext.define('NOC.sa.managedobject.Controller', {
         t += "<span style='float:right'>" + itemId + "</span>";
         formTitle.update(t);
     },
+    resetInlineStore: function(formPanel, defaults) {
+        Ext.each(formPanel.query("[itemId$=-inline]"),
+            function(gridField) {
+                var store = gridField.getStore(),
+                    value = [];
+                if(!store) {
+                    store = new Ext.create("NOC.core.InlineModelStore", {
+                        model: gridField.model
+                    });
+                    gridField.setStore(store);
+                }
+                if(store.hasOwnProperty("rootProperty") && this.hasOwnProperty(store.rootProperty)) {
+                    value = this[store.rootProperty];
+                }
+                store.loadData(value);
+            }, defaults || {});
+    },
     loadInlineStore(formPanel, id) {
         Ext.each(formPanel.query("[itemId$=-inline]"),
             function(gridField) {
@@ -737,11 +756,12 @@ Ext.define('NOC.sa.managedobject.Controller', {
         var view = this.getView(),
             cloneBtn = view.down('[itemId=managedobject-form-panel] [itemId=cloneBtn]'),
             saveBtn = view.down('[itemId=managedobject-form-panel] [itemId=saveBtn]'),
+            deleteBtn = view.down('[itemId=managedobject-form-panel] [itemId=deleteBtn]'),
             createBtn = view.down('[itemId=managedobject-form-panel] [itemId=createBtn]');
 
-        saveBtn.enable(view.hasPermission("create"));
-        createBtn.enable(view.hasPermission("create"));
         cloneBtn.enable(view.hasPermission("create"));
-
+        saveBtn.enable(view.hasPermission("create"));
+        deleteBtn.enable(view.hasPermission("delete"));
+        createBtn.enable(view.hasPermission("create"));
     },
 });
