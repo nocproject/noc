@@ -46,6 +46,8 @@ Ext.define('NOC.sa.managedobject.form.View', {
     controller: 'managedobject.form',
     region: 'center',
     layout: 'form',
+    border: true,
+    padding: 4,
     scrollable: true,
     defaults: {
         minWidth: 800,
@@ -1214,10 +1216,7 @@ Ext.define('NOC.sa.managedobject.form.View', {
                 {
                     xtype: "inlinegrid",
                     itemId: "sa-managedobject-attr-inline",
-                    // store: {
-                    // type: "inlinestore",
                     model: "NOC.sa.managedobject.AttributesModel",
-                    // },
                     columns: [
                         {
                             text: __("Key"),
@@ -1246,10 +1245,8 @@ Ext.define('NOC.sa.managedobject.form.View', {
                 {
                     xtype: "inlinegrid",
                     itemId: "sa-managedobject-caps-inline",
-                    // store: {
-                    // type: "inlinestore",
                     model: "NOC.sa.managedobject.CapabilitiesModel",
-                    // },
+                    readOnly: true,
                     columns: [
                         {
                             text: __("Capability"),
@@ -1300,6 +1297,32 @@ Ext.define('NOC.sa.managedobject.form.View', {
                 },
                 handler: 'toMain'
             },
+            {
+                itemId: "saveBtn",
+                text: __("Save"),
+                tooltip: __("Save changes"),
+                glyph: NOC.glyph.save,
+                formBind: true,
+                disabled: true,
+                handler: "onSaveRecord",
+            },
+            {
+                itemId: "createBtn",
+                text: __("Add"),
+                glyph: NOC.glyph.plus,
+                tooltip: __("Add new record"),
+                hasAccess: NOC.hasPermission("create"),
+                handler: "onNewRecord"
+            },
+            {
+                itemId: "cloneBtn",
+                text: __("Clone"),
+                tooltip: __("Copy existing values to a new object"),
+                glyph: NOC.glyph.copy,
+                disabled: true,
+                hasAccess: NOC.hasPermission("create"),
+                handler: "onCloneRecord"
+            }
         ]
     }],
 });

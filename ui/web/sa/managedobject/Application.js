@@ -251,7 +251,14 @@ Ext.define('NOC.sa.managedobject.Application', {
                                     {text: 'Item 2', handler: function() {alert("Item 2 clicked");}}
                                 ]
                             })
-                        }
+                        }, {
+                            itemId: "createBtn",
+                            text: __("Add"),
+                            glyph: NOC.glyph.plus,
+                            tooltip: __("Add new record"),
+                            hasAccess: NOC.hasPermission("create"),
+                            handler: "onNewRecord"
+                        },
                     ]
                 }
             }]

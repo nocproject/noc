@@ -642,7 +642,7 @@ Ext.define('NOC.sa.managedobject.Controller', {
             view = this.getView();
 
         if(gridView) {
-            gridView.mask();
+            gridView.mask(__("Loading ..."));
         }
         Ext.Ajax.request({
             url: url,
@@ -660,6 +660,7 @@ Ext.define('NOC.sa.managedobject.Controller', {
                         gridView = this.getView();
                     }
                     formPanel = gridView.down('[itemId=managedobject-form-panel]');
+                    formPanel.recordId = id;
                     form = formPanel.getForm();
                     Ext.iterate(data, function(v) {
                         if(v.indexOf("__") !== -1) {
@@ -705,7 +706,7 @@ Ext.define('NOC.sa.managedobject.Controller', {
             }
         });
     },
-    // Set form title
+    // Set edit form title
     setFormTitle: function(tpl, itemId) {
         var t = "<b>" + Ext.String.format(tpl, this.view.appTitle) + "</b>",
             formTitle = this.view.down('[itemId=formTitle]');
@@ -728,4 +729,7 @@ Ext.define('NOC.sa.managedobject.Controller', {
                 store.load();
             }, this);
     },
+    onNewRecord: function() {
+        this.getView().down('[itemId=managedobject-form-panel]').getController().onNewRecord();
+    }
 });

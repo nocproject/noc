@@ -522,6 +522,11 @@ Ext.define("NOC.sa.managedobject.Model", {
             persist: false
         },
         {
+            name: "diagnostics",
+            type: "auto",
+            persist: false
+        },
+        {
             name: "row_class",
             type: "string",
             persist: false

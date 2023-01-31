@@ -8,6 +8,7 @@ Ext.define("NOC.core.InlineGrid", {
     extend: "Ext.grid.Panel",
     alias: "widget.inlinegrid",
     selType: "rowmodel",
+    readOnly: false,
     bbar: {
         xtype: "pagingtoolbar",
         dock: "bottom",
@@ -48,6 +49,9 @@ Ext.define("NOC.core.InlineGrid", {
         this.columns = me.columns;
         this.bbar.store = this.store = me.store;
         this.callParent();
+        if(this.readOnly) {
+            this.down('[dock=top][xtype=toolbar]').hide(true)
+        }
     },
     //
     onCancelEdit: function(editor, context) {
