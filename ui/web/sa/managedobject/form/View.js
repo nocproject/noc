@@ -1311,7 +1311,7 @@ Ext.define('NOC.sa.managedobject.form.View', {
                 text: __("Add"),
                 glyph: NOC.glyph.plus,
                 tooltip: __("Add new record"),
-                hasAccess: NOC.hasPermission("create"),
+                disabled: true,
                 handler: "onNewRecord"
             },
             {
@@ -1320,7 +1320,6 @@ Ext.define('NOC.sa.managedobject.form.View', {
                 tooltip: __("Copy existing values to a new object"),
                 glyph: NOC.glyph.copy,
                 disabled: true,
-                hasAccess: NOC.hasPermission("create"),
                 handler: "onCloneRecord"
             }
         ]

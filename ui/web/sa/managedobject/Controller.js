@@ -637,6 +637,9 @@ Ext.define('NOC.sa.managedobject.Controller', {
         this.editManagedObject(gridView.up('[itemId=sa-managedobject]'), record.id);
     },
     //
+    onNewRecord: function() {
+        this.getView().down('[itemId=managedobject-form-panel]').getController().onNewRecord();
+    },
     editManagedObject: function(gridView, id) {
         var url = '/sa/managedobject/' + id + '/',
             view = this.getView();
@@ -697,6 +700,7 @@ Ext.define('NOC.sa.managedobject.Controller', {
                 if(gridView) {
                     gridView.unmask();
                 }
+                this.buttonState();
             },
             failure: function() {
                 if(gridView) {
@@ -729,7 +733,15 @@ Ext.define('NOC.sa.managedobject.Controller', {
                 store.load();
             }, this);
     },
-    onNewRecord: function() {
-        this.getView().down('[itemId=managedobject-form-panel]').getController().onNewRecord();
-    }
+    buttonState: function() {
+        var view = this.getView(),
+            cloneBtn = view.down('[itemId=managedobject-form-panel] [itemId=cloneBtn]'),
+            saveBtn = view.down('[itemId=managedobject-form-panel] [itemId=saveBtn]'),
+            createBtn = view.down('[itemId=managedobject-form-panel] [itemId=createBtn]');
+
+        saveBtn.enable(view.hasPermission("create"));
+        createBtn.enable(view.hasPermission("create"));
+        cloneBtn.enable(view.hasPermission("create"));
+
+    },
 });

@@ -9,7 +9,7 @@ console.debug("Defining NOC.sa.managedobject.Proxy");
 Ext.define("NOC.sa.managedobject.Proxy", {
     extend: "Ext.data.proxy.Ajax",
     alias: 'proxy.managedobject',
-    url: "/sa/managedobject/{{id}}/",
+    url: "/sa/managedobject/",
     actionMethods: {
         create: 'POST',
         read: 'GET',

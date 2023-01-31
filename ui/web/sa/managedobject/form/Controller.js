@@ -19,7 +19,6 @@ Ext.define('NOC.sa.managedobject.form.Controller', {
         mainView.setHistoryHash();
     },
     onSaveRecord: function() {
-        console.log('click save!');
         var me = this.getView();
         if(!me.form.isValid()) {
             NOC.error(__("Error in data"));
@@ -38,7 +37,12 @@ Ext.define('NOC.sa.managedobject.form.Controller', {
         console.log('form handler : onNewRecord');
     },
     onCloneRecord: function() {
-
+        var view = this.getView();
+        view.up('[itemId=sa-managedobject]').getController().setFormTitle(__("Clone") + " {0}", __("CLONE"));
+        view.getForm().setValues({bi_id: null});
+        view.recordId = undefined;
+        // view.down('[itemId=cloneBtn]').setDisabled(true);
+        Ext.Array.each(view.query('[itemId$=-inline]'), function(grid) {return grid.getStore().cloneData()});
     },
     saveRecord: function(data) {
         var me = this,
@@ -50,27 +54,36 @@ Ext.define('NOC.sa.managedobject.form.Controller', {
             NOC.error(__("Invalid data!"));
             return;
         }
+        record.set("id", this.getView().recordId);
         if(this.getView().recordId) {
-            record.set("id", this.getView().recordId);
             record.phantom = false;
-            record.proxy.url = record.proxy.url.replace("{{id}}", record.id);
+            record.proxy.url += record.id + "/";
         }
 
         this.getView().mask(__("Saving ..."));
         this.getView().saveInlines(record.id,
             Ext.Array.map(this.getView().query('[itemId$=-inline]'), function(grid) {return grid.getStore()}));
         Ext.Object.each(data, function(key, value) {if(!Ext.isEmpty(value)) record.set(key, value)});
-        var result = record.save({
+        record.save({
             success: function(record, operation) {
                 me.getView().unmask();
+                me.getView().setHistoryHash();
+                me.toMain();
                 NOC.msg.complete(__("Saved"));
             },
             failure: function(record, operation) {
                 var message = "Error saving record";
+                if(operation && operation.error && operation.error.response && operation.error.response.responseText) {
+                    var response = Ext.decode(operation.error.response.responseText);
+                    if(response && response.message) {
+                        message = response.message;
+                    }
+                }
                 NOC.error(message);
                 me.getView().unmask();
             },
         });
     },
+    // Workaround labelField
     onChange: Ext.emptyFn,
 });
