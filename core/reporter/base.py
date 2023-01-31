@@ -99,6 +99,8 @@ class ReportEngine(object):
         ctxs = {}
         # Extract data
         report_band = report.get_root_band()
+        for q in report_band.queries:
+            root.rows = self.get_rows(q, root.get_data())
         for rb in report_band.iter_nester():
             if rb.parent.name == BandData.ROOT_BAND_NAME:
                 bd_root = root
@@ -108,7 +110,7 @@ class ReportEngine(object):
             bd.set_data(bd_root.get_data())
             ctxs[bd.name] = bd
             for q in rb.queries:
-                data = self.get_rows(q, bd.get_data())
+                data = self.get_rows(q, bd.get_data(), p_rows=bd_root.rows)
                 if data is None:
                     continue
                 bd.rows = data
@@ -116,7 +118,9 @@ class ReportEngine(object):
             root.add_child(bd)
         return root
 
-    def get_rows(self, query: "ReportQuery", ctx: Dict[str, Any]) -> Optional[pl.DataFrame]:
+    def get_rows(
+        self, query: "ReportQuery", ctx: Dict[str, Any], p_rows: Optional[pl.DataFrame] = None
+    ) -> Optional[pl.DataFrame]:
         """
 
         :param query:
@@ -125,16 +129,26 @@ class ReportEngine(object):
         """
         if query.json:
             return pl.DataFrame(orjson.loads(query.json))
-        if not query.datasource:
+        if not query.datasource and not query.query:
             return None
-        ds = ds_loader[query.datasource]
-        if not ds:
-            raise ValueError(f"Unknown Datasource: {query.datasource}")
-        params = query.params or {}
-        params.update(ctx)
-        if query.fields:
-            params["fields"] = query.fields
-        return ds.query_sync(**params)
+        row = None
+        if query.datasource:
+            ds = ds_loader[query.datasource]
+            if not ds:
+                raise ValueError(f"Unknown Datasource: {query.datasource}")
+            params = query.params or {}
+            params.update(ctx)
+            if query.fields:
+                params["fields"] = query.fields
+            row = ds.query_sync(**params)
+        logger.info("Execute query: %s; Context: %s", query.query, ctx)
+        if query.query:
+            row = eval(
+                query.query,
+                {"__builtins__": {}},
+                {"ds": row, "ctx": ctx, "parent": p_rows, "pl": pl},
+            )
+        return row
 
     def resolve_output_filename(self, run_params: RunParams, root_band: BandData) -> str:
         """

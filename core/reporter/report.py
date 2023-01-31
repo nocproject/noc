@@ -20,6 +20,16 @@ class BandData(object):
     Report Data for Band
     """
 
+    __slots__ = (
+        "name",
+        "parent",
+        "orientation",
+        "data",
+        "children_bands",
+        "rows",
+        "report_field_format",
+    )
+
     ROOT_BAND_NAME = "Root"
 
     def __init__(
@@ -87,7 +97,7 @@ class BandData(object):
         """
         return self.children_bands.get(name, [])
 
-    def get_child_by_name(self, name: str) -> "BandData":
+    def get_child_by_name(self, name: str) -> Optional["BandData"]:
         """
 
         :param name:
@@ -102,7 +112,7 @@ class BandData(object):
             yield b
             yield from b.iter_all_bands()
 
-    def find_band_recursively(self, name: str) -> "BandData":
+    def find_band_recursively(self, name: str) -> Optional["BandData"]:
         """
 
         :param name:

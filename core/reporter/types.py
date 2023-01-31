@@ -82,6 +82,10 @@ class Template(object):
     def get_document_name(self):
         return self.output_name_pattern
 
+    def __post_init__(self):
+        if not isinstance(self.output_type, OutputType):
+            self.output_type = OutputType(self.output_type)
+
 
 @dataclass
 class Parameter(object):
@@ -115,6 +119,13 @@ class Report(object):
             return self.templates[code]
         except KeyError:
             raise ValueError(f"Report template not found for code [{code}]")
+
+    def __post_init__(self):
+        if isinstance(self.root_band, dict):
+            self.root_band = ReportBand(**self.root_band)
+        for code, t in self.templates.items():
+            if isinstance(t, dict):
+                self.templates[code] = Template(**t)
 
 
 @dataclass

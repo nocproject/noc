@@ -18,13 +18,15 @@ class TableFormatter(DataFormatter):
 
         :return:
         """
-        rb = self.root_band.find_band_recursively("master_data")
-        csv_header = ";".join(cc for cc in rb.rows.columns) + "\n"
-        self.output_stream.write(csv_header.encode("utf8"))
-        rb.rows.write_csv(
-            # header=[self.HEADER_ROW.get(cc, cc) for cc in out_columns],
-            file=self.output_stream,
-            sep=";",
-            quote='"',
-            has_header=False,
-        )
+        for rb in self.root_band.iter_all_bands():
+            if rb.rows is None or rb.rows.is_empty():
+                continue
+            csv_header = ";".join(cc for cc in rb.rows.columns) + "\n"
+            self.output_stream.write(csv_header.encode("utf8"))
+            rb.rows.write_csv(
+                # header=[self.HEADER_ROW.get(cc, cc) for cc in out_columns],
+                file=self.output_stream,
+                sep=";",
+                quote='"',
+                has_header=False,
+            )
