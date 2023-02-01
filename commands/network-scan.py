@@ -70,9 +70,11 @@ class Command(BaseCommand):
         parser.add_argument("--timeout", type=int, default=1, help="SNMP GET timeout")
         parser.add_argument("--convert", type=bool, default=False, help="convert mac address")
         parser.add_argument("--version", type=int, help="version snmp check")
-        # parser.add_argument("--auth", help="auth profile")
+        parser.add_argument("--auth-profile", help="auth profile")
         parser.add_argument("--credential", help="credential profile")
         parser.add_argument("--pool", help="name pool", default="default")
+        parser.add_argument("--adm-domain", help="name adm domain", default="default")
+        parser.add_argument("--label", action="append", help="mo label")
         parser.add_argument("--autoadd", help="add object", default="")
         parser.add_argument("--mail", help="mail notification_group name")
         parser.add_argument("--email", action="append", help="mailbox list")
@@ -92,10 +94,12 @@ class Command(BaseCommand):
         timeout,
         convert,
         version,
-        # auth,
+        auth_profile,
         credential,
         pool,
+        adm_domain,
         autoadd,
+        label,
         mail,
         email,
         formats,
@@ -210,12 +214,11 @@ class Command(BaseCommand):
 
         # параметры by-default
         is_managed = "True"
-        administrative_domain = "default"
+        # administrative_domain = "default"
         profile = "Generic.Host"
         # object_profile = "default"
         description = "create object %s" % (datetime.datetime.now().strftime("%Y%m%d"))
         segment = "ALL"
-        # auth_profile="autoadd"
         # scheme = "1"
         # address = ""
         # port = ""
@@ -236,7 +239,7 @@ class Command(BaseCommand):
         # config_diff_filter_rule = ""
         # config_validation_rule = ""
         # max_scripts = "1"
-        labels = ["autoadd"]
+        # labels = ["autoadd"]
         # pool = "default"
         # container = ""
         # trap_source_type = "d"
@@ -261,7 +264,7 @@ class Command(BaseCommand):
             if credential:
                 try:
                     self.cred = CredentialCheckRule.objects.get(name=credential)
-                except AuthProfile.DoesNotExist:
+                except CredentialCheckRule.DoesNotExist:
                     self.die("Invalid credential profile-%s" % credential)
                 for snmp in self.cred.suggest_snmp:
                     community.append(snmp.snmp_ro)
@@ -269,7 +272,7 @@ class Command(BaseCommand):
                 credential = f"TG.{pool}"
                 try:
                     self.cred = CredentialCheckRule.objects.get(name=credential)
-                except AuthProfile.DoesNotExist:
+                except CredentialCheckRule.DoesNotExist:
                     self.die("Invalid credential profile-%s" % credential)
                 for snmp in self.cred.suggest_snmp:
                     community.append(snmp.snmp_ro)
@@ -319,9 +322,8 @@ class Command(BaseCommand):
         # snmp
         asyncio.run(snmp_task())
         print("enable_snmp ", len(self.enable_snmp))
-        print(f"{resolve_name_dns=}  {resolve_name_snmp=}")
-        data = "IP;Available via ICMP;IP enable;is_managed;suggest name;SMNP sysname;SNMP sysObjectId;Vendor;Model;Имя;pool;labels\n"
-        # столбцы x1,x2,x3,x4,x5,x6,x7,x8,x9,x10,x11,x12
+
+        data = "IP;Available via ICMP;IP enable;is_managed;suggest name;SMNP sysname;SNMP sysObjectId;Vendor;Model;Name;pool;labels\n"
         for ipx in self.enable_ping:
             x2 = "True"
             x12 = ipx
@@ -351,19 +353,19 @@ class Command(BaseCommand):
                     m = ManagedObject(
                         name=name,
                         is_managed=is_managed,
-                        # auth_profile=self.auth,
-                        administrative_domain=AdministrativeDomain.objects.get(
-                            name=administrative_domain
-                        ),
+                        administrative_domain=AdministrativeDomain.objects.get(name=adm_domain),
                         profile=Profile.objects.get(name=profile),
                         description=description,
                         object_profile=self.object_profile,
                         segment=NetworkSegment.objects.get(name=segment),
                         scheme=1,
                         address=ipx,
-                        labels=labels,
                         pool=Pool.objects.get(name=pool),
                     )
+                    if auth_profile:
+                        m.auth_profile = AuthProfile.objects.get(name=auth_profile)
+                    if label:
+                        m.labels = label
                     m.save()
                 x3 = "False"
             if ipx in self.enable_snmp:
