@@ -1,7 +1,9 @@
 # ----------------------------------------------------------------------
 # NSN.TIMOS.get_config
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# NSN.TIMOS.get_config
+# ----------------------------------------------------------------------
+# Copyright (C) 2007-2023 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -32,10 +34,14 @@ class Script(BaseScript):
 
         conf = {}
         conf["name"] = "li"
-        self.cli("configure li")
-        conf["config"] = self.cli("info")
-        conf["config"] = self.cleaned_config(conf["config"])
-        self.cli("exit")
-        configs.append(conf)
+        # 7705 SAR-X dont have this command
+        try:
+            self.cli("configure li")
+            conf["config"] = self.cli("info")
+            conf["config"] = self.cleaned_config(conf["config"])
+            self.cli("exit")
+            configs.append(conf)
+        except self.CLISyntaxError:
+            pass
 
         return configs
