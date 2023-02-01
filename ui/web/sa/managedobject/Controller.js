@@ -759,9 +759,10 @@ Ext.define('NOC.sa.managedobject.Controller', {
             deleteBtn = view.down('[itemId=managedobject-form-panel] [itemId=deleteBtn]'),
             createBtn = view.down('[itemId=managedobject-form-panel] [itemId=createBtn]');
 
-        cloneBtn.enable(view.hasPermission("create"));
-        saveBtn.enable(view.hasPermission("create"));
-        deleteBtn.enable(view.hasPermission("delete"));
-        createBtn.enable(view.hasPermission("create"));
+        saveBtn.setDisabled(!view.hasPermission("update"));
+        saveBtn.formBind = view.hasPermission("update");
+        cloneBtn.setDisabled(!view.hasPermission("create"));
+        deleteBtn.setDisabled(!view.hasPermission("delete"));
+        createBtn.setDisabled(!view.hasPermission("create"));
     },
 });

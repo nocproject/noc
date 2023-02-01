@@ -1302,8 +1302,6 @@ Ext.define('NOC.sa.managedobject.form.View', {
                 text: __("Save"),
                 tooltip: __("Save changes"),
                 glyph: NOC.glyph.save,
-                formBind: true,
-                disabled: true,
                 handler: "onSaveRecord",
             },
             {
@@ -1311,7 +1309,6 @@ Ext.define('NOC.sa.managedobject.form.View', {
                 text: __("Add"),
                 glyph: NOC.glyph.plus,
                 tooltip: __("Add new record"),
-                disabled: true,
                 handler: "onNewRecord"
             },
             {
@@ -1319,7 +1316,6 @@ Ext.define('NOC.sa.managedobject.form.View', {
                 text: __("Clone"),
                 tooltip: __("Copy existing values to a new object"),
                 glyph: NOC.glyph.copy,
-                disabled: true,
                 handler: "onCloneRecord"
             },
             {
@@ -1327,7 +1323,6 @@ Ext.define('NOC.sa.managedobject.form.View', {
                 text: __("Delete"),
                 tooltip: __("Delete object"),
                 glyph: NOC.glyph.times,
-                disabled: true,
                 handler: 'onDeleteRecord'
             },
             {
