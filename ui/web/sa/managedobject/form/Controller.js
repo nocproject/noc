@@ -82,7 +82,9 @@ Ext.define('NOC.sa.managedobject.form.Controller', {
             );
         }
     },
-    onConsole: function() {},
+    onConsole: function() {
+        this.itemPreview('sa-console');
+    },
     onScripts: function() {},
     onInterfaces: function() {},
     onSensors: function() {},

@@ -21,6 +21,7 @@ Ext.define('NOC.sa.managedobject.Application', {
         'NOC.sa.managedobject.form.View',
         'NOC.sa.managedobject.RepoPreview',
         'NOC.sa.managedobject.ConfDBPanel',
+        'NOC.sa.managedobject.ConsolePanel',
     ],
     stateMap: {
         w: __('Waiting'),
@@ -551,6 +552,15 @@ Ext.define('NOC.sa.managedobject.Application', {
             activeItem: 6,
             itemId: 'sa-confdb',
             xtype: 'sa.confdb',
+            app: this,
+            onClose: function() {
+                this.up().setActiveItem(this.backItem);
+            },
+        },
+        {
+            activeItem: 7,
+            itemId: 'sa-console',
+            xtype: 'sa.console',
             app: this,
             onClose: function() {
                 this.up().setActiveItem(this.backItem);

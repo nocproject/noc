@@ -9,6 +9,7 @@ console.debug("Defining NOC.sa.managedobject.ConsolePanel");
 Ext.define("NOC.sa.managedobject.ConsolePanel", {
     extend: "Ext.panel.Panel",
     app: null,
+    alias: "widget.sa.console",
     layout: "fit",
     autoScroll: true,
 
