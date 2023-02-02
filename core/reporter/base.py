@@ -7,7 +7,7 @@
 
 # Python modules
 import logging
-from typing import Dict, Any, Optional
+from typing import Dict, Any, Optional, List
 
 # Third-party modules
 import orjson
@@ -15,8 +15,6 @@ import polars as pl
 from jinja2 import Template as Jinja2Template
 
 # NOC modules
-from noc.core.datasources.loader import loader as ds_loader
-from noc.core.reporter.formatter.loader import loader as df_loader
 from .types import Template, OutputType, RunParams, Report, ReportQuery
 from .report import BandData
 
@@ -65,6 +63,8 @@ class ReportEngine(object):
         :return:
         """
         #
+        from noc.core.reporter.formatter.loader import loader as df_loader
+
         formatter = df_loader[output_type.value]
         fmt = formatter(band_data, template, output_type, output_stream)
         fmt.render_document()
@@ -96,58 +96,89 @@ class ReportEngine(object):
         """
         root = BandData(BandData.ROOT_BAND_NAME)
         root.set_data(params)
-        ctxs = {}
         # Extract data
         report_band = report.get_root_band()
-        for q in report_band.queries:
-            root.rows = self.get_rows(q, root.get_data())
+        root.rows = self.get_rows(report_band.queries, root.get_data())
         for rb in report_band.iter_nester():
-            if rb.parent.name == BandData.ROOT_BAND_NAME:
-                bd_root = root
-            else:
-                bd_root = ctxs[rb.parent.name]
-            bd = BandData(rb.name, bd_root, rb.orientation)
-            bd.set_data(bd_root.get_data())
-            ctxs[bd.name] = bd
-            for q in rb.queries:
-                data = self.get_rows(q, bd.get_data(), p_rows=bd_root.rows)
-                if data is None:
-                    continue
-                bd.rows = data
-                bd.set_data(dict(zip(data.columns, data.row(0))))
-            root.add_child(bd)
+            bd_root = root.find_band_recursively(rb.parent.name)
+            logger.info("Root: %s/%s - c %s", bd_root, rb, len(bd_root.children_bands))
+            # Fill parent bands
+            if bd_root.parent:
+                for c in bd_root.parent.iter_children_bands():
+                    c.rows = self.get_rows(rb.queries, c.get_data(), root_band=root)
+            # Fill Query Data
+            rows: Optional[pl.DataFrame] = self.get_rows(
+                rb.queries, bd_root.get_data(), root_band=root
+            )
+            if rows is None or rows.is_empty():
+                continue
+            bands = []
+            if not rb.children:
+                # Last Bands not convert to children bands
+                bd = BandData(rb.name, bd_root, rb.orientation)
+                bd.rows = rows
+                bd_root.add_child(bd)
+                continue
+            for d in rows.to_dicts():
+                bd = BandData(rb.name, bd_root, rb.orientation)
+                bd.set_data(d)
+                bands.append(bd)
+            bd_root.add_children(bands)
+
         return root
 
     def get_rows(
-        self, query: "ReportQuery", ctx: Dict[str, Any], p_rows: Optional[pl.DataFrame] = None
+        self, queries: List[ReportQuery], ctx: Dict[str, Any], root_band: Optional[BandData] = None
     ) -> Optional[pl.DataFrame]:
+        """
+
+        :param queries:
+        :param ctx:
+        :param root_band:
+        :return:
+        """
+        if not queries:
+            return None
+        rows = None
+        for query in queries:
+            data = None
+            if query.json:
+                data = pl.DataFrame(orjson.loads(query.json))
+            if query.datasource:
+                data = self.query_datasource(query, ctx)
+            if query.query:
+                logger.info("Execute query: %s; Context: %s", query.query, ctx)
+                data = eval(
+                    query.query,
+                    {"__builtins__": {}},
+                    {"ds": data, "ctx": ctx, "root_band": root_band, "pl": pl},
+                )
+            if data is None or data.is_empty():
+                continue
+            if rows is not None:
+                # @todo Linked field!
+                rows = rows.join(data)
+                continue
+            rows = data
+        return rows
+
+    def query_datasource(self, query: ReportQuery, ctx: Dict[str, Any]) -> Optional[pl.DataFrame]:
         """
 
         :param query:
         :param ctx:
         :return:
         """
-        if query.json:
-            return pl.DataFrame(orjson.loads(query.json))
-        if not query.datasource and not query.query:
-            return None
-        row = None
-        if query.datasource:
-            ds = ds_loader[query.datasource]
-            if not ds:
-                raise ValueError(f"Unknown Datasource: {query.datasource}")
-            params = query.params or {}
-            params.update(ctx)
-            if query.fields:
-                params["fields"] = query.fields
-            row = ds.query_sync(**params)
-        logger.info("Execute query: %s; Context: %s", query.query, ctx)
-        if query.query:
-            row = eval(
-                query.query,
-                {"__builtins__": {}},
-                {"ds": row, "ctx": ctx, "parent": p_rows, "pl": pl},
-            )
+        from noc.core.datasources.loader import loader as ds_loader
+
+        ds = ds_loader[query.datasource]
+        if not ds:
+            raise ValueError(f"Unknown Datasource: {query.datasource}")
+        params = query.params or {}
+        params.update(ctx)
+        if query.fields:
+            params["fields"] = query.fields
+        row = ds.query_sync(**params)
         return row
 
     def resolve_output_filename(self, run_params: RunParams, root_band: BandData) -> str:

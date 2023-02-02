@@ -7,6 +7,7 @@
 
 # Python modules
 from typing import Optional, Dict, Any, Iterable, List
+from collections import defaultdict
 
 # Third-party modules
 from polars import DataFrame
@@ -42,7 +43,7 @@ class BandData(object):
         self.parent = parent_band
         self.orientation = orientation
         self.data: Dict[str, Any] = {}
-        self.children_bands: Dict[str, "BandData"] = {}
+        self.children_bands: Dict[str, List["BandData"]] = defaultdict(list)
         self.rows: Optional[DataFrame] = None
         self.report_field_format: Dict[str, ReportField] = {}
 
@@ -61,8 +62,8 @@ class BandData(object):
         Itarate over children bands
         :return:
         """
-        for b in self.children_bands:
-            yield b
+        for b in self.children_bands.values():
+            yield from b
 
     @property
     def full_name(self):
@@ -80,8 +81,8 @@ class BandData(object):
             self.add_child(b)
 
     def add_child(self, band: "BandData"):
-        if band.name not in self.children_bands:
-            self.children_bands[band.name] = band
+        # if band.name not in self.children_bands:
+        self.children_bands[band.name].append(band)
 
     def set_data(self, data: Dict[str, Any]):
         self.data.update(data.copy())
@@ -105,12 +106,13 @@ class BandData(object):
         """
         if name not in self.children_bands:
             return None
-        return self.children_bands[name]
+        return self.children_bands[name][0]
 
     def iter_all_bands(self) -> Iterable["BandData"]:
-        for b in self.children_bands.values():
-            yield b
-            yield from b.iter_all_bands()
+        for c_bands in self.children_bands.values():
+            for band in c_bands:
+                yield band
+                yield from band.iter_all_bands()
 
     def find_band_recursively(self, name: str) -> Optional["BandData"]:
         """

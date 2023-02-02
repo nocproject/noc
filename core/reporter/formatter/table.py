@@ -5,9 +5,6 @@
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
-# Python modules
-import csv
-
 # NOC modules
 from .base import DataFormatter
 

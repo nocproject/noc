@@ -1,0 +1,30 @@
+name: report
+templates:
+  DEFAULT:
+    code: DEFAULT
+    output_type: table
+root_band:
+    name: Root
+    children:
+      - name: header
+      - name: master_data
+        orientation: H
+        queries:
+          - name: master_data
+            json: '[
+            {
+                "administrativedomain": "(006005)",
+                "profile": "Huawei.VRP",
+                "value": 1
+            },
+            {
+                "administrativedomain": "(084088)",
+                "profile": "Generic.Host",
+                "value": 2
+            },
+            {
+                "administrativedomain": "(207029)",
+                "profile": "Generic.Host",
+                "value": 2
+            }
+        ]'
