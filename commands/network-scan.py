@@ -72,10 +72,14 @@ class Command(BaseCommand):
         parser.add_argument("--version", type=int, help="version snmp check")
         parser.add_argument("--auth-profile", help="auth profile")
         parser.add_argument("--credential", help="credential profile")
-        parser.add_argument("--pool", help="name pool", default="default")
+        parser.add_argument("--pool", nargs=argparse.OPTIONAL, help="name pool", const="default")
         parser.add_argument("--adm-domain", help="name adm domain", default="default")
         parser.add_argument("--label", action="append", help="mo label")
-        parser.add_argument("--autoadd", help="add object", default="")
+        parser.add_argument(
+            "--autoadd", nargs=argparse.OPTIONAL, help="add devices to noc", const="default"
+        )
+        parser.add_argument("--syslog-source", choices=["m", "a"], help="syslog_source")
+        parser.add_argument("--trap-source", choices=["m", "a"], help="trap_source")
         parser.add_argument("--mail", help="mail notification_group name")
         parser.add_argument("--email", action="append", help="mailbox list")
         parser.add_argument("--formats", default="csv", help="Format file (csv or xlsx)")
@@ -105,6 +109,8 @@ class Command(BaseCommand):
         formats,
         resolve_name_snmp,
         resolve_name_dns,
+        syslog_source,
+        trap_source,
         *args,
         **options,
     ):
@@ -254,22 +260,15 @@ class Command(BaseCommand):
             self.version = [1, 0]
         else:
             self.version = [version]
-        try:
-            self.pool = Pool.objects.get(name=pool)
-        except Pool.DoesNotExist:
-            self.die("Invalid pool-%s" % pool)
+        if pool:
+            try:
+                self.pool = Pool.objects.get(name=pool)
+            except Pool.DoesNotExist:
+                self.die("Invalid pool-%s" % pool)
         # snmp community
         if not community:
             community = []
             if credential:
-                try:
-                    self.cred = CredentialCheckRule.objects.get(name=credential)
-                except CredentialCheckRule.DoesNotExist:
-                    self.die("Invalid credential profile-%s" % credential)
-                for snmp in self.cred.suggest_snmp:
-                    community.append(snmp.snmp_ro)
-            elif pool and pool != "default":
-                credential = f"TG.{pool}"
                 try:
                     self.cred = CredentialCheckRule.objects.get(name=credential)
                 except CredentialCheckRule.DoesNotExist:
@@ -366,6 +365,10 @@ class Command(BaseCommand):
                         m.auth_profile = AuthProfile.objects.get(name=auth_profile)
                     if label:
                         m.labels = label
+                    if syslog_source:
+                        m.syslog_source_type = syslog_source
+                    if trap_source:
+                        m.trap_source_type = trap_source
                     m.save()
                 x3 = "False"
             if ipx in self.enable_snmp:
