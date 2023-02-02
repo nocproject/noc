@@ -14,9 +14,7 @@ Ext.define('NOC.sa.managedobject.form.Controller', {
     alias: 'controller.managedobject.form',
 
     toMain: function() {
-        var mainView = this.getView().up().up();
-        mainView.setActiveItem('managedobject-select');
-        mainView.setHistoryHash();
+        this.gotoItem('managedobject-select');
     },
     onSaveRecord: function() {
         var me = this.getView();
@@ -64,6 +62,40 @@ Ext.define('NOC.sa.managedobject.form.Controller', {
         this.getView().getForm().reset();
         this.getView().up('[itemId=sa-managedobject]').getController().resetInlineStore(this.getView());
     },
+    onConfig: function() {
+        this.itemPreview('sa-repopreview');
+    },
+    onConfDB: function() {
+        this.itemPreview('sa-confdb');
+    },
+    onCard: function() {
+        if(this.getView().recordId) {
+            window.open(
+                "/api/card/view/managedobject/" + this.getView().recordId + "/"
+            );
+        }
+    },
+    onDashboard: function() {
+        if(this.getView().recordId) {
+            window.open(
+                "/ui/grafana/dashboard/script/noc.js?dashboard=mo&id=" + this.getView().recordId
+            );
+        }
+    },
+    onConsole: function() {},
+    onScripts: function() {},
+    onInterfaces: function() {},
+    onSensors: function() {},
+    onCPE: function() {},
+    onLinks: function() {},
+    onDiscovery: function() {},
+    onAlarm: function() {},
+    onMaintenance: function() {},
+    onInventory: function() {},
+    onInteractions: function() {},
+    onValidationSettings: function() {},
+    onCaps: function() {},
+    onHelpOpener: function() {},
     newRecord: function(defaults) {
         var defaultValues = {},
             view = this.getView(),
@@ -155,6 +187,19 @@ Ext.define('NOC.sa.managedobject.form.Controller', {
     },
     reloadSelectionGrid: function() {
         this.getView().up().up().down('[reference=saManagedobjectSelectionGrid]').getStore().reload();
+    },
+    gotoItem: function(itemName) {
+        var mainView = this.getView().up().up();
+        mainView.setActiveItem(itemName);
+        mainView.setHistoryHash();
+    },
+    itemPreview: function(itemName) {
+        var mainView = this.getView().up().up(),
+            backItem = this.getView().up(),
+            activeItem = mainView.setActiveItem(itemName);
+        if(activeItem !== false) {
+            activeItem.preview(mainView.currentRecord, backItem);
+        }
     },
     // Workaround labelField
     onChange: Ext.emptyFn,

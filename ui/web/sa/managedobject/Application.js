@@ -19,6 +19,8 @@ Ext.define('NOC.sa.managedobject.Application', {
         'NOC.sa.managedobject.Controller',
         'NOC.core.filter.Filter',
         'NOC.sa.managedobject.form.View',
+        'NOC.sa.managedobject.RepoPreview',
+        'NOC.sa.managedobject.ConfDBPanel',
     ],
     stateMap: {
         w: __('Waiting'),
@@ -206,7 +208,8 @@ Ext.define('NOC.sa.managedobject.Application', {
                             }]
                         }
                     ]
-                }, {
+                },
+                {
                     xtype: 'NOC.Filter',
                     reference: 'filterPanel',
                     region: 'west',
@@ -531,6 +534,27 @@ Ext.define('NOC.sa.managedobject.Application', {
                     itemId: 'managedobject-form-panel',
                 }
             ]
+        },
+        {
+            activeItem: 5,
+            itemId: 'sa-repopreview',
+            xtype: 'sa.repopreview',
+            app: this,
+            previewName: "{0} config",
+            restUrl: "/sa/managedobject/{0}/repo/cfg/",
+            historyHashPrefix: "config",
+            onClose: function() {
+                this.up().setActiveItem(this.backItem);
+            },
+        },
+        {
+            activeItem: 6,
+            itemId: 'sa-confdb',
+            xtype: 'sa.confdb',
+            app: this,
+            onClose: function() {
+                this.up().setActiveItem(this.backItem);
+            },
         }
     ],
     destroy: Ext.emptyFn,

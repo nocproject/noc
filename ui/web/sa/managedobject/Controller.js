@@ -656,14 +656,17 @@ Ext.define('NOC.sa.managedobject.Controller', {
             success: function(response) {
                 if(response.status === 200) {
                     var field,
-                        r = {},
                         formPanel,
                         form,
-                        data = Ext.decode(response.responseText);
+                        r = {},
+                        data = Ext.decode(response.responseText),
+                        record = Ext.create("NOC.sa.managedobject.Model", data);
 
                     if(!gridView) { // restore by url
                         gridView = this.getView();
                     }
+                    record.set('id', id);
+                    view.currentRecord = record;
                     formPanel = gridView.down('[itemId=managedobject-form-panel]');
                     formPanel.recordId = id;
                     form = formPanel.getForm();

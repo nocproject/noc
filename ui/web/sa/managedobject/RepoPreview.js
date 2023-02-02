@@ -8,6 +8,7 @@ console.debug("Defining NOC.sa.managedobject.RepoPreview");
 
 Ext.define("NOC.sa.managedobject.RepoPreview", {
     extend: "NOC.core.RepoPreview",
+    alias: "widget.sa.repopreview",
     initComponent: function() {
         var me = this, topBar, index;
         me.callParent();
@@ -71,7 +72,9 @@ Ext.define("NOC.sa.managedobject.RepoPreview", {
             case "revision": {
                 me.clearHideCombo(me.objectCombo);
                 me.diffCombo.setValue(null);
-                me.requestRevisions(id);
+                if(Ext.getClassName(id) !== 'Ext.menu.Item') {
+                    me.requestRevisions(id);
+                }
                 me.diffCombo.show();
                 me.menuBtn.setText(Ext.String.format("{0} {1}", __("Compare With"), __("Revision")));
                 break;

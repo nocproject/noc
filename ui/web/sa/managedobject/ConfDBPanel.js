@@ -9,6 +9,7 @@ console.debug("Defining NOC.sa.managedobject.ConfDBPanel");
 Ext.define("NOC.sa.managedobject.ConfDBPanel", {
     extend: "NOC.core.ApplicationPanel",
     app: null,
+    alias: "widget.sa.confdb",
     requires: [
         "NOC.core.CMText",
         "NOC.cm.confdbquery.LookupField"
@@ -281,7 +282,7 @@ Ext.define("NOC.sa.managedobject.ConfDBPanel", {
                         visible = node.isLeaf() ? searchPattern.test(node.get('text')) : false,
                         i;
 
-                    for(i = 0; i < len && !(visible = children[i].get('visible')); i++) ;
+                    for(i = 0; i < len && !(visible = children[i].get('visible')); i++);
 
                     if(visible && node.isLeaf()) {
                         matches++;

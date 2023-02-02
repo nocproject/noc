@@ -1288,15 +1288,10 @@ Ext.define('NOC.sa.managedobject.form.View', {
     dockedItems: [{
         xtype: 'toolbar',
         dock: 'top',
+        layout: {
+            overflowHandler: "Menu"
+        },
         items: [
-            {
-                glyph: NOC.glyph.arrow_left,
-                tooltip: __('Back'),
-                style: {
-                    pointerEvents: 'all'
-                },
-                handler: 'toMain'
-            },
             {
                 itemId: "saveBtn",
                 text: __("Save"),
@@ -1304,6 +1299,29 @@ Ext.define('NOC.sa.managedobject.form.View', {
                 glyph: NOC.glyph.save,
                 handler: "onSaveRecord",
             },
+            {
+                itemId: "close",
+                text: __("Close"),
+                tooltip: __("Close without saving"),
+                glyph: NOC.glyph.arrow_left,
+                handler: 'toMain'
+            },
+            "-",
+            {
+                itemId: "resetBtn",
+                text: __("Reset"),
+                tooltip: __("Reset to default values"),
+                glyph: NOC.glyph.undo,
+                handler: 'onResetRecord'
+            },
+            {
+                itemId: "deleteBtn",
+                text: __("Delete"),
+                tooltip: __("Delete object"),
+                glyph: NOC.glyph.times,
+                handler: 'onDeleteRecord'
+            },
+            "-",
             {
                 itemId: "createBtn",
                 text: __("Add"),
@@ -1318,20 +1336,106 @@ Ext.define('NOC.sa.managedobject.form.View', {
                 glyph: NOC.glyph.copy,
                 handler: "onCloneRecord"
             },
+            "-",
             {
-                itemId: "deleteBtn",
-                text: __("Delete"),
-                tooltip: __("Delete object"),
-                glyph: NOC.glyph.times,
-                handler: 'onDeleteRecord'
+                text: __("Config"),
+                glyph: NOC.glyph.file,
+                handler: "onConfig"
             },
             {
-                itemId: "resetBtn",
-                text: __("Reset"),
-                tooltip: __("Reset to default values"),
-                glyph: NOC.glyph.undo,
-                handler: 'onResetRecord'
+                text: __("ConfDB"),
+                glyph: NOC.glyph.file_code_o,
+                handler: "onConfDB"
             },
+            {
+                text: __("Card"),
+                glyph: NOC.glyph.eye,
+                handler: "onCard"
+            },
+            {
+                text: __("Dashboard"),
+                glyph: NOC.glyph.line_chart,
+                tooltip: __("Show dashboard"),
+                handler: "onDashboard"
+            },
+            {
+                text: __("Show Map"),
+                glyph: NOC.glyph.globe,
+            },
+            {
+                text: __("Console"),
+                glyph: NOC.glyph.terminal,
+                handler: "onConsole"
+            },
+            {
+                text: __("Scripts"),
+                glyph: NOC.glyph.play,
+                disabled: true,
+                handler: "onScripts"
+            },
+            {
+                text: __("Interfaces"),
+                glyph: NOC.glyph.reorder,
+                handler: "onInterfaces"
+            },
+            {
+                text: __("Sensors"),
+                glyph: NOC.glyph.thermometer_full,
+                handler: "onSensors"
+            },
+            {
+                text: __("CPE"),
+                glyph: NOC.glyph.share_alt,
+                handler: "onCPE"
+            },
+            {
+                text: __("Links"),
+                glyph: NOC.glyph.link,
+                handler: "onLinks"
+            },
+            {
+                text: __("Discovery"),
+                glyph: NOC.glyph.search,
+                handler: "onDiscovery"
+            },
+            {
+                text: __("Alarms"),
+                glyph: NOC.glyph.exclamation_triangle,
+                handler: "onAlarm"
+            },
+            {
+                text: __("New Maintaince"),
+                glyph: NOC.glyph.wrench,
+                handler: "onMaintenance"
+            },
+            {
+                text: __("Inventory"),
+                glyph: NOC.glyph.list,
+                handler: "onInventory"
+            },
+            {
+                text: __("Command Log"),
+                glyph: NOC.glyph.film,
+                handler: "onInteractions"
+            },
+            {
+                text: __("Validation"),
+                glyph: NOC.glyph.file,
+                handler: "onValidationSettings"
+            },
+            {
+                text: __("Capabilities"),
+                glyph: NOC.glyph.file,
+                handler: "onCaps"
+            },
+            "->",
+            {
+                itemId: "formHelp",
+                glyph: NOC.glyph.question_circle,
+                tooltip: __("Form Help"),
+                handler: "onHelpOpener"
+
+            }
         ]
     }],
 });
