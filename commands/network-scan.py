@@ -76,7 +76,7 @@ class Command(BaseCommand):
         parser.add_argument("--adm-domain", help="name adm domain", default="default")
         parser.add_argument("--label", action="append", help="mo label")
         parser.add_argument(
-            "--autoadd", nargs=argparse.OPTIONAL, help="add devices to noc", const="default"
+            "--autoadd", nargs=argparse.OPTIONAL, help="add object", const="default"
         )
         parser.add_argument("--syslog-source", choices=["m", "a"], help="syslog_source")
         parser.add_argument("--trap-source", choices=["m", "a"], help="trap_source")
