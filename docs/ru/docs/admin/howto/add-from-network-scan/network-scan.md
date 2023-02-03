@@ -57,6 +57,8 @@ Can combine with other arguments. For example if you want do exclude default gat
 5. Use custom community for checks:
 	`./noc network-scan --community=ofcnotpublic 172.24.12.0/30`
 
+Default community is "public"
+
 6. Use specific SNMP version for checks:
 	`./noc network-scan --community=ofcnotpublic --version=1 172.24.12.0/30`
 
@@ -77,7 +79,7 @@ By default, ManagedObject's name wil be an IP address, and all other parameters 
 
 	```
 	--adm-domain="MyAdmDomain"
-	--obj-profile"MyMoObjProfile"
+	--obj-profile="MyMoObjProfile"
 	--segment="MyNetSegment"
 	--pool="MyPool"
 	--syslog-source=m (management address) or --syslog-source=a (all addresses)

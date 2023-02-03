@@ -67,7 +67,6 @@ class Command(BaseCommand):
         parser.add_argument("--community", action="append", help="SNMP community")
         parser.add_argument("--oid", default=self.CHECK_OIDS, action="append", help="SNMP GET OIDs")
         parser.add_argument("--timeout", type=int, default=1, help="SNMP GET timeout")
-        parser.add_argument("--convert", type=bool, default=False, help="convert mac address")
         parser.add_argument("--version", type=int, help="version snmp check")
         parser.add_argument("--obj-profile", help="name object profile", default="default")
         parser.add_argument("--credential", help="credential profile")
