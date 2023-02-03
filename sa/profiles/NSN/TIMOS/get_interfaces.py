@@ -1,7 +1,7 @@
 # ----------------------------------------------------------------------
 #  NSN.TIMOS.get_interfaces
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2021 The NOC Project
+# Copyright (C) 2007-2023 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -178,6 +178,18 @@ class Script(BaseScript):
         """,
         re.VERBOSE | re.MULTILINE | re.DOTALL,
     )
+    re_port_detail_info_sar = re.compile(
+        r"""
+        Description\s*?:\s(?P<description>.*?)\n
+        Interface\s*?:\s(?P<name>\S+)\s+
+        Port\sIfIndex\s+:\s(?P<snmp_ifindex>\d+)\n
+        Admin\sStatus\s*?:\s(?P<admin_status>\S+)\s.*?
+        Oper\sStatus\s*?:\s(?P<oper_status>\S+)\s.*?
+        .*?
+        Hardware\sAddress\s*?:\s(?P<mac>\S+)
+        """,
+        re.VERBOSE | re.MULTILINE | re.DOTALL,
+    )
     re_lag_detail = re.compile(
         r"""
         Description\s*?:\s(?P<description>.+?)\n-{79}
@@ -286,13 +298,15 @@ class Script(BaseScript):
                 match = self.re_int_desc_group.search(block)
                 if match:
                     iface = match.groupdict()
-                    if not iface["mac"] or iface["mac"] == "":
+                    if "mac" in iface and iface["mac"] == "":
                         del iface["mac"]
                     iface["type"] = "other"
                     iface["subinterfaces"] = []
             elif IfType.subsc.value in block:
                 match = self.re_int_desc_subs.search(block)
                 iface = match.groupdict()
+                if "mac" in iface and iface["mac"] == "":
+                    del iface["mac"]
                 iface["subinterfaces"] = []
                 iface["type"] = "loopback"
                 sub = {
@@ -311,6 +325,8 @@ class Script(BaseScript):
             elif IfType.red.value in block:
                 match = self.re_int_desc_vprn.search(block)
                 iface = match.groupdict()
+                if "mac" in iface and iface["mac"] == "":
+                    del iface["mac"]
                 iface["type"] = "tunnel"
                 if "subinterfaces" in iface:
                     iface["subinterfaces"] = [{"name": iface["subinterfaces"], "type": "tunnel"}]
@@ -323,7 +339,7 @@ class Script(BaseScript):
                 if not match:
                     continue
                 iface = match.groupdict()
-                if not iface.get("mac"):
+                if "mac" in iface and iface["mac"] == "":
                     del iface["mac"]
                 if "subinterfaces" in iface:
                     if iface["subinterfaces"].startswith("sdp"):
@@ -350,6 +366,7 @@ class Script(BaseScript):
                     iface["subinterfaces"] = [{"name": iface["name"]}]
             else:
                 continue
+
             if iface["description"] == "(Not Specified)":
                 iface.pop("description")
             proto = iface["protocols"]
@@ -465,6 +482,8 @@ class Script(BaseScript):
                 match_detail = self.re_port_detail_info.search(port_detail)
                 if not match_detail:
                     match_detail = self.re_port_detail_info_sr.search(port_detail)
+                    if not match_detail:
+                        match_detail = self.re_port_detail_info_sar.search(port_detail)
                 iface: Dict[str, Any] = match.groupdict()
                 iface.update(match_detail.groupdict())
                 if "aggregated_interface" in iface:
@@ -473,6 +492,8 @@ class Script(BaseScript):
                     else:
                         del iface["aggregated_interface"]
                 iface["type"] = "physical"
+                if "mac" in iface and iface["mac"] == "":
+                    del iface["mac"]
                 iface["subinterfaces"] = []
                 iface.pop("bad_stat")
                 iface["description"] = iface["description"].replace("\n", "")
@@ -487,6 +508,8 @@ class Script(BaseScript):
                 iface["type"] = "aggregated"
                 if iface["name"]:
                     iface["name"] = f'lag-{iface["name"]}'
+                if "mac" in iface and iface["mac"] == "":
+                    del iface["mac"]
                 iface["subinterfaces"] = []
                 # QinQ
                 # saps = self.cli(
