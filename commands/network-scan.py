@@ -26,7 +26,6 @@ from noc.core.ioloop.snmp import snmp_get, SNMPError
 from noc.core.mib import mib
 from noc.core.snmp.version import SNMP_v1, SNMP_v2c
 from noc.sa.models.managedobject import ManagedObject, ManagedObjectProfile
-from noc.sa.models.authprofile import AuthProfile
 from noc.sa.models.credentialcheckrule import CredentialCheckRule
 from noc.sa.models.managedobject import AdministrativeDomain
 from noc.inv.models.networksegment import NetworkSegment
@@ -70,14 +69,13 @@ class Command(BaseCommand):
         parser.add_argument("--timeout", type=int, default=1, help="SNMP GET timeout")
         parser.add_argument("--convert", type=bool, default=False, help="convert mac address")
         parser.add_argument("--version", type=int, help="version snmp check")
-        parser.add_argument("--auth-profile", help="auth profile")
+        parser.add_argument("--obj-profile", help="name object profile", default="default")
         parser.add_argument("--credential", help="credential profile")
-        parser.add_argument("--pool", nargs=argparse.OPTIONAL, help="name pool", const="default")
+        parser.add_argument("--pool", help="name pool", default="default")
         parser.add_argument("--adm-domain", help="name adm domain", default="default")
+        parser.add_argument("--segment", help="network segment", default="ALL")
         parser.add_argument("--label", action="append", help="mo label")
-        parser.add_argument(
-            "--autoadd", nargs=argparse.OPTIONAL, help="add object", const="default"
-        )
+        parser.add_argument("--autoadd", help="add object", action="store_true")
         parser.add_argument("--syslog-source", choices=["m", "a"], help="syslog_source")
         parser.add_argument("--trap-source", choices=["m", "a"], help="trap_source")
         parser.add_argument("--mail", help="mail notification_group name")
@@ -98,10 +96,11 @@ class Command(BaseCommand):
         timeout,
         convert,
         version,
-        auth_profile,
         credential,
         pool,
         adm_domain,
+        segment,
+        obj_profile,
         autoadd,
         label,
         mail,
@@ -218,13 +217,13 @@ class Command(BaseCommand):
         self.count_snmp = 0
         self.count_net = 0
 
-        # параметры by-default
+        # options by-default
         is_managed = "True"
         # administrative_domain = "default"
         profile = "Generic.Host"
         # object_profile = "default"
         description = "create object %s" % (datetime.datetime.now().strftime("%Y%m%d"))
-        segment = "ALL"
+        # segment = "ALL"
         # scheme = "1"
         # address = ""
         # port = ""
@@ -256,15 +255,15 @@ class Command(BaseCommand):
         # y = ""
         # default_zoom = ""
 
+        # key processing
         if version is None:
             self.version = [1, 0]
         else:
             self.version = [version]
-        if pool:
-            try:
-                self.pool = Pool.objects.get(name=pool)
-            except Pool.DoesNotExist:
-                self.die("Invalid pool-%s" % pool)
+        try:
+            self.pool = Pool.objects.get(name=pool)
+        except Pool.DoesNotExist:
+            self.die("Invalid pool-%s" % pool)
         # snmp community
         if not community:
             community = []
@@ -281,14 +280,22 @@ class Command(BaseCommand):
         # auto add objects profile
         if autoadd:
             try:
-                self.object_profile = ManagedObjectProfile.objects.get(name=autoadd)
+                self.adm_domain = AdministrativeDomain.objects.get(name=adm_domain)
+            except AdministrativeDomain.DoesNotExist:
+                self.die("Invalid adm profile-%s")
+            self.profile = Profile.objects.get(name=profile)
+            try:
+                self.segment = NetworkSegment.objects.get(name=segment)
+            except NetworkSegment.DoesNotExist:
+                self.die("Invalid network segment-%s")
+            try:
+                self.object_profile = ManagedObjectProfile.objects.get(name=obj_profile)
             except ManagedObjectProfile.DoesNotExist:
-                self.die("Invalid object profile-%s" % autoadd)
+                self.die("Invalid object profile-%s")
 
-        # создание списка наличия мо в noc
+        # creating a list of presence mo in noc
         moall = ManagedObject.objects.filter(is_managed=True)
-        if pool:
-            moall = moall.filter(pool=self.pool)
+        moall = moall.filter(pool=self.pool)
         for mm in moall:
             self.hosts_enable.add(mm.address)
             self.mo[mm.address] = {
@@ -297,12 +304,11 @@ class Command(BaseCommand):
                 "is_managed": mm.is_managed,
                 "snmp_ro": mm.auth_profile.snmp_ro if mm.auth_profile else mm.snmp_ro,
             }
-        # добавить в список мо с remote:deleted
+        # add to mo list with remote:deleted
         moall = ManagedObject.objects.filter(is_managed=False).exclude(
             labels__contains=["remote:deleted"]
         )
-        if pool:
-            moall = moall.filter(pool=self.pool)
+        moall = moall.filter(pool=self.pool)
         for mm in moall:
             if mm.address not in self.hosts_enable:
                 self.hosts_enable.add(mm.address)
@@ -333,6 +339,7 @@ class Command(BaseCommand):
                 if ipx in self.enable_snmp and "1.3.6.1.2.1.1.5.0" in self.snmp[ipx]:
                     x12 = self.snmp[ipx]["1.3.6.1.2.1.1.5.0"]
             x4 = x5 = x6 = x7 = x8 = x9 = x11 = "None"
+            x12 = x12.strip()
             if ipx in self.hosts_enable:
                 x3 = "True"
                 x8 = self.mo[ipx]["name"]
@@ -341,28 +348,18 @@ class Command(BaseCommand):
                     x9 = ",".join(self.mo[ipx]["labels"] if self.mo[ipx]["labels"] else [])
             else:
                 if autoadd:
-                    name = ipx
-                    if resolve_name_dns:
-                        if self.get_domain_name(ipx):
-                            name = self.get_domain_name(ipx)
-                    if resolve_name_snmp:
-                        if ipx in self.enable_snmp:
-                            if "1.3.6.1.2.1.1.5.0" in self.snmp[ipx]:
-                                name = self.snmp[ipx]["1.3.6.1.2.1.1.5.0"]
                     m = ManagedObject(
-                        name=name,
+                        name=x12 if not x12 or x12 != "" else ipx,
                         is_managed=is_managed,
-                        administrative_domain=AdministrativeDomain.objects.get(name=adm_domain),
-                        profile=Profile.objects.get(name=profile),
+                        administrative_domain=self.adm_domain,
+                        profile=self.profile,
                         description=description,
                         object_profile=self.object_profile,
-                        segment=NetworkSegment.objects.get(name=segment),
+                        segment=self.segment,
                         scheme=1,
                         address=ipx,
-                        pool=Pool.objects.get(name=pool),
+                        pool=self.pool,
                     )
-                    if auth_profile:
-                        m.auth_profile = AuthProfile.objects.get(name=auth_profile)
                     if label:
                         m.labels = label
                     if syslog_source:
@@ -425,7 +422,7 @@ class Command(BaseCommand):
 
         # output in csv or mail
         if email:
-            bodymessage = "Отчет во вложении.\n\nОтсканированы сети:\n"
+            bodymessage = "Report in attachment.\n\nscan network:\n"
             for adr in self.nets:
                 bodymessage += adr + "\n"
             filename = "found_ip_%s" % (datetime.datetime.now().strftime("%Y%m%d"))
@@ -443,7 +440,6 @@ class Command(BaseCommand):
                     row_data = str(line).strip("\n")
                     rr = row_data.split(";")
                     ws.write_row(row, 0, tuple(rr))
-
                     # Move on to the next worksheet row.
                     row += 1
                 wb.close()
@@ -456,11 +452,10 @@ class Command(BaseCommand):
             ms.logger = logging.getLogger("network_scan")
             self.i = 1
             for boxmail in email:
-                # ms.send_mail(str(self.i), boxmail, "Отчет о расхождениях (%s)" % pool, bodymessage, attachments=attach)
                 self.i += 1
                 msg = {
                     "address": boxmail,
-                    "subject": "Отчет о расхождениях (%s)" % pool,
+                    "subject": "Report (%s)" % pool,
                     "body": bodymessage,
                     "attachments": attach,
                 }
@@ -468,7 +463,7 @@ class Command(BaseCommand):
             """
             msg = {
                 "address": email,
-                "subject": "Отчет о расхождениях (%s)" % pool,
+                "subject": "Report (%s)" % pool,
                 "body": bodymessage,
                 "attachments": attach,
             }
