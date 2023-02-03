@@ -7,7 +7,7 @@
 
 # Python modules
 import logging
-from typing import Dict, Any, Optional, List
+from typing import Dict, Any, Optional, List, Iterable
 
 # Third-party modules
 import orjson
@@ -15,7 +15,7 @@ import polars as pl
 from jinja2 import Template as Jinja2Template
 
 # NOC modules
-from .types import Template, OutputType, RunParams, Report, ReportQuery
+from .types import Template, OutputType, RunParams, Report, ReportQuery, ReportBand
 from .report import BandData
 
 
@@ -84,47 +84,54 @@ class ReportEngine(object):
                 raise ValueError(f"Required parameter {name} not found")
         return clean_params
 
-    def load_data(self, report: Report, params: Dict[str, Any]) -> BandData:
+    def iter_bands_data(
+        self, report_band: ReportBand, root_band: BandData, root
+    ) -> Iterable[BandData]:
         """
-        Load report data from band
-        1. Create root DataBand
-        2. Extract data from report band
-        3. Merge root DataBand and Extract Data
-            1. If not queries - from params
-            2. If queries - get parent band params and execute query
+
+        :param rb:
+        :param root_band:
         :return:
         """
+        rows: Optional[pl.DataFrame] = self.get_rows(
+            report_band.queries, root_band.get_data(), root_band=root
+        )
+        if not report_band.children:
+            band = BandData(report_band.name, root_band, report_band.orientation)
+            band.rows = rows
+            yield band
+            return
+        for d in rows.sort("mac").to_dicts():
+            band = BandData(report_band.name, root_band, report_band.orientation)
+            band.set_data(d)
+            yield band
+
+    def load_data(self, report: Report, params: Dict[str, Any]) -> BandData:
+        """
+        Generate BandData from ReportBand
+        :param report:
+        :param params:
+        :return:
+        """
+        report_band = report.get_root_band()
+        # Create Root BandData
         root = BandData(BandData.ROOT_BAND_NAME)
         root.set_data(params)
-        # Extract data
-        report_band = report.get_root_band()
-        root.rows = self.get_rows(report_band.queries, root.get_data())
+        root.rows = self.get_rows(report_band.queries, params)
+        # Extract data from ReportBand
         for rb in report_band.iter_nester():
-            bd_root = root.find_band_recursively(rb.parent.name)
-            logger.info("Root: %s/%s - c %s", bd_root, rb, len(bd_root.children_bands))
-            # Fill parent bands
-            if bd_root.parent:
-                for c in bd_root.parent.iter_children_bands():
-                    c.rows = self.get_rows(rb.queries, c.get_data(), root_band=root)
-            # Fill Query Data
-            rows: Optional[pl.DataFrame] = self.get_rows(
-                rb.queries, bd_root.get_data(), root_band=root
-            )
-            if rows is None or rows.is_empty():
+            bd_parent = root.find_band_recursively(rb.parent.name)
+            logger.info(
+                "Proccessed ReporBand: %s; Parent BandData: %s", rb.name, bd_parent
+            )  # Level needed ?
+            if bd_parent.parent:
+                # Fill parent DataBand children row
+                for c in bd_parent.parent.get_children_by_name(rb.parent.name):
+                    for band in self.iter_bands_data(rb, c, root):
+                        bd_parent.add_child(band)
                 continue
-            bands = []
-            if not rb.children:
-                # Last Bands not convert to children bands
-                bd = BandData(rb.name, bd_root, rb.orientation)
-                bd.rows = rows
-                bd_root.add_child(bd)
-                continue
-            for d in rows.to_dicts():
-                bd = BandData(rb.name, bd_root, rb.orientation)
-                bd.set_data(d)
-                bands.append(bd)
-            bd_root.add_children(bands)
-
+            for band in self.iter_bands_data(rb, bd_parent, root):
+                bd_parent.add_child(band)
         return root
 
     def get_rows(
@@ -147,7 +154,7 @@ class ReportEngine(object):
             if query.datasource:
                 data = self.query_datasource(query, ctx)
             if query.query:
-                logger.info("Execute query: %s; Context: %s", query.query, ctx)
+                logger.debug("Execute query: %s; Context: %s", query.query, ctx)
                 data = eval(
                     query.query,
                     {"__builtins__": {}},
