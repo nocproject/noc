@@ -8,6 +8,7 @@ console.debug("Defining NOC.sa.managedobject.DiscoveryPanel");
 
 Ext.define("NOC.sa.managedobject.DiscoveryPanel", {
     extend: "Ext.panel.Panel",
+    alias: "widget.sa.discovery",
     app: null,
     layout: "fit",
     autoScroll: true,
@@ -22,27 +23,27 @@ Ext.define("NOC.sa.managedobject.DiscoveryPanel", {
             handler: me.onClose
         });
 
-         me.refreshButton = Ext.create("Ext.button.Button", {
+        me.refreshButton = Ext.create("Ext.button.Button", {
             text: __("Refresh"),
             glyph: NOC.glyph.refresh,
             scope: me,
             handler: me.onRefresh
         });
 
-         me.runSelectedButton = Ext.create("Ext.button.Button", {
-             text: __("Run"),
-             glyph: NOC.glyph.play,
-             scope: me,
-             disabled: true,
-             handler: me.onRunSelected
+        me.runSelectedButton = Ext.create("Ext.button.Button", {
+            text: __("Run"),
+            glyph: NOC.glyph.play,
+            scope: me,
+            disabled: true,
+            handler: me.onRunSelected
         });
 
         me.stopSelectedButton = Ext.create("Ext.button.Button", {
-             text: __("Disable"),
-             glyph: NOC.glyph.minus_circle,
-             scope: me,
-             disabled: true,
-             handler: me.onStopSelected
+            text: __("Disable"),
+            glyph: NOC.glyph.minus_circle,
+            scope: me,
+            disabled: true,
+            handler: me.onStopSelected
         });
 
         me.store = Ext.create("Ext.data.Store", {

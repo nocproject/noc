@@ -48,6 +48,7 @@ Ext.define('NOC.sa.managedobject.form.View', {
         'NOC.sa.managedobject.LinksPanel',
         'NOC.sa.managedobject.InterfacePanel',
         'NOC.sa.managedobject.SensorsPanel',
+        'NOC.sa.managedobject.DiscoveryPanel',
     ],
     alias: 'widget.managedobject.form',
     controller: 'managedobject.form',
@@ -1344,7 +1345,7 @@ Ext.define('NOC.sa.managedobject.form.View', {
             historyHashPrefix: 'script', // suffix from itemId
             app: this,
             onClose: function() {
-                this.up('[itemId=sa-script]').setActiveItem(this.backItem);
+                this.up().setActiveItem(this.backItem);
                 this.up('[appId=sa.managedobject]').setHistoryHash(this.currentRecord.id);
             },
         },
@@ -1372,6 +1373,16 @@ Ext.define('NOC.sa.managedobject.form.View', {
             activeItem: 7,
             itemId: 'sa-links',
             xtype: 'sa.links',
+            app: this,
+            onClose: function() {
+                this.up().setActiveItem(this.backItem);
+                this.up('[appId=sa.managedobject]').setHistoryHash(this.currentRecord.id);
+            },
+        },
+        {
+            activeItem: 8,
+            itemId: 'sa-discovery',
+            xtype: 'sa.discovery',
             app: this,
             onClose: function() {
                 this.up().setActiveItem(this.backItem);
