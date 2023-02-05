@@ -705,6 +705,7 @@ Ext.define('NOC.sa.managedobject.Controller', {
                         formView.getController().itemPreview('sa-' + suffix);
                     }
                     this.setFormTitle(formView.changeTitle, data.id);
+                    this.showMapHandler(record);
                 }
                 if(gridView) {
                     gridView.unmask();
@@ -772,4 +773,43 @@ Ext.define('NOC.sa.managedobject.Controller', {
         deleteBtn.setDisabled(!view.hasPermission("delete"));
         createBtn.setDisabled(!view.hasPermission("create"));
     },
+    showMapHandler: function(record) {
+        Ext.Ajax.request({
+            url: "/sa/managedobject/" + record.get("id") + "/map_lookup/",
+            method: "GET",
+            scope: this,
+            success: function(response) {
+                var me = this,
+                    defaultHandler, menu,
+                    showMapBtn = this.getView().down('[itemId=showMapBtn]'),
+                    data = Ext.decode(response.responseText);
+
+                defaultHandler = data.filter(function(el) {
+                    return el.is_default
+                })[0];
+                showMapBtn.setHandler(function() {
+                    NOC.launch("inv.map", "history", {
+                        args: defaultHandler.args
+                    });
+                }, me);
+                showMapBtn.setMenu(
+                    data.filter(function(el) {
+                        return !el.is_default
+                    }).map(function(el) {
+                        return {
+                            text: el.label,
+                            handler: function() {
+                                NOC.launch("inv.map", "history", {
+                                    args: el.args
+                                })
+                            }
+                        }
+                    })
+                );
+            },
+            failure: function() {
+                NOC.error(__("Show Map Button : Failed to get data"));
+            }
+        });
+    }
 });

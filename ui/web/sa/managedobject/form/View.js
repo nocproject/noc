@@ -1503,6 +1503,7 @@ Ext.define('NOC.sa.managedobject.form.View', {
                 handler: "onDashboard"
             },
             {
+                itemId: "showMapBtn",
                 text: __("Show Map"),
                 glyph: NOC.glyph.globe,
             },
