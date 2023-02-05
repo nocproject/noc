@@ -49,6 +49,7 @@ Ext.define('NOC.sa.managedobject.form.View', {
         'NOC.sa.managedobject.InterfacePanel',
         'NOC.sa.managedobject.SensorsPanel',
         'NOC.sa.managedobject.DiscoveryPanel',
+        'NOC.sa.managedobject.AlarmPanel',
     ],
     alias: 'widget.managedobject.form',
     controller: 'managedobject.form',
@@ -1386,6 +1387,17 @@ Ext.define('NOC.sa.managedobject.form.View', {
             itemId: 'sa-discovery',
             xtype: 'sa.discovery',
             historyHashPrefix: 'discovery', // suffix from itemId
+            app: this,
+            onClose: function() {
+                this.up().setActiveItem(this.backItem);
+                this.up('[appId=sa.managedobject]').setHistoryHash(this.currentRecord.id);
+            },
+        },
+        {
+            activeItem: 9,
+            itemId: 'sa-alarms',
+            xtype: 'sa.alarms',
+            historyHashPrefix: 'alarms', // suffix from itemId
             app: this,
             onClose: function() {
                 this.up().setActiveItem(this.backItem);

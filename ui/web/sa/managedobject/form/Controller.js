@@ -103,7 +103,9 @@ Ext.define('NOC.sa.managedobject.form.Controller', {
     onDiscovery: function() {
         this.itemPreview('sa-discovery');
     },
-    onAlarm: function() {},
+    onAlarm: function() {
+        this.itemPreview('sa-alarms');
+    },
     onMaintenance: function() {},
     onInventory: function() {},
     onInteractions: function() {},

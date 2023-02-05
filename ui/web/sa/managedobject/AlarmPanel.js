@@ -8,6 +8,7 @@ console.debug("Defining NOC.sa.managedobject.AlarmPanel");
 
 Ext.define("NOC.sa.managedobject.AlarmPanel", {
     extend: "NOC.core.ApplicationPanel",
+    alias: "widget.sa.alarms",
     requires: [
         "NOC.fm.alarm.Model"
     ],
