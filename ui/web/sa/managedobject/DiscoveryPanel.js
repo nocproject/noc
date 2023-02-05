@@ -201,6 +201,12 @@ Ext.define("NOC.sa.managedobject.DiscoveryPanel", {
             scope: me,
             success: function(response) {
                 var data = Ext.decode(response.responseText);
+                if(me.historyHashPrefix) {
+                    me.app.setHistoryHash(
+                        me.currentRecord.get("id"),
+                        me.historyHashPrefix
+                    );
+                }
                 me.store.loadData(data);
             },
             failure: function() {

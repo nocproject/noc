@@ -1320,7 +1320,7 @@ Ext.define('NOC.sa.managedobject.form.View', {
             activeItem: 2,
             itemId: 'sa-confdb',
             xtype: 'sa.confdb',
-            historyHashPrefix: "config",  // suffix from itemId
+            historyHashPrefix: "confdb",  // suffix from itemId
             app: this,
             onClose: function() {
                 this.up().setActiveItem(this.backItem);
@@ -1353,6 +1353,7 @@ Ext.define('NOC.sa.managedobject.form.View', {
             activeItem: 5,
             itemId: 'sa-interfaces',
             xtype: 'sa.interfacepanel',
+            historyHashPrefix: 'interfaces', // suffix from itemId
             app: this,
             onClose: function() {
                 this.up().setActiveItem(this.backItem);
@@ -1363,6 +1364,7 @@ Ext.define('NOC.sa.managedobject.form.View', {
             activeItem: 6,
             itemId: 'sa-sensors',
             xtype: 'sa.sensors',
+            historyHashPrefix: 'sensors', // suffix from itemId
             app: this,
             onClose: function() {
                 this.up().setActiveItem(this.backItem);
@@ -1383,6 +1385,7 @@ Ext.define('NOC.sa.managedobject.form.View', {
             activeItem: 8,
             itemId: 'sa-discovery',
             xtype: 'sa.discovery',
+            historyHashPrefix: 'discovery', // suffix from itemId
             app: this,
             onClose: function() {
                 this.up().setActiveItem(this.backItem);
