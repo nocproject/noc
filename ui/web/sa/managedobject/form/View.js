@@ -1526,11 +1526,11 @@ Ext.define('NOC.sa.managedobject.form.View', {
                 glyph: NOC.glyph.thermometer_full,
                 handler: "onSensors"
             },
-            {
-                text: __("CPE"),
-                glyph: NOC.glyph.share_alt,
-                handler: "onCPE"
-            },
+            // {
+            //     text: __("CPE"),
+            //     glyph: NOC.glyph.share_alt,
+            //     handler: "onCPE"
+            // },
             {
                 text: __("Links"),
                 glyph: NOC.glyph.link,
@@ -1546,11 +1546,11 @@ Ext.define('NOC.sa.managedobject.form.View', {
                 glyph: NOC.glyph.exclamation_triangle,
                 handler: "onAlarm"
             },
-            {
-                text: __("New Maintaince"),
-                glyph: NOC.glyph.wrench,
-                handler: "onMaintenance"
-            },
+            // {
+            //     text: __("New Maintaince"),
+            //     glyph: NOC.glyph.wrench,
+            //     handler: "onMaintenance"
+            // },
             {
                 text: __("Inventory"),
                 glyph: NOC.glyph.list,
@@ -1561,16 +1561,16 @@ Ext.define('NOC.sa.managedobject.form.View', {
                 glyph: NOC.glyph.film,
                 handler: "onInteractions"
             },
-            {
-                text: __("Validation"),
-                glyph: NOC.glyph.file,
-                handler: "onValidationSettings"
-            },
-            {
-                text: __("Capabilities"),
-                glyph: NOC.glyph.file,
-                handler: "onCaps"
-            },
+            // {
+            //     text: __("Validation"),
+            //     glyph: NOC.glyph.file,
+            //     handler: "onValidationSettings"
+            // },
+            // {
+            //     text: __("Capabilities"),
+            //     glyph: NOC.glyph.file,
+            //     handler: "onCaps"
+            // },
             "->",
             {
                 itemId: "formHelp",
