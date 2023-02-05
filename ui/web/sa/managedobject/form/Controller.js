@@ -107,7 +107,9 @@ Ext.define('NOC.sa.managedobject.form.Controller', {
         this.itemPreview('sa-alarms');
     },
     onMaintenance: function() {},
-    onInventory: function() {},
+    onInventory: function() {
+        this.itemPreview('sa-inventory');
+    },
     onInteractions: function() {},
     onValidationSettings: function() {},
     onCaps: function() {},
