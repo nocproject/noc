@@ -195,18 +195,18 @@ Ext.define("NOC.sa.managedobject.DiscoveryPanel", {
         me.logPanel.items.first().update('');
         me.currentRecord = record;
         me.setTitle(record.get("name") + " discovery");
+        if(me.historyHashPrefix) {
+            me.app.setHistoryHash(
+                me.currentRecord.get("id"),
+                me.historyHashPrefix
+            );
+        }
         Ext.Ajax.request({
             url: "/sa/managedobject/" + record.get("id") + "/discovery/",
             method: "GET",
             scope: me,
             success: function(response) {
                 var data = Ext.decode(response.responseText);
-                if(me.historyHashPrefix) {
-                    me.app.setHistoryHash(
-                        me.currentRecord.get("id"),
-                        me.historyHashPrefix
-                    );
-                }
                 me.store.loadData(data);
             },
             failure: function() {
