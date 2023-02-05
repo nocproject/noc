@@ -87,6 +87,12 @@ Ext.define("NOC.sa.managedobject.ConsolePanel", {
         me.setTitle(c.join(" "));
         me.clearBody();
         me.prompt = record.get("name") + "> ";
+        if(me.historyHashPrefix) {
+            me.app.setHistoryHash(
+                me.currentRecord.get("id"),
+                me.historyHashPrefix
+            );
+        }
     },
     //
     onSpecialKey: function(field, e) {

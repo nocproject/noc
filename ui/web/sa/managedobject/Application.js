@@ -7,7 +7,6 @@ console.debug('Defining NOC.sa.managedobject.Application');
 Ext.define('NOC.sa.managedobject.Application', {
     itemId: "sa-managedobject",
     extend: 'NOC.core.Application',
-    xtype: 'layout-card',
     layout: 'card',
     alias: 'widget.managedobject',
     viewModel: 'managedobject',
@@ -19,9 +18,6 @@ Ext.define('NOC.sa.managedobject.Application', {
         'NOC.sa.managedobject.Controller',
         'NOC.core.filter.Filter',
         'NOC.sa.managedobject.form.View',
-        'NOC.sa.managedobject.RepoPreview',
-        'NOC.sa.managedobject.ConfDBPanel',
-        'NOC.sa.managedobject.ConsolePanel',
     ],
     stateMap: {
         w: __('Waiting'),
@@ -532,40 +528,9 @@ Ext.define('NOC.sa.managedobject.Application', {
             items: [
                 {
                     xtype: 'managedobject.form',
-                    itemId: 'managedobject-form-panel',
                 }
             ]
         },
-        {
-            activeItem: 5,
-            itemId: 'sa-repopreview',
-            xtype: 'sa.repopreview',
-            app: this,
-            previewName: "{0} config",
-            restUrl: "/sa/managedobject/{0}/repo/cfg/",
-            historyHashPrefix: "config",
-            onClose: function() {
-                this.up().setActiveItem(this.backItem);
-            },
-        },
-        {
-            activeItem: 6,
-            itemId: 'sa-confdb',
-            xtype: 'sa.confdb',
-            app: this,
-            onClose: function() {
-                this.up().setActiveItem(this.backItem);
-            },
-        },
-        {
-            activeItem: 7,
-            itemId: 'sa-console',
-            xtype: 'sa.console',
-            app: this,
-            onClose: function() {
-                this.up().setActiveItem(this.backItem);
-            },
-        }
     ],
     destroy: Ext.emptyFn,
 });

@@ -58,6 +58,12 @@ Ext.define("NOC.sa.managedobject.RepoPreview", {
         var me = this;
         me.callParent(arguments);
         me.menuBtnFn("revision", record.get("id"));
+        if(me.historyHashPrefix) {
+            me.app.setHistoryHash(
+                me.currentRecord.get("id"),
+                me.historyHashPrefix
+            );
+        }
     },
     menuBtnFn: function(type, id) {
         var me = this;

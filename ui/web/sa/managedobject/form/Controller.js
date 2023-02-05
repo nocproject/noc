@@ -63,33 +63,43 @@ Ext.define('NOC.sa.managedobject.form.Controller', {
         this.getView().up('[itemId=sa-managedobject]').getController().resetInlineStore(this.getView());
     },
     onConfig: function() {
-        this.itemPreview('sa-repopreview');
+        this.itemPreview('sa-config');
     },
     onConfDB: function() {
         this.itemPreview('sa-confdb');
     },
     onCard: function() {
-        if(this.getView().recordId) {
+        var formPanel = this.getView().down('[itemId=managedobject-form-panel]');
+        if(formPanel.recordId) {
             window.open(
-                "/api/card/view/managedobject/" + this.getView().recordId + "/"
+                "/api/card/view/managedobject/" + formPanel.recordId + "/"
             );
         }
     },
     onDashboard: function() {
-        if(this.getView().recordId) {
+        var formPanel = this.getView().down('[itemId=managedobject-form-panel]');
+        if(formPanel.recordId) {
             window.open(
-                "/ui/grafana/dashboard/script/noc.js?dashboard=mo&id=" + this.getView().recordId
+                "/ui/grafana/dashboard/script/noc.js?dashboard=mo&id=" + formPanel.recordId
             );
         }
     },
     onConsole: function() {
         this.itemPreview('sa-console');
     },
-    onScripts: function() {},
-    onInterfaces: function() {},
-    onSensors: function() {},
+    onScripts: function() {
+        this.itemPreview('sa-script');
+    },
+    onInterfaces: function() {
+        this.itemPreview('sa-interfaces');
+    },
+    onSensors: function() {
+        this.itemPreview('sa-sensors');
+    },
     onCPE: function() {},
-    onLinks: function() {},
+    onLinks: function() {
+        this.itemPreview('sa-links');
+    },
     onDiscovery: function() {},
     onAlarm: function() {},
     onMaintenance: function() {},
@@ -191,16 +201,17 @@ Ext.define('NOC.sa.managedobject.form.Controller', {
         this.getView().up().up().down('[reference=saManagedobjectSelectionGrid]').getStore().reload();
     },
     gotoItem: function(itemName) {
-        var mainView = this.getView().up().up();
+        var mainView = this.getView().up('[appId=sa.managedobject]');
         mainView.setActiveItem(itemName);
         mainView.setHistoryHash();
     },
     itemPreview: function(itemName) {
-        var mainView = this.getView().up().up(),
-            backItem = this.getView().up(),
+        var mainView = this.getView(),
+            backItem = mainView.down('[itemId=managedobject-form-panel]'),
             activeItem = mainView.setActiveItem(itemName);
         if(activeItem !== false) {
-            activeItem.preview(mainView.currentRecord, backItem);
+            activeItem.app = mainView.up('[appId=sa.managedobject]');
+            activeItem.preview(backItem.currentRecord, backItem);
         }
     },
     // Workaround labelField

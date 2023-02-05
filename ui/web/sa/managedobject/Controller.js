@@ -54,8 +54,8 @@ Ext.define('NOC.sa.managedobject.Controller', {
             }
         ];
         var action = this.getView().noc.cmd;
-        if(action && action.args && action.args.length === 1) {
-            this.editManagedObject(undefined, action.args[0]);
+        if(action && action.args && action.args.length >= 1) {
+            this.editManagedObject(undefined, action.args[0], action.args[1]);
         }
         app.setActiveItem(0);
         // page 1 init selection grid
@@ -642,7 +642,7 @@ Ext.define('NOC.sa.managedobject.Controller', {
         view.down('[itemId=managedobject-form-panel]').getController().onNewRecord();
         view.getLayout().setActiveItem('managedobject-form');
     },
-    editManagedObject: function(gridView, id) {
+    editManagedObject: function(gridView, id, suffix) {
         var url = '/sa/managedobject/' + id + '/',
             view = this.getView();
 
@@ -666,9 +666,10 @@ Ext.define('NOC.sa.managedobject.Controller', {
                         gridView = this.getView();
                     }
                     record.set('id', id);
-                    view.currentRecord = record;
                     formPanel = gridView.down('[itemId=managedobject-form-panel]');
+                    formView = formPanel.up();
                     formPanel.recordId = id;
+                    formPanel.currentRecord = record;
                     form = formPanel.getForm();
                     Ext.iterate(data, function(v) {
                         if(v.indexOf("__") !== -1) {
@@ -699,8 +700,11 @@ Ext.define('NOC.sa.managedobject.Controller', {
                     form.setValues(r);
                     this.loadInlineStore(formPanel, data.id);
                     view.setHistoryHash(data.id);
-                    view.getLayout().setActiveItem('managedobject-form');
-                    this.setFormTitle(formPanel.changeTitle, data.id);
+                    view.getLayout().setActiveItem('managedobject-form').down().setActiveItem('managedobject-form-panel');
+                    if(suffix) {
+                        formView.getController().itemPreview('sa-' + suffix);
+                    }
+                    this.setFormTitle(formView.changeTitle, data.id);
                 }
                 if(gridView) {
                     gridView.unmask();
@@ -757,10 +761,10 @@ Ext.define('NOC.sa.managedobject.Controller', {
     },
     buttonState: function() {
         var view = this.getView(),
-            cloneBtn = view.down('[itemId=managedobject-form-panel] [itemId=cloneBtn]'),
-            saveBtn = view.down('[itemId=managedobject-form-panel] [itemId=saveBtn]'),
-            deleteBtn = view.down('[itemId=managedobject-form-panel] [itemId=deleteBtn]'),
-            createBtn = view.down('[itemId=managedobject-form-panel] [itemId=createBtn]');
+            cloneBtn = view.down('[itemId=cloneBtn]'),
+            saveBtn = view.down('[itemId=saveBtn]'),
+            deleteBtn = view.down('[itemId=deleteBtn]'),
+            createBtn = view.down('[itemId=createBtn]');
 
         saveBtn.setDisabled(!view.hasPermission("update"));
         saveBtn.formBind = view.hasPermission("update");

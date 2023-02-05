@@ -8,6 +8,7 @@ console.debug("Defining NOC.sa.managedobject.SensorsPanel");
 
 Ext.define("NOC.sa.managedobject.SensorsPanel", {
     extend: "NOC.core.ApplicationPanel",
+    alias: "widget.sa.sensors",
     requires: [
         "NOC.sa.managedobject.SensorsStore",
         "NOC.inv.sensorprofile.LookupField",
@@ -199,7 +200,7 @@ Ext.define("NOC.sa.managedobject.SensorsPanel", {
     },
     //
     onCellClick: function(view, cell, cellIndex, record, row,
-                          rowIndex, e) {
+        rowIndex, e) {
         var me = this;
         if(e.target.tagName === "A") {
             var header = view.panel.headerCt.getHeaderAtIndex(cellIndex);

@@ -8,6 +8,7 @@ console.debug("Defining NOC.sa.managedobject.ScriptPanel");
 
 Ext.define("NOC.sa.managedobject.ScriptPanel", {
     extend: "NOC.core.ApplicationPanel",
+    alias: "widget.sa.script",
     requires: [
         "NOC.sa.managedobject.ScriptStore",
         "NOC.sa.managedobject.scripts.ErrorPreview",
@@ -15,7 +16,6 @@ Ext.define("NOC.sa.managedobject.ScriptPanel", {
     ],
     app: null,
     autoScroll: true,
-    layout: "card",
 
     initComponent: function() {
         var me = this;
@@ -66,9 +66,13 @@ Ext.define("NOC.sa.managedobject.ScriptPanel", {
             }
         });
 
+        me.scriptContainer = Ext.create("Ext.panel.Panel", {
+            layout: "card",
+            items: [me.scriptPanel]
+        });
         //
         Ext.apply(me, {
-            items: [me.scriptPanel]
+            items: [me.scriptContainer]
         });
         me.callParent();
         me.loadMask = new Ext.LoadMask(me, {msg: "Running task. Please wait ..."});
@@ -133,27 +137,36 @@ Ext.define("NOC.sa.managedobject.ScriptPanel", {
         var me = this,
             preview = Ext.create(me.currentPreview, {
                 app: me,
+                itemId: "sa-script-result",
                 script: name,
                 result: result
             });
-        me.add(preview);
-        me.getLayout().setActiveItem(1);
+        Ext.each(me.scriptContainer.query('[itemId=sa-script-result]'), function(comp) {
+            me.scriptContainer.remove(comp);
+        })
+        me.scriptContainer.add(preview);
+        me.scriptContainer.setActiveItem("sa-script-result");
     },
     //
     showError: function(name, result) {
         var me = this,
             preview = Ext.create("NOC.sa.managedobject.scripts.ErrorPreview", {
                 app: me,
+                itemId: "sa-script-error",
                 script: name,
                 result: result
             });
-        me.add(preview);
-        me.getLayout().setActiveItem(1);
+        Ext.each(me.scriptContainer.query('[itemId=sa-script-error]'), function(comp) {
+            me.scriptContainer.remove(comp);
+        })
+        me.scriptContainer.add(preview);
+        me.scriptContainer.setActiveItem("sa-script-error");
     },
     //
     showForm: function(name, items) {
-        var me = this;
+        var me = this, queryResult;
         me.form = Ext.create("Ext.form.Panel", {
+            itemId: "sa-script-form",
             items: items,
             dockedItems: [
                 {
@@ -177,16 +190,16 @@ Ext.define("NOC.sa.managedobject.ScriptPanel", {
                 }
             ]
         });
-        me.add(me.form);
-        me.getLayout().setActiveItem(1);
+        Ext.each(me.scriptContainer.query('[itemId=sa-script-form]'), function(comp) {
+            me.scriptContainer.remove(comp);
+        })
+        me.scriptContainer.add(me.form);
+        me.scriptContainer.setActiveItem('sa-script-form');
     },
     //
     destroyForm: function() {
         var me = this;
-        me.getLayout().setActiveItem(0);
-        me.remove(me.form);
-        me.form.close();
-        me.form = null;
+        me.scriptContainer.setActiveItem(0);
     },
     //
     onFormClose: function() {
