@@ -12,6 +12,7 @@ from noc.core.clickhouse.fields import (
     DateTimeField,
     StringField,
     ReferenceField,
+    UInt32Field,
 )
 from noc.core.clickhouse.engines import MergeTree
 from noc.core.bi.dictionaries.managedobject import ManagedObject
@@ -38,3 +39,4 @@ class DisposeLog(Model):
     managed_object = ReferenceField(ManagedObject, description=_("Object Name"))
     event_class = ReferenceField(EventClass, description=_("Event Class"))
     alarm_class = ReferenceField(AlarmClass, description=_("Alarm Class"))
+    reopens = UInt32Field(description=_("Reopens"))
