@@ -262,6 +262,23 @@ class ActiveEvent(Document):
             return None
         return h.get(k)
 
+    @classmethod
+    def create_from_dict(cls, d: dict):
+        """
+        Create instance from dict with data from clickhouse
+        """
+        return cls(
+            id=d["id"],
+            timestamp=datetime.datetime.strptime(d["timestamp"], "%Y-%m-%d %H:%M:%S"),
+            managed_object=ManagedObject.get_by_bi_id(d["managed_object_bi_id"]),
+            event_class=EventClass.get_by_bi_id(d["event_class_bi_id"]),
+            start_timestamp=datetime.datetime.strptime(d["start_timestamp"], "%Y-%m-%d %H:%M:%S"),
+            source=d["source"],
+            raw_vars=d["raw_vars"],
+            resolved_vars=d["resolved_vars"],
+            vars=d["vars"],
+        )
+
 
 # Avoid circular references
 from .failedevent import FailedEvent

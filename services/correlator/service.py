@@ -413,6 +413,7 @@ class CorrelatorService(FastAPIService):
         :param min_group_size: For Group alarm, minimal count alarm on it
         :returns: Alarm, if created, None otherwise
         """
+
         scope_label = str(event.id) if event else "DIRECT"
         labels = labels or []
         # @todo: Make configurable
@@ -552,7 +553,7 @@ class CorrelatorService(FastAPIService):
             AlarmEscalation.watch_escalations(a)
         return a
 
-    async def raise_alarm_from_rule(self, rule: Rule, event: ActiveEvent):
+    async def raise_alarm_from_rule(self, rule: Rule, event: ActiveEvent) -> Optional[ActiveAlarm]:
         """
         Raise alarm from incoming event
         """
@@ -566,7 +567,7 @@ class CorrelatorService(FastAPIService):
             self.logger.info("Changing managed object to %s", managed_object.name)
         # Extract variables
         vars = rule.get_vars(event)
-        await self.raise_alarm(
+        return await self.raise_alarm(
             managed_object=managed_object,
             timestamp=event.timestamp,
             alarm_class=rule.alarm_class,
@@ -618,7 +619,9 @@ class CorrelatorService(FastAPIService):
             metrics["alarm_drop"] += 1
             return
 
-    async def clear_alarm_from_rule(self, rule: "Rule", event: "ActiveEvent"):
+    async def clear_alarm_from_rule(
+        self, rule: "Rule", event: "ActiveEvent"
+    ) -> Optional["ActiveAlarm"]:
         managed_object = self.eval_expression(rule.managed_object, event=event)
         if not managed_object:
             self.logger.info(
@@ -652,6 +655,7 @@ class CorrelatorService(FastAPIService):
         alarm.clear_alarm("Cleared by disposition rule '%s'" % rule.u_name, ts=event.timestamp)
         metrics["alarm_clear"] += 1
         await self.clear_groups(groups, ts=event.timestamp)
+        return alarm
 
     def get_delayed_event(self, rule: Rule, event: ActiveEvent):
         """
@@ -1048,6 +1052,22 @@ class CorrelatorService(FastAPIService):
         """
         Dispose event according to disposition rule
         """
+
+        def save_to_disposelog(action: str, a: Optional[ActiveAlarm] = None):
+            # Send dispose information to clickhouse
+            data = {
+                "date": e.timestamp.date(),
+                "ts": e.timestamp,
+                "event_id": str(e.id),
+                "alarm_id": str(a.id) if a else None,
+                "op": action,
+                "managed_object": e.managed_object.bi_id,
+                "event_class": e.event_class.bi_id,
+                "alarm_class": a.alarm_class.bi_id if a else None,
+                "reopens": a.reopens if a else 0,
+            }
+            self.register_metrics("disposelog", [data])
+
         event_id = str(e.id)
         self.logger.info("[%s] Disposing", event_id)
         drc = self.rules.get(e.event_class.id)
@@ -1064,14 +1084,18 @@ class CorrelatorService(FastAPIService):
             if rule.action == "drop":
                 self.logger.info("[%s] Dropped by action", event_id)
                 e.delete()
+                save_to_disposelog("drop")
                 return
             elif rule.action == "ignore":
                 self.logger.info("[%s] Ignored by action", event_id)
+                save_to_disposelog("ignore")
                 return
             elif rule.action == "raise" and rule.combo_condition == "none":
-                await self.raise_alarm_from_rule(rule, e)
+                alarm = await self.raise_alarm_from_rule(rule, e)
+                save_to_disposelog("raise", alarm)
             elif rule.action == "clear" and rule.combo_condition == "none":
-                await self.clear_alarm_from_rule(rule, e)
+                alarm = await self.clear_alarm_from_rule(rule, e)
+                save_to_disposelog("clear", alarm)
             if rule.action in ("raise", "clear"):
                 # Write reference if can trigger delayed event
                 if rule.unique and rule.event_class.id in self.back_rules:
@@ -1087,9 +1111,11 @@ class CorrelatorService(FastAPIService):
                         de = self.get_delayed_event(br, e)
                         if de:
                             if br.action == "raise":
-                                await self.raise_alarm_from_rule(br, de)
+                                alarm = await self.raise_alarm_from_rule(br, de)
+                                save_to_disposelog("raise", alarm)
                             elif br.action == "clear":
-                                await self.clear_alarm_from_rule(br, de)
+                                alarm = await self.clear_alarm_from_rule(br, de)
+                                save_to_disposelog("clear", alarm)
             if rule.stop_disposition:
                 break
         self.logger.info("[%s] Disposition complete", event_id)
