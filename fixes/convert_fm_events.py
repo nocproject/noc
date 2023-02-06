@@ -22,7 +22,6 @@ from noc.sa.models.profile import Profile
 from noc.fm.models.eventclass import EventClass
 from noc.main.models.pool import Pool
 from noc.config import config
-from noc.core.ip import IP
 
 CHUNK = 300
 SNMP_TRPAP_OID = "1__3__6__1__6__3__1__1__4__1__0"
@@ -55,16 +54,23 @@ def fix():
             "profile": profile,
         }
     out = defaultdict(list)
+    out_logs = defaultdict(list)
     n_partitions = len(config.clickhouse.cluster_topology.split(","))
     for row in coll.find():
         mo_id = row["managed_object"]
+        ec: EventClass = EventClass.get_by_id(row["event_class"])
         key = mo_id % n_partitions
         if len(out[key]) > CHUNK:
             for p, data in out.items():
                 if not data:
                     continue
                 publish(b"\n".join(data), "ch.events", partition=p)
+            for p, data in out_logs.items():
+                if not data:
+                    continue
+                publish(b"\n".join(data), "ch.disposelog", partition=p)
             out = defaultdict(list)
+            out_logs = defaultdict(list)
         if mo_id not in mo_map:
             continue
         ts: datetime.datetime = row["timestamp"].replace(microsecond=0)
@@ -75,7 +81,7 @@ def fix():
                     "ts": ts.isoformat(sep=" "),
                     "start_ts": ts.isoformat(sep=" "),
                     "event_id": str(row["_id"]),
-                    "event_class": EventClass.get_by_id(row["event_class"]).bi_id,
+                    "event_class": ec.bi_id,
                     "source": row.get("source", "other"),
                     "raw_vars": row["raw_vars"],
                     "resolved_vars": row["resolved_vars"],
@@ -86,14 +92,36 @@ def fix():
                     "pool": mo_map[mo_id]["pool"],
                     "ip": mo_map[mo_id]["address"],
                     "profile": mo_map[mo_id]["profile"],
-                    # "vendor":
+                    # "vendor": mo_map[mo_id]["vendor"],
                     # "platform":
                     # "version":
                     "administrative_domain": mo_map[mo_id]["adm_dom"],
                 }
             )
         )
+        for aa in row.get("alarms", []):
+            op = "raise"
+            if [dr.action for dr in ec.disposition if dr.action == "clear"]:
+                op = "clear"
+            out_logs[key].append(
+                orjson.dumps(
+                    {
+                        "date": ts.date().isoformat(),
+                        "ts": ts.isoformat(sep=" "),
+                        "event_id": str(row["_id"]),
+                        "alarm_id": str(aa),
+                        "op": op,
+                        "managed_object": mo_map[mo_id]["bi_id"],
+                        "event_class": ec.bi_id,
+                        "alarm_class": "",
+                    }
+                )
+            )
     for p, data in out.items():
         if not data:
             continue
         publish(b"\n".join(data), "ch.events", partition=p)
+    for p, data in out_logs.items():
+        if not data:
+            continue
+        publish(b"\n".join(data), "ch.disposelog", partition=p)
