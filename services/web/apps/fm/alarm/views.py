@@ -22,6 +22,7 @@ from mongoengine.queryset.visitor import Q
 
 # NOC modules
 from noc.config import config
+from noc.core.clickhouse.connect import connection
 from noc.services.web.base.extapplication import ExtApplication, view
 from noc.inv.models.object import Object
 from noc.inv.models.networksegment import NetworkSegment
@@ -31,6 +32,7 @@ from noc.fm.models.alarmclass import AlarmClass
 from noc.fm.models.alarmseverity import AlarmSeverity
 from noc.fm.models.activeevent import ActiveEvent
 from noc.fm.models.archivedevent import ArchivedEvent
+from noc.fm.models.eventclass import EventClass
 from noc.fm.models.utils import get_alarm
 from noc.sa.models.managedobject import ManagedObject
 from noc.inv.models.resourcegroup import ResourceGroup
@@ -53,6 +55,15 @@ from noc.core.translation import ugettext as _
 from noc.fm.models.alarmescalation import AlarmEscalation
 from noc.core.comp import smart_text
 from noc.core.service.loader import get_service
+
+SQL_EVENTS = """select
+    e.event_id, e.ts,
+    e.event_class as event_class_bi_id, e.managed_object as managed_object_bi_id,
+    e.start_ts, e.source, e.raw_vars, e.resolved_vars, e.vars
+    from events e
+    where e.event_id in (select event_id from disposelog where alarm_id=%s)
+    format JSONEachRow
+"""
 
 
 def get_advanced_field(id):
@@ -461,20 +472,33 @@ class AlarmApplication(ExtApplication):
             ]
         # Events
         events = []
-        for ec in ActiveEvent, ArchivedEvent:
-            for e in ec.objects.filter(alarms=alarm.id):
-                events += [
-                    {
-                        "id": str(e.id),
-                        "event_class": str(e.event_class.id),
-                        "event_class__label": e.event_class.name,
-                        "timestamp": self.to_json(e.timestamp),
-                        "status": e.status,
-                        "managed_object": e.managed_object.id,
-                        "managed_object__label": e.managed_object.name,
-                        "subject": e.subject,
-                    }
-                ]
+        cursor = connection()
+        res = cursor.execute(SQL_EVENTS, return_raw=True, args=[str(alarm.id)]).decode().split("\n")
+        res = [orjson.loads(r) for r in res if r]
+        for r in res:
+            event = ActiveEvent(
+                id=r["event_id"],
+                timestamp=r["ts"],
+                managed_object=ManagedObject.get_by_bi_id(r["managed_object_bi_id"]),
+                event_class=EventClass.get_by_bi_id(r["event_class_bi_id"]),
+                start_timestamp=r["start_ts"],
+                source=r["source"],
+                raw_vars=r["raw_vars"],
+                resolved_vars=r["resolved_vars"],
+                vars=r["vars"],
+            )
+            events += [
+                {
+                    "id": str(event.id),
+                    "event_class": str(event.event_class.id),
+                    "event_class__label": event.event_class.name,
+                    "timestamp": event.timestamp,
+                    "status": event.status,
+                    "managed_object": event.managed_object.id,
+                    "managed_object__label": event.managed_object.name,
+                    "subject": event.subject,
+                }
+            ]
         if events:
             d["events"] = events
         # Alarms

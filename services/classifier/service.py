@@ -13,6 +13,8 @@ import os
 from collections import defaultdict
 import operator
 import re
+import socket
+import struct
 from time import perf_counter
 from typing import Optional, Dict, List
 
@@ -104,6 +106,8 @@ E_SRC_METRICS = {
 NS = 1000000000.0
 
 CABLE_ABDUCT = "Security | Abduct | Cable Abduct"
+
+SNMP_TRAP_OID = "1__3__6__1__6__3__1__1__4__1__0"
 
 
 class ClassifierService(FastAPIService):
@@ -483,7 +487,32 @@ class ClassifierService(FastAPIService):
             return
         # Activate event
         event.expires = event.timestamp + datetime.timedelta(seconds=event.event_class.ttl)
-        event.save()
+
+        # Send event to clickhouse
+        mo = event.managed_object
+        data = {
+            "date": event.timestamp.date(),
+            "ts": event.timestamp,
+            "start_ts": event.start_timestamp,
+            "event_id": str(event.id),
+            "event_class": event.event_class.bi_id,
+            "source": event.source or E_SRC_OTHER,
+            "raw_vars": event.raw_vars,
+            "resolved_vars": event.resolved_vars,
+            "vars": event.vars,
+            "snmp_trap_oid": event.raw_vars.get(SNMP_TRAP_OID, ""),
+            "message": event.raw_vars.get("message", ""),
+            "managed_object": mo.bi_id,
+            "pool": mo.pool.bi_id,
+            "ip": struct.unpack("!I", socket.inet_aton(mo.address))[0],
+            "profile": mo.profile.bi_id,
+            "vendor": mo.vendor.bi_id if mo.vendor else None,
+            "platform": mo.platform.bi_id if mo.platform else None,
+            "version": mo.version.bi_id if mo.version else None,
+            "administrative_domain": mo.administrative_domain.bi_id,
+        }
+        self.register_metrics("events", [data])
+
         # Fill deduplication filter
         self.dedup_filter.register(event)
         # Fill suppress filter
