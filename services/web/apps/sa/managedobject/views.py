@@ -32,6 +32,7 @@ from noc.inv.models.platform import Platform
 from noc.inv.models.firmware import Firmware
 from noc.inv.models.resourcegroup import ResourceGroup
 from noc.inv.models.object import Object
+from noc.main.models.label import Label
 from noc.services.web.base.modelinline import ModelInline
 from noc.services.web.base.repoinline import RepoInline
 from noc.project.models.project import Project
@@ -272,6 +273,46 @@ class ManagedObjectApplication(ExtModelApplication):
             )
         )
         return data
+
+    def instance_to_dict_list(self, o: "ManagedObject", fields=None):
+        """
+
+        :param o:
+        :param fields:
+        :return:
+        """
+        return {
+            "id": str(o.id),
+            "name": o.name,
+            "address": o.address,
+            "is_managed": o.is_managed,
+            "administrative_domain": str(o.administrative_domain.name),
+            "object_profile": str(o.object_profile.name),
+            "segment": str(o.segment.name),
+            "auth_profile": str(o.auth_profile.name) if o.auth_profile else "",
+            "profile_name": o.profile.name,
+            "pool": str(o.pool.name),
+            "platform": o.platform.name if o.platform else "",
+            "version": o.version.version if o.version else "",
+            "vrf": o.vrf.name if o.vrf else "",
+            "description": o.description or "",
+            "row_class": o.object_profile.style.css_class_name if o.object_profile.style else "",
+            "labels": [
+                {
+                    "id": ll.name,
+                    "is_protected": ll.is_protected,
+                    "scope": ll.scope,
+                    "name": ll.name,
+                    "value": ll.value,
+                    "badges": ll.badges,
+                    "bg_color1": f"#{ll.bg_color1:06x}",
+                    "fg_color1": f"#{ll.fg_color1:06x}",
+                    "bg_color2": f"#{ll.bg_color2:06x}",
+                    "fg_color2": f"#{ll.fg_color2:06x}",
+                }
+                for ll in Label.objects.filter(name__in=o.labels).order_by("display_order")
+            ],
+        }
 
     def clean(self, data):
         # Clean resource groups

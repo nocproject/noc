@@ -567,9 +567,12 @@ class ExtModelApplication(ExtApplication):
         """
         return True
 
-    @view(method=["GET"], url=r"^$", access="read", api=True)
+    def instance_to_dict_list(self, o, fields=None):
+        return self.instance_to_dict(o, fields=fields)
+
+    @view(method=["GET", "POST"], url=r"^$", access="read", api=True)
     def api_list(self, request):
-        return self.list_data(request, self.instance_to_dict)
+        return self.list_data(request, self.instance_to_dict_list)
 
     @view(method=["GET"], url=r"^lookup/$", access="lookup", api=True)
     def api_lookup(self, request):
