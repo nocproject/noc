@@ -107,6 +107,8 @@ NS = 1000000000.0
 
 CABLE_ABDUCT = "Security | Abduct | Cable Abduct"
 
+SNMP_TRAP_OID = "1__3__6__1__6__3__1__1__4__1__0"
+
 
 class ClassifierService(FastAPIService):
     """
@@ -494,12 +496,12 @@ class ClassifierService(FastAPIService):
             "start_ts": event.start_timestamp,
             "event_id": str(event.id),
             "event_class": event.event_class.bi_id,
-            "source": event.source,
+            "source": event.source or E_SRC_OTHER,
             "raw_vars": event.raw_vars,
             "resolved_vars": event.resolved_vars,
             "vars": event.vars,
-            "snmp_trap_oid": event.vars.get("trap_oid", None),
-            "message": event.vars.get("message", None),
+            "snmp_trap_oid": event.raw_vars.get(SNMP_TRAP_OID, ""),
+            "message": event.raw_vars.get("message", ""),
             "managed_object": mo.bi_id,
             "pool": mo.pool.bi_id,
             "ip": struct.unpack("!I", socket.inet_aton(mo.address))[0],
