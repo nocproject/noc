@@ -1483,6 +1483,12 @@ Ext.define('NOC.sa.managedobject.form.View', {
             },
             "-",
             {
+                itemId: "showMapBtn",
+                xtype: "splitbutton",
+                text: __("Show Map"),
+                glyph: NOC.glyph.globe,
+            },
+            {
                 text: __("Config"),
                 glyph: NOC.glyph.file,
                 handler: "onConfig"
@@ -1502,11 +1508,6 @@ Ext.define('NOC.sa.managedobject.form.View', {
                 glyph: NOC.glyph.line_chart,
                 tooltip: __("Show dashboard"),
                 handler: "onDashboard"
-            },
-            {
-                itemId: "showMapBtn",
-                text: __("Show Map"),
-                glyph: NOC.glyph.globe,
             },
             {
                 text: __("Console"),
