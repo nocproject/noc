@@ -885,7 +885,10 @@ Ext.define('NOC.sa.managedobject.Controller', {
         });
     },
     onCellClick: function(self, td, cellIndex, record) {
-        this.editManagedObject(undefined, record.id, self.getGridColumns()[cellIndex].dataIndex);
+        var cellName = self.getGridColumns()[cellIndex].dataIndex;
+        if(["interface_count", "link_count"].includes(cellName)) {
+            this.editManagedObject(undefined, record.id,);
+        }
     },
     renderClickableCell: function(value, metaData) {
         metaData.tdStyle = "text-decoration-line: underline;cursor: pointer;";
