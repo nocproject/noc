@@ -81,20 +81,20 @@ class EventApplication(ExtDocApplication):
         def make_where_section(query_params):
             where_list = []
             for k, v in query_params.items():
-                if k == "timestamp__gte":
+                if k == "ts__gte":
                     where_list += [f"timestamp>='{v}'"]
-                elif k == "timestamp__lte":
+                elif k == "ts__lte":
                     where_list += [f"timestamp<='{v}'"]
                 elif k == "managed_object":
-                    where_list += [f"managed_object={v.bi_id}"]
+                    where_list += [f"managed_object_bi_id={v.bi_id}"]
                 elif k == "managed_object__in":
                     v = [str(id) for id in v]
                     if v:
-                        where_list += [f"managed_object in ({','.join(v)})"]
+                        where_list += [f"managed_object_bi_id in ({','.join(v)})"]
                     else:
-                        where_list += ["managed_object in (-1)"]
+                        where_list += ["managed_object_bi_id in (-1)"]
                 elif k == "event_class":
-                    where_list += [f"event_class={EventClass.get_by_id(v).bi_id}"]
+                    where_list += [f"event_class_bi_id={EventClass.get_by_id(v).bi_id}"]
             if where_list:
                 return "where " + " and ".join(where_list)
             return ""
