@@ -64,80 +64,90 @@ Ext.define('NOC.sa.managedobject.Application', {
                             listeners: {
                                 selectionchange: 'onSelectionChange',
                                 itemdblclick: 'onSelectionDblClick',
-                                afterrender: 'setRowClass'
+                                afterrender: 'setRowClass',
+                                cellclick: 'onCellClick',
                             },
                             dockedItems: [{
                                 tbar: {
-                                    items: [{ // @todo: Search
-                                        glyph: NOC.glyph.refresh,
-                                        tooltip: __('Refresh data'),
-                                        style: {
-                                            pointerEvents: 'all'
-                                        },
-                                        handler: 'onSelectionRefresh'
-                                    }, {
-                                        xtype: 'combo',
-                                        editable: false,
-                                        minWidth: 225,
-                                        emptyText: __('Group select'),
-                                        store: {
-                                            fields: ['cmd', 'title'],
-                                            data: [
-                                                {'cmd': 'SCREEN', 'title': __('All devices on screen')},
-                                                {'cmd': 'FIRST_50', 'title': __('First 50')},
-                                                {'cmd': 'FIRST_100', 'title': __('First 100')},
-                                                {'cmd': 'N_ROWS', 'title': __('First N')},
-                                                {'cmd': 'PERIOD', 'title': __('Period start,qty')}
-                                            ]
-                                        },
-                                        queryMode: 'local',
-                                        displayField: 'title',
-                                        valueField: 'cmd',
-                                        listeners: {
-                                            select: 'onSelectionSelectAll'
-                                        }
-                                    }, {
-                                        text: __('Unselect All'),
-                                        glyph: NOC.glyph.minus_circle,
-                                        tooltip: __('Unselect all devices'),
-                                        style: {
-                                            pointerEvents: 'all'
-                                        },
-                                        bind: {
-                                            disabled: '{!selectionGridHasSel}'
-                                        },
-                                        handler: 'onSelectionUnselectAll'
-                                    }, '->', {
-                                        text: __('Add'),
-                                        glyph: NOC.glyph.cart_plus,
-                                        tooltip: __('Move all selected devices to the basket'),
-                                        style: {
-                                            pointerEvents: 'all'
-                                        },
-                                        bind: {
-                                            disabled: '{!selectionGridHasSel}'
-                                        },
-                                        handler: 'onSelectionAddChecked'
-                                    }, '|', {
-                                        glyph: NOC.glyph.shopping_cart,
-                                        tooltip: __('Show/Hide Basket'),
-                                        style: {
-                                            pointerEvents: 'all'
-                                        },
-                                        bind: {
-                                            disabled: '{!hasRecords}',
-                                            text: '{total.selected}',
+                                    items: [
+                                        { // @todo: Search
+                                            glyph: NOC.glyph.refresh,
+                                            tooltip: __('Refresh data'),
                                             style: {
-                                                cursor: '{cursorIcon}'
+                                                pointerEvents: 'all'
+                                            },
+                                            handler: 'onSelectionRefresh'
+                                        },
+                                        {
+                                            xtype: 'combo',
+                                            editable: false,
+                                            minWidth: 225,
+                                            emptyText: __('Group select'),
+                                            store: {
+                                                fields: ['cmd', 'title'],
+                                                data: [
+                                                    {'cmd': 'SCREEN', 'title': __('All devices on screen')},
+                                                    {'cmd': 'FIRST_50', 'title': __('First 50')},
+                                                    {'cmd': 'FIRST_100', 'title': __('First 100')},
+                                                    {'cmd': 'N_ROWS', 'title': __('First N')},
+                                                    {'cmd': 'PERIOD', 'title': __('Period start,qty')}
+                                                ]
+                                            },
+                                            queryMode: 'local',
+                                            displayField: 'title',
+                                            valueField: 'cmd',
+                                            listeners: {
+                                                select: 'onSelectionSelectAll'
                                             }
                                         },
-                                        handler: 'toggleBasket'
-                                    }, '|', {
-                                        xtype: 'box',
-                                        bind: {
-                                            html: __('Selected : {total.selection}')
-                                        }
-                                    }]
+                                        {
+                                            text: __('Unselect All'),
+                                            glyph: NOC.glyph.minus_circle,
+                                            tooltip: __('Unselect all devices'),
+                                            style: {
+                                                pointerEvents: 'all'
+                                            },
+                                            bind: {
+                                                disabled: '{!selectionGridHasSel}'
+                                            },
+                                            handler: 'onSelectionUnselectAll'
+                                        },
+                                        '->',
+                                        {
+                                            text: __('Add'),
+                                            glyph: NOC.glyph.cart_plus,
+                                            tooltip: __('Move all selected devices to the basket'),
+                                            style: {
+                                                pointerEvents: 'all'
+                                            },
+                                            bind: {
+                                                disabled: '{!selectionGridHasSel}'
+                                            },
+                                            handler: 'onSelectionAddChecked'
+                                        },
+                                        '|',
+                                        {
+                                            glyph: NOC.glyph.shopping_cart,
+                                            tooltip: __('Show/Hide Basket'),
+                                            style: {
+                                                pointerEvents: 'all'
+                                            },
+                                            bind: {
+                                                disabled: '{!hasRecords}',
+                                                text: '{total.selected}',
+                                                style: {
+                                                    cursor: '{cursorIcon}'
+                                                }
+                                            },
+                                            handler: 'toggleBasket'
+                                        },
+                                        '|',
+                                        {
+                                            xtype: 'box',
+                                            bind: {
+                                                html: __('Selected : {total.selection}')
+                                            }
+                                        }]
                                 }
                             }],
                             viewConfig: {

@@ -45,6 +45,78 @@ Ext.define('NOC.sa.managedobject.Controller', {
                 dataIndex: 'version',
                 flex: 1
             }, {
+                text: __("S"),
+                dataIndex: "oper_state",
+                sortable: false,
+                width: 30,
+                renderer: function(value, metaData) {
+                    var color = "grey";
+                    metaData.tdAttr = "data-qtip='<table style=\"font-size: 11px;\">" +
+                        "<tr><td style=\"padding-right: 10px;\"><div class=\"noc-object-oper-state\" style=\"background-color: grey;\"></div></td><td>" + __("Unmanaged or ping is disabled") + "</td></tr>" +
+                        "<tr><td><div class=\"noc-object-oper-state\" style=\"background-color: red;\"></div></td><td>" + __("Ping fail") + "</td></tr>" +
+                        "<tr><td><div class=\"noc-object-oper-state\" style=\"background-color: yellow;\"></div></td><td>" + __("Device has alarm") + "</td></tr>" +
+                        "<tr><td><div class=\"noc-object-oper-state\" style=\"background-color: green;\"></div></td><td>" + __("Device is normal") + "</td></tr>" +
+                        "</table>'";
+                    if(value === "failed") {
+                        color = "red";
+                    } else if(value === "degraded") {
+                        color = "yellow";
+                    } else if(value === "full") {
+                        color = "green";
+                    }
+                    return "<div class='noc-object-oper-state' style='background-color: " + color + "'></div>";
+                }
+            }, {
+                text: __('Managed'),
+                dataIndex: 'is_managed',
+                width: 30,
+                renderer: NOC.render.Bool
+            }, {
+                text: __('Obj. Profile'),
+                dataIndex: 'object_profile',
+                flex: 1
+            }, {
+                text: __('Adm. Domain'),
+                dataIndex: 'administrative_domain',
+                flex: 1
+            }, {
+                text: __('Auth Profile'),
+                dataIndex: 'auth_profile',
+                flex: 1
+            }, {
+                text: __('VRF'),
+                dataIndex: 'vrf',
+                flex: 1
+            }, {
+                text: __('Pool'),
+                dataIndex: 'pool',
+                flex: 1
+            }, {
+                text: __('Description'),
+                dataIndex: 'description',
+                flex: 1
+            }, {
+                text: __('Interfaces'),
+                dataIndex: 'interface_count',
+                width: 50,
+                sortable: false,
+                align: "right",
+                renderer: this.renderClickableCell
+            }, {
+                text: __('Links'),
+                dataIndex: 'link_count',
+                width: 50,
+                sortable: false,
+                align: "right",
+                cls: "noc-clickable-cell",
+                renderer: this.renderClickableCell
+            }, {
+                text: __('Labels'),
+                dataIndex: 'labels',
+                renderer: NOC.render.LabelField,
+                align: "right",
+                width: 100
+            }, {
                 xtype: 'glyphactioncolumn',
                 width: 25,
                 items: [{
@@ -811,5 +883,12 @@ Ext.define('NOC.sa.managedobject.Controller', {
                 NOC.error(__("Show Map Button : Failed to get data"));
             }
         });
-    }
+    },
+    onCellClick: function(self, td, cellIndex, record) {
+        this.editManagedObject(undefined, record.id, self.getGridColumns()[cellIndex].dataIndex);
+    },
+    renderClickableCell: function(value, metaData) {
+        metaData.tdStyle = "text-decoration-line: underline;cursor: pointer;";
+        return value;
+    },
 });

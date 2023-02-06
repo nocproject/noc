@@ -1354,9 +1354,9 @@ Ext.define('NOC.sa.managedobject.form.View', {
         },
         {
             activeItem: 5,
-            itemId: 'sa-interfaces',
+            itemId: 'sa-interface_count',
             xtype: 'sa.interfacepanel',
-            historyHashPrefix: 'interfaces', // suffix from itemId
+            historyHashPrefix: 'interface_count', // suffix from itemId
             app: this,
             onClose: function() {
                 this.up().setActiveItem(this.backItem);
@@ -1376,8 +1376,9 @@ Ext.define('NOC.sa.managedobject.form.View', {
         },
         {
             activeItem: 7,
-            itemId: 'sa-links',
+            itemId: 'sa-link_count',
             xtype: 'sa.links',
+            historyHashPrefix: 'link_count', // suffix from itemId
             app: this,
             onClose: function() {
                 this.up().setActiveItem(this.backItem);

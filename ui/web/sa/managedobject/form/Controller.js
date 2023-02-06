@@ -91,14 +91,14 @@ Ext.define('NOC.sa.managedobject.form.Controller', {
         this.itemPreview('sa-script');
     },
     onInterfaces: function() {
-        this.itemPreview('sa-interfaces');
+        this.itemPreview('sa-interface_count');
     },
     onSensors: function() {
         this.itemPreview('sa-sensors');
     },
     onCPE: function() {},
     onLinks: function() {
-        this.itemPreview('sa-links');
+        this.itemPreview('sa-link_count');
     },
     onDiscovery: function() {
         this.itemPreview('sa-discovery');
