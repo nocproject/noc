@@ -29,7 +29,6 @@ import cachetools
 # NOC modules
 from noc.main.models.style import Style
 from noc.pm.models.metrictype import MetricType
-from noc.pm.models.thresholdprofile import ThresholdProfile
 from noc.core.mongo.fields import ForeignKeyField, PlainReferenceField
 from noc.core.model.decorator import on_delete_check
 from noc.core.bi.decorator import bi_sync

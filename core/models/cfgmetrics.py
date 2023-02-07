@@ -25,7 +25,7 @@ class MetricItem(object):
         :param collected_interval:
         :return:
         """
-        return collected_interval * max(1, round(collected_interval / self.interval))
+        return collected_interval * max(1, round(self.interval / collected_interval))
 
 
 @dataclass(frozen=True)

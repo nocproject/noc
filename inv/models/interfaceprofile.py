@@ -33,7 +33,6 @@ from noc.main.models.remotesystem import RemoteSystem
 from noc.main.models.handler import Handler
 from noc.main.models.label import Label
 from noc.pm.models.metrictype import MetricType
-from noc.pm.models.thresholdprofile import ThresholdProfile
 from noc.cm.models.interfacevalidationpolicy import InterfaceValidationPolicy
 from noc.core.bi.decorator import bi_sync
 from noc.core.change.decorator import change

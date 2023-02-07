@@ -88,12 +88,13 @@ class MetricsCheck(DiscoveryCheck):
         self.job.context["last_run"] = ts
         s_data = {"managed_object": self.object.bi_id}
         interval = self.object.get_metric_discovery_interval()
+        self.logger.debug("Running with interval: %s:%s", interval, self.job.get_runs())
         for mc in self.iter_metric_sources():
             mc_metrics = []
             for m in mc.metrics:
                 ie = m.get_effective_collected_interval(interval)  # Is collected ?
-                if ie > m.interval:
-                    p_sc = ie / m.interval
+                if ie != interval:
+                    p_sc = ie / interval
                     o_sc = bi_hash(mc.get_source_code(m.interval)) % p_sc
                     if self.job.get_runs() % p_sc != o_sc:  # runs
                         continue

@@ -37,7 +37,12 @@ from noc.main.models.handler import Handler
 from noc.main.models.label import Label
 from noc.core.scheduler.job import Job
 from noc.core.defer import call_later, defer
-from noc.sa.interfaces.base import DictListParameter, ObjectIdParameter, BooleanParameter
+from noc.sa.interfaces.base import (
+    DictListParameter,
+    ObjectIdParameter,
+    BooleanParameter,
+    IntParameter,
+)
 from noc.core.bi.decorator import bi_sync
 from noc.ip.models.prefixprofile import PrefixProfile
 from noc.ip.models.addressprofile import AddressProfile
@@ -50,7 +55,6 @@ from noc.inv.models.ifdescpatterns import IfDescPatterns
 from noc.main.models.glyph import Glyph
 from noc.core.topology.types import ShapeOverlayPosition, ShapeOverlayForm
 from noc.pm.models.metrictype import MetricType
-from noc.pm.models.thresholdprofile import ThresholdProfile
 from .authprofile import AuthProfile
 from .capsprofile import CapsProfile
 from noc.vc.models.vlanfilter import VLANFilter
@@ -104,10 +108,8 @@ class MatchRules(BaseModel):
 m_valid = DictListParameter(
     attrs={
         "metric_type": ObjectIdParameter(required=True),
-        "enable_box": BooleanParameter(default=False),
-        "enable_periodic": BooleanParameter(default=True),
         "is_stored": BooleanParameter(default=True),
-        "threshold_profile": ObjectIdParameter(required=False),
+        "interval": IntParameter(min_value=0, default=300),
     }
 )
 
