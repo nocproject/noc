@@ -1433,9 +1433,7 @@ Ext.define('NOC.sa.managedobject.form.View', {
     dockedItems: [{
         xtype: 'toolbar',
         dock: 'top',
-        layout: {
-            overflowHandler: "Menu"
-        },
+        overflowHandler: "menu",
         items: [
             {
                 itemId: "saveBtn",
@@ -1487,6 +1485,8 @@ Ext.define('NOC.sa.managedobject.form.View', {
                 xtype: "splitbutton",
                 text: __("Show Map"),
                 glyph: NOC.glyph.globe,
+                menu: [ // Dynamically add items, in showMapHandler from Controller
+                ],
             },
             {
                 text: __("Config"),

@@ -852,7 +852,7 @@ Ext.define('NOC.sa.managedobject.Controller', {
             scope: this,
             success: function(response) {
                 var me = this,
-                    defaultHandler, menu,
+                    defaultHandler, menuItems,
                     showMapBtn = this.getView().down('[itemId=showMapBtn]'),
                     data = Ext.decode(response.responseText);
 
@@ -864,20 +864,22 @@ Ext.define('NOC.sa.managedobject.Controller', {
                         args: defaultHandler.args
                     });
                 }, me);
-                showMapBtn.setMenu(
-                    data.filter(function(el) {
-                        return !el.is_default
-                    }).map(function(el) {
-                        return {
-                            text: el.label,
-                            handler: function() {
-                                NOC.launch("inv.map", "history", {
-                                    args: el.args
-                                })
-                            }
+                showMapBtn.getMenu().removeAll();
+                menuItems = data.filter(function(el) {
+                    return !el.is_default
+                }).map(function(el) {
+                    return {
+                        text: el.label,
+                        handler: function() {
+                            NOC.launch("inv.map", "history", {
+                                args: el.args
+                            })
                         }
-                    })
-                );
+                    }
+                });
+                Ext.Array.each(menuItems, function(item) {
+                    showMapBtn.getMenu().add(item);
+                });
             },
             failure: function() {
                 NOC.error(__("Show Map Button : Failed to get data"));
@@ -887,7 +889,7 @@ Ext.define('NOC.sa.managedobject.Controller', {
     onCellClick: function(self, td, cellIndex, record) {
         var cellName = self.getGridColumns()[cellIndex].dataIndex;
         if(["interface_count", "link_count"].includes(cellName)) {
-            this.editManagedObject(undefined, record.id,);
+            this.editManagedObject(undefined, record.id, cellName);
         }
     },
     renderClickableCell: function(value, metaData) {
