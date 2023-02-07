@@ -108,6 +108,7 @@ class Profile(BaseProfile):
         "136": "MES-5316A",
         "142": "MES-3348F",  # rev.B
         "190": "MES-3324F",  # rev.B
+        "235": "MES-2348P",
     }
 
     REVISIONS = {"190": "rev.B"}
