@@ -65,7 +65,7 @@ class ReportEngine(object):
         #
         from noc.core.reporter.formatter.loader import loader as df_loader
 
-        formatter = df_loader[output_type.value]
+        formatter = df_loader[template.formatter]
         fmt = formatter(band_data, template, output_type, output_stream)
         fmt.render_document()
 
@@ -89,7 +89,7 @@ class ReportEngine(object):
     ) -> Iterable[BandData]:
         """
 
-        :param rb:
+        :param report_band:
         :param root_band:
         :return:
         """
@@ -97,12 +97,22 @@ class ReportEngine(object):
             report_band.queries, root_band.get_data(), root_band=root
         )
         if not report_band.children:
-            band = BandData(report_band.name, root_band, report_band.orientation)
+            band = BandData(
+                report_band.name,
+                root_band,
+                report_band.orientation,
+                title_template=report_band.title_template,
+            )
             band.rows = rows
             yield band
             return
-        for d in rows.sort("mac").to_dicts():
-            band = BandData(report_band.name, root_band, report_band.orientation)
+        for d in rows.to_dicts():
+            band = BandData(
+                report_band.name,
+                root_band,
+                report_band.orientation,
+                title_template=report_band.title_template,
+            )
             band.set_data(d)
             yield band
 
@@ -122,7 +132,7 @@ class ReportEngine(object):
         for rb in report_band.iter_nester():
             bd_parent = root.find_band_recursively(rb.parent.name)
             logger.info(
-                "Proccessed ReporBand: %s; Parent BandData: %s", rb.name, bd_parent
+                "Proccessed ReportBand: %s; Parent BandData: %s", rb.name, bd_parent
             )  # Level needed ?
             if bd_parent.parent:
                 # Fill parent DataBand children row

@@ -21,9 +21,8 @@ class BandOrientation(enum.Enum):
 class OutputType(enum.Enum):
     HTML = "html"
     XLSX = "xlsx"
-    CUSTOM = "custom"
-    TABLE = "table"
     CSV = "csv"
+    PDF = "pdf"
 
 
 @dataclass
@@ -45,6 +44,7 @@ class ReportQuery(object):
 @dataclass
 class ReportBand(object):
     name: str
+    title_template: Optional[str] = None  # Title format for Section row
     queries: Optional[List[ReportQuery]] = None
     parent: Optional["ReportBand"] = None
     orientation: BandOrientation = "H"  # Relevant only for xlsx template
@@ -75,6 +75,7 @@ class Template(object):
     code: str = "DEFAULT"  # ReportTemplate.DEFAULT_TEMPLATE_CODE;
     # documentPath: str
     content: Optional[bytes] = None
+    formatter: Optional[str] = None  # Formatter name. Or Autodetect by content
     output_name_pattern: Optional[str] = "report.html"
     handler: Optional[str] = None  # For custom code
     custom: bool = False
@@ -104,11 +105,15 @@ class ReportField(object):
 
 @dataclass
 class Report(object):
-    name: str
-    root_band: ReportBand
-    templates: Dict[str, Template]  # template_code -> template
-    parameters: Optional[List[Parameter]] = None
-    field_format: Optional[List[ReportField]] = None
+    """
+    Report Configuration
+    """
+
+    name: str  # Report Name
+    root_band: ReportBand  # Report Band
+    templates: Dict[str, Template]  # Report Templates: template_code -> Template
+    parameters: Optional[List[Parameter]] = None  # Report Parameters
+    # field_format: Optional[List[ReportField]] = None
 
     def get_root_band(self) -> ReportBand:
         return self.root_band
@@ -131,7 +136,7 @@ class Report(object):
 @dataclass
 class RunParams(object):
     report: Report
-    report_template: Optional[str] = None  # Report Template Code
+    report_template: Optional[str] = None  # Report Template Code, Use default if not set
     output_type: Optional[OutputType] = None
     params: Optional[Dict[str, Any]] = None
     output_name_pattern: Optional[str] = None

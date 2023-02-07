@@ -2,57 +2,59 @@ name: report
 templates:
   DEFAULT:
     code: DEFAULT
-    output_type: table
+    formatter: table
+    output_type: csv
 root_band:
   name: Root
   children:
     - name: header
     - name: master_data
+      title_template: '{{ mac }} {{ reason }}'
       orientation: H
       queries:
         - name: q1
-          query: root_band.rows.groupby(by="mac").agg(pl.first('reason'))
+          query: root_band.rows.groupby(by="mac").agg(pl.first('reason')).sort("mac")
       children:
         - name: duplicate_detail
           orientation: H
           queries:
            - name: detail
-             query: root_band.rows.filter(pl.col('mac') == ctx['mac'])
+             query: root_band.rows.filter(pl.col('mac') == ctx['mac']).select(['name', 'address', 'pool'])
   queries:
     - name: duplicate
       json: '[{"address": "10.0.0.11",
               "pool": "58d6cbbfc165cf2ea8edc242",
-              "profile": "91#995686",
+              "name": "91#995686",
               "mac": "00:0E:5E:00:01:02",
               "reason": "Other"},
              {"address": "10.0.0.15",
               "pool": "58d6cbbfc165cf2ea8edc242",
-              "profile": "111#995706",
+              "name": "111#995706",
               "mac": "00:0E:5E:00:01:02",
               "reason": "Other"},
              {"address": "10.0.0.40",
               "pool": "58d6cbbfc165cf2ea8edc242",
-              "profile": "192#1229613",
+              "name": "192#1229613",
               "mac": "00:1F:CE:00:01:02",
               "reason": "Other"},
              {"address": "10.0.0.161",
               "pool": "58d6cbbfc165cf2ea8edc242",
-              "profile": "51#1232468",
+              "name": "51#1232468",
               "mac": "00:1F:CE:00:01:02",
               "reason": "Other"},
              {"address": "10.0.0.47",
               "pool": "58d6cbbfc165cf2ea8edc242",
-              "profile": "21#1036646",
+              "name": "21#1036646",
               "mac": "00:00:00:00:00:00",
               "reason": "Other"},
              {"address": "10.0.0.254",
               "pool": "58d6cbbfc165cf2ea8edc242",
-              "profile": "6/1#1045306",
+              "name": "6/1#1045306",
               "mac": "00:00:00:00:00:00",
               "reason": "Other"},
              {"address": "11.0.0.25",
               "pool": "58d6cbbfc165cf2ea8edc242",
-              "profile": "cx300#1051006",
+              "name": "cx300#1051006",
               "mac": "00:00:00:00:00:00",
               "reason": "Other"}
             ]'
