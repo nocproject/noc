@@ -503,7 +503,7 @@ class CLI(BaseCLI):
                 self.script.credentials.get("super_password", "") or "",
                 encoding=self.native_encoding,
             )
-            + (self.profile.username_submit or b"\n"),
+            + (self.profile.password_submit or b"\n"),
             shadow=True,
         )
         if self.super_password_retries > 1:
