@@ -72,7 +72,7 @@ class ManagedObjectApplication(ExtModelApplication):
     attrs = ModelInline(ManagedObjectAttribute)
     cfg = RepoInline("config", access="config")
 
-    extra_permissions = ["alarm", "change_interface"]
+    extra_permissions = ["alarm", "change_interface", "commands"]
     implied_permissions = {"read": ["inv:networksegment:lookup", "main:handler:lookup"]}
     diverged_permissions = {"config": "read", "console": "script"}
     order_map = {
@@ -282,7 +282,7 @@ class ManagedObjectApplication(ExtModelApplication):
         :return:
         """
         return {
-            "id": str(o.id),
+            "id": o.id,
             "name": o.name,
             "address": o.address,
             "is_managed": o.is_managed,
@@ -290,7 +290,7 @@ class ManagedObjectApplication(ExtModelApplication):
             "object_profile": str(o.object_profile.name),
             "segment": str(o.segment.name),
             "auth_profile": str(o.auth_profile.name) if o.auth_profile else "",
-            "profile_name": o.profile.name,
+            "profile": o.profile.name,
             "pool": str(o.pool.name),
             "platform": o.platform.name if o.platform else "",
             "version": o.version.version if o.version else "",
@@ -311,7 +311,8 @@ class ManagedObjectApplication(ExtModelApplication):
                     "fg_color2": f"#{ll.fg_color2:06x}",
                 }
                 for ll in Label.objects.filter(name__in=o.labels).order_by("display_order")
-            ],
+            ]
+            # "row_class": ""
         }
 
     def clean(self, data):
