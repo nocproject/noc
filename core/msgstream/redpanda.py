@@ -99,7 +99,7 @@ class RedPandaClient(object):
                     isr=list(p_meta.isr),
                 )
         # Fetch newest offset
-        con = await self.get_consumer()
+        # con = await self.get_consumer()
         # await con.start()
         # offsets = await con.end_offsets(req_parts)
         # for tp, offset in offsets.items():
@@ -252,7 +252,7 @@ class RedPandaClient(object):
 
         Client Example:
         # consumer = AIOKafkaConsumer(
-        #     bootstrap_servers='10.36.129.20:9092,10.36.129.19:9092,10.36.129.21:9092'
+        #     bootstrap_servers='10.10.10.20:9092,10.10.10.19:9092,10.10.10.21:9092'
         # )
         # consumer = AIOKafkaConsumer(
         #     loop=loop, bootstrap_servers='localhost:9092',
@@ -277,8 +277,7 @@ class RedPandaClient(object):
         :param allow_isr:
         :return:
         """
-        consumer = await self.get_consumer()
-        to_restore_position = True
+        consumer = await self.get_consumer(group_id=stream)
         if partition is not None:
             consumer.assign([TopicPartition(topic=stream, partition=partition)])
         else:
@@ -293,12 +292,13 @@ class RedPandaClient(object):
                 {tp: start_timestamp}
             )
             consumer.seek(tp, offset[tp].offset)
-        elif to_restore_position:
-            logger.debug("Getting stored offset for stream '%s'", stream)
-            r = await consumer.seek_to_committed(tp)
-            logger.debug("Resuming from offset %d", r[tp])
         else:
-            await consumer.seek_to_end(*tp)
+            logger.info("Getting stored offset for stream '%s'", stream)
+            r = await consumer.seek_to_committed(tp)
+            if r[tp] is not None:
+                logger.info("Resuming from offset %d", r[tp])
+            else:
+                await consumer.seek_to_end(tp)
         # async with consumer as c:
         async for msg in consumer:
             yield Message(

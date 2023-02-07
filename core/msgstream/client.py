@@ -13,8 +13,6 @@ from typing import Optional, Dict, AsyncIterable, Any
 import orjson
 
 # NOC modules
-from noc.core.msgstream.liftbridge import LiftBridgeClient
-from noc.core.msgstream.redpanda import RedPandaClient
 from noc.core.handler import get_handler
 from .message import Message, PublishRequest
 from .config import get_stream
