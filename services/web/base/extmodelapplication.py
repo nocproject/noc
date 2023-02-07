@@ -297,7 +297,7 @@ class ExtModelApplication(ExtApplication):
             ):
                 continue
             v = q[p]
-            if self.in_param in p:
+            if self.in_param in p and isinstance(v, str):
                 v = v.split(",")
             if v == "\x00":
                 v = None
