@@ -19,7 +19,7 @@ class Profile(BaseProfile):
         (
             rb"Destination filename startup-config\? \[y\/n\]",
             b"y",
-        )
+        ),
     ]
     pattern_unprivileged_prompt = rb"^(?P<hostname>\S+?)>"
     pattern_prompt = rb"^(?P<hostname>\S+?)(?:\(config\))?#"
