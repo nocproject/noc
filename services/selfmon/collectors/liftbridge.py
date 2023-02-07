@@ -40,14 +40,17 @@ class LiftbridgeStreamCollector(BaseCollector):
         self._broker = [f"{svc.host}:{svc.port}"]
 
     async def get_meta(self) -> Metadata:
+        await self.resolve_liftbridge()
         async with LiftbridgeClient(self._broker) as client:
             return await client.get_metadata()
 
     async def get_partition_meta(self, stream, partition) -> PartitionMetadata:
+        await self.resolve_liftbridge()
         async with LiftbridgeClient(self._broker) as client:
             return await client.get_partition_metadata(stream, partition)
 
     async def fetch_cursor(self, stream, partition, name):
+        await self.resolve_liftbridge()
         async with LiftbridgeClient(self._broker) as client:
             return await client.get_cursor(stream=stream, partition=partition, cursor_id=name)
 
