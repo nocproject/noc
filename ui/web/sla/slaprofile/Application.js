@@ -110,20 +110,6 @@ Ext.define("NOC.sla.slaprofile.Application", {
                             renderer: NOC.render.Lookup("metric_type")
                         },
                         {
-                            text: __("Box"),
-                            dataIndex: "enable_box",
-                            width: 50,
-                            renderer: NOC.render.Bool,
-                            editor: "checkbox"
-                        },
-                        {
-                            text: __("Periodic"),
-                            dataIndex: "enable_periodic",
-                            width: 50,
-                            renderer: NOC.render.Bool,
-                            editor: "checkbox"
-                        },
-                        {
                             text: __("Stored"),
                             dataIndex: "is_stored",
                             width: 50,
@@ -131,13 +117,13 @@ Ext.define("NOC.sla.slaprofile.Application", {
                             editor: "checkbox"
                         },
                         {
-                            text: __("Profile"),
-                            dataIndex: "threshold_profile",
-                            width: 150,
+                            text: __("Interval"),
+                            dataIndex: "interval",
                             editor: {
-                                xtype: "pm.thresholdprofile.LookupField"
-                            },
-                            renderer: NOC.render.Lookup("threshold_profile")
+                                xtype: "numberfield",
+                                minValue: 0,
+                                defaultValue: 300,
+                            }
                         }
                     ]
                 }
