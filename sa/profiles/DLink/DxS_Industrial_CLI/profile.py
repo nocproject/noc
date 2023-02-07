@@ -2,7 +2,7 @@
 # Vendor: DLink
 # OS:     DxS_Industrial_CLI
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2021 The NOC Project
+# Copyright (C) 2007-2023 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -14,8 +14,15 @@ class Profile(BaseProfile):
     name = "DLink.DxS_Industrial_CLI"
 
     pattern_more = [(rb"CTRL\+C.+?a A[Ll][Ll]\s*", b"a")]
+    pattern_more = [
+        (rb"CTRL\+C.+?a A[Ll][Ll]\s*", b"a"),
+        (
+            rb"Destination filename startup-config\? \[y\/n\]",
+            b"y",
+        )
+    ]
     pattern_unprivileged_prompt = rb"^(?P<hostname>\S+?)>"
-    pattern_prompt = rb"^(?P<hostname>\S+?)#"
+    pattern_prompt = rb"^(?P<hostname>\S+?)(?:\(config\))?#"
     pattern_syntax_error = rb"% Invalid input detected at"
     command_disable_pager = "terminal length 0"
     command_super = b"enable"
