@@ -2890,6 +2890,7 @@ class ManagedObject(NOCModel):
                     scope_name=mc.metric_type.scope.table_name,
                     is_stored=mc.is_stored,
                     is_compose=mc.metric_type.is_compose,
+                    interval=mc.interval,
                 )
             )
         if metrics:
@@ -3114,7 +3115,6 @@ class ManagedObject(NOCModel):
             attrs={"address": self.address, "mo": self},
         )
 
-    @cachetools.cached()
     def get_metric_discovery_interval(self) -> int:
         """
         Return Metric Discovery interval by MetricConfigs

@@ -25,7 +25,7 @@ class MetricItem(object):
         :param collected_interval:
         :return:
         """
-        return collected_interval * max(1, round(collected_interval, self.interval))
+        return collected_interval * max(1, round(collected_interval / self.interval))
 
 
 @dataclass(frozen=True)
@@ -58,4 +58,4 @@ class MetricCollectorConfig(object):
             return f"sla:{self.sla_probe}:{interval}"
         elif self.collector == "sensor":
             return f"sensor:{self.sensor}:{interval}"
-        return f"managed_object:{','.join(self.labels)}:{interval}"
+        return f"managed_object:{','.join(self.labels or [])}:{interval}"

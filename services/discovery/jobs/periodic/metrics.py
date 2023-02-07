@@ -12,6 +12,7 @@ from typing import Any, List, Dict, Iterable, Optional
 
 # Third-party modules
 import orjson
+from noc.core.bi.decorator import bi_hash
 from pymongo import ReadPreference
 
 # NOC modules
@@ -93,7 +94,7 @@ class MetricsCheck(DiscoveryCheck):
                 ie = m.get_effective_collected_interval(interval)  # Is collected ?
                 if ie > m.interval:
                     p_sc = ie / m.interval
-                    o_sc = hash(mc.get_source_code(m.interval)) % p_sc
+                    o_sc = bi_hash(mc.get_source_code(m.interval)) % p_sc
                     if self.job.get_runs() % p_sc != o_sc:  # runs
                         continue
                 mt_name = m.name.replace(" ", "_")
