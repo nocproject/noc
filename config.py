@@ -245,6 +245,7 @@ class Config(BaseConfig):
             default=True, help="Sync diagnostic labels on Box discovery"
         )
         sample = IntParameter(default=0)
+        min_metric_interval = IntParameter(default=60)
 
     class dns(ConfigSection):
         warn_before_expired = SecondsParameter(default="30d")

@@ -2864,7 +2864,7 @@ class ManagedObject(NOCModel):
         self.initial_data = _get_field_snapshot(self.__class__, self)
 
     def iter_collected_metrics(
-        self, is_box: bool = False, is_periodic: bool = True
+        self,
     ) -> Iterable[MetricCollectorConfig]:
         """
         Return metrics setting for colleted by box or periodic
@@ -2879,8 +2879,9 @@ class ManagedObject(NOCModel):
         from noc.inv.models.interfaceprofile import InterfaceProfile
 
         metrics: List[MetricItem] = []
+
         for mc in ManagedObjectProfile.get_object_profile_metrics(self.object_profile.id).values():
-            if (is_box and not mc.enable_box) or (is_periodic and not mc.enable_periodic):
+            if not mc.interval:
                 continue
             metrics.append(
                 MetricItem(
@@ -2916,7 +2917,7 @@ class ManagedObject(NOCModel):
                 continue  # No metrics configured
             metrics: List[MetricItem] = []
             for mc in i_profile.metrics:
-                if (is_box and not mc.enable_box) or (is_periodic and not mc.enable_periodic):
+                if not mc.interval:
                     continue
                 # Check metric collected policy
                 if not i_profile.allow_collected_metric(
@@ -2929,6 +2930,7 @@ class ManagedObject(NOCModel):
                     scope_name=mc.metric_type.scope.table_name,
                     is_stored=mc.is_stored,
                     is_compose=mc.metric_type.is_compose,
+                    interval=mc.interval,
                 )
                 if mi not in metrics:
                     metrics.append(mi)
@@ -2941,6 +2943,7 @@ class ManagedObject(NOCModel):
                             scope_name=mc.metric_type.scope.table_name,
                             is_stored=True,
                             is_compose=False,
+                            interval=mc.interval,
                         )
                         if mi not in metrics:
                             metrics.append(mi)
@@ -3110,6 +3113,20 @@ class ManagedObject(NOCModel):
             level=self.object_profile.level,
             attrs={"address": self.address, "mo": self},
         )
+
+    @cachetools.cached()
+    def get_metric_discovery_interval(self) -> int:
+        """
+        Return Metric Discovery interval by MetricConfigs
+        :return:
+        """
+        intervals = []
+        for mc in self.iter_collected_metrics():
+            intervals += [mi.interval for mi in mc.metrics if mi.interval]
+        r = min(intervals)
+        if r < config.discovery.min_metric_interval:
+            return config.discovery.min_metric_interval
+        return max(r, 0)
 
 
 @on_save

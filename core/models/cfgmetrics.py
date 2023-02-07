@@ -17,6 +17,15 @@ class MetricItem(object):
     scope_name: str = field(compare=False)
     is_stored: bool = field(compare=False, default=True)
     is_compose: bool = field(compare=False, default=False)
+    interval: int = field(compare=False, default=300)
+
+    def get_effective_collected_interval(self, collected_interval: int):
+        """
+        Calculated Effective collected interval
+        :param collected_interval:
+        :return:
+        """
+        return collected_interval * max(1, round(collected_interval, self.interval))
 
 
 @dataclass(frozen=True)
@@ -38,3 +47,15 @@ class MetricCollectorConfig(object):
         if not self.hints:
             return {}
         return dict(v.split("::") for v in self.hints)
+
+    def get_source_code(self, interval: int):
+        """
+        Get Source Code for metric
+        :param interval: Metric Collected Interval
+        :return:
+        """
+        if self.collector == "sla":
+            return f"sla:{self.sla_probe}:{interval}"
+        elif self.collector == "sensor":
+            return f"sensor:{self.sensor}:{interval}"
+        return f"managed_object:{','.join(self.labels)}:{interval}"

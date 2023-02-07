@@ -225,13 +225,9 @@ class Sensor(Document):
         if instance.managed_object:
             yield list(instance.managed_object.effective_labels)
 
-    def iter_collected_metrics(
-        self, is_box: bool = False, is_periodic: bool = True
-    ) -> Iterable[MetricCollectorConfig]:
+    def iter_collected_metrics(self) -> Iterable[MetricCollectorConfig]:
         """
         Return metrics setting for colleted by box or periodic
-        :param is_box:
-        :param is_periodic:
         :return:
         """
         if not self.state.is_productive or not self.profile.enable_collect or not self.snmp_oid:
@@ -240,7 +236,12 @@ class Sensor(Document):
         for mt_name in ["Sensor | Value", "Sensor | Status"]:
             mt = MetricType.get_by_name(mt_name)
             metrics += [
-                MetricItem(name=mt_name, field_name=mt.field_name, scope_name=mt.scope.table_name)
+                MetricItem(
+                    name=mt_name,
+                    field_name=mt.field_name,
+                    scope_name=mt.scope.table_name,
+                    interval=self.profile.collect_interval,
+                )
             ]
         if not metrics:
             # self.logger.info("SLA metrics are not configured. Skipping")

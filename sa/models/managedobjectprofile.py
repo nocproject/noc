@@ -63,18 +63,14 @@ metrics_lock = Lock()
 @dataclass
 class MetricConfig(object):
     metric_type: MetricType
-    enable_box: bool
-    enable_periodic: bool
     is_stored: bool
-    threshold_profile: Optional[ThresholdProfile]
+    interval: int
 
 
 class ModelMetricConfigItem(BaseModel):
     metric_type: str
-    enable_box: bool = False
-    enable_periodic: bool = True
     is_stored: bool = True
-    threshold_profile: Optional[str] = None
+    interval: int = 0
 
     def __str__(self):
         return self.metric_type
@@ -942,17 +938,7 @@ class ManagedObjectProfile(NOCModel):
             mt = MetricType.get_by_id(mt_id)
             if not mt:
                 continue
-            if m.get("threshold_profile"):
-                threshold_profile = ThresholdProfile.get_by_id(m.get("threshold_profile"))
-            else:
-                threshold_profile = None
-            r[mt.name] = MetricConfig(
-                mt,
-                m.get("enable_box", True),
-                m.get("enable_periodic", True),
-                m.get("is_stored", True),
-                threshold_profile,
-            )
+            r[mt.name] = MetricConfig(mt, m.get("is_stored", True), m.get("interval", 0))
         return r
 
 

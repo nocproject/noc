@@ -51,10 +51,8 @@ NON_DISABLED_METRIC_TYPE = {"Interface | Status | Oper", "Interface | Status | A
 @dataclass
 class MetricConfig(object):
     metric_type: MetricType
-    enable_box: bool
-    enable_periodic: bool
     is_stored: bool
-    threshold_profile: Optional[ThresholdProfile]
+    interval: int
 
 
 class MatchRule(EmbeddedDocument):
@@ -73,14 +71,10 @@ class InterfaceProfileMetrics(EmbeddedDocument):
     meta = {"strict": False}
     metric_type = ReferenceField(MetricType, required=True)
     # Metric collection settings
-    # Enable during box discovery
-    enable_box = BooleanField(default=False)
-    # Enable during periodic discovery
-    enable_periodic = BooleanField(default=True)
     # Send metrics to persistent store
     is_stored = BooleanField(default=True)
-    # Threshold processing
-    threshold_profile = ReferenceField(ThresholdProfile)
+    # Interval for collecter metrics
+    interval = IntField(default=300, min_value=0)
 
     def __str__(self):
         return (
@@ -270,9 +264,7 @@ class InterfaceProfile(Document):
         :param m:
         :return:
         """
-        return MetricConfig(
-            m.metric_type, m.enable_box, m.enable_periodic, m.is_stored, m.threshold_profile
-        )
+        return MetricConfig(m.metric_type, m.is_stored, m.interval)
 
     @classmethod
     @cachetools.cachedmethod(

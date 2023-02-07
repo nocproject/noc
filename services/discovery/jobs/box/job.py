@@ -142,8 +142,6 @@ class BoxDiscoveryJob(MODiscoveryJob):
                 check(self).run()
         if self.object.object_profile.enable_box_discovery_sla:
             SLACheck(self).run()
-        if self.object.object_profile.enable_box_discovery_metrics:
-            MetricsCheck(self).run()
         if self.object.object_profile.enable_box_discovery_hk:
             HouseKeepingCheck(self).run()
         DiagnosticCheck(self, run_order="E").run()

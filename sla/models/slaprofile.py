@@ -43,23 +43,18 @@ metrics_lock = Lock()
 @dataclass
 class MetricConfig(object):
     metric_type: MetricType
-    enable_box: bool
-    enable_periodic: bool
     is_stored: bool
-    threshold_profile: Optional[ThresholdProfile]
+    interval: int
 
 
 class SLAProfileMetrics(EmbeddedDocument):
     metric_type: MetricType = ReferenceField(MetricType, required=True)
     # Metric collection settings
     # Enable during box discovery
-    enable_box = BooleanField(default=False)
-    # Enable during periodic discovery
-    enable_periodic = BooleanField(default=True)
     # Send metrics to persistent store
     is_stored = BooleanField(default=True)
     # Threshold processing
-    threshold_profile: ThresholdProfile = ReferenceField(ThresholdProfile)
+    interval = IntField(default=300, min_value=0)
 
 
 @bi_sync
@@ -143,9 +138,7 @@ class SLAProfile(Document):
         :param m:
         :return:
         """
-        return MetricConfig(
-            m.metric_type, m.enable_box, m.enable_periodic, m.is_stored, m.threshold_profile
-        )
+        return MetricConfig(m.metric_type, m.is_stored, m.interval)
 
     @classmethod
     @cachetools.cachedmethod(
