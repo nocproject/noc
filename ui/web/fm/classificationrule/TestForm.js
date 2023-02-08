@@ -1,7 +1,7 @@
 //---------------------------------------------------------------------
 // fm.classificationrule rule test form
 //---------------------------------------------------------------------
-// Copyright (C) 2007-2013 The NOC Project
+// Copyright (C) 2007-2023 The NOC Project
 // See LICENSE for details
 //---------------------------------------------------------------------
 console.debug("Defining NOC.fm.classificationrule.TestForm");
@@ -65,8 +65,8 @@ Ext.define("NOC.fm.classificationrule.TestForm", {
             scope: me,
             jsonData: {
                 data: data,
-                patterns: me.app.getPatterns(),
-                vars: me.app.getVars(),
+                patterns: fd.patterns,
+                vars: fd.vars,
                 event_class: fd.event_class
             },
             success: function(response) {
