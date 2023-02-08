@@ -10,6 +10,7 @@ Ext.define('NOC.sa.managedobject.Controller', {
         "Ext.ux.grid.column.GlyphAction",
     ],
     alias: 'controller.managedobject',
+    url: '/sa/managedobject/',
 
     init: function(app) {
         var selectionGrid = app.lookupReference('saManagedobjectSelectionGrid');
@@ -705,6 +706,67 @@ Ext.define('NOC.sa.managedobject.Controller', {
             blob = new Blob([text], {type: "text/plain;charset=utf-8"});
         saveAs(blob, 'result.txt');
     },
+    onGroupEdit: function() {
+        var selectedModels = this.lookupReference('saManagedobjectSelectedGrid1').getStore().getData().items,
+            selectedIds = Ext.Array.map(selectedModels, function(record) {return record.id}),
+            formCmp = this.getView().down('[itemId=managedobject-form-panel]'),
+            form = formCmp.getForm(),
+            disabledFields = Ext.Array.filter(form.getFields().items, function(field) {return !field.groupEdit}),
+            groupEditFields = Ext.Array.filter(form.getFields().items, function(field) {return field.groupEdit});
+        parentCmp = this.lookupReference('saManagedobjectSelectedGrid1').up();
+        Ext.Array.each(disabledFields, function(field) {field.setDisabled(true)});
+        this.view.down('[itemId=formTitle]').update(Ext.String.format(
+            formCmp.up().groupChangeTitle, selectedIds.length, formCmp.up('[itemId=sa-managedobject]').appTitle
+        ));
+        this.displayButtons(["closeBtn", "groupSaveBtn"]);
+        form.reset();
+        parentCmp.mask(__('Loading'));
+        Ext.Ajax.request({
+            url: this.url + "full/",
+            method: "POST",
+            scope: this,
+            jsonData: {
+                id__in: selectedIds,
+            },
+            success: function(response) {
+                var selection = Ext.decode(response.responseText),
+                    isSameValue = function(data, name) {
+                        var i, isSameValue = true, initValue = data[0][name];
+                        for(i = 0; i < selection.length; i++) {
+                            if(selection[i][name] !== initValue) {
+                                isSameValue = false;
+                                break;
+                            }
+                        }
+                        return isSameValue;
+                    },
+                    isLookup = function(object, name) {
+                        return Ext.Array.contains(Ext.Object.getKeys(object), name + "__label");
+                    };
+                parentCmp.unmask();
+                this.getView().getLayout().setActiveItem('managedobject-form');
+                Ext.Array.each(groupEditFields, function(field) {
+                    var value = selection[0][field.name];
+                    if(value) {
+                        if(isSameValue(selection, field.name)) {
+                            if(isLookup(selection[0], field.name)) {
+                                value = {[field.displayField]: selection[0][field.name + '__label'], [field.valueField]: selection[0][field.name]};
+                            }
+                        } else {
+                            value = "Leave unchanged";
+                        }
+                        field.setValue(value);
+                    }
+                }, this);
+            },
+            failure: function() {
+                if(gridView) {
+                    parentCmp.unmask();
+                }
+                NOC.error(__("Failed get group MO detail"));
+            }
+        });
+    },
     onEdit: function(gridView, rowIndex, colIndex, item, e, record) {
         this.editManagedObject(gridView.up('[itemId=sa-managedobject]'), record.id);
     },
@@ -715,11 +777,11 @@ Ext.define('NOC.sa.managedobject.Controller', {
         view.getLayout().setActiveItem('managedobject-form');
     },
     editManagedObject: function(gridView, id, suffix) {
-        var url = '/sa/managedobject/' + id + '/',
+        var url = this.url + id + '/',
             view = this.getView();
 
         if(gridView) {
-            gridView.mask(__("Loading ..."));
+            gridView.mask(__('Loading'));
         }
         Ext.Ajax.request({
             url: url,
@@ -743,6 +805,7 @@ Ext.define('NOC.sa.managedobject.Controller', {
                     formPanel.recordId = id;
                     formPanel.currentRecord = record;
                     form = formPanel.getForm();
+                    Ext.Array.each(form.getFields().items, function(field) {field.setDisabled(false)});
                     Ext.iterate(data, function(v) {
                         if(v.indexOf("__") !== -1) {
                             return
@@ -773,6 +836,9 @@ Ext.define('NOC.sa.managedobject.Controller', {
                     this.loadInlineStore(formPanel, data.id);
                     view.setHistoryHash(data.id);
                     view.getLayout().setActiveItem('managedobject-form').down().setActiveItem('managedobject-form-panel');
+                    this.displayButtons(["closeBtn", "saveBtn", "resetBtn", "deleteBtn", "createBtn", "cloneBtn", "showMapBtn",
+                        "configBtn", "confDBBtn", "cardBtn", "dashboardBtn", "consoleBtn", "scriptsBtn", "interfacesBtn",
+                        "sensorsBtn", "linksBtn", "discoverBtn", "alarmsBtn", "inventoryBtn", "cmdBtn", "helpBtn"]);
                     if(suffix) {
                         formView.getController().itemPreview('sa-' + suffix);
                     }
@@ -896,4 +962,10 @@ Ext.define('NOC.sa.managedobject.Controller', {
         metaData.tdStyle = "text-decoration-line: underline;cursor: pointer;";
         return value;
     },
+    displayButtons(displayItems) {
+        var formButtons = this.getView().down('[itemId=managedobject-form]').down().getDockedItems()[0].getRefItems();
+        Ext.Array.each(formButtons, function(button) {
+            button.setVisible(Ext.Array.contains(displayItems, button.itemId));
+        })
+    }
 });

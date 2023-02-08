@@ -78,7 +78,10 @@ Ext.define('NOC.sa.managedobject.form.View', {
                     xtype: "container",
                     html: "Title",
                     itemId: "formTitle",
-                    padding: "0 0 4 0"
+                    padding: 4,
+                    style: {
+                        fontWeight: "bold"
+                    }
                 },
                 {
                     xtype: "fieldset",
@@ -88,6 +91,7 @@ Ext.define('NOC.sa.managedobject.form.View', {
                     border: false,
                     items: [
                         {
+                            border: false,
                             items: [ // first column
                                 {
                                     name: "name",
@@ -121,6 +125,7 @@ Ext.define('NOC.sa.managedobject.form.View', {
                                 }
                             ]
                         }, {
+                            border: false,
                             items: [ // second column
                                 {
                                     name: "diagnostics",
@@ -1443,7 +1448,14 @@ Ext.define('NOC.sa.managedobject.form.View', {
                 handler: "onSaveRecord",
             },
             {
-                itemId: "close",
+                itemId: "groupSaveBtn",
+                text: __("Save"),
+                tooltip: __("Save changes"),
+                glyph: NOC.glyph.save,
+                handler: "onSaveRecords",
+            },
+            {
+                itemId: "closeBtn",
                 text: __("Close"),
                 tooltip: __("Close without saving"),
                 glyph: NOC.glyph.arrow_left,
@@ -1489,42 +1501,50 @@ Ext.define('NOC.sa.managedobject.form.View', {
                 ],
             },
             {
+                itemId: "configBtn",
                 text: __("Config"),
                 glyph: NOC.glyph.file,
                 handler: "onConfig"
             },
             {
+                itemId: "confDBBtn",
                 text: __("ConfDB"),
                 glyph: NOC.glyph.file_code_o,
                 handler: "onConfDB"
             },
             {
+                itemId: "cardBtn",
                 text: __("Card"),
                 glyph: NOC.glyph.eye,
                 handler: "onCard"
             },
             {
+                itemId: "dashboardBtn",
                 text: __("Dashboard"),
                 glyph: NOC.glyph.line_chart,
                 tooltip: __("Show dashboard"),
                 handler: "onDashboard"
             },
             {
+                itemId: "consoleBtn",
                 text: __("Console"),
                 glyph: NOC.glyph.terminal,
                 handler: "onConsole"
             },
             {
+                itemId: "scriptsBtn",
                 text: __("Scripts"),
                 glyph: NOC.glyph.play,
                 handler: "onScripts"
             },
             {
+                itemId: "interfacesBtn",
                 text: __("Interfaces"),
                 glyph: NOC.glyph.reorder,
                 handler: "onInterfaces"
             },
             {
+                itemId: "sensorsBtn",
                 text: __("Sensors"),
                 glyph: NOC.glyph.thermometer_full,
                 handler: "onSensors"
@@ -1535,16 +1555,19 @@ Ext.define('NOC.sa.managedobject.form.View', {
             //     handler: "onCPE"
             // },
             {
+                itemId: "linksBtn",
                 text: __("Links"),
                 glyph: NOC.glyph.link,
                 handler: "onLinks"
             },
             {
+                itemId: "discoverBtn",
                 text: __("Discovery"),
                 glyph: NOC.glyph.search,
                 handler: "onDiscovery"
             },
             {
+                itemId: "alarmsBtn",
                 text: __("Alarms"),
                 glyph: NOC.glyph.exclamation_triangle,
                 handler: "onAlarm"
@@ -1555,11 +1578,13 @@ Ext.define('NOC.sa.managedobject.form.View', {
             //     handler: "onMaintenance"
             // },
             {
+                itemId: "inventoryBtn",
                 text: __("Inventory"),
                 glyph: NOC.glyph.list,
                 handler: "onInventory"
             },
             {
+                itemId: "cmdBtn",
                 text: __("Command Log"),
                 glyph: NOC.glyph.film,
                 handler: "onInteractions"
@@ -1576,7 +1601,7 @@ Ext.define('NOC.sa.managedobject.form.View', {
             // },
             "->",
             {
-                itemId: "formHelp",
+                itemId: "helpBtn",
                 glyph: NOC.glyph.question_circle,
                 tooltip: __("Form Help"),
                 handler: "onHelpOpener"

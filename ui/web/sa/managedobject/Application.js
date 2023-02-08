@@ -249,18 +249,23 @@ Ext.define('NOC.sa.managedobject.Application', {
                             xtype: 'splitbutton',
                             text: __('Group Operation'),
                             tooltip: __('Select Action'),
-                            style: {
-                                pointerEvents: 'all'
-                            },
                             bind: {
                                 disabled: '{!hasRecords}'
                             },
                             menu: new Ext.menu.Menu({
                                 items: [
-                                    {text: 'Run Commands', handler: 'toNext'},
-                                    {text: 'Item 2', handler: function() {alert("Item 2 clicked");}}
+                                    {text: __("Group Edit"), handler: 'onGroupEdit', glyph: NOC.glyph.edit},
                                 ]
                             })
+                        }, {
+                            itemId: "runCmdBtn",
+                            text: __("Run Commands"),
+                            glyph: NOC.glyph.play,
+                            bind: {
+                                disabled: '{!hasRecords}'
+                            },
+                            hasAccess: NOC.hasPermission("commands"),
+                            handler: "toNext"
                         }, {
                             itemId: "createBtn",
                             text: __("Add"),

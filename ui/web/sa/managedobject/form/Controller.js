@@ -31,6 +31,9 @@ Ext.define('NOC.sa.managedobject.form.Controller', {
         this.saveRecord(v);
 
     },
+    onSaveRecords: function() {
+
+    },
     onNewRecord: function() {
         this.newRecord();
     },
