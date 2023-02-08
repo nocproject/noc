@@ -4,9 +4,9 @@
 # Copyright (C) 2007-2021 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
-import datetime
 
 # Python modules
+import datetime
 import operator
 from threading import Lock
 from itertools import chain
@@ -313,8 +313,6 @@ class ManagedObjectProfile(NOCModel):
     enable_box_discovery_xmac = models.BooleanField(default=False)
     # Enable interface description discovery
     enable_box_discovery_ifdesc = models.BooleanField(default=False)
-    # Enable metrics
-    enable_box_discovery_metrics = models.BooleanField(default=False)
     # Enable Housekeeping
     enable_box_discovery_hk = models.BooleanField(default=False)
     # Enable Alarms
@@ -353,7 +351,7 @@ class ManagedObjectProfile(NOCModel):
         default="A",
     )
     # Collect metrics
-    enable_periodic_discovery_metrics = models.BooleanField(default=False)
+    enable_metrics = models.BooleanField(default=False)
     # Enable Alarms
     enable_periodic_discovery_alarms = models.BooleanField(default=False)
     # Enable CPE status
@@ -678,6 +676,8 @@ class ManagedObjectProfile(NOCModel):
     # Limits
     snmp_rate_limit = models.IntegerField(default=0)
     #
+    metrics_default_interval = models.IntegerField(default=300)
+    #
     metrics = PydanticField(
         "Metric Config Items",
         schema=MetricConfigItems,
@@ -940,7 +940,9 @@ class ManagedObjectProfile(NOCModel):
             mt = MetricType.get_by_id(mt_id)
             if not mt:
                 continue
-            r[mt.name] = MetricConfig(mt, m.get("is_stored", True), m.get("interval", 0))
+            r[mt.name] = MetricConfig(
+                mt, m.get("is_stored", True), m.get("interval") or opr.metrics_default_interval
+            )
         return r
 
 

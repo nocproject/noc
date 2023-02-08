@@ -77,6 +77,8 @@ class SLAProfile(Document):
     test_packets_num = IntField(default=10, min_value=1, max_value=60000)
     # Object id in BI
     bi_id = LongField(unique=True)
+    #
+    metrics_default_interval = IntField(default=0, min_value=0)
     # Interface profile metrics
     metrics: List[SLAProfileMetrics] = ListField(EmbeddedDocumentField(SLAProfileMetrics))
     # Labels
@@ -131,13 +133,16 @@ class SLAProfile(Document):
         return Label.get_effective_setting(label, "enable_slaprofile")
 
     @staticmethod
-    def config_from_settings(m: "SLAProfileMetrics") -> "MetricConfig":
+    def config_from_settings(
+        m: "SLAProfileMetrics", profile_interval: Optional[int] = None
+    ) -> "MetricConfig":
         """
         Returns MetricConfig from .metrics field
         :param m:
+        :param profile_interval:
         :return:
         """
-        return MetricConfig(m.metric_type, m.is_stored, m.interval)
+        return MetricConfig(m.metric_type, m.is_stored, m.interval or profile_interval)
 
     @classmethod
     @cachetools.cachedmethod(
@@ -149,5 +154,5 @@ class SLAProfile(Document):
         if not spr:
             return r
         for m in spr.metrics:
-            r[m.metric_type.name] = cls.config_from_settings(m)
+            r[m.metric_type.name] = cls.config_from_settings(m, spr.metrics_default_interval)
         return r

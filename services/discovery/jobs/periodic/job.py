@@ -17,7 +17,6 @@ from .uptime import UptimeCheck
 from .interfacestatus import InterfaceStatusCheck
 from .mac import MACCheck
 from .alarms import AlarmsCheck
-from .metrics import MetricsCheck
 from .cpestatus import CPEStatusCheck
 from .diagnostic import DiagnosticCheck
 
@@ -57,8 +56,6 @@ class PeriodicDiscoveryJob(MODiscoveryJob):
             AlarmsCheck(self).run()
         if self.object.object_profile.enable_periodic_discovery_mac:
             MACCheck(self).run()
-        if self.object.object_profile.enable_periodic_discovery_metrics:
-            MetricsCheck(self).run()
         DiagnosticCheck(self, run_order="E").run()
 
     def get_running_policy(self):

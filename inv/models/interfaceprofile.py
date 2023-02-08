@@ -170,6 +170,8 @@ class InterfaceProfile(Document):
         ],
         default="d",
     )
+    #
+    metrics_default_interval = IntField(default=0, min_value=0)
     # Interface profile metrics
     metrics = ListField(EmbeddedDocumentField(InterfaceProfileMetrics))
     # Alarm weight
@@ -257,13 +259,16 @@ class InterfaceProfile(Document):
         )
 
     @staticmethod
-    def config_from_settings(m: "InterfaceProfileMetrics") -> "MetricConfig":
+    def config_from_settings(
+        m: "InterfaceProfileMetrics", profile_interval: Optional[int] = None
+    ) -> "MetricConfig":
         """
         Returns MetricConfig from .metrics field
         :param m:
+        :param profile_interval:
         :return:
         """
-        return MetricConfig(m.metric_type, m.is_stored, m.interval)
+        return MetricConfig(m.metric_type, m.is_stored, m.interval or profile_interval)
 
     @classmethod
     @cachetools.cachedmethod(
@@ -275,7 +280,7 @@ class InterfaceProfile(Document):
         if not ipr:
             return r
         for m in ipr.metrics:
-            r[m.metric_type.name] = cls.config_from_settings(m)
+            r[m.metric_type.name] = cls.config_from_settings(m, ipr.metrics_default_interval)
         return r
 
     @property
@@ -300,6 +305,7 @@ class InterfaceProfile(Document):
         Check metric collected policy by interface status
         :param admin_status:
         :param oper_status:
+        :param metric_type:
         :return:
         """
         if self.status_discovery == "d" or self.metric_collected_policy == "e":
