@@ -12,6 +12,7 @@ Ext.define('NOC.sa.managedobject.form.Controller', {
         "NOC.sa.managedobject.Proxy",
     ],
     alias: 'controller.managedobject.form',
+    url: '/sa/managedobject/',
 
     toMain: function() {
         this.gotoItem('managedobject-select');
@@ -265,6 +266,31 @@ Ext.define('NOC.sa.managedobject.form.Controller', {
     reloadSelectionGrids: function() {
         this.getView().up('[itemId=sa-managedobject]').down('[reference=saManagedobjectSelectionGrid]').getStore().reload();
         // ToDo update reference=saManagedobjectSelectedGrid1, take new values from reference=saManagedobjectSelectionGrid
+        var basketGrid = this.getView().up('[itemId=sa-managedobject]').down('[reference=saManagedobjectSelectedGrid1]'),
+            ids = Ext.Array.map(basketGrid.getStore().getData().items, function(record) {return record.id});
+        if(ids.length > 0) {
+            basketGrid.mask(__("Loading"));
+            Ext.Ajax.request({
+                url: this.url + "full/",
+                method: "POST",
+                scope: this,
+                jsonData: {
+                    id__in: ids,
+                },
+                success: function(response) {
+                    var data = Ext.decode(response.responseText);
+                    basketGrid.unmask();
+                    basketGrid.getStore().loadData(data);
+                },
+                failure: function() {
+                    basketGrid.unmask();
+                    if(gridView) {
+                        parentCmp.unmask();
+                    }
+                    NOC.error(__("Failed refresh basket"));
+                }
+            });
+        }
     },
     gotoItem: function(itemName) {
         var mainView = this.getView().up('[appId=sa.managedobject]');
