@@ -234,18 +234,19 @@ Ext.define('NOC.sa.managedobject.form.Controller', {
         });
     },
     deleteRecord: function() {
-        var form = this.getView().down('[itemId=managedobject-form-panel]'),
+        var formPanel = this.getView().down('[itemId=managedobject-form-panel]'),
             record = Ext.create("NOC.sa.managedobject.Model");
 
         record.self.setProxy({type: "managedobject"});
-        if(form.recordId) {
+        if(formPanel.recordId) {
             this.getView().mask(__("Deleting ..."));
             Ext.Ajax.request({
-                url: "/sa/managedobject/" + form.recordId + "/",
+                url: "/sa/managedobject/" + formPanel.recordId + "/",
                 method: "DELETE",
                 scope: this,
                 success: function(response) {
-                    // Process result
+                    var basketStore = this.getView().up('[itemId=sa-managedobject]').down('[reference=saManagedobjectSelectedGrid1]').getStore();
+                    basketStore.remove(this.getView().down('[itemId=managedobject-form-panel]').currentRecord)
                     this.reloadSelectionGrids();
                     this.toMain();
                     this.getView().unmask();
@@ -264,10 +265,9 @@ Ext.define('NOC.sa.managedobject.form.Controller', {
         }
     },
     reloadSelectionGrids: function() {
-        this.getView().up('[itemId=sa-managedobject]').down('[reference=saManagedobjectSelectionGrid]').getStore().reload();
-        // ToDo update reference=saManagedobjectSelectedGrid1, take new values from reference=saManagedobjectSelectionGrid
         var basketGrid = this.getView().up('[itemId=sa-managedobject]').down('[reference=saManagedobjectSelectedGrid1]'),
             ids = Ext.Array.map(basketGrid.getStore().getData().items, function(record) {return record.id});
+        this.getView().up('[itemId=sa-managedobject]').down('[reference=saManagedobjectSelectionGrid]').getStore().reload();
         if(ids.length > 0) {
             basketGrid.mask(__("Loading"));
             Ext.Ajax.request({
