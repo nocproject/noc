@@ -33,7 +33,6 @@ from noc.main.models.remotesystem import RemoteSystem
 from noc.main.models.handler import Handler
 from noc.main.models.label import Label
 from noc.pm.models.metrictype import MetricType
-from noc.pm.models.thresholdprofile import ThresholdProfile
 from noc.cm.models.interfacevalidationpolicy import InterfaceValidationPolicy
 from noc.core.bi.decorator import bi_sync
 from noc.core.change.decorator import change
@@ -51,10 +50,8 @@ NON_DISABLED_METRIC_TYPE = {"Interface | Status | Oper", "Interface | Status | A
 @dataclass
 class MetricConfig(object):
     metric_type: MetricType
-    enable_box: bool
-    enable_periodic: bool
     is_stored: bool
-    threshold_profile: Optional[ThresholdProfile]
+    interval: int
 
 
 class MatchRule(EmbeddedDocument):
@@ -73,14 +70,10 @@ class InterfaceProfileMetrics(EmbeddedDocument):
     meta = {"strict": False}
     metric_type = ReferenceField(MetricType, required=True)
     # Metric collection settings
-    # Enable during box discovery
-    enable_box = BooleanField(default=False)
-    # Enable during periodic discovery
-    enable_periodic = BooleanField(default=True)
     # Send metrics to persistent store
     is_stored = BooleanField(default=True)
-    # Threshold processing
-    threshold_profile = ReferenceField(ThresholdProfile)
+    # Interval for collecter metrics
+    interval = IntField(default=300, min_value=0)
 
     def __str__(self):
         return (
@@ -177,6 +170,8 @@ class InterfaceProfile(Document):
         ],
         default="d",
     )
+    #
+    metrics_default_interval = IntField(default=0, min_value=0)
     # Interface profile metrics
     metrics = ListField(EmbeddedDocumentField(InterfaceProfileMetrics))
     # Alarm weight
@@ -264,15 +259,16 @@ class InterfaceProfile(Document):
         )
 
     @staticmethod
-    def config_from_settings(m: "InterfaceProfileMetrics") -> "MetricConfig":
+    def config_from_settings(
+        m: "InterfaceProfileMetrics", profile_interval: Optional[int] = None
+    ) -> "MetricConfig":
         """
         Returns MetricConfig from .metrics field
         :param m:
+        :param profile_interval:
         :return:
         """
-        return MetricConfig(
-            m.metric_type, m.enable_box, m.enable_periodic, m.is_stored, m.threshold_profile
-        )
+        return MetricConfig(m.metric_type, m.is_stored, m.interval or profile_interval)
 
     @classmethod
     @cachetools.cachedmethod(
@@ -284,7 +280,7 @@ class InterfaceProfile(Document):
         if not ipr:
             return r
         for m in ipr.metrics:
-            r[m.metric_type.name] = cls.config_from_settings(m)
+            r[m.metric_type.name] = cls.config_from_settings(m, ipr.metrics_default_interval)
         return r
 
     @property
@@ -309,6 +305,7 @@ class InterfaceProfile(Document):
         Check metric collected policy by interface status
         :param admin_status:
         :param oper_status:
+        :param metric_type:
         :return:
         """
         if self.status_discovery == "d" or self.metric_collected_policy == "e":

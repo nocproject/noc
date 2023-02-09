@@ -10,7 +10,6 @@ from noc.services.web.base.extmodelapplication import ExtModelApplication
 from noc.sa.models.managedobjectprofile import ManagedObjectProfile
 from noc.core.translation import ugettext as _
 from noc.pm.models.metrictype import MetricType
-from noc.pm.models.thresholdprofile import ThresholdProfile
 
 
 class ManagedObjectProfileApplication(ExtModelApplication):
@@ -39,7 +38,4 @@ class ManagedObjectProfileApplication(ExtModelApplication):
                 mt = MetricType.get_by_id(m["metric_type"])
                 if mt:
                     m["metric_type__label"] = mt.name
-                if m.get("threshold_profile"):
-                    tp = ThresholdProfile.get_by_id(m["threshold_profile"])
-                    m["threshold_profile__label"] = tp.name
         return d

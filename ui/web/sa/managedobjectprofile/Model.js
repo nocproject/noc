@@ -385,11 +385,6 @@ Ext.define("NOC.sa.managedobjectprofile.Model", {
             defaultValue: false
         },
         {
-            name: "enable_box_discovery_metrics",
-            type: "boolean",
-            defaultValue: false
-        },
-        {
             name: "enable_box_discovery_hk",
             type: "boolean",
             defaultValue: false
@@ -467,11 +462,6 @@ Ext.define("NOC.sa.managedobjectprofile.Model", {
             name: "periodic_discovery_mac_filter_policy",
             type: "string",
             defaultValue: "A"
-        },
-        {
-            name: "enable_periodic_discovery_metrics",
-            type: "boolean",
-            defaultValue: false
         },
         {
             name: "enable_periodic_discovery_alarms",
@@ -590,6 +580,16 @@ Ext.define("NOC.sa.managedobjectprofile.Model", {
             name: "mo_count",
             type: "int",
             persist: false
+        },
+        {
+            name: "enable_metrics",
+            type: "boolean",
+            defaultValue: false
+        },
+        {
+            name: "metrics_default_interval",
+            type: "integer",
+            defaultValue: 300
         },
         {
             name: "metrics",

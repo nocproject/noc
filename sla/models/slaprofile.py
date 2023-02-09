@@ -29,7 +29,6 @@ import cachetools
 # NOC modules
 from noc.main.models.style import Style
 from noc.pm.models.metrictype import MetricType
-from noc.pm.models.thresholdprofile import ThresholdProfile
 from noc.core.mongo.fields import ForeignKeyField, PlainReferenceField
 from noc.core.model.decorator import on_delete_check
 from noc.core.bi.decorator import bi_sync
@@ -43,23 +42,18 @@ metrics_lock = Lock()
 @dataclass
 class MetricConfig(object):
     metric_type: MetricType
-    enable_box: bool
-    enable_periodic: bool
     is_stored: bool
-    threshold_profile: Optional[ThresholdProfile]
+    interval: int
 
 
 class SLAProfileMetrics(EmbeddedDocument):
     metric_type: MetricType = ReferenceField(MetricType, required=True)
     # Metric collection settings
     # Enable during box discovery
-    enable_box = BooleanField(default=False)
-    # Enable during periodic discovery
-    enable_periodic = BooleanField(default=True)
     # Send metrics to persistent store
     is_stored = BooleanField(default=True)
     # Threshold processing
-    threshold_profile: ThresholdProfile = ReferenceField(ThresholdProfile)
+    interval = IntField(default=300, min_value=0)
 
 
 @bi_sync
@@ -83,6 +77,8 @@ class SLAProfile(Document):
     test_packets_num = IntField(default=10, min_value=1, max_value=60000)
     # Object id in BI
     bi_id = LongField(unique=True)
+    #
+    metrics_default_interval = IntField(default=0, min_value=0)
     # Interface profile metrics
     metrics: List[SLAProfileMetrics] = ListField(EmbeddedDocumentField(SLAProfileMetrics))
     # Labels
@@ -137,15 +133,16 @@ class SLAProfile(Document):
         return Label.get_effective_setting(label, "enable_slaprofile")
 
     @staticmethod
-    def config_from_settings(m: "SLAProfileMetrics") -> "MetricConfig":
+    def config_from_settings(
+        m: "SLAProfileMetrics", profile_interval: Optional[int] = None
+    ) -> "MetricConfig":
         """
         Returns MetricConfig from .metrics field
         :param m:
+        :param profile_interval:
         :return:
         """
-        return MetricConfig(
-            m.metric_type, m.enable_box, m.enable_periodic, m.is_stored, m.threshold_profile
-        )
+        return MetricConfig(m.metric_type, m.is_stored, m.interval or profile_interval)
 
     @classmethod
     @cachetools.cachedmethod(
@@ -157,5 +154,5 @@ class SLAProfile(Document):
         if not spr:
             return r
         for m in spr.metrics:
-            r[m.metric_type.name] = cls.config_from_settings(m)
+            r[m.metric_type.name] = cls.config_from_settings(m, spr.metrics_default_interval)
         return r

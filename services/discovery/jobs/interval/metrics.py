@@ -12,6 +12,7 @@ from typing import Any, List, Dict, Iterable, Optional
 
 # Third-party modules
 import orjson
+from noc.core.bi.decorator import bi_hash
 from pymongo import ReadPreference
 
 # NOC modules
@@ -58,16 +59,12 @@ class MetricsCheck(DiscoveryCheck):
         :return:
         """
         o: List[str] = Object.get_managed(self.object).values_list("id")
-        for mc in self.object.iter_collected_metrics(
-            is_box=self.is_box, is_periodic=self.is_periodic
-        ):
+        for mc in self.object.iter_collected_metrics():
             yield mc
         for sensor in Sensor.objects.filter(object__in=list(o)).read_preference(
             ReadPreference.SECONDARY_PREFERRED
         ):
-            for mc in sensor.iter_collected_metrics(
-                is_box=self.is_box, is_periodic=self.is_periodic
-            ):
+            for mc in sensor.iter_collected_metrics():
                 yield mc
         if not self.has_any_capability(self.SLA_CAPS):
             self.logger.info("SLA not configured, skipping SLA metrics")
@@ -75,7 +72,7 @@ class MetricsCheck(DiscoveryCheck):
         for sla in SLAProbe.objects.filter(managed_object=self.object.id).read_preference(
             ReadPreference.SECONDARY_PREFERRED
         ):
-            for mc in sla.iter_collected_metrics(is_box=self.is_box, is_periodic=self.is_periodic):
+            for mc in sla.iter_collected_metrics():
                 yield mc
 
     def handler(self):
@@ -90,9 +87,17 @@ class MetricsCheck(DiscoveryCheck):
             self.job.context["time_delta"] = time_delta
         self.job.context["last_run"] = ts
         s_data = {"managed_object": self.object.bi_id}
+        interval = self.object.get_metric_discovery_interval()
+        self.logger.debug("Running with interval: %s:%s", interval, self.job.get_runs())
         for mc in self.iter_metric_sources():
             mc_metrics = []
             for m in mc.metrics:
+                ie = m.get_effective_collected_interval(interval)  # Is collected ?
+                if ie != interval:
+                    p_sc = ie / interval
+                    o_sc = bi_hash(mc.get_source_code(m.interval)) % p_sc
+                    if self.job.get_runs() % p_sc != o_sc:  # runs
+                        continue
                 mt_name = m.name.replace(" ", "_")
                 mc_metrics.append(m.name)
                 if f"{m.name}.scope" in s_data:

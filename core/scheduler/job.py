@@ -371,3 +371,6 @@ class Job(object):
         if si <= ts:
             si += interval
         return datetime.datetime.fromtimestamp(si)
+
+    def get_runs(self) -> int:
+        return self.attrs.get(Job.ATTR_RUNS, 0)
