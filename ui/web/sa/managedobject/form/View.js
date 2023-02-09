@@ -138,6 +138,7 @@ Ext.define('NOC.sa.managedobject.form.View', {
                                     fieldLabel: __("Labels"),
                                     xtype: "labelfield",
                                     allowBlank: true,
+                                    minWidth: 100,
                                     tabIndex: 40,
                                     query: {
                                         "enable_managedobject": true

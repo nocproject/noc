@@ -8,7 +8,7 @@
 console.debug("Defining NOC.sa.managedobject.ApplicationModel");
 Ext.define("NOC.sa.managedobject.ApplicationModel", {
     extend: "Ext.data.Model",
-    rest_url: "/sa/managedobject/",
+    rest_url: "/sa/managedobject/list/",
     actionMethods: {
         read: 'POST'
     },

@@ -709,16 +709,17 @@ Ext.define('NOC.sa.managedobject.Controller', {
     onGroupEdit: function() {
         var selectedModels = this.lookupReference('saManagedobjectSelectedGrid1').getStore().getData().items,
             selectedIds = Ext.Array.map(selectedModels, function(record) {return record.id}),
-            formCmp = this.getView().down('[itemId=managedobject-form-panel]'),
-            form = formCmp.getForm(),
+            formPanel = this.getView().down('[itemId=managedobject-form-panel]'),
+            form = formPanel.getForm(),
             disabledFields = Ext.Array.filter(form.getFields().items, function(field) {return !field.groupEdit}),
             groupEditFields = Ext.Array.filter(form.getFields().items, function(field) {return field.groupEdit});
         parentCmp = this.lookupReference('saManagedobjectSelectedGrid1').up();
         Ext.Array.each(disabledFields, function(field) {field.setDisabled(true)});
         this.view.down('[itemId=formTitle]').update(Ext.String.format(
-            formCmp.up().groupChangeTitle, selectedIds.length, formCmp.up('[itemId=sa-managedobject]').appTitle
+            formPanel.up().groupChangeTitle, selectedIds.length, formPanel.up('[itemId=sa-managedobject]').appTitle
         ));
         this.displayButtons(["closeBtn", "groupSaveBtn"]);
+        formPanel.ids = selectedIds;
         form.reset();
         parentCmp.mask(__('Loading'));
         Ext.Ajax.request({
@@ -756,6 +757,7 @@ Ext.define('NOC.sa.managedobject.Controller', {
                             value = "Leave unchanged";
                         }
                         field.setValue(value);
+                        field.initValue();
                     }
                 }, this);
             },
@@ -772,8 +774,11 @@ Ext.define('NOC.sa.managedobject.Controller', {
     },
     //
     onNewRecord: function() {
-        var view = this.getView();
-        view.down('[itemId=managedobject-form-panel]').getController().onNewRecord();
+        var view = this.getView(),
+            formPanel = view.down('[itemId=managedobject-form-panel]');
+        formPanel.up().getController().onNewRecord();
+        formPanel.up().form = formPanel.getForm();
+        this.displayButtons(["closeBtn", "saveBtn"]);
         view.getLayout().setActiveItem('managedobject-form');
     },
     editManagedObject: function(gridView, id, suffix) {
@@ -830,7 +835,8 @@ Ext.define('NOC.sa.managedobject.Controller', {
                             r[v] = data[v];
                         }
                     });
-                    // 
+                    //
+                    this.getView().down('[itemId=managedobject-form]').down().form = form;
                     form.reset();
                     form.setValues(r);
                     this.loadInlineStore(formPanel, data.id);
@@ -873,14 +879,11 @@ Ext.define('NOC.sa.managedobject.Controller', {
     resetInlineStore: function(formPanel, defaults) {
         Ext.each(formPanel.query("[itemId$=-inline]"),
             function(gridField) {
-                var store = gridField.getStore(),
-                    value = [];
-                if(!store) {
-                    store = new Ext.create("NOC.core.InlineModelStore", {
-                        model: gridField.model
-                    });
-                    gridField.setStore(store);
-                }
+                var store, value = [];
+                store = new Ext.create("NOC.core.InlineModelStore", {
+                    model: gridField.model
+                });
+                gridField.setStore(store);
                 if(store.hasOwnProperty("rootProperty") && this.hasOwnProperty(store.rootProperty)) {
                     value = this[store.rootProperty];
                 }
