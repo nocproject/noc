@@ -1102,3 +1102,7 @@ class ManagedObjectApplication(ExtModelApplication):
     @view(url=r"^full/", method=["GET", "POST"], access="read", api=True)
     def api_list_full(self, request):
         return self.list_data(request, self.instance_to_dict)
+
+    @view(url=r"^list/", method=["GET", "POST"], access="read", api=True)
+    def api_list_short(self, request):
+        return self.list_data(request, self.instance_to_dict_list)

@@ -570,7 +570,7 @@ class ExtModelApplication(ExtApplication):
     def instance_to_dict_list(self, o, fields=None):
         return self.instance_to_dict(o, fields=fields)
 
-    @view(method=["GET", "POST"], url=r"^$", access="read", api=True)
+    @view(method=["GET"], url=r"^$", access="read", api=True)
     def api_list(self, request):
         return self.list_data(request, self.instance_to_dict_list)
 
