@@ -1208,12 +1208,6 @@ Ext.define("NOC.sa.managedobjectprofile.Application", {
                                             xtype: "checkboxfield",
                                             boxLabel: __("Alarms"),
                                             colspan: 3
-                                        },
-                                        {
-                                            name: "enable_box_discovery_metrics",
-                                            xtype: "checkboxfield",
-                                            boxLabel: __("Metrics"),
-                                            colspan: 3
                                         }
                                     ]
                                 },
@@ -2136,12 +2130,6 @@ Ext.define("NOC.sa.managedobjectprofile.Application", {
                                             colspan: 3
                                         },
                                         {
-                                            name: "enable_periodic_discovery_metrics",
-                                            xtype: "checkboxfield",
-                                            boxLabel: __("Metrics"),
-                                            colspan: 3
-                                        },
-                                        {
                                             name: "enable_periodic_discovery_cpestatus",
                                             xtype: "checkboxfield",
                                             boxLabel: __("CPE status"),
@@ -2593,6 +2581,40 @@ Ext.define("NOC.sa.managedobjectprofile.Application", {
                                 "(Interface Metrics settings Inventory -> Setup -> Interface Profile)"),
                             items: [
                                 {
+                                    name: "enable_metrics",
+                                    xtype: "checkboxfield",
+                                    boxLabel: __("Enable Metrics")
+                                },
+                                {
+                                    xtype: "container",
+                                    layout: "hbox",
+                                    defaults: {
+                                        padding: "0 8 0 0"
+                                    },
+                                    items: [
+                                        {
+                                            name: "metrics_default_interval",
+                                            xtype: "numberfield",
+                                            fieldLabel: __("Default Interval, sec"),
+                                            labelWidth: 200,
+                                            allowBlank: false,
+                                            uiStyle: "small",
+                                            minValue: 0,
+                                            listeners: {
+                                                scope: me,
+                                                change: function(_item, newValue, oldValue, eOpts) {
+                                                    me.form.findField("metrics_default_interval_calculated").setValue(newValue);
+                                                }
+                                            }
+                                        },
+                                        {
+                                            name: 'metrics_default_interval_calculated',
+                                            xtype: 'displayfield',
+                                            renderer: NOC.render.Duration
+                                        }
+                                    ]
+                                },
+                                {
                                     name: "metrics",
                                     xtype: "gridfield",
                                     fieldLabel: __("Metrics"),
@@ -2608,20 +2630,6 @@ Ext.define("NOC.sa.managedobjectprofile.Application", {
                                             renderer: NOC.render.Lookup("metric_type")
                                         },
                                         {
-                                            text: __("Box"),
-                                            dataIndex: "enable_box",
-                                            width: 50,
-                                            renderer: NOC.render.Bool,
-                                            editor: "checkbox"
-                                        },
-                                        {
-                                            text: __("Periodic"),
-                                            dataIndex: "enable_periodic",
-                                            width: 50,
-                                            renderer: NOC.render.Bool,
-                                            editor: "checkbox"
-                                        },
-                                        {
                                             text: __("Is Stored"),
                                             dataIndex: "is_stored",
                                             width: 50,
@@ -2629,13 +2637,13 @@ Ext.define("NOC.sa.managedobjectprofile.Application", {
                                             editor: "checkbox"
                                         },
                                         {
-                                            text: __("Profile"),
-                                            dataIndex: "threshold_profile",
-                                            width: 150,
+                                            text: __("Interval"),
+                                            dataIndex: "interval",
                                             editor: {
-                                                xtype: "pm.thresholdprofile.LookupField"
-                                            },
-                                            renderer: NOC.render.Lookup("threshold_profile")
+                                                xtype: "numberfield",
+                                                minValue: 0,
+                                                defaultValue: 300,
+                                            }
                                         }
                                     ]
 

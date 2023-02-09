@@ -55,7 +55,7 @@ class MODashboard(JinjaDashboard):
             Check interface profile has metrics
             """
             for m in profile.metrics:
-                if m.enable_box or m.enable_periodic:
+                if m.interval:
                     return True
             return False
 
@@ -189,7 +189,7 @@ class MODashboard(JinjaDashboard):
         ocm = []
         for m in self.object.object_profile.metrics or []:
             mt = MetricType.get_by_id(m["metric_type"])
-            if not mt or not (m.get("enable_periodic", False) or m.get("enable_box", False)):
+            if not mt or not m.get("interval", 0):
                 continue
             if check_metrics(mt):
                 ocm += [{"name": mt.name, "metric": mt.field_name}]

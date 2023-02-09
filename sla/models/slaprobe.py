@@ -153,9 +153,7 @@ class SLAProbe(Document):
                 managed_object=managed_object, target=target_address
             ).first()
 
-    def iter_collected_metrics(
-        self, is_box: bool = False, is_periodic: bool = True
-    ) -> Iterable[MetricCollectorConfig]:
+    def iter_collected_metrics(self) -> Iterable[MetricCollectorConfig]:
         """
         Return metrics setting for colleted by box or periodic
         :param is_box:
@@ -166,7 +164,7 @@ class SLAProbe(Document):
             return
         metrics = []
         for metric in self.profile.metrics:
-            if (is_box and not metric.enable_box) or (is_periodic and not metric.enable_periodic):
+            if not metric.interval:
                 continue
             metrics += [
                 MetricItem(
@@ -175,6 +173,7 @@ class SLAProbe(Document):
                     scope_name=metric.metric_type.scope.table_name,
                     is_stored=metric.is_stored,
                     is_compose=metric.metric_type.is_compose,
+                    interval=metric.interval,
                 )
             ]
         if not metrics:

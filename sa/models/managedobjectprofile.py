@@ -4,9 +4,9 @@
 # Copyright (C) 2007-2021 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
-import datetime
 
 # Python modules
+import datetime
 import operator
 from threading import Lock
 from itertools import chain
@@ -37,7 +37,12 @@ from noc.main.models.handler import Handler
 from noc.main.models.label import Label
 from noc.core.scheduler.job import Job
 from noc.core.defer import call_later, defer
-from noc.sa.interfaces.base import DictListParameter, ObjectIdParameter, BooleanParameter
+from noc.sa.interfaces.base import (
+    DictListParameter,
+    ObjectIdParameter,
+    BooleanParameter,
+    IntParameter,
+)
 from noc.core.bi.decorator import bi_sync
 from noc.ip.models.prefixprofile import PrefixProfile
 from noc.ip.models.addressprofile import AddressProfile
@@ -50,7 +55,6 @@ from noc.inv.models.ifdescpatterns import IfDescPatterns
 from noc.main.models.glyph import Glyph
 from noc.core.topology.types import ShapeOverlayPosition, ShapeOverlayForm
 from noc.pm.models.metrictype import MetricType
-from noc.pm.models.thresholdprofile import ThresholdProfile
 from .authprofile import AuthProfile
 from .capsprofile import CapsProfile
 from noc.vc.models.vlanfilter import VLANFilter
@@ -63,18 +67,14 @@ metrics_lock = Lock()
 @dataclass
 class MetricConfig(object):
     metric_type: MetricType
-    enable_box: bool
-    enable_periodic: bool
     is_stored: bool
-    threshold_profile: Optional[ThresholdProfile]
+    interval: int
 
 
 class ModelMetricConfigItem(BaseModel):
     metric_type: str
-    enable_box: bool = False
-    enable_periodic: bool = True
     is_stored: bool = True
-    threshold_profile: Optional[str] = None
+    interval: int = 0
 
     def __str__(self):
         return self.metric_type
@@ -108,10 +108,8 @@ class MatchRules(BaseModel):
 m_valid = DictListParameter(
     attrs={
         "metric_type": ObjectIdParameter(required=True),
-        "enable_box": BooleanParameter(default=False),
-        "enable_periodic": BooleanParameter(default=True),
         "is_stored": BooleanParameter(default=True),
-        "threshold_profile": ObjectIdParameter(required=False),
+        "interval": IntParameter(min_value=0, default=300),
     }
 )
 
@@ -315,8 +313,6 @@ class ManagedObjectProfile(NOCModel):
     enable_box_discovery_xmac = models.BooleanField(default=False)
     # Enable interface description discovery
     enable_box_discovery_ifdesc = models.BooleanField(default=False)
-    # Enable metrics
-    enable_box_discovery_metrics = models.BooleanField(default=False)
     # Enable Housekeeping
     enable_box_discovery_hk = models.BooleanField(default=False)
     # Enable Alarms
@@ -355,7 +351,7 @@ class ManagedObjectProfile(NOCModel):
         default="A",
     )
     # Collect metrics
-    enable_periodic_discovery_metrics = models.BooleanField(default=False)
+    enable_metrics = models.BooleanField(default=False)
     # Enable Alarms
     enable_periodic_discovery_alarms = models.BooleanField(default=False)
     # Enable CPE status
@@ -680,6 +676,8 @@ class ManagedObjectProfile(NOCModel):
     # Limits
     snmp_rate_limit = models.IntegerField(default=0)
     #
+    metrics_default_interval = models.IntegerField(default=300)
+    #
     metrics = PydanticField(
         "Metric Config Items",
         schema=MetricConfigItems,
@@ -942,16 +940,8 @@ class ManagedObjectProfile(NOCModel):
             mt = MetricType.get_by_id(mt_id)
             if not mt:
                 continue
-            if m.get("threshold_profile"):
-                threshold_profile = ThresholdProfile.get_by_id(m.get("threshold_profile"))
-            else:
-                threshold_profile = None
             r[mt.name] = MetricConfig(
-                mt,
-                m.get("enable_box", True),
-                m.get("enable_periodic", True),
-                m.get("is_stored", True),
-                threshold_profile,
+                mt, m.get("is_stored", True), m.get("interval") or opr.metrics_default_interval
             )
         return r
 

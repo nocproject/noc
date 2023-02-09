@@ -12,7 +12,6 @@ import random
 # NOC modules
 from noc.services.discovery.jobs.base import MODiscoveryJob
 from noc.services.discovery.jobs.periodic.mac import MACCheck
-from noc.services.discovery.jobs.periodic.metrics import MetricsCheck
 from noc.core.span import Span
 from noc.core.change.policy import change_tracker
 from .resolver import ResolverCheck
@@ -142,8 +141,6 @@ class BoxDiscoveryJob(MODiscoveryJob):
                 check(self).run()
         if self.object.object_profile.enable_box_discovery_sla:
             SLACheck(self).run()
-        if self.object.object_profile.enable_box_discovery_metrics:
-            MetricsCheck(self).run()
         if self.object.object_profile.enable_box_discovery_hk:
             HouseKeepingCheck(self).run()
         DiagnosticCheck(self, run_order="E").run()
