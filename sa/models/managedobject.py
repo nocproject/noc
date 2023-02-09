@@ -2891,9 +2891,9 @@ class ManagedObject(NOCModel):
         from noc.inv.models.interfaceprofile import InterfaceProfile
 
         metrics: List[MetricItem] = []
-
+        d_interval = self.object_profile.metrics_default_interval
         for mc in ManagedObjectProfile.get_object_profile_metrics(self.object_profile.id).values():
-            if not mc.interval:
+            if not mc.interval and not d_interval:
                 continue
             metrics.append(
                 MetricItem(
@@ -2902,7 +2902,7 @@ class ManagedObject(NOCModel):
                     scope_name=mc.metric_type.scope.table_name,
                     is_stored=mc.is_stored,
                     is_compose=mc.metric_type.is_compose,
-                    interval=mc.interval,
+                    interval=mc.interval or d_interval,
                 )
             )
         if metrics:
@@ -2930,7 +2930,7 @@ class ManagedObject(NOCModel):
                 continue  # No metrics configured
             metrics: List[MetricItem] = []
             for mc in i_profile.metrics:
-                if not mc.interval:
+                if not mc.interval and not d_interval:
                     continue
                 # Check metric collected policy
                 if not i_profile.allow_collected_metric(
@@ -2943,7 +2943,7 @@ class ManagedObject(NOCModel):
                     scope_name=mc.metric_type.scope.table_name,
                     is_stored=mc.is_stored,
                     is_compose=mc.metric_type.is_compose,
-                    interval=mc.interval,
+                    interval=mc.interval or d_interval,
                 )
                 if mi not in metrics:
                     metrics.append(mi)
@@ -2956,7 +2956,7 @@ class ManagedObject(NOCModel):
                             scope_name=mc.metric_type.scope.table_name,
                             is_stored=True,
                             is_compose=False,
-                            interval=mc.interval,
+                            interval=mc.interval or d_interval,
                         )
                         if mi not in metrics:
                             metrics.append(mi)

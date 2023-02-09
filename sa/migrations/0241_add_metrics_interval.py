@@ -52,6 +52,7 @@ class Migration(BaseMigration):
             """SELECT id, metrics FROM sa_managedobjectprofile WHERE id = ANY (%s)""",
             [list(box_collected_metrics)],
         ):
+            metrics = orjson.loads(metrics)
             for m in metrics:
                 if m.get("is_box"):
                     m["interval"] = box_collected_metrics[mop_id]
@@ -59,3 +60,4 @@ class Migration(BaseMigration):
                 """UPDATE sa_managedobjectprofile SET metrics = %s::jsonb WHERE id = %s""",
                 [orjson.dumps(metrics).decode("utf-8"), mop_id],
             )
+        # Insert interval jobs

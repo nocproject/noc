@@ -1208,12 +1208,6 @@ Ext.define("NOC.sa.managedobjectprofile.Application", {
                                             xtype: "checkboxfield",
                                             boxLabel: __("Alarms"),
                                             colspan: 3
-                                        },
-                                        {
-                                            name: "enable_box_discovery_metrics",
-                                            xtype: "checkboxfield",
-                                            boxLabel: __("Metrics"),
-                                            colspan: 3
                                         }
                                     ]
                                 },
@@ -2136,12 +2130,6 @@ Ext.define("NOC.sa.managedobjectprofile.Application", {
                                             colspan: 3
                                         },
                                         {
-                                            name: "enable_periodic_discovery_metrics",
-                                            xtype: "checkboxfield",
-                                            boxLabel: __("Metrics"),
-                                            colspan: 3
-                                        },
-                                        {
                                             name: "enable_periodic_discovery_cpestatus",
                                             xtype: "checkboxfield",
                                             boxLabel: __("CPE status"),
@@ -2592,6 +2580,40 @@ Ext.define("NOC.sa.managedobjectprofile.Application", {
                             tooltip: __("Setup colleced metric on divices (not Interface!). <br/>" +
                                 "(Interface Metrics settings Inventory -> Setup -> Interface Profile)"),
                             items: [
+                                {
+                                    name: "enable_metrics",
+                                    xtype: "checkboxfield",
+                                    boxLabel: __("Enable Metrics")
+                                },
+                                {
+                                    xtype: "container",
+                                    layout: "hbox",
+                                    defaults: {
+                                        padding: "0 8 0 0"
+                                    },
+                                    items: [
+                                        {
+                                            name: "metrics_default_interval",
+                                            xtype: "numberfield",
+                                            fieldLabel: __("Default Interval, sec"),
+                                            labelWidth: 200,
+                                            allowBlank: false,
+                                            uiStyle: "small",
+                                            minValue: 0,
+                                            listeners: {
+                                                scope: me,
+                                                change: function(_item, newValue, oldValue, eOpts) {
+                                                    me.form.findField("metrics_default_interval_calculated").setValue(newValue);
+                                                }
+                                            }
+                                        },
+                                        {
+                                            name: 'metrics_default_interval_calculated',
+                                            xtype: 'displayfield',
+                                            renderer: NOC.render.Duration
+                                        }
+                                    ]
+                                },
                                 {
                                     name: "metrics",
                                     xtype: "gridfield",
