@@ -24,7 +24,7 @@ class Migration(BaseMigration):
             enable_periodic_metrics,
             periodic_interval,
         ) in self.db.execute(
-            """SELECT id, enable_box_discovery_metrics, box_discovery_interval, periodic_discovery_interval, enable_periodic_discovery_metrics FROM sa_managedobjectprofile"""
+            """SELECT id, enable_box_discovery_metrics, box_discovery_interval, enable_periodic_discovery_metrics, periodic_discovery_interval FROM sa_managedobjectprofile"""
         ):
             if enable_periodic_metrics and periodic_interval != 300:
                 metric_intervals[mop_id] = periodic_interval
