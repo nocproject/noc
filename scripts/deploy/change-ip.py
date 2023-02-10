@@ -26,6 +26,7 @@ CONSUL_pg_path = "/etc/consul.d/scripts/postgres_check.sh"
 GRAFANA_DEB_PATH = "/etc/grafana/grafana.ini"
 GRAFANA_DS_NOC = "/var/lib/grafana/provisioning/datasources/NocDS.yml"
 GRAFANA_DS_CH = "/var/lib/grafana/provisioning/datasources/nocchdb.yml"
+GRAFANA_NOC_JS = "/usr/share/grafana/public/dashboards/noc.js"
 CLICKHOUSE_DEB_PATH = "/etc/clickhouse-server/users.xml"
 TELEGRAF_PG = "/etc/telegraf/telegraf.d/postgresql.conf"
 TELEGRAF_MG = "/etc/telegraf/telegraf.d/mongodb.conf"
@@ -47,6 +48,7 @@ ALL_PATHS = [
     CLICKHOUSE_DEB_PATH,
     GRAFANA_DS_NOC,
     GRAFANA_DS_CH,
+    GRAFANA_NOC_JS,
     TELEGRAF_PG,
     TELEGRAF_MG,
     TELEGRAF_NG,
