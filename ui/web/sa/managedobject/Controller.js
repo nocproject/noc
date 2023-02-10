@@ -769,6 +769,47 @@ Ext.define('NOC.sa.managedobject.Controller', {
             }
         });
     },
+    onNewMaintaince: function() {
+        var basketStore = this.lookupReference('saManagedobjectSelectedGrid1').getStore(),
+            objects = Ext.Array.map(basketStore.getData().items, function(record) {return {object: record.id, object__label: record.get("name")}}),
+            args = {
+                direct_objects: objects,
+                subject: __('created from managed objects list at ') + Ext.Date.format(new Date(), 'd.m.Y H:i P'),
+                contacts: NOC.email ? NOC.email : NOC.username,
+                start_date: Ext.Date.format(new Date(), 'd.m.Y'),
+                start_time: Ext.Date.format(new Date(), 'H:i'),
+                stop_time: '12:00',
+                suppress_alarms: true
+            };
+        Ext.create("NOC.maintenance.maintenancetype.LookupField")
+            .getStore()
+            .load({
+                params: {__query: 'РНР'},
+                callback: function(records) {
+                    if(records.length > 0) {
+                        Ext.apply(args, {
+                            type: records[0].id
+                        })
+                    }
+                    NOC.launch("maintenance.maintenance", "new", {
+                        args: args
+                    });
+                }
+            });
+    },
+    onAddToMaintaince: function() {
+        var basketStore = this.lookupReference('saManagedobjectSelectedGrid1').getStore();
+        NOC.run(
+            'NOC.inv.map.Maintenance',
+            __('Add To Maintenance'),
+            {
+                args: [
+                    {mode: 'Object'},
+                    Ext.Array.map(basketStore.getData().items, function(record) {return {object: record.id, object__label: record.get("name")}}),
+                ]
+            }
+        );
+    },
     onEdit: function(gridView, rowIndex, colIndex, item, e, record) {
         this.editManagedObject(gridView.up('[itemId=sa-managedobject]'), record.id);
     },

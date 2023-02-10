@@ -262,6 +262,16 @@ Ext.define('NOC.sa.managedobject.Application', {
                                         },
                                         handler: 'onGroupEdit',
                                     },
+                                    {
+                                        text: __("New Maintaince"),
+                                        glyph: NOC.glyph.wrench,
+                                        handler: "onNewMaintaince"
+                                    },
+                                    {
+                                        text: __("Add to Maintaince"),
+                                        glyph: NOC.glyph.plus,
+                                        handler: "onAddToMaintaince"
+                                    }
                                 ]
                             })
                         }, {
