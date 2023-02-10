@@ -769,6 +769,15 @@ Ext.define('NOC.sa.managedobject.Controller', {
             }
         });
     },
+    onRunDiscovery: function() {
+        this.runAction("run_discovery");
+    },
+    onSetManaged: function() {
+        this.runAction("set_managed");
+    },
+    onSetUnmanaged: function() {
+        this.runAction("set_unmanaged");
+    },
     onNewMaintaince: function() {
         var basketStore = this.lookupReference('saManagedobjectSelectedGrid1').getStore(),
             objects = Ext.Array.map(basketStore.getData().items, function(record) {return {object: record.id, object__label: record.get("name")}}),
@@ -996,5 +1005,57 @@ Ext.define('NOC.sa.managedobject.Controller', {
         Ext.Array.each(formButtons, function(button) {
             button.setVisible(Ext.Array.contains(displayItems, button.itemId));
         })
+    },
+    runAction: function(actionName, params) {
+        var me = this,
+            basketStore = this.lookupReference('saManagedobjectSelectedGrid1').getStore(),
+            ids = Ext.Array.map(basketStore.getData().items, function(record) {return record.id});
+        Ext.Ajax.request({
+            url: "/sa/managedobject/" + "actions/" + actionName + "/",
+            method: "POST",
+            scope: me,
+            jsonData: {ids: ids},
+            success: function(response) {
+                this.reloadSelectionGrids();
+                NOC.info(Ext.decode(response.responseText) || "OK");
+            },
+            failure: function() {
+                NOC.error(__("Action") + " " + actionName + " " + __("failed"));
+            }
+        });
+    },
+    reloadSelectionGrids: function() {
+        var mainGrid = this.getView().down('[reference=saManagedobjectSelectionGrid]'),
+            basketGrid = this.getView().down('[reference=saManagedobjectSelectedGrid1]'),
+            ids = Ext.Array.map(basketGrid.getStore().getData().items, function(record) {return record.id});
+        mainGrid.mask(__("Loading"));
+        mainGrid.getStore().reload({
+            callback: function() {
+                mainGrid.unmask();
+            }
+        });
+        if(ids.length > 0) {
+            basketGrid.mask(__("Loading"));
+            Ext.Ajax.request({
+                url: this.url + "full/",
+                method: "POST",
+                scope: this,
+                jsonData: {
+                    id__in: ids,
+                },
+                success: function(response) {
+                    var data = Ext.decode(response.responseText);
+                    basketGrid.unmask();
+                    basketGrid.getStore().loadData(data);
+                },
+                failure: function() {
+                    basketGrid.unmask();
+                    if(gridView) {
+                        parentCmp.unmask();
+                    }
+                    NOC.error(__("Failed refresh basket"));
+                }
+            });
+        }
     }
 });

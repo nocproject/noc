@@ -121,11 +121,11 @@ Ext.define('NOC.sa.managedobject.form.Controller', {
         var view = this.getView(),
             parentController = view.up('[itemId=sa-managedobject]').getController(),
             formPanel = this.getView().down('[itemId=managedobject-form-panel]');
-        view.up('[itemId=sa-managedobject]').getController().setFormTitle(__("Clone") + " {0}", "CLONE");
+        parentController.setFormTitle(__("Clone") + " {0}", "CLONE");
+        parentController.displayButtons(["closeBtn", "saveBtn", "resetBtn"]);
         formPanel.getForm().setValues({bi_id: null});
         formPanel.recordId = undefined;
         Ext.Array.each(view.query('[itemId$=-inline]'), function(grid) {return grid.getStore().cloneData()});
-        parentController.displayButtons(["closeBtn", "saveBtn", "resetBtn"]);
     },
     onDeleteRecord: function() {
         var me = this;
@@ -291,32 +291,8 @@ Ext.define('NOC.sa.managedobject.form.Controller', {
         }
     },
     reloadSelectionGrids: function() {
-        var basketGrid = this.getView().up('[itemId=sa-managedobject]').down('[reference=saManagedobjectSelectedGrid1]'),
-            ids = Ext.Array.map(basketGrid.getStore().getData().items, function(record) {return record.id});
-        this.getView().up('[itemId=sa-managedobject]').down('[reference=saManagedobjectSelectionGrid]').getStore().reload();
-        if(ids.length > 0) {
-            basketGrid.mask(__("Loading"));
-            Ext.Ajax.request({
-                url: this.url + "full/",
-                method: "POST",
-                scope: this,
-                jsonData: {
-                    id__in: ids,
-                },
-                success: function(response) {
-                    var data = Ext.decode(response.responseText);
-                    basketGrid.unmask();
-                    basketGrid.getStore().loadData(data);
-                },
-                failure: function() {
-                    basketGrid.unmask();
-                    if(gridView) {
-                        parentCmp.unmask();
-                    }
-                    NOC.error(__("Failed refresh basket"));
-                }
-            });
-        }
+        var parentController = this.getView().up('[itemId=sa-managedobject]').getController();
+        parentController.reloadSelectionGrids();
     },
     gotoItem: function(itemName) {
         var mainView = this.getView().up('[appId=sa.managedobject]');

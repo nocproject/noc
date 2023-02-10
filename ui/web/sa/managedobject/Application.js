@@ -263,6 +263,21 @@ Ext.define('NOC.sa.managedobject.Application', {
                                         handler: 'onGroupEdit',
                                     },
                                     {
+                                        text: __("Run discovery now"),
+                                        glyph: NOC.glyph.play,
+                                        handler: "onRunDiscovery",
+                                    },
+                                    {
+                                        text: __("Set managed"),
+                                        glyph: NOC.glyph.check,
+                                        handler: "onSetManaged",
+                                    },
+                                    {
+                                        text: __("Set unmanaged"),
+                                        glyph: NOC.glyph.times,
+                                        handler: "onSetUnmanaged",
+                                    },
+                                    {
                                         text: __("New Maintaince"),
                                         glyph: NOC.glyph.wrench,
                                         handler: "onNewMaintaince"
