@@ -46,6 +46,15 @@ Ext.define('NOC.sa.managedobject.ViewModel', {
         }
     },
     formulas: {
+        hasCreatePerm: function() {
+            return this.getView().hasPermission("create");
+        },
+        hasUpdatePerm: function() {
+            return this.getView().hasPermission("update");
+        },
+        hasRunCmdPerm: function(get) {
+            return this.getView().hasPermission("commands") && get('total.selected') > 0;
+        },
         hasRecords: function(get) {
             return get('total.selected') > 0;
         },

@@ -254,7 +254,14 @@ Ext.define('NOC.sa.managedobject.Application', {
                             },
                             menu: new Ext.menu.Menu({
                                 items: [
-                                    {text: __("Group Edit"), handler: 'onGroupEdit', glyph: NOC.glyph.edit},
+                                    {
+                                        text: __("Group Edit"),
+                                        glyph: NOC.glyph.edit,
+                                        bind: {
+                                            disabled: '{!hasUpdatePerm}'
+                                        },
+                                        handler: 'onGroupEdit',
+                                    },
                                 ]
                             })
                         }, {
@@ -262,16 +269,17 @@ Ext.define('NOC.sa.managedobject.Application', {
                             text: __("Run Commands"),
                             glyph: NOC.glyph.play,
                             bind: {
-                                disabled: '{!hasRecords}'
+                                disabled: '{!hasRunCmdPerm}'
                             },
-                            hasAccess: NOC.hasPermission("commands"),
                             handler: "toNext"
                         }, {
                             itemId: "createBtn",
                             text: __("Add"),
                             glyph: NOC.glyph.plus,
                             tooltip: __("Add new record"),
-                            hasAccess: NOC.hasPermission("create"),
+                            bind: {
+                                disabled: '{!hasCreatePerm}'
+                            },
                             handler: "onNewRecord"
                         },
                     ]

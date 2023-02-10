@@ -14,6 +14,32 @@ Ext.define('NOC.sa.managedobject.form.Controller', {
     alias: 'controller.managedobject.form',
     url: '/sa/managedobject/',
 
+    init: function(app) {
+        var view = this.getView().up('[itemId=sa-managedobject]'),
+            consoleBtn = app.down('[itemId=consoleBtn]'),
+            deleteBtn = app.down('[itemId=deleteBtn]'),
+            cmdBtn = app.down('[itemId=cmdBtn]'),
+            scriptsBtn = app.down('[itemId=scriptsBtn]'),
+            configBtn = app.down('[itemId=configBtn]'),
+            confDBBtn = app.down('[itemId=confDBBtn]'),
+            saveBtn = app.down('[itemId=saveBtn]'),
+            resetBtn = app.down('[itemId=resetBtn]'),
+            cloneBtn = app.down('[itemId=cloneBtn]'),
+            createBtn = app.down('[itemId=createBtn]');
+
+        // saveBtn.formBind = view.hasPermission("update");
+        consoleBtn.setDisabled(!view.hasPermission("console"));
+        deleteBtn.setDisabled(!view.hasPermission("delete"));
+        cmdBtn.setDisabled(!view.hasPermission("interactions"));
+        scriptsBtn.setDisabled(!view.hasPermission("script"));
+        configBtn.setDisabled(!view.hasPermission("config"));
+        confDBBtn.setDisabled(!view.hasPermission("config"));
+        saveBtn.setDisabled(!view.hasPermission("update"));
+        resetBtn.setDisabled(!view.hasPermission("update"));
+        cloneBtn.setDisabled(!view.hasPermission("create"));
+        createBtn.setDisabled(!view.hasPermission("create"));
+
+    },
     toMain: function() {
         this.gotoItem('managedobject-select');
     },
@@ -91,14 +117,13 @@ Ext.define('NOC.sa.managedobject.form.Controller', {
     },
     onCloneRecord: function() {
         var view = this.getView(),
+            parentController = view.up('[itemId=sa-managedobject]').getController(),
             formPanel = this.getView().down('[itemId=managedobject-form-panel]');
         view.up('[itemId=sa-managedobject]').getController().setFormTitle(__("Clone") + " {0}", "CLONE");
         formPanel.getForm().setValues({bi_id: null});
         formPanel.recordId = undefined;
         Ext.Array.each(view.query('[itemId$=-inline]'), function(grid) {return grid.getStore().cloneData()});
-        // view.down('[itemId=cloneBtn]').setDisabled(true);
-        view.down('[itemId=createBtn]').setDisabled(true);
-        view.down('[itemId=deleteBtn]').setDisabled(true);
+        parentController.displayButtons(["closeBtn", "saveBtn", "resetBtn"]);
     },
     onDeleteRecord: function() {
         var me = this;
@@ -176,20 +201,19 @@ Ext.define('NOC.sa.managedobject.form.Controller', {
         var defaultValues = {},
             view = this.getView(),
             formPanel = this.getView().down('[itemId=managedobject-form-panel]'),
+            parentController = view.up('[itemId=sa-managedobject]').getController(),
             fieldsWithDefaultValue = Ext.Array.filter(Ext.create("NOC.sa.managedobject.Model").fields,
                 function(field) {return !Ext.isEmpty(field.defaultValue)});
 
         Ext.Array.each(fieldsWithDefaultValue, function(field) {
             defaultValues[field.name] = field.defaultValue;
         });
-        view.up('[itemId=sa-managedobject]').getController().setFormTitle(__("Create") + " {0}", "NEW");
+        parentController.setFormTitle(__("Create") + " {0}", "NEW");
+        parentController.resetInlineStore(formPanel, defaults);
+        parentController.displayButtons(["closeBtn", "saveBtn", "resetBtn"]);
         formPanel.recordId = undefined;
         formPanel.getForm().reset();
         formPanel.getForm().setValues(defaultValues);
-        view.up('[itemId=sa-managedobject]').getController().resetInlineStore(formPanel, defaults);
-        view.down('[itemId=cloneBtn]').setDisabled(true);
-        view.down('[itemId=createBtn]').setDisabled(true);
-        view.down('[itemId=deleteBtn]').setDisabled(true);
     },
     saveRecord: function(data) {
         var me = this,

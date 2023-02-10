@@ -778,7 +778,6 @@ Ext.define('NOC.sa.managedobject.Controller', {
             formPanel = view.down('[itemId=managedobject-form-panel]');
         formPanel.up().getController().onNewRecord();
         formPanel.up().form = formPanel.getForm();
-        this.displayButtons(["closeBtn", "saveBtn"]);
         view.getLayout().setActiveItem('managedobject-form');
     },
     editManagedObject: function(gridView, id, suffix) {
@@ -854,7 +853,6 @@ Ext.define('NOC.sa.managedobject.Controller', {
                 if(gridView) {
                     gridView.unmask();
                 }
-                this.buttonState();
             },
             failure: function() {
                 if(gridView) {
@@ -900,19 +898,6 @@ Ext.define('NOC.sa.managedobject.Controller', {
                 store.setParent(id);
                 store.load();
             }, this);
-    },
-    buttonState: function() {
-        var view = this.getView(),
-            cloneBtn = view.down('[itemId=cloneBtn]'),
-            saveBtn = view.down('[itemId=saveBtn]'),
-            deleteBtn = view.down('[itemId=deleteBtn]'),
-            createBtn = view.down('[itemId=createBtn]');
-
-        saveBtn.setDisabled(!view.hasPermission("update"));
-        saveBtn.formBind = view.hasPermission("update");
-        cloneBtn.setDisabled(!view.hasPermission("create"));
-        deleteBtn.setDisabled(!view.hasPermission("delete"));
-        createBtn.setDisabled(!view.hasPermission("create"));
     },
     showMapHandler: function(record) {
         Ext.Ajax.request({
