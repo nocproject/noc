@@ -25,6 +25,7 @@ Ext.define('NOC.sa.managedobject.form.Controller', {
             saveBtn = app.down('[itemId=saveBtn]'),
             resetBtn = app.down('[itemId=resetBtn]'),
             cloneBtn = app.down('[itemId=cloneBtn]'),
+            alarmsBtn = app.down('[itemId=alarmsBtn]'),
             createBtn = app.down('[itemId=createBtn]');
 
         // saveBtn.formBind = view.hasPermission("update");
@@ -37,6 +38,7 @@ Ext.define('NOC.sa.managedobject.form.Controller', {
         saveBtn.setDisabled(!view.hasPermission("update"));
         resetBtn.setDisabled(!view.hasPermission("update"));
         cloneBtn.setDisabled(!view.hasPermission("create"));
+        alarmsBtn.setDisabled(!view.hasPermission("alarm"));
         createBtn.setDisabled(!view.hasPermission("create"));
 
     },
