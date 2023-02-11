@@ -10,8 +10,8 @@ Ext.define("NOC.sa.managedobject.SensorsPanel", {
     extend: "NOC.core.ApplicationPanel",
     alias: "widget.sa.sensors",
     requires: [
+        "NOC.core.ComboBox",
         "NOC.sa.managedobject.SensorsStore",
-        "NOC.inv.sensorprofile.LookupField",
         "NOC.core.label.LabelField",
     ],
     app: null,
@@ -68,7 +68,11 @@ Ext.define("NOC.sa.managedobject.SensorsPanel", {
                             text: __("Profile"),
                             dataIndex: "profile",
                             renderer: NOC.render.Lookup("profile"),
-                            editor: "inv.sensorprofile.LookupField"
+                            editor: {
+                                xtype: "core.combo",
+                                restUrl: "/inv/sensorprofile/lookup/",
+                                uiStyle: "medium-combo",
+                            }
                         },
                         {
                             text: __("Labels"),

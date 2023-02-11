@@ -12,7 +12,7 @@ Ext.define("NOC.sa.managedobject.ConfDBPanel", {
     alias: "widget.sa.confdb",
     requires: [
         "NOC.core.CMText",
-        "NOC.cm.confdbquery.LookupField"
+        "NOC.core.ComboBox",
     ],
     autoScroll: true,
     layout: "border",
@@ -139,7 +139,9 @@ Ext.define("NOC.sa.managedobject.ConfDBPanel", {
         });
 
         me.confDBQueryField = Ext.create({
-            xtype: "cm.confdbquery.LookupField",
+            xtype: "core.combo",
+            restUrl: "/cm/confdbquery/lookup/",
+            uiStyle: "medium-combo",
             listeners: {
                 scope: me,
                 change: function(field, value) {

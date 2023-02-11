@@ -14,33 +14,13 @@ Ext.define('NOC.sa.managedobject.form.View', {
         'NOC.core.label.LabelDisplay',
         'NOC.core.status.StatusField',
         'NOC.core.combotree.ComboTree',
+        'NOC.core.ComboBox',
         'NOC.core.InlineGrid',
         'NOC.core.InlineModelStore',
-        'NOC.main.ref.stencil.LookupField',
-        'NOC.main.pool.LookupField',
-        'NOC.main.glyph.LookupField',
-        'NOC.main.ref.soposition.LookupField',
-        'NOC.main.ref.soform.LookupField',
-        'NOC.main.handler.LookupField',
-        'NOC.main.remotesystem.LookupField',
-        'NOC.main.timepattern.LookupField',
-        'NOC.inv.resourcegroup.LookupField',
-        'NOC.inv.vendor.LookupField',
-        'NOC.inv.platform.LookupField',
-        'NOC.inv.firmware.LookupField',
-        'NOC.ip.vrf.LookupField',
-        'NOC.fm.ttsystem.LookupField',
-        'NOC.project.project.LookupField',
-        'NOC.sa.profile.LookupField',
-        'NOC.sa.managedobjectprofile.LookupField',
         'NOC.sa.managedobject.AttributesModel',
         'NOC.sa.managedobject.CapabilitiesModel',
         'NOC.sa.managedobject.form.Controller',
-        'NOC.sa.managedobject.LookupField',
         'NOC.sa.managedobject.SchemeLookupField',
-        'NOC.sa.administrativedomain.LookupField',
-        'NOC.sa.authprofile.LookupField',
-        'NOC.vc.l2domain.LookupField',
         'NOC.sa.managedobject.RepoPreview',
         'NOC.sa.managedobject.ConfDBPanel',
         'NOC.sa.managedobject.ConsolePanel',
@@ -180,7 +160,9 @@ Ext.define('NOC.sa.managedobject.form.View', {
                             items: [
                                 {
                                     name: "object_profile",
-                                    xtype: "sa.managedobjectprofile.LookupField",
+                                    xtype: "core.combo",
+                                    restUrl: "/sa/managedobjectprofile/lookup/",
+                                    uiStyle: "medium-combo",
                                     fieldLabel: __("Object Profile"),
                                     tooltip: __(
                                         "More settings for worked with devices. <br/>" +
@@ -193,33 +175,42 @@ Ext.define('NOC.sa.managedobject.form.View', {
                                     // listeners: {
                                     //     render: this.addTooltip
                                     // }
-                                }]
+                                }
+                            ]
                         },
                         {
                             xtype: "container",
                             items: [
                                 {
                                     name: "shape",
-                                    xtype: "main.ref.stencil.LookupField",
+                                    xtype: "core.combo",
+                                    restUrl: "/main/ref/stencil/lookup/",
+                                    uiStyle: "medium-combo",
                                     fieldLabel: __("Shape"),
                                     allowBlank: true,
                                     groupEdit: true
                                 },
                                 {
                                     name: "shape_overlay_glyph",
-                                    xtype: "main.glyph.LookupField",
+                                    xtype: "core.combo",
+                                    restUrl: "/main/glyph/lookup/",
+                                    uiStyle: "medium-combo",
                                     fieldLabel: __("Glyph"),
                                     allowBlank: true
                                 },
                                 {
                                     name: "shape_overlay_position",
-                                    xtype: "main.ref.soposition.LookupField",
+                                    xtype: "core.combo",
+                                    restUrl: "/main/ref/soposition/lookup/",
+                                    uiStyle: "medium-combo",
                                     fieldLabel: __("Position"),
                                     allowBlank: true
                                 },
                                 {
                                     name: "shape_overlay_form",
-                                    xtype: "main.ref.soform.LookupField",
+                                    xtype: "core.combo",
+                                    restUrl: "/main/ref/soform/lookup/",
+                                    uiStyle: "medium-combo",
                                     fieldLabel: __("Form"),
                                     allowBlank: true
                                 }
@@ -238,7 +229,9 @@ Ext.define('NOC.sa.managedobject.form.View', {
                             items: [
                                 {
                                     name: "profile",
-                                    xtype: "sa.profile.LookupField",
+                                    xtype: "core.combo",
+                                    restUrl: "/sa/profile/lookup/",
+                                    uiStyle: "medium-combo",
                                     fieldLabel: __("SA Profile"),
                                     tooltip: __(
                                         "Profile (Adapter) for device work. <br/>" +
@@ -252,7 +245,9 @@ Ext.define('NOC.sa.managedobject.form.View', {
                                     // }
                                 }, {
                                     name: "vendor",
-                                    xtype: "inv.vendor.LookupField",
+                                    xtype: "core.combo",
+                                    restUrl: "/inv/vendor/lookup/",
+                                    uiStyle: "medium-combo",
                                     fieldLabel: __("Vendor"),
                                     tooltip: __(
                                         "Set after Version Discovery. Not for manual set"
@@ -263,7 +258,9 @@ Ext.define('NOC.sa.managedobject.form.View', {
                                     // }
                                 }, {
                                     name: "platform",
-                                    xtype: "inv.platform.LookupField",
+                                    xtype: "core.combo",
+                                    restUrl: "/inv/platform/lookup/",
+                                    uiStyle: "medium-combo",
                                     fieldLabel: __("Platform"),
                                     tooltip: __(
                                         "Set after Version Discovery. Not for manual set"
@@ -279,7 +276,9 @@ Ext.define('NOC.sa.managedobject.form.View', {
                             items: [
                                 {
                                     name: "version",
-                                    xtype: "inv.firmware.LookupField",
+                                    xtype: "core.combo",
+                                    restUrl: "/inv/firmware/lookup/",
+                                    uiStyle: "medium-combo",
                                     fieldLabel: __("Version"),
                                     allowBlank: true
                                 }, {
@@ -408,7 +407,9 @@ Ext.define('NOC.sa.managedobject.form.View', {
                             items: [
                                 {
                                     name: "auth_profile",
-                                    xtype: "sa.authprofile.LookupField",
+                                    xtype: "core.combo",
+                                    restUrl: "/sa/authprofile/lookup/",
+                                    uiStyle: "medium-combo",
                                     fieldLabel: __("Auth Profile"),
                                     tooltip: __(
                                         'Get credentials (user, pass, snmp etc.) from Auth profile.<br/> ' +
@@ -491,7 +492,9 @@ Ext.define('NOC.sa.managedobject.form.View', {
                                 },
                                 {
                                     name: "time_pattern",
-                                    xtype: "main.timepattern.LookupField",
+                                    xtype: "core.combo",
+                                    restUrl: "/main/timepattern/lookup/",
+                                    uiStyle: "medium-combo",
                                     fieldLabel: __("Time Pattern"),
                                     tooltip: __(
                                         'Use this field if you want disable ping check on specified time.<br/> ' +
@@ -518,7 +521,9 @@ Ext.define('NOC.sa.managedobject.form.View', {
                             items: [
                                 {
                                     name: "administrative_domain",
-                                    xtype: "sa.administrativedomain.LookupField",
+                                    xtype: "noc.core.combotree",
+                                    restUrl: "/sa/administrativedomain/",
+                                    uiStyle: "medium-combo",
                                     fieldLabel: __("Administrative Domain"),
                                     tooltip: __(
                                         "Use for setup User permission on Object. <br/>" +
@@ -543,7 +548,9 @@ Ext.define('NOC.sa.managedobject.form.View', {
                                 },
                                 {
                                     name: "pool",
-                                    xtype: "main.pool.LookupField",
+                                    xtype: "core.combo",
+                                    restUrl: "/main/pool/lookup/",
+                                    uiStyle: "medium-combo",
                                     fieldLabel: __("Pool"),
                                     tooltip: __(
                                         "Use for shard devices over intersection IP Address spaces. <br/>" +
@@ -558,7 +565,9 @@ Ext.define('NOC.sa.managedobject.form.View', {
                                 },
                                 {
                                     name: "project",
-                                    xtype: "project.project.LookupField",
+                                    xtype: "core.combo",
+                                    restUrl: "/project/project/lookup/",
+                                    uiStyle: "medium-combo",
                                     fieldLabel: __("Project"),
                                     allowBlank: true,
                                     tabIndex: 140,
@@ -589,14 +598,18 @@ Ext.define('NOC.sa.managedobject.form.View', {
                             items: [
                                 {
                                     name: "vrf",
-                                    xtype: "ip.vrf.LookupField",
+                                    xtype: "core.combo",
+                                    restUrl: "/ip/vrf/lookup/",
+                                    uiStyle: "medium-combo",
                                     fieldLabel: __("VRF"),
                                     allowBlank: true,
                                     groupEdit: true
                                 },
                                 {
                                     name: "l2_domain",
-                                    xtype: "vc.l2domain.LookupField",
+                                    xtype: "core.combo",
+                                    restUrl: "/vc/l2domain/lookup/",
+                                    uiStyle: "medium-combo",
                                     fieldLabel: __("L2 Domain"),
                                     allowBlank: true,
                                     groupEdit: true
@@ -760,7 +773,9 @@ Ext.define('NOC.sa.managedobject.form.View', {
                             items: [
                                 {
                                     name: "fm_pool",
-                                    xtype: "main.pool.LookupField",
+                                    xtype: "core.combo",
+                                    restUrl: "/main/pool/lookup/",
+                                    uiStyle: "medium-combo",
                                     fieldLabel: __("FM Pool"),
                                     tooltip: __(
                                         "Use to override pool for events processing"
@@ -902,7 +917,9 @@ Ext.define('NOC.sa.managedobject.form.View', {
                                     width: 350,
                                     renderer: NOC.render.Lookup("group"),
                                     editor: {
-                                        xtype: "inv.resourcegroup.LookupField"
+                                        xtype: "core.combo",
+                                        restUrl: "/inv/resourcegroup/lookup/",
+
                                     }
                                 }
                             ]
@@ -917,7 +934,8 @@ Ext.define('NOC.sa.managedobject.form.View', {
                                     width: 350,
                                     renderer: NOC.render.Lookup("group"),
                                     editor: {
-                                        xtype: "inv.resourcegroup.LookupField"
+                                        xtype: "core.combo",
+                                        restUrl: "/inv/resourcegroup/lookup/",
                                     }
                                 }
                             ]
@@ -932,7 +950,8 @@ Ext.define('NOC.sa.managedobject.form.View', {
                                     width: 350,
                                     renderer: NOC.render.Lookup("group"),
                                     editor: {
-                                        xtype: "inv.resourcegroup.LookupField"
+                                        xtype: "core.combo",
+                                        restUrl: "/inv/resourcegroup/lookup/",
                                     }
                                 }
                             ]
@@ -947,7 +966,8 @@ Ext.define('NOC.sa.managedobject.form.View', {
                                     width: 350,
                                     renderer: NOC.render.Lookup("group"),
                                     editor: {
-                                        xtype: "inv.resourcegroup.LookupField"
+                                        xtype: "core.combo",
+                                        restUrl: "/inv/resourcegroup/lookup/",
                                     }
                                 }
                             ]
@@ -966,7 +986,9 @@ Ext.define('NOC.sa.managedobject.form.View', {
                             items: [
                                 {
                                     name: "controller",
-                                    xtype: "sa.managedobject.LookupField",
+                                    xtype: "core.combo",
+                                    restUrl: "/sa/managedobject/lookup/",
+                                    uiStyle: "medium-combo",
                                     fieldLabel: __("Controller"),
                                     allowBlank: true,
                                     groupEdit: true
@@ -1008,7 +1030,9 @@ Ext.define('NOC.sa.managedobject.form.View', {
                             items: [
                                 {
                                     name: "config_filter_handler",
-                                    xtype: "main.handler.LookupField",
+                                    xtype: "core.combo",
+                                    restUrl: "/main/handler/lookup/",
+                                    uiStyle: "medium-combo",
                                     fieldLabel: __("Config Filter Handler"),
                                     allowBlank: true,
                                     groupEdit: true,
@@ -1018,7 +1042,9 @@ Ext.define('NOC.sa.managedobject.form.View', {
                                 },
                                 {
                                     name: "config_diff_filter_handler",
-                                    xtype: "main.handler.LookupField",
+                                    xtype: "core.combo",
+                                    restUrl: "/main/handler/lookup/",
+                                    uiStyle: "medium-combo",
                                     fieldLabel: __("Config Diff Filter Handler"),
                                     allowBlank: true,
                                     groupEdit: true,
@@ -1031,7 +1057,9 @@ Ext.define('NOC.sa.managedobject.form.View', {
                             items: [
                                 {
                                     name: "config_validation_handler",
-                                    xtype: "main.handler.LookupField",
+                                    xtype: "core.combo",
+                                    restUrl: "/main/handler/lookup/",
+                                    uiStyle: "medium-combo",
                                     fieldLabel: __("Config Validation Handler"),
                                     allowBlank: true,
                                     groupEdit: true,
@@ -1054,7 +1082,9 @@ Ext.define('NOC.sa.managedobject.form.View', {
                             items: [
                                 {
                                     name: "remote_system",
-                                    xtype: "main.remotesystem.LookupField",
+                                    xtype: "core.combo",
+                                    restUrl: "/main/remotesystem/lookup/",
+                                    uiStyle: "medium-combo",
                                     fieldLabel: __("Remote System"),
                                     allowBlank: true
                                 },
@@ -1095,7 +1125,9 @@ Ext.define('NOC.sa.managedobject.form.View', {
                                 },
                                 {
                                     name: "tt_system",
-                                    xtype: "fm.ttsystem.LookupField",
+                                    xtype: "core.combo",
+                                    restUrl: "/fm/ttsystem/lookup/",
+                                    uiStyle: "medium-combo",
                                     fieldLabel: __("TT System"),
                                     allowBlank: true,
                                     groupEdit: true

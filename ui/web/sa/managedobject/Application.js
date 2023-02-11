@@ -45,6 +45,8 @@ Ext.define('NOC.sa.managedobject.Application', {
                     items: [
                         {
                             xtype: 'grid', // selection grid
+                            stateful: true,
+                            stateId: "sa-managedobject-selection-grid",
                             reference: 'saManagedobjectSelectionGrid',
                             region: 'center',
                             width: '50%',
@@ -155,6 +157,8 @@ Ext.define('NOC.sa.managedobject.Application', {
                             }
                         }, {
                             xtype: 'grid', // selected grid
+                            stateful: true,
+                            stateId: "sa-managedobject-selected1-grid",
                             reference: 'saManagedobjectSelectedGrid1',
                             region: 'east',
                             width: '50%',
@@ -317,6 +321,8 @@ Ext.define('NOC.sa.managedobject.Application', {
             items: [
                 {
                     xtype: 'grid',
+                    stateful: true,
+                    stateId: "sa-managedobject-selected2-grid",
                     reference: 'saManagedobjectSelectedGrid2',
                     region: 'center',
                     width: '50%',
@@ -433,6 +439,8 @@ Ext.define('NOC.sa.managedobject.Application', {
             items: [
                 {
                     xtype: 'grid',
+                    stateful: true,
+                    stateId: "sa-managedobject-selected3-grid",
                     reference: 'saManagedobjectSelectedGrid3',
                     region: 'center',
                     width: '50%',

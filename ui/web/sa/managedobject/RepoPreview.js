@@ -9,6 +9,9 @@ console.debug("Defining NOC.sa.managedobject.RepoPreview");
 Ext.define("NOC.sa.managedobject.RepoPreview", {
     extend: "NOC.core.RepoPreview",
     alias: "widget.sa.repopreview",
+    requires: [
+        "NOC.core.ComboBox",
+    ],
     initComponent: function() {
         var me = this, topBar, index;
         me.callParent();
@@ -25,7 +28,9 @@ Ext.define("NOC.sa.managedobject.RepoPreview", {
                 }
             ]
         });
-        me.objectCombo = Ext.create("NOC.sa.managedobject.LookupField", {
+        me.objectCombo = Ext.create("NOC.core.ComboBox", {
+            restUrl: "/sa/managedobject/lookup/",
+            uiStyle: "medium-combo",
             itemId: "objectCombo",
             hidden: true,
             listeners: {

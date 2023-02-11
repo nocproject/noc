@@ -11,19 +11,10 @@ Ext.define('NOC.core.filter.Filter', {
     viewModel: 'core.filter',
     requires: [
         'Ext.ux.form.SearchField',
-        'NOC.sa.profile.LookupField',
-        'NOC.main.pool.LookupField',
-        'NOC.sa.vendor.LookupField',
-        'NOC.sa.platform.LookupField',
+        'NOC.core.ComboBox',
         'NOC.sa.administrativedomain.TreeCombo',
         'NOC.inv.networksegment.TreeCombo',
-        'NOC.inv.firmware.LookupField',
-        'NOC.inv.platform.LookupField',
-        'NOC.inv.vendor.LookupField',
-        'NOC.sa.managedobjectprofile.LookupField',
         'NOC.inv.resourcegroup.TreeCombo',
-        'NOC.sa.commandsnippet.LookupField',
-        'NOC.sa.actioncommands.LookupField',
         'NOC.core.filter.ViewModel',
         'NOC.core.filter.FilterController'
     ],
@@ -64,7 +55,8 @@ Ext.define('NOC.core.filter.Filter', {
             }
         },
         {
-            xtype: 'sa.profile.LookupField',
+            xtype: "core.combo",
+            restUrl: "/sa/profile/lookup/",
             itemId: 'profile', // name of http request query param
             fieldLabel: __('By SA Profile:'),
             listeners: {
@@ -78,7 +70,8 @@ Ext.define('NOC.core.filter.Filter', {
             }
         },
         {
-            xtype: 'sa.managedobjectprofile.LookupField',
+            xtype: "core.combo",
+            restUrl: "/sa/managedobjectprofile/lookup/",
             itemId: 'object_profile', // name of http request query param
             fieldLabel: __('By Obj. Profile:'),
             listeners: {
@@ -114,7 +107,7 @@ Ext.define('NOC.core.filter.Filter', {
         {
             xtype: 'inv.resourcegroup.TreeCombo',
             itemId: 'resource_group', // name of http request query param
-            fieldLabel:__("By Service Group"),
+            fieldLabel: __("By Service Group"),
             listeners: {
                 select: 'setFilter'
             },
@@ -126,7 +119,8 @@ Ext.define('NOC.core.filter.Filter', {
             }
         },
         {
-            xtype: 'main.pool.LookupField',
+            xtype: "core.combo",
+            restUrl: "/main/pool/lookup/",
             itemId: 'pool', // name of http request query param
             fieldLabel: __('By Pool:'),
             listeners: {
@@ -140,7 +134,8 @@ Ext.define('NOC.core.filter.Filter', {
             }
         },
         {
-            xtype: 'inv.vendor.LookupField',
+            xtype: "core.combo",
+            restUrl: "/inv/vendor/lookup/",
             itemId: 'vendor',  // name of http request query param
             fieldLabel: __('By Vendor:'),
             listeners: {
@@ -154,7 +149,8 @@ Ext.define('NOC.core.filter.Filter', {
             }
         },
         {
-            xtype: 'inv.platform.LookupField',
+            xtype: "core.combo",
+            restUrl: "/inv/platform/lookup/",
             itemId: 'platform',  // name of http request query param
             fieldLabel: __('By Platform:'),
             listeners: {
@@ -168,7 +164,8 @@ Ext.define('NOC.core.filter.Filter', {
             }
         },
         {
-            xtype: 'inv.firmware.LookupField',
+            xtype: "core.combo",
+            restUrl: "/inv/firmware/lookup/",
             itemId: 'version',  // name of http request query param
             fieldLabel: __('By Version:'),
             listeners: {
