@@ -13,169 +13,11 @@ Ext.define('NOC.sa.managedobject.Controller', {
     url: '/sa/managedobject/',
 
     init: function(app) {
-        var selectionGrid = app.lookupReference('saManagedobjectSelectionGrid');
-        var selectedGrid1 = app.lookupReference('saManagedobjectSelectedGrid1');
-        var selectedGrid2 = app.lookupReference('saManagedobjectSelectedGrid2');
-        var selectedGrid3 = app.lookupReference('saManagedobjectSelectedGrid3');
-        var defaultCols = [
-            {
-                xtype: 'glyphactioncolumn',
-                width: 25,
-                items: [{
-                    glyph: NOC.glyph.edit,
-                    handler: 'onEdit'
-                }]
-            }, {
-                text: __('Name'),
-                dataIndex: 'name',
-                width: 200
-            }, {
-                text: __('Address'),
-                dataIndex: 'address',
-                width: 100
-            }, {
-                text: __('Profile'),
-                dataIndex: 'profile',
-                width: 100
-            }, {
-                text: __('Platform'),
-                dataIndex: 'platform',
-                flex: 1
-            }, {
-                text: __('Version'),
-                dataIndex: 'version',
-                flex: 1
-            }, {
-                text: __("S"),
-                dataIndex: "oper_state",
-                sortable: false,
-                width: 30,
-                renderer: function(value, metaData) {
-                    var color = "grey";
-                    metaData.tdAttr = "data-qtip='<table style=\"font-size: 11px;\">" +
-                        "<tr><td style=\"padding-right: 10px;\"><div class=\"noc-object-oper-state\" style=\"background-color: grey;\"></div></td><td>" + __("Unmanaged or ping is disabled") + "</td></tr>" +
-                        "<tr><td><div class=\"noc-object-oper-state\" style=\"background-color: red;\"></div></td><td>" + __("Ping fail") + "</td></tr>" +
-                        "<tr><td><div class=\"noc-object-oper-state\" style=\"background-color: yellow;\"></div></td><td>" + __("Device has alarm") + "</td></tr>" +
-                        "<tr><td><div class=\"noc-object-oper-state\" style=\"background-color: green;\"></div></td><td>" + __("Device is normal") + "</td></tr>" +
-                        "</table>'";
-                    if(value === "failed") {
-                        color = "red";
-                    } else if(value === "degraded") {
-                        color = "yellow";
-                    } else if(value === "full") {
-                        color = "green";
-                    }
-                    return "<div class='noc-object-oper-state' style='background-color: " + color + "'></div>";
-                }
-            }, {
-                text: __('Managed'),
-                dataIndex: 'is_managed',
-                width: 30,
-                renderer: NOC.render.Bool
-            }, {
-                text: __('Obj. Profile'),
-                dataIndex: 'object_profile',
-                flex: 1
-            }, {
-                text: __('Adm. Domain'),
-                dataIndex: 'administrative_domain',
-                flex: 1
-            }, {
-                text: __('Auth Profile'),
-                dataIndex: 'auth_profile',
-                flex: 1
-            }, {
-                text: __('VRF'),
-                dataIndex: 'vrf',
-                flex: 1
-            }, {
-                text: __('Pool'),
-                dataIndex: 'pool',
-                flex: 1
-            }, {
-                text: __('Description'),
-                dataIndex: 'description',
-                flex: 1
-            }, {
-                text: __('Interfaces'),
-                dataIndex: 'interface_count',
-                width: 50,
-                sortable: false,
-                align: "right",
-                renderer: this.renderClickableCell
-            }, {
-                text: __('Links'),
-                dataIndex: 'link_count',
-                width: 50,
-                sortable: false,
-                align: "right",
-                cls: "noc-clickable-cell",
-                renderer: this.renderClickableCell
-            }, {
-                text: __('Labels'),
-                dataIndex: 'labels',
-                renderer: NOC.render.LabelField,
-                align: "right",
-                width: 100
-            }, {
-                xtype: 'glyphactioncolumn',
-                width: 25,
-                items: [{
-                    glyph: NOC.glyph.cart_plus,
-                    handler: 'onAddObject'
-                }]
-            }
-        ];
         var action = this.getView().noc.cmd;
         if(action && action.args && action.args.length >= 1) {
             this.editManagedObject(undefined, action.args[0], action.args[1]);
         }
         app.setActiveItem(0);
-        // page 1 init selection grid
-        Ext.Array.each(defaultCols, function(col, index) {
-            selectionGrid.headerCt.insert(index + 1, col);
-        });
-        selectionGrid.getView().refresh();
-        // page 1 init selected grid
-        Ext.Array.each([{
-            xtype: 'glyphactioncolumn',
-            width: 25,
-            items: [{
-                glyph: NOC.glyph.minus_circle,
-                handler: 'onRemoveObject'
-            }]
-        }].concat(defaultCols), function(col, index) {
-            selectedGrid1.headerCt.insert(index + 1, col);
-        });
-        selectedGrid1.getView().refresh();
-        // page 2 init selected grid
-        Ext.Array.each(defaultCols.concat([{
-            xtype: 'glyphactioncolumn',
-            width: 25,
-            items: [{
-                glyph: NOC.glyph.minus_circle,
-                handler: 'onRemoveObject'
-            }]
-        }]), function(col, index) {
-            selectedGrid2.headerCt.insert(index + 1, col);
-        });
-        selectedGrid2.getView().refresh();
-        // page 3 init selected grid
-        Ext.Array.each(defaultCols.concat({
-            text: __('Status'),
-            dataIndex: 'status',
-            width: 70,
-            renderer: NOC.render.Choices({
-                w: __('Waiting'),
-                r: __('Running'),
-                f: __('Failed'),
-                s: __('Success')
-            })
-        }), function(col, index) {
-            selectedGrid3.headerCt.insert(index + 1, col);
-        });
-        selectedGrid3.getView().refresh();
-
         app.lookupReference('filterPanel').appId = 'sa.managedobject';
     },
     //
@@ -326,7 +168,7 @@ Ext.define('NOC.sa.managedobject.Controller', {
             case 'action': {
                 commandForm.add({
                     xclass: 'NOC.sa.action.LookupField',
-                    reference: 'sa-managedobject-action-field',
+                    reference: 'saManagedobjectActionField',
                     name: 'modeId',
                     fieldLabel: __('Actions'),
                     allowBlank: false,
@@ -340,7 +182,7 @@ Ext.define('NOC.sa.managedobject.Controller', {
             case 'snippet': {
                 commandForm.add({
                     xclass: 'NOC.sa.commandsnippet.LookupField',
-                    reference: 'sa-managedobject-snippet-field',
+                    reference: 'saManagedobjectFnippetField',
                     name: 'modeId',
                     fieldLabel: __('Snippets'),
                     allowBlank: false,

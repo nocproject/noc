@@ -3,6 +3,125 @@
 // See LICENSE for details
 //---------------------------------------------------------------------
 
+defaultColumns = [
+    {
+        text: __('Name'),
+        dataIndex: 'name',
+        width: 200
+    },
+    {
+        text: __('Address'),
+        dataIndex: 'address',
+        width: 100
+    },
+    {
+        text: __('Profile'),
+        dataIndex: 'profile',
+        width: 100
+    },
+    {
+        text: __('Platform'),
+        dataIndex: 'platform',
+        flex: 1
+    },
+    {
+        text: __('Version'),
+        dataIndex: 'version',
+        flex: 1
+    },
+    {
+        text: __("S"),
+        dataIndex: "oper_state",
+        sortable: false,
+        width: 30,
+        renderer: function(value, metaData) {
+            var color = "grey";
+            metaData.tdAttr = "data-qtip='<table style=\"font-size: 11px;\">" +
+                "<tr><td style=\"padding-right: 10px;\"><div class=\"noc-object-oper-state\" style=\"background-color: grey;\"></div></td><td>" + __("Unmanaged or ping is disabled") + "</td></tr>" +
+                "<tr><td><div class=\"noc-object-oper-state\" style=\"background-color: red;\"></div></td><td>" + __("Ping fail") + "</td></tr>" +
+                "<tr><td><div class=\"noc-object-oper-state\" style=\"background-color: yellow;\"></div></td><td>" + __("Device has alarm") + "</td></tr>" +
+                "<tr><td><div class=\"noc-object-oper-state\" style=\"background-color: green;\"></div></td><td>" + __("Device is normal") + "</td></tr>" +
+                "</table>'";
+            if(value === "failed") {
+                color = "red";
+            } else if(value === "degraded") {
+                color = "yellow";
+            } else if(value === "full") {
+                color = "green";
+            }
+            return "<div class='noc-object-oper-state' style='background-color: " + color + "'></div>";
+        }
+    },
+    {
+        text: __('Managed'),
+        dataIndex: 'is_managed',
+        width: 30,
+        renderer: NOC.render.Bool
+    },
+    {
+        text: __('Obj. Profile'),
+        dataIndex: 'object_profile',
+        flex: 1
+    },
+    {
+        text: __('Adm. Domain'),
+        dataIndex: 'administrative_domain',
+        flex: 1
+    },
+    {
+        text: __('Auth Profile'),
+        dataIndex: 'auth_profile',
+        flex: 1
+    },
+    {
+        text: __('VRF'),
+        dataIndex: 'vrf',
+        flex: 1
+    },
+    {
+        text: __('Pool'),
+        dataIndex: 'pool',
+        flex: 1
+    },
+    {
+        text: __('Description'),
+        dataIndex: 'description',
+        flex: 1
+    },
+    {
+        text: __('Interfaces'),
+        dataIndex: 'interface_count',
+        width: 50,
+        sortable: false,
+        align: "right",
+        renderer: this.renderClickableCell
+    },
+    {
+        text: __('Links'),
+        dataIndex: 'link_count',
+        width: 50,
+        sortable: false,
+        align: "right",
+        cls: "noc-clickable-cell",
+        renderer: this.renderClickableCell
+    },
+    {
+        text: __('Labels'),
+        dataIndex: 'labels',
+        renderer: NOC.render.LabelField,
+        align: "right",
+        width: 100
+    },
+    {
+        xtype: 'glyphactioncolumn',
+        width: 25,
+        items: [{
+            glyph: NOC.glyph.cart_plus,
+            handler: 'onAddObject'
+        }]
+    }
+];
+//
 console.debug('Defining NOC.sa.managedobject.Application');
 Ext.define('NOC.sa.managedobject.Application', {
     itemId: "sa-managedobject",
@@ -46,7 +165,7 @@ Ext.define('NOC.sa.managedobject.Application', {
                         {
                             xtype: 'grid', // selection grid
                             stateful: true,
-                            stateId: "sa-managedobject-selection-grid",
+                            stateId: "sa.managedobject-selection-grid",
                             reference: 'saManagedobjectSelectionGrid',
                             region: 'center',
                             width: '50%',
@@ -55,6 +174,14 @@ Ext.define('NOC.sa.managedobject.Application', {
                             border: false,
                             scrollable: true,
                             emptyText: __('Not Found'),
+                            columns: [{
+                                xtype: 'glyphactioncolumn',
+                                width: 25,
+                                items: [{
+                                    glyph: NOC.glyph.edit,
+                                    handler: 'onEdit'
+                                }]
+                            }].concat(this.defaultColumns),
                             bind: {
                                 store: '{selectionStore}',
                                 selection: '{selectionRow}'
@@ -155,24 +282,31 @@ Ext.define('NOC.sa.managedobject.Application', {
                             viewConfig: {
                                 enableTextSelection: true
                             }
-                        }, {
+                        },
+                        {
                             xtype: 'grid', // selected grid
                             stateful: true,
-                            stateId: "sa-managedobject-selected1-grid",
+                            stateId: "sa.managedobject-selected1-grid",
                             reference: 'saManagedobjectSelectedGrid1',
                             region: 'east',
                             width: '50%',
-
                             collapsed: true,
                             animCollapse: false,
                             collapseMode: 'mini',
                             hideCollapseTool: true,
-
                             resizable: true,
                             pageSize: 0,
                             border: false,
                             scrollable: true,
                             emptyText: __('nothing checked'),
+                            columns: [{
+                                xtype: 'glyphactioncolumn',
+                                width: 25,
+                                items: [{
+                                    glyph: NOC.glyph.minus_circle,
+                                    handler: 'onRemoveObject'
+                                }]
+                            }].concat(this.defaultColumns),
                             split: {
                                 xtype: 'splitter'
                             },
@@ -321,14 +455,20 @@ Ext.define('NOC.sa.managedobject.Application', {
             items: [
                 {
                     xtype: 'grid',
-                    stateful: true,
-                    stateId: "sa-managedobject-selected2-grid",
                     reference: 'saManagedobjectSelectedGrid2',
                     region: 'center',
                     width: '50%',
                     border: false,
                     scrollable: true,
                     bind: '{selectedStore}',
+                    columns: this.defaultColumns.concat([{
+                        xtype: 'glyphactioncolumn',
+                        width: 25,
+                        items: [{
+                            glyph: NOC.glyph.minus_circle,
+                            handler: 'onRemoveObject'
+                        }]
+                    }]),
                     listeners: {
                         afterrender: 'setRowClass'
                     }
@@ -439,14 +579,23 @@ Ext.define('NOC.sa.managedobject.Application', {
             items: [
                 {
                     xtype: 'grid',
-                    stateful: true,
-                    stateId: "sa-managedobject-selected3-grid",
                     reference: 'saManagedobjectSelectedGrid3',
                     region: 'center',
                     width: '50%',
                     border: false,
                     scrollable: true,
                     bind: '{selectedStore}',
+                    columns: this.defaultColumns.concat({
+                        text: __('Status'),
+                        dataIndex: 'status',
+                        width: 70,
+                        renderer: NOC.render.Choices({
+                            w: __('Waiting'),
+                            r: __('Running'),
+                            f: __('Failed'),
+                            s: __('Success')
+                        })
+                    }),
                     selModel: {
                         mode: 'SINGLE',
                         selType: 'checkboxmodel'
