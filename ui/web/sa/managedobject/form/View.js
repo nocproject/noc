@@ -178,9 +178,9 @@ Ext.define('NOC.sa.managedobject.form.View', {
                                     allowBlank: false,
                                     tabIndex: 50,
                                     groupEdit: true,
-                                    // listeners: {
-                                    //     render: this.addTooltip
-                                    // }
+                                    listeners: {
+                                        render: 'addTooltip'
+                                    }
                                 }
                             ]
                         },
@@ -245,9 +245,9 @@ Ext.define('NOC.sa.managedobject.form.View', {
                                     allowBlank: false,
                                     tabIndex: 60,
                                     groupEdit: true,
-                                    // listeners: {
-                                    //     render: this.addTooltip
-                                    // }
+                                    listeners: {
+                                        render: 'addTooltip'
+                                    }
                                 }, {
                                     name: "vendor",
                                     xtype: "core.combo",
@@ -258,9 +258,9 @@ Ext.define('NOC.sa.managedobject.form.View', {
                                         "Set after Version Discovery. Not for manual set"
                                     ),
                                     allowBlank: true,
-                                    // listeners: {
-                                    //     render: this.addTooltip
-                                    // }
+                                    listeners: {
+                                        render: 'addTooltip'
+                                    }
                                 }, {
                                     name: "platform",
                                     xtype: "core.combo",
@@ -271,9 +271,9 @@ Ext.define('NOC.sa.managedobject.form.View', {
                                         "Set after Version Discovery. Not for manual set"
                                     ),
                                     allowBlank: true,
-                                    // listeners: {
-                                    //     render: this.addTooltip
-                                    // }
+                                    listeners: {
+                                        render: 'addTooltip'
+                                    }
                                 }
                             ]
                         }, {
@@ -343,9 +343,9 @@ Ext.define('NOC.sa.managedobject.form.View', {
                                         ["CS", __("CLI, SNMP")]
                                     ],
                                     groupEdit: true,
-                                    // listeners: {
-                                    //     render: this.addTooltip
-                                    // }
+                                    listeners: {
+                                        render: 'addTooltip'
+                                    }
                                 },
                                 {
                                     name: "port",
@@ -373,9 +373,9 @@ Ext.define('NOC.sa.managedobject.form.View', {
                                         ["D", __("Disable")]
                                     ],
                                     groupEdit: true,
-                                    // listeners: {
-                                    //     render: this.addTooltip
-                                    // }
+                                    listeners: {
+                                        render: 'addTooltip'
+                                    }
                                 },
                                 {
                                     name: "cli_privilege_policy",
@@ -393,9 +393,9 @@ Ext.define('NOC.sa.managedobject.form.View', {
                                         ["D", __("Don't Raise")]
                                     ],
                                     groupEdit: true,
-                                    // listeners: {
-                                    //     render: this.addTooltip
-                                    // }
+                                    listeners: {
+                                        render: 'addTooltip'
+                                    }
                                 },
                                 {
                                     name: "remote_path",
@@ -422,9 +422,9 @@ Ext.define('NOC.sa.managedobject.form.View', {
                                     tabIndex: 60,
                                     allowBlank: true,
                                     groupEdit: true,
-                                    // listeners: {
-                                    //     render: this.addTooltip
-                                    // }
+                                    listeners: {
+                                        render: 'addTooltip'
+                                    }
                                 },
                                 {
                                     name: "user",
@@ -489,9 +489,9 @@ Ext.define('NOC.sa.managedobject.form.View', {
                                     minValue: 0,
                                     maxValue: 99,
                                     groupEdit: true,
-                                    // listeners: {
-                                    //     render: this.addTooltip
-                                    // }
+                                    listeners: {
+                                        render: 'addTooltip'
+                                    }
                                 },
                                 {
                                     name: "time_pattern",
@@ -505,9 +505,9 @@ Ext.define('NOC.sa.managedobject.form.View', {
                                     ),
                                     allowBlank: true,
                                     groupEdit: true,
-                                    // listeners: {
-                                    // render: this.addTooltip
-                                    // }
+                                    listeners: {
+                                        render: 'addTooltip'
+                                    }
                                 }
                             ]
                         }
@@ -536,9 +536,9 @@ Ext.define('NOC.sa.managedobject.form.View', {
                                     allowBlank: false,
                                     tabIndex: 110,
                                     groupEdit: true,
-                                    // listeners: {
-                                    // render: this.addTooltip
-                                    // }
+                                    listeners: {
+                                        render: 'addTooltip'
+                                    }
                                 },
                                 {
                                     name: "segment",
@@ -562,9 +562,9 @@ Ext.define('NOC.sa.managedobject.form.View', {
                                     allowBlank: false,
                                     tabIndex: 130,
                                     groupEdit: true,
-                                    // listeners: {
-                                    // render: this.addTooltip
-                                    // }
+                                    listeners: {
+                                        render: 'addTooltip'
+                                    }
                                 },
                                 {
                                     name: "project",
@@ -575,9 +575,9 @@ Ext.define('NOC.sa.managedobject.form.View', {
                                     allowBlank: true,
                                     tabIndex: 140,
                                     groupEdit: true,
-                                    // listeners: {
-                                    // render: this.addTooltip
-                                    // }
+                                    listeners: {
+                                        render: 'addTooltip'
+                                    }
                                 },
                                 {
                                     name: "fqdn",
@@ -591,9 +591,9 @@ Ext.define('NOC.sa.managedobject.form.View', {
                                     allowBlank: true,
                                     uiStyle: "medium",
                                     tabIndex: 150,
-                                    // listeners: {
-                                    // render: this.addTooltip
-                                    // }
+                                    listeners: {
+                                        render: 'addTooltip'
+                                    }
                                 }
                             ]
                         }, {
@@ -649,9 +649,9 @@ Ext.define('NOC.sa.managedobject.form.View', {
                                     ],
                                     allowBlank: false,
                                     uiStyle: "medium",
-                                    // listeners: {
-                                    // render: this.addTooltip
-                                    // }
+                                    listeners: {
+                                        render: 'addTooltip'
+                                    }
                                 }
                             ]
                         }
@@ -787,9 +787,9 @@ Ext.define('NOC.sa.managedobject.form.View', {
                                     allowBlank: true,
                                     tabIndex: 160,
                                     groupEdit: true,
-                                    // listeners: {
-                                    // render: this.addTooltip
-                                    // }
+                                    listeners: {
+                                        render: 'addTooltip'
+                                    }
                                 },
                                 {
                                     name: "event_processing_policy",

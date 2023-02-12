@@ -308,6 +308,14 @@ Ext.define('NOC.sa.managedobject.form.Controller', {
             activeItem.preview(backItem.currentRecord, backItem);
         }
     },
+    addTooltip: function(element) {
+        if(element.tooltip) {
+            Ext.create('Ext.tip.ToolTip', {
+                target: element.getEl(),
+                html: element.tooltip
+            });
+        }
+    },
     // Workaround labelField
     onChange: Ext.emptyFn,
 });
