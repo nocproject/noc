@@ -2,6 +2,12 @@
 // Copyright (C) 2007-2023 The NOC Project
 // See LICENSE for details
 //---------------------------------------------------------------------
+fieldSetDefaults = {
+    xtype: "container",
+    padding: 10,
+    layout: "form",
+    columnWidth: 0.5
+};
 
 console.debug('Defining NOC.sa.managedobject.form.View');
 Ext.define('NOC.sa.managedobject.form.View', {
@@ -47,12 +53,15 @@ Ext.define('NOC.sa.managedobject.form.View', {
             activeItem: 0,
             itemId: 'managedobject-form-panel',
             xtype: 'form',
-            layout: 'form',
-            scrollable: true,
+            layout: 'anchor',
+            border: true,
+            padding: 4,
             defaults: {
+                anchor: "100%",
                 minWidth: 800,
                 maxWidth: 1000,
             },
+            scrollable: true,
             items: [
                 {
                     xtype: "container",
@@ -66,8 +75,7 @@ Ext.define('NOC.sa.managedobject.form.View', {
                 {
                     xtype: "fieldset",
                     layout: "column",
-                    minWidth: 800,
-                    maxWidth: 1000,
+                    defaults: this.fieldSetDefaults,
                     border: false,
                     items: [
                         {
@@ -151,12 +159,10 @@ Ext.define('NOC.sa.managedobject.form.View', {
                     xtype: "fieldset",
                     title: __("Role"),
                     layout: "column",
-                    minWidth: 800,
-                    maxWidth: 1000,
+                    defaults: this.fieldSetDefaults,
                     collapsible: true,
                     items: [
                         {
-                            xtype: "container",
                             items: [
                                 {
                                     name: "object_profile",
@@ -179,7 +185,6 @@ Ext.define('NOC.sa.managedobject.form.View', {
                             ]
                         },
                         {
-                            xtype: "container",
                             items: [
                                 {
                                     name: "shape",
@@ -222,10 +227,10 @@ Ext.define('NOC.sa.managedobject.form.View', {
                     xtype: "fieldset",
                     title: __("Platform"),
                     layout: "column",
+                    defaults: this.fieldSetDefaults,
                     collapsible: true,
                     items: [
                         {
-                            xtype: "container",
                             items: [
                                 {
                                     name: "profile",
@@ -272,7 +277,6 @@ Ext.define('NOC.sa.managedobject.form.View', {
                                 }
                             ]
                         }, {
-                            xtype: "container",
                             items: [
                                 {
                                     name: "version",
@@ -295,10 +299,10 @@ Ext.define('NOC.sa.managedobject.form.View', {
                     xtype: "fieldset",
                     title: __("Access"),
                     layout: "column",
+                    defaults: this.fieldSetDefaults,
                     collapsible: true,
                     items: [
                         {
-                            xtype: "container",
                             items: [
                                 {
                                     name: "scheme",
@@ -403,7 +407,6 @@ Ext.define('NOC.sa.managedobject.form.View', {
                             ]
                         },
                         {
-                            xtype: "container",
                             items: [
                                 {
                                     name: "auth_profile",
@@ -514,10 +517,10 @@ Ext.define('NOC.sa.managedobject.form.View', {
                     xtype: "fieldset",
                     title: __("Location"),
                     layout: "column",
+                    defaults: this.fieldSetDefaults,
                     collapsible: true,
                     items: [
                         {
-                            xtype: "container",
                             items: [
                                 {
                                     name: "administrative_domain",
@@ -594,7 +597,6 @@ Ext.define('NOC.sa.managedobject.form.View', {
                                 }
                             ]
                         }, {
-                            xtype: "container",
                             items: [
                                 {
                                     name: "vrf",
@@ -659,6 +661,7 @@ Ext.define('NOC.sa.managedobject.form.View', {
                     xtype: "fieldset",
                     title: __("Discovery"),
                     layout: "column",
+                    defaults: this.fieldSetDefaults,
                     collapsible: true,
                     items: [
                         {
@@ -746,6 +749,7 @@ Ext.define('NOC.sa.managedobject.form.View', {
                     xtype: "fieldset",
                     title: __("ConfDB"),
                     layout: "column",
+                    defaults: this.fieldSetDefaults,
                     collapsible: true,
                     items: [
                         {
@@ -766,10 +770,10 @@ Ext.define('NOC.sa.managedobject.form.View', {
                     xtype: "fieldset",
                     title: __("Event Sources"),
                     layout: "column",
+                    defaults: this.fieldSetDefaults,
                     collapsible: true,
                     items: [
                         {
-                            xtype: "container",
                             items: [
                                 {
                                     name: "fm_pool",
@@ -842,7 +846,6 @@ Ext.define('NOC.sa.managedobject.form.View', {
                                 }
                             ]
                         }, {
-                            xtype: "container",
                             items: [
                                 {
                                     name: "syslog_source_type",
@@ -887,10 +890,8 @@ Ext.define('NOC.sa.managedobject.form.View', {
                 {
                     xtype: "fieldset",
                     title: __("Resource Groups"),
-                    layout: {
-                        type: 'vbox',
-                        align: 'stretch',
-                    },
+                    layout: "column",
+                    defaults: this.fieldSetDefaults,
                     collapsible: true,
                     collapsed: false,
                     items: [
@@ -978,11 +979,11 @@ Ext.define('NOC.sa.managedobject.form.View', {
                     xtype: "fieldset",
                     title: __("CPE"),
                     layout: "column",
+                    defaults: this.fieldSetDefaults,
                     collapsible: true,
                     collapsed: true,
                     items: [
                         {
-                            xtype: "container",
                             items: [
                                 {
                                     name: "controller",
@@ -1001,7 +1002,6 @@ Ext.define('NOC.sa.managedobject.form.View', {
                                 }]
                         },
                         {
-                            xtype: "container",
                             items: [
                                 {
                                     name: "global_cpe_id",
@@ -1022,11 +1022,11 @@ Ext.define('NOC.sa.managedobject.form.View', {
                     xtype: "fieldset",
                     title: __("Rules"),
                     layout: "column",
+                    defaults: this.fieldSetDefaults,
                     collapsible: true,
                     collapsed: true,
                     items: [
                         {
-                            xtype: "container",
                             items: [
                                 {
                                     name: "config_filter_handler",
@@ -1053,7 +1053,6 @@ Ext.define('NOC.sa.managedobject.form.View', {
                                     }
                                 }]
                         }, {
-                            xtype: "container",
                             items: [
                                 {
                                     name: "config_validation_handler",
@@ -1074,11 +1073,11 @@ Ext.define('NOC.sa.managedobject.form.View', {
                     xtype: "fieldset",
                     title: __("Integration"),
                     layout: "column",
+                    defaults: this.fieldSetDefaults,
                     collapsible: true,
                     collapsed: true,
                     items: [
                         {
-                            xtype: "container",
                             items: [
                                 {
                                     name: "remote_system",
@@ -1095,7 +1094,6 @@ Ext.define('NOC.sa.managedobject.form.View', {
                                     allowBlank: true
                                 }]
                         }, {
-                            xtype: "container",
                             items: []
                         }
                     ]
@@ -1104,11 +1102,11 @@ Ext.define('NOC.sa.managedobject.form.View', {
                     xtype: "fieldset",
                     title: __("Escalation"),
                     layout: "column",
+                    defaults: this.fieldSetDefaults,
                     collapsible: true,
                     collapsed: true,
                     items: [
                         {
-                            xtype: "container",
                             items: [
                                 {
                                     name: "escalation_policy",
@@ -1133,7 +1131,6 @@ Ext.define('NOC.sa.managedobject.form.View', {
                                     groupEdit: true
                                 }]
                         }, {
-                            xtype: "container",
                             items: [
                                 {
                                     name: "tt_queue",
@@ -1156,11 +1153,11 @@ Ext.define('NOC.sa.managedobject.form.View', {
                     xtype: "fieldset",
                     title: __("Discovery Alarm"),
                     layout: "column",
+                    defaults: this.fieldSetDefaults,
                     collapsible: true,
                     collapsed: true,
                     items: [
                         {
-                            xtype: "container",
                             items: [
                                 {
                                     name: "box_discovery_alarm_policy",
@@ -1176,7 +1173,6 @@ Ext.define('NOC.sa.managedobject.form.View', {
                                 }]
                         },
                         {
-                            xtype: "container",
                             items: [
                                 {
                                     name: "periodic_discovery_alarm_policy",
@@ -1192,7 +1188,6 @@ Ext.define('NOC.sa.managedobject.form.View', {
                                 }]
                         },
                         {
-                            xtype: "container",
                             items: [
                                 {
                                     name: "denied_firmware_policy",
@@ -1215,11 +1210,11 @@ Ext.define('NOC.sa.managedobject.form.View', {
                     xtype: "fieldset",
                     title: __("Telemetry"),
                     layout: "column",
+                    defaults: this.fieldSetDefaults,
                     collapsible: true,
                     collapsed: true,
                     items: [
                         {
-                            xtype: "container",
                             items: [
                                 {
                                     name: "box_discovery_telemetry_policy",
@@ -1240,7 +1235,6 @@ Ext.define('NOC.sa.managedobject.form.View', {
                                     groupEdit: true
                                 }]
                         }, {
-                            xtype: "container",
                             items: [
                                 {
                                     name: "periodic_discovery_telemetry_policy",
