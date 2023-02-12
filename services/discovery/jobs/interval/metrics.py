@@ -21,6 +21,7 @@ from noc.core.models.cfgmetrics import MetricCollectorConfig
 from noc.inv.models.object import Object
 from noc.inv.models.interfaceprofile import MetricConfig
 from noc.inv.models.sensor import Sensor
+from noc.inv.models.cpe import CPE
 from noc.pm.models.metrictype import MetricType
 from noc.sla.models.slaprobe import SLAProbe
 from noc.config import config
@@ -73,6 +74,11 @@ class MetricsCheck(DiscoveryCheck):
             ReadPreference.SECONDARY_PREFERRED
         ):
             for mc in sla.iter_collected_metrics():
+                yield mc
+        for cpe in CPE.objects.filter(controller=self.object.id).read_preference(
+            ReadPreference.SECONDARY_PREFERRED
+        ):
+            for mc in cpe.iter_collected_metrics():
                 yield mc
 
     def handler(self):

@@ -5,6 +5,9 @@
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
+# Python modules
+from typing import Dict, List
+
 # Third-party modules
 from pymongo import ReadPreference
 
@@ -31,20 +34,29 @@ class CPEStatusCheck(DiscoveryCheck):
             return
         self.logger.info("Checking cpe statuses")
         cpe_cache = {}
+        hints = []
         for cpe in CPE.objects.filter(
-            controller=self.object.id,
-            profile__in=CPEProfile.get_with_status_discovery(),
+                controller=self.object.id,
+                profile__in=CPEProfile.get_with_status_discovery(),
         ).read_preference(ReadPreference.SECONDARY_PREFERRED):
-            cpe_cache[cpe.global_id] = cpe
+            if not cpe.state.is_productive:
+                continue
+            cpe_cache[cpe.local_id] = cpe
         if not cpe_cache:
             self.logger.info("No CPE with status discovery enabled. Skipping")
             return
         bulk = []
-        result = self.object.scripts.get_cpe_status()
+        result: List[Dict[str, str]] = self.object.scripts.get_cpe_status(cpes=hints)
         for r in result:
-            if r.get("global_id") not in cpe_cache:
+            lid = r["local_id"]
+            if lid not in cpe_cache:
                 continue
-            cpe = cpe_cache[r["global_id"]]  # Bulk
-            cpe.set_oper_status(r["status"] == "active", bulk=bulk)
+            gid = r.get("global_id")
+            cpe = cpe_cache[lid]
+            if gid and cpe.global_id and gid != cpe.global_id:
+                # CPE Moved
+                self.logger.info("[%s] Global ID not equal. CPE moved", cpe)
+            cpe.set_oper_status(r["oper_status"], bulk=bulk)
         if bulk:
+            self.logger.info("%d statuses changed", len(bulk))
             CPE._get_collection().bulk_write(bulk)

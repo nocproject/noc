@@ -1,5 +1,5 @@
 # ----------------------------------------------------------------------
-# CPEStatus
+# CPE
 # ----------------------------------------------------------------------
 # Copyright (C) 2007-2022 The NOC Project
 # See LICENSE for details
@@ -160,7 +160,8 @@ class CPE(Document):
             return
         metrics = []
         for metric in self.profile.metrics:
-            if not metric.interval:
+            interval = metric.interval or self.profile.metrics_default_interval
+            if not interval:
                 continue
             metrics += [
                 MetricItem(
@@ -169,7 +170,7 @@ class CPE(Document):
                     scope_name=metric.metric_type.scope.table_name,
                     is_stored=metric.is_stored,
                     is_compose=metric.metric_type.is_compose,
-                    interval=metric.interval,
+                    interval=interval,
                 )
             ]
         if not metrics:
@@ -177,8 +178,13 @@ class CPE(Document):
             return
         labels, hints = [f"noc::chassis::{self.global_id}"], [
             f"cpe_type::{self.type}",
-            f"cpe_local_id::{self.local_id}",
+            f"local_id::{self.local_id}",
         ]
+        if self.interface:
+            labels += [f"noc::interface::{self.interface}"]
+            iface = self.get_cpe_interface()
+            if iface and iface.ifindex:
+                hints += [f"ifindex::{iface.ifindex}"]
         yield MetricCollectorConfig(
             collector="cpe",
             metrics=tuple(metrics),
