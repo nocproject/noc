@@ -94,7 +94,11 @@ Ext.define('NOC.sa.managedobject.Controller', {
     },
     //
     onSelectionDblClick: function(grid, record, item, rowIndex) {
-        this.onAddObject(grid, rowIndex);
+        if(this.lookupReference('saManagedobjectSelectedGrid1').getCollapsed() === false) {
+            this.onAddObject(grid, rowIndex);
+        } else {
+            this.editManagedObject(grid.up('[itemId=sa-managedobject]'), record.id);
+        }
     },
     //
     onSelectionSelectAll: function(combo, record) {
