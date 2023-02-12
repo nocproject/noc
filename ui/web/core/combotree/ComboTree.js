@@ -76,7 +76,8 @@ Ext.define("NOC.core.combotree.ComboTree", {
                 limitParam: "__limit",
                 sortParam: "__sort",
                 extraParams: {
-                    __format: "ext"
+                    __format: "ext",
+                    parent: "",
                 },
                 reader: readerCfg
             };
@@ -112,12 +113,8 @@ Ext.define("NOC.core.combotree.ComboTree", {
         me.bindStore(storeCfg);
         // tree panel store
         treeProxyCfg = Ext.apply({
-                url: me.restUrl + "lookup/"
-            },
-            Ext.merge({
-                extraParams: {parent: ""}
-            }, Ext.clone(defaultProxyCfg), true)
-        );
+            url: me.restUrl + "lookup/"
+        }, Ext.clone(defaultProxyCfg), true);
         var treeStoreCfg = Ext.merge(
             Ext.clone(storeCfg),
             {
@@ -328,8 +325,8 @@ Ext.define("NOC.core.combotree.ComboTree", {
     },
     setValue: function(value, doSelect) {
         var me = this,
-          vm,
-          params = {};
+            vm,
+            params = {};
 
         if(value == null) {
             me.callParent([value]);
@@ -341,6 +338,7 @@ Ext.define("NOC.core.combotree.ComboTree", {
                 return;
             }
             params[me.valueField] = value;
+            console.warn('exec query : ' + me.restUrl + "lookup/");
             Ext.Ajax.request({
                 url: me.restUrl + "lookup/",
                 method: "GET",
