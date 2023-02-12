@@ -101,7 +101,7 @@ class CPE(Document):
     _bi_id_cache = cachetools.TTLCache(maxsize=100, ttl=60)
 
     def __str__(self):
-        return "%s: %s" % (self.managed_object.name, self.name)
+        return f"{self.controller}: {self.local_id}"
 
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_id_cache"), lock=lambda _: id_lock)
@@ -132,6 +132,15 @@ class CPE(Document):
         return Label.get_effective_setting(label, "enable_cpeprobe")
 
     @classmethod
+    def _reset_caches(cls, cpe_id: int):
+        try:
+            del cls._id_cache[
+                str(cpe_id),
+            ]
+        except KeyError:
+            pass
+
+    @classmethod
     def get_component(
         cls, managed_object, global_id: str = None, local_id: str = None, **kwargs
     ) -> Optional["CPE"]:
@@ -140,14 +149,14 @@ class CPE(Document):
         if global_id:
             return CPE.objects.filter(global_id=global_id).first()
         if local_id:
-            return CPE.objects.filter(managed_object=managed_object, local_id=local_id).first()
+            return CPE.objects.filter(controller=managed_object, local_id=local_id).first()
 
     def iter_collected_metrics(self) -> Iterable[MetricCollectorConfig]:
         """
         Return metrics setting for collected
         :return:
         """
-        if not self.state.is_productive or not self.managed_object:
+        if not self.state.is_productive or not self.controller:
             return
         metrics = []
         for metric in self.profile.metrics:
@@ -195,7 +204,7 @@ class CPE(Document):
         return {
             "type": "cpe",
             "bi_id": cpe.bi_id,
-            "fm_pool": cpe.managed_object.get_effective_fm_pool().name,
+            "fm_pool": cpe.controller.get_effective_fm_pool().name,
             "labels": labels,
             "metrics": [
                 {"name": mc.metric_type.field_name, "is_stored": mc.is_stored}
@@ -228,7 +237,7 @@ class CPE(Document):
         :param scope: Scope name
         """
 
-        o_label = f"{scope or ''}|{self.name}|{source}"
+        o_label = f"{scope or ''}|{self}|{source}"
         # Update existing capabilities
         new_caps = []
         seen = set()
@@ -287,7 +296,7 @@ class CPE(Document):
             logger.info("[%s] Saving changes", o_label)
             self.caps = new_caps
             self.update(caps=self.caps)
-            self._reset_caches(self.id, credential=True)
+            self._reset_caches(self.id)
         caps = {}
         for ci in new_caps:
             cn = Capability.get_by_id(ci["capability"])
@@ -296,10 +305,10 @@ class CPE(Document):
         return caps
 
     def set_oper_status(
-            self,
-            status: bool,
-            change_ts: Optional[datetime.datetime] = None,
-            bulk: Optional[List[Any]] = None,
+        self,
+        status: bool,
+        change_ts: Optional[datetime.datetime] = None,
+        bulk: Optional[List[Any]] = None,
     ):
         """
         Set oper CPE status
