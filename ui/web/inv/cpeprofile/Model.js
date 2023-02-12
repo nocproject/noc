@@ -49,7 +49,7 @@ Ext.define("NOC.inv.cpeprofile.Model", {
         {
             name: "cpe_status_discovery",
             type: "string",
-            defaultValue: "d"
+            defaultValue: "D"
         },
         {
             name: "enable_collect",

@@ -191,7 +191,7 @@ class CPE(Document):
             labels=tuple(labels),
             hints=hints,
             cpe=self.bi_id,
-            service=self.service,
+            # service=self.service,
         )
 
     @classmethod

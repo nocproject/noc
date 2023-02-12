@@ -84,6 +84,19 @@ Ext.define("NOC.inv.cpeprofile.Application", {
           uiStyle: "medium"
         },
         {
+            name: "cpe_status_discovery",
+            xtype: "combobox",
+            fieldLabel: __("Status Discovery"),
+            allowBlank: true,
+            labelWidth: 200,
+            defaultValue: "D",
+            store: [
+                ["D", __("Disabled")],
+                ["E", __("Enable")]
+            ],
+            uiStyle: "medium"
+        },
+        {
           name: "enable_collect",
           xtype: "checkbox",
           boxLabel: __("Enable Collect"),
@@ -142,7 +155,6 @@ Ext.define("NOC.inv.cpeprofile.Application", {
                     editor: {
                         xtype: "numberfield",
                         minValue: 0,
-                        defaultValue: 300,
                     }
                 }
             ]

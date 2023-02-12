@@ -63,7 +63,7 @@ class CPEProfileMetrics(EmbeddedDocument):
     # Send metrics to persistent store
     is_stored = BooleanField(default=True)
     # Interval for collecter metrics
-    interval = IntField(default=600, min_value=0)
+    interval = IntField(min_value=0)
 
     def __str__(self):
         return f"{self.metric_type} /({self.is_stored})"

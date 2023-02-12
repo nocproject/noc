@@ -69,12 +69,12 @@ class MetricsCheck(DiscoveryCheck):
                 yield mc
         if not self.has_any_capability(self.SLA_CAPS):
             self.logger.info("SLA not configured, skipping SLA metrics")
-            return
-        for sla in SLAProbe.objects.filter(managed_object=self.object.id).read_preference(
-            ReadPreference.SECONDARY_PREFERRED
-        ):
-            for mc in sla.iter_collected_metrics():
-                yield mc
+        else:
+            for sla in SLAProbe.objects.filter(managed_object=self.object.id).read_preference(
+                ReadPreference.SECONDARY_PREFERRED
+            ):
+                for mc in sla.iter_collected_metrics():
+                    yield mc
         for cpe in CPE.objects.filter(controller=self.object.id).read_preference(
             ReadPreference.SECONDARY_PREFERRED
         ):
@@ -111,6 +111,8 @@ class MetricsCheck(DiscoveryCheck):
                 s_data[f"{mt_name}.time_delta"] = time_delta
                 s_data[f"{mt_name}.scope"] = m.scope_name
                 s_data[f"{mt_name}.field"] = m.field_name
+            if not mc_metrics:
+                continue
             metrics.append(
                 {
                     "collector": mc.collector,
@@ -120,6 +122,7 @@ class MetricsCheck(DiscoveryCheck):
                     "service": mc.service,
                     "sensor": mc.sensor,
                     "sla_probe": mc.sla_probe,
+                    "cpe": mc.cpe,
                 }
             )
         if not metrics:

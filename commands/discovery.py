@@ -30,6 +30,7 @@ class Command(BaseCommand):
         "box": "noc.services.discovery.jobs.box.job.BoxDiscoveryJob",
         "periodic": "noc.services.discovery.jobs.periodic.job.PeriodicDiscoveryJob",
         "segment": "noc.services.discovery.jobs.segment.job.SegmentDiscoveryJob",
+        "interval": "noc.services.discovery.jobs.interval.job.IntervalDiscoveryJob",
     }
 
     checks = {
@@ -52,7 +53,6 @@ class Command(BaseCommand):
             "stp",
             "sla",
             "cpe",
-            "cpestatus",
             "lacp",
             "hk",
             "mac",
@@ -65,7 +65,6 @@ class Command(BaseCommand):
             "address",
             "nri_portmap",
             "nri_service",
-            "metrics",
             "alarms",
             "diagnostic",
         ],
@@ -73,11 +72,11 @@ class Command(BaseCommand):
             "uptime",
             "interfacestatus",
             "mac",
-            "metrics",
             "cpestatus",
             "alarms",
             "diagnostic",
         ],
+        "interval": ["metrics"],
         "segment": ["mac"],
     }
 
