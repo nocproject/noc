@@ -339,6 +339,12 @@ Ext.define('NOC.sa.managedobject.Application', {
                                             }
                                         },
                                         handler: 'onSelectedRemoveAll'
+                                    }, {
+                                        text: __('Export'),
+                                        glyph: NOC.glyph.arrow_down,
+                                        tooltip: __("Save all from basket"),
+                                        handler: 'onExportBasket'
+
                                     }, '->', {
                                         glyph: NOC.glyph.shopping_cart,
                                         style: {

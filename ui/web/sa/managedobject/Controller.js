@@ -9,6 +9,9 @@ Ext.define('NOC.sa.managedobject.Controller', {
     requires: [
         "Ext.ux.grid.column.GlyphAction",
     ],
+    mixins: [
+        "NOC.core.Export"
+    ],
     alias: 'controller.managedobject',
     url: '/sa/managedobject/',
 
@@ -899,5 +902,10 @@ Ext.define('NOC.sa.managedobject.Controller', {
                 }
             });
         }
-    }
+    },
+    onExportBasket: function() {
+        var date = "_" + Ext.Date.format(new Date(), "YmdHis"),
+            filename = this.getView().appId.replace(/\./g, "_") + date + ".csv";
+        this.save(this.lookupReference('saManagedobjectSelectedGrid1'), filename);
+    },
 });
