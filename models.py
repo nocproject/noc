@@ -156,6 +156,8 @@ _MODELS = {
     "inv.Coverage": "noc.inv.models.coverage.Coverage",
     "inv.CoveredBuilding": "noc.inv.models.coveredbuilding.CoveredBuilding",
     "inv.CoveredObject": "noc.inv.models.coveredobject.CoveredObject",
+    "inv.CPE": "noc.inv.models.cpe.CPE",
+    "inv.CPEProfile": "noc.inv.models.cpeprofile.CPEProfile",
     "inv.DiscoveryID": "noc.inv.models.discoveryid.DiscoveryID",
     "inv.ExtNRILink": "noc.inv.models.extnrilink.ExtNRILink",
     "inv.Firmware": "noc.inv.models.firmware.Firmware",

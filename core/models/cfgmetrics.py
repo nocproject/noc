@@ -30,7 +30,7 @@ class MetricItem(object):
 
 @dataclass(frozen=True)
 class MetricCollectorConfig(object):
-    collector: Literal["sla", "sensor", "managed_object"]
+    collector: Literal["sla", "sensor", "managed_object", "cpe"]
     #
     metrics: Tuple[MetricItem, ...]  # Metric Type List
     # Key labels
@@ -42,11 +42,12 @@ class MetricCollectorConfig(object):
     # Collectors
     sensor: Optional[int] = None  # Sensor BI_Id
     sla_probe: Optional[int] = None  # SLA Probe BI_Id
+    cpe: Optional[int] = None
 
     def get_hints(self) -> Dict[str, Union[str, int]]:
         if not self.hints:
             return {}
-        return dict(v.split("::") for v in self.hints)
+        return dict(v.split("::", 1) for v in self.hints)
 
     def get_source_code(self, interval: int):
         """
@@ -58,4 +59,6 @@ class MetricCollectorConfig(object):
             return f"sla:{self.sla_probe}:{interval}"
         elif self.collector == "sensor":
             return f"sensor:{self.sensor}:{interval}"
+        elif self.collector == "cpe":
+            return f"cpe:{self.cpe}:{interval}"
         return f"managed_object:{','.join(self.labels or [])}:{interval}"
