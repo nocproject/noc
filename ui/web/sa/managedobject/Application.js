@@ -94,7 +94,10 @@ defaultColumns = [
         width: 50,
         sortable: false,
         align: "right",
-        renderer: this.renderClickableCell
+        renderer: function(value, metaData) {
+            metaData.tdStyle = "text-decoration-line: underline;cursor: pointer;";
+            return value;
+        },
     },
     {
         text: __('Links'),
@@ -102,8 +105,10 @@ defaultColumns = [
         width: 50,
         sortable: false,
         align: "right",
-        cls: "noc-clickable-cell",
-        renderer: this.renderClickableCell
+        renderer: function(value, metaData) {
+            metaData.tdStyle = "text-decoration-line: underline;cursor: pointer;";
+            return value;
+        },
     },
     {
         text: __('Labels'),

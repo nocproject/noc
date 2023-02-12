@@ -842,10 +842,6 @@ Ext.define('NOC.sa.managedobject.Controller', {
             this.editManagedObject(undefined, record.id, cellName);
         }
     },
-    renderClickableCell: function(value, metaData) {
-        metaData.tdStyle = "text-decoration-line: underline;cursor: pointer;";
-        return value;
-    },
     displayButtons(displayItems) {
         var formButtons = this.getView().down('[itemId=managedobject-form]').down().getDockedItems()[0].getRefItems();
         Ext.Array.each(formButtons, function(button) {
