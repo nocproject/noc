@@ -25,7 +25,7 @@ class CPECheck(DiscoveryCheck):
 
     name = "cpe"
     required_script = "get_cpe"
-    required_capabilities = ["CPE | Controller"]
+    # required_capabilities = ["CPE | Controller"]
     caps_map = {
         "vendor": "CPE | Vendor",
         "model": "CPE | Model",
@@ -47,7 +47,7 @@ class CPECheck(DiscoveryCheck):
             cpe = self.find_cpe(r["id"], r["global_id"])
             if not cpe:
                 cpe = self.submit_cpe(
-                    local_id=r["local_id"],
+                    local_id=r["id"],
                     global_id=r["global_id"],
                     c_type=r["type"],
                     status=r["status"],
@@ -59,7 +59,7 @@ class CPECheck(DiscoveryCheck):
             cpe_cache[cpe.id] = cpe
             # Update Caps
             caps = self.cleanup_caps(r)
-            cpe.update_caps(caps, scope="cpe")
+            cpe.update_caps(caps, source="cpe", scope="cpe")
             # Update labels
             # ifindex
             # State
@@ -87,6 +87,7 @@ class CPECheck(DiscoveryCheck):
             {"DB | CPEs": CPE.objects.filter(controller=self.object.id).count()},
             source="cpe",
         )
+        # Remove Unseen
 
     def submit_managed_object(self, cpe: CPE):
         """

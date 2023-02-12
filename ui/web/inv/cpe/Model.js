@@ -41,6 +41,11 @@ Ext.define("NOC.inv.cpe.Model", {
             type: "string"
         },
         {
+            name: "profile__labels",
+            type: "string",
+            persist: false
+        },
+        {
             name: "state",
             type: "string"
         },
@@ -51,6 +56,15 @@ Ext.define("NOC.inv.cpe.Model", {
         {
             name: "caps",
             type: "auto"
+        },
+        {
+            name: "labels",
+            type: "auto"
+        },
+        {
+            name: "effective_labels",
+            type: "auto",
+            persist: false
         },
         {
             name: "bi_id",
