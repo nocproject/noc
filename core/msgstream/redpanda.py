@@ -8,6 +8,7 @@
 # Python modules
 import logging
 import asyncio
+import random
 from typing import Optional, Dict, AsyncIterable
 from collections import defaultdict
 
@@ -27,6 +28,7 @@ from kafka.errors import (
 # NOC Modules
 from noc.core.perf import metrics
 from noc.config import config
+from noc.core.ioloop.util import run_sync
 from .config import get_stream
 from .metadata import Metadata, PartitionMetadata, Broker
 from .message import Message, PublishRequest
@@ -40,13 +42,21 @@ class RedPandaClient(object):
     TIMESTAMP_MULTIPLIER = TS_NS = 1_000
 
     def __init__(self):
-        self.bootstrap = config.redpanda.bootstrap_servers.split(",")
+        self.bootstrap = run_sync(self.resolve_broker)
         self.producer: Optional[AIOKafkaProducer] = None
         self.consumer: Optional[AIOKafkaConsumer] = None
         self.client: Optional[AIOKafkaClient] = None
         self.admin_client: Optional[KafkaAdminClient] = None
         self.loop = asyncio.get_running_loop()
         self.stub = None
+
+    async def resolve_broker(self) -> str:
+        # Getting addresses from config directly will block the loop on resolve() method.
+        # So get parameter via .find_parameter() and resolve explicitly.
+        addresses = await config.find_parameter("redpanda.addresses").async_get()
+        # Use random broker from seed
+        svc = random.choice(addresses)
+        return f"{svc.host}:{svc.port}"
 
     async def __aenter__(self) -> "RedPandaClient":
         return self
