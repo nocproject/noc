@@ -611,6 +611,7 @@ nav:
       - How-to Guides:
           - Overview: admin/howto/index.md
           - Deploy NOC: admin/howto/deploy-noc/deploy-noc.md
+          - Discovery devices from network: admin/howto/add-from-network-scan/network-scan.md 
           - Monitoring NOC: admin/howto/monitoring/monitoring-noc.md
           - Respond to alerts: admin/howto/respond-to-alerts/respond-to-alerts.md
           - Handbook alerts noc: admin/howto/respond-to-alerts/handbook-alerts-noc/ConsulServicesCountDecrease.md
