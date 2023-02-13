@@ -73,14 +73,10 @@ class InterfaceProfileMetrics(EmbeddedDocument):
     # Send metrics to persistent store
     is_stored = BooleanField(default=True)
     # Interval for collecter metrics
-    interval = IntField(default=300, min_value=0)
+    interval = IntField(min_value=0)
 
     def __str__(self):
-        return (
-            f"{self.metric_type} "
-            f"({self.enable_box}/{self.enable_periodic}/{self.is_stored}):"
-            f' {self.threshold_profile.name if self.threshold_profile else ""}'
-        )
+        return self.metric_type.name
 
 
 @Label.match_labels("interface_profile", allowed_op={"="})

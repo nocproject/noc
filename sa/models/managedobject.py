@@ -228,6 +228,7 @@ logger = logging.getLogger(__name__)
     delete=[
         ("sa.ManagedObjectAttribute", "managed_object"),
         ("sa.CPEStatus", "managed_object"),
+        ("inv.CPE", "controller"),
         ("inv.MACDB", "managed_object"),
         ("sa.ServiceSummary", "managed_object"),
         ("inv.DiscoveryID", "object"),
