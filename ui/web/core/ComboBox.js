@@ -31,7 +31,7 @@ Ext.define("NOC.core.ComboBox", {
     },
     triggers: {
         clear: {
-            cls: "x-form-clean-trigger",
+            cls: 'x-form-clear-trigger',
             hidden: true,
             weight: -1,
             handler: function(field) {
@@ -79,9 +79,9 @@ Ext.define("NOC.core.ComboBox", {
             && Ext.String.startsWith(me.$className, 'NOC.')
             && Ext.String.endsWith(me.$className, 'LookupField')) {
             me.restUrl = me.$className
-            .replace('NOC', '')
-            .replace(/\./g, '/')
-            .replace('/LookupField', '/lookup/');
+                .replace('NOC', '')
+                .replace(/\./g, '/')
+                .replace('/LookupField', '/lookup/');
         }
 
         if(this.restUrl) {
@@ -142,11 +142,11 @@ Ext.define("NOC.core.ComboBox", {
                 process(value, NOC.permissions$.getPermissions(me.app));
             } else {
                 NOC.permissions$.subscribe({
-                        key: this.app,
-                        value: function(perms) {
-                            process(value, perms);
-                        }
+                    key: this.app,
+                    value: function(perms) {
+                        process(value, perms);
                     }
+                }
                 );
             }
         } else {

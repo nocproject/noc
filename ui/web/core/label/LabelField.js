@@ -29,12 +29,23 @@ Ext.define("NOC.core.label.LabelField", {
     isTree: false,
     pickerPosition: "left", // right | left
     appClass: "main.label",
+    toBufferTrigger: true,
+    clearTrigger: false,
     triggers: {
         toBuffer: {
             cls: "x-form-clipboard-trigger",
             hidden: false,
             weight: -1,
             handler: "toClipboard"
+        },
+        clear: {
+            cls: "x-form-clean-trigger",
+            hidden: true,
+            weight: -1,
+            handler: function(field) {
+                field.setValue(null);
+                field.fireEvent("select", field);
+            }
         },
         create: {
             cls: "x-form-plus-trigger",
@@ -92,6 +103,9 @@ Ext.define("NOC.core.label.LabelField", {
                     me.getTrigger("create").show();
                 }
             };
+        if(this.toBufferTrigger === false) {
+            this.getTrigger("toBuffer").hide();
+        }
         me.triggers.picker.cls = "theme-classic fas fa fa-folder-open-o";
         if(me.isTree) {
             me.treePicker = Ext.create({

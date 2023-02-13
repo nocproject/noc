@@ -262,6 +262,7 @@ Ext.define("NOC.core.combotree.ComboTree", {
     },
     onItemClick: function(view, record) {
         this.selectItem(record);
+        this.fireEvent("select", this, record);
     },
     onItemBeforeExpand: function(self) {
         var me = this, node;
@@ -338,7 +339,6 @@ Ext.define("NOC.core.combotree.ComboTree", {
                 return;
             }
             params[me.valueField] = value;
-            console.warn('exec query : ' + me.restUrl + "lookup/");
             Ext.Ajax.request({
                 url: me.restUrl + "lookup/",
                 method: "GET",

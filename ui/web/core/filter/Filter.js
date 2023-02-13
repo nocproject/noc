@@ -12,9 +12,7 @@ Ext.define('NOC.core.filter.Filter', {
     requires: [
         'Ext.ux.form.SearchField',
         'NOC.core.ComboBox',
-        'NOC.sa.administrativedomain.TreeCombo',
-        'NOC.inv.networksegment.TreeCombo',
-        'NOC.inv.resourcegroup.TreeCombo',
+        'NOC.core.combotree.ComboTree',
         'NOC.core.filter.ViewModel',
         'NOC.core.filter.FilterController'
     ],
@@ -61,12 +59,6 @@ Ext.define('NOC.core.filter.Filter', {
             fieldLabel: __('By SA Profile:'),
             listeners: {
                 select: 'setFilter'
-            },
-            triggers: {
-                clear: {
-                    cls: 'x-form-clear-trigger',
-                    handler: 'cleanFilter'
-                }
             }
         },
         {
@@ -76,16 +68,11 @@ Ext.define('NOC.core.filter.Filter', {
             fieldLabel: __('By Obj. Profile:'),
             listeners: {
                 select: 'setFilter'
-            },
-            triggers: {
-                clear: {
-                    cls: 'x-form-clear-trigger',
-                    handler: 'cleanFilter'
-                }
             }
         },
         {
-            xtype: 'sa.administrativedomain.TreeCombo',
+            xtype: "noc.core.combotree",
+            restUrl: "/sa/administrativedomain/",
             isLookupField: true,
             itemId: 'administrative_domain', // name of http request query param
             fieldLabel: __('By Adm. Domain:'),
@@ -95,7 +82,8 @@ Ext.define('NOC.core.filter.Filter', {
             }
         },
         {
-            xtype: 'inv.networksegment.TreeCombo',
+            xtype: "noc.core.combotree",
+            restUrl: "/inv/networksegment/",
             isLookupField: true,
             itemId: 'segment', // name of http request query param
             fieldLabel: __('By Segment:'),
@@ -105,17 +93,14 @@ Ext.define('NOC.core.filter.Filter', {
             }
         },
         {
-            xtype: 'inv.resourcegroup.TreeCombo',
-            itemId: 'resource_group', // name of http request query param
+            xtype: "noc.core.combotree",
+            restUrl: "/inv/resourcegroup/",
+            isLookupField: true,
+            itemId: 'effective_service_groups', // name of http request query param
             fieldLabel: __("By Service Group"),
             listeners: {
+                clear: 'setFilter',
                 select: 'setFilter'
-            },
-            triggers: {
-                clear: {
-                    cls: 'x-form-clear-trigger',
-                    handler: 'cleanFilter'
-                }
             }
         },
         {
@@ -125,12 +110,6 @@ Ext.define('NOC.core.filter.Filter', {
             fieldLabel: __('By Pool:'),
             listeners: {
                 select: 'setFilter'
-            },
-            triggers: {
-                clear: {
-                    cls: 'x-form-clear-trigger',
-                    handler: 'cleanFilter'
-                }
             }
         },
         {
@@ -140,12 +119,6 @@ Ext.define('NOC.core.filter.Filter', {
             fieldLabel: __('By Vendor:'),
             listeners: {
                 select: 'setFilter'
-            },
-            triggers: {
-                clear: {
-                    cls: 'x-form-clear-trigger',
-                    handler: 'cleanFilter'
-                }
             }
         },
         {
@@ -155,12 +128,6 @@ Ext.define('NOC.core.filter.Filter', {
             fieldLabel: __('By Platform:'),
             listeners: {
                 select: 'setFilter'
-            },
-            triggers: {
-                clear: {
-                    cls: 'x-form-clear-trigger',
-                    handler: 'cleanFilter'
-                }
             }
         },
         {
@@ -170,12 +137,19 @@ Ext.define('NOC.core.filter.Filter', {
             fieldLabel: __('By Version:'),
             listeners: {
                 select: 'setFilter'
+            }
+        },
+        {
+            xtype: "labelfield",
+            itemId: 'labels__labels',
+            fieldLabel: __('By Labels:'),
+            isLookupField: true,
+            toBufferTrigger: false,
+            query: {
+                "enable_managedobject": true
             },
-            triggers: {
-                clear: {
-                    cls: 'x-form-clear-trigger',
-                    handler: 'cleanFilter'
-                }
+            listeners: {
+                change: 'setFilter'
             }
         },
         {
