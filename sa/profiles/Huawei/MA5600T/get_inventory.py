@@ -308,7 +308,7 @@ class Script(BaseScript):
     def get_ma5600_subboard(self):
         # SubBoard
         subboard = defaultdict(list)
-        for (slot_index, slot_type, slot_ver, slot_descr) in self.snmp.get_tables(
+        for slot_index, slot_type, slot_ver, slot_descr in self.snmp.get_tables(
             [
                 mib["HUAWEI-DEVICE-MIB::hwSubslotType"],
                 mib["HUAWEI-DEVICE-MIB::hwSubslotVersion"],
