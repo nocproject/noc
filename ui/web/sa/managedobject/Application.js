@@ -380,13 +380,31 @@ Ext.define('NOC.sa.managedobject.Application', {
                     },
                     treeAlign: 'left',
                     resizable: true,
-                    selectionStore: 'managedobject.selectionStore'
+                    selectionStore: 'managedobject.selectionStore',
+                    listeners: {
+                        changeSearchField: function() {
+                            console.log('changeSearchField');
+                        }
+                    },
                 }
             ],
             dockedItems: [{
                 tbar: {
                     items: [
                         {
+                            xtype: 'searchfield',
+                            itemId: '__query',  // name of http request query param
+                            width: 400,
+                            triggers: {
+                                clear: {
+                                    cls: 'x-form-clear-trigger',
+                                    handler: 'cleanSearchField'
+                                }
+                            },
+                            listeners: {
+                                specialkey: 'onSearchFieldChange'
+                            }
+                        }, '|', {
                             text: __('Filtering List'),
                             glyph: NOC.glyph.filter,
                             tooltip: __('Show/Hide Filter'),

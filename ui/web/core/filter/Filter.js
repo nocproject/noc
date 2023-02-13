@@ -36,22 +36,22 @@ Ext.define('NOC.core.filter.Filter', {
         align: 'right'
     },
     items: [
-        {
-            xtype: 'searchfield',
-            isLookupField: true,
-            itemId: '__query',  // name of http request query param
-            fieldLabel: __('Name'),
-            labelWidth: 50,
-            triggers: {
-                clear: {
-                    cls: 'x-form-clear-trigger',
-                    handler: 'cleanFilter'
-                }
-            },
-            listeners: {
-                specialkey: 'setFilter'
-            }
-        },
+        // {
+        //     xtype: 'searchfield',
+        //     isLookupField: true,
+        //     itemId: '__query',  // name of http request query param
+        //     fieldLabel: __('Name'),
+        //     labelWidth: 50,
+        //     triggers: {
+        //         clear: {
+        //             cls: 'x-form-clear-trigger',
+        //             handler: 'cleanFilter'
+        //         }
+        //     },
+        //     listeners: {
+        //         specialkey: 'setFilter'
+        //     }
+        // },
         {
             xtype: "core.combo",
             restUrl: "/sa/profile/lookup/",

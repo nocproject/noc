@@ -22,6 +22,7 @@ Ext.define('NOC.sa.managedobject.Controller', {
         }
         app.setActiveItem(0);
         app.lookupReference('filterPanel').appId = 'sa.managedobject';
+        this.restoreSearchField();
     },
     //
     onAddObject: function(grid, rowIndex) {
@@ -908,4 +909,20 @@ Ext.define('NOC.sa.managedobject.Controller', {
             filename = this.getView().appId.replace(/\./g, "_") + date + ".csv";
         this.save(this.lookupReference('saManagedobjectSelectedGrid1'), filename);
     },
+    cleanSearchField: function(field) {
+        field.setValue(null);
+        this.lookupReference('filterPanel').getController().setFilter(field);
+    },
+    onSearchFieldChange: function(field) {
+        this.lookupReference('filterPanel').getController().setFilter(field);
+    },
+    restoreSearchField: function() {
+        var param = '__query',
+            queryStr = Ext.util.History.getToken().split('?')[1];
+        if(queryStr && queryStr.includes(param)) {
+            var query = Ext.Object.fromQueryString(queryStr, true);
+            console.log('restore restoreSearchField : ', query);
+            this.getView().down('[itemId=' + param + ']').setValue(query[param]);
+        }
+    }
 });

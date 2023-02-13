@@ -3,8 +3,8 @@
 // See LICENSE for details
 //---------------------------------------------------------------------
 
-console.debug('Defining NOC.sa.managedobject.form.Controller');
-Ext.define('NOC.sa.managedobject.form.Controller', {
+console.debug('Defining NOC.sa.managedobject.form.FormController');
+Ext.define('NOC.sa.managedobject.form.FormController', {
     extend: 'Ext.app.ViewController',
     requires: [
         "Ext.ux.grid.column.GlyphAction",

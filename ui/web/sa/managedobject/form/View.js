@@ -25,7 +25,7 @@ Ext.define('NOC.sa.managedobject.form.View', {
         'NOC.core.InlineModelStore',
         'NOC.sa.managedobject.AttributesModel',
         'NOC.sa.managedobject.CapabilitiesModel',
-        'NOC.sa.managedobject.form.Controller',
+        'NOC.sa.managedobject.form.FormController',
         'NOC.sa.managedobject.SchemeLookupField',
         'NOC.sa.managedobject.RepoPreview',
         'NOC.sa.managedobject.ConfDBPanel',
