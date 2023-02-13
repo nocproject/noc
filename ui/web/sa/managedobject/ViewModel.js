@@ -15,7 +15,8 @@ Ext.define('NOC.sa.managedobject.ViewModel', {
     data: {
         total: {
             selection: 0,
-            selected: 0
+            selected: 0,
+            all: 0
         },
         progressState: {
             w: 0,
@@ -31,7 +32,7 @@ Ext.define('NOC.sa.managedobject.ViewModel', {
         selectedStore: {
             model: 'NOC.sa.managedobject.ApplicationModel',
             listeners: {
-                datachanged: 'onStoreSizeChange'
+                datachanged: 'onSelectedStoreSizeChange'
             }
         },
         selectionStore: {
@@ -42,7 +43,10 @@ Ext.define('NOC.sa.managedobject.ViewModel', {
             leadingBufferZone: 70,
             numFromEdge: Math.ceil(70 / 2),
             trailingBufferZone: 70,
-            purgePageCount: 10
+            purgePageCount: 10,
+            listeners: {
+                datachanged: 'onSelectionStoreSizeChange'
+            }
         }
     },
     formulas: {

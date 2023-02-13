@@ -281,6 +281,13 @@ Ext.define('NOC.sa.managedobject.Application', {
                                             bind: {
                                                 html: __('Selected : {total.selection}')
                                             }
+                                        },
+                                        '|',
+                                        {
+                                            xtype: 'box',
+                                            bind: {
+                                                html: __('Total : {total.all}')
+                                            }
                                         }]
                                 }
                             }],

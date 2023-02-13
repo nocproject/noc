@@ -41,8 +41,12 @@ Ext.define('NOC.sa.managedobject.Controller', {
         grid.store.removeAt(rowIndex);
     },
     //
-    onStoreSizeChange: function() {
+    onStoreSelectedSizeChange: function(store) {
         this.getViewModel().set('total.selected', this.getStore('selectedStore').getCount());
+    },
+    //
+    onSelectionStoreSizeChange: function(store) {
+        this.getViewModel().set('total.all', store.getCount());
     },
     //
     collapseFilter: function() {
