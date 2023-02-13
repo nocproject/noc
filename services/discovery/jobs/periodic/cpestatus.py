@@ -36,8 +36,8 @@ class CPEStatusCheck(DiscoveryCheck):
         cpe_cache = {}
         hints = []
         for cpe in CPE.objects.filter(
-                controller=self.object.id,
-                profile__in=CPEProfile.get_with_status_discovery(),
+            controller=self.object.id,
+            profile__in=CPEProfile.get_with_status_discovery(),
         ).read_preference(ReadPreference.SECONDARY_PREFERRED):
             if not cpe.state.is_productive:
                 continue
