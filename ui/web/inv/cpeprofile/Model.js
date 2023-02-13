@@ -58,8 +58,7 @@ Ext.define("NOC.inv.cpeprofile.Model", {
         },
         {
             name: "metrics_default_interval",
-            type: "int",
-            defaultValue: 600
+            type: "int"
         },
         {
             name: "metrics",

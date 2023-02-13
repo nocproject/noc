@@ -436,6 +436,14 @@ Ext.define("NOC.inv.interfaceprofile.Application", {
                         ]
                     },
                     {
+                      name: "metrics_default_interval",
+                      xtype: "numberfield",
+                      fieldLabel: __("Metric Default interval"),
+                      allowBlank: true,
+                      uiStyle: "medium",
+                      minValue: 0,
+                    },
+                    {
                         name: "metrics",
                         xtype: "gridfield",
                         fieldLabel: __("Metrics"),
