@@ -523,6 +523,10 @@ class Config(BaseConfig):
         max_batch_size = BytesParameter(
             default=16384, help="Maximum size of buffered data per partition"
         )
+        retry_backoff_ms = SecondsParameter(
+            default=3,
+            help="The amount of time to wait before attempting to retry a failed request to a given topic partition",
+        )
 
     class rpc(ConfigSection):
         retry_timeout = StringParameter(default="0.1,0.5,1,3,10,30")

@@ -150,6 +150,7 @@ class RedPandaClient(object):
             client_id=CLIENT_ID,
             enable_auto_commit=False,
             group_id=group_id,
+            retry_backoff_ms=config.redpanda.retry_backoff_ms * 1_000,
         )
         # @todo errors
         await self.consumer.start()
@@ -301,6 +302,7 @@ class RedPandaClient(object):
                 await consumer.seek_to_end(tp)
         # async with consumer as c:
         async for msg in consumer:
+            logger.info("Consume message")
             yield Message(
                 value=msg.value,
                 subject=msg.topic,
