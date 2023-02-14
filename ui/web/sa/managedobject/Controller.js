@@ -844,8 +844,8 @@ Ext.define('NOC.sa.managedobject.Controller', {
             }
         });
     },
-    onCellClick: function(self, td, cellIndex, record) {
-        var cellName = self.getGridColumns()[cellIndex].dataIndex;
+    onCellClick: function(self, td, cellIndex, record, tr, rowIndex, e) {
+        var cellName = e.position.column.dataIndex;
         if(["interface_count", "link_count"].includes(cellName)) {
             this.editManagedObject(undefined, record.id, cellName);
         }
