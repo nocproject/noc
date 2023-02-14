@@ -498,7 +498,7 @@ class CLI(BaseCLI):
         d = b"".join(self.collected_data + [data])
         self.collected_data = []
         self.expect(
-            {"prompt": self.on_prompt, "pager": self.send_pager_reply},
+            {"pager": self.send_pager_reply, "prompt": self.on_prompt},
             self.profile.cli_timeout_prompt,
         )
         return d
