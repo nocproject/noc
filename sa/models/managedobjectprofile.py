@@ -963,7 +963,7 @@ def update_diagnostics_alarms(profile_id, box_changed, periodic_changed, alarm_p
     def iter_objects() -> Tuple[int, bool, str, Dict[str, str], bool, bool]:
         pool_cache = cachetools.LRUCache(maxsize=200)
         pool_cache.__missing__ = lambda x: Pool.objects.get(id=x)
-        for (o_id, is_managed, pool_id, fm_pool_id, diagnostics, box_alarm, periodic_alarm,) in (
+        for o_id, is_managed, pool_id, fm_pool_id, diagnostics, box_alarm, periodic_alarm in (
             ManagedObject.objects.filter(is_managed=True, object_profile=profile_id)
             .filter(
                 d_Q(diagnostics__CLI__state=DiagnosticState.failed.value)
