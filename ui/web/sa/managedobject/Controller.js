@@ -153,6 +153,7 @@ Ext.define('NOC.sa.managedobject.Controller', {
         this.lookupReference('saManagedobjectSelectedGrid1').getStore().add(
             this.lookupReference('saManagedobjectSelectionGrid').getSelection()
         );
+        this.lookupReference('saManagedobjectSelectionGrid').getSelectionModel().deselectAll();
         this.getViewModel().set('total.selected', this.getStore('selectedStore').getCount());
     },
     //
