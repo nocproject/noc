@@ -109,7 +109,7 @@ m_valid = DictListParameter(
     attrs={
         "metric_type": ObjectIdParameter(required=True),
         "is_stored": BooleanParameter(default=True),
-        "interval": IntParameter(min_value=0, default=300),
+        "interval": IntParameter(min_value=0, required=False),
     }
 )
 

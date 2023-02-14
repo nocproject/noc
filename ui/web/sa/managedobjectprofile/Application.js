@@ -2641,8 +2641,7 @@ Ext.define("NOC.sa.managedobjectprofile.Application", {
                                             dataIndex: "interval",
                                             editor: {
                                                 xtype: "numberfield",
-                                                minValue: 0,
-                                                defaultValue: 300,
+                                                minValue: 0
                                             }
                                         }
                                     ]

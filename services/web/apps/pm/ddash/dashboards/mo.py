@@ -55,7 +55,7 @@ class MODashboard(JinjaDashboard):
             Check interface profile has metrics
             """
             for m in profile.metrics:
-                if m.interval:
+                if m.interval or profile.metrics_default_interval:
                     return True
             return False
 

@@ -436,12 +436,33 @@ Ext.define("NOC.inv.interfaceprofile.Application", {
                         ]
                     },
                     {
-                      name: "metrics_default_interval",
-                      xtype: "numberfield",
-                      fieldLabel: __("Metric Default interval"),
-                      allowBlank: true,
-                      uiStyle: "medium",
-                      minValue: 0,
+                        xtype: "container",
+                        layout: "hbox",
+                        defaults: {
+                            padding: "0 8 0 0"
+                        },
+                        items: [
+                            {
+                                name: "metrics_default_interval",
+                                xtype: "numberfield",
+                                fieldLabel: __("Default Interval, sec"),
+                                labelWidth: 200,
+                                allowBlank: false,
+                                uiStyle: "small",
+                                minValue: 0,
+                                listeners: {
+                                    scope: me,
+                                    change: function(_item, newValue, oldValue, eOpts) {
+                                        me.form.findField("metrics_default_interval_calculated").setValue(newValue);
+                                    }
+                                }
+                                },
+                            {
+                                name: 'metrics_default_interval_calculated',
+                                xtype: 'displayfield',
+                                renderer: NOC.render.Duration
+                            }
+                        ]
                     },
                     {
                         name: "metrics",

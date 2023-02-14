@@ -58,6 +58,7 @@ class CPE(Document):
         "auto_create_index": False,
         "indexes": [
             "controller",
+            "global_id",
             "labels",
             "effective_labels",
             {"fields": ["controller", "local_id"], "unique": True},

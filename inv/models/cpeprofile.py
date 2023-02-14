@@ -31,6 +31,7 @@ from noc.core.bi.decorator import bi_sync
 from noc.core.mongo.fields import PlainReferenceField, ForeignKeyField
 from noc.main.models.style import Style
 from noc.main.models.label import Label
+from noc.main.models.pool import Pool
 from noc.pm.models.metrictype import MetricType
 from noc.wf.models.workflow import Workflow
 from noc.sa.models.managedobjectprofile import ManagedObjectProfile
@@ -96,10 +97,10 @@ class CPEProfile(Document):
     # Sync CPE with ManagedObject
     sync_managedobject = BooleanField(default=False)
     object_profile = ForeignKeyField(ManagedObjectProfile, required=False)
+    object_pool = PlainReferenceField(Pool, required=False)
     # Sync CPE status
     cpe_status_discovery = StringField(choices=[("E", "Enable"), ("D", "Disable")], default="E")
     # Metrics
-    enable_collect = BooleanField(default=False)
     metrics_default_interval = IntField(default=0, min_value=0)
     # Interface profile metrics
     metrics = ListField(EmbeddedDocumentField(CPEProfileMetrics))
