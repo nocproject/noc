@@ -41,7 +41,7 @@ Ext.define('NOC.sa.managedobject.Controller', {
         grid.store.removeAt(rowIndex);
     },
     //
-    onStoreSelectedSizeChange: function(store) {
+    onSelectedStoreSizeChange: function(store) {
         this.getViewModel().set('total.selected', this.getStore('selectedStore').getCount());
     },
     //
@@ -925,7 +925,6 @@ Ext.define('NOC.sa.managedobject.Controller', {
             queryStr = Ext.util.History.getToken().split('?')[1];
         if(queryStr && queryStr.includes(param)) {
             var query = Ext.Object.fromQueryString(queryStr, true);
-            console.log('restore restoreSearchField : ', query);
             this.getView().down('[itemId=' + param + ']').setValue(query[param]);
         }
     }
