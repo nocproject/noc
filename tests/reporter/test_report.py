@@ -17,7 +17,7 @@ from noc.core.reporter.types import Report, RunParams
 from noc.core.mongo.connection import connect
 
 
-@pytest.mark.parametrize("report", ["report_2", "report_datasource"])
+@pytest.mark.parametrize("report", ["report_simple_csv", "report_id_cache_poison"])
 def test_report(report):
     path = os.path.realpath(os.path.dirname(__file__))
     with open(os.path.join(path, f"{report}.yml"), "rb") as f:

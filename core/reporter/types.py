@@ -45,8 +45,9 @@ class ReportQuery(object):
 class ReportBand(object):
     name: str
     title_template: Optional[str] = None  # Title format for Section row
+    summary: bool = False  # Calculate summary stat
     queries: Optional[List[ReportQuery]] = None
-    parent: Optional["ReportBand"] = None
+    parent: Optional["ReportBand"] = None  # Parent Band
     orientation: BandOrientation = "H"  # Relevant only for xlsx template
     children: Optional[List["ReportBand"]] = None
 
@@ -110,10 +111,10 @@ class Report(object):
     """
 
     name: str  # Report Name
-    root_band: ReportBand  # Report Band
+    root_band: ReportBand  # Report Band (Band Configuration)
     templates: Dict[str, Template]  # Report Templates: template_code -> Template
     parameters: Optional[List[Parameter]] = None  # Report Parameters
-    # field_format: Optional[List[ReportField]] = None
+    # field_format: Optional[List[ReportField]] = None  # Field Formatter
 
     def get_root_band(self) -> ReportBand:
         return self.root_band
@@ -135,11 +136,15 @@ class Report(object):
 
 @dataclass
 class RunParams(object):
+    """
+    Report request
+    """
+
     report: Report
     report_template: Optional[str] = None  # Report Template Code, Use default if not set
-    output_type: Optional[OutputType] = None
-    params: Optional[Dict[str, Any]] = None
-    output_name_pattern: Optional[str] = None
+    output_type: Optional[OutputType] = None  # Requested OutputType (if not set used from template)
+    params: Optional[Dict[str, Any]] = None  # Requested report params
+    output_name_pattern: Optional[str] = None  # Output document file name
 
     def get_template(self) -> "Template":
         return self.report.get_template(self.report_template)

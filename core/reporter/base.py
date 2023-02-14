@@ -24,7 +24,8 @@ logger = logging.getLogger(__name__)
 
 class ReportEngine(object):
     """
-    Reporting Engine implementation
+    Reporting Engine implementation. Report Pipeline:
+    RunParams -> ReportEngine -> load_data -> DataBand -> Formatter -> DocumentFile
     """
 
     def __init__(self):
@@ -32,9 +33,9 @@ class ReportEngine(object):
 
     def run_report(self, r_params: RunParams, out: bytes):
         """
-        Run report
+        Run report withs params
         :param r_params: Report params
-        :param out:
+        :param out: Output document
         :return:
         """
         # Handler param
@@ -148,7 +149,7 @@ class ReportEngine(object):
         self, queries: List[ReportQuery], ctx: Dict[str, Any], root_band: Optional[BandData] = None
     ) -> Optional[pl.DataFrame]:
         """
-
+        Getting Band rows
         :param queries:
         :param ctx:
         :param root_band:
@@ -181,7 +182,7 @@ class ReportEngine(object):
 
     def query_datasource(self, query: ReportQuery, ctx: Dict[str, Any]) -> Optional[pl.DataFrame]:
         """
-
+        Resolve Datasource for Query
         :param query:
         :param ctx:
         :return:

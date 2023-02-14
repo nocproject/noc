@@ -19,7 +19,7 @@ from .types import BandOrientation, ReportField
 
 class BandData(object):
     """
-    Report Data for Band
+    Report Data for Band. Contains data, rows and format options
     """
 
     __slots__ = (
@@ -59,17 +59,25 @@ class BandData(object):
 
     @property
     def title(self) -> str:
+        """
+        Render Band Title if setting template
+        :return:
+        """
         if not self.title_template:
             return self.name
         return Jinja2Template(self.title_template).render(self.get_data())
 
     @property
     def is_root(self) -> bool:
+        """
+        Return True if Root Band
+        :return:
+        """
         return self.name == self.ROOT_BAND_NAME
 
     def iter_children_bands(self) -> Iterable["BandData"]:
         """
-        Itarate over children bands
+        Iterate over children bands
         :return:
         """
         for b in self.children_bands.values():
@@ -77,6 +85,10 @@ class BandData(object):
 
     @property
     def full_name(self):
+        """
+        Calculate full BandName - <rb>.<b1>.<b2>
+        :return:
+        """
         if not self.parent or self.is_root:
             return self.name
         path = [self.name]
@@ -87,14 +99,23 @@ class BandData(object):
         return ".".join(reversed(path))
 
     def add_children(self, bands: List["BandData"]):
+        """
+        Add children Band
+        :param bands:
+        :return:
+        """
         for b in bands:
             self.add_child(b)
 
     def add_child(self, band: "BandData"):
-        # if band.name not in self.children_bands:
         self.children_bands[band.name].append(band)
 
     def set_data(self, data: Dict[str, Any]):
+        """
+        Set Band Data
+        :param data:
+        :return:
+        """
         self.data.update(data.copy())
 
     def get_data(self):
@@ -102,7 +123,7 @@ class BandData(object):
 
     def get_children_by_name(self, name: str) -> List["BandData"]:
         """
-
+        Return Children Bands by name
         :param name:
         :return:
         """
@@ -119,6 +140,10 @@ class BandData(object):
         return self.children_bands[name][0]
 
     def iter_all_bands(self) -> Iterable["BandData"]:
+        """
+        Iterate over nested bands from current
+        :return:
+        """
         for c_bands in self.children_bands.values():
             for band in c_bands:
                 yield band
