@@ -22,7 +22,15 @@ class OutputType(enum.Enum):
     HTML = "html"
     XLSX = "xlsx"
     CSV = "csv"
+    SSV = "ssv"
     PDF = "pdf"
+
+
+class ColumnAlign(enum.Enum):
+    LEFT = 1
+    RIGHT = 2
+    CENTER = 3
+    MASK = 3
 
 
 @dataclass
@@ -45,7 +53,6 @@ class ReportQuery(object):
 class ReportBand(object):
     name: str
     title_template: Optional[str] = None  # Title format for Section row
-    summary: bool = False  # Calculate summary stat
     queries: Optional[List[ReportQuery]] = None
     parent: Optional["ReportBand"] = None  # Parent Band
     orientation: BandOrientation = "H"  # Relevant only for xlsx template
@@ -71,12 +78,23 @@ class ReportBand(object):
 
 
 @dataclass
+class ColumnFormat(object):
+    title: Optional[str] = None
+    align: ColumnAlign = ColumnAlign.LEFT
+    format_type: Optional[str] = None
+    has_total: bool = False  # Calculate summary stat
+
+
+@dataclass
 class Template(object):
     output_type: OutputType
     code: str = "DEFAULT"  # ReportTemplate.DEFAULT_TEMPLATE_CODE;
     # documentPath: str
     content: Optional[bytes] = None
     formatter: Optional[str] = None  # Formatter name. Or Autodetect by content
+    columns_format: Optional[
+        Dict[str, ColumnFormat]
+    ] = None  # BandName -> ColumnName -> ColumnFormat
     output_name_pattern: Optional[str] = "report.html"
     handler: Optional[str] = None  # For custom code
     custom: bool = False
@@ -87,6 +105,10 @@ class Template(object):
     def __post_init__(self):
         if not isinstance(self.output_type, OutputType):
             self.output_type = OutputType(self.output_type)
+        if not self.columns_format:
+            return
+        for c_name in list(self.columns_format):
+            self.columns_format[c_name] = ColumnFormat(**self.columns_format[c_name])
 
 
 @dataclass
