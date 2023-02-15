@@ -1,0 +1,8 @@
+{
+    "name": "CPE | Serial Number",
+    "$collection": "inv.capabilities",
+    "uuid": "4b15c3a1-8abf-4a2f-9852-69ee3db15b76",
+    "description": "CPE device Serial Number",
+    "type": "str",
+    "card_template": null
+}

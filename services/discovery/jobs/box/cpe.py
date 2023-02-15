@@ -56,9 +56,6 @@ class CPECheck(DiscoveryCheck):
             processed.add(cpe.id)
             if cpe.description != r.get("description"):
                 cpe.description = r.get("description")
-            # Update Caps
-            caps = self.cleanup_caps(r)
-            cpe.update_caps(caps, source="cpe", scope="cpe")
             # Update labels
             labels = r.get("labels")
             if labels is not None:
@@ -66,11 +63,18 @@ class CPECheck(DiscoveryCheck):
                     Label.ensure_label(ll)
                 cpe.labels = [ll for ll in labels if CPE.can_set_label(ll)]
                 cpe.extra_labels = {"sa": cpe.labels}
+            # Update Caps
+            caps = self.cleanup_caps(r)
+            cpe.update_caps(caps, source="cpe", scope="cpe")
             # State
             if r["status"] == "active":
                 cpe.fire_event("up", bulk=bulk)
             else:
                 cpe.fire_event("down", bulk=bulk)
+            # Sync Address
+            if cpe.address != r.get("address"):
+                cpe.address = r.get("address")
+            cpe.save()
             # Sync Asset
             if cpe.profile.sync_asset and caps.get("CPE | Model"):
                 artifacts_assets += [
@@ -80,9 +84,6 @@ class CPECheck(DiscoveryCheck):
                         caps.get("CPE | Serial Number"),
                     )
                 ]
-            # Sync Address
-            if cpe.address != r.get("address"):
-                cpe.address = r.get("address")
             # Sync ManagedObject
             if cpe.profile.sync_managedobject:
                 self.submit_managed_object(cpe)

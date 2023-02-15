@@ -125,8 +125,15 @@ class CPE(Document):
             ]
 
     @classmethod
-    def iter_effective_labels(cls, cpe: "CPE") -> List[str]:
-        return cpe.labels + cpe.profile.labels
+    def iter_effective_labels(cls, instance: "CPE") -> List[str]:
+        yield list(instance.labels or [])
+        if instance.profile.labels:
+            yield list(instance.profile.labels)
+        yield [
+            ll
+            for ll in instance.managed_object.get_effective_labels()
+            if ll != "noc::is_linked::="
+        ]
 
     @classmethod
     def can_set_label(cls, label):

@@ -233,7 +233,6 @@ class MODashboard(JinjaDashboard):
         }
 
     def get_context(self):
-
         return {
             "port_types": self.object_data["port_types"],
             "object_metrics": self.object_data["object_metrics"],
