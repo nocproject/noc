@@ -3,7 +3,7 @@ templates:
   DEFAULT:
     code: DEFAULT
     formatter: table
-    output_type: csv
+    output_type: ssv
 root_band:
     name: Root
     children:
