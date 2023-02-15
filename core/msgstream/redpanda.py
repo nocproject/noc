@@ -82,6 +82,19 @@ class RedPandaClient(object):
         # if self.client:
         #    await self.client.close()
 
+    @staticmethod
+    async def _sleep_on_error(delay: float = 1.0, deviation: float = 0.5):
+        """
+        Wait random time on error.
+
+        Args:
+            delay: Average delay in seecods.
+            deviation: Deviation from delay in seconds.
+        """
+        await asyncio.sleep(
+            delay - deviation + 2 * deviation * random.random()
+        )
+
     async def fetch_metadata(
         self, stream: Optional[str] = None, wait_for_stream: bool = False
     ) -> Metadata:
@@ -148,7 +161,7 @@ class RedPandaClient(object):
                 # KafkaConnectionError: No connection to node with id 1
                 metrics["errors", ("type", "kafka_producer_start")] += 1
                 logger.error("Failed to connect producer: %s", e)
-            await asyncio.sleep(10)
+            await self._sleep_on_error(delay=10)
         return self.producer
 
     async def get_consumer(self, group_id=None) -> AIOKafkaConsumer:
