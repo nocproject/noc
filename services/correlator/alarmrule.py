@@ -18,6 +18,7 @@ from jinja2 import Template
 from noc.fm.models.alarmrule import AlarmRule as CfgAlarmRule
 from noc.fm.models.alarmclass import AlarmClass
 from noc.fm.models.activealarm import ActiveAlarm
+from noc.main.models.notificationgroup import NotificationGroup
 
 DEFAULT_GROUP_CLASS = "Group"
 
@@ -42,6 +43,16 @@ class Group(object):
 
 
 @dataclass
+class Action(object):
+    policy: str
+    notification_group: Optional[NotificationGroup] = None
+    severity_policy: str = "shift"
+    severity: int = 0
+    # Sync collection Default ?
+    alarm_class: Optional[AlarmClass] = None
+
+
+@dataclass
 class GroupItem(object):
     reference: str
     alarm_class: AlarmClass
@@ -52,12 +63,19 @@ class GroupItem(object):
     window: int = 0
 
 
+@dataclass
+class ActionItem(object):
+    severity: Optional[int] = None
+    notification_group: Optional[int] = None
+
+
 class AlarmRule(object):
     _default_alarm_class: Optional[AlarmClass] = None
 
     def __init__(self):
         self.match: List[Match] = []
         self.groups: List[Group] = []
+        self.actions: List[Action] = []
 
     @classmethod
     def try_from(cls, rule_cfg: CfgAlarmRule) -> Optional["AlarmRule"]:
@@ -90,6 +108,16 @@ class AlarmRule(object):
                     labels=group.labels or [],
                 )
             )
+        # Add actions
+        for action in rule_cfg.actions:
+            if action.when != "raise":
+                continue
+            rule.actions.append(
+                Action(
+                    policy=action.policy,
+                    severity=action.severity,
+                )
+            )
         return rule
 
     def is_match(self, alarm: ActiveAlarm) -> bool:
@@ -108,7 +136,7 @@ class AlarmRule(object):
             # Match against alarm class
             if match.alarm_class and match.alarm_class != alarm.alarm_class:
                 continue
-            # Match against referene re
+            # Match against reference re
             if (
                 getattr(alarm, "raw_reference", None)
                 and match.reference_rx
@@ -140,6 +168,17 @@ class AlarmRule(object):
                 max_threshold=group.max_threshold,
                 window=group.window,
             )
+
+    def iter_actions(self, alarm: ActiveAlarm) -> Iterable[ActionItem]:
+        """
+        Render Group Item
+        :param alarm:
+        :return:
+        """
+        for action in self.actions:
+            yield action
+            if action.policy == "drop":
+                break
 
 
 class AlarmRuleSet(object):

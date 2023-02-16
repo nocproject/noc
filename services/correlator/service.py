@@ -479,7 +479,10 @@ class CorrelatorService(FastAPIService):
         a.effective_labels = list(chain.from_iterable(ActiveAlarm.iter_effective_labels(a)))
         a.raw_reference = reference
         # Calculate alarm coverage
-        summary = ServiceSummary.get_object_summary(managed_object)
+        if a.alarm_class.affected_service:
+            summary = ServiceSummary.get_object_summary(managed_object)
+        else:
+            summary = {}
         summary["object"] = {managed_object.object_profile.id: 1}
         if a.is_link_alarm and a.components.interface:
             summary["interface"] = {a.components.interface.profile.id: 1}
@@ -511,6 +514,9 @@ class CorrelatorService(FastAPIService):
             for gi in rule.iter_groups(a):
                 if gi.reference and gi.reference not in alarm_groups:
                     alarm_groups[gi.reference] = gi
+            for ai in rule.iter_actions(a):
+                if ai.severity:
+                    a.severity = max(a.severity + ai.severity, 0)
         all_groups, deferred_groups = await self.get_groups(a, alarm_groups.values())
         a.groups = [g.reference for g in all_groups]
         a.deferred_groups = deferred_groups

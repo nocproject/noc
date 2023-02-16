@@ -37,7 +37,6 @@ from noc.core.bi.decorator import bi_sync
 from noc.core.model.decorator import on_delete_check
 from noc.core.change.decorator import change
 from noc.core.prettyjson import to_json
-from .alarmseverity import AlarmSeverity
 from .datasource import DataSource
 from .alarmrootcausecondition import AlarmRootCauseCondition
 from .alarmclasscategory import AlarmClassCategory
@@ -144,8 +143,6 @@ class AlarmClass(Document):
     reference = ListField(StringField())
     # Can alarm status be cleared by user
     user_clearable = BooleanField(default=True)
-    # Default alarm severity
-    default_severity = PlainReferenceField(AlarmSeverity)
     #
     datasources = ListField(EmbeddedDocumentField(DataSource))
     #
@@ -168,6 +165,7 @@ class AlarmClass(Document):
     # RCA
     root_cause = ListField(EmbeddedDocumentField(AlarmRootCauseCondition))
     topology_rca = BooleanField(default=False)
+    affected_service = BooleanField(default=False)
     # List of handlers to be called on alarm raising
     handlers = ListField(StringField())
     # List of handlers to be called on alarm clear
@@ -186,6 +184,8 @@ class AlarmClass(Document):
     # Root cause will be detached if consequence alarm
     # will not clear itself in *recover_time*
     recover_time = IntField(required=False, default=300)
+    #
+    labels = ListField(StringField())
     #
     bi_id = LongField(unique=True)
     #
@@ -276,9 +276,8 @@ class AlarmClass(Document):
             "is_ephemeral": self.is_ephemeral,
             "reference": [d for d in self.reference],
             "user_clearable": self.user_clearable,
+            "labels": self.labels,
         }
-        if self.default_severity:
-            r["default_severity__name"] = self.default_severity.name
         if self.description:
             r["description"] = self.description
         if self.datasources:
@@ -325,7 +324,6 @@ class AlarmClass(Document):
                 "reference",
                 "is_ephemeral",
                 "user_clearable",
-                "default_severity__name",
                 "datasources",
                 "components",
                 "vars",

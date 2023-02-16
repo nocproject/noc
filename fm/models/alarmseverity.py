@@ -118,7 +118,7 @@ class AlarmSeverity(Document):
         )
 
     @classmethod
-    def severity_for_weight(cls, w):
+    def severity_for_weight(cls, w) -> int:
         """
         Calculate absolute severity for given weight *w*
         :returns: severity as int

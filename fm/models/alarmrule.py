@@ -86,6 +86,9 @@ class Action(EmbeddedDocument):
     )
     handler = PlainReferenceField(Handler)
     notification_group = ForeignKeyField(NotificationGroup, required=False)
+    severity_policy = StringField(choices=["set", "shift"])
+    severity = IntField()
+    # Sync collection Default ?
     alarm_class = PlainReferenceField(AlarmClass)
 
     def __str__(self):
