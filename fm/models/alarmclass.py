@@ -30,7 +30,6 @@ import cachetools
 import jinja2
 
 # NOC modules
-from noc.core.mongo.fields import PlainReferenceField
 from noc.core.text import quote_safe_path
 from noc.core.handler import get_handler
 from noc.core.bi.decorator import bi_sync

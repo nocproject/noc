@@ -19,7 +19,6 @@ from noc.main.models.style import Style
 from noc.core.mongo.fields import ForeignKeyField
 from noc.core.text import quote_safe_path
 from noc.core.prettyjson import to_json
-from noc.core.model.decorator import on_delete_check
 
 id_lock = Lock()
 
