@@ -896,6 +896,7 @@ class ActiveAlarm(Document):
     @classmethod
     def iter_effective_labels(cls, instance: "ActiveAlarm"):
         yield instance.labels
+        yield instance.alarm_class.labels
         yield [
             ll
             for ll in instance.managed_object.effective_labels
