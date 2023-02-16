@@ -24,7 +24,6 @@ from noc.core.model.decorator import on_delete_check
 id_lock = Lock()
 
 
-@on_delete_check(check=[("fm.AlarmClass", "default_severity")])
 class AlarmSeverity(Document):
     """
     Alarm severities

@@ -298,6 +298,8 @@ class AlarmClass(Document):
             r["root_cause"] = [rr.json_data for rr in self.root_cause]
         if self.topology_rca:
             r["topology_rca"] = True
+        if self.affected_service:
+            r["affected_service"] = True
         if self.plugins:
             r["plugins"] = [p.json_data for p in self.plugins]
         if self.notification_delay:
@@ -338,6 +340,7 @@ class AlarmClass(Document):
                 "recommended_actions",
                 "root_cause",
                 "topology_rca",
+                "affected_service",
                 "plugins",
                 "notification_delay",
                 "control_time0",

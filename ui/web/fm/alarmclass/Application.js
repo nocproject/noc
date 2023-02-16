@@ -47,6 +47,12 @@ Ext.define('NOC.fm.alarmclass.Application', {
                     width: 30
                 },
                 {
+                    text: __("Labels"),
+                    dataIndex: "labels",
+                    renderer: NOC.render.LabelField,
+                    width: 100
+                },
+                {
                     text: __('Description'),
                     dataIndex: 'description',
                     flex: 1

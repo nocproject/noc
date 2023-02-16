@@ -80,7 +80,6 @@ UL.rules, UL.rules LI {
             <th>Discr.</th>
             <th>User clearable</th>
             <th>Vars</th>
-            <th>Default severity</th>
             <th>Root Cause</th>
         </tr>
     </thead>
@@ -99,7 +98,6 @@ UL.rules, UL.rules LI {
             <b>{{v.name}}:</b> {{v.description}}<br/>{% if v.default %}default: {{v.default}}<br/>{% endif %}
             {% endfor %}
         </td>
-        <td>{{a.default_severity}}</td>
         <td>
             {% for rc in a.root_cause %}
                 <b>{{rc.name}}:</b><br/>
