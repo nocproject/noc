@@ -1,0 +1,13 @@
+{
+    "name": "SKS | SKS | SKS-16E1-IP-ES-L sysObjectID3",
+    "$collection": "sa.profilecheckrules",
+    "uuid": "55678c4a-4540-48e3-8889-92622a343885",
+    "description": "SKS-16E1-IP-ES-L",
+    "preference": 1000,
+    "method": "snmp_v2c_get",
+    "param": "SNMPv2-MIB::sysObjectID.0",
+    "match_method": "eq",
+    "value": "1.3.6.1.4.1.55314.1.28",
+    "action": "match",
+    "profile__name": "SKS.SKS"
+}
