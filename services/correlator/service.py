@@ -482,7 +482,7 @@ class CorrelatorService(FastAPIService):
         if a.alarm_class.affected_service:
             summary = ServiceSummary.get_object_summary(managed_object)
         else:
-            summary = {}
+            summary = {"service": {}, "subscriber": {}, "interface": {}}
         summary["object"] = {managed_object.object_profile.id: 1}
         if a.is_link_alarm and a.components.interface:
             summary["interface"] = {a.components.interface.profile.id: 1}

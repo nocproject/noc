@@ -6,7 +6,6 @@
     "reference": ["interface"],
     "is_ephemeral": false,
     "user_clearable": true,
-    "default_severity__name": "WARNING",
     "components": [
         {
             "name": "interface",
@@ -118,5 +117,6 @@
             }
         }
     ],
-    "recover_time": 300
+    "recover_time": 300,
+    "labels": ["noc::severity::warning"]
 }

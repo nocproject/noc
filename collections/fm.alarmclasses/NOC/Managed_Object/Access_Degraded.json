@@ -7,7 +7,6 @@
     "reference": [],
     "is_ephemeral": true,
     "user_clearable": true,
-    "default_severity__name": "WARNING",
     "vars": [{
         "name": "reason",
         "description": "Reason by access lost"
@@ -17,5 +16,6 @@
     "symptoms": "NOC cannot interact with the box",
     "probable_causes": "Device or Access server is misconfigured, community mismatch or misconfigured ACL",
     "recommended_actions": "Check Access configuration",
-    "recover_time": 300
+    "recover_time": 300,
+    "labels": ["noc::severity::warning"]
 }

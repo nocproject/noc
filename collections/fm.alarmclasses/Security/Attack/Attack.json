@@ -4,7 +4,6 @@
     "uuid": "b1187763-a252-491f-8683-d791a09ae95f",
     "is_unique": true,
     "user_clearable": true,
-    "default_severity__name": "WARNING",
     "components": [
         {
             "name": "interface",
@@ -59,5 +58,6 @@
     "body_template": "{{name}} attack detected.{% if interface %}\nInterface: {{interface}}{% endif %}{% if description %} ({{description}}){% endif %}{% if src_ip %}\nSource IP: {{src_ip}}{% endif %}{% if src_mac %}\nSource MAC: {{src_mac}}{% endif %}{% if vlan %}\nVlan: {{vlan}}{% endif %}{% if vlan_name %} ({{vlan_name}}){% endif %}",
     "symptoms": "Unsolicitized traffic from source",
     "probable_causes": "Virus/Botnet activity or malicious actions",
-    "recommended_actions": "Negotiate the source if it is your customer, or ignore"
+    "recommended_actions": "Negotiate the source if it is your customer, or ignore",
+    "labels": ["noc::severity::warning"]
 }

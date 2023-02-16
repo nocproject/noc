@@ -4,7 +4,6 @@
     "uuid": "ab8660e7-b14f-4d2f-adfc-8738d51c3e19",
     "is_unique": true,
     "user_clearable": true,
-    "default_severity__name": "CRITICAL",
     "vars": [
         {
             "name": "reason",
@@ -15,5 +14,6 @@
     "body_template": "TCAM error{% if reason %}: {{reason}}{% endif %}",
     "symptoms": "From random instability to complete operation failure",
     "probable_causes": "",
-    "recommended_actions": ""
+    "recommended_actions": "",
+    "labels": ["noc::severity::critical"]
 }

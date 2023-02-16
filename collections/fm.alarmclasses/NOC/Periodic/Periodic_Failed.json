@@ -5,7 +5,6 @@
     "is_unique": true,
     "reference": ["task"],
     "user_clearable": false,
-    "default_severity__name": "WARNING",
     "vars": [
         {
             "name": "task",
@@ -16,5 +15,6 @@
     "body_template": "Periodic task {{task}} has been failed",
     "symptoms": "No specific symptoms",
     "probable_causes": "Failure occured when noc-scheduler tried to execute periodic task",
-    "recommended_actions": "Check noc-scheduler, noc-sae and noc-activator logs"
+    "recommended_actions": "Check noc-scheduler, noc-sae and noc-activator logs",
+    "labels": ["noc::severity::warning"]
 }

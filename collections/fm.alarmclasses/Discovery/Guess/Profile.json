@@ -5,7 +5,6 @@
     "description": "Not find profile in Profile Check Rules",
     "is_unique": true,
     "user_clearable": true,
-    "default_severity__name": "WARNING",
     "vars": [
         {
             "name": "path",
@@ -20,5 +19,6 @@
     "body_template": "Not find profile in Profile Check Rules for managed object {{alarm.managed_object.name}} (IP: {{alarm.managed_object.address}}).",
     "symptoms": "Error in response device SA profile",
     "probable_causes": "Not find profile for OID or HTTP response or wrong SNMP community in device settings",
-    "recommended_actions": "View having prfoile check rules for device"
+    "recommended_actions": "View having prfoile check rules for device",
+    "labels": ["noc::severity::warning"]
 }

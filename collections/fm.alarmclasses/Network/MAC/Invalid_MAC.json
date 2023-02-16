@@ -6,7 +6,6 @@
     "reference": ["mac"],
     "is_ephemeral": false,
     "user_clearable": true,
-    "default_severity__name": "INFO",
     "components": [
         {
             "name": "interface",
@@ -41,5 +40,6 @@
     "symptoms": "",
     "probable_causes": "",
     "recommended_actions": "",
-    "recover_time": 300
+    "recover_time": 300,
+    "labels": ["noc::severity::info"]
 }

@@ -5,7 +5,6 @@
     "description": "Alarm Class for low error thresholds",
     "is_unique": true,
     "user_clearable": true,
-    "default_severity__name": "MAJOR",
     "vars": [
         {
             "name": "metric",
@@ -56,5 +55,6 @@
     "body_template": "Measured values: {{ alarm.vars.value }} for {{alarm.vars.metric}} are out of normal range: {{alarm.vars.threshold}} on {{alarm.managed_object.name}}: {{ alarm.vars.path }}.  (Managed Object IP: {{alarm.managed_object.address}})",
     "symptoms": "Values are out of second threshold value.",
     "probable_causes": "Metric value cross critical threshold",
-    "recommended_actions": ""
+    "recommended_actions": "",
+    "labels": ["noc::severity::major"]
 }

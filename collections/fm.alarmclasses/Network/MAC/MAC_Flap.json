@@ -6,7 +6,6 @@
     "reference": ["mac"],
     "is_ephemeral": false,
     "user_clearable": true,
-    "default_severity__name": "INFO",
     "components": [
         {
             "name": "frominterface",
@@ -81,5 +80,6 @@
     "symptoms": "",
     "probable_causes": "The system found the specified host moving between the specified ports.",
     "recommended_actions": "Examine the network for possible loops.",
-    "recover_time": 300
+    "recover_time": 300,
+    "labels": ["noc::severity::info"]
 }

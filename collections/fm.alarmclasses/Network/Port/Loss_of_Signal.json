@@ -6,7 +6,6 @@
     "reference": ["interface"],
     "is_ephemeral": false,
     "user_clearable": true,
-    "default_severity__name": "WARNING",
     "components": [
         {
             "name": "interface",
@@ -41,5 +40,6 @@
     "symptoms": "Connection lost",
     "probable_causes": "Administrative action, cable damage, hardware or software error either from this or from another side",
     "recommended_actions": "Check configuration, both sides of links and hardware",
-    "recover_time": 300
+    "recover_time": 300,
+    "labels": ["noc::severity::warning"]
 }

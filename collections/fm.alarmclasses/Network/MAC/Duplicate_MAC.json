@@ -6,7 +6,6 @@
     "reference": ["mac"],
     "is_ephemeral": false,
     "user_clearable": true,
-    "default_severity__name": "MINOR",
     "components": [
         {
             "name": "oneinterface",
@@ -54,5 +53,6 @@
     "symptoms": "",
     "probable_causes": "",
     "recommended_actions": "",
-    "recover_time": 300
+    "recover_time": 300,
+    "labels": ["noc::severity::minor"]
 }

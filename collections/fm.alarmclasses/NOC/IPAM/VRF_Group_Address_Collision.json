@@ -5,7 +5,6 @@
     "is_unique": true,
     "reference": ["address"],
     "user_clearable": true,
-    "default_severity__name": "WARNING",
     "vars": [
         {
             "name": "address",
@@ -32,5 +31,6 @@
     "body_template": "NOC detects address collision for VRF group. {{vrf}}:{{address}} is already presents in IPAM in VRF {{existing_vrf}}{% if existing_object %} ({{existing_object}}){% endif %}",
     "symptoms": "",
     "probable_causes": "Equipment misconfiguration of IP address misallocation",
-    "recommended_actions": "Check address allocation and equipment configuration"
+    "recommended_actions": "Check address allocation and equipment configuration",
+    "labels": ["noc::severity::warning"]
 }

@@ -5,7 +5,6 @@
     "is_unique": true,
     "reference": ["unit"],
     "user_clearable": true,
-    "default_severity__name": "CRITICAL",
     "vars": [
         {
             "name": "unit",
@@ -16,5 +15,6 @@
     "body_template": "Unit {{unit}} is out of stack",
     "symptoms": "",
     "probable_causes": "",
-    "recommended_actions": ""
+    "recommended_actions": "",
+    "labels": ["noc::severity::critical"]
 }

@@ -5,7 +5,6 @@
     "description": "No activator service available",
     "is_unique": true,
     "user_clearable": true,
-    "default_severity__name": "WARNING",
     "vars": [
         {
             "name": "path",
@@ -20,5 +19,6 @@
     "body_template": "Exception when executing SA task on managed object {{alarm.managed_object.name}} (IP: {{alarm.managed_object.address}}). All SA tasks to this object are temporary suspended",
     "symptoms": "No getting free activator for run task",
     "probable_causes": "Activator service down or lost Consul registration",
-    "recommended_actions": "Check activator service and Consul DCS is alive and available check pass"
+    "recommended_actions": "Check activator service and Consul DCS is alive and available check pass",
+    "labels": ["noc::severity::warning"]
 }

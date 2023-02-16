@@ -5,7 +5,6 @@
     "description": "Low privilege for executing command on managed object",
     "is_unique": true,
     "user_clearable": true,
-    "default_severity__name": "WARNING",
     "vars": [
         {
             "name": "path",
@@ -20,5 +19,6 @@
     "body_template": "Low privileges for execute command on managed object {{alarm.managed_object.name}} (IP: {{alarm.managed_object.address}}). All SA tasks to this object are temporary suspended",
     "symptoms": "CLI command is not supported in current CLI mode and nothing password for raise permission level",
     "probable_causes": "Low permission level and not credential to raise it for execute command",
-    "recommended_actions": "Add enable password to managed object settings or grant permission for execute commands"
+    "recommended_actions": "Add enable password to managed object settings or grant permission for execute commands",
+    "labels": ["noc::severity::warning"]
 }

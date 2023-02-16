@@ -5,7 +5,6 @@
     "is_unique": true,
     "reference": ["name"],
     "user_clearable": true,
-    "default_severity__name": "CRITICAL",
     "vars": [
         {
             "name": "name",
@@ -32,5 +31,6 @@
     "body_template": "The temperature measured at {{name}}, is outside of the normal range.{%if threshold %} {{threshold}} threshold exceeded.{% endif %}{% if measure %} The current state is {{measure}}. {% endif %}{% if min %} Min state is {{min}}. {% endif %}{% if max %} Max state is {{max}}. {% endif %}",
     "symptoms": "",
     "probable_causes": "",
-    "recommended_actions": ""
+    "recommended_actions": "",
+    "labels": ["noc::severity::critical"]
 }
