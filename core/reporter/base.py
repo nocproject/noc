@@ -15,7 +15,7 @@ import polars as pl
 from jinja2 import Template as Jinja2Template
 
 # NOC modules
-from .types import Template, OutputType, RunParams, Report, ReportQuery, ReportBand
+from .types import Template, OutputType, RunParams, ReportConfig, ReportQuery, ReportBand
 from .report import BandData
 
 
@@ -52,7 +52,7 @@ class ReportEngine(object):
 
     def generate_report(
         self,
-        report: Report,
+        report: ReportConfig,
         template: Template,
         output_type: OutputType,
         output_stream: bytes,
@@ -70,7 +70,7 @@ class ReportEngine(object):
         fmt = formatter(band_data, template, output_type, output_stream)
         fmt.render_document()
 
-    def clean_param(self, report: Report, params: Dict[str, Any]):
+    def clean_param(self, report: ReportConfig, params: Dict[str, Any]):
         """
         Clean and validata input params
         :param report:
@@ -117,7 +117,7 @@ class ReportEngine(object):
             band.set_data(d)
             yield band
 
-    def load_data(self, report: Report, params: Dict[str, Any]) -> BandData:
+    def load_data(self, report: ReportConfig, params: Dict[str, Any]) -> BandData:
         """
         Generate BandData from ReportBand
         :param report:

@@ -13,7 +13,7 @@ from io import BytesIO
 
 # NOC modules
 from noc.core.reporter.base import ReportEngine
-from noc.core.reporter.types import Report, RunParams
+from noc.core.reporter.types import ReportConfig, RunParams
 from noc.core.mongo.connection import connect
 
 
@@ -24,7 +24,7 @@ def test_report(report):
         cfg = yaml.safe_load(f)
     # r = yaml.safe_load(report_config)
     report_engine = ReportEngine()
-    rp = RunParams(report=Report(**cfg))
+    rp = RunParams(report=ReportConfig(**cfg))
     out = BytesIO()
     connect()
     report_engine.run_report(r_params=rp, out=out)

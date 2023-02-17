@@ -34,12 +34,6 @@ class ColumnAlign(enum.Enum):
 
 
 @dataclass
-class ReportField(object):
-    name: str
-    type: str
-
-
-@dataclass
 class ReportQuery(object):
     name: str
     datasource: Optional[str] = None  # DataSource Name
@@ -127,7 +121,7 @@ class ReportField(object):
 
 
 @dataclass
-class Report(object):
+class ReportConfig(object):
     """
     Report Configuration
     """
@@ -162,7 +156,7 @@ class RunParams(object):
     Report request
     """
 
-    report: Report
+    report: ReportConfig
     report_template: Optional[str] = None  # Report Template Code, Use default if not set
     output_type: Optional[OutputType] = None  # Requested OutputType (if not set used from template)
     params: Optional[Dict[str, Any]] = None  # Requested report params
