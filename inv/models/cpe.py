@@ -34,6 +34,7 @@ from noc.core.mongo.fields import PlainReferenceField, ForeignKeyField
 from noc.core.models.cfgmetrics import MetricCollectorConfig, MetricItem
 from noc.core.validators import is_ipv4
 from noc.main.models.label import Label
+from noc.main.models.textindex import full_text_search, TextIndex
 from noc.sa.models.managedobject import ManagedObject
 from noc.sa.interfaces.igetcpe import IGetCPE
 from noc.wf.models.state import State
@@ -47,6 +48,7 @@ CPE_TYPES = IGetCPE.returns.element.attrs["type"].choices
 logger = logging.getLogger(__name__)
 
 
+@full_text_search
 @Label.model
 @change
 @bi_sync
@@ -130,9 +132,7 @@ class CPE(Document):
         if instance.profile.labels:
             yield list(instance.profile.labels)
         yield [
-            ll
-            for ll in instance.managed_object.get_effective_labels()
-            if ll != "noc::is_linked::="
+            ll for ll in instance.managed_object.get_effective_labels() if ll != "noc::is_linked::="
         ]
 
     @classmethod
@@ -345,3 +345,23 @@ class CPE(Document):
                         {"$set": {"oper_status": status, "oper_status_change": change_ts}},
                     )
                 ]
+
+    def get_index(self):
+        """
+        Get FTS index
+        """
+        card = f"CPE object {self.global_id} ({self.address})"
+        content: List[str] = [self.global_id, self.address]
+        if self.description:
+            content += [self.description]
+        r = {
+            "title": f"{self.global_id} {self.controller}",
+            "content": "\n".join(content),
+            "card": card,
+            "tags": self.labels,
+        }
+        return r
+
+    @classmethod
+    def get_search_result_url(cls, obj_id):
+        return f"/api/card/view/cpe/{obj_id}/"

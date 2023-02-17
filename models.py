@@ -340,7 +340,7 @@ _MODELS = {
     "wf.Transition": "noc.wf.models.transition.Transition",
 }
 
-FTS_MODELS = ["ip.Address", "ip.Prefix", "ip.VRF", "sa.ManagedObject"]
+FTS_MODELS = ["ip.Address", "ip.Prefix", "ip.VRF", "sa.ManagedObject", "cpe.CPE"]
 
 COLLECTIONS = [
     "main.Font",

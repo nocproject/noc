@@ -21,7 +21,7 @@ class CPEApplication(ExtDocApplication):
     title = _("CPEs")
     menu = _("CPEs")
     model = CPE
-    query_fields = ["description__contains", "global_id"]
+    query_fields = ["description__contains", "global_id", "global_id__contains"]
 
     @staticmethod
     def get_style(cpe: CPE):

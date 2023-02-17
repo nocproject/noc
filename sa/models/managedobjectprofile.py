@@ -125,7 +125,6 @@ id_lock = Lock()
 @on_delete_check(
     check=[
         ("sa.ManagedObject", "object_profile"),
-        ("sa.ManagedObjectProfile", "cpe_profile"),
         ("inv.CPEProfile", "object_profile"),
     ],
     clean_lazy_labels="managedobjectprofile",
@@ -318,8 +317,6 @@ class ManagedObjectProfile(NOCModel):
     enable_box_discovery_hk = models.BooleanField(default=False)
     # Enable Alarms
     enable_box_discovery_alarms = models.BooleanField(default=False)
-    # Enable CPE status
-    enable_box_discovery_cpestatus = models.BooleanField(default=False)
     # Enable Box CPE status policy
     box_discovery_cpestatus_policy = models.CharField(
         _("CPE Status Policy"),
@@ -369,20 +366,6 @@ class ManagedObjectProfile(NOCModel):
     #
     clear_links_on_platform_change = models.BooleanField(default=False)
     clear_links_on_serial_change = models.BooleanField(default=False)
-    # CPE discovery settings
-    cpe_segment_policy = models.CharField(
-        _("CPE Segment Policy"),
-        max_length=1,
-        choices=[("C", "From controller"), ("L", "From linked object")],
-        default="C",
-    )
-    cpe_cooldown = models.IntegerField(_("CPE cooldown, days"), default=0)
-    cpe_profile = models.ForeignKey(
-        "self", verbose_name="Object Profile", blank=True, null=True, on_delete=models.CASCADE
-    )
-    cpe_auth_profile = models.ForeignKey(
-        AuthProfile, verbose_name="Auth Profile", null=True, blank=True, on_delete=models.CASCADE
-    )
     #
     hk_handler = DocumentReferenceField(Handler, null=True, blank=True)
     #

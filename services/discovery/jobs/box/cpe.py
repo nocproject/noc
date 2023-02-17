@@ -9,7 +9,7 @@
 from typing import Optional, Dict, Any, List, Tuple
 
 # Third-party modules
-from mongoengine.queryset.visitor import Q
+from mongoengine.queryset.visitor import Q as m_Q
 
 # NOC modules
 from noc.services.discovery.jobs.base import DiscoveryCheck
@@ -75,6 +75,7 @@ class CPECheck(DiscoveryCheck):
             if cpe.address != r.get("address"):
                 cpe.address = r.get("address")
             cpe.save()
+            # Profile classification
             # Sync Asset
             if cpe.profile.sync_asset and caps.get("CPE | Model"):
                 artifacts_assets += [
@@ -111,7 +112,15 @@ class CPECheck(DiscoveryCheck):
         :param cpe:
         :return:
         """
-        mo = ManagedObject.objects.filter(cpe_id=str(cpe.id)).first()
+        from django.db.models.query_utils import Q
+
+        name = f"cpe-{cpe.global_id}"
+
+        mo = ManagedObject.objects.filter(Q(cpe_id=str(cpe.id)) | Q(name=name)).first()
+        if mo and not mo.cpe_id:
+            # Old CPE, bind to current
+            mo.cpe_id = str(cpe.id)
+            mo.save()
         if mo and mo.address != cpe.address:
             self.logger.info(
                 "[%s|%s] Changed ManagedObject Address: %s -> %s",
@@ -121,15 +130,9 @@ class CPECheck(DiscoveryCheck):
                 cpe.address,
             )
             mo.address = cpe.address
+            mo.save()
             return
         elif mo:
-            return
-        # Check changed CPE
-        name = f"cpe-{cpe.global_id}"
-        mo = ManagedObject.objects.filter(name=name).first()
-        if mo:
-            mo.cpe = cpe.id
-            mo.address = cpe.address
             return
         # Create ManagedObject
         self.logger.info("[%s|%s] Created ManagedObject %s", cpe.local_id, cpe.global_id, name)
@@ -165,7 +168,7 @@ class CPECheck(DiscoveryCheck):
         :return:
         """
         cpe = CPE.objects.filter(
-            Q(global_id=global_id) | Q(controller=self.object.id, local_id=local_id)
+            m_Q(global_id=global_id) | m_Q(controller=self.object.id, local_id=local_id)
         ).first()
         if cpe:
             return cpe

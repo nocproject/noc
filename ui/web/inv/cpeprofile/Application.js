@@ -13,6 +13,9 @@ Ext.define("NOC.inv.cpeprofile.Application", {
     "NOC.core.ListFormField",
     "NOC.main.handler.LookupField",
     "NOC.inv.sensorprofile.Model",
+    "NOC.main.pool.LookupField",
+    "NOC.sa.managedobject.LookupField",
+    "NOC.sa.managedobjectprofile.LookupField",
     "NOC.wf.workflow.LookupField",
     "NOC.main.style.LookupField",
     "NOC.pm.metrictype.LookupField"
@@ -54,6 +57,22 @@ Ext.define("NOC.inv.cpeprofile.Application", {
           uiStyle: "extra"
         },
         {
+          name: "bi_id",
+          xtype: "displayfield",
+          fieldLabel: __("BI ID"),
+          allowBlank: true,
+          uiStyle: "medium"
+        },
+        {
+          name: "labels",
+          xtype: "labelfield",
+          fieldLabel: __("Labels"),
+          allowBlank: true,
+          query: {
+            "enable_cpeprofile": true
+          }
+        },
+        {
           name: "workflow",
           xtype: "wf.workflow.LookupField",
           fieldLabel: __("WorkFlow"),
@@ -66,22 +85,38 @@ Ext.define("NOC.inv.cpeprofile.Application", {
           allowBlank: true
         },
         {
-          name: "dynamic_classification_policy",
-          xtype: "combobox",
-          fieldLabel: __("Dynamic Classification Policy"),
-          allowBlank: false,
-          queryMode: "local",
-          displayField: "label",
-          valueField: "id",
-          store: {
-            fields: ["id", "label"],
-            data: [
-                {id: "D", label: "Disable"},
-                {id: "R", label: "By Rule"},
+            xtype: "fieldset",
+            title: __("ManagedObject Sync Settings"),
+            items: [
+                {
+                    name: "sync_managedobject",
+                    xtype: "checkbox",
+                    boxLabel: __("Sync ManagedObject")
+                },
+                {
+                    name: "object_profile",
+                    xtype: "sa.managedobjectprofile.LookupField",
+                    fieldLabel: __("Managed Object Profile"),
+                    allowBlank: true
+                },
+                {
+                    name: "pool",
+                    xtype: "main.pool.LookupField",
+                    fieldLabel: __("Pool"),
+                    allowBlank: true
+                }
             ]
-          },
-          defaultValue: "R",
-          uiStyle: "medium"
+        },
+        {
+          xtype: "fieldset",
+          title: __("Asset Sync Settings"),
+          items: [
+              {
+                  name: "sync_asset",
+                  xtype: "checkbox",
+                  boxLabel: __("Sync Asset")
+              }
+          ]
         },
         {
             name: "cpe_status_discovery",
@@ -117,29 +152,13 @@ Ext.define("NOC.inv.cpeprofile.Application", {
                             me.form.findField("metrics_default_interval_calculated").setValue(newValue);
                         }
                     }
-                    },
+                },
                 {
                     name: 'metrics_default_interval_calculated',
                     xtype: 'displayfield',
                     renderer: NOC.render.Duration
                 }
-                ]
-        },
-        {
-          name: "bi_id",
-          xtype: "displayfield",
-          fieldLabel: __("BI ID"),
-          allowBlank: true,
-          uiStyle: "medium"
-        },
-        {
-          name: "labels",
-          xtype: "labelfield",
-          fieldLabel: __("Labels"),
-          allowBlank: true,
-          query: {
-            "enable_sensorprofile": true
-          }
+            ]
         },
         {
             name: "metrics",
@@ -173,6 +192,24 @@ Ext.define("NOC.inv.cpeprofile.Application", {
                     }
                 }
             ]
+        },
+        {
+          name: "dynamic_classification_policy",
+          xtype: "combobox",
+          fieldLabel: __("Dynamic Classification Policy"),
+          allowBlank: false,
+          queryMode: "local",
+          displayField: "label",
+          valueField: "id",
+          store: {
+            fields: ["id", "label"],
+            data: [
+                {id: "D", label: "Disable"},
+                {id: "R", label: "By Rule"},
+            ]
+          },
+          defaultValue: "R",
+          uiStyle: "medium"
         },
         {
           name: "match_rules",

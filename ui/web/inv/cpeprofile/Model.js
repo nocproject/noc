@@ -37,6 +37,24 @@ Ext.define("NOC.inv.cpeprofile.Model", {
             persist: false
         },
         {
+            name: "pool",
+            type: "string"
+        },
+        {
+            name: "pool__label",
+            type: "string",
+            persist: false
+        },
+        {
+            name: "object_profile",
+            type: "int"
+        },
+        {
+            name: "object_profile__label",
+            type: "string",
+            persist: false
+        },
+        {
             name: "sync_asset",
             type: "bool",
             defaultValue: false

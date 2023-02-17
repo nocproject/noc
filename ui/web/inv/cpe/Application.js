@@ -49,6 +49,13 @@ Ext.define("NOC.inv.cpe.Application", {
                     dataIndex: "state",
                     width: 200,
                     renderer: NOC.render.Lookup("state")
+                },
+                {
+                    text: __("Oper Status."),
+                    dataIndex: "oper_status",
+                    width: 30,
+                    renderer: NOC.render.Bool,
+                    sortable: false
                 }
             ],
 

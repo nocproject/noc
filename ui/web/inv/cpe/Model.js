@@ -41,13 +41,18 @@ Ext.define("NOC.inv.cpe.Model", {
             type: "string"
         },
         {
-            name: "profile__labels",
+            name: "profile__label",
             type: "string",
             persist: false
         },
         {
             name: "state",
             type: "string"
+        },
+        {
+            name: "oper_status",
+            type: "boolean",
+            persist: false
         },
         {
             name: "description",
