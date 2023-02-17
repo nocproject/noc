@@ -24,6 +24,6 @@ class Migration(BaseMigration):
         # Delete ManagedObject Profile CPE Options
         self.db.delete_column("sa_managedobjectprofile", "cpe_segment_policy")
         self.db.delete_column("sa_managedobjectprofile", "cpe_cooldown")
-        self.db.delete_column("sa_managedobjectprofile", "cpe_profile")
-        self.db.delete_column("sa_managedobjectprofile", "cpe_auth_profile")
+        self.db.delete_column("sa_managedobjectprofile", "cpe_profile_id")
+        self.db.delete_column("sa_managedobjectprofile", "cpe_auth_profile_id")
         self.db.delete_column("sa_managedobjectprofile", "enable_box_discovery_cpestatus")
