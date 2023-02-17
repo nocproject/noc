@@ -13,10 +13,11 @@ from typing import Optional, Dict, AsyncIterable, Any
 import orjson
 
 # NOC modules
-from noc.core.msgstream.liftbridge import LiftBridgeClient
+from noc.core.handler import get_handler
 from .message import Message, PublishRequest
 from .config import get_stream
 from .metadata import Metadata
+from noc.config import config
 
 
 logger = logging.getLogger(__name__)
@@ -40,7 +41,16 @@ class MessageStreamClient(object):
     """
 
     def __init__(self):
-        self.client = LiftBridgeClient()
+        self.client = self.get_client()
+
+    @classmethod
+    def get_client(cls) -> "MessageStreamClient":
+        logger.info("Using cache backend: %s", config.msgstream.client_class)
+        c = get_handler(config.msgstream.client_class)
+        if c:
+            return c()
+        logger.error("Cannot load MsgStream client")
+        raise NotImplementedError("Cannot load MsgStream client")
 
     async def __aenter__(self) -> "MessageStreamClient":
         return self
