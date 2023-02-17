@@ -1198,7 +1198,7 @@ Ext.define("NOC.sa.managedobjectprofile.Application", {
                                         {
                                             name: "enable_box_discovery_cpe",
                                             xtype: "checkboxfield",
-                                            boxLabel: __("CPE status"),
+                                            boxLabel: __("CPE"),
                                             colspan: 3
                                         },
                                         {
@@ -2006,13 +2006,6 @@ Ext.define("NOC.sa.managedobjectprofile.Application", {
                                             colspan: 3
                                         },
                                         {
-                                            name: "enable_periodic_discovery_cpestatus",
-                                            xtype: "checkboxfield",
-                                            boxLabel: __("CPE status"),
-                                            reference: "enablePeriodicDiscoveryCPEStatus",
-                                            colspan: 2
-                                        },
-                                        {
                                             name: "enable_periodic_discovery_mac",
                                             xtype: "checkboxfield",
                                             boxLabel: __("MAC"),
@@ -2058,6 +2051,13 @@ Ext.define("NOC.sa.managedobjectprofile.Application", {
                                             boxLabel: __("Alarms"),
                                             colspan: 3
                                         },
+                                        {
+                                            name: "enable_periodic_discovery_cpestatus",
+                                            xtype: "checkboxfield",
+                                            boxLabel: __("CPE status"),
+                                            reference: "enablePeriodicDiscoveryCPEStatus",
+                                            colspan: 3
+                                        }
                                     ]
                                 },
                                 {

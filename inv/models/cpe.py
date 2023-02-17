@@ -23,7 +23,7 @@ from mongoengine.fields import (
     BooleanField,
     DateTimeField,
     DictField,
-    EmbeddedDocumentField,
+    EmbeddedDocumentListField,
 )
 
 # NOC modules
@@ -34,7 +34,7 @@ from noc.core.mongo.fields import PlainReferenceField, ForeignKeyField
 from noc.core.models.cfgmetrics import MetricCollectorConfig, MetricItem
 from noc.core.validators import is_ipv4
 from noc.main.models.label import Label
-from noc.main.models.textindex import full_text_search, TextIndex
+from noc.main.models.textindex import full_text_search
 from noc.sa.models.managedobject import ManagedObject
 from noc.sa.interfaces.igetcpe import IGetCPE
 from noc.wf.models.state import State
@@ -92,7 +92,7 @@ class CPE(Document):
     # IPv4 CPE address, used for ManagedObject sync
     address = StringField(validation=is_ipv4)
     # Capabilities
-    caps: List[CapsItem] = ListField(EmbeddedDocumentField(CapsItem))
+    caps: List[CapsItem] = EmbeddedDocumentListField(CapsItem)
     # Object id in BI
     bi_id = LongField(unique=True)
     # Labels
@@ -131,13 +131,11 @@ class CPE(Document):
         yield list(instance.labels or [])
         if instance.profile.labels:
             yield list(instance.profile.labels)
-        yield [
-            ll for ll in instance.managed_object.get_effective_labels() if ll != "noc::is_linked::="
-        ]
+        yield [ll for ll in instance.controller.get_effective_labels() if ll != "noc::is_linked::="]
 
     @classmethod
     def can_set_label(cls, label):
-        return Label.get_effective_setting(label, "enable_cpeprobe")
+        return Label.get_effective_setting(label, "enable_managedobject")
 
     @classmethod
     def _reset_caches(cls, cpe_id: int):
@@ -255,7 +253,7 @@ class CPE(Document):
         seen = set()
         changed = False
         for ci in self.caps:
-            c = Capability.get_by_id(ci["capability"])
+            c = ci.capability
             cs = ci.source
             css = ci.scope or ""
             cv = ci.value
@@ -299,9 +297,7 @@ class CPE(Document):
                 logger.info("[%s] Unknown capability %s, ignoring", o_label, cn)
                 continue
             logger.info("[%s] Adding capability %s = %s", o_label, cn, caps[cn])
-            new_caps += [
-                {"capability": str(c.id), "value": caps[cn], "source": source, "scope": scope or ""}
-            ]
+            new_caps += [CapsItem(capability=c, value=caps[cn], source=source, scope=scope or "")]
             changed = True
 
         if changed:
@@ -311,9 +307,9 @@ class CPE(Document):
             self._reset_caches(self.id)
         caps = {}
         for ci in new_caps:
-            cn = Capability.get_by_id(ci["capability"])
+            cn = ci.capability
             if cn:
-                caps[cn.name] = ci.get("value")
+                caps[cn.name] = ci.value
         return caps
 
     def set_oper_status(

@@ -138,6 +138,7 @@ class CPECheck(DiscoveryCheck):
         self.logger.info("[%s|%s] Created ManagedObject %s", cpe.local_id, cpe.global_id, name)
         mo = ManagedObject(
             name=name,
+            is_managed=True,
             pool=cpe.profile.object_pool or self.object.pool,
             profile=Profile.get_by_id(Profile.get_generic_profile_id()),
             object_profile=cpe.profile.object_profile or self.object.object_profile,
@@ -187,6 +188,6 @@ class CPECheck(DiscoveryCheck):
     def cleanup_caps(self, result: Dict[str, Any]) -> Dict[str, str]:
         r = {}
         for attr_name, caps in self.caps_map.items():
-            if attr_name in result:
+            if attr_name in result and result[attr_name]:
                 r[caps] = result[attr_name]
         return r
