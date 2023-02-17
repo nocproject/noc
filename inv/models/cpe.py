@@ -33,6 +33,7 @@ from noc.core.change.decorator import change
 from noc.core.mongo.fields import PlainReferenceField, ForeignKeyField
 from noc.core.models.cfgmetrics import MetricCollectorConfig, MetricItem
 from noc.core.validators import is_ipv4
+from noc.core.model.decorator import on_delete_check
 from noc.main.models.label import Label
 from noc.main.models.textindex import full_text_search
 from noc.sa.models.managedobject import ManagedObject
@@ -53,6 +54,7 @@ logger = logging.getLogger(__name__)
 @change
 @bi_sync
 @workflow
+@on_delete_check(clean=[("sa.ManagedObject", "managed_object")])
 class CPE(Document):
     meta = {
         "collection": "cpes",
