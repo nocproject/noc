@@ -217,7 +217,11 @@ class Script(BaseScript):
                         raise self.NotSupportedError()
                 if not self.is_has_image:
                     if has_unit_command:
-                        ver = self.cli(f"show version unit {unit}", cached=True)
+                        try:
+                            ver = self.cli(f"show version unit {unit}", cached=True)
+                        except self.CLISyntaxError:
+                            if unit == "1":
+                                ver = self.cli("show version", cached=True)
                     else:
                         ver = self.cli("show version", cached=True)
                 else:
