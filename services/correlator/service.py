@@ -516,6 +516,7 @@ class CorrelatorService(FastAPIService):
                     alarm_groups[gi.reference] = gi
             for ai in rule.iter_actions(a):
                 if ai.severity:
+                    a.base_weight = ai.severity
                     a.severity = max(a.severity + ai.severity, 0)
         all_groups, deferred_groups = await self.get_groups(a, alarm_groups.values())
         a.groups = [g.reference for g in all_groups]

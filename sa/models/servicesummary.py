@@ -346,7 +346,7 @@ class ServiceSummary(Document):
         return w
 
     @classmethod
-    def get_severity(cls, summary) -> int:
+    def get_severity(cls, summary):
         """
         Convert result of *get_object_summary* to alarm severity
         """

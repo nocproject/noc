@@ -177,8 +177,6 @@ class AlarmRule(object):
         """
         for action in self.actions:
             yield action
-            if action.policy == "drop":
-                break
 
 
 class AlarmRuleSet(object):

@@ -83,9 +83,11 @@ class ActiveAlarm(Document):
 
     timestamp = DateTimeField(required=True)
     last_update = DateTimeField(required=True)
-    managed_object = ForeignKeyField(ManagedObject)
-    alarm_class = PlainReferenceField(AlarmClass)
+    managed_object: "ManagedObject" = ForeignKeyField(ManagedObject)
+    alarm_class: "AlarmClass" = PlainReferenceField(AlarmClass)
     severity = IntField(required=True)
+    # Base for calculate severity
+    base_weight = IntField(default=0)
     vars = DictField()
     # Alarm reference is a hash of discriminator
     # for external systems
@@ -217,25 +219,27 @@ class ActiveAlarm(Document):
         else:
             self.save()
 
-    def change_severity(self, user="", delta=None, severity=None, to_save=True):
+    def change_severity(
+        self, user="", delta=None, severity: Optional[AlarmSeverity] = None, to_save=True
+    ):
         """
         Change alarm severity
         """
         if isinstance(user, User):
             user = user.username
         if delta:
-            self.severity = max(0, self.severity + delta)
+            self.severity = max(0, self.base_weight + self.severity + delta)
             if delta > 0:
-                self.log_message("%s has increased alarm severity by %s" % (user, delta))
+                self.log_message(f"{user} has increased alarm severity by {delta}")
             else:
-                self.log_message("%s has decreased alarm severity by %s" % (user, delta))
+                self.log_message(f"{user} has decreased alarm severity by {delta}")
         elif severity:
             if isinstance(severity, int) or isinstance(severity, float):
-                self.severity = int(severity)
-                self.log_message("%s has changed severity to %s" % (user, severity))
+                self.severity = self.base_weight + int(severity)
+                self.log_message(f"{user} has changed severity to {severity}")
             else:
-                self.severity = severity.severity
-                self.log_message("%s has changed severity to %s" % (user, severity.name))
+                self.severity = self.base_weight + severity.severity
+                self.log_message(f"{user} has changed severity to {severity.name}")
         if to_save:
             self.safe_save()
 
@@ -524,7 +528,7 @@ class ActiveAlarm(Document):
         return r
 
     @property
-    def effective_style(self):
+    def effective_style(self) -> "Style":
         if self.custom_style:
             return self.custom_style
         else:
@@ -560,6 +564,9 @@ class ActiveAlarm(Document):
         for a in ActiveAlarm.objects.filter(root=self.id):
             a.update_summary()
             update_dict(objects, SummaryItem.items_to_dict(a.total_objects))
+            if not self.alarm_class.affected_service:
+                # Skip services for calculate Severities
+                continue
             update_dict(services, SummaryItem.items_to_dict(a.total_services))
             update_dict(subscribers, SummaryItem.items_to_dict(a.total_subscribers))
         obj_list = ObjectSummaryItem.dict_to_items(objects)
