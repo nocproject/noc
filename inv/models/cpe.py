@@ -54,7 +54,7 @@ logger = logging.getLogger(__name__)
 @change
 @bi_sync
 @workflow
-@on_delete_check(clean=[("sa.ManagedObject", "managed_object")])
+@on_delete_check(clean=[("sa.ManagedObject", "cpe_id")])
 class CPE(Document):
     meta = {
         "collection": "cpes",
