@@ -569,7 +569,7 @@ services:
       && env
       && ./noc migrate
       && ./noc ensure-indexes
-      && ./noc migrate-liftbridge
+      && ./noc migrate-liftbridge --slots 1
       && ./noc collection sync
       && ./noc migrate-liftbridge
       && ./noc migrate-ch
