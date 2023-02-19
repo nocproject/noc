@@ -308,7 +308,7 @@ class Script(BaseScript):
     def get_ma5600_subboard(self):
         # SubBoard
         subboard = defaultdict(list)
-        for (slot_index, slot_type, slot_ver, slot_descr) in self.snmp.get_tables(
+        for slot_index, slot_type, slot_ver, slot_descr in self.snmp.get_tables(
             [
                 mib["HUAWEI-DEVICE-MIB::hwSubslotType"],
                 mib["HUAWEI-DEVICE-MIB::hwSubslotVersion"],
@@ -465,7 +465,9 @@ class Script(BaseScript):
                 i_type = "FAN"
             elif item_name.startswith("slot") and "PWC" in item.type:
                 i_type = "PWR"
-            elif item_name.startswith("main_board") and "Assembly Chassis" not in item.description:
+            elif (
+                "board" in item.description.lower() or item_name.startswith("main_board")
+            ) and "Assembly Chassis" not in item.description:
                 i_type = "BOARD"
             elif item_name.startswith("daughter_board"):
                 i_type = "DAUGHTERBOARD"
