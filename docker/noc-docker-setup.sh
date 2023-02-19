@@ -164,7 +164,7 @@ SETUPENV() {
           { echo "COMPOSEPATH=$INSTALLPATH/docker"
             echo "COMPOSEPREFIX=$COMPOSEPREFIX"
             echo "CONSUL_VERSION_TAG=1.8.6"
-            echo "CLICKHOUSE_VERSION_TAG=20.3.12.112"
+            echo "CLICKHOUSE_VERSION_TAG=22.4.5.9"
             echo "COMPOSE_HTTP_TIMEOUT=300"
             echo "# logging driver: json-file, local, journald"
             echo "COMPOSE_LOG_DRIVER=json-file"
