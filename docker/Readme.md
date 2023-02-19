@@ -24,12 +24,12 @@ see URL: https://docs.docker.com/compose/install/
 7. Prepare to launch containers:
 ```
 export DOCKER_CLIENT_TIMEOUT=200
-docker-compose up --no-start
+docker compose up --no-start
 ```
 
 8. Perform initial db initialization and migrations:
 ```
-docker-compose up migrate
+docker compose up migrate
 ```
 
 Note: Be aware that command will run lots of noc daemons and expected
@@ -38,7 +38,7 @@ On laptops with SSD it takes about 2 minutes to get everything started
 
 9. Start `NOC` in the docker: 
 ```
-docker-compose up -d 
+docker compose up -d 
 ```
 
 10. Go to https://0.0.0.0 using default credentials:
