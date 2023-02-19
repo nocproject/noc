@@ -74,7 +74,7 @@ class Script(BaseScript):
     )
     rx_ports = re.compile(
         r"^\s*(?P<port>\d+)\s+(?P<type>ADSL|VDSL|GPON|10GE|GE|FE|GE-Optic|GE-Elec|FE-Elec|)\s+.*?"
-        r"(?P<state>[Oo]nline|[Oo]ffline|Activating|Activated|Registered)",
+        r"(?P<state>[Oo]nline|[Oo]ffline|Activating|Activated|Deactivated|Registered)",
         re.MULTILINE,
     )
 
