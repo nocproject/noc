@@ -27,6 +27,8 @@ Jinja2==3.0.3
 PyYAML==6.0
 Pygments==2.13.0
 XlsxWriter==3.0.2
+# Kafka
+aiokafka==0.8.0
 atomicl==0.1.1
 blinker==1.4
 bsdiff4==1.2.2
@@ -110,7 +112,5 @@ pytest-assume==2.4.3; extra == "testing"
 pytest-dependency==0.5.1; extra == "testing"
 # Cython
 Cython==0.29.32; extra == "cython"
-# Kafka
-aiokafka==0.7.2; extra == "sender-kafka"
 # etl/extractor
 dbf==0.99.1; extra == "testing"
