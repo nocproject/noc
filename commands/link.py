@@ -9,6 +9,7 @@
 import argparse
 import time
 import datetime
+import os
 from collections import defaultdict
 
 # NOC modules
@@ -16,6 +17,12 @@ from noc.core.management.base import BaseCommand, CommandError
 from noc.core.mongo.connection import connect
 from noc.inv.models.interface import Interface
 from noc.inv.models.link import Link
+
+ALARM_CLASSES_NAME = [
+    "NOC | Managed Object | Ping Failed",
+    "Discovery | Job | Box",
+    "NOC | Managed Object | Access Lost",
+]
 
 
 class Command(BaseCommand):
@@ -43,6 +50,12 @@ class Command(BaseCommand):
         ttl_policy = subparsers.add_parser("ttl-policy", help="Remove links by TTL")
         ttl_policy.add_argument("--ttl", type=int, help="TTL by days", default=10)
         ttl_policy.add_argument(
+            "--with-empty-ls",
+            dest="with_empty_ls",
+            action="store_true",
+            help="Include links with empty LastSeen",
+        )
+        ttl_policy.add_argument(
             "--approve", dest="dry_run", action="store_false", help="Apply changes"
         )
 
@@ -63,10 +76,11 @@ class Command(BaseCommand):
         r = []
         for mo in i:
             r += [", ".join(format_interface(li) for li in i[mo])]
-        link = " --- ".join(r)
+        rlink = " --- ".join(r)
         if show_method:
-            link += " [%s]" % link.discovery_method
-        self.stdout.write(link)
+            rlink += f" [{link.discovery_method}]"
+        rlink += os.linesep
+        self.stdout.write(rlink)
 
     def handle_show(self, *args, **options):
         show_method = options.get("show_method")
@@ -115,8 +129,9 @@ class Command(BaseCommand):
             if iface:
                 iface.unlink()
 
-    def handle_ttl_policy(self, ttl=10, dry_run=True, *args, **options):
+    def handle_ttl_policy(self, ttl=10, dry_run=True, with_empty_ls=False, *args, **options):
         from noc.fm.models.activealarm import ActiveAlarm
+        from noc.fm.models.alarmclass import AlarmClass
 
         today = datetime.datetime.now()
         deadline = today - datetime.timedelta(days=ttl)
@@ -124,7 +139,15 @@ class Command(BaseCommand):
         alarm_mos = [
             d["managed_object"]
             for d in ActiveAlarm._get_collection().find(
-                {"managed_object": {"$exists": True}}, {"managed_object": 1}
+                {
+                    "managed_object": {"$exists": True},
+                    "alarm_class": {
+                        "$in": list(
+                            AlarmClass.objects.filter(name__in=ALARM_CLASSES_NAME).scalar("id")
+                        )
+                    },
+                },
+                {"managed_object": 1},
             )
         ]
         # Filter object with Active alarm, and manual links
@@ -136,7 +159,7 @@ class Command(BaseCommand):
             f" Deadline links: {Link.objects.filter(last_seen__lt=deadline).count()},"
             f' Manual links: {Link.objects.filter(discovery_method="").count()},'
             f" On alarmed objects: {Link.objects.filter(linked_objects__in=alarm_mos).count()}"
-            f' Empty last_seen: {Link.objects.filter(last_seen=None, linked_objects__nin=alarm_mos, discovery_method__ne="").count()}'
+            f' Empty last_seen: {Link.objects.filter(first_discovered__lt=deadline, last_seen=None, linked_objects__nin=alarm_mos, discovery_method__ne="").count()}'
         )
         self.print(
             f"# {deadline_links.count()}/{Link.objects.count()} Links over on deadline: {deadline}"
@@ -148,9 +171,23 @@ class Command(BaseCommand):
                 self.print("%d\n" % i)
                 time.sleep(1)
             for link in list(deadline_links):
-                self.print("Clean %s" % link)
+                self.print(f"Clean {link}")
                 iface = link.interfaces[0]
                 iface.unlink()
+            if with_empty_ls:
+                empty_links = Link.objects.filter(
+                    first_discovered__lt=deadline,
+                    last_seen=None,
+                    linked_objects__nin=alarm_mos,
+                    discovery_method__ne="",
+                )
+                self.print(f"Clean {empty_links.count()}")
+                for link in list(empty_links):
+                    if not link.interfaces:
+                        link.delete()
+                        continue
+                    iface = link.interfaces[0]
+                    iface.unlink()
             self.print("# Done.")
 
 
