@@ -9,7 +9,7 @@
 from io import BytesIO
 
 # NOC modules
-from ..types import ReportBand, Template, OutputType
+from ..types import Template, OutputType
 from noc.core.reporter.report import BandData
 
 

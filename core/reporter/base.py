@@ -47,7 +47,7 @@ class ReportEngine(object):
         data = self.load_data(report, cleaned_param)
         self.generate_report(report, template, out_type, out, cleaned_param, data)
         self.logger.info("[%s] Finished report with parameter: %s", report, cleaned_param)
-        output_name = self.resolve_output_filename(run_params=r_params, root_band=data)
+        # output_name = self.resolve_output_filename(run_params=r_params, root_band=data)
         return out
 
     def generate_report(

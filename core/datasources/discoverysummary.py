@@ -13,7 +13,6 @@ from noc.inv.models.interface import Interface
 from noc.sa.models.managedobject import ManagedObject
 from noc.sa.models.managedobjectprofile import ManagedObjectProfile
 from noc.main.models.pool import Pool
-from noc.inv.models.link import Link
 
 # NOC modules
 from .base import FieldInfo, BaseDataSource

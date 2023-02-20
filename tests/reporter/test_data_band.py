@@ -6,7 +6,6 @@
 # ----------------------------------------------------------------------
 
 # Third-party modules
-import pytest
 import polars as pl
 
 # NOC modules

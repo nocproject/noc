@@ -23,7 +23,7 @@ class RequestStub(object):
         self.user = user
 
 
-@pytest.mark.parametrize("report", ["report_objectsummary"])  #  "report_datasource_cmp"
+@pytest.mark.parametrize("report", ["report_objectsummary"])
 def test_report_config(report):
     path = os.path.realpath(os.path.dirname(__file__))
     with open(os.path.join(path, f"{report}.yml"), "rb") as f:
@@ -37,8 +37,8 @@ def test_report_config(report):
     out.seek(0)
     site.autodiscover()
     app = site.apps[r_cfg.name]
-    args = {}
-    request = RequestStub(None)
+    # args = {}
+    # request = RequestStub(None)
     report = app.get_data()
     if r_cfg.templates["DEFAULT"].output_type == OutputType.HTML:
         assert out.read().decode("utf8") == report.to_html()
