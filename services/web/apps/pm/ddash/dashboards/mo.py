@@ -55,7 +55,7 @@ class MODashboard(JinjaDashboard):
             Check interface profile has metrics
             """
             for m in profile.metrics:
-                if m.interval:
+                if m.interval or profile.metrics_default_interval:
                     return True
             return False
 
@@ -233,7 +233,6 @@ class MODashboard(JinjaDashboard):
         }
 
     def get_context(self):
-
         return {
             "port_types": self.object_data["port_types"],
             "object_metrics": self.object_data["object_metrics"],

@@ -1,0 +1,8 @@
+{
+    "name": "CPE | MAC Address",
+    "$collection": "inv.capabilities",
+    "uuid": "e183663c-f532-41ac-815b-9a0328a96bfd",
+    "description": "CPE device MAC Address",
+    "type": "str",
+    "card_template": null
+}

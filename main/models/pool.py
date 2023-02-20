@@ -32,6 +32,7 @@ id_lock = threading.Lock()
         ("sa.AdministrativeDomain", "default_pool"),
         ("sa.ManagedObject", "pool"),
         ("sa.ManagedObject", "fm_pool"),
+        ("inv.CPEProfile", "object_pool"),
         # ("fm.EscalationItem", "administrative_domain")
     ],
     clean_lazy_labels="pool",

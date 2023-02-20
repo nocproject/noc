@@ -61,7 +61,6 @@ Ext.define("NOC.sa.managedobjectprofile.Application", {
             enableBoxDiscoveryAddressConfDB: false,
             enableBoxDiscoveryHK: false,
             enableBoxDiscoveryNRIPortmap: false,
-            enableBoxDiscoveryCPEStatus: false,
             enableBoxDiscoveryIfDesc: false,
             enableFMRCADownlinkMerge: false
         },
@@ -1197,10 +1196,9 @@ Ext.define("NOC.sa.managedobjectprofile.Application", {
                                             uiStyle: "medium"
                                         },
                                         {
-                                            name: "enable_box_discovery_cpestatus",
+                                            name: "enable_box_discovery_cpe",
                                             xtype: "checkboxfield",
-                                            boxLabel: __("CPE status"),
-                                            reference: "enableBoxDiscoveryCPEStatus",
+                                            boxLabel: __("CPE"),
                                             colspan: 3
                                         },
                                         {
@@ -1792,128 +1790,6 @@ Ext.define("NOC.sa.managedobjectprofile.Application", {
                                 },
                                 {
                                     xtype: "fieldset",
-                                    title: __("CPE Status"),
-                                    layout: "vbox",
-                                    defaults: {
-                                        labelAlign: "top",
-                                        padding: 4
-                                    },
-                                    items: [
-                                        {
-                                            xtype: "container",
-                                            layout: "hbox",
-                                            defaults: {
-                                                padding: "0 8 0 0"
-                                            },
-                                            items: [
-                                                {
-                                                    name: "box_discovery_cpestatus_policy",
-                                                    xtype: "combobox",
-                                                    fieldLabel: __("Box CPE Status Policy"),
-                                                    labelWidth: 120,
-                                                    allowBlank: true,
-                                                    tooltip: __('Set Policy for CPE Status Discovery. ' +
-                                                        'S - Check only CPE Statuses (script get_cpe_status)' +
-                                                        'F - Check ALL CPE info (script get_cpe)'),
-                                                    displayField: "label",
-                                                    valueField: "id",
-                                                    store: {
-                                                        fields: ["id", "label"],
-                                                        data: [
-                                                            {"id": "S", "label": __("Status only")},
-                                                            {"id": "F", "label": __("Full")}
-                                                        ]
-                                                    },
-                                                    bind: {
-                                                        disabled: "{!enableBoxDiscoveryCPEStatus.checked}"
-                                                    },
-                                                    listeners: {
-                                                        render: me.addTooltip
-                                                    }
-                                                }
-                                            ]
-                                        }
-                                        ]
-                                },
-                                {
-                                    xtype: "fieldset",
-                                    title: __("CPE"),
-                                    layout: "vbox",
-                                    defaults: {
-                                        labelAlign: "top",
-                                        padding: 4
-                                    },
-                                    items: [
-                                        {
-                                            xtype: "container",
-                                            layout: "hbox",
-                                            defaults: {
-                                                padding: "0 8 0 0"
-                                            },
-                                            items: [
-                                                {
-                                                    name: "enable_box_discovery_cpe",
-                                                    xtype: "checkboxfield",
-                                                    boxLabel: __("CPE")
-                                                }
-                                            ]
-                                        },
-                                        {
-                                            xtype: "container",
-                                            layout: "hbox",
-                                            defaults: {
-                                                padding: "0 8 0 0"
-                                            },
-                                            items: [
-                                                {
-                                                    name: "cpe_segment_policy",
-                                                    xtype: "combobox",
-                                                    fieldLabel: __("Segment Policy"),
-                                                    allowBlank: true,
-                                                    store: [
-                                                        ["C", _("Use Controller's")],
-                                                        ["L", _("Use uplink object's")]
-                                                    ],
-                                                    uiStyle: "medium"
-                                                },
-                                                {
-                                                    name: "cpe_cooldown",
-                                                    xtype: "numberfield",
-                                                    fieldLabel: __("CPE Cooldown (days)"),
-                                                    labelWidth: 205,
-                                                    allowBlank: true,
-                                                    minValue: 0,
-                                                    uiStyle: "small"
-                                                }
-                                            ]
-                                        },
-                                        {
-                                            xtype: "container",
-                                            layout: "hbox",
-                                            defaults: {
-                                                padding: "0 8 0 0"
-                                            },
-                                            items: [
-                                                {
-                                                    name: "cpe_profile",
-                                                    xtype: "sa.managedobjectprofile.LookupField",
-                                                    fieldLabel: __("CPE Profile"),
-                                                    allowBlank: true,
-                                                    uiStyle: "medium"
-                                                },
-                                                {
-                                                    name: "cpe_auth_profile",
-                                                    xtype: "sa.authprofile.LookupField",
-                                                    fieldLabel: __("CPE Auth Profile"),
-                                                    allowBlank: true,
-                                                    uiStyle: "medium"
-                                                }
-                                            ]
-                                        }
-                                    ]
-                                },
-                                {
-                                    xtype: "fieldset",
                                     title: __("NRI"),
                                     layouy: "hbox",
                                     defaults: {
@@ -2130,38 +2006,6 @@ Ext.define("NOC.sa.managedobjectprofile.Application", {
                                             colspan: 3
                                         },
                                         {
-                                            name: "enable_periodic_discovery_cpestatus",
-                                            xtype: "checkboxfield",
-                                            boxLabel: __("CPE status"),
-                                            reference: "enablePeriodicDiscoveryCPEStatus",
-                                            colspan: 2
-                                        },
-                                        {
-                                            name: "periodic_discovery_cpestatus_policy",
-                                            xtype: "combobox",
-                                            fieldLabel: __("Periodic CPE Status Policy"),
-                                            labelWidth: 150,
-                                            allowBlank: true,
-                                            tooltip: __('Set Policy for CPE Status Discovery. ' +
-                                                'S - Check only CPE Statuses (script get_cpe_status)' +
-                                                'F - Check ALL CPE info (script get_cpe)'),
-                                            displayField: "label",
-                                            valueField: "id",
-                                            store: {
-                                                fields: ["id", "label"],
-                                                data: [
-                                                    {"id": "S", "label": __("Status only")},
-                                                    {"id": "F", "label": __("Full")}
-                                                ]
-                                            },
-                                            bind: {
-                                                disabled: "{!enablePeriodicDiscoveryCPEStatus.checked}"
-                                            },
-                                            listeners: {
-                                                render: me.addTooltip
-                                            }
-                                        },
-                                        {
                                             name: "enable_periodic_discovery_mac",
                                             xtype: "checkboxfield",
                                             boxLabel: __("MAC"),
@@ -2207,6 +2051,13 @@ Ext.define("NOC.sa.managedobjectprofile.Application", {
                                             boxLabel: __("Alarms"),
                                             colspan: 3
                                         },
+                                        {
+                                            name: "enable_periodic_discovery_cpestatus",
+                                            xtype: "checkboxfield",
+                                            boxLabel: __("CPE status"),
+                                            reference: "enablePeriodicDiscoveryCPEStatus",
+                                            colspan: 3
+                                        }
                                     ]
                                 },
                                 {
@@ -2641,8 +2492,7 @@ Ext.define("NOC.sa.managedobjectprofile.Application", {
                                             dataIndex: "interval",
                                             editor: {
                                                 xtype: "numberfield",
-                                                minValue: 0,
-                                                defaultValue: 300,
+                                                minValue: 0
                                             }
                                         }
                                     ]

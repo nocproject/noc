@@ -1,0 +1,23 @@
+<table class="table table-condensed table-hover">
+<tbody>
+    <tr>
+        <th colspan="2">
+            {{ object.global_id }} CPE
+        </th>
+    </tr>
+    <tr>
+        <th scope="row">{{ _("Profile") }}</th>
+        <td>{{object.profile.name}}</td>
+    <tr>
+    {% if object.description %}
+    <tr>
+        <th scope="row">{{ _("Description") }}</th>
+        <td>{{object.description}}</td>
+    </tr>
+    {% endif %}
+    <tr>
+        <th scope="row">{{ _("Local Id") }}</th>
+        <td>{{ object.controller.name }}{{ object.local_id }} </td>
+    <tr>
+</tbody>
+</table>
