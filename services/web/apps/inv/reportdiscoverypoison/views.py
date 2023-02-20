@@ -1,7 +1,7 @@
 # ---------------------------------------------------------------------
 # inv.reportdiscovery
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2016 The NOC Project
+# Copyright (C) 2007-2023 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -33,7 +33,6 @@ class ReportDiscoveryIDPoisonApplication(SimpleReport):
     form = ReportForm
 
     def get_data(self, request, pool=None, filter_dup_macs=False, **kwargs):
-
         data = []
         # Find object with equal ID
         find = DiscoveryID._get_collection().aggregate(
