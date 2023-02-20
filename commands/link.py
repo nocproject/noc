@@ -9,6 +9,7 @@
 import argparse
 import time
 import datetime
+import os
 from collections import defaultdict
 
 # NOC modules
@@ -78,6 +79,7 @@ class Command(BaseCommand):
         rlink = " --- ".join(r)
         if show_method:
             rlink += f" [{link.discovery_method}]"
+        rlink += os.linesep
         self.stdout.write(rlink)
 
     def handle_show(self, *args, **options):
