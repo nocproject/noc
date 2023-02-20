@@ -9,7 +9,7 @@
 from typing import Optional, Iterable, Tuple, Any, AsyncIterable
 
 # NOC modules
-from .base import FieldInfo, BaseDataSource
+from .base import FieldInfo, FieldType, BaseDataSource
 from noc.sa.models.managedobject import ManagedObject
 
 
@@ -30,8 +30,8 @@ class ManagedObjectLabelsStatDS(BaseDataSource):
     row_index = "managed_object_id"
 
     fields = [
-        FieldInfo(name="managed_object_id", type="int64"),
-    ] + [FieldInfo(name=f, type="bool") for f in get_labels()]
+        FieldInfo(name="managed_object_id", type=FieldType.UINT),
+    ] + [FieldInfo(name=f, type=FieldType.BOOL) for f in get_labels()]
 
     @classmethod
     async def iter_query(

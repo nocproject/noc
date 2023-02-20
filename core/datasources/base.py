@@ -20,6 +20,7 @@ class FieldType(enum.Enum):
     STRING = pl.Utf8
     INT = pl.Int64
     UINT = pl.UInt32
+    UINT64 = pl.UInt64
     INT32 = pl.Int32
     FLOAT = pl.Float32
     BOOL = pl.Boolean

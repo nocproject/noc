@@ -12,7 +12,7 @@ from typing import Optional, Iterable, Tuple, AsyncIterable
 from pymongo.read_preferences import ReadPreference
 
 # NOC modules
-from .base import FieldInfo, BaseDataSource
+from .base import FieldInfo, FieldType, BaseDataSource
 from noc.core.mongo.connection import get_db
 
 
@@ -22,8 +22,8 @@ class ManagedObjectConfigDS(BaseDataSource):
 
     # "Up/10G", "Up/1G", "Up/100M", "Up/10M", "Down/-", "-"
     fields = [
-        FieldInfo(name="managed_object_id", type="int64"),
-        FieldInfo(name="last_changed_ts", type="datetime64"),
+        FieldInfo(name="managed_object_id", type=FieldType.UINT),
+        FieldInfo(name="last_changed_ts", type=FieldType.UINT64),
     ]
 
     @classmethod

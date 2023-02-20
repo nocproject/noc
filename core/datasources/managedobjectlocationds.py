@@ -9,11 +9,10 @@
 from typing import Optional, Iterable, Tuple, AsyncIterable
 
 # Third-party modules
-import pandas as pd
 from pymongo.read_preferences import ReadPreference
 
 # NOC modules
-from .base import FieldInfo, BaseDataSource
+from .base import FieldInfo, FieldType, BaseDataSource
 from noc.inv.models.object import Object
 from noc.sa.models.managedobject import ManagedObject
 
@@ -23,15 +22,10 @@ class ManagedObjectLocationDS(BaseDataSource):
     row_index = "container_id"
 
     fields = [
-        FieldInfo(name="managed_object_id", type="int64"),
-        FieldInfo(name="container_id", type="int64"),
+        FieldInfo(name="managed_object_id", type=FieldType.UINT),
+        FieldInfo(name="container_id"),
         FieldInfo(name="location_address"),
     ]
-
-    @classmethod
-    async def query(cls, fields: Optional[Iterable[str]] = None, *args, **kwargs) -> pd.DataFrame:
-        data = [mm async for mm in cls.iter_query(fields, **args, **kwargs)]
-        return pd.DataFrame.from_records(data, index="container_id")
 
     @classmethod
     async def iter_query(

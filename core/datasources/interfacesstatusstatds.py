@@ -12,7 +12,7 @@ from typing import Optional, Iterable, Dict, Tuple, List, AsyncIterable
 from pymongo.read_preferences import ReadPreference
 
 # NOC modules
-from .base import FieldInfo, BaseDataSource
+from .base import FieldInfo, FieldType, BaseDataSource
 from noc.inv.models.interface import Interface
 
 
@@ -21,13 +21,13 @@ class InterfacesStatusStatDS(BaseDataSource):
 
     # "Up/10G", "Up/1G", "Up/100M", "Up/10M", "Down/-", "-"
     fields = [
-        FieldInfo(name="managed_object_id", type="int64"),
-        FieldInfo(name="Up_10G", type="int64"),
-        FieldInfo(name="Up_1G", type="int64"),
-        FieldInfo(name="Up_100M", type="int64"),
-        FieldInfo(name="Up_10M", type="int64"),
-        FieldInfo(name="Down_-", type="int64"),
-        FieldInfo(name="-", type="int64"),
+        FieldInfo(name="managed_object_id", type=FieldType.UINT),
+        FieldInfo(name="Up_10G", type=FieldType.UINT),
+        FieldInfo(name="Up_1G", type=FieldType.UINT),
+        FieldInfo(name="Up_100M", type=FieldType.UINT),
+        FieldInfo(name="Up_10M", type=FieldType.UINT),
+        FieldInfo(name="Down_-", type=FieldType.UINT),
+        FieldInfo(name="-", type=FieldType.UINT),
     ]
 
     @staticmethod

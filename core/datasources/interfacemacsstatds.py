@@ -13,7 +13,7 @@ from typing import Optional, Iterable, AsyncIterable, Tuple
 import orjson
 
 # NOC modules
-from .base import FieldInfo, BaseDataSource
+from .base import FieldInfo, FieldType, BaseDataSource
 from noc.core.clickhouse.connect import connection
 from noc.config import config
 
@@ -32,9 +32,9 @@ class InterfaceMACsStatDS(BaseDataSource):
     name = "interfacemacsstatds"
 
     fields = [
-        FieldInfo(name="managed_object_id", type="int64"),
-        FieldInfo(name="interface_name", type="str"),
-        FieldInfo(name="mac_count", type="int64"),
+        FieldInfo(name="managed_object_id", type=FieldType.UINT),
+        FieldInfo(name="interface_name"),
+        FieldInfo(name="mac_count", type=FieldType.UINT),
     ]
 
     @classmethod
