@@ -9,7 +9,7 @@
 from typing import Optional, Iterable, Tuple, AsyncIterable
 
 # NOC modules
-from .base import FieldInfo, BaseDataSource
+from .base import FieldInfo, FieldType, BaseDataSource
 from noc.inv.models.discoveryid import DiscoveryID
 from noc.core.mac import MAC
 from noc.inv.models.macblacklist import MACBlacklist
@@ -23,15 +23,15 @@ class DiscoveryIDCachePoisonDS(BaseDataSource):
     name = "discoveryidcachepoisonds"
 
     fields = [
-        FieldInfo(name="managed_object", type="int"),
-        FieldInfo(name="name", type="str"),
-        FieldInfo(name="address", type="str"),
-        FieldInfo(name="profile", type="str"),
-        FieldInfo(name="pool", type="pool"),
-        FieldInfo(name="is_managed", type="bool"),
-        FieldInfo(name="reason", type="str"),
-        FieldInfo(name="macs", type="str"),
-        FieldInfo(name="on_blacklist", type="bool"),
+        FieldInfo(name="managed_object", type=FieldType.UINT),
+        FieldInfo(name="name"),
+        FieldInfo(name="address"),
+        FieldInfo(name="profile"),
+        FieldInfo(name="pool"),
+        FieldInfo(name="is_managed", type=FieldType.BOOL),
+        FieldInfo(name="reason"),
+        FieldInfo(name="macs"),
+        FieldInfo(name="on_blacklist", type=FieldType.BOOL),
     ]
 
     @classmethod

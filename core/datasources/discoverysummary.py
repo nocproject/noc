@@ -15,7 +15,7 @@ from noc.sa.models.managedobjectprofile import ManagedObjectProfile
 from noc.main.models.pool import Pool
 
 # NOC modules
-from .base import FieldInfo, BaseDataSource
+from .base import FieldInfo, FieldType, BaseDataSource
 
 MOS_METRICS_PIPELINE = [
     {"$match": {"type": "physical"}},
@@ -48,16 +48,16 @@ class DiscoverySummaryDS(BaseDataSource):
     name = "discoverysummary"
 
     fields = [
-        FieldInfo(name="pool", type="str"),
-        FieldInfo(name="profile", type="str"),
-        FieldInfo(name="discovered_managed_object_box", type="int"),
-        FieldInfo(name="discovered_managed_object_periodic", type="int"),
-        FieldInfo(name="discovered_managed_object_all", type="int"),
-        FieldInfo(name="discovered_managed_object_box_per_second", type="float"),
-        FieldInfo(name="discovered_managed_object_periodic_per_second", type="float"),
+        FieldInfo(name="pool"),
+        FieldInfo(name="profile"),
+        FieldInfo(name="discovered_managed_object_box", type=FieldType.UINT),
+        FieldInfo(name="discovered_managed_object_periodic", type=FieldType.UINT),
+        FieldInfo(name="discovered_managed_object_all", type=FieldType.UINT),
+        FieldInfo(name="discovered_managed_object_box_per_second", type=FieldType.FLOAT),
+        FieldInfo(name="discovered_managed_object_periodic_per_second", type=FieldType.FLOAT),
         FieldInfo(name="discovered_interface", type="int"),
-        FieldInfo(name="discovered_links", type="int"),
-        FieldInfo(name="discovered_metrics", type="int"),
+        FieldInfo(name="discovered_links", type=FieldType.UINT),
+        FieldInfo(name="discovered_metrics", type=FieldType.UINT),
         # FieldInfo(name="Discovered Managed Object (Box)", type="int"),
         # FieldInfo(name="Discovered Managed Object (Box)", type="int"),
         # FieldInfo(name="Discovered Interface", type="int"),

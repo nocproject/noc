@@ -12,16 +12,16 @@ from typing import Optional, Iterable, Tuple, AsyncIterable
 from noc.inv.models.link import Link
 
 # NOC modules
-from .base import FieldInfo, BaseDataSource
+from .base import FieldInfo, FieldType, BaseDataSource
 
 
 class LinkedMethodStatDS(BaseDataSource):
     name = "linkedmethodstatds"
 
     fields = [
-        FieldInfo(name="pool", type="str"),
-        FieldInfo(name="method", type="str"),
-        FieldInfo(name="count", type="int"),
+        FieldInfo(name="pool"),
+        FieldInfo(name="method"),
+        FieldInfo(name="count", type=FieldType.UINT),
     ]
 
     @classmethod

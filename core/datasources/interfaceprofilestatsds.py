@@ -13,16 +13,16 @@ from noc.inv.models.interface import Interface
 from noc.inv.models.interfaceprofile import InterfaceProfile
 
 # NOC modules
-from .base import FieldInfo, BaseDataSource
+from .base import FieldInfo, FieldType, BaseDataSource
 
 
 class InterfaceProfileStatsDS(BaseDataSource):
     name = "interfaceprofilestatsds"
 
     fields = [
-        FieldInfo(name="pool", type="str"),
-        FieldInfo(name="profile", type="str"),
-        FieldInfo(name="count", type="int"),
+        FieldInfo(name="pool"),
+        FieldInfo(name="profile"),
+        FieldInfo(name="count", type=FieldType.UINT),
     ]
 
     @classmethod

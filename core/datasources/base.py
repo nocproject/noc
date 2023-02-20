@@ -6,6 +6,7 @@
 # ----------------------------------------------------------------------
 
 # Python modules
+import enum
 from dataclasses import dataclass
 from functools import partial
 from collections import defaultdict
@@ -15,12 +16,21 @@ from typing import Tuple, Union, Optional, Iterable, List, Dict, AsyncIterable
 import polars as pl
 
 
+class FieldType(enum.Enum):
+    STRING = pl.Utf8
+    INT = pl.Int64
+    UINT = pl.UInt32
+    INT32 = pl.Int32
+    FLOAT = pl.Float32
+    BOOL = pl.Boolean
+
+
 @dataclass
 class FieldInfo(object):
     name: str
     description: Optional[str] = None
     internal_name: Optional[str] = None
-    type: str = "string"
+    type: FieldType = FieldType.STRING
     is_caps: bool = False
 
 
@@ -78,7 +88,7 @@ class BaseDataSource(object):
         r = defaultdict(list)
         async for _, f_name, value in cls.iter_query(fields, *args, **kwargs):
             r[f_name].append(value)
-        return pl.DataFrame(r, columns=[c.name for c in cls.fields])
+        return pl.DataFrame(r, columns={c.name: c.type.value for c in cls.fields})
 
     @classmethod
     async def iter_row(
