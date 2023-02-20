@@ -45,7 +45,7 @@ MOS_METRICS_PIPELINE = [
 ]
 
 
-class ManagedObjectConfigDS(BaseDataSource):
+class DiscoverySummaryDS(BaseDataSource):
     name = "discoverysummary"
 
     fields = [
@@ -95,9 +95,10 @@ class ManagedObjectConfigDS(BaseDataSource):
                     r["discovered_managed_object_periodic"] = len(mos)
                 if mop.enable_box_discovery:
                     r["discovered_managed_object_box"] = len(mos)
-                if mos:
-                    #     # r["discovered_interface"] = Interface.objects.filter(managed_object__in=mos).count()
-                    r["discovered_links"] = Link.objects.filter(linked_objects__in=mos).count()
+                r["discovered_managed_object_all"] = len(mos)
+                # if mos:
+                #     #     # r["discovered_interface"] = Interface.objects.filter(managed_object__in=mos).count()
+                #     r["discovered_links"] = Link.objects.filter(linked_objects__in=mos).count()
                 if mop.report_ping_rtt:
                     r["discovered_metrics"] += 1
                 if mop.report_ping_attempts:
@@ -112,6 +113,13 @@ class ManagedObjectConfigDS(BaseDataSource):
                 yield row_num, "discovered_managed_object_periodic", r[
                     "discovered_managed_object_periodic"
                 ]
+                yield row_num, "discovered_managed_object_all", r["discovered_managed_object_all"]
                 yield row_num, "discovered_interface", r["discovered_links"]
                 yield row_num, "discovered_links", r["discovered_links"]
                 yield row_num, "discovered_metrics", r["discovered_metrics"]
+                yield row_num, "discovered_managed_object_box_per_second", (
+                    float(len(mos)) / mop.box_discovery_interval
+                ) if mop.enable_box_discovery else 0
+                yield row_num, "discovered_managed_object_periodic_per_second", (
+                    float(len(mos)) / mop.periodic_discovery_interval
+                ) if mop.enable_periodic_discovery else 0
