@@ -29,10 +29,12 @@ def test_report(report):
     connect()
     report_engine.run_report(r_params=rp, out=out)
     out.seek(0)
-    if os.name == "nt":
-        re_out = out.read().decode("utf8")
-        re_out = re_out.replace("\r\n", "\n")
-    else:
-        re_out = out.read()
+    # if os.name == "nt":
+    #     re_out = out.read().decode("utf8")
+    #     re_out = re_out.replace("\r\n", "\n")
+    # else:
+    #     re_out = out.read()
+    re_out = out.read().decode("utf8")
+    re_out = re_out.replace("\r\n", "\n")
     with open(os.path.join(path, f"{report}.csv"), "r") as f:
         assert re_out == f.read()

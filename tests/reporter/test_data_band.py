@@ -57,4 +57,6 @@ def create_band_data():
         for b2 in range(1, 5):
             cb = BandData(f"Band{b1}{b2}", bd)
             bd.add_child(cb)
+            if cb.name == "Band11":
+                cb.rows = pl.DataFrame([{"col1": 1, "col2": 2}])
     return root
