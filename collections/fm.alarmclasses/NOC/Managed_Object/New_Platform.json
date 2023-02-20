@@ -5,7 +5,6 @@
     "description": "New platform creation is denied by policy",
     "is_unique": true,
     "user_clearable": true,
-    "default_severity__name": "WARNING",
     "vars": [
         {
             "name": "path",
@@ -21,5 +20,6 @@
     "symptoms": "",
     "probable_causes": "New Platform Creation Policy in  ManagedObject Profile deny added new platform discovered on device.",
     "recommended_actions": "Go to menu Inventory -> Setup -> Platform, added it manually and restart discovery.",
-    "recover_time": 300
+    "recover_time": 300,
+    "labels": ["noc::severity::warning"]
 }

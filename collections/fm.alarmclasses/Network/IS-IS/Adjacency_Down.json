@@ -5,7 +5,6 @@
     "is_unique": true,
     "reference": ["neighbor", "interface"],
     "user_clearable": true,
-    "default_severity__name": "WARNING",
     "vars": [
         {
             "name": "interface",
@@ -50,5 +49,6 @@
                 "managed_object": "alarm.managed_object.id"
             }
         }
-    ]
+    ],
+    "labels": ["noc::severity::warning"]
 }

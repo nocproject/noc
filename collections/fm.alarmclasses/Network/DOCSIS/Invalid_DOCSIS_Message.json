@@ -4,7 +4,6 @@
     "uuid": "c3b73a9c-e6ed-47fa-a970-5765584339c2",
     "is_unique": true,
     "user_clearable": true,
-    "default_severity__name": "WARNING",
     "vars": [
         {
             "name": "interface",
@@ -23,5 +22,6 @@
     "body_template": "Invalid DOCSIS Message received from a Cable Modem{% if mac %} {{mac}},{% endif %}{% if sid %} {{sid}},{% endif %} {% if interface %}interface {{interface}}{% endif %}",
     "symptoms": "",
     "probable_causes": "A cable modem that is not DOCSIS-compliant has attempted to send an invalid DOCSIS message.",
-    "recommended_actions": "Locate the cable modem that sent this message and replace it with DOCSIS-compliant modem."
+    "recommended_actions": "Locate the cable modem that sent this message and replace it with DOCSIS-compliant modem.",
+    "labels": ["noc::severity::warning"]
 }

@@ -5,7 +5,6 @@
     "is_unique": true,
     "reference": ["name"],
     "user_clearable": true,
-    "default_severity__name": "MAJOR",
     "vars": [
         {
             "name": "name",
@@ -20,5 +19,6 @@
     "notification_delay": 30,
     "control_time0": 300,
     "control_time1": 300,
-    "control_timeN": 300
+    "control_timeN": 300,
+    "labels": ["noc::severity::major"]
 }

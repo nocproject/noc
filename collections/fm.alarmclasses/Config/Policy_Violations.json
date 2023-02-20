@@ -7,7 +7,6 @@
     "reference": [],
     "is_ephemeral": false,
     "user_clearable": true,
-    "default_severity__name": "WARNING",
     "vars": [
 
     ],
@@ -16,5 +15,6 @@
     "symptoms": "",
     "probable_causes": "New changes or rolling back previous configuration.",
     "recommended_actions": "Go to the hardware and analyze the configuration.",
-    "recover_time": 300
+    "recover_time": 300,
+    "labels": ["noc::severity::warning"]
 }

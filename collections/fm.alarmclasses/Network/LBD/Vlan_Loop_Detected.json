@@ -6,7 +6,6 @@
     "reference": ["interface", "vlan"],
     "is_ephemeral": false,
     "user_clearable": true,
-    "default_severity__name": "WARNING",
     "components": [
         {
             "name": "interface",
@@ -60,5 +59,6 @@
     "symptoms": "Lost traffic on specific vlan",
     "probable_causes": "",
     "recommended_actions": "Check topology or use STP to avoid loops",
-    "recover_time": 300
+    "recover_time": 300,
+    "labels": ["noc::severity::warning"]
 }

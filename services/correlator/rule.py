@@ -31,7 +31,6 @@ class Rule(object):
         self.c_defaults: Dict[str, Any] = {}  # Static AlarmClass variables
         self.d_defaults: Dict[str, Any] = {}  # Dynamic AlarmClass variables
         if self.alarm_class:
-            self.severity = self.alarm_class.default_severity.severity
             self.unique: bool = self.alarm_class.is_unique
             a_vars: Set[str] = {v.name for v in self.alarm_class.vars}
             e_vars: Set[str] = {v.name for v in self.event_class.vars}

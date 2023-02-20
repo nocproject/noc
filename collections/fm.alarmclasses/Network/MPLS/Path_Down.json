@@ -5,7 +5,6 @@
     "is_unique": true,
     "reference": ["name"],
     "user_clearable": true,
-    "default_severity__name": "WARNING",
     "vars": [
         {
             "name": "name",
@@ -20,5 +19,6 @@
     "body_template": "MPLS Path Down: {{name}}{% if reason %} ({{reason}}){% endif %}",
     "symptoms": "",
     "probable_causes": "",
-    "recommended_actions": ""
+    "recommended_actions": "",
+    "labels": ["noc::severity::warning"]
 }

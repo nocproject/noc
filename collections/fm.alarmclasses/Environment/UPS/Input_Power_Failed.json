@@ -4,7 +4,6 @@
     "uuid": "c3afd86c-dee6-4cdf-9daa-8b78222e7d12",
     "is_unique": true,
     "user_clearable": true,
-    "default_severity__name": "CRITICAL",
     "vars": [
 
     ],
@@ -12,5 +11,6 @@
     "body_template": "Input power failed, going into on battery mode",
     "symptoms": "",
     "probable_causes": "",
-    "recommended_actions": ""
+    "recommended_actions": "",
+    "labels": ["noc::severity::critical"]
 }

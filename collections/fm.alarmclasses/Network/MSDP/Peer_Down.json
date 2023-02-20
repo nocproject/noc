@@ -5,7 +5,6 @@
     "is_unique": true,
     "reference": ["peer"],
     "user_clearable": true,
-    "default_severity__name": "WARNING",
     "vars": [
         {
             "name": "peer",
@@ -24,5 +23,6 @@
     "body_template": "MSDP peer {{peer}} DOWN.{% if vrf %} VRF {{vrf}}.{% endif %}{% if reason %}\n Reason: {{reason}}.{% endif %}",
     "symptoms": "",
     "probable_causes": "",
-    "recommended_actions": "Check msdp peer aviability, check msdp peer configuration changes"
+    "recommended_actions": "Check msdp peer aviability, check msdp peer configuration changes",
+    "labels": ["noc::severity::warning"]
 }

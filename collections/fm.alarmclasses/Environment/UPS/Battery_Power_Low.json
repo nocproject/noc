@@ -4,7 +4,6 @@
     "uuid": "1cc92f54-813d-4038-a8cc-8303538f026b",
     "is_unique": true,
     "user_clearable": true,
-    "default_severity__name": "CRITICAL",
     "vars": [
 
     ],
@@ -12,5 +11,6 @@
     "body_template": "Battery power low",
     "symptoms": "",
     "probable_causes": "",
-    "recommended_actions": "Change old battery"
+    "recommended_actions": "Change old battery",
+    "labels": ["noc::severity::critical"]
 }

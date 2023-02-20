@@ -5,7 +5,6 @@
     "description": "Device refused CLI connection",
     "is_unique": true,
     "user_clearable": true,
-    "default_severity__name": "WARNING",
     "vars": [
         {
             "name": "path",
@@ -20,5 +19,6 @@
     "body_template": "Managed object refuse connection {{alarm.managed_object.name}} (IP: {{alarm.managed_object.address}}). All SA tasks to this object are temporary suspended",
     "symptoms": "Connection refused when setup session with managed object",
     "probable_causes": "Firewall or ACL settings on device or device busy",
-    "recommended_actions": "Check ACL settings on device and it availability"
+    "recommended_actions": "Check ACL settings on device and it availability",
+    "labels": ["noc::severity::warning"]
 }

@@ -5,7 +5,6 @@
     "is_unique": true,
     "reference": ["peer"],
     "user_clearable": true,
-    "default_severity__name": "WARNING",
     "vars": [
         {
             "name": "peer",
@@ -20,5 +19,6 @@
     "body_template": "CEF Peer {{peer}} reason failed: {{reason}}",
     "symptoms": "",
     "probable_causes": "",
-    "recommended_actions": ""
+    "recommended_actions": "",
+    "labels": ["noc::severity::warning"]
 }

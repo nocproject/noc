@@ -169,6 +169,12 @@ Ext.define("NOC.fm.alarmrule.Application", {
                             })
                         },
                         {
+                            text: __("Severity"),
+                            dataIndex: "severity",
+                            editor: {
+                                xtype: "numberfield",
+                            }},
+                        {
                             text: __("Notification Group"),
                             dataIndex: "notification_group",
                             editor: "main.notificationgroup.LookupField",
