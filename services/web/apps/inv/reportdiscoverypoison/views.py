@@ -1,7 +1,7 @@
 # ---------------------------------------------------------------------
 # inv.reportdiscovery
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2016 The NOC Project
+# Copyright (C) 2007-2023 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -33,7 +33,6 @@ class ReportDiscoveryIDPoisonApplication(SimpleReport):
     form = ReportForm
 
     def get_data(self, request, pool=None, filter_dup_macs=False, **kwargs):
-
         data = []
         # Find object with equal ID
         find = DiscoveryID._get_collection().aggregate(
@@ -42,6 +41,8 @@ class ReportDiscoveryIDPoisonApplication(SimpleReport):
                 {"$group": {"_id": "$macs", "count": {"$sum": 1}, "mo": {"$push": "$object"}}},
                 {"$match": {"count": {"$gt": 1}}},
                 {"$group": {"_id": "$mo", "macs": {"$push": "$_id"}}},
+                {"$project": {"macs": 1, "smacs": {"$arrayElemAt": ["$macs", 0]}}},
+                {"$sort": {"smacs": 1}},
             ],
             allowDiskUse=True,
         )
@@ -54,7 +55,7 @@ class ReportDiscoveryIDPoisonApplication(SimpleReport):
             data_c = []
             pool_c = set()
             reason = "Other"
-            for mo in ManagedObject.objects.filter(id__in=f["_id"]):
+            for mo in sorted(ManagedObject.objects.filter(id__in=f["_id"]), key=lambda x: x.name):
                 pool_c.add(mo.pool.name)
                 data_c.append((mo.name, mo.address, mo.profile.name, mo.pool.name, mo.is_managed))
             if len(data_c) > 0:
