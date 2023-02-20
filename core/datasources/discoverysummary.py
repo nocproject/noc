@@ -55,7 +55,7 @@ class DiscoverySummaryDS(BaseDataSource):
         FieldInfo(name="discovered_managed_object_all", type=FieldType.UINT),
         FieldInfo(name="discovered_managed_object_box_per_second", type=FieldType.FLOAT),
         FieldInfo(name="discovered_managed_object_periodic_per_second", type=FieldType.FLOAT),
-        FieldInfo(name="discovered_interface", type="int"),
+        FieldInfo(name="discovered_interface", type=FieldType.UINT),
         FieldInfo(name="discovered_links", type=FieldType.UINT),
         FieldInfo(name="discovered_metrics", type=FieldType.UINT),
         # FieldInfo(name="Discovered Managed Object (Box)", type="int"),
