@@ -4,7 +4,6 @@
     "uuid": "16c2b30a-4378-40ae-889f-c78e09f5c335",
     "is_unique": true,
     "user_clearable": true,
-    "default_severity__name": "WARNING",
     "vars": [
         {
             "name": "config",
@@ -35,5 +34,6 @@
                 "managed_object": "alarm.managed_object.id"
             }
         }
-    ]
+    ],
+    "labels": ["noc::severity::warning"]
 }

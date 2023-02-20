@@ -13,7 +13,6 @@ Ext.define('NOC.fm.alarmclass.Application', {
         "NOC.core.ListFormField",
         'NOC.fm.alarmclass.Model',
         'NOC.fm.alarmclass.LookupField',
-        'NOC.fm.alarmseverity.LookupField',
         "NOC.core.label.LabelField",
         'Ext.ux.form.JSONField',
         'Ext.ux.form.StringsField',
@@ -46,6 +45,12 @@ Ext.define('NOC.fm.alarmclass.Application', {
                     dataIndex: 'is_builtin',
                     renderer: NOC.render.Bool,
                     width: 30
+                },
+                {
+                    text: __("Labels"),
+                    dataIndex: "labels",
+                    renderer: NOC.render.LabelField,
+                    width: 100
                 },
                 {
                     text: __('Description'),
@@ -133,9 +138,14 @@ Ext.define('NOC.fm.alarmclass.Application', {
                             title: __('Severity'),
                             items: [
                                 {
-                                    name: 'default_severity',
-                                    xtype: 'fm.alarmseverity.LookupField',
-                                    fieldLabel: __('Default Severity')
+                                    name: "labels",
+                                    xtype: "labelfield",
+                                    fieldLabel: __("Labels"),
+                                    allowBlank: true,
+                                    uiStyle: "medium",
+                                    query: {
+                                        "enable_alarm": true
+                                    },
                                 },
                                 {
                                     name: 'is_unique',

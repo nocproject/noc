@@ -4,7 +4,6 @@
     "uuid": "d8d98bf5-3a57-48df-80c5-3e67f25f43c9",
     "is_unique": true,
     "user_clearable": true,
-    "default_severity__name": "CRITICAL",
     "vars": [
         {
             "name": "reason",
@@ -15,5 +14,6 @@
     "body_template": "TCAM entry capacity exceeded{% if reason %}: {{reason}}{% endif %}",
     "symptoms": "",
     "probable_causes": "",
-    "recommended_actions": ""
+    "recommended_actions": "",
+    "labels": ["noc::severity::critical"]
 }

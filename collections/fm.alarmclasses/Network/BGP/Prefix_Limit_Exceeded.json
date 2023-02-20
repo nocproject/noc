@@ -5,7 +5,6 @@
     "is_unique": true,
     "reference": ["peer"],
     "user_clearable": true,
-    "default_severity__name": "WARNING",
     "vars": [
         {
             "name": "peer",
@@ -24,5 +23,6 @@
     "body_template": "BGP Peer {{peer}}{%if vrf %}vrf {{vrf}}{% endif %}{% if as %} (AS{{as}}){% endif %} prefix limit exceeded",
     "symptoms": "",
     "probable_causes": "",
-    "recommended_actions": ""
+    "recommended_actions": "",
+    "labels": ["noc::severity::warning"]
 }

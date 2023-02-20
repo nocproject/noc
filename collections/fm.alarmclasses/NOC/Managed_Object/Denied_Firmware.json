@@ -5,7 +5,6 @@
     "description": "Firmware version is denied to use by policy",
     "is_unique": true,
     "user_clearable": true,
-    "default_severity__name": "WARNING",
     "vars": [
         {
             "name": "path",
@@ -21,5 +20,6 @@
     "symptoms": "",
     "probable_causes": "Installed firmware on device is denied by system policy.",
     "recommended_actions": "Update firmware on device.",
-    "recover_time": 300
+    "recover_time": 300,
+    "labels": ["noc::severity::warning"]
 }

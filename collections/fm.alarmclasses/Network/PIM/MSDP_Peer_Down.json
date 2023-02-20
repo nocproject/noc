@@ -5,7 +5,6 @@
     "is_unique": true,
     "reference": ["peer"],
     "user_clearable": true,
-    "default_severity__name": "WARNING",
     "vars": [
         {
             "name": "peer",
@@ -24,5 +23,6 @@
     "body_template": "MSDP peer {{peer}} DOWN.{% if vrf %} VRF {{vrf}}.{% endif %}{% if reason %}\n Reason: {{reason}}.{% endif %}",
     "symptoms": "Multicast flows lost",
     "probable_causes": "Link failure or protocol misconfiguration",
-    "recommended_actions": "Check links and local and neighbor router configuration"
+    "recommended_actions": "Check links and local and neighbor router configuration",
+    "labels": ["noc::severity::warning"]
 }

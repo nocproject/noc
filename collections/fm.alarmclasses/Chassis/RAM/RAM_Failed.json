@@ -5,7 +5,6 @@
     "is_unique": true,
     "reference": ["bank"],
     "user_clearable": true,
-    "default_severity__name": "CRITICAL",
     "vars": [
         {
             "name": "bank",
@@ -16,5 +15,6 @@
     "body_template": "RAM Failed {% if bank %}at bank {{bank}}{% endif %}",
     "symptoms": "From random instability to complete operation failure",
     "probable_causes": "",
-    "recommended_actions": "Replace faulty RAM module"
+    "recommended_actions": "Replace faulty RAM module",
+    "labels": ["noc::severity::critical"]
 }

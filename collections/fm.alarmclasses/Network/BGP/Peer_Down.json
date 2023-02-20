@@ -6,7 +6,6 @@
     "reference": ["peer"],
     "is_ephemeral": false,
     "user_clearable": true,
-    "default_severity__name": "WARNING",
     "components": [
         {
             "name": "peer",
@@ -60,5 +59,6 @@
     "body_template": "BGP Peer {{peer}}{%if vrf %} vrf {{vrf}}{% endif %}{% if as %} (AS{{as}}{% if description %}, {{description}}{% endif %}){% endif %} session down{%if reason %}\nReason - {{reason}}{% endif %}\n{% if local_as %}Local AS: AS{{local_as}}\nRemote AS: AS{{as}} ({{description}})\nImport Filter: {{import_filter}}\nExport Filter: {{export_filter}}{% endif %}",
     "symptoms": "",
     "probable_causes": "",
-    "recommended_actions": ""
+    "recommended_actions": "",
+    "labels": ["noc::severity::warning"]
 }

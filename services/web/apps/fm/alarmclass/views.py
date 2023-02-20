@@ -24,6 +24,3 @@ class AlarmClassApplication(ExtDocApplication):
     parent_field = "parent"
     query_fields = ["name", "description"]
     query_condition = "icontains"
-
-    def field_row_class(self, o):
-        return o.default_severity.style.css_class_name

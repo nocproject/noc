@@ -5,7 +5,6 @@
     "description": "Base Alarm Class for Periodic discovery alarms.",
     "is_unique": true,
     "user_clearable": true,
-    "default_severity__name": "WARNING",
     "vars": [
 
     ],
@@ -14,5 +13,6 @@
     "symptoms": "",
     "probable_causes": "Various errors connecting to the equipment",
     "recommended_actions": "Connection error - check telnet/ssh port availability on device\nAuthentication error - check allow access to device with credentials\nSNMP error - check SNMP community settings on device",
-    "recover_time": 300
+    "recover_time": 300,
+    "labels": ["noc::severity::warning"]
 }

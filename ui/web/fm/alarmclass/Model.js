@@ -76,10 +76,6 @@ Ext.define("NOC.fm.alarmclass.Model", {
             type: "int"
         },
         {
-            name: "default_severity",
-            type: "string"
-        },
-        {
             name: "reference",
             type: "auto",
         },
@@ -120,6 +116,10 @@ Ext.define("NOC.fm.alarmclass.Model", {
         {
             name: "recover_time",
             type: "int"
+        },
+        {
+            name: "labels",
+            type: "auto"
         },
         {
             name: "row_class",
