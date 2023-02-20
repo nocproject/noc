@@ -1,0 +1,8 @@
+{
+    "name": "CPE | Vendor",
+    "$collection": "inv.capabilities",
+    "uuid": "0a2d11b0-731d-4015-b48c-02634b714b39",
+    "description": "CPE Vendor",
+    "type": "str",
+    "card_template": null
+}

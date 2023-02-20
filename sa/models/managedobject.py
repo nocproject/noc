@@ -228,6 +228,7 @@ logger = logging.getLogger(__name__)
     delete=[
         ("sa.ManagedObjectAttribute", "managed_object"),
         ("sa.CPEStatus", "managed_object"),
+        ("inv.CPE", "controller"),
         ("inv.MACDB", "managed_object"),
         ("sa.ServiceSummary", "managed_object"),
         ("inv.DiscoveryID", "object"),
@@ -346,16 +347,12 @@ class ManagedObject(NOCModel):
     config = GridVCSField("config")
     # Default VRF
     vrf = ForeignKey("ip.VRF", verbose_name="VRF", blank=True, null=True, on_delete=CASCADE)
+    # Reference to CPE
+    cpe_id = DocumentReferenceField("inv.CPE", null=True, blank=True)
     # Reference to controller, when object is CPE
     controller = ForeignKey(
         "self", verbose_name="Controller", blank=True, null=True, on_delete=CASCADE
     )
-    # CPE id on given controller
-    local_cpe_id = CharField("Local CPE ID", max_length=128, null=True, blank=True)
-    # Globally unique CPE id
-    global_cpe_id = CharField("Global CPE ID", max_length=128, null=True, blank=True)
-    # Last seen date, for CPE
-    last_seen = DateTimeField("Last Seen", blank=True, null=True)
     # Stencils
     shape = CharField(
         "Shape", blank=True, null=True, choices=stencil_registry.choices, max_length=128
@@ -2930,7 +2927,7 @@ class ManagedObject(NOCModel):
                 continue  # No metrics configured
             metrics: List[MetricItem] = []
             for mc in i_profile.metrics:
-                if not mc.interval and not d_interval:
+                if not mc.interval and not i_profile.metrics_default_interval:
                     continue
                 # Check metric collected policy
                 if not i_profile.allow_collected_metric(
@@ -2943,7 +2940,7 @@ class ManagedObject(NOCModel):
                     scope_name=mc.metric_type.scope.table_name,
                     is_stored=mc.is_stored,
                     is_compose=mc.metric_type.is_compose,
-                    interval=mc.interval or d_interval,
+                    interval=mc.interval or i_profile.metrics_default_interval,
                 )
                 if mi not in metrics:
                     metrics.append(mi)
@@ -2956,7 +2953,7 @@ class ManagedObject(NOCModel):
                             scope_name=mc.metric_type.scope.table_name,
                             is_stored=True,
                             is_compose=False,
-                            interval=mc.interval or d_interval,
+                            interval=mc.interval or i_profile.metrics_default_interval,
                         )
                         if mi not in metrics:
                             metrics.append(mi)

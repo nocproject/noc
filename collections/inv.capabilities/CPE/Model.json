@@ -1,0 +1,8 @@
+{
+    "name": "CPE | Model",
+    "$collection": "inv.capabilities",
+    "uuid": "30aca8f1-37fa-4622-ada0-1dab542d579d",
+    "description": "CPE device Model (part no)",
+    "type": "str",
+    "card_template": null
+}

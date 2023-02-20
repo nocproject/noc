@@ -390,11 +390,6 @@ Ext.define("NOC.sa.managedobjectprofile.Model", {
             defaultValue: false
         },
         {
-            name: "enable_box_discovery_cpestatus",
-            type: "boolean",
-            defaultValue: false
-        },
-        {
             name: "enable_box_discovery_alarms",
             type: "boolean",
             defaultValue: false
@@ -501,20 +496,6 @@ Ext.define("NOC.sa.managedobjectprofile.Model", {
             defaultValue: false
         },
         {
-            name: "cpe_segment_policy",
-            type: "string",
-            defaultValue: "C"
-        },
-        {
-            name: "cpe_cooldown",
-            type: "int",
-            defaultValue: 0
-        },
-        {
-            name: "cpe_profile",
-            type: "int"
-        },
-        {
             name: "box_discovery_telemetry_sample",
             type: "int",
             defaultValue: 0
@@ -523,20 +504,6 @@ Ext.define("NOC.sa.managedobjectprofile.Model", {
             name: "periodic_discovery_telemetry_sample",
             type: "int",
             defaultValue: 0
-        },
-        {
-            name: "cpe_profile__label",
-            type: "string",
-            persist: false
-        },
-        {
-            name: "cpe_auth_profile",
-            type: "string"
-        },
-        {
-            name: "cpe_auth_profile__label",
-            type: "string",
-            persist: false
         },
         {
             name: "caps_profile",

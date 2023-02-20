@@ -319,6 +319,8 @@ class Script(BaseScript, metaclass=MetricScriptBase):
         self.metric_labels: Dict[str, List[MetricConfig]] = {}
         #
         self.sla_metrics: Dict[Tuple[str, str], int] = {}
+        #
+        self.cpe_metrics: Dict[Tuple[str, str], int] = {}
         # metric type -> [metric config]
         self.metric_configs: Dict[str, List[MetricConfig]] = defaultdict(list)
 
@@ -358,6 +360,7 @@ class Script(BaseScript, metaclass=MetricScriptBase):
         """
         # Generate list of MetricConfig from input parameters
         sla_metrics: List[MetricCollectorConfig] = []
+        cpe_metrics: List[MetricCollectorConfig] = []
         sensor_metrics: List[MetricCollectorConfig] = []
         object_metrics: List[MetricConfig] = []
         if collected:
@@ -371,6 +374,12 @@ class Script(BaseScript, metaclass=MetricScriptBase):
                     sla_metrics.append(coll)
                     for m in coll.metrics:
                         self.sla_metrics[(coll.sla_probe, m)] = seq_id
+                        seq_id += 1
+                    continue
+                elif coll.collector == "cpe":
+                    cpe_metrics.append(coll)
+                    for m in coll.metrics:
+                        self.cpe_metrics[(coll.cpe, m)] = seq_id
                         seq_id += 1
                     continue
                 hints = coll.get_hints()
@@ -446,6 +455,8 @@ class Script(BaseScript, metaclass=MetricScriptBase):
         # Apply sla metrics
         if sla_metrics:
             self.collect_sla_metrics(sla_metrics)
+        if cpe_metrics:
+            self.collect_cpe_metrics(cpe_metrics)
         # Apply custom metric collection processes
         self.collect_profile_metrics(object_metrics)
         return self.get_metrics()
@@ -490,6 +501,9 @@ class Script(BaseScript, metaclass=MetricScriptBase):
                     data[mm]["sla_probe"] = rr["sla_probe"]
                 if rr.get("service"):
                     data[mm]["service"] = rr["service"]
+                if rr.get("cpe"):
+                    # For CPE used ID as ManagedObject
+                    data[mm]["managed_object"] = rr["cpe"]
                 if "time_delta" in s_data[data_mt]:
                     data[mm]["time_delta"] = s_data[data_mt]["time_delta"]
             data[mm][field_name] = rr["value"]
@@ -657,6 +671,7 @@ class Script(BaseScript, metaclass=MetricScriptBase):
         multi: bool = False,
         sensor: Optional[int] = None,
         sla_probe: Optional[int] = None,
+        cpe: Optional[int] = None,
         service: Optional[int] = None,
     ):
         """
@@ -685,6 +700,7 @@ class Script(BaseScript, metaclass=MetricScriptBase):
             When False - only first call with composite labels for same labels will be returned
         :param sensor: Sensor Id
         :param sla_probe: SLA Probe Id
+        :param cpe: CPE Id
         :param service: Service Id
         """
         if value == SNMP_OVERLOAD_VALUE:
@@ -728,6 +744,7 @@ class Script(BaseScript, metaclass=MetricScriptBase):
                 "scale": scale,
                 "sensor": sensor,
                 "sla_probe": sla_probe,
+                "cpe": cpe,
                 "service": service,
             }
         ]
@@ -798,6 +815,14 @@ class Script(BaseScript, metaclass=MetricScriptBase):
     def collect_sla_metrics(self, metrics: List[MetricCollectorConfig]):
         """
         Collect for SLA metrics method. Replaced by profile
+        :param metrics:
+        :return:
+        """
+        ...
+
+    def collect_cpe_metrics(self, metrics: List[MetricCollectorConfig]):
+        """
+        Collect for CPE metrics method. Replaced by profile
         :param metrics:
         :return:
         """

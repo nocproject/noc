@@ -41,7 +41,7 @@ class IGetMetrics(BaseInterface):
     )
     collected = DictListParameter(
         attrs={
-            # "sla", "sensor", "managed_object"
+            # "cpe", "sla", "sensor", "managed_object"
             "collector": StringParameter(default="managed_object"),
             # List Metric type for collected
             "metrics": StringListParameter(),
@@ -54,6 +54,7 @@ class IGetMetrics(BaseInterface):
             # Collector field id
             "sensor": IntParameter(required=False),
             "sla_probe": IntParameter(required=False),
+            "cpe": IntParameter(required=False),
         },
         required=False,
     )

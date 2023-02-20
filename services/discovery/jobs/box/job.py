@@ -44,7 +44,6 @@ from .vpn import VPNCheck
 from .prefix import PrefixCheck
 from .address import AddressCheck
 from .segmentation import SegmentationCheck
-from ..periodic.cpestatus import CPEStatusCheck
 from .ifdesc import IfDescCheck
 from ..periodic.alarms import AlarmsCheck
 from ..periodic.diagnostic import DiagnosticCheck
@@ -117,8 +116,6 @@ class BoxDiscoveryJob(MODiscoveryJob):
             NRIServiceCheck(self).run()
         if self.object.object_profile.enable_box_discovery_cpe:
             CPECheck(self).run()
-        if self.object.object_profile.enable_box_discovery_cpestatus:
-            CPEStatusCheck(self).run()
         if self.object.object_profile.enable_box_discovery_alarms:
             AlarmsCheck(self).run()
         if self.object.object_profile.enable_box_discovery_mac:

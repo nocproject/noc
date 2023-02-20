@@ -109,7 +109,7 @@ m_valid = DictListParameter(
     attrs={
         "metric_type": ObjectIdParameter(required=True),
         "is_stored": BooleanParameter(default=True),
-        "interval": IntParameter(min_value=0, default=300),
+        "interval": IntParameter(min_value=0, required=False),
     }
 )
 
@@ -125,7 +125,7 @@ id_lock = Lock()
 @on_delete_check(
     check=[
         ("sa.ManagedObject", "object_profile"),
-        ("sa.ManagedObjectProfile", "cpe_profile"),
+        ("inv.CPEProfile", "object_profile"),
     ],
     clean_lazy_labels="managedobjectprofile",
 )
@@ -317,8 +317,6 @@ class ManagedObjectProfile(NOCModel):
     enable_box_discovery_hk = models.BooleanField(default=False)
     # Enable Alarms
     enable_box_discovery_alarms = models.BooleanField(default=False)
-    # Enable CPE status
-    enable_box_discovery_cpestatus = models.BooleanField(default=False)
     # Enable Box CPE status policy
     box_discovery_cpestatus_policy = models.CharField(
         _("CPE Status Policy"),
@@ -368,20 +366,6 @@ class ManagedObjectProfile(NOCModel):
     #
     clear_links_on_platform_change = models.BooleanField(default=False)
     clear_links_on_serial_change = models.BooleanField(default=False)
-    # CPE discovery settings
-    cpe_segment_policy = models.CharField(
-        _("CPE Segment Policy"),
-        max_length=1,
-        choices=[("C", "From controller"), ("L", "From linked object")],
-        default="C",
-    )
-    cpe_cooldown = models.IntegerField(_("CPE cooldown, days"), default=0)
-    cpe_profile = models.ForeignKey(
-        "self", verbose_name="Object Profile", blank=True, null=True, on_delete=models.CASCADE
-    )
-    cpe_auth_profile = models.ForeignKey(
-        AuthProfile, verbose_name="Auth Profile", null=True, blank=True, on_delete=models.CASCADE
-    )
     #
     hk_handler = DocumentReferenceField(Handler, null=True, blank=True)
     #
@@ -962,7 +946,7 @@ def update_diagnostics_alarms(profile_id, box_changed, periodic_changed, alarm_p
     def iter_objects() -> Tuple[int, bool, str, Dict[str, str], bool, bool]:
         pool_cache = cachetools.LRUCache(maxsize=200)
         pool_cache.__missing__ = lambda x: Pool.objects.get(id=x)
-        for (o_id, is_managed, pool_id, fm_pool_id, diagnostics, box_alarm, periodic_alarm,) in (
+        for o_id, is_managed, pool_id, fm_pool_id, diagnostics, box_alarm, periodic_alarm in (
             ManagedObject.objects.filter(is_managed=True, object_profile=profile_id)
             .filter(
                 d_Q(diagnostics__CLI__state=DiagnosticState.failed.value)

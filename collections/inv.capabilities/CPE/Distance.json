@@ -1,0 +1,8 @@
+{
+    "name": "CPE | Distance",
+    "$collection": "inv.capabilities",
+    "uuid": "448e58f2-f6e3-4305-b776-716208bf78f9",
+    "description": "Distance to CPE from controller",
+    "type": "float",
+    "card_template": null
+}
