@@ -77,7 +77,7 @@ class Command(BaseCommand):
             r += [", ".join(format_interface(li) for li in i[mo])]
         link = " --- ".join(r)
         if show_method:
-            link += " [%s]" % link.discovery_method
+            link += f" [{li.discovery_method}]"
         self.stdout.write(link)
 
     def handle_show(self, *args, **options):
