@@ -40,6 +40,14 @@ def test_find_band_recursively():
     assert "Band1.Band11" == band11.full_name
 
 
+def test_get_band_data():
+    root = create_band_data()
+
+    band11 = root.find_band_recursively("Band11")
+    d_band = root.get_data_band()
+    assert band11 is d_band
+
+
 def create_band_data():
     root = BandData(BandData.ROOT_BAND_NAME)
 

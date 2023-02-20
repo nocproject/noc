@@ -8,12 +8,22 @@
 # Python modules
 import csv
 import os
-from typing import Dict
+from typing import Dict, List, Any, Optional, Tuple
 from io import StringIO
+
+# Third-party modules
+from jinja2 import Template as Jinja2Template
 
 # NOC modules
 from .base import DataFormatter
-from ..types import OutputType
+from ..types import OutputType, BandFormat
+from noc.services.web.base.simplereport import (
+    Report,
+    TextSection,
+    TableSection,
+    SectionRow,
+    TableColumn,
+)
 
 
 class TableFormatter(DataFormatter):
@@ -22,40 +32,92 @@ class TableFormatter(DataFormatter):
 
         :return:
         """
+        report = Report()
+        rband_format = self.get_band_format(self.root_band.name)
+        report.append_section(
+            TextSection(title=rband_format.title_template if rband_format else "")
+        )
+        columns, fields = self.get_columns()
+        report.append_section(
+            TableSection(
+                columns=list(columns),
+                data=self.get_report_data(fields),
+                enumerate=False,
+            )
+        )
         if self.report_template.output_type == OutputType.CSV:
-            self.render_csv(delimiter=",")
+            r = report.to_csv(delimiter=",")
         elif self.report_template.output_type == OutputType.SSV:
-            self.render_csv()
+            r = report.to_csv(delimiter=";")
+        elif self.report_template.output_type == OutputType.HTML:
+            r = report.to_html()
+        self.output_stream.write(r.encode("utf8"))
 
-    def get_fields(self, rows=None) -> Dict[str, str]:
+    def get_report_data(self, columns: List[str] = None) -> List[Any]:
         """
-        Return field_name -> field header map
-        :param rows:
+        Convert Report Band to Report Data Section
         :return:
         """
-        r = {}
-        if not self.report_template.columns_format:
-            return {fn: fn for fn in rows.columns}
-        for c_name, c_format in self.report_template.columns_format.items():
-            r[c_name] = c_format.title or c_name
+        r = []
+        for rb in self.root_band.iter_all_bands():
+            # Section Row
+            if rb.parent:  # Section
+                bf = self.get_band_format(rb.name)
+                if bf and bf.title_template:
+                    r.append(SectionRow(self.get_title(rb, bf.title_template)))
+            # Out data
+            if not rb.has_children and rb.rows is not None and not rb.rows.is_empty():
+                row_columns = columns or rb.rows.columns
+                for row in rb.rows.to_dicts():
+                    r.append([row.get(c, "") for c in row_columns])
         return r
 
-    def render_csv(self, delimiter: str = ";"):
+    def get_band_format(self, name: str) -> Optional[BandFormat]:
+        """
+
+        :return:
+        """
+        if not self.report_template.bands_format or name not in self.report_template.bands_format:
+            return
+        return self.report_template.bands_format[name]
+
+    def get_columns(self) -> Tuple[List[Any], Optional[List[str]]]:
+        """
+        Return columns format and fields list
+        :return:
+        """
+        # Try Root config first
+        band_format = self.get_band_format(self.root_band.name)
         fields = None
-        for rb in self.root_band.iter_all_bands():
-            if rb.rows is None or rb.rows.is_empty():
-                continue
-            if not rb.children_bands:
-                if not fields:
-                    fields = self.get_fields(rb.rows)
-                    csv_header = delimiter.join(fields[ll] for ll in fields) + os.linesep
-                    self.output_stream.write(csv_header.encode("utf8"))
-                if rb.parent and not rb.parent.is_root:  # Section
-                    self.output_stream.write(f"{rb.parent.title}{os.linesep}".encode("utf8"))
-                rb.rows.write_csv(
-                    # header=[self.HEADER_ROW.get(cc, cc) for cc in out_columns],
-                    file=self.output_stream,
-                    sep=delimiter,
-                    quote='"',
-                    has_header=False,
-                )
+        # Try DataBand
+        if not band_format or not band_format.columns:
+            band = self.root_band.get_data_band()
+            band_format = self.get_band_format(band.name)
+            fields = [c.name for c in band_format.columns] if band_format else None
+        if not band_format:
+            return ([fn for fn in band.rows.columns],) * 2
+        columns = []
+        for c in band_format.columns:
+            if c.format_type or c.total:
+                columns += [
+                    TableColumn(
+                        c.title or "",
+                        align=c.align.name.lower(),
+                        format=c.format_type,
+                        total=c.total,
+                        total_label=c.total_label,
+                    )
+                ]
+            else:
+                columns += [c.title or ""]
+        return columns, fields
+
+    @staticmethod
+    def get_title(band, template: Optional[str] = None) -> str:
+        """
+        Render Band Title if setting template
+        :return:
+        """
+        if not template:
+            return band.name
+        return Jinja2Template(template).render(band.get_data())

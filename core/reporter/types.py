@@ -30,7 +30,7 @@ class ColumnAlign(enum.Enum):
     LEFT = 1
     RIGHT = 2
     CENTER = 3
-    MASK = 3
+    MASK = 4
 
 
 @dataclass
@@ -82,9 +82,13 @@ class ColumnFormat(object):
 
     name: str
     title: Optional[str] = None
-    align: ColumnAlign = ColumnAlign.LEFT
+    align: ColumnAlign = 1
     format_type: Optional[str] = None
-    has_total: bool = False  # Calculate summary stat
+    total: str = None  # Calculate summary stat
+    total_label: str = "Total"
+
+    def __post_init__(self):
+        self.align = ColumnAlign(self.align)
 
 
 @dataclass

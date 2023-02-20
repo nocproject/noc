@@ -1,0 +1,58 @@
+name: inv.reportdiscovery
+templates:
+  DEFAULT:
+    code: DEFAULT
+    formatter: table
+    output_type: html
+    bands_format:
+      Root:
+        title_template: Discovery Summary
+        columns:
+          - name: name
+            title:
+          - name: count
+            title: Count
+            align: 2
+            format_type: integer
+            total: sum
+      managed_object:
+        title_template: Managed Objects
+      interfaces:
+        title_template: Interfaces
+      links:
+        title_template: Links
+      jobs_summary:
+        title_template: Discovery jobs summary
+      jobs_per_seconds:
+        title_template: Jobs per second
+
+root_band:
+  name: Root
+  children:
+    - name: header
+    - name: managed_object
+      queries:
+        - name: q1
+          query: root_band.rows.groupby(by='profile').agg([pl.sum('discovered_managed_object_all').alias('count')]).sort(['count', 'profile'], reverse=[True, False])
+    - name: interfaces
+      queries:
+        - name: q2
+          datasource: interfaceprofilestatsds
+          query: ds.select(['profile', 'count']).sort('count', reverse=True)
+    - name: links
+      queries:
+        - name: q3
+          datasource: linkedmethodstatds
+          query: ds.select(['method', 'count']).sort('count', reverse=True)
+    - name: jobs_summary
+      queries:
+        - name: q4
+          query: root_band.rows.select([pl.col('discovered_managed_object_box').alias('Box'), pl.col('discovered_managed_object_periodic').alias('Periodic')]).sum().transpose(include_header=True)
+    - name: jobs_per_seconds
+      queries:
+        - name: q5
+          query: root_band.rows.select([pl.col('discovered_managed_object_box_per_second').alias('Box').sum().round(4), pl.col('discovered_managed_object_periodic_per_second').alias('Periodic').sum().round(4)]).transpose(include_header=True)
+      orientation: H
+  queries:
+    - name: discovery
+      datasource: discoverysummary
