@@ -57,7 +57,6 @@ class InterfacesStatusStatDS(BaseDataSource):
     async def iter_query(
         cls, fields: Optional[Iterable[str]] = None, *args, **kwargs
     ) -> AsyncIterable[Tuple[str, str]]:
-
         match = {"type": "physical"}
         query_fields = {ff.name: None for ff in cls.fields if not fields or ff.name in fields}
         row_num = 0
