@@ -97,12 +97,11 @@ class ReportEngine(object):
         rows: Optional[pl.DataFrame] = self.get_rows(
             report_band.queries, root_band.get_data(), root_band=root
         )
-        if not report_band.children:
+        if not report_band.has_children:
             band = BandData(
                 report_band.name,
                 root_band,
                 report_band.orientation,
-                title_template=report_band.title_template,
             )
             band.rows = rows
             yield band
@@ -112,7 +111,6 @@ class ReportEngine(object):
                 report_band.name,
                 root_band,
                 report_band.orientation,
-                title_template=report_band.title_template,
             )
             band.set_data(d)
             yield band
@@ -139,14 +137,15 @@ class ReportEngine(object):
                 # Fill parent DataBand children row
                 for c in bd_parent.parent.get_children_by_name(rb.parent.name):
                     for band in self.iter_bands_data(rb, c, root):
-                        bd_parent.add_child(band)
+                        c.add_child(band)
                 continue
             for band in self.iter_bands_data(rb, bd_parent, root):
                 bd_parent.add_child(band)
         return root
 
+    @classmethod
     def get_rows(
-        self, queries: List[ReportQuery], ctx: Dict[str, Any], root_band: Optional[BandData] = None
+        cls, queries: List[ReportQuery], ctx: Dict[str, Any], root_band: Optional[BandData] = None
     ) -> Optional[pl.DataFrame]:
         """
         Getting Band rows
@@ -163,7 +162,7 @@ class ReportEngine(object):
             if query.json:
                 data = pl.DataFrame(orjson.loads(query.json))
             if query.datasource:
-                data = self.query_datasource(query, ctx)
+                data = cls.query_datasource(query, ctx)
             if query.query:
                 logger.debug("Execute query: %s; Context: %s", query.query, ctx)
                 data = eval(
@@ -180,7 +179,8 @@ class ReportEngine(object):
             rows = data
         return rows
 
-    def query_datasource(self, query: ReportQuery, ctx: Dict[str, Any]) -> Optional[pl.DataFrame]:
+    @classmethod
+    def query_datasource(cls, query: ReportQuery, ctx: Dict[str, Any]) -> Optional[pl.DataFrame]:
         """
         Resolve Datasource for Query
         :param query:

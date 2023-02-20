@@ -4,12 +4,14 @@ templates:
     code: DEFAULT
     formatter: table
     output_type: ssv
+    bands_format:
+      master_data:
+        title_template: '{{ mac }} {{ reason }}'
 root_band:
   name: Root
   children:
     - name: header
     - name: master_data
-      title_template: '{{ mac }} {{ reason }}'
       orientation: H
       queries:
         - name: q1

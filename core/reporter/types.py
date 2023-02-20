@@ -46,11 +46,14 @@ class ReportQuery(object):
 @dataclass
 class ReportBand(object):
     name: str
-    title_template: Optional[str] = None  # Title format for Section row
     queries: Optional[List[ReportQuery]] = None
     parent: Optional["ReportBand"] = None  # Parent Band
     orientation: BandOrientation = "H"  # Relevant only for xlsx template
     children: Optional[List["ReportBand"]] = None
+
+    @property
+    def has_children(self) -> bool:
+        return bool(self.children)
 
     def __post_init__(self):
         queries = []
@@ -68,15 +71,35 @@ class ReportBand(object):
     def iter_nester(self) -> Iterable["ReportBand"]:
         for c in self.children:
             yield c
-            yield from c.children
+            yield from c.iter_nester()
 
 
 @dataclass
 class ColumnFormat(object):
+    """
+    Format settings for column
+    """
+
+    name: str
     title: Optional[str] = None
     align: ColumnAlign = ColumnAlign.LEFT
     format_type: Optional[str] = None
     has_total: bool = False  # Calculate summary stat
+
+
+@dataclass
+class BandFormat(object):
+    """
+    Configuration for autogenerate template
+    """
+
+    title_template: Optional[str] = None  # Title format for Section row
+    columns: Optional[List[ColumnFormat]] = None  # ColumnName -> ColumnFormat
+
+    def __post_init__(self):
+        if not self.columns:
+            return
+        self.columns = [ColumnFormat(**c) for c in self.columns]
 
 
 @dataclass
@@ -86,9 +109,9 @@ class Template(object):
     # documentPath: str
     content: Optional[bytes] = None
     formatter: Optional[str] = None  # Formatter name. Or Autodetect by content
-    columns_format: Optional[
-        Dict[str, ColumnFormat]
-    ] = None  # BandName -> ColumnName -> ColumnFormat
+    bands_format: Optional[
+        Dict[str, BandFormat]
+    ] = None  # BandName -> BandFormat. For autoformat BandsData
     output_name_pattern: Optional[str] = "report.html"
     handler: Optional[str] = None  # For custom code
     custom: bool = False
@@ -99,10 +122,10 @@ class Template(object):
     def __post_init__(self):
         if not isinstance(self.output_type, OutputType):
             self.output_type = OutputType(self.output_type)
-        if not self.columns_format:
+        if not self.bands_format:
             return
-        for c_name in list(self.columns_format):
-            self.columns_format[c_name] = ColumnFormat(**self.columns_format[c_name])
+        for c_name in list(self.bands_format):
+            self.bands_format[c_name] = BandFormat(**self.bands_format[c_name])
 
 
 @dataclass

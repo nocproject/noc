@@ -11,7 +11,6 @@ from collections import defaultdict
 
 # Third-party modules
 from polars import DataFrame
-from jinja2 import Template as Jinja2Template
 
 # NOC modules
 from .types import BandOrientation, ReportField
@@ -40,15 +39,14 @@ class BandData(object):
         name: str,
         parent_band: Optional["BandData"] = None,
         orientation: BandOrientation = BandOrientation.HORIZONTAL,
-        title_template: Optional[str] = None,
+        rows=None,
     ):
         self.name = name
-        self.title_template = title_template
         self.parent = parent_band
         self.orientation = orientation
         self.data: Dict[str, Any] = {}
         self.children_bands: Dict[str, List["BandData"]] = defaultdict(list)
-        self.rows: Optional[DataFrame] = None
+        self.rows: Optional[DataFrame] = rows
         self.report_field_format: Dict[str, ReportField] = {}
 
     def __str__(self):
@@ -58,22 +56,16 @@ class BandData(object):
         return f"{self.name} ({self.parent})"
 
     @property
-    def title(self) -> str:
-        """
-        Render Band Title if setting template
-        :return:
-        """
-        if not self.title_template:
-            return self.name
-        return Jinja2Template(self.title_template).render(self.get_data())
-
-    @property
     def is_root(self) -> bool:
         """
         Return True if Root Band
         :return:
         """
         return self.name == self.ROOT_BAND_NAME
+
+    @property
+    def has_children(self) -> bool:
+        return bool(self.children_bands)
 
     def iter_children_bands(self) -> Iterable["BandData"]:
         """
@@ -161,3 +153,14 @@ class BandData(object):
             if b.name == name:
                 return b
         return None
+
+    def get_data_band(self) -> "BandData":
+        """
+        Return Leaf Band. First Band without children
+        :return:
+        """
+        if not self.has_children:
+            return self
+        for band in self.iter_all_bands():
+            if band.rows is not None and not band.has_children:
+                return band
