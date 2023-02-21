@@ -15,7 +15,7 @@ import orjson
 from pymongo.read_preferences import ReadPreference
 
 # NOC modules
-from .base import FieldInfo, BaseDataSource
+from .base import FieldInfo, FieldType, BaseDataSource
 from noc.fm.models.outage import Outage
 from noc.fm.models.reboot import Reboot
 from noc.sa.models.objectstatus import ObjectStatus
@@ -33,12 +33,12 @@ class ManagedObjectAvailabilityDS(BaseDataSource):
     name = "managedobjectavailabilityds"
 
     fields = [
-        FieldInfo(name="id", description="Object Id", type="int64"),
-        FieldInfo(name="current_avail_status", description="Avail Status", type="bool"),
-        FieldInfo(name="avail_percent", description="Availability by Percent", type="int"),
-        FieldInfo(name="downtime", description="Downtime (sec)", type="int"),
-        FieldInfo(name="down_count", description="Count outages", type="int"),
-        FieldInfo(name="reboots", description="Reboots", type="int"),
+        FieldInfo(name="id", description="Object Id", type=FieldType.UINT),
+        FieldInfo(name="current_avail_status", description="Avail Status", type=FieldType.BOOL),
+        FieldInfo(name="avail_percent", description="Availability by Percent", type=FieldType.UINT),
+        FieldInfo(name="downtime", description="Downtime (sec)", type=FieldType.UINT),
+        FieldInfo(name="down_count", description="Count outages", type=FieldType.UINT),
+        FieldInfo(name="reboots", description="Reboots", type=FieldType.UINT),
     ]
 
     @staticmethod

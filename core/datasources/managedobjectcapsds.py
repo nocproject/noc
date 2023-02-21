@@ -12,16 +12,24 @@ from typing import Optional, Iterable, AsyncIterable, Tuple
 import pandas as pd
 
 # NOC modules
-from .base import FieldInfo, BaseDataSource
+from .base import FieldInfo, FieldType, BaseDataSource
 from noc.sa.models.managedobject import ManagedObject
 from noc.inv.models.capability import Capability
+
+
+caps_dtype_map = {
+    "bool": FieldType.BOOL,
+    "str": FieldType.STRING,
+    "int": FieldType.UINT,
+    "float": FieldType.FLOAT,
+}
 
 
 def get_capabilities() -> Iterable[Tuple[str, str]]:
     for key, c_type, value in (
         Capability.objects.filter().order_by("name").scalar("id", "type", "name")
     ):
-        yield key, c_type, value
+        yield key, caps_dtype_map[c_type], value
 
 
 class ManagedObjectCapsDS(BaseDataSource):

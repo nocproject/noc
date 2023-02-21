@@ -12,7 +12,7 @@ from typing import Optional, Iterable, Dict, Any, List, Tuple, AsyncIterable
 from pymongo.read_preferences import ReadPreference
 
 # NOC modules
-from .base import FieldInfo, BaseDataSource
+from .base import FieldInfo, FieldType, BaseDataSource
 from noc.sa.models.managedobject import ManagedObject
 from noc.sa.models.authprofile import AuthProfile
 from noc.sa.models.profile import Profile
@@ -26,19 +26,26 @@ from noc.inv.models.discoveryid import DiscoveryID
 from noc.project.models.project import Project
 from noc.core.validators import is_objectid
 
+caps_dtype_map = {
+    "bool": FieldType.BOOL,
+    "str": FieldType.STRING,
+    "int": FieldType.UINT,
+    "float": FieldType.FLOAT,
+}
+
 
 def get_capabilities() -> Iterable[Tuple[str, str]]:
     for key, c_type, value in (
         Capability.objects.filter().order_by("name").scalar("id", "type", "name")
     ):
-        yield key, c_type, value
+        yield key, caps_dtype_map[c_type], value
 
 
 class ManagedObjectDS(BaseDataSource):
     name = "managedobjectds"
 
     fields = [
-        FieldInfo(name="id", description="Object Id", type="int64"),
+        FieldInfo(name="id", description="Object Id", type=FieldType.UINT),
         FieldInfo(name="name", description="Object Name"),
         FieldInfo(name="profile", description="Profile Name"),
         FieldInfo(
@@ -50,7 +57,7 @@ class ManagedObjectDS(BaseDataSource):
         FieldInfo(
             name="status",
             description="Object Admin Status",
-            type="bool",
+            type=FieldType.BOOL,
             internal_name="is_managed",
         ),
         FieldInfo(name="address", description="Object IP Address"),
@@ -110,13 +117,13 @@ class ManagedObjectDS(BaseDataSource):
             name="link_count",
             description="Object links count",
             internal_name="links",
-            type="int64",
+            type=FieldType.UINT,
         ),
         FieldInfo(
             name="physical_iface_count",
             description="Object physical interfaces",
             internal_name="DB | Interfaces",
-            type="int64",
+            type=FieldType.UINT,
             is_caps=True,
         ),
         # Oper fields
@@ -124,7 +131,6 @@ class ManagedObjectDS(BaseDataSource):
             name="avail",
             description="Object Availability Status",
             internal_name="id",
-            type="str",
         ),
     ] + [
         FieldInfo(name=c_name, type=c_type, internal_name=str(c_id), is_caps=True)

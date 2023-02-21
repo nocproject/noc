@@ -28,7 +28,7 @@ class ReportDiscoveryApplication(SimpleReport):
         j_periodic = 0
         j_periodic_sec = 0.0
         for p in ManagedObjectProfile.objects.all():
-            o_count = ManagedObject.objects.filter(object_profile=p).count()
+            o_count = ManagedObject.objects.filter(is_managed=True, object_profile=p).count()
             d += [[p.name, o_count]]
             if p.enable_box_discovery:
                 j_box += o_count
@@ -45,8 +45,8 @@ class ReportDiscoveryApplication(SimpleReport):
             n = Interface.objects.filter(profile=p).count()
             d += [[p.name, n]]
             d_count -= n
-        data += [["-", d_count]]
         data += sorted(d, key=lambda x: -x[1])
+        data += [["-", d_count]]
         # Links summary
         data += [SectionRow("Links")]
         r = Link._get_collection().aggregate(
