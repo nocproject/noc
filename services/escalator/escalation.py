@@ -40,6 +40,7 @@ from noc.core.lock.process import ProcessLock
 from noc.core.log import PrefixLoggerAdapter
 from noc.sa.models.servicesummary import SummaryItem, ObjectSummaryItem
 from noc.core.defer import call_later
+from noc.core.tt.types import EscalationContext, EscalationItem as ECtxItem
 
 
 logger = logging.getLogger(__name__)
@@ -403,22 +404,49 @@ class EscalationSequence(BaseSequence):
             self.log_alarm("Cannot find pre reason")
             metrics["escalation_tt_fail"] += 1
             return None
-        subject = esc_item.template.render_subject(**ctx)
-        body = esc_item.template.render_body(**ctx)
-        self.logger.debug("Escalation message:\nSubject: %s\n%s", subject, body)
+        # Build escalation context
+        e_ctx_items = [ECtxItem(id=mo.id, tt_id=mo.tt_system_id)]
+        items_map = {str(mo.id): self.escalation_doc.items[0]}
+        if esc_item.promote_group_tt and esc_item.promote_affected_tt:
+            for item in self.escalation_doc.items[1:]:
+                # @todo: Check escalation status for already escalated and maintenance?
+                alarm = self.alarm_ids[item.alarm]
+                if not alarm.managed_object.can_escalate(True):
+                    err = f"Cannot append object {alarm.managed_object.name} to group tt: Escalations are disabled"
+                    self.log_alarm(err)
+                    item.escalation_status = "fail"
+                    item.escalation_error = err
+                    continue
+                if alarm.managed_object.tt_system != mo.tt_system:
+                    err = f"Cannot append object {alarm.managed_object.name} to group tt: Belongs to other TT system"
+                    self.log_alarm(err)
+                    item.escalation_status = "fail"
+                    item.escalation_error = err
+                    continue
+                ei = ECtxItem(
+                    id=str(alarm.managed_object.id),
+                    tt_id=alarm.managed_object.tt_system_id,
+                )
+                e_ctx_items.append(ei)
+                items_map[alarm.managed_object.id] = item
+        e_ctx = EscalationContext(
+            queue=mo.tt_queue,
+            reason=pre_reason,
+            login=self.login,
+            timestamp=self.get_timestamp(),
+            subject=esc_item.template.render_subject(**ctx),
+            body=esc_item.template.render_body(**ctx),
+            leader=ECtxItem(id=mo.id, tt_id=mo.tt_system_id),
+            items=e_ctx_items,
+        )
+        # Render TT subject and body
+        #
+        self.logger.debug("Escalation message:\nSubject: %s\n%s", e_ctx.subject, e_ctx.body)
         self.log_alarm(f"Creating TT in system {mo.tt_system.name}")
         tts = mo.tt_system.get_system()
         try:
             try:
-                tt_id = tts.create_tt(
-                    queue=mo.tt_queue,
-                    obj=mo.tt_system_id,
-                    reason=pre_reason,
-                    subject=subject,
-                    body=body,
-                    login=self.login,
-                    timestamp=self.get_timestamp(),
-                )
+                tt_id = tts.create(e_ctx)
             except TemporaryTTError as e:
                 metrics["escalation_tt_retry"] += 1
                 self.log_alarm(f"Temporary error detected. Retry after {RETRY_TIMEOUT}s")
@@ -433,39 +461,16 @@ class EscalationSequence(BaseSequence):
             # Save to escalation context
             self.escalation_doc.tt_id = ctx["tt"]
             self.escalation_doc.leader.escalation_status = "ok"
-            # Promote to group tt
-            if tts.promote_group_tt and esc_item.promote_group_tt:
-                # Create group TT
-                self.log_alarm("Promoting to group tt")
-                gtt = tts.create_group_tt(tt_id, self.alarm.timestamp)
-                # Append affected objects
-                if esc_item.promote_affected_tt:
-                    for item in self.escalation_doc.items:
-                        # @todo: Check escalation status for already escalated and maintenance?
-                        alarm = self.alarm_ids[item.alarm]
-                        if not alarm.managed_object.can_escalate(True):
-                            err = f"Cannot append object {alarm.managed_object.name} to group tt {gtt}: Escalations are disabled"
-                            self.log_alarm(err)
-                            item.escalation_status = "fail"
-                            item.escalation_error = err
-                            continue
-                        if alarm.managed_object.tt_system != mo.tt_system:
-                            err = f"Cannot append object {alarm.managed_object.name} to group tt {gtt}: Belongs to other TT system"
-                            self.log_alarm(err)
-                            item.escalation_status = "fail"
-                            item.escalation_error = err
-                            continue
-                        self.log_alarm(
-                            f"Appending object {alarm.managed_object.name} to group tt {gtt}"
-                        )
-                        try:
-                            tts.add_to_group_tt(gtt, alarm.managed_object.tt_system_id)
-                        except TemporaryTTError as e:
-                            item.escalation_status = "temp"
-                            item.escalation_error = str(e)
-                        except TTError as e:
-                            item.escalation_status = "fail"
-                            item.escalation_error = str(e)
+            # Project result to escalation items
+            for item in e_ctx.items:
+                ei = items_map[item.id]
+                e_status = item.get_status()
+                if not e_status:
+                    self.log_alarm("Adapter malfunction. Status for {item.id} is not set.")
+                    continue
+                item.escalation_status = e_status.status
+                if e_status.msg:
+                    item.escalation_error = e_status.msg
             metrics["escalation_tt_create"] += 1
         except TTError as e:
             self.log_alarm(f"Failed to create TT: {e}")
