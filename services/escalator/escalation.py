@@ -40,7 +40,12 @@ from noc.core.lock.process import ProcessLock
 from noc.core.log import PrefixLoggerAdapter
 from noc.sa.models.servicesummary import SummaryItem, ObjectSummaryItem
 from noc.core.defer import call_later
-from noc.core.tt.types import EscalationContext, EscalationItem as ECtxItem
+from noc.core.tt.types import (
+    EscalationContext,
+    EscalationItem as ECtxItem,
+    DeescalationContext,
+    TTCommentRequest,
+)
 
 
 logger = logging.getLogger(__name__)
@@ -857,12 +862,14 @@ class DeescalationSequence(BaseSequence):
             return
         try:
             self.logger.info("Closing TT %s", self.tt_id)
-            self.tts.get_system().close_tt(
-                self.get_remote_tt_id(),
-                subject=self.subject,
-                body=self.body,
-                login=self.login,
-                queue=self.queue,
+            self.tts.get_system().close(
+                DeescalationContext(
+                    id=self.get_remote_tt_id(),
+                    subject=self.subject,
+                    body=self.body,
+                    login=self.login,
+                    queue=self.queue,
+                )
             )
             metrics["escalation_tt_close"] += 1
             self.escalation_doc.leader.deescalation_status = "ok"
@@ -893,12 +900,14 @@ class DeescalationSequence(BaseSequence):
             return
         try:
             self.logger.info("Appending comment to TT %s", self.tt_id)
-            self.tts.get_system().add_comment(
-                self.get_remote_tt_id(),
-                subject=self.subject,
-                body=self.body,
-                login=self.login,
-                queue=self.queue,
+            self.tts.get_system().comment(
+                TTCommentRequest(
+                    id=self.get_remote_tt_id(),
+                    subject=self.subject,
+                    body=self.body,
+                    login=self.login,
+                    queue=self.queue,
+                )
             )
             self.escalation_doc.leader.deescalation_status = "ok"
             metrics["escalation_tt_comment"] += 1

@@ -10,7 +10,7 @@ import logging
 from typing import Optional, List
 
 # NOC modules
-from .types import EscalationContext, TTInfo
+from .types import DeescalationContext, EscalationContext, TTInfo, TTCommentRequest
 from .error import TTError, TemporaryTTError
 
 
@@ -55,6 +55,19 @@ class BaseTTSystem(object):
         """
         return self.create_tt(ctx)
 
+    def close(self, ctx: DeescalationContext) -> None:
+        """
+        Close TT.
+
+        Args:
+            ctx: Deescalation context.
+
+        Raises:
+            TTError: on deescalation error.
+        """
+
+        self.close_tt(ctx)
+
     def create_tt(self, ctx: EscalationContext) -> str:
         """
         Create TT implemetation.
@@ -94,28 +107,26 @@ class BaseTTSystem(object):
         """
         raise NotImplementedError()
 
-    def close_tt(self, tt_id, subject=None, body=None, reason=None, login=None, queue=None):
+    def close_tt(self, ctx: DeescalationContext) -> None:
         """
-        Close TT
-        :param tt_id: TT id, as returned by create_tt
-        :param subject: Closing message subject
-        :param body: Closing message body
-        :param reason: Final reason
-        :param login: User login
-        :param queue: ticket queue
-        :returns: Boolean. True, when alarm is closed properly
-        :raises TTError:
+        Close TT implementation.
+
+        Args:
+            ctx: Deescalation context.
+
+        Raises:
+            TTError: on deescalation error.
         """
         raise NotImplementedError()
 
-    def add_comment(self, tt_id, subject=None, body=None, login=None, queue=None):
+    def comment(self, req: TTCommentRequest) -> None:
         """
-        Append comment to TT
-        :param tt_id: TT id, as returned by create_tt
-        :param subject: Closing message subject
-        :param body: Closing message body
-        :param login: User login
-        :param queue: ticket queue
-        :raises TTError:
+        Add comment to TT.
+
+        Args:
+            req: TTCommentRequest
+
+        Raises:
+            TTError: On comment error.
         """
         raise NotImplementedError()

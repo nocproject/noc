@@ -89,6 +89,27 @@ class EscalationContext(BaseModel):
         return self.items[0]
 
 
+class DeescalationContext(BaseModel):
+    """
+    Deescalation context data class.
+
+    Args:
+        id: TT id.
+        subject: Rendered message subject.
+        body: Rendered message body.
+        queue: TT system's queue to search TT
+        login: TT system's login
+        timestamp: Alarm timestamp.
+    """
+
+    id: str
+    queue: Optional[str] = None
+    login: Optional[str] = None
+    timestamp: Optional[datetime] = None
+    subject: str
+    body: str
+
+
 class TTRef(BaseModel):
     """
     External system reference.
@@ -102,12 +123,11 @@ class TTRef(BaseModel):
     description: str
 
 
-class TTComment(BaseModel):
+class TTCommentInfo(BaseModel):
     """
     Trouble Ticket comment.
     """
 
-    id: str
     ts: Optional[datetime]
     login: Optional[TTRef]
     subject: Optional[str]
@@ -133,4 +153,12 @@ class TTInfo(BaseModel):
     final_reason: Optional[TTRef] = None
     dept: Optional[TTRef] = None
     close_dept: Optional[TTRef] = None
-    comments: Optional[List[TTComment]] = None
+    comments: Optional[List[TTCommentInfo]] = None
+
+
+class TTCommentRequest(BaseModel):
+    ts: Optional[datetime]
+    login: Optional[TTRef]
+    subject: Optional[str]
+    body: str
+    reply_to: Optional[str]
