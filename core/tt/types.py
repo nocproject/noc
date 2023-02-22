@@ -1,12 +1,12 @@
 # ----------------------------------------------------------------------
 # EscalationContext
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2022, The NOC Project
+# Copyright (C) 2007-2023, The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
 # Python modules
-from typing import List, Optional, Tuple
+from typing import List, Optional
 from datetime import datetime
 
 # Third-party modules
