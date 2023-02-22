@@ -407,28 +407,27 @@ class EscalationSequence(BaseSequence):
         # Build escalation context
         e_ctx_items = [ECtxItem(id=mo.id, tt_id=mo.tt_system_id)]
         items_map = {str(mo.id): self.escalation_doc.items[0]}
-        if esc_item.promote_group_tt and esc_item.promote_affected_tt:
-            for item in self.escalation_doc.items[1:]:
-                # @todo: Check escalation status for already escalated and maintenance?
-                alarm = self.alarm_ids[item.alarm]
-                if not alarm.managed_object.can_escalate(True):
-                    err = f"Cannot append object {alarm.managed_object.name} to group tt: Escalations are disabled"
-                    self.log_alarm(err)
-                    item.escalation_status = "fail"
-                    item.escalation_error = err
-                    continue
-                if alarm.managed_object.tt_system != mo.tt_system:
-                    err = f"Cannot append object {alarm.managed_object.name} to group tt: Belongs to other TT system"
-                    self.log_alarm(err)
-                    item.escalation_status = "fail"
-                    item.escalation_error = err
-                    continue
-                ei = ECtxItem(
-                    id=str(alarm.managed_object.id),
-                    tt_id=alarm.managed_object.tt_system_id,
-                )
-                e_ctx_items.append(ei)
-                items_map[alarm.managed_object.id] = item
+        for item in self.escalation_doc.items[1:]:
+            # @todo: Check escalation status for already escalated and maintenance?
+            alarm = self.alarm_ids[item.alarm]
+            if not alarm.managed_object.can_escalate(True):
+                err = f"Cannot append object {alarm.managed_object.name} to group tt: Escalations are disabled"
+                self.log_alarm(err)
+                item.escalation_status = "fail"
+                item.escalation_error = err
+                continue
+            if alarm.managed_object.tt_system != mo.tt_system:
+                err = f"Cannot append object {alarm.managed_object.name} to group tt: Belongs to other TT system"
+                self.log_alarm(err)
+                item.escalation_status = "fail"
+                item.escalation_error = err
+                continue
+            ei = ECtxItem(
+                id=str(alarm.managed_object.id),
+                tt_id=alarm.managed_object.tt_system_id,
+            )
+            e_ctx_items.append(ei)
+            items_map[alarm.managed_object.id] = item
         e_ctx = EscalationContext(
             queue=mo.tt_queue,
             reason=pre_reason,
@@ -468,6 +467,10 @@ class EscalationSequence(BaseSequence):
                 if not e_status:
                     self.log_alarm("Adapter malfunction. Status for {item.id} is not set.")
                     continue
+                elif e_status.is_ok:
+                    self.log_alarm("{item.id} is appended successfully")
+                else:
+                    self.log_alarm("Failed to append {item.id}: {e_status.msg} ({e_status.status})")
                 item.escalation_status = e_status.status
                 if e_status.msg:
                     item.escalation_error = e_status.msg

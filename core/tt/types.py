@@ -17,6 +17,10 @@ class EscalationStatus(BaseModel):
     status: str
     msg: Optional[str] = None
 
+    def is_ok(self) -> bool:
+        """Check if status if ok."""
+        return self.status == "ok"
+
 
 class EscalationItem(BaseModel):
     """
