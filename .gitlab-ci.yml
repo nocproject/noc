@@ -68,6 +68,26 @@ flake8:
     expire_in: 7 days
   allow_failure: false
 
+ruff:
+  stage: Lint
+  image: registry.getnoc.com/infrastructure/noc-py-lint:master
+  script:
+    - set -x
+    - ruff -q --format=junit . > build/reports/ruff-junit.xml
+  only:
+    refs:
+      - merge_requests
+    changes:
+      - "*.py"
+      - "**/*.py"
+  tags:
+    - docker
+  artifacts:
+    reports:
+      junit: ./build/reports/ruff-junit.xml
+    expire_in: 7 days
+  allow_failure: false
+
 black:
   stage: Lint
   image: registry.getnoc.com/infrastructure/noc-py-lint:master

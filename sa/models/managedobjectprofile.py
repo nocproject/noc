@@ -55,7 +55,6 @@ from noc.inv.models.ifdescpatterns import IfDescPatterns
 from noc.main.models.glyph import Glyph
 from noc.core.topology.types import ShapeOverlayPosition, ShapeOverlayForm
 from noc.pm.models.metrictype import MetricType
-from .authprofile import AuthProfile
 from .capsprofile import CapsProfile
 from noc.vc.models.vlanfilter import VLANFilter
 from noc.core.service.loader import get_service

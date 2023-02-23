@@ -30,7 +30,6 @@ from django.db.models import (
     ForeignKey,
     IntegerField,
     FloatField,
-    DateTimeField,
     BigIntegerField,
     SET_NULL,
     CASCADE,
