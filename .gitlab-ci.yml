@@ -73,6 +73,7 @@ ruff:
   image: registry.getnoc.com/infrastructure/noc-py-lint:master
   script:
     - set -x
+    - mkdir -p build/reports
     - ruff -q --format=junit . > build/reports/ruff-junit.xml
   only:
     refs:
@@ -366,7 +367,6 @@ build:web:
       - build/rust/release
     expire_in: 7 days
 
-
 Build dnssync:
   stage: Build
   extends: .build_rust
@@ -411,7 +411,7 @@ upload dnssync:
     BUILD_TARGET: dnssync
   rules:
     - if: '$CI_PIPELINE_SOURCE == "schedule"'
-      when: never    
+      when: never
     - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
       changes:
         - rust/$BUILD_TARGET/*
