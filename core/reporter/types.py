@@ -1,14 +1,17 @@
 # ----------------------------------------------------------------------
 # Report Engine Base Class
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2022 The NOC Project
+# Copyright (C) 2007-2023 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
 # Python modules
 import enum
 from dataclasses import dataclass
-from typing import Dict, List, Optional, Any, Iterable
+from typing import Dict, List, Optional, Any, Iterable, ForwardRef
+
+# Third-party modules
+from pydantic import BaseModel
 
 
 class BandOrientation(enum.Enum):
@@ -33,40 +36,40 @@ class ColumnAlign(enum.Enum):
     MASK = 4
 
 
-@dataclass
-class ReportQuery(object):
+class FieldFormat(enum.Enum):
+    BOOL = "bool"
+    INTEGER = "int"
+    URL = "url"
+    PERCENT = "percent"
+    DATETIME = "datetime"
+    NUMERIC = "numeric"
+    STRING = "string"
+
+
+class ReportQuery(BaseModel):
     name: str
     datasource: Optional[str] = None  # DataSource Name
     query: Optional[str] = None  # DataFrame query
-    fields: Optional[List[str]] = None  # DataSource Fields for query
     params: Dict[str, Any] = None
-    json: Optional[str] = None
+    json_data: Optional[str] = None
 
 
-@dataclass
-class ReportBand(object):
+ReportBand = ForwardRef("ReportBand")
+
+
+class ReportBand(BaseModel):
     name: str
     queries: Optional[List[ReportQuery]] = None
     parent: Optional["ReportBand"] = None  # Parent Band
     orientation: BandOrientation = "H"  # Relevant only for xlsx template
     children: Optional[List["ReportBand"]] = None
 
+    def __str__(self):
+        return self.name
+
     @property
     def has_children(self) -> bool:
         return bool(self.children)
-
-    def __post_init__(self):
-        queries = []
-        for q in self.queries or []:
-            if isinstance(q, dict):
-                queries.append(ReportQuery(**q))
-        self.queries = queries
-        children = []
-        for c in self.children or []:
-            if isinstance(c, dict):
-                c["parent"] = self
-                children.append(ReportBand(**c))
-        self.children = children
 
     def iter_nester(self) -> Iterable["ReportBand"]:
         for c in self.children:
@@ -74,8 +77,7 @@ class ReportBand(object):
             yield from c.iter_nester()
 
 
-@dataclass
-class ColumnFormat(object):
+class ColumnFormat(BaseModel):
     """
     Format settings for column
     """
@@ -91,8 +93,7 @@ class ColumnFormat(object):
         self.align = ColumnAlign(self.align)
 
 
-@dataclass
-class BandFormat(object):
+class BandFormat(BaseModel):
     """
     Configuration for autogenerate template
     """
@@ -100,14 +101,8 @@ class BandFormat(object):
     title_template: Optional[str] = None  # Title format for Section row
     columns: Optional[List[ColumnFormat]] = None  # ColumnName -> ColumnFormat
 
-    def __post_init__(self):
-        if not self.columns:
-            return
-        self.columns = [ColumnFormat(**c) for c in self.columns]
 
-
-@dataclass
-class Template(object):
+class Template(BaseModel):
     output_type: OutputType
     code: str = "DEFAULT"  # ReportTemplate.DEFAULT_TEMPLATE_CODE;
     # documentPath: str
@@ -123,17 +118,8 @@ class Template(object):
     def get_document_name(self):
         return self.output_name_pattern
 
-    def __post_init__(self):
-        if not isinstance(self.output_type, OutputType):
-            self.output_type = OutputType(self.output_type)
-        if not self.bands_format:
-            return
-        for c_name in list(self.bands_format):
-            self.bands_format[c_name] = BandFormat(**self.bands_format[c_name])
 
-
-@dataclass
-class Parameter(object):
+class Parameter(BaseModel):
     name: str  # User friendly name
     alias: str  # for system use
     type: str  # Param Class ?
@@ -147,8 +133,7 @@ class ReportField(object):
     output_format: str  # Jinja template
 
 
-@dataclass
-class ReportConfig(object):
+class ReportConfig(BaseModel):
     """
     Report Configuration
     """
@@ -169,16 +154,8 @@ class ReportConfig(object):
         except KeyError:
             raise ValueError(f"Report template not found for code [{code}]")
 
-    def __post_init__(self):
-        if isinstance(self.root_band, dict):
-            self.root_band = ReportBand(**self.root_band)
-        for code, t in self.templates.items():
-            if isinstance(t, dict):
-                self.templates[code] = Template(**t)
 
-
-@dataclass
-class RunParams(object):
+class RunParams(BaseModel):
     """
     Report request
     """
@@ -194,8 +171,9 @@ class RunParams(object):
 
     def get_params(self) -> Dict[str, Any]:
         r = {}
-        if self.report.parameters:
-            r.update(self.report.parameters)
         if self.params:
             r.update(self.params)
         return r
+
+
+ReportBand.update_forward_refs()

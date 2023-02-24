@@ -1,12 +1,14 @@
 # ---------------------------------------------------------------------
 # Report model
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2022 The NOC Project
+# Copyright (C) 2007-2023 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
 # Python modules
-from typing import Dict, Any
+import operator
+from threading import Lock
+from typing import Dict, Any, Optional, List
 
 # Third-party modules
 from mongoengine.document import Document
@@ -20,11 +22,16 @@ from mongoengine.fields import (
     DictField,
     FileField,
 )
+import cachetools
 
 # NOC modules
 from noc.core.mongo.fields import ForeignKeyField
+from noc.core.reporter.types import ReportConfig, Parameter, ReportBand, ReportQuery
+from noc.core.reporter.types import Template as TemplateCfg
 from noc.aaa.models.user import User
 from noc.aaa.models.group import Group
+
+id_lock = Lock()
 
 
 class ReportParam(EmbeddedDocument):
@@ -106,12 +113,81 @@ class Report(Document):
     code = StringField()  # Optional code for REST access
     hide = BooleanField()  # Hide from ReportMenu
     is_system = BooleanField(default=False)  # Report Is System Based
-    allow_rest = BooleanField(default=False)   # Available report data from REST API
+    allow_rest = BooleanField(default=False)  # Available report data from REST API
     #
-    parameters = EmbeddedDocumentListField(ReportParam)
-    templates = EmbeddedDocumentListField(Template)
-    bands = EmbeddedDocumentListField(Band)
-    bands_format = EmbeddedDocumentListField(BandFormat)
+    parameters: List["ReportParam"] = EmbeddedDocumentListField(ReportParam)
+    templates: List["Template"] = EmbeddedDocumentListField(Template)
+    bands: List["Band"] = EmbeddedDocumentListField(Band)
+    bands_format: List["BandFormat"] = EmbeddedDocumentListField(BandFormat)
     #
     permissions = EmbeddedDocumentListField(Permission)
     localization = DictField()
+
+    _id_cache = cachetools.TTLCache(maxsize=100, ttl=60)
+    _name_cache = cachetools.TTLCache(maxsize=100, ttl=60)
+
+    def __str__(self):
+        return self.name
+
+    @classmethod
+    @cachetools.cachedmethod(operator.attrgetter("_id_cache"), lock=lambda _: id_lock)
+    def get_by_id(cls, id) -> Optional["Report"]:
+        return Report.objects.filter(id=id).first()
+
+    @classmethod
+    @cachetools.cachedmethod(operator.attrgetter("_name_cache"), lock=lambda _: id_lock)
+    def get_by_name(cls, name: str) -> Optional["Report"]:
+        return Report.objects.filter(name=name).first()
+
+    @property
+    def config(self) -> ReportConfig:
+        params = []
+        for p in self.parameters:
+            params.append(
+                Parameter(
+                    name=p.name,
+                    alias=p.label,
+                    type=p.type,
+                    required=p.required,
+                    default_value=p.default,
+                )
+            )
+        templates = {}
+        for t in self.templates:
+            templates[t.code] = TemplateCfg(
+                code=t.code,
+                output_type=t.output_type,
+                formatter=t.formatter,
+                output_name_pattern=t.output_name_pattern,
+            )
+        for bf in self.bands_format:
+            pass
+        bands = {"Root": ReportBand(name="Root", children=[])}
+        for b in self.bands:
+            if b.name in bands:
+                bands[b.name].queries = (
+                    [
+                        ReportQuery(name="q1", datasource=q.datasource, query=q.ds_query)
+                        for q in b.queries
+                    ],
+                )
+            else:
+                bands[b.name] = ReportBand(
+                    name=b.name,
+                    queries=[
+                        ReportQuery(name="q1", datasource=q.datasource, query=q.ds_query)
+                        for q in b.queries
+                    ],
+                    children=[],
+                )
+            if b.name != "Root":
+                parent = b.parent or "Root"
+                bands[b.name].parent = parent
+                bands[parent].children += [bands[b.name]]
+
+        return ReportConfig(
+            name=self.name,
+            root_band=bands["Root"],
+            templates=templates,
+            parameters=params,
+        )
