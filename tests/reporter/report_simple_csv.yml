@@ -2,7 +2,7 @@ name: report
 templates:
   DEFAULT:
     code: DEFAULT
-    formatter: table
+    formatter: simplereport
     output_type: ssv
 root_band:
     name: Root
@@ -12,7 +12,7 @@ root_band:
         orientation: H
         queries:
           - name: master_data
-            json: '[
+            json_data: '[
             {
                 "administrativedomain": "(006005)",
                 "profile": "Huawei.VRP",

@@ -60,12 +60,19 @@ ReportBand = ForwardRef("ReportBand")
 class ReportBand(BaseModel):
     name: str
     queries: Optional[List[ReportQuery]] = None
+    source: Optional[str] = None
     parent: Optional["ReportBand"] = None  # Parent Band
     orientation: BandOrientation = "H"  # Relevant only for xlsx template
     children: Optional[List["ReportBand"]] = None
 
     def __str__(self):
         return self.name
+
+    def __init__(self, **data):
+        super().__init__(**data)
+        self.children = self.children or []
+        for c in self.children:
+            c.parent = self
 
     @property
     def has_children(self) -> bool:

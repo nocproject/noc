@@ -112,9 +112,9 @@ class Report(Document):
     #
     code = StringField()  # Optional code for REST access
     hide = BooleanField()  # Hide from ReportMenu
-    format_type = StringField(choices=[
-        ("B", "Format by Band"), ("S", "Format by Source"), ("T", "Format by Template")
-    ])  #
+    format_type = StringField(
+        choices=[("B", "Format by Band"), ("S", "Format by Source"), ("T", "Format by Template")]
+    )  #
     report_source = StringField()
     is_system = BooleanField(default=False)  # Report Is System Based
     allow_rest = BooleanField(default=False)  # Available report data from REST API

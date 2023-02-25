@@ -18,6 +18,8 @@ class ReportSource(object):
     Class for old-compatible report format when Data and Format union in one source
     """
 
+    name = None
+
     def get_format(self) -> BandFormat:
         """
         Report Format describe

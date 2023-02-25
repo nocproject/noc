@@ -36,11 +36,13 @@ class ReportApplication(ExtDocApplication):
         return r
 
     def clean(self, data):
-        bands = [{
-            "name": "Root",
-            "orientation": data.pop("root_orientation", None) or "H",
-            "queries": data.pop("root_queries", None) or [],
-        }]
+        bands = [
+            {
+                "name": "Root",
+                "orientation": data.pop("root_orientation", None) or "H",
+                "queries": data.pop("root_queries", None) or [],
+            }
+        ]
         for b in data.get("bands") or []:
             if not b.get("parent"):
                 b["parent"] = "Root"

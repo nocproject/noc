@@ -23,23 +23,24 @@ class RequestStub(object):
         self.user = user
 
 
-@pytest.mark.parametrize("report", ["report_objectsummary"])
+@pytest.mark.parametrize("report", ["report_objectsummary", "report_source_classificationrule"])  #
 def test_report_config(report):
     path = os.path.realpath(os.path.dirname(__file__))
     with open(os.path.join(path, f"{report}.yml"), "rb") as f:
         cfg = yaml.safe_load(f)
+    args = cfg.pop("args", None) or {}
+    if "request" in args:
+        args["request"] = RequestStub(None)
     r_cfg = ReportConfig(**cfg)
     report_engine = ReportEngine()
-    rp = RunParams(report=r_cfg)
+    rp = RunParams(report=r_cfg, params=args)
     out = BytesIO()
     connect()
     report_engine.run_report(r_params=rp, out=out)
     out.seek(0)
     site.autodiscover()
     app = site.apps[r_cfg.name]
-    # args = {}
-    # request = RequestStub(None)
-    report = app.get_data()
+    report = app.get_data(**args)
     if r_cfg.templates["DEFAULT"].output_type == OutputType.HTML:
         assert out.read().decode("utf8") == report.to_html()
     else:

@@ -102,6 +102,7 @@ class BandData(object):
             self.add_child(b)
 
     def add_child(self, band: "BandData"):
+        band.parent = self
         self.children_bands[band.name].append(band)
 
     def set_data(self, data: Dict[str, Any]):

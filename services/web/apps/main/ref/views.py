@@ -26,6 +26,8 @@ from noc.core.window import wf_choices
 from noc.core.topology.types import ShapeOverlayPosition, ShapeOverlayForm
 from noc.core.topology.loader import loader as topo_loader
 from noc.core.mx import MESSAGE_TYPES, MESSAGE_HEADERS
+from noc.core.datasources.loader import loader as ds_loader
+from noc.main.reportsources.loader import loader as rds_loader
 from noc.models import iter_model_id
 from noc import settings
 from noc.services.web.apps.kb.parsers.loader import loader as kbparser_loader
@@ -218,6 +220,28 @@ class RefAppplication(ExtApplication):
         for name in topo_loader:
             topo_gen = topo_loader[name]
             r += [{"id": name, "label": topo_gen.header or name}]
+        return r  # list(sorted(r))
+
+    def build_datasource(self):
+        """
+        Datasource name
+        :return:
+        """
+        r = []
+        for name in ds_loader:
+            ds = ds_loader[name]
+            r += [{"id": name, "label": ds.name}]
+        return r  # list(sorted(r))
+
+    def build_reportsource(self):
+        """
+        ReportSource name
+        :return:
+        """
+        r = []
+        for name in rds_loader:
+            repo_source = rds_loader[name]
+            r += [{"id": name, "label": repo_source.name}]
         return r  # list(sorted(r))
 
     @view(url=r"^(?P<ref>\S+)/lookup/$", method=["GET"], access=True, api=True)

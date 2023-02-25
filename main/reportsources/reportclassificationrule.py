@@ -16,7 +16,9 @@ from noc.core.reporter.types import BandFormat, ColumnFormat
 from noc.fm.models.eventclassificationrule import EventClassificationRule
 
 
-class ReportClassificationRules(ReportSource):
+class ReportClassificationRule(ReportSource):
+    name = "reportclassificationrule"
+
     def get_format(self) -> BandFormat:
         return BandFormat(
             title_template="Classification Rules",
@@ -26,7 +28,7 @@ class ReportClassificationRules(ReportSource):
             ],
         )
 
-    def get_data(self, request, **kwargs) -> List[BandData]:
+    def get_data(self, request=None, **kwargs) -> List[BandData]:
         def get_profile(r):
             for p in r.patterns:
                 if p.key_re in ("profile", "^profile$"):
@@ -37,20 +39,22 @@ class ReportClassificationRules(ReportSource):
         data = []
         for r in EventClassificationRule.objects.order_by("preference"):
             p_re = get_profile(r)
-            if p_re and not re.search(p_re, profile):
+            if profile and p_re and not re.search(p_re, profile):
                 # Skip
                 continue
-            data += []
-            b = BandData(name="event_class")
-            b.set_data({"key_re": "Event Class", "value_re": r.event_class.name})
-            data.append(b)
-            b = BandData(name="rule")
+            # d1
+            b = BandData(name="row")
             b.set_data({"name": r.name, "preference": r.preference})
             b.format = BandFormat(title_template="{{ name }} ({{ preference }})")
+            data.append(b)
+            # d2
+            b = BandData(name="row")
+            b.set_data({"key_re": "Event Class", "value_re": r.event_class.name})
+            data.append(b)
             # data += [SectionRow("%s (%s)" % (r.name, r.preference))]
             # data += [["Event Class", r.event_class.name]]
             for p in r.patterns:
-                b = BandData(name="rule_match")
+                b = BandData(name="row")
                 b.set_data({"key_re": p.key_re, "value_re": p.value_re})
                 data.append(b)
         return data
