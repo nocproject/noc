@@ -60,7 +60,6 @@ class Template(EmbeddedDocument):
     meta = {"strict": False, "auto_create_index": False}
     output_type = StringField()
     code = StringField(default="DEFAULT")
-    formatter = StringField()
     content = FileField(required=False)
     output_name_pattern = StringField()
     handler = StringField()
@@ -109,9 +108,14 @@ class Report(Document):
     category = StringField()
     uuid = UUIDField(binary=True)
     description = StringField(required=False)
+    report_format = StringField()
     #
     code = StringField()  # Optional code for REST access
     hide = BooleanField()  # Hide from ReportMenu
+    format_type = StringField(choices=[
+        ("B", "Format by Band"), ("S", "Format by Source"), ("T", "Format by Template")
+    ])  #
+    report_source = StringField()
     is_system = BooleanField(default=False)  # Report Is System Based
     allow_rest = BooleanField(default=False)  # Available report data from REST API
     #
