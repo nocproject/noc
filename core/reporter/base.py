@@ -136,7 +136,9 @@ class ReportEngine(object):
         # Extract data from ReportBand
         for rb in report_band.iter_nester():
             bd_parent = root.find_band_recursively(rb.parent.name)
-            logger.info("Processed ReportBand: %s; Parent BandData: %s", rb.name, bd_parent)  # Level needed ?
+            logger.info(
+                "Processed ReportBand: %s; Parent BandData: %s", rb.name, bd_parent
+            )  # Level needed ?
             if bd_parent.parent:
                 # Fill parent DataBand children row
                 for c in bd_parent.parent.get_children_by_name(rb.parent.name):
