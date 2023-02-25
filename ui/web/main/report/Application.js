@@ -15,7 +15,11 @@ Ext.define('NOC.main.report.Application', {
         'Ext.ux.form.JSONField',
         'Ext.ux.form.StringsField',
         'Ext.ux.form.GridField',
-        "NOC.main.ref.modelid.LookupField"
+        "NOC.main.ref.modelid.LookupField",
+        "NOC.main.ref.datasource.LookupField",
+        "NOC.main.ref.reportsource.LookupField",
+        "NOC.aaa.group.LookupField",
+        "NOC.aaa.user.LookupField"
     ],
     model: 'NOC.main.report.Model',
     search: true,
@@ -68,13 +72,6 @@ Ext.define('NOC.main.report.Application', {
                             uiStyle: 'large'
                         },
                         {
-                            name: 'code',
-                            xtype: 'textfield',
-                            fieldLabel: __('Code'),
-                            allowBlank: true,
-                            width: 50
-                        },
-                        {
                             name: 'uuid',
                             xtype: 'displayfield',
                             style: 'padding-left: 10px',
@@ -100,7 +97,14 @@ Ext.define('NOC.main.report.Application', {
                                     name: 'description',
                                     xtype: 'textarea',
                                     fieldLabel: __('Description'),
-                                    uiStyle: 'extra'
+                                    uiStyle: 'large'
+                                },
+                                {
+                                    name: 'code',
+                                    xtype: 'textfield',
+                                    fieldLabel: __('Code'),
+                                    allowBlank: true,
+                                    uiStyle: 'large'
                                 },
                                 {
                                     name: 'category',
@@ -108,6 +112,31 @@ Ext.define('NOC.main.report.Application', {
                                     fieldLabel: __('Category'),
                                     allowBlank: true,
                                     uiStyle: 'large'
+                                },
+                                {
+                                    name: "format",
+                                    xtype: "radiogroup",
+                                    // columns: 3,
+                                    vertical: true,
+                                    fieldLabel: __("Report Format"),
+                                    allowBlank: false,
+                                    width: 600,
+                                    items: [
+                                        {boxLabel: __("By Datasource"), inputValue: 'B'},
+                                        {boxLabel: __("By Source"), inputValue: 'S'},
+                                        {boxLabel: __("By Template"), inputValue: 'T', checked: true}]
+                                },
+                                {
+                                    name: "report_source",
+                                    xtype: "main.ref.reportsource.LookupField",
+                                    fieldLabel: __("Report Source"),
+                                    allowBlank: true
+                                },
+                                {
+                                    name: "hide",
+                                    xtype: "checkboxfield",
+                                    boxLabel: __("Hide Report from UI"),
+                                    allowBlank: false
                                 }
                             ]
                         }, // Text
@@ -123,6 +152,7 @@ Ext.define('NOC.main.report.Application', {
                                             xtype: "combobox",
                                             fieldLabel: __("Orientation"),
                                             allowBlank: true,
+                                            defaultValue: "H",
                                             store: [
                                                 ["H", __("Horizontal")],
                                                 ["V", __("Vertical")],
@@ -138,14 +168,15 @@ Ext.define('NOC.main.report.Application', {
                                                 {
                                                     dataIndex: "datasource",
                                                     text: __("Datasource"),
-                                                    editor: "textfield",
-                                                    width: 100
+                                                    renderer: NOC.render.Lookup('datasource'),
+                                                    editor: 'main.ref.datasource.LookupField',
+                                                    width: 200
                                                 },
                                                 {
                                                     dataIndex: "ds_query",
                                                     text: __("Query"),
                                                     editor: "textfield",
-                                                    width: 100
+                                                    width: 300
                                                 },
                                                 {
                                                     text: __('Json Data'),
@@ -182,6 +213,7 @@ Ext.define('NOC.main.report.Application', {
                                             xtype: "combobox",
                                             fieldLabel: __("Orientation"),
                                             allowBlank: true,
+                                            defaultValue: "H",
                                             store: [
                                                 ["H", __("Horizontal")],
                                                 ["V", __("Vertical")],
@@ -194,18 +226,18 @@ Ext.define('NOC.main.report.Application', {
                                             xtype: "gridfield",
                                             fieldLabel: __("Column Formats"),
                                             columns: [
-
                                                 {
                                                     dataIndex: "datasource",
                                                     text: __("Datasource"),
-                                                    editor: "textfield",
-                                                    width: 100
+                                                    editor: 'main.ref.datasource.LookupField',
+                                                    renderer: NOC.render.Lookup('datasource'),
+                                                    width: 200
                                                 },
                                                 {
                                                     dataIndex: "ds_query",
                                                     text: __("Query"),
                                                     editor: "textfield",
-                                                    width: 100
+                                                    width: 300
                                                 },
                                                 {
                                                     text: __('Json Data'),
@@ -248,11 +280,6 @@ Ext.define('NOC.main.report.Application', {
                                             ]
                                         },
                                         {
-                                            name: "formatter",
-                                            xtype: "textfield",
-                                            fieldLabel: __("Formatter")
-                                        },
-                                        {
                                             name: "output_name_pattern",
                                             xtype: "textfield",
                                             fieldLabel: __("Filename pattern")
@@ -270,15 +297,33 @@ Ext.define('NOC.main.report.Application', {
                                     columns: [
                                         {
                                             text: __('User'),
-                                            dataIndex: 'name',
-                                            width: 100,
-                                            editor: 'textfield'
+                                            dataIndex: 'user',
+                                            width: 250,
+                                            renderer: NOC.render.Lookup('user'),
+                                            editor: 'aaa.user.LookupField'
                                         },
                                         {
                                             text: __('Group'),
                                             dataIndex: 'group',
-                                            width: 100,
-                                            editor: 'textfield'
+                                            width: 250,
+                                            renderer: NOC.render.Lookup('group'),
+                                            editor: 'aaa.group.LookupField'
+                                        },
+                                        {
+                                            text: __("Edit"),
+                                            dataIndex: "edit",
+                                            width: 50,
+                                            renderer: NOC.render.Bool,
+                                            editor: "checkbox",
+                                            defaultValue: false
+                                        },
+                                        {
+                                            text: __("Launch"),
+                                            dataIndex: "launch",
+                                            width: 50,
+                                            renderer: NOC.render.Bool,
+                                            editor: "checkbox",
+                                            defaultValue: true
                                         }
                                     ]
                                 }

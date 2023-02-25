@@ -39,7 +39,8 @@ Ext.define("NOC.main.report.Model", {
         },
         {
             name: "hide",
-            type: "boolean"
+            type: "boolean",
+            defaultValue: false
         },
         {
             name: "is_system",
@@ -48,7 +49,8 @@ Ext.define("NOC.main.report.Model", {
         },
         {
             name: "allow_rest",
-            type: "boolean"
+            type: "boolean",
+            defaultValue: false
         },
         {
             name: "parameters",

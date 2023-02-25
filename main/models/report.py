@@ -28,6 +28,7 @@ import cachetools
 from noc.core.mongo.fields import ForeignKeyField
 from noc.core.reporter.types import ReportConfig, Parameter, ReportBand, ReportQuery
 from noc.core.reporter.types import Template as TemplateCfg
+from noc.core.reporter.types import BandFormat as BandFormatCfg
 from noc.aaa.models.user import User
 from noc.aaa.models.group import Group
 
@@ -77,6 +78,9 @@ class BandFormat(EmbeddedDocument):
     title_template = StringField()
     column_format = ListField(DictField())
 
+    def __str__(self):
+        return self.name
+
 
 class Band(EmbeddedDocument):
     meta = {"strict": False, "auto_create_index": False}
@@ -112,8 +116,8 @@ class Report(Document):
     #
     code = StringField()  # Optional code for REST access
     hide = BooleanField()  # Hide from ReportMenu
-    format_type = StringField(
-        choices=[("B", "Format by Band"), ("S", "Format by Source"), ("T", "Format by Template")]
+    format = StringField(
+        choices=[("B", "By Datasource"), ("S", "By Source"), ("T", "By Template")]
     )  #
     report_source = StringField()
     is_system = BooleanField(default=False)  # Report Is System Based
@@ -156,16 +160,27 @@ class Report(Document):
                     default_value=p.default,
                 )
             )
+        b_format_cfg = {}
+        for bf in self.bands_format:
+            b_format_cfg[bf.name] = BandFormatCfg(
+                **{"title_template": bf.title_template, "columns": bf.column_format}
+            )
         templates = {}
         for t in self.templates:
             templates[t.code] = TemplateCfg(
                 code=t.code,
                 output_type=t.output_type,
-                formatter=t.formatter,
+                formatter="simplereport",
                 output_name_pattern=t.output_name_pattern,
+                bands_format=b_format_cfg,
             )
-        for bf in self.bands_format:
-            pass
+        if self.format == "S" and self.report_source:
+            return ReportConfig(
+                name=self.name,
+                root_band=ReportBand(name="Root", children=[], source=self.report_source),
+                templates=templates,
+                parameters=params,
+            )
         bands = {"Root": ReportBand(name="Root", children=[])}
         for b in self.bands:
             if b.name in bands:
