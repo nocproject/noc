@@ -1,10 +1,11 @@
 site_name: NOC Docs
 site_description: NOC Documentation Project
 site_author: The NOC Project
+site_url: https://docs.getnoc.com/master/en/
 repo_url: https://code.getnoc.com/noc/noc/
 repo_name: Gitlab
 edit_uri: -/edit/master/docs/en/docs
-copyright: 2007-2021, The NOC Project
+copyright: 2007-2023, The NOC Project
 nav:
   - Home: index.md
   - User's Guide:
