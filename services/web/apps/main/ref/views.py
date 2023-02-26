@@ -230,6 +230,8 @@ class RefAppplication(ExtApplication):
         r = []
         for name in ds_loader:
             ds = ds_loader[name]
+            if not ds:
+                continue
             r += [{"id": name, "label": ds.name}]
         return r  # list(sorted(r))
 
@@ -241,6 +243,8 @@ class RefAppplication(ExtApplication):
         r = []
         for name in rds_loader:
             repo_source = rds_loader[name]
+            if not repo_source:
+                continue
             r += [{"id": name, "label": repo_source.name}]
         return r  # list(sorted(r))
 
