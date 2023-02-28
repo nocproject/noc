@@ -1,7 +1,7 @@
 # ---------------------------------------------------------------------
 # NAG.SNR.get_inventory
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2022 The NOC Project
+# Copyright (C) 2007-2023 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -58,7 +58,7 @@ class Script(BaseScript):
         part_no = s["platform"]
         vendor = s["vendor"]
         if self.is_foxgate_cli:
-            r += [
+            r = [
                 {
                     "type": "CHASSIS",
                     "vendor": vendor,
@@ -90,6 +90,19 @@ class Script(BaseScript):
                 }
             ]
             r += self.get_transceivers(slot_id)
+        # Some devices do not have `show slot` command
+        if not r:
+            r = [
+                {
+                    "type": "CHASSIS",
+                    "vendor": vendor,
+                    "part_no": part_no,
+                    "revision": revision,
+                    "serial": serial,
+                    "description": "",
+                }
+            ]
+            r += self.get_transceivers(1)
         return r
 
     def get_transceivers(self, slot_id):
