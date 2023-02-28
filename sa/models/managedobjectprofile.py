@@ -891,11 +891,10 @@ class ManagedObjectProfile(NOCModel):
         ):
             if not mop.metrics:
                 continue
+            r.add(mop.metrics_default_interval)
             for m in mop.metrics:
-                if m["enable_box"]:
-                    r.add(mop.box_discovery_interval)
-                if m["enable_periodic"]:
-                    r.add(mop.periodic_discovery_interval)
+                if m.get("interval", 0):
+                    r.add(m["interval"])
         return max(r) if r else 0
 
     @classmethod
