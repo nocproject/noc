@@ -7,8 +7,8 @@
 
 # Python modules
 import contextlib
-from contextvars import ContextVar
 import time
+from contextvars import ContextVar
 from collections import defaultdict
 from typing import Optional, Tuple, List, Dict, Literal, Set
 from abc import ABCMeta, abstractmethod
@@ -17,10 +17,13 @@ from abc import ABCMeta, abstractmethod
 # NOC modules
 from noc.core.defer import defer
 from noc.core.hash import hash_int
-from .model import ChangeField
+from .model import ChangeItem
 
 CHANGE_HANDLER = "noc.core.change.change.on_change"
 DS_APPLY_HANDLER = "noc.core.change.change.apply_datastream"
+BI_APPLY_HANDLER = "noc.core.change.change.apply_ch_dictionary"
+# inv.ObjectModel and sensors, inv.Object and data
+SYNC_SENSOR_HANDLER = "noc.core.change.change.apply_sync_sensors"
 
 
 cv_policy: ContextVar[Optional["BaseChangeTrackerPolicy"]] = ContextVar("cv_policy", default=None)
@@ -28,11 +31,29 @@ cv_policy_stack: ContextVar[Optional[List["BaseChangeTrackerPolicy"]]] = Context
     "cv_policy_stack", default=None
 )
 
+CHANGE_HANDLERS: Dict[str, Set[str]] = defaultdict(set)
+
 
 class ChangeTracker(object):
     """
     Thread-local change tracker.
     """
+
+    @staticmethod
+    def load_receivers() -> None:
+        """
+        Return changes receiver
+        :return:
+        """
+        from noc.core.bi.dictionaries.loader import loader
+
+        for dcls_name in loader:
+            bi_dict_model = loader[dcls_name]
+            if not bi_dict_model:
+                continue
+            CHANGE_HANDLERS[bi_dict_model._meta.source_model].add(BI_APPLY_HANDLER)
+        CHANGE_HANDLERS["inv.ObjectModel"].add(SYNC_SENSOR_HANDLER)
+        CHANGE_HANDLERS["inv.Object"].add(SYNC_SENSOR_HANDLER)
 
     @staticmethod
     def get_policy() -> "BaseChangeTrackerPolicy":
@@ -44,11 +65,12 @@ class ChangeTracker(object):
 
     def register(
         self,
-        op: str,
+        op: Literal["create", "update", "delete"],
         model: str,
         id: str,
         fields: Optional[List] = None,
         datastreams: Optional[List[Tuple[str, str]]] = None,
+        audit: bool = False,
     ) -> None:
         """
         Register datastream change
@@ -57,9 +79,25 @@ class ChangeTracker(object):
         :param id: Item id
         :param fields: List of changed fields
         :param datastreams: List of changed datastream
+        :param audit: Send Changes to Audit Log
         :return:
         """
-        self.get_policy().register(op, model, id, fields, datastreams)
+        from noc.core.middleware.tls import get_user
+
+        if not CHANGE_HANDLERS:
+            self.load_receivers()
+        self.get_policy().register(
+            item=ChangeItem(
+                op=op,
+                model_id=model,
+                item_id=id,
+                ts=time.time(),
+                user=str(get_user()),
+                changed_fields=fields,
+            )
+        )
+        if datastreams:
+            self.get_policy().register_ds(items=datastreams)  # Handler -> Change
 
     @staticmethod
     def push_policy(policy: "BaseChangeTrackerPolicy") -> None:
@@ -124,14 +162,11 @@ class BaseChangeTrackerPolicy(object, metaclass=ABCMeta):
         ...
 
     @abstractmethod
-    def register(
-        self,
-        op: str,
-        model: str,
-        id: str,
-        fields: Optional[List] = None,
-        datastreams: Optional[List[Tuple[str, str]]] = None,
-    ) -> None:
+    def register(self, item: ChangeItem) -> None:
+        ...
+
+    @abstractmethod
+    def register_ds(self, items: List[Tuple[str, str]]) -> None:
         ...
 
 
@@ -140,14 +175,10 @@ class DropChangeTrackerPolicy(BaseChangeTrackerPolicy):
     Drop all changes
     """
 
-    def register(
-        self,
-        op: str,
-        model: str,
-        id: str,
-        fields: Optional[List] = None,
-        datastreams: Optional[List[Tuple[str, str]]] = None,
-    ) -> None:
+    def register(self, item: ChangeItem) -> None:
+        pass
+
+    def register_ds(self, items: List[Tuple[str, str]]) -> None:
         pass
 
 
@@ -156,90 +187,55 @@ class SimpleChangeTrackerPolicy(BaseChangeTrackerPolicy):
     Simple policy, applies every registered change
     """
 
-    def register(
-        self,
-        op: Literal["create", "delete", "update"],
-        model: str,
-        id: str,
-        fields: Optional[List[ChangeField]] = None,
-        datastreams: Optional[List[Tuple[str, str]]] = None,
-    ) -> None:
-        key = hash_int(id)
-        t0 = time.time()
-        defer(CHANGE_HANDLER, key=key, changes=[(op, model, str(id), fields, t0)])
-        if not datastreams:
-            return
+    def register(self, item: ChangeItem) -> None:
+        for handler in CHANGE_HANDLERS.get(item.model_id, []):
+            defer(handler, key=hash(item), changes=[item])
+
+    def register_ds(self, items: Optional[List[Tuple[str, str]]]):
         ds_changes = defaultdict(set)
-        for ds_name, item_id in datastreams:
+        key = 0
+        for ds_name, item_id in items:
             ds_changes[ds_name].add(str(item_id))
+            if not key:
+                key = hash_int(item_id)
         defer(DS_APPLY_HANDLER, key=key, ds_changes={k: list(v) for k, v in ds_changes.items()})
 
 
 class BulkChangeTrackerPolicy(BaseChangeTrackerPolicy):
     def __init__(self):
         super().__init__()
-        self.changes: Dict[
-            Tuple[str, str],
-            Tuple[Literal["create", "delete", "update"], Optional[List[ChangeField]], float],
-        ] = {}
+        self.changes: Dict[str, Dict[int, ChangeItem]] = defaultdict(dict)
         self.ds_changes: Dict[str, Set[str]] = defaultdict(set)
 
-    def register(
-        self,
-        op: Literal["create", "delete", "update"],
-        model: str,
-        id: str,
-        fields: Optional[List[ChangeField]] = None,
-        datastreams: Optional[List[Tuple[str, str]]] = None,
-    ) -> None:
-        def merge_fields(
-            f1: Optional[List[ChangeField]], f2: Optional[List[ChangeField]]
-        ) -> Optional[Tuple[ChangeField]]:
-            processed = set()
-            r = []
-            for x in f1 or []:
-                r.append(x)
-                processed.add(x.field)
-            for x in f2 or []:
-                if x.field not in processed:
-                    r.append(x)
-            return r
+    def register(self, item: ChangeItem) -> None:
+        key = hash(item)
+        for handler in CHANGE_HANDLERS.get(item.model_id, []):
+            changes = self.changes[handler]
+            prev = changes.get(key)
+            if prev is None:
+                # First change
+                changes[key] = item
+                return
+            prev = (
+                prev.change(item.op, changed_fields=item.changed_fields, timestamp=item.ts) or prev
+            )
+            changes[key] = prev
 
-        t0 = time.time()
+    def register_ds(self, items: List[Tuple[str, str]]) -> None:
         # Changed datastreams
-        for ds_name, item_id in datastreams or []:
+        for ds_name, item_id in items or []:
             self.ds_changes[ds_name].add(str(item_id))
-        prev = self.changes.get((model, id))
-        if prev is None:
-            # First change
-            self.changes[model, id] = (op, fields, t0)
-            return
-        # Series of change
-        if op == "delete":
-            # Delete overrides any operation
-            self.changes[model, id] = (op, None, t0)
-            return
-        if op == "create":
-            raise RuntimeError("create must be first update")
-        # Update
-        prev_op = prev[0]
-        if prev_op == "create":
-            # Create + Update -> Create with merged fields
-            self.changes[model, id] = ("create", merge_fields(prev[1], fields), t0)
-        elif prev_op == "update":
-            # Update + Update -> Update with merged fields
-            self.changes[model, id] = ("update", merge_fields(prev[1], fields), t0)
-        elif prev_op == "delete":
-            raise RuntimeError("Cannot update after delete")
 
     def commit(self) -> None:
         # Split to buckets
-        changes = defaultdict(list)
-        for (model_id, item_id), (op, fields, ts) in self.changes.items():
-            part = 0
-            changes[part].append((op, model_id, item_id, fields, ts))
-        for part, items in changes.items():
-            defer(CHANGE_HANDLER, key=part, changes=items)
+        # changes = defaultdict(list)
+        # for (model_id, item_id), (op, fields, ts) in self.changes.items():
+        #     part = 0
+        #     changes[part].append((op, model_id, item_id, fields, ts))
+        for handler, changes in self.changes.items():
+            # for key, items in changes.items():
+            key = 0
+            defer(handler, key=key, changes=list(changes.values()))
         if self.ds_changes:
             defer(
                 DS_APPLY_HANDLER, key=0, ds_changes={k: list(v) for k, v in self.ds_changes.items()}

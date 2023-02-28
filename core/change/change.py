@@ -18,6 +18,7 @@ from mongoengine.queryset.visitor import Q
 # NOC modules
 from noc.models import get_model
 from noc.core.service.loader import get_service
+from noc.core.change.model import ChangeItem
 from noc.config import config
 
 logger = getLogger(__name__)
@@ -71,11 +72,6 @@ def on_change(
         elif model_id == "inv.Object" and ("data" in changed_fields_old or not changed_fields_old):
             # @todo ManagedObject address change
             sensors_changes[model_id].add(item_id)
-    if bi_dict_changes:
-        apply_ch_dictionary(bi_dict_changes)
-    #
-    if sensors_changes:
-        apply_sync_sensors(sensors_changes)
 
 
 def apply_datastream(ds_changes: Optional[Dict[str, Set[str]]] = None) -> None:
@@ -95,10 +91,10 @@ def apply_datastream(ds_changes: Optional[Dict[str, Set[str]]] = None) -> None:
         ds.bulk_update(sorted(items))
 
 
-def apply_ch_dictionary(bi_dict_changes: DefaultDict[str, Set[Tuple[str, float]]]) -> None:
+def apply_ch_dictionary(changes: List[ChangeItem]) -> None:
     """
     Apply Clickhouse BI Dictionary
-    :param bi_dict_changes:
+    :param changes:
     :return:
     """
     from noc.core.bi.dictionaries.loader import loader
@@ -107,6 +103,14 @@ def apply_ch_dictionary(bi_dict_changes: DefaultDict[str, Set[Tuple[str, float]]
     svc = get_service()
     t0 = time.time()
     n_parts = len(config.clickhouse.cluster_topology.split(","))
+    bi_dict_changes = defaultdict(set)
+    for item in changes:
+        item = ChangeItem(**item)
+        o = item.instance
+        if not o:
+            logger.error("[%s|%s] Missed item. Skipping", item.model_id, item.item_id)
+            return
+        bi_dict_changes[item.model_id].add((o, item.ts))
     for dcls_name in loader:
         bi_dict_model: Optional["DictionaryModel"] = loader[dcls_name]
         if not bi_dict_model or bi_dict_model._meta.source_model not in bi_dict_changes:
@@ -120,7 +124,6 @@ def apply_ch_dictionary(bi_dict_changes: DefaultDict[str, Set[Tuple[str, float]]
             lt = time.localtime(ts or t0)
             r["ts"] = time.strftime("%Y-%m-%d %H:%M:%S", lt)
             data += [orjson.dumps(r)]
-
         for partition in range(0, n_parts):
             svc.publish(
                 value=b"\n".join(data),
@@ -130,14 +133,24 @@ def apply_ch_dictionary(bi_dict_changes: DefaultDict[str, Set[Tuple[str, float]]
             )
 
 
-def apply_sync_sensors(sensors_changes: DefaultDict[str, Set[str]]) -> None:
+def apply_sync_sensors(changes: List[ChangeItem]) -> None:
     """
 
-    :param sensors_changes:
+    :param changes:
     :return:
     """
     from noc.inv.models.object import Object
     from noc.inv.models.sensor import sync_object
+
+    sensors_changes = {}
+    for item in changes:
+        fields = {cf["field"] for cf in item.get("changed_fields", [])}
+        model_id = item["model_id"]
+        if model_id == "inv.ObjectModel" and ("sensors" in fields or not fields):
+            sensors_changes[model_id].add(item["item_id"])
+        elif model_id == "inv.Object" and ("data" in fields or not fields):
+            # @todo ManagedObject address change
+            sensors_changes[model_id].add(item["item_id"])
 
     query = Q()
     if "inv.ObjectModel" in sensors_changes:
