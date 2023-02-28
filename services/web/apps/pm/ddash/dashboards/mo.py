@@ -196,7 +196,6 @@ class MODashboard(JinjaDashboard):
             om += [mt.name]
         object_metrics.extend(sorted(om))
         object_check_metrics.extend(sorted(ocm, key=operator.itemgetter("name")))
-
         # Sensors
         sensor_types = defaultdict(list)
         sensor_enum = []
