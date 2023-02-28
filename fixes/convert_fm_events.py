@@ -85,7 +85,7 @@ def fix():
                     "source": row.get("source", "other"),
                     "raw_vars": row["raw_vars"],
                     "resolved_vars": row["resolved_vars"],
-                    "vars": row["vars"],
+                    "vars": {k: str(v) for k, v in row["vars"].items()},
                     "snmp_trap_oid": row["raw_vars"].get(SNMP_TRPAP_OID, ""),
                     "message": row["raw_vars"].get("message", ""),
                     "managed_object": mo_map[mo_id]["bi_id"],
