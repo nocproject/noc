@@ -5,7 +5,7 @@
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
-
+# Python modules
 from collections import defaultdict
 
 # Third-party modules
@@ -136,7 +136,6 @@ class Migration(BaseMigration):
                     "enable_managedobjectprofile": False,
                     "enable_administrativedomain": False,
                     "enable_authprofile": False,
-                    "enable_commandsnippet": False,
                     "enable_commandsnippet": False,
                     #
                     "enable_allocationgroup": False,

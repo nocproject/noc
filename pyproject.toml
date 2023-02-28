@@ -128,3 +128,77 @@ valid-metaclass-classmethod-first-arg = ['mcs']
 
 [tool.pylint.'EXCEPTIONS']
 overgeneral-exceptions = ['Exception']
+
+[tool.ruff]
+# Exclude a variety of commonly ignored directories.
+exclude = [".git", "build", "dist", "var", "share", "collections"]
+line-length = 100
+# Assume Python 3.9
+target-version = "py39"
+# Enable
+select = [
+  # "E", # Pycodestyle Error
+  "F", # Pyflakes
+  # "W", # Pycodestyle Warning
+  # "C90", # mccabe
+  # "I", # isort
+  # "D", # Pydocstyle
+  # "YTT", # flake8-2020
+  # "ANN", # flake8-annotations
+  # "S", # flake8-bandit
+  # "BLE", # flake8-blind-except
+  # "B", # flake8-bugbear
+  # "A", # flake8-builtins
+  # "C4", # flake8-comprehensions 
+  # "EM", # flake8-errmsg
+  # "ISC", # flake8-implicit-str-concat
+  # "ICN", # flake8-import-conventions
+  # "PT", # flake8-pytest-style
+  # "RET", # flake8-return
+  # "SIM", # flake8-simplify
+  # "PLC", # pylint
+  # "PLE", # pylint
+  # "PLR", # pylint
+  # "PLW", # pylint
+  # "PIE", # flake8-pie
+  # "RUF", # ruff specific
+]
+# Always autofix, but never try to fix `F401` (unused imports).
+fix = false #fix = true
+ignore = ["D203", "D212", "D107", "PLR0913"] 
+unfixable = ["F401"] 
+
+[tool.ruff.flake8-quotes]
+docstring-quotes = "double"
+
+[tool.ruff.pydocstyle]
+convention = "google"
+
+[tool.ruff.mccabe]
+max-complexity = 12
+
+[tool.ruff.per-file-ignores]
+"*/migrations/*.py" = [
+  "D100", # Missing docstring in public module
+  "D101", # Missing docstring in public class
+  "D102", # Missing docstring in public method
+  "D103", # Missing docstring in public function
+  "D104", # Missing docstring in public package
+]
+"cmibs/*.py" = [
+  "D100", # Missing docstring in public module
+  "D101", # Missing docstring in public class
+  "D102", # Missing docstring in public method
+  "D103", # Missing docstring in public function
+  "D104", # Missing docstring in public package
+]
+"tests/*.py" = [
+  "D100", # Missing docstring in public module
+  "D101", # Missing docstring in public class
+  "D102", # Missing docstring in public method
+  "D103", # Missing docstring in public function
+  "D104", # Missing docstring in public package
+  "S101", # Use of assert detected
+  "PLR2004", # Magic value used in comparison, consider replacing {value} with a constant variable
+  "PT011", # {exc} is to broad
+]

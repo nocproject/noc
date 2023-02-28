@@ -21,7 +21,7 @@ from noc.inv.models.interface import Interface
 from noc.inv.models.subinterface import SubInterface
 from noc.sa.models.service import Service
 from noc.core.span import Span
-from noc.core.topology.path import KSPFinder, PathInfo
+from noc.core.topology.path import KSPFinder
 from noc.core.topology.constraint.base import BaseConstraint
 from noc.core.topology.constraint.vlan import VLANConstraint
 from noc.core.topology.constraint.upwards import UpwardsConstraint
