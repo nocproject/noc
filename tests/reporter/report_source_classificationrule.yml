@@ -1,0 +1,15 @@
+name: fm.reportclassificationrule
+args:
+  profile: "Cisco.IOS"
+  request: "admin"
+parameters:
+  - name: Profile
+    alias: profile
+    type: string
+templates:
+  DEFAULT:
+    formatter: simplereport
+    output_type: csv
+root_band:
+  name: Root
+  source: reportclassificationrule

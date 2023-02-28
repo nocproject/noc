@@ -14,6 +14,7 @@ from jinja2 import Template as Jinja2Template
 # NOC modules
 from .base import DataFormatter
 from ..types import OutputType, BandFormat
+from ..report import BandData
 from noc.services.web.base.simplereport import (
     Report,
     TextSection,
@@ -30,7 +31,7 @@ class TableFormatter(DataFormatter):
         :return:
         """
         report = Report()
-        rband_format = self.get_band_format(self.root_band.name)
+        rband_format = self.get_band_format(self.root_band)
         report.append_section(
             TextSection(title=rband_format.title_template if rband_format else "")
         )
@@ -42,6 +43,7 @@ class TableFormatter(DataFormatter):
                 enumerate=False,
             )
         )
+        r = b""
         if self.report_template.output_type == OutputType.CSV:
             r = report.to_csv(delimiter=",")
         elif self.report_template.output_type == OutputType.SSV:
@@ -58,25 +60,35 @@ class TableFormatter(DataFormatter):
         r = []
         for rb in self.root_band.iter_all_bands():
             # Section Row
-            if rb.parent:  # Section
-                bf = self.get_band_format(rb.name)
+            if not rb.is_root:  # Section
+                bf = self.get_band_format(rb)
                 if bf and bf.title_template:
                     r.append(SectionRow(self.get_title(rb, bf.title_template)))
+                    if rb.rows is None:
+                        continue
             # Out data
             if not rb.has_children and rb.rows is not None and not rb.rows.is_empty():
                 row_columns = columns or rb.rows.columns
                 for row in rb.rows.to_dicts():
                     r.append([row.get(c, "") for c in row_columns])
+            elif not rb.has_children and rb.data:
+                row_columns = columns or list(rb.data)
+                r.append([rb.data.get(c, "") for c in row_columns])
         return r
 
-    def get_band_format(self, name: str) -> Optional[BandFormat]:
+    def get_band_format(self, band: BandData) -> Optional[BandFormat]:
         """
 
         :return:
         """
-        if not self.report_template.bands_format or name not in self.report_template.bands_format:
+        if band.format:
+            return band.format
+        if (
+            not self.report_template.bands_format
+            or band.name not in self.report_template.bands_format
+        ):
             return
-        return self.report_template.bands_format[name]
+        return self.report_template.bands_format[band.name]
 
     def get_columns(self) -> Tuple[List[Any], Optional[List[str]]]:
         """
@@ -84,12 +96,12 @@ class TableFormatter(DataFormatter):
         :return:
         """
         # Try Root config first
-        band_format = self.get_band_format(self.root_band.name)
+        band_format = self.get_band_format(self.root_band)
+        band = self.root_band.get_data_band()
         fields = None
         # Try DataBand
         if not band_format or not band_format.columns:
-            band = self.root_band.get_data_band()
-            band_format = self.get_band_format(band.name)
+            band_format = self.get_band_format(band)
             fields = [c.name for c in band_format.columns] if band_format else None
         if not band_format:
             return ([fn for fn in band.rows.columns],) * 2
