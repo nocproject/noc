@@ -499,7 +499,7 @@ class ClassifierService(FastAPIService):
             "source": event.source or E_SRC_OTHER,
             "raw_vars": event.raw_vars,
             "resolved_vars": event.resolved_vars,
-            "vars": event.vars,
+            "vars": {k: str(v) for k, v in event.vars.items()},
             "snmp_trap_oid": event.raw_vars.get(SNMP_TRAP_OID, ""),
             "message": event.raw_vars.get("message", ""),
             "managed_object": mo.bi_id,
