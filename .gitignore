@@ -20,6 +20,7 @@ lib64
 !/.flake8
 !/.coveragerc
 !/.prettierrc
+!/.requirements
 !/scripts/build/
 ext_*
 static/test/
