@@ -2,7 +2,7 @@ name: inv.reportdiscovery
 templates:
   DEFAULT:
     code: DEFAULT
-    formatter: table
+    formatter: simplereport
     output_type: html
     bands_format:
       Root:

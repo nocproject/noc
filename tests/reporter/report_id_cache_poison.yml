@@ -2,7 +2,7 @@ name: report
 templates:
   DEFAULT:
     code: DEFAULT
-    formatter: table
+    formatter: simplereport
     output_type: ssv
     bands_format:
       master_data:
@@ -24,7 +24,7 @@ root_band:
              query: root_band.rows.filter(pl.col('mac') == ctx['mac']).select(['name', 'address', 'pool'])
   queries:
     - name: duplicate
-      json: '[{"address": "10.0.0.11",
+      json_data: '[{"address": "10.0.0.11",
               "pool": "58d6cbbfc165cf2ea8edc242",
               "name": "91#995686",
               "mac": "00:0E:5E:00:01:02",

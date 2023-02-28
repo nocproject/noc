@@ -17,6 +17,7 @@ from jinja2 import Template as Jinja2Template
 # NOC modules
 from .types import Template, OutputType, RunParams, ReportConfig, ReportQuery, ReportBand
 from .report import BandData
+from noc.main.reportsources.loader import loader as r_source_loader
 
 
 logger = logging.getLogger(__name__)
@@ -126,12 +127,17 @@ class ReportEngine(object):
         # Create Root BandData
         root = BandData(BandData.ROOT_BAND_NAME)
         root.set_data(params)
+        if report_band.source:
+            s = r_source_loader[report_band.source]()
+            root.format = s.get_format()
+            root.add_children(s.get_data(**params))
+            return root
         root.rows = self.get_rows(report_band.queries, params)
         # Extract data from ReportBand
         for rb in report_band.iter_nester():
             bd_parent = root.find_band_recursively(rb.parent.name)
             logger.info(
-                "Proccessed ReportBand: %s; Parent BandData: %s", rb.name, bd_parent
+                "Processed ReportBand: %s; Parent BandData: %s", rb.name, bd_parent
             )  # Level needed ?
             if bd_parent.parent:
                 # Fill parent DataBand children row
@@ -159,8 +165,8 @@ class ReportEngine(object):
         rows = None
         for query in queries:
             data = None
-            if query.json:
-                data = pl.DataFrame(orjson.loads(query.json))
+            if query.json_data:
+                data = pl.DataFrame(orjson.loads(query.json_data))
             if query.datasource:
                 data = cls.query_datasource(query, ctx)
             if query.query:
@@ -194,8 +200,8 @@ class ReportEngine(object):
             raise ValueError(f"Unknown Datasource: {query.datasource}")
         params = query.params or {}
         params.update(ctx)
-        if query.fields:
-            params["fields"] = query.fields
+        # if query.fields:
+        #     params["fields"] = query.fields
         row = ds.query_sync(**params)
         return row
 

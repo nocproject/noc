@@ -13,7 +13,7 @@ from collections import defaultdict
 from polars import DataFrame
 
 # NOC modules
-from .types import BandOrientation, ReportField
+from .types import BandOrientation, ReportField, BandFormat
 
 
 class BandData(object):
@@ -29,6 +29,7 @@ class BandData(object):
         "data",
         "children_bands",
         "rows",
+        "format",
         "report_field_format",
     )
 
@@ -47,6 +48,7 @@ class BandData(object):
         self.data: Dict[str, Any] = {}
         self.children_bands: Dict[str, List["BandData"]] = defaultdict(list)
         self.rows: Optional[DataFrame] = rows
+        self.format: Optional[BandFormat] = None
         self.report_field_format: Dict[str, ReportField] = {}
 
     def __str__(self):
@@ -100,6 +102,7 @@ class BandData(object):
             self.add_child(b)
 
     def add_child(self, band: "BandData"):
+        band.parent = self
         self.children_bands[band.name].append(band)
 
     def set_data(self, data: Dict[str, Any]):

@@ -105,7 +105,7 @@ class DiscoverySummaryDS(BaseDataSource):
                     r["discovered_metrics"] += 1
                 if mop.report_ping_attempts:
                     r["discovered_metrics"] += 1
-                if mop.enable_periodic_discovery and mop.enable_periodic_discovery_metrics:
+                if mop.enable_periodic_discovery:
                     r["discovered_metrics"] = len(mop.metrics) * len(mos)
                     for mo_id in mos.intersection(set(metrics)):
                         r["discovered_metrics"] += metrics[mo_id]
