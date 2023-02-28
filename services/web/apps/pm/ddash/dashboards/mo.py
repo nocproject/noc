@@ -35,7 +35,6 @@ class MODashboard(JinjaDashboard):
         mo: ManagedObject = cls.resolve_object(object_id)
         caps = mo.get_caps()
         dash = cls
-        print(loader.caps_map)
         for capability in loader.caps_map:
             if capability in caps:
                 dash = loader.caps_map[capability]
@@ -189,7 +188,7 @@ class MODashboard(JinjaDashboard):
         ocm = []
         for m in self.object.object_profile.metrics or []:
             mt = MetricType.get_by_id(m["metric_type"])
-            if not mt or not m.get("interval", 0):
+            if not mt:
                 continue
             if check_metrics(mt):
                 ocm += [{"name": mt.name, "metric": mt.field_name}]
