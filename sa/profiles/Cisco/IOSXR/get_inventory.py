@@ -1,7 +1,7 @@
 # ---------------------------------------------------------------------
 # Cisco.IOSXR.get_inventory
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2023 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -22,16 +22,35 @@ class Script(BaseScript):
         r"PID:\s+(?P<pid>\S*?)\s*,?\s+VID:\s+(?P<vid>\S*?)\s*,? SN: (?P<serial>\S+)",
         re.MULTILINE | re.DOTALL | re.IGNORECASE,
     )
+    # Found in ASR9K ver 7.1.3
+    rx_item2 = re.compile(
+        r"^\s+Name: (?P<name>.+?)\s+Descr: (?P<descr>.+?)\s*\n"
+        r"^\s+PID: (?P<pid>\S+)\s+VID: (?P<vid>\S+)\s+SN: (?P<serial>\S+)\s*\n",
+        re.MULTILINE,
+    )
+    rx_new_type = re.compile(r"^\d/(?:RSP|FT|PT|PT0-PM|)(?P<number>\d+)$")
+    rx_new_chass = re.compile(r"^ASR \d+ Chassis$")
 
     rx_trans = re.compile(r"((?:100|1000|10G)BASE\S+)")
 
     def execute(self):
         objects = []
         v = self.cli("admin show inventory")
-        for match in self.rx_item.finditer(v):
+        if self.rx_item.search(v):
+            rx_search = self.rx_item
+        else:
+            rx_search = self.rx_item2
+        for match in rx_search.finditer(v):
+            self.logger.debug(
+                "Get type: %s, %s, %s",
+                match.group("name"),
+                match.group("pid"),
+                match.group("descr"),
+            )
             type, number, part_no = self.get_type(
                 match.group("name"), match.group("pid"), match.group("descr"), len(objects)
             )
+            self.logger.debug("Return: %s, %s, %s", type, number, part_no)
             if not part_no:
                 continue
             else:
@@ -58,6 +77,9 @@ class Script(BaseScript):
         Get type, number and part_no
         """
         if "RSP" in pid or "RSP" in name:
+            match = self.rx_new_type.search(name)
+            if match:
+                return "RSP", match.group("number"), pid
             number = name.split()[1].split("/")[1][3]
             return "RSP", number, pid
         elif "A9K-MODULEv" in pid:
@@ -70,37 +92,56 @@ class Script(BaseScript):
             (
                 "LC" in descr
                 or "Line Card" in descr
+                or "Line card" in descr
                 or "Linecard" in descr
                 or "Interface Module" in descr
             )
             and "module mau" not in name
             and not name.startswith("chassis")
         ):
+            match = self.rx_new_type.search(name)
+            if match:
+                return "MOD", match.group("number"), pid
             number = name.split()[1].split("/")[1]
             return "MOD", number, pid
         elif "MPA" in pid:
             number = name.split()[1].split("/")[-1]
             return "MPA", number, pid
         elif "XFP" in pid or "GLC" in pid or "CFP-" in pid or "SFP" in descr:
-            number = name.split()[2].split("/")[-1]
+            try:
+                name = name.split()[2]
+            except IndexError:
+                pass
+            number = name.split("/")[-1]
             if not pid:
                 pid = self.get_transceiver_pid(descr)
                 if not pid:
                     return None, None, None
             return "XCVR", number, pid
         elif "FAN" in pid:
+            match = self.rx_new_type.search(name)
+            if match:
+                return "FAN", match.group("number"), pid
             number = name.split()[1].split("/")[1][2]
             return "FAN", number, pid
-        elif "Power Module" in descr or "Power Supply" in descr:
+        elif "Power Module" in descr or "Power Supply" in descr or "AC Power" in descr:
+            match = self.rx_new_type.search(name)
+            if match:
+                return "PWR", match.group("number"), pid
             numbers = name.split()[1].split("/")
             if len(numbers) == 4:  # 0/PS0/M1/SP
                 number = numbers[2][1:]
             else:  # 0/PM0/SP
                 number = numbers[1][2:]
             return "PWR", number, pid
+        elif "Power Tray" in descr:
+            match = self.rx_new_type.search(name)
+            return "PT", match.group("number"), pid
         elif name.startswith("chassis"):
             return "CHASSIS", None, pid
-        elif name.startswith("Rack") and "Slot Single Chassis" in descr:
+        elif name.startswith("Rack") and (
+            "Slot Single Chassis" in descr or self.rx_new_chass.search(descr)
+        ):
             return "CHASSIS", None, pid
         # Unknown
         return None, None, None
