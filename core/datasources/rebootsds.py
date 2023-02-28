@@ -41,7 +41,6 @@ class RebootsDS(BaseDataSource):
         if end:
             time_cond["$lte"] = end
         match = {"ts": time_cond} if time_cond else {}
-        print("match", match, type(match))
         pipeline = [
             {"$match": match},
             {"$group": {"_id": "$object", "count": {"$sum": 1}}},
