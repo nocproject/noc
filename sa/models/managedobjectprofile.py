@@ -882,7 +882,7 @@ class ManagedObjectProfile(NOCModel):
     @classmethod
     def get_max_metrics_interval(cls, managed_object_profiles=None):
         Q = models.Q
-        op_query = (Q(enable_metrics=True))
+        op_query = Q(enable_metrics=True)
         if managed_object_profiles:
             op_query &= Q(id__in=managed_object_profiles)
         r = set()
