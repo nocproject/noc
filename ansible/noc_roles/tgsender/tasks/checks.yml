@@ -1,27 +1,27 @@
 ---
 - block:
-  - name: fail if noc is not selected
-    fail:
-      msg: "Tgsender role have to be set with noc role to get own sources."
-    when:
-      - has_svc_noc is not defined
-    tags:
-      - checks
+    - name: fail if noc is not selected
+      fail:
+        msg: "Tgsender role have to be set with noc role to get own sources."
+      when:
+        - has_svc_noc is not defined
+      tags:
+        - checks
 
-  - name: warn if tgsender token is not set
-    debug:
-      msg: |
-        Tgsender role have to work only if telegram token provided.
-        Setup telegram token or disable tgsender service.
-        Deploy will continue in 1 minute
-    when:
-      - tgsender_token is not defined or not tgsender_token
+    - name: warn if tgsender token is not set
+      debug:
+        msg: |
+          Tgsender role have to work only if telegram token provided.
+          Setup telegram token or disable tgsender service.
+          Deploy will continue in 1 minute
+      when:
+        - tgsender_token is not defined or not tgsender_token
 
-  - name: timeout for 1 min
-    pause:
-      minutes: 1
-    when:
-      - tgsender_token is not defined or not tgsender_token
+    - name: timeout for 1 min
+      pause:
+        minutes: 1
+      when:
+        - tgsender_token is not defined or not tgsender_token
 
   when:
     - has_svc_tgsender is defined

@@ -179,7 +179,7 @@
     http_proxy: "{{ http_proxy }}"
     https_proxy: "{{ http_proxy }}"
   when:
-    - 'svc-activator-exec' in groups and inventory_hostname in groups["svc-activator-exec"]
+    - "'svc-activator-exec' in groups and inventory_hostname in groups['svc-activator-exec']"
   tags:
     - requirements
 
@@ -193,7 +193,7 @@
     http_proxy: "{{ http_proxy }}"
     https_proxy: "{{ http_proxy }}"
   when:
-    - 'svc-classifier-exec' in groups and inventory_hostname in groups["svc-classifier-exec"]
+    - "'svc-classifier-exec' in groups and inventory_hostname in groups['svc-classifier-exec']"
   tags:
     - requirements
 
@@ -261,7 +261,7 @@
     http_proxy: "{{ http_proxy }}"
     https_proxy: "{{ http_proxy }}"
   when:
-    - 'svc-memcached-exec' in groups and groups["svc-memcached-exec"]|length>0
+    - "'svc-memcached-exec' in groups and groups['svc-memcached-exec']|length>0 "
   tags:
     - requirements
 
@@ -275,7 +275,7 @@
     http_proxy: "{{ http_proxy }}"
     https_proxy: "{{ http_proxy }}"
   when:
-    - 'svc-redis-exec' in groups and groups["svc-redis-exec"]|length>0
+    - "'svc-redis-exec' in groups and groups['svc-redis-exec']|length>0"
   tags:
     - requirements
 
@@ -289,7 +289,7 @@
     http_proxy: "{{ http_proxy }}"
     https_proxy: "{{ http_proxy }}"
   when:
-    - 'svc-kafkasender-exec' in groups and inventory_hostname in groups["svc-kafkasender-exec"]
+    - "'svc-kafkasender-exec' in groups and inventory_hostname in groups['svc-kafkasender-exec']"
   tags:
     - requirements
 
@@ -303,7 +303,7 @@
     http_proxy: "{{ http_proxy }}"
     https_proxy: "{{ http_proxy }}"
   when:
-    - 'svc-ping-exec' in groups and inventory_hostname in groups["svc-ping-exec"]
+    - "'svc-ping-exec' in groups and inventory_hostname in groups['svc-ping-exec']"
   tags:
     - requirements
 
