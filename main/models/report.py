@@ -40,7 +40,7 @@ class ReportParam(EmbeddedDocument):
     name = StringField(required=True)
     description = StringField(required=False)
     label = StringField()
-    type = StringField(choices=["integer", "string", "date", "model"], required=True)
+    type = StringField(choices=["integer", "string", "date", "model", "choice"], required=True)
     model_id = StringField()
     required = BooleanField(default=False)
     default = StringField(required=False)
@@ -117,7 +117,7 @@ class Report(Document):
     code = StringField()  # Optional code for REST access
     hide = BooleanField()  # Hide from ReportMenu
     format = StringField(
-        choices=[("B", "By Datasource"), ("S", "By Source"), ("T", "By Template")]
+        choices=[("D", "By Datasource"), ("S", "By Source"), ("T", "By Template")]
     )  #
     report_source = StringField()
     is_system = BooleanField(default=False)  # Report Is System Based
@@ -184,12 +184,10 @@ class Report(Document):
         bands = {"Root": ReportBand(name="Root", children=[])}
         for b in self.bands:
             if b.name in bands:
-                bands[b.name].queries = (
-                    [
-                        ReportQuery(name="q1", datasource=q.datasource, query=q.ds_query)
-                        for q in b.queries
-                    ],
-                )
+                bands[b.name].queries = [
+                    ReportQuery(name="q1", datasource=q.datasource, query=q.ds_query)
+                    for q in b.queries
+                ]
             else:
                 bands[b.name] = ReportBand(
                     name=b.name,
@@ -201,7 +199,7 @@ class Report(Document):
                 )
             if b.name != "Root":
                 parent = b.parent or "Root"
-                bands[b.name].parent = parent
+                bands[b.name].parent = bands[parent]
                 bands[parent].children += [bands[b.name]]
 
         return ReportConfig(

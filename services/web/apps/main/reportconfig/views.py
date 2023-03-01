@@ -5,9 +5,15 @@
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
+# Third-party modules
+from django.http import HttpResponse
+
 # NOC modules
 from noc.services.web.base.extdocapplication import ExtDocApplication, view
+from noc.sa.interfaces.base import StringParameter, DictParameter
 from noc.main.models.report import Report
+from noc.core.reporter.base import ReportEngine
+from noc.core.reporter.types import RunParams
 from noc.core.translation import ugettext as _
 from noc.models import get_model
 
@@ -58,13 +64,15 @@ class ReportApplication(ExtDocApplication):
             "title": report.name,
             "description": report.description,
             "params": [],
-            "preview": True,
+            "preview": False,
             "buttons": [
                 {"title": "xslx", "param": {"output_type": "xslx"}},
                 {"title": "csv", "param": {"output_type": "csv"}},
-                {"title": "Preview", "param": {"output_type": "html"}},
             ],
         }
+        if report.format == "S":
+            r["preview"] = True
+            r["buttons"] += [{"title": "Preview", "param": {"output_type": "html"}}]
         for param in report.parameters:
             cfg = {"name": param.name, "fieldLabel": param.label, "allowBlank": not param.required}
             if param.type == "model":
@@ -77,9 +85,53 @@ class ReportApplication(ExtDocApplication):
                 cfg["xtype"] = "datefield"
                 cfg["format"] = "d.m.Y"
                 cfg["submitFormat"] = "d.m.Y"
+            elif param.type == "choice":
+                cfg["xtype"] = "radiogroup"
+                cfg["items"] = [
+                    {"boxLabel": x, "inputValue": x, "checked": x == param.default}
+                    for x in param.description.split(";")
+                ]
             else:
                 cfg["xtype"] = "textfield"
             r["params"] += [cfg]
-        # "report.control" - table
+        if report.format == "D":
+            ds = report.get_datasource()
+            r["params"] += [
+                {
+                    "xtype": "report.control",
+                    "storeData": [
+                        {"name": ff.name, "active": True, "label": ff.name} for ff in ds.fields
+                    ],
+                }
+            ]
         # formats
         return r
+
+    @view(
+        method=["GET"],
+        url="^(?P<report_id>\S+)/run/$",
+        access="launch",
+        api=True,
+        # validate={
+        #     "parameters": DictParameter(
+        #         attrs={"name": StringParameter(), "value": StringParameter()}, required=False
+        #     ),
+        #     "output_type": StringParameter(default="html"),
+        # },
+    )
+    def api_report_run(self, request, report_id: str):
+        """
+
+        :param request:
+        :param report_id:
+        :param query:
+        :return:
+        """
+        q = {str(k): v[0] if len(v) == 1 else v for k, v in request.GET.lists()}
+        report: "Report" = self.get_object_or_404(Report, id=report_id)
+        report_engine = ReportEngine()
+        rp = RunParams(report=report.config, output_type=q.get("output_type"))
+        out_doc = report_engine.run_report(r_params=rp, out=out)
+        response = HttpResponse(out_doc.content, content_type=out_doc.content_type)
+        response["Content-Disposition"] = f'attachment; filename="{out_doc.document_name}"'
+        return response

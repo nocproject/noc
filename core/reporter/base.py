@@ -7,6 +7,7 @@
 
 # Python modules
 import logging
+from io import BytesIO
 from typing import Dict, Any, Optional, List, Iterable
 
 # Third-party modules
@@ -15,7 +16,7 @@ import polars as pl
 from jinja2 import Template as Jinja2Template
 
 # NOC modules
-from .types import Template, OutputType, RunParams, ReportConfig, ReportQuery, ReportBand
+from .types import Template, OutputType, RunParams, ReportConfig, ReportQuery, ReportBand, OutputDocument
 from .report import BandData
 from noc.main.reportsources.loader import loader as r_source_loader
 
@@ -32,7 +33,7 @@ class ReportEngine(object):
     def __init__(self):
         self.logger = logger
 
-    def run_report(self, r_params: RunParams, out: bytes):
+    def run_report(self, r_params: RunParams):
         """
         Run report withs params
         :param r_params: Report params
@@ -40,6 +41,7 @@ class ReportEngine(object):
         :return:
         """
         # Handler param
+        out: BytesIO = BytesIO()
         report = r_params.report
         template = r_params.get_template()
         out_type = r_params.output_type or template.output_type
@@ -48,8 +50,8 @@ class ReportEngine(object):
         data = self.load_data(report, cleaned_param)
         self.generate_report(report, template, out_type, out, cleaned_param, data)
         self.logger.info("[%s] Finished report with parameter: %s", report, cleaned_param)
-        # output_name = self.resolve_output_filename(run_params=r_params, root_band=data)
-        return out
+        output_name = self.resolve_output_filename(run_params=r_params, root_band=data)
+        return OutputDocument(content=out.getvalue(), document_name=output_name, output_type=out_type)
 
     def generate_report(
         self,
@@ -213,4 +215,4 @@ class ReportEngine(object):
         template = run_params.get_template()
         output_name = template.get_document_name()
         ctx = root_band.get_data()
-        return Jinja2Template(output_name).render(ctx)
+        return f"{Jinja2Template(output_name).render(ctx)}.{run_params.output_type.value}"

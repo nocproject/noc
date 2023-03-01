@@ -183,4 +183,24 @@ class RunParams(BaseModel):
         return r
 
 
+class OutputDocument(BaseModel):
+    content: bytes
+    document_name: str
+    output_type: OutputType
+
+    @property
+    def content_type(self):
+        """
+        application/zip
+        :return:
+        """
+        if self.output_type == OutputType.CSV:
+            return "text/csv"
+        elif self.output_type == OutputType.XLSX:
+            return "application/vnd.ms-excel"
+        elif self.output_type == OutputType.PDF:
+            return "application/pdf"
+        return "application/octet-stream"
+
+
 ReportBand.update_forward_refs()

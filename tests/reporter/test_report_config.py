@@ -9,7 +9,6 @@
 import pytest
 import os
 import yaml
-from io import BytesIO
 
 # NOC modules
 from noc.core.reporter.base import ReportEngine
@@ -34,14 +33,12 @@ def test_report_config(report):
     r_cfg = ReportConfig(**cfg)
     report_engine = ReportEngine()
     rp = RunParams(report=r_cfg, params=args)
-    out = BytesIO()
     connect()
-    report_engine.run_report(r_params=rp, out=out)
-    out.seek(0)
+    out_doc = report_engine.run_report(r_params=rp)
     site.autodiscover()
     app = site.apps[r_cfg.name]
     report = app.get_data(**args)
     if r_cfg.templates["DEFAULT"].output_type == OutputType.HTML:
-        assert out.read().decode("utf8") == report.to_html()
+        assert out_doc.content.decode("utf8") == report.to_html()
     else:
-        assert out.read().decode("utf8") == report.to_csv()
+        assert out_doc.content.decode("utf8") == report.to_csv()
