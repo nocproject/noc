@@ -5,12 +5,12 @@ services:
     image: "mongo:4.2"
     command: mongod --wiredTigerCacheSizeGB 1.5 --bind_ip_all --keyFile=mongodb.key --replSet noc --port 27017
     entrypoint:
-        - sh
-        - -c
-        - |
-                chmod 600 mongodb.key
-                chown 999:999 mongodb.key
-                exec docker-entrypoint.sh $$@
+      - sh
+      - -c
+      - |
+        chmod 600 mongodb.key
+        chown 999:999 mongodb.key
+        exec docker-entrypoint.sh $$@
     volumes:
       - ./files/mongo-init.js:/docker-entrypoint-initdb.d/01mongo-init.js
       - ./files/mongodb.key:/mongodb.key
@@ -37,7 +37,7 @@ services:
       MONGO_REPL_SET_HOSTS: mongo
     entrypoint: sh /rs-init.sh
     healthcheck:
-      test: ["CMD","grep", "healthy", "/tmp/job_is_done"]
+      test: [ "CMD", "grep", "healthy", "/tmp/job_is_done" ]
       interval: 3s
       timeout: 3s
       retries: 100
@@ -55,7 +55,15 @@ services:
           size: "512M"
     command: -c fsync=off
     healthcheck:
-      test: ["CMD", "su", "-", "postgres", "-c", "psql -U noc -l | grep noc"]
+      test:
+        [
+          "CMD",
+          "su",
+          "-",
+          "postgres",
+          "-c",
+          "psql -U noc -l | grep noc"
+        ]
       interval: 3s
       timeout: 3s
       retries: 100
@@ -73,7 +81,7 @@ services:
     build:
       context: ../
       dockerfile: Dockerfile
-      target: code
+      target: dev
     restart: "no"
     working_dir: /opt/noc
     depends_on:
@@ -94,9 +102,7 @@ services:
       snmpd:
         condition: service_started
     command: >
-      sh -c "set -xe
-      && ./noc test run --junit-report=build/reports/py-test-junit.xml --statistics
-      "
+      sh -c "set -xe && ./noc test run --junit-report=build/reports/py-test-junit.xml --statistics "
     environment:
       NOC_TEST_DB: noc_tests
     env_file:
