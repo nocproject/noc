@@ -4,9 +4,9 @@
 // Copyright (C) 2007-2023 The NOC Project
 // See LICENSE for details
 //---------------------------------------------------------------------
-console.debug('Defining NOC.main.report.Application');
+console.debug('Defining NOC.main.reportconfig.Application');
 
-Ext.define('NOC.main.report.Application', {
+Ext.define('NOC.main.reportconfig.Application', {
     extend: 'NOC.core.ModelApplication',
     requires: [
         'NOC.core.JSONPreview',
@@ -21,7 +21,7 @@ Ext.define('NOC.main.report.Application', {
         "NOC.aaa.group.LookupField",
         "NOC.aaa.user.LookupField"
     ],
-    model: 'NOC.main.report.Model',
+    model: 'NOC.main.reportconfig.Model',
     search: true,
     rowClassField: 'row_class',
 
