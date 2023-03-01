@@ -30,7 +30,7 @@ class DiscoveryIDCachePoisonDS(BaseDataSource):
         FieldInfo(name="pool"),
         FieldInfo(name="is_managed", type=FieldType.BOOL),
         FieldInfo(name="reason"),
-        FieldInfo(name="macs"),
+        FieldInfo(name="mac"),
         FieldInfo(name="on_blacklist", type=FieldType.BOOL),
     ]
 
@@ -57,7 +57,7 @@ class DiscoveryIDCachePoisonDS(BaseDataSource):
             data = [
                 mo
                 for mo in ManagedObject.objects.filter(id__in=row["_id"]).values(
-                    "name", "address", "profile", "pool", "is_managed"
+                    "id", "name", "address", "profile", "pool", "is_managed"
                 )
             ]
             if len(data) > 0:
@@ -69,12 +69,12 @@ class DiscoveryIDCachePoisonDS(BaseDataSource):
                 on_blacklist = True
             for mo in data:
                 row_num += 1
-                yield row_num, "managed_object", row["_id"]
+                yield row_num, "managed_object", mo["id"]
                 yield row_num, "name", mo["name"]
                 yield row_num, "address", mo["address"]
                 yield row_num, "pool", Pool.get_by_id(mo["pool"]).name
                 yield row_num, "profile", Profile.get_by_id(mo["profile"]).name
-                yield row_num, "mac", MAC(row["macs"][0])
+                yield row_num, "mac", str(MAC(row["macs"][0]))
                 yield row_num, "reason", reason
-                yield row_num, "is_managed", "True" if mo["address"] else "False"
+                yield row_num, "is_managed", mo["is_managed"]
                 yield row_num, "on_blacklist", on_blacklist

@@ -214,5 +214,6 @@ class ReportEngine(object):
         """
         template = run_params.get_template()
         output_name = template.get_document_name()
+        out_type = run_params.output_type or template.output_type
         ctx = root_band.get_data()
-        return f"{Jinja2Template(output_name).render(ctx)}.{run_params.output_type.value}"
+        return f"{Jinja2Template(output_name).render(ctx)}.{out_type}"

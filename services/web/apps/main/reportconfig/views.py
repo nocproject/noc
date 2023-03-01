@@ -13,7 +13,7 @@ from noc.services.web.base.extdocapplication import ExtDocApplication, view
 from noc.sa.interfaces.base import StringParameter, DictParameter
 from noc.main.models.report import Report
 from noc.core.reporter.base import ReportEngine
-from noc.core.reporter.types import RunParams
+from noc.core.reporter.types import RunParams, OutputType
 from noc.core.translation import ugettext as _
 from noc.models import get_model
 
@@ -130,8 +130,8 @@ class ReportApplication(ExtDocApplication):
         q = {str(k): v[0] if len(v) == 1 else v for k, v in request.GET.lists()}
         report: "Report" = self.get_object_or_404(Report, id=report_id)
         report_engine = ReportEngine()
-        rp = RunParams(report=report.config, output_type=q.get("output_type"))
-        out_doc = report_engine.run_report(r_params=rp, out=out)
+        rp = RunParams(report=report.config, output_type=OutputType(q.get("output_type")))
+        out_doc = report_engine.run_report(r_params=rp)
         response = HttpResponse(out_doc.content, content_type=out_doc.content_type)
         response["Content-Disposition"] = f'attachment; filename="{out_doc.document_name}"'
         return response

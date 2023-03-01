@@ -44,11 +44,11 @@ class TableFormatter(DataFormatter):
             )
         )
         r = b""
-        if self.report_template.output_type == OutputType.CSV:
+        if self.output_type == OutputType.CSV:
             r = report.to_csv(delimiter=",")
-        elif self.report_template.output_type == OutputType.SSV:
+        elif self.output_type == OutputType.SSV:
             r = report.to_csv(delimiter=";")
-        elif self.report_template.output_type == OutputType.HTML:
+        elif self.output_type == OutputType.HTML:
             r = report.to_html()
         self.output_stream.write(r.encode("utf8"))
 
