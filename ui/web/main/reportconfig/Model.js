@@ -38,6 +38,10 @@ Ext.define("NOC.main.report.Model", {
             type: "string"
         },
         {
+            name: "format",
+            type: "string"
+        },
+        {
             name: "hide",
             type: "boolean",
             defaultValue: false

@@ -6,9 +6,10 @@
 # ----------------------------------------------------------------------
 
 # NOC modules
-from noc.services.web.base.extdocapplication import ExtDocApplication
+from noc.services.web.base.extdocapplication import ExtDocApplication, view
 from noc.main.models.report import Report
 from noc.core.translation import ugettext as _
+from noc.models import get_model
 
 
 class ReportApplication(ExtDocApplication):
@@ -49,3 +50,36 @@ class ReportApplication(ExtDocApplication):
             bands += [b]
         data["bands"] = bands
         return super().clean(data)
+
+    @view(url=r"^(?P<report_id>\S+)/form/$", method=["GET"], access="launch", api=True)
+    def api_form_report(self, request, report_id):
+        report: "Report" = self.get_object_or_404(Report, id=report_id)
+        r = {
+            "title": report.name,
+            "description": report.description,
+            "params": [],
+            "preview": True,
+            "buttons": [
+                {"title": "xslx", "param": {"output_type": "xslx"}},
+                {"title": "csv", "param": {"output_type": "csv"}},
+                {"title": "Preview", "param": {"output_type": "html"}},
+            ],
+        }
+        for param in report.parameters:
+            cfg = {"name": param.name, "fieldLabel": param.label, "allowBlank": not param.required}
+            if param.type == "model":
+                model = get_model(param.model_id)
+                cfg["xtype"] = "core.combo"
+                cfg["restUrl"] = f'/{"/".join(param.model_id.lower().split("."))}/lookup/'
+            elif param.type == "integer":
+                cfg["xtype"] = "numberfield"
+            elif param.type == "date":
+                cfg["xtype"] = "datefield"
+                cfg["format"] = "d.m.Y"
+                cfg["submitFormat"] = "d.m.Y"
+            else:
+                cfg["xtype"] = "textfield"
+            r["params"] += [cfg]
+        # "report.control" - table
+        # formats
+        return r
