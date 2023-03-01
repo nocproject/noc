@@ -72,7 +72,10 @@ RUN \
     snmp \
     vim \
     git \
-    && pip3 install -r ./.requirements/dev.txt -r ./.requirements/test.txt \
+    && pip3 install\
+        -r ./.requirements/dev.txt\
+        -r ./.requirements/lint.txt
+        -r ./.requirements/test.txt\
     && rm -rf /var/lib/apt/lists/*
 
 #
