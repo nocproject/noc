@@ -17,8 +17,8 @@ class ReportApplication(ExtDocApplication):
     Report application
     """
 
-    title = "Reports"
-    menu = _("Report")
+    title = "Report Configs"
+    menu = _("Report Config")
     model = Report
 
     def instance_to_dict(self, o, fields=None, nocustom=False):
