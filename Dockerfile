@@ -68,14 +68,15 @@ EXPOSE 1200
 FROM code AS dev
 
 RUN \
-    apt update && apt-get install -y --no-install-recommends \
+    apt update\
+    && apt-get install -y --no-install-recommends \
     snmp \
     vim \
     git \
     && pip3 install\
-        -r ./.requirements/dev.txt\
-        -r ./.requirements/lint.txt
-        -r ./.requirements/test.txt\
+    -r ./.requirements/dev.txt\
+    -r ./.requirements/lint.txt\
+    -r ./.requirements/test.txt\
     && rm -rf /var/lib/apt/lists/*
 
 #
