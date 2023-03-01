@@ -8,7 +8,7 @@ console.debug("Defining NOC.main.reportconfig.Model");
 
 Ext.define("NOC.main.reportconfig.Model", {
     extend: "Ext.data.Model",
-    rest_url: "/main/report/",
+    rest_url: "/main/reportconfig/",
 
     fields: [
         {
