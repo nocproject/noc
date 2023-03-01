@@ -17,7 +17,8 @@ ARG BUILD_PACKAGES="build-essential cmake gcc libffi-dev libmemcached-dev libssl
 
 RUN \
     set -x \
-    && apt update && apt-get install -y --no-install-recommends \
+    && apt-get update\
+    && apt-get install -y --no-install-recommends \
     bzip2 \
     curl \
     libffi7 \
@@ -68,7 +69,7 @@ EXPOSE 1200
 FROM code AS dev
 
 RUN \
-    apt update\
+    apt-get update\
     && apt-get install -y --no-install-recommends \
     snmp \
     vim \
