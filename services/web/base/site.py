@@ -390,6 +390,19 @@ class Site(object):
         self.menu += [r]
         return r
 
+    def setup_reports(self):
+        """
+        Auto Load Report
+        :return:
+        """
+        from noc.main.models.report import Report
+        from .reportapplication import ReportConfigApplication
+
+        for report in Report.objects.filter():
+            app = ReportConfigApplication
+            app.report_id = str(report.id)
+            self.do_register(app)
+
     def autodiscover(self):
         """
         Auto-load and initialize all application classes
@@ -431,6 +444,7 @@ class Site(object):
         # Register all collected applications
         for app_class in self.pending_applications:
             self.do_register(app_class)
+        self.setup_reports()
         self.pending_applications = []
         # Setup router URLs
         self.setup_router()
