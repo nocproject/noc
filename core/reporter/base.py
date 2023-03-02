@@ -16,7 +16,15 @@ import polars as pl
 from jinja2 import Template as Jinja2Template
 
 # NOC modules
-from .types import Template, OutputType, RunParams, ReportConfig, ReportQuery, ReportBand, OutputDocument
+from .types import (
+    Template,
+    OutputType,
+    RunParams,
+    ReportConfig,
+    ReportQuery,
+    ReportBand,
+    OutputDocument,
+)
 from .report import BandData
 from noc.main.reportsources.loader import loader as r_source_loader
 
@@ -51,7 +59,9 @@ class ReportEngine(object):
         self.generate_report(report, template, out_type, out, cleaned_param, data)
         self.logger.info("[%s] Finished report with parameter: %s", report, cleaned_param)
         output_name = self.resolve_output_filename(run_params=r_params, root_band=data)
-        return OutputDocument(content=out.getvalue(), document_name=output_name, output_type=out_type)
+        return OutputDocument(
+            content=out.getvalue(), document_name=output_name, output_type=out_type
+        )
 
     def generate_report(
         self,
@@ -82,7 +92,7 @@ class ReportEngine(object):
         """
         clean_params = params.copy()
         for p in report.parameters or []:
-            name = p.alias
+            name = p.name
             value = params.get(name)
             if value is None and p.required:
                 raise ValueError(f"Required parameter {name} not found")
@@ -216,4 +226,4 @@ class ReportEngine(object):
         output_name = template.get_document_name()
         out_type = run_params.output_type or template.output_type
         ctx = root_band.get_data()
-        return f"{Jinja2Template(output_name).render(ctx)}.{out_type}"
+        return f"{Jinja2Template(output_name).render(ctx)}.{out_type.value}"

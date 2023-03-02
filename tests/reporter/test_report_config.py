@@ -39,6 +39,6 @@ def test_report_config(report):
     app = site.apps[r_cfg.name]
     report = app.get_data(**args)
     if r_cfg.templates["DEFAULT"].output_type == OutputType.HTML:
-        assert out_doc.content.decode("utf8") == report.to_html()
+        assert out_doc.content.decode("utf8") == report.to_html(include_buttons=False)
     else:
         assert out_doc.content.decode("utf8") == report.to_csv()

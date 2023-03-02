@@ -6,7 +6,7 @@
 # ----------------------------------------------------------------------
 
 # Third-party modules
-from django.http import HttpResponse
+from django.http import HttpResponse, HttpResponseBadRequest
 
 # NOC modules
 from noc.services.web.base.extdocapplication import ExtDocApplication, view
@@ -65,20 +65,23 @@ class ReportApplication(ExtDocApplication):
             "description": report.description,
             "params": [],
             "preview": False,
-            "buttons": [
-                {"title": "xslx", "param": {"output_type": "xslx"}},
-                {"title": "csv", "param": {"output_type": "csv"}},
+            "dockedItems": [
+                {"text": "csv", "param": {"output_type": "csv"}},
             ],
         }
         if report.format == "S":
             r["preview"] = True
-            r["buttons"] += [{"title": "Preview", "param": {"output_type": "html"}}]
+            r["dockedItems"] += [{"text": "Preview", "param": {"output_type": "html"}}]
         for param in report.parameters:
             cfg = {"name": param.name, "fieldLabel": param.label, "allowBlank": not param.required}
             if param.type == "model":
                 model = get_model(param.model_id)
-                cfg["xtype"] = "core.combo"
-                cfg["restUrl"] = f'/{"/".join(param.model_id.lower().split("."))}/lookup/'
+                if hasattr(model, "get_path"):
+                    cfg["xtype"] = "noc.core.combotree"
+                    cfg["restUrl"] = f'/{"/".join(param.model_id.lower().split("."))}/'
+                else:
+                    cfg["xtype"] = "core.combo"
+                    cfg["restUrl"] = f'/{"/".join(param.model_id.lower().split("."))}/lookup/'
             elif param.type == "integer":
                 cfg["xtype"] = "numberfield"
             elif param.type == "date":
@@ -98,27 +101,16 @@ class ReportApplication(ExtDocApplication):
             ds = report.get_datasource()
             r["params"] += [
                 {
-                    "xtype": "report.control",
-                    "storeData": [
-                        {"name": ff.name, "active": True, "label": ff.name} for ff in ds.fields
-                    ],
+                    "name": "fields",
+                    "xtype": "reportcolumnselect",
+                    "fieldLabel": "Fields",
+                    "storeData": [[ff.name, ff.name, False] for ff in ds.fields],
                 }
             ]
         # formats
         return r
 
-    @view(
-        method=["GET"],
-        url="^(?P<report_id>\S+)/run/$",
-        access="launch",
-        api=True,
-        # validate={
-        #     "parameters": DictParameter(
-        #         attrs={"name": StringParameter(), "value": StringParameter()}, required=False
-        #     ),
-        #     "output_type": StringParameter(default="html"),
-        # },
-    )
+    @view(method=["GET"], url="^(?P<report_id>\S+)/run/$", access="launch", api=True)
     def api_report_run(self, request, report_id: str):
         """
 
@@ -130,8 +122,11 @@ class ReportApplication(ExtDocApplication):
         q = {str(k): v[0] if len(v) == 1 else v for k, v in request.GET.lists()}
         report: "Report" = self.get_object_or_404(Report, id=report_id)
         report_engine = ReportEngine()
-        rp = RunParams(report=report.config, output_type=OutputType(q.get("output_type")))
-        out_doc = report_engine.run_report(r_params=rp)
+        rp = RunParams(report=report.config, output_type=OutputType(q.get("output_type")), params=q)
+        try:
+            out_doc = report_engine.run_report(r_params=rp)
+        except ValueError as e:
+            return HttpResponseBadRequest(e)
         response = HttpResponse(out_doc.content, content_type=out_doc.content_type)
         response["Content-Disposition"] = f'attachment; filename="{out_doc.document_name}"'
         return response
