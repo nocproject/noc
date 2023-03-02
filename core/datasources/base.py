@@ -89,7 +89,8 @@ class BaseDataSource(object):
         r = defaultdict(list)
         async for _, f_name, value in cls.iter_query(fields, *args, **kwargs):
             r[f_name].append(value)
-        return pl.DataFrame(r, columns=[(c.name, c.type.value) for c in cls.fields])
+        return pl.DataFrame([pl.Series(c.name, r[f_name], dtype=c.type.value) for c in cls.fields])
+        # return pl.DataFrame(r, columns=[(c.name, c.type.value) for c in cls.fields])
 
     @classmethod
     async def iter_row(

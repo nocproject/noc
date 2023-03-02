@@ -178,9 +178,16 @@ class Report(Document):
             return ReportConfig(
                 name=self.name,
                 root_band=ReportBand(name="Root", children=[], source=self.report_source),
-                templates=templates,
+                templates={"DEFAULT": TemplateCfg(
+                    code="DEFAULT",
+                    output_type="html",
+                    formatter="simplereport",
+                    output_name_pattern="report1",
+                    bands_format={},
+                )},
                 parameters=params,
             )
+
         bands = {"Root": ReportBand(name="Root", children=[])}
         for b in self.bands:
             if b.name in bands:
@@ -208,3 +215,8 @@ class Report(Document):
             templates=templates,
             parameters=params,
         )
+
+    def get_datasource(self):
+        from noc.core.datasources.loader import loader
+
+        return loader[self.bands[0].queries[0].datasource]
