@@ -525,6 +525,7 @@ class TableSection(ReportSection):
             s += [c.format_html_subtotal(current_section.data[c]) for c in self.columns]
             s += ["</tr>"]
             return s
+
         if include_buttons:
             s = [
                 "<script type='text/javascript' src='/ui/pkg/jquery.table2csv/jquery.table2csv.js'></script>",

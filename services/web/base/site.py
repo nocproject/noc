@@ -11,6 +11,7 @@ import glob
 import os
 import hashlib
 import logging
+import types
 from collections import defaultdict
 import operator
 from urllib.parse import urlencode
@@ -124,6 +125,7 @@ class Site(object):
         """
         Decorator for application view
         """
+
         # Render view
         def inner(request, *args, **kwargs):
             def nq(s):
@@ -399,7 +401,7 @@ class Site(object):
         from .reportapplication import ReportConfigApplication
 
         for report in Report.objects.filter():
-            app = ReportConfigApplication
+            app = types.new_class("ReportConfigApplication", (ReportConfigApplication,))
             app.report_id = str(report.id)
             self.do_register(app)
 
