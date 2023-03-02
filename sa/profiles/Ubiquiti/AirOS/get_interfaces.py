@@ -18,5 +18,5 @@ class Script(BaseScript):
     BULK = False
 
     def clean_iftype(self, ifname, ifindex):
-        iftype = self.snmp.get(mib["IF-MIB::ifType.%s" % ifindex], cached=True)
+        iftype = self.snmp.get(mib[f"IF-MIB::ifType.{ifindex}"], cached=True)
         return self.profile.get_interface_type(iftype)
