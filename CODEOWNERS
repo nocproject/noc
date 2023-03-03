@@ -22,7 +22,10 @@
 /tests/ @dv
 
 # Dependencies
-/requirements/ @dv @freeseacher
+/.requirements/ @dv @aversant @EKbfh
+
+# Ansible Deploy
+/ansible/ @EKbfh
 
 # Fixes
 /fixes/ @dv @aversant
@@ -31,11 +34,11 @@
 /sa/profiles/ @dv @aversant @dmitryluhtionov
 
 # Configuration
-/config.py @dv @aversant @freeseacher
+/config.py @dv @aversant @EKbfh
 
 # Core
 /core/ @dv @aversant
-/core/config/ @dv @aversant @freeseacher
+/core/config/ @dv @aversant @EKbfh
 
 # Models
 models/ @dv @aversant
@@ -50,14 +53,13 @@ models/ @dv @aversant
 /rust/ @dv
 
 # Documentation
-/docs/ @dv
-/docs/src/en/ @dv
+/docs/ @dv @EKbfh @aversant
 
 # Codeowners itself
 CODEOWNERS @dv
 
 # CI settings
-/.gitlab-ci.yml @dv @freeseacher
+/.gitlab-ci.yml @dv @EKbfh
 
 # Docker files
-/.docker/ @dv @freeseacher
+/.docker/ @dv @EKbfh
