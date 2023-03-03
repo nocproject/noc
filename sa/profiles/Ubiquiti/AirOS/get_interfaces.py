@@ -12,7 +12,6 @@ from noc.core.mib import mib
 
 
 class Script(BaseScript):
-
     name = "Ubiquiti.AirOS.get_interfaces"
     interface = IGetInterfaces
     BULK = False
