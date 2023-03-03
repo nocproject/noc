@@ -76,6 +76,9 @@
     - reload systemd
     - restart mongod
 
+- name: "Flush handlers"
+  meta: flush_handlers
+
 - name: Copy systemd tmpfile
   template:
     src: etc/tmpfiles.d/mongo.conf.j2

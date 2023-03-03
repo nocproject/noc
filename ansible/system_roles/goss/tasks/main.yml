@@ -1,24 +1,24 @@
 ---
 - block:
-  - name: "Include OS-specific tasks"
-    include_tasks: "os/{{ ansible_distribution }}_{{ ansible_distribution_major_version }}/main.yml"
-    when:
-      - has_svc_goss is defined
+    - name: "Include OS-specific tasks"
+      include_tasks: "os/{{ ansible_distribution }}_{{ ansible_distribution_major_version }}/main.yml"
+      when:
+        - has_svc_goss is defined
 
-  - name: "install Goss"
-    import_tasks: "install.yml"
-    when:
-      - ansible_distribution != 'FreeBSD'
-      - has_svc_goss is defined
+    - name: "install Goss"
+      import_tasks: "install.yml"
+      when:
+        - ansible_distribution != 'FreeBSD'
+        - has_svc_goss is defined
 
-  # yamllint disable rule:indentation
-  - name: place main check file
-    copy:
-      content: |
-        ---
-        gossfile:
-          {{ goss_conf_dir }}/*.yml: {}
-      dest: "{{ goss_conf }}/goss.yaml"
+    # yamllint disable rule:indentation
+    - name: place main check file
+      copy:
+        content: |
+          ---
+          gossfile:
+            {{ goss_conf_dir }}/*.yml: {}
+        dest: "{{ goss_conf }}/goss.yaml"
   # yamllint enable rule:indentation
 
   when:

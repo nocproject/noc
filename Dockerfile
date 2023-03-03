@@ -16,7 +16,9 @@ WORKDIR /opt/noc/
 ARG BUILD_PACKAGES="build-essential cmake gcc libffi-dev libmemcached-dev libssl-dev zlib1g-dev"
 
 RUN \
-    apt update && apt-get install -y --no-install-recommends \
+    set -x \
+    && apt-get update\
+    && apt-get install -y --no-install-recommends \
     bzip2 \
     curl \
     libffi7 \
@@ -25,7 +27,20 @@ RUN \
     libpq-dev \
     $BUILD_PACKAGES \
     && pip3 install --upgrade pip \
-    && (./scripts/build/get-noc-requirements.py activator classifier cache-memcached cache-redis login-ldap login-pam login-radius prod-tools cython testing sender-kafka ping | pip3 install -r /dev/stdin )\
+    && pip3 install\
+    -r ./.requirements/node.txt\
+    -r ./.requirements/activator.txt\
+    -r ./.requirements/classifier.txt\
+    -r ./.requirements/cache-memcached.txt\
+    -r ./.requirements/cache-redis.txt\
+    -r ./.requirements/login-ldap.txt\
+    -r ./.requirements/login-pam.txt\
+    -r ./.requirements/login-radius.txt\
+    -r ./.requirements/prod-tools.txt\
+    -r ./.requirements/cython.txt\
+    -r ./.requirements/testing.txt\
+    -r ./.requirements/sender-kafka.txt\
+    -r ./.requirements/ping.txt\
     && python3 ./scripts/deploy/install-packages requirements/web.json \
     && python3 ./scripts/deploy/install-packages requirements/card.json \
     && python3 ./scripts/deploy/install-packages requirements/bi.json \
@@ -54,11 +69,15 @@ EXPOSE 1200
 FROM code AS dev
 
 RUN \
-    apt update && apt-get install -y --no-install-recommends \
+    apt-get update\
+    && apt-get install -y --no-install-recommends \
     snmp \
     vim \
     git \
-    && (./scripts/build/get-noc-requirements.py dev | pip3 install -r /dev/stdin )\
+    && pip3 install\
+    -r ./.requirements/dev.txt\
+    -r ./.requirements/lint.txt\
+    -r ./.requirements/test.txt\
     && rm -rf /var/lib/apt/lists/*
 
 #

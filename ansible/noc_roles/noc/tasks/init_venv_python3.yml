@@ -169,32 +169,165 @@
   register: s
   changed_when: "'CHANGED' in s.stdout"
 
-- name: Combine service list for requirements install
-  set_fact:
-    node_noc_components: "{{ lookup('template', './templates/requirements.list.j2') }}"
-  tags:
-    - requirements
-
-- name: Generate package list for install
-  command: "./scripts/build/get-noc-requirements.py {{ node_noc_components | replace('\r\n', ' ') }}"
-  args:
-    chdir: "{{ noc_root }}"
-  register: noc_pip_packages
-  tags:
-    - requirements
-
-- name: Install ALL necessary python packages
+- name: Install -activator- python packages
   pip:
     chdir: "{{ noc_root }}"
-    name: "{{ noc_pip_packages.stdout.split('\n') }}"
+    requirements: ./.requirements/activator.txt
     virtualenv: "{{ noc_root }}"
     extra_args: "--upgrade"
   environment:
     http_proxy: "{{ http_proxy }}"
     https_proxy: "{{ http_proxy }}"
-    PATH: "{{ ansible_env.PATH }}:/usr/pgsql-{{ postgres_version }}/bin/"
-    CFLAGS: "{{ pip_cflags | default('') }}"
-    LDFLAGS: "{{ pip_ldflags | default('') }}"
+  when:
+    - "'svc-activator-exec' in groups and inventory_hostname in groups['svc-activator-exec']"
+  tags:
+    - requirements
+
+- name: Install -classifier- python packages
+  pip:
+    chdir: "{{ noc_root }}"
+    requirements: ./.requirements/classifier.txt
+    virtualenv: "{{ noc_root }}"
+    extra_args: "--upgrade"
+  environment:
+    http_proxy: "{{ http_proxy }}"
+    https_proxy: "{{ http_proxy }}"
+  when:
+    - "'svc-classifier-exec' in groups and inventory_hostname in groups['svc-classifier-exec']"
+  tags:
+    - requirements
+
+- name: Install -login- python packages 1
+  pip:
+    chdir: "{{ noc_root }}"
+    requirements: ./.requirements/login-ldap.txt
+    virtualenv: "{{ noc_root }}"
+    extra_args: "--upgrade"
+  environment:
+    http_proxy: "{{ http_proxy }}"
+    https_proxy: "{{ http_proxy }}"
+  when:
+    - login_methods is defined and 'ldap' in login_methods
+  tags:
+    - requirements
+
+- name: Install -login- python packages 2
+  pip:
+    chdir: "{{ noc_root }}"
+    requirements: ./.requirements/login-radius.txt
+    virtualenv: "{{ noc_root }}"
+    extra_args: "--upgrade"
+  environment:
+    http_proxy: "{{ http_proxy }}"
+    https_proxy: "{{ http_proxy }}"
+  when:
+    - login_methods is defined and 'radius' in login_methods
+  tags:
+    - requirements
+
+- name: Install -supervisor- python packages
+  pip:
+    chdir: "{{ noc_root }}"
+    requirements: ./.requirements/supervisor.txt
+    virtualenv: "{{ noc_root }}"
+    extra_args: "--upgrade"
+  environment:
+    http_proxy: "{{ http_proxy }}"
+    https_proxy: "{{ http_proxy }}"
+  tags:
+    - requirements
+
+- name: Install -prod-tools- python packages
+  pip:
+    chdir: "{{ noc_root }}"
+    requirements: ./.requirements/prod-tools.txt
+    virtualenv: "{{ noc_root }}"
+    extra_args: "--upgrade"
+  environment:
+    http_proxy: "{{ http_proxy }}"
+    https_proxy: "{{ http_proxy }}"
+  when:
+    - noc_env_type == "prod"
+  tags:
+    - requirements
+
+- name: Install -memcached- python packages
+  pip:
+    chdir: "{{ noc_root }}"
+    requirements: ./.requirements/cache-memcached.txt
+    virtualenv: "{{ noc_root }}"
+    extra_args: "--upgrade"
+  environment:
+    http_proxy: "{{ http_proxy }}"
+    https_proxy: "{{ http_proxy }}"
+  when:
+    - "'svc-memcached-exec' in groups and groups['svc-memcached-exec']|length>0 "
+  tags:
+    - requirements
+
+- name: Install -redis- python packages
+  pip:
+    chdir: "{{ noc_root }}"
+    requirements: ./.requirements/cache-redis.txt
+    virtualenv: "{{ noc_root }}"
+    extra_args: "--upgrade"
+  environment:
+    http_proxy: "{{ http_proxy }}"
+    https_proxy: "{{ http_proxy }}"
+  when:
+    - "'svc-redis-exec' in groups and groups['svc-redis-exec']|length>0"
+  tags:
+    - requirements
+
+- name: Install -kafka- python packages
+  pip:
+    chdir: "{{ noc_root }}"
+    requirements: ./.requirements/sender-kafka.txt
+    virtualenv: "{{ noc_root }}"
+    extra_args: "--upgrade"
+  environment:
+    http_proxy: "{{ http_proxy }}"
+    https_proxy: "{{ http_proxy }}"
+  when:
+    - "'svc-kafkasender-exec' in groups and inventory_hostname in groups['svc-kafkasender-exec']"
+  tags:
+    - requirements
+
+- name: Install -ping- python packages
+  pip:
+    chdir: "{{ noc_root }}"
+    requirements: ./.requirements/ping.txt
+    virtualenv: "{{ noc_root }}"
+    extra_args: "--upgrade"
+  environment:
+    http_proxy: "{{ http_proxy }}"
+    https_proxy: "{{ http_proxy }}"
+  when:
+    - "'svc-ping-exec' in groups and inventory_hostname in groups['svc-ping-exec']"
+  tags:
+    - requirements
+
+- name: Install -node- python packages
+  pip:
+    chdir: "{{ noc_root }}"
+    requirements: ./.requirements/node.txt
+    virtualenv: "{{ noc_root }}"
+    extra_args: "--upgrade"
+  environment:
+    http_proxy: "{{ http_proxy }}"
+    https_proxy: "{{ http_proxy }}"
+  tags:
+    - requirements
+
+- name: Install -cython- python packages
+  pip:
+    chdir: "{{ noc_root }}"
+    requirements: ./.requirements/cython.txt
+    virtualenv: "{{ noc_root }}"
+    extra_args: "--upgrade"
+  environment:
+    http_proxy: "{{ http_proxy }}"
+    https_proxy: "{{ http_proxy }}"
   tags:
     - requirements
 
