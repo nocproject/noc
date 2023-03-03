@@ -39,81 +39,55 @@ check labels:
   allow_failure: true
   retry: 2
 
-flake8:
+py-lint:
   stage: Lint
-  image: registry.getnoc.com/infrastructure/noc-py-lint:master
+  image: python:3.11-bullseye
   script:
     - set -x
-    - FLIST=$(git --no-pager diff --diff-filter=d --name-only $(git merge-base --fork-point origin/$CI_MERGE_REQUEST_TARGET_BRANCH_NAME) $CI_COMMIT_SHA  | egrep ".py$" | grep -v ".docker/"|| true)
-    - >
-      if [ ! -z "$FLIST" ];
-      then
-        mkdir -p build/reports;
-        flake8 --format junit-xml $FLIST > build/reports/flake8-junit.xml || flake8 $FLIST;
-      else
-        echo "No files to lint"
-        true;
-      fi
-  only:
-    refs:
-      - merge_requests
-    changes:
-      - "*.py"
-      - "**/*.py"
-  tags:
-    - docker
-  artifacts:
-    reports:
-      junit: ./build/reports/flake8-junit.xml
-    expire_in: 7 days
-  allow_failure: false
-
-ruff:
-  stage: Lint
-  image: registry.getnoc.com/infrastructure/noc-py-lint:master
-  script:
-    - set -x
+    # Install python dependencies
+    - pip install --upgrade pip
+    - pip install -r .requirements/lint.txt
+    # Create directory for reports
     - mkdir -p build/reports
-    - ruff -q --format=junit . > build/reports/ruff-junit.xml
+    # Get list of changed files
+    # @todo: Deprecated, remove in future
+    - FLIST=$(git --no-pager diff --diff-filter=d --name-only $(git merge-base --fork-point origin/$CI_MERGE_REQUEST_TARGET_BRANCH_NAME) $CI_COMMIT_SHA  | egrep ".py$" | grep -v ".docker/"|| true)
+    # Check formatting
+    - black --check --diff .
+    - STATUS_BLACK=$?
+    # Ruff linter
+    - ruff -q --format=junit . > build/reports/junit-ruff.xml
+    - STATUS_RUFF=$?
+    # flake8
+    # @todo: Will be replaced by ruff
+    - >
+      if [ ! -z "$FLIST" ];
+      then
+        flake8 --format junit-xml $FLIST > build/reports/junit-flake8.xml;
+        STATUS_FLAKE8=$?;
+      else
+        echo "No files to lint";
+        true;
+        STATUS_FLAKE8=$?;
+      fi
+    # Final result
+    - test $STATUS_BLACK -a $STATUS_RUFF -a $STATUS_FLAKE
   only:
     refs:
       - merge_requests
     changes:
       - "*.py"
       - "**/*.py"
+      - ".requirements/*.txt"
+      - ".gitlab-ci.yml"
+      - "pyproject.toml"
   tags:
     - docker
   artifacts:
     reports:
-      junit: ./build/reports/ruff-junit.xml
+      junit: ./build/reports/junit-*.xml
     expire_in: 7 days
   allow_failure: false
-
-black:
-  stage: Lint
-  image: registry.getnoc.com/infrastructure/noc-py-lint:master
-  script:
-    - set -x
-    - FLIST=$(git --no-pager diff --diff-filter=d --name-only $(git merge-base --fork-point origin/$CI_MERGE_REQUEST_TARGET_BRANCH_NAME) $CI_COMMIT_SHA  | egrep ".py$" | grep -v ".docker/"|| true)
-    - >
-      if [ ! -z "$FLIST" ];
-      then
-        black --check --diff $FLIST;
-      else
-        echo "No files to lint"
-        true;
-      fi
-  only:
-    refs:
-      - merge_requests
-    changes:
-      - "*.py"
-      - "**/*.py"
-  tags:
-    - docker
-  allow_failure: false
-
-# @todo: Rust fmt
 
 mypy:
   stage: Lint
@@ -170,29 +144,6 @@ prettier:
   tags:
     - docker
   allow_failure: false
-
-pylint:
-  stage: Lint
-  image: registry.getnoc.com/infrastructure/noc-py-lint:master
-  script:
-    - set -x
-    - FLIST=$(git --no-pager diff --diff-filter=d --name-only $(git merge-base --fork-point origin/$CI_MERGE_REQUEST_TARGET_BRANCH_NAME) $CI_COMMIT_SHA | egrep ".py$" | grep -v ".docker/"|| true)
-    - >
-      if [ ! -z "$FLIST" ];
-      then
-        pylint "$FLIST";
-      else
-        echo "No files to lint"
-        true;
-      fi
-  only:
-    refs:
-      - merge_requests
-    changes:
-      - "*.py"
-      - "**/*.py"
-  tags:
-    - docker
 
 # Test python code section
 py:test:
