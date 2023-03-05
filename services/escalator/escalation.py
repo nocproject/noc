@@ -320,6 +320,13 @@ class EscalationSequence(BaseSequence):
             ActiveAlarm.objects.filter(root=self.alarm.id, rca_type=RCA_DOWNLINK_MERGE).first()
         )
 
+    def has_unavailable_alarm(self) -> bool:
+        """
+        Return true if alarm is unavailable service
+        :return:
+        """
+        return self.alarm.alarm_class.name == "NOC | Managed Object | Ping Failed"
+
     def get_ctx(self):
         """
         Get escalation context
@@ -410,7 +417,7 @@ class EscalationSequence(BaseSequence):
             metrics["escalation_tt_fail"] += 1
             return None
         # Build escalation context
-        e_ctx_items = [ECtxItem(id=mo.id, tt_id=mo.tt_system_id)]
+        e_ctx_items = [ECtxItem(id=str(mo.id), tt_id=mo.tt_system_id)]
         items_map = {str(mo.id): self.escalation_doc.items[0]}
         for item in self.escalation_doc.items[1:]:
             # @todo: Check escalation status for already escalated and maintenance?
@@ -438,6 +445,7 @@ class EscalationSequence(BaseSequence):
             subject=esc_item.template.render_subject(**ctx),
             body=esc_item.template.render_body(**ctx),
             leader=ECtxItem(id=mo.id, tt_id=mo.tt_system_id),
+            is_unavailable=self.has_unavailable_alarm(),
             items=e_ctx_items,
         )
         # Render TT subject and body
@@ -865,6 +873,7 @@ class DeescalationSequence(BaseSequence):
             self.tts.get_system().close(
                 DeescalationContext(
                     id=self.get_remote_tt_id(),
+                    is_unavailable=self.has_unavailable_alarm(),
                     subject=self.subject,
                     body=self.body,
                     login=self.login,
@@ -963,6 +972,13 @@ class DeescalationSequence(BaseSequence):
         """
         alarm_ids = [a.alarm for a in self.escalation_doc.items]
         return bool(ActiveAlarm.objects.filter(id__in=alarm_ids))
+
+    def has_unavailable_alarm(self) -> bool:
+        """
+        Return true if alarm is unavailable service
+        :return:
+        """
+        return self.alarm.alarm_class.name == "NOC | Managed Object | Ping Failed"
 
     def process(self) -> None:
         """

@@ -70,6 +70,7 @@ class EscalationContext(BaseModel):
         queue: TT system's queue to place TT
         login: TT system's login
         timestamp: Alarm timestamp.
+        is_unavailable: Alarm triggered unavailable items
         items: Managed object references. Leader is first.
     """
 
@@ -80,6 +81,7 @@ class EscalationContext(BaseModel):
     subject: str
     body: str
     items: List[EscalationItem]
+    is_unavailable: bool = False
 
     @property
     def leader(self) -> EscalationItem:
@@ -100,6 +102,7 @@ class DeescalationContext(BaseModel):
         queue: TT system's queue to search TT
         login: TT system's login
         timestamp: Alarm timestamp.
+        is_unavailable: Alarm triggered unavailable items
     """
 
     id: str
@@ -108,6 +111,7 @@ class DeescalationContext(BaseModel):
     timestamp: Optional[datetime] = None
     subject: str
     body: str
+    is_unavailable: bool = False
 
 
 class TTRef(BaseModel):
