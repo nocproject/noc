@@ -10,7 +10,7 @@ from typing import List, Optional
 from datetime import datetime
 
 # Third-party modules
-from pydantic import BaseModel
+from pydantic import BaseModel, PrivateAttr
 
 
 class EscalationStatus(BaseModel):
@@ -31,21 +31,21 @@ class EscalationItem(BaseModel):
         tt_id: Managed Object's id in TT system.
     """
 
-    id: str
+    id: int
     tt_id: str
-    _status: Optional[EscalationStatus] = None
+    _status: Optional[EscalationStatus] = PrivateAttr()
 
     def set_ok(self) -> None:
         """Mark item as processed successfully."""
-        self.__status = EscalationStatus(status="ok")
+        self._status = EscalationStatus(status="ok")
 
     def set_fail(self, msg: str) -> None:
         """Mark item as failed."""
-        self.__status = EscalationStatus(status="fail", msg=msg)
+        self._status = EscalationStatus(status="fail", msg=msg)
 
     def set_temp(self, msg: str) -> None:
         """Mark item as temporary."""
-        self.__status = EscalationStatus(status="temp", msg=msg)
+        self._status = EscalationStatus(status="temp", msg=msg)
 
     def get_status(self) -> EscalationStatus:
         """
@@ -54,7 +54,7 @@ class EscalationItem(BaseModel):
         Returns:
             Escalation status, if set. None otherwise.
         """
-        return self.__status
+        return self._status
 
 
 class EscalationContext(BaseModel):

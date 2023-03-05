@@ -427,12 +427,9 @@ class EscalationSequence(BaseSequence):
                 item.escalation_status = "fail"
                 item.escalation_error = err
                 continue
-            ei = ECtxItem(
-                id=str(alarm.managed_object.id),
-                tt_id=alarm.managed_object.tt_system_id,
-            )
+            ei = ECtxItem(id=str(alarm.managed_object.id), tt_id=alarm.managed_object.tt_system_id)
             e_ctx_items.append(ei)
-            items_map[alarm.managed_object.id] = item
+            items_map[str(alarm.managed_object.id)] = item
         e_ctx = EscalationContext(
             queue=mo.tt_queue,
             reason=pre_reason,
@@ -468,17 +465,20 @@ class EscalationSequence(BaseSequence):
             # Project result to escalation items
             for item in e_ctx.items:
                 ei = items_map[item.id]
-                e_status = item.get_status()
-                if not e_status:
+                try:
+                    e_status = item.get_status()
+                except AttributeError:
                     self.log_alarm("Adapter malfunction. Status for {item.id} is not set.")
                     continue
-                elif e_status.is_ok:
-                    self.log_alarm("{item.id} is appended successfully")
+                if e_status.is_ok:
+                    self.log_alarm(f"{item.id} is appended successfully")
                 else:
-                    self.log_alarm("Failed to append {item.id}: {e_status.msg} ({e_status.status})")
-                item.escalation_status = e_status.status
+                    self.log_alarm(
+                        f"Failed to append {item.id}: {e_status.msg} ({e_status.status})"
+                    )
+                ei.escalation_status = e_status.status
                 if e_status.msg:
-                    item.escalation_error = e_status.msg
+                    ei.escalation_error = e_status.msg
             metrics["escalation_tt_create"] += 1
         except TTError as e:
             self.log_alarm(f"Failed to create TT: {e}")
@@ -817,9 +817,9 @@ class DeescalationSequence(BaseSequence):
             close_timestamp__exists=False, items__0__alarm=self.alarm.id
         ).first()
         if not escalation_doc:
-            self.logger.error("Cannot find escalation document. Stoppinng")
+            self.logger.error("Cannot find escalation document. Stopping")
             self.stop_sequence()
-        self.escalation_doc = escalation_doc
+        # self.escalation_doc = escalation_doc
         return escalation_doc
 
     def get_tts(self, tt_id: Optional[str]) -> Optional[TTSystem]:
