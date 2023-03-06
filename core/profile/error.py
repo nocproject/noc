@@ -9,6 +9,6 @@
 from noc.core.error import NOCError, ERR_SA_NO_PROFILE
 
 
-class NoSAProfileError(NOCError):
-    default_msg = "SA profile not found"
+class SANoProfileError(NOCError):
+    default_msg = "SA Profile not found"
     default_code = ERR_SA_NO_PROFILE
