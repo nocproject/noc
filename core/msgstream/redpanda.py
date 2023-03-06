@@ -91,9 +91,7 @@ class RedPandaClient(object):
             delay: Average delay in seecods.
             deviation: Deviation from delay in seconds.
         """
-        await asyncio.sleep(
-            delay - deviation + 2 * deviation * random.random()
-        )
+        await asyncio.sleep(delay - deviation + 2 * deviation * random.random())
 
     async def fetch_metadata(
         self, stream: Optional[str] = None, wait_for_stream: bool = False
