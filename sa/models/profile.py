@@ -21,6 +21,7 @@ from noc.core.prettyjson import to_json
 from noc.core.model.decorator import on_delete_check
 from noc.core.change.decorator import change
 from noc.core.profile.loader import loader, GENERIC_PROFILE
+from noc.core.profile.error import NoSAProfileError
 
 id_lock = threading.Lock()
 
@@ -90,7 +91,10 @@ class Profile(Document):
         return os.path.join(vendor, "%s.json" % soft)
 
     def get_profile(self):
-        return loader.get_profile(self.name)()
+        try:
+            return loader.get_profile(self.name)()
+        except TypeError:
+            raise NoSAProfileError()
 
     @property
     def is_generic(self):
