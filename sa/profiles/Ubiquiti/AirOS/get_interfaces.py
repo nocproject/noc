@@ -12,11 +12,10 @@ from noc.core.mib import mib
 
 
 class Script(BaseScript):
-
     name = "Ubiquiti.AirOS.get_interfaces"
     interface = IGetInterfaces
     BULK = False
 
     def clean_iftype(self, ifname, ifindex):
-        iftype = self.snmp.get(mib["IF-MIB::ifType.%s" % ifindex], cached=True)
+        iftype = self.snmp.get(mib["IF-MIB::ifType", ifindex], cached=True)
         return self.profile.get_interface_type(iftype)
