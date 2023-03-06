@@ -41,7 +41,7 @@ class Migration(BaseMigration):
                             Job.ATTR_RUNS: 0,
                             Job.ATTR_FAULTS: 0,
                             Job.ATTR_OFFSET: random.random(),
-                            Job.ATTR_TS: row.get(Job.ATTR_TS, now)
+                            Job.ATTR_TS: row.get(Job.ATTR_TS, now),
                         }
                     )
                 ]
