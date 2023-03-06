@@ -7,9 +7,11 @@
 # ----------------------------------------------------------------------
 
 # Python modules
+import argparse
 import sys
-from typing import Iterable
 from dataclasses import dataclass
+from io import TextIOWrapper
+from typing import Iterable, Optional
 from xml.sax.saxutils import escape
 
 
@@ -19,9 +21,11 @@ class Item(object):
     text: str
 
 
-def iter_problems() -> Iterable[Item]:
+def iter_problems(tee:bool=False) -> Iterable[Item]:
     section = []
     for line in sys.stdin:
+        if tee:
+            sys.stdout.write(line)
         if line.startswith("+++"):
             section = []
             continue
@@ -32,8 +36,8 @@ def iter_problems() -> Iterable[Item]:
         section.append(line)
 
 
-def main() -> int:
-    problems = list(iter_problems())
+def process(out:Optional[str]=None, tee:bool=False) -> int:
+    problems = list(iter_problems(tee))
     r = [
         '<?xml version="1.0" encoding="utf-8"?>',
         f'<testsuite errors="0" failures="{len(problems)}" '
@@ -48,11 +52,22 @@ def main() -> int:
             "  </testcase>",
         ]
     r.append("</testsuite>")
-    print("\n".join(r))
     if problems:
+        if out:
+            with(open(out,"w")) as f:
+                f.write("\n".join(r))
+        else:
+            sys.stdout.write("\n".join(r))
         return 1
     return 0
 
+def main() -> int:
+    parser = argparse.ArgumentParser(prog="black-junit.py", description="Format black output to JUnit XML")
+    parser.add_argument("-t","--tee", dest="tee", action="store_true")
+    parser.add_argument("-o", "--output", dest="output")
+    args = parser.parse_args()
+    return process(out=args.output, tee=args.tee)
+    return 0
 
 if __name__ == "__main__":
     sys.exit(main())

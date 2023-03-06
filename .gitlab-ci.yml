@@ -53,7 +53,7 @@ py-lint:
     # @todo: Deprecated, remove in future
     - FLIST=$(git --no-pager diff --diff-filter=d --name-only $(git merge-base --fork-point origin/$CI_MERGE_REQUEST_TARGET_BRANCH_NAME) $CI_COMMIT_SHA  | egrep ".py$" | grep -v ".docker/"|| true)
     # Check formatting
-    - black --check --diff . 2>&1 | ./scripts/ci/black-junit.py > build/reports/junit-black.xml
+    - black --check --diff . 2>&1 | ./scripts/ci/black-junit.py --tee --output=build/reports/junit-black.xml
     - STATUS_BLACK=$?
     # Ruff linter
     - ruff -q --format=junit . > build/reports/junit-ruff.xml
