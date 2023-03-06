@@ -19,7 +19,7 @@ target-version = "py39"
 select = [
   # "E", # Pycodestyle Error
   "F", # Pyflakes
-  # "W", # Pycodestyle Warning
+  "W", # Pycodestyle Warning
   # "C90", # mccabe
   # "I", # isort
   # "D", # Pydocstyle
