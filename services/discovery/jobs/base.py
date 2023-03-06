@@ -37,7 +37,7 @@ from noc.inv.models.discoveryid import DiscoveryID
 from noc.inv.models.interface import Interface
 from noc.inv.models.link import Link
 from noc.core.mongo.connection import get_db
-from noc.core.service.error import RPCError, RPCRemoteError, RPCNoService
+from noc.core.service.error import RPCError, RPCRemoteError
 from noc.core.error import (
     ERR_CLI_AUTH_FAILED,
     ERR_CLI_NO_SUPER_COMMAND,
@@ -45,13 +45,11 @@ from noc.core.error import (
     ERR_CLI_SSH_PROTOCOL_ERROR,
     ERR_CLI_CONNECTION_REFUSED,
     ERR_CLI_PASSWORD_TIMEOUT,
-    ERR_RPC_NO_SERVICE,
 )
 from noc.core.span import Span
 from noc.core.cache.base import cache
 from noc.core.perf import metrics
 from noc.core.comp import smart_bytes
-from noc.core.dcs.error import ResolutionError
 
 
 class MODiscoveryJob(PeriodicJob):
@@ -620,9 +618,6 @@ class DiscoveryCheck(object):
                 )
                 self.logger.error("Terminated due RPC error: %s", e)
                 span.set_error_from_exc(e, e.default_code)
-            except ResolutionError:
-                self.logger.error("Terminated due RPC error: Not found active service")
-                span.set_error_from_exc(RPCNoService(msg="Not found active service"), code=ERR_RPC_NO_SERVICE)
             except Exception as e:
                 self.set_problem(
                     alarm_class="Discovery | Error | Unhandled Exception",

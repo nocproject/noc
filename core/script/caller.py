@@ -88,9 +88,13 @@ class Session(object):
     def close(self):
         if not self._hints[0]:
             return  # Not open
-        open_sync_rpc(
-            "activator", pool=self._pool, calling_service=CALLING_SERVICE, hints=self._hints
-        ).close_session(self._id)
+        try:
+            open_sync_rpc(
+                "activator", pool=self._pool, calling_service=CALLING_SERVICE, hints=self._hints
+            ).close_session(self._id)
+        except RPCNoService:
+            # Reboot service
+            return
 
 
 class SessionContext(object):
