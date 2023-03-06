@@ -13,26 +13,31 @@
 		// Dockerfile target
 		"target": "dev"
 	},
-	// Set *default* container specific settings.json values on container create.
-	"settings": {
-		"python.formatting.blackPath": "/usr/local/bin/black",
-		"python.formatting.provider": "black",
-		"python.pythonPath": "/usr/local/bin/python",
-		"[python]": {
-			"editor.codeActionsOnSave": {
-				"source.fixAll": true,
-			}
-		},
+	// VSCode settings
+	"customizations": {
+		"vscode": {
+			"settings": {
+				"python.formatting.blackPath": "/usr/local/bin/black",
+				"python.formatting.provider": "black",
+				"python.pythonPath": "/usr/local/bin/python",
+				"[python]": {
+					"editor.formatOnSave": true,
+					"editor.codeActionsOnSave": {
+						"source.fixAll": true
+					}
+				}
+			},
+			// Add the IDs of extensions you want installed when the container is created.
+			"extensions": [
+				"ms-python.python",
+				"yzhang.markdown-all-in-one",
+				"ms-azuretools.vscode-docker",
+				"be5invis.toml",
+				"redhat.vscode-yaml",
+				"charliermarsh.ruff"
+			]
+		}
 	},
-	// Add the IDs of extensions you want installed when the container is created.
-	"extensions": [
-		"ms-python.python",
-		"yzhang.markdown-all-in-one",
-		"ms-azuretools.vscode-docker",
-		"be5invis.toml",
-		"redhat.vscode-yaml",
-		"charliermarsh.ruff",
-	],
 	// Use 'forwardPorts' to make a list of ports inside the container available locally.
 	// "forwardPorts": [],
 	// Uncomment the next line to run commands after the container is created - for example installing curl.
