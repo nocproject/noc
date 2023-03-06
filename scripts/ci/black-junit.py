@@ -10,7 +10,6 @@
 import argparse
 import sys
 from dataclasses import dataclass
-from io import TextIOWrapper
 import os
 from typing import Iterable, Optional
 from xml.sax.saxutils import escape
