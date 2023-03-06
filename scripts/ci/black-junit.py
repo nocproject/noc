@@ -48,7 +48,7 @@ def process(out:Optional[str]=None, tee:bool=False) -> int:
         cls_name = item.path.replace(os.sep, ".")[:-3]
         r += [
             f'  <testcase classname="black.{cls_name}" file="{escape(item.path)}" line="1" '
-            f'name="black" '
+            f'name="{item.path}" '
             'time="0.0">',
             f"    <failure>{escape(item.text)}</failure>",
             "  </testcase>",
