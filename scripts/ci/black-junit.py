@@ -22,7 +22,7 @@ class Item(object):
     text: str
 
 
-def iter_problems(tee:bool=False) -> Iterable[Item]:
+def iter_problems(tee: bool = False) -> Iterable[Item]:
     section = []
     for line in sys.stdin:
         if tee:
@@ -37,7 +37,7 @@ def iter_problems(tee:bool=False) -> Iterable[Item]:
         section.append(line)
 
 
-def process(out:Optional[str]=None, tee:bool=False) -> int:
+def process(out: Optional[str] = None, tee: bool = False) -> int:
     problems = list(iter_problems(tee))
     r = [
         '<?xml version="1.0" encoding="utf-8"?>',
@@ -56,19 +56,23 @@ def process(out:Optional[str]=None, tee:bool=False) -> int:
     r.append("</testsuite>")
     if problems:
         if out:
-            with(open(out,"w")) as f:
+            with (open(out, "w")) as f:
                 f.write("\n".join(r))
         else:
             sys.stdout.write("\n".join(r))
         return 1
     return 0
 
+
 def main() -> int:
-    parser = argparse.ArgumentParser(prog="black-junit.py", description="Format black output to JUnit XML")
-    parser.add_argument("-t","--tee", dest="tee", action="store_true")
+    parser = argparse.ArgumentParser(
+        prog="black-junit.py", description="Format black output to JUnit XML"
+    )
+    parser.add_argument("-t", "--tee", dest="tee", action="store_true")
     parser.add_argument("-o", "--output", dest="output")
     args = parser.parse_args()
     return process(out=args.output, tee=args.tee)
+
 
 if __name__ == "__main__":
     sys.exit(main())
