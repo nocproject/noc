@@ -11,6 +11,7 @@ import argparse
 import sys
 from dataclasses import dataclass
 from io import TextIOWrapper
+import os
 from typing import Iterable, Optional
 from xml.sax.saxutils import escape
 
@@ -44,8 +45,9 @@ def process(out:Optional[str]=None, tee:bool=False) -> int:
         f'name="black" skipped="0" tests="{len(problems)}" time="0.0">',
     ]
     for item in problems:
+        cls_name = item.path.replace(os.sep, ".")[:-3]
         r += [
-            f'  <testcase classname="black" file="{escape(item.path)}" line="1" '
+            f'  <testcase classname="black.{cls_name}" file="{escape(item.path)}" line="1" '
             f'name="black" '
             'time="0.0">',
             f"    <failure>{escape(item.text)}</failure>",
@@ -67,7 +69,6 @@ def main() -> int:
     parser.add_argument("-o", "--output", dest="output")
     args = parser.parse_args()
     return process(out=args.output, tee=args.tee)
-    return 0
 
 if __name__ == "__main__":
     sys.exit(main())
