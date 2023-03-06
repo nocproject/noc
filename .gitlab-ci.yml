@@ -71,7 +71,7 @@ py-lint:
         STATUS_FLAKE8=$?;
       fi
     # Final result
-    - test $STATUS_BLACK -a $STATUS_RUFF -a $STATUS_FLAKE
+    - test $STATUS_BLACK -a $STATUS_RUFF -a $STATUS_FLAKE8
   only:
     refs:
       - merge_requests
