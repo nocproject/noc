@@ -44,7 +44,7 @@ def main() -> int:
             f'  <testcase classname="black" file="{escape(item.path)}" line="1" '
             f'name="black" '
             'time="0.0">',
-            f'    <failure message="{escape(item.text)}"></failure>',
+            f"    <failure>{escape(item.text)}</failure>",
             "  </testcase>",
         ]
     r.append("</testsuite>")
