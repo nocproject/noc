@@ -1,86 +1,105 @@
 # ----------------------------------------------------------------------
 # Base TT System
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2017, The NOC Project
+# Copyright (C) 2007-2023, The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
 # Python modules
 import logging
+from typing import Optional, List
 
 # NOC modules
+from .types import DeescalationContext, EscalationContext, TTInfo, TTCommentRequest
 from .error import TTError, TemporaryTTError
 
 
 class BaseTTSystem(object):
-    promote_group_tt = False
+    """
+    Base class for TT integration adapter.
+
+    Args:
+        name: TT system name
+        connection: Connection settings string, as defined
+            in TTSystem.connection
+
+    Attributes:
+        TTError: Basic error.
+        TemporaryTTError: Transient error, escalation
+            can be restarted.
+    """
 
     TTError = TTError
     TemporaryTTError = TemporaryTTError
 
-    def __init__(self, name, connection):
-        """
-        Initialize TT System
-        :param name: TT System name
-        :param connection: Connection settings string, as defined
-            in TTSystem.connection
-        """
+    def __init__(self, name: str, connection: str):
         self.connection = connection
         self.name = name
         self.logger = logging.getLogger("tt.%s" % self.name)
 
-    def create_tt(
-        self, queue, obj, reason=None, subject=None, body=None, login=None, timestamp=None
-    ):
+    def create(self, ctx: EscalationContext) -> str:
         """
-        Create TT
-        :param queue: ticket queue
-        :param obj: Supported object's identifier
-        :param reason: Preliminary reason
-        :param subject: TT Subject
-        :param body: TT body
-        :param login: User login
-        :param timestamp: Escalated alarm timestamp
-        :returns: TT id as string
-        :raises TTError:
+        Create TT.
+
+        Override to implement custom logic.
+
+        Args:
+            ctx: EscalationContext structure.
+
+        Returns:
+            Created TT id.
+
+        Raises:
+            TemporaryTTError: When escalation attempt may be retried.
+            TTError: When escalation is failed.
+        """
+        return self.create_tt(ctx)
+
+    def close(self, ctx: DeescalationContext) -> None:
+        """
+        Close TT.
+
+        Args:
+            ctx: Deescalation context.
+
+        Raises:
+            TTError: on deescalation error.
+        """
+
+        self.close_tt(ctx)
+
+    def create_tt(self, ctx: EscalationContext) -> str:
+        """
+        Create TT implemetation.
+
+        Args:
+            ctx: EscalationContext structure.
+
+        Returns:
+            Created TT id
+
+        Raises:
+            TemporaryTTError: When escalation attempt may be retried.
+            TTError: When escalation is failed.
         """
         raise NotImplementedError()
 
-    def get_tt(self, tt_id):
+    def get_tt(self, tt_id: str) -> Optional[TTInfo]:
         """
-        Get TT information
-        :param tt_id: TT id, as returned by create_tt
-        :returns: dict with keys
-            *tt_id* - tt id
-            *queue* - internal queue id
-            *obj* - Supported object's identifier
-            *resolved* - True if TT has been resolved
-            *stage_id* - Current TT stage id (in terms of external system)
-            *stage* - Current TT stage text
-            *open_ts* - TT creation timestamp
-            *close_ts* - TT closing timestamp (only if resolved)
-            *stage_ts* - Current stage starting timestamp
-            *owner* - Login of TT owner (if any)
-            *dept* - Department currently holding TT (only if not resolved)
-            *close_dept* - Department which closed TT (only for resolved)
-            *pre_reason_id* - Internal pre reason id
-            *pre_reason* - Pre-reason name
-            *final_reason_id* - Internal final reason id
-            *final_reason* - Final reason name
-            *subject* - TT subject
-            *body* - TT body
-            *comments*: dict of TT comments
-                *id* - Comment id
-                *reply_to* - id of parent comment
-                *ts* - timestamp
-                *login* - Login of user leaving comment
-                *subject* - Comment subject
-                *body* - Comment body
-        :raises TTError:
+        Get TT information.
+
+        Args:
+            tt_id: TT id, as returned by create_tt.
+
+        Returns:
+            Optional TTInfo structure
+
+        Raise:
+            TTError: On TT system error.
         """
         raise NotImplementedError()
 
-    def get_object_tts(self, obj):
+    def get_object_tts(self, obj: str) -> List[str]:
         """
         Get list of TTs, open for object obj
         :param obj: Supported object id, as passed to create_tt
@@ -88,44 +107,26 @@ class BaseTTSystem(object):
         """
         raise NotImplementedError()
 
-    def close_tt(self, tt_id, subject=None, body=None, reason=None, login=None, queue=None):
+    def close_tt(self, ctx: DeescalationContext) -> None:
         """
-        Close TT
-        :param tt_id: TT id, as returned by create_tt
-        :param subject: Closing message subject
-        :param body: Closing message body
-        :param reason: Final reason
-        :param login: User login
-        :param queue: ticket queue
-        :returns: Boolean. True, when alarm is closed properly
-        :raises TTError:
+        Close TT implementation.
+
+        Args:
+            ctx: Deescalation context.
+
+        Raises:
+            TTError: on deescalation error.
         """
         raise NotImplementedError()
 
-    def add_comment(self, tt_id, subject=None, body=None, login=None, queue=None):
+    def comment(self, req: TTCommentRequest) -> None:
         """
-        Append comment to TT
-        :param tt_id: TT id, as returned by create_tt
-        :param subject: Closing message subject
-        :param body: Closing message body
-        :param login: User login
-        :param queue: ticket queue
-        :raises TTError:
-        """
-        raise NotImplementedError()
+        Add comment to TT.
 
-    def create_group_tt(self, tt_id, timestamp=None):
-        """
-        Promote tt as the group tt.
-        Called only when promote_group_tt is set
-        :param tt_id: tt_id as returned by create_tt
-        """
-        raise NotImplementedError()
+        Args:
+            req: TTCommentRequest
 
-    def add_to_group_tt(self, gtt_id, obj):
-        """
-        Add object to the group tt
-        :param gtt_id: Group tt id, as returned by create_group_tt
-        :param obj: Supported object's identifier
+        Raises:
+            TTError: On comment error.
         """
         raise NotImplementedError()
