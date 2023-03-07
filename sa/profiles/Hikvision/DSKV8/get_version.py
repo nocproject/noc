@@ -7,7 +7,7 @@
 
 # Python modules
 import re
-import xml.etree.ElementTree as ElementTree
+from xml.etree import ElementTree
 
 # NOC modules
 from noc.core.script.base import BaseScript

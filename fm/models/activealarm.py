@@ -234,7 +234,7 @@ class ActiveAlarm(Document):
             else:
                 self.log_message(f"{user} has decreased alarm severity by {delta}")
         elif severity:
-            if isinstance(severity, int) or isinstance(severity, float):
+            if isinstance(severity, (float, int)):
                 self.severity = self.base_weight + int(severity)
                 self.log_message(f"{user} has changed severity to {severity}")
             else:

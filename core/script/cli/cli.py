@@ -555,7 +555,7 @@ class CLI(BaseCLI):
         self.logger.debug("Performing setup sequence: %s", self.profile.setup_sequence)
         lseq = len(self.profile.setup_sequence)
         for i, c in enumerate(self.profile.setup_sequence):
-            if isinstance(c, int) or isinstance(c, float):
+            if isinstance(c, (float, int)):
                 await asyncio.sleep(c)
                 continue
             cmd = c % self.script.credentials

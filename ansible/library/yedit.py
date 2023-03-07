@@ -185,7 +185,7 @@ import shutil  # noqa: F401
 import time  # noqa: F401
 
 try:
-    import ruamel.yaml as yaml  # noqa: F401
+    from ruamel import yaml  # noqa: F401
 except ImportError:
     import yaml  # noqa: F401
 
@@ -709,7 +709,7 @@ class Yedit(object):
         # "" refers to the root of the document
         # Only update the root path (entire document) when its a list or dict
         if path == "":
-            if isinstance(result, list) or isinstance(result, dict):
+            if isinstance(result, (dict, list)):
                 self.yaml_dict = result
                 return (True, self.yaml_dict)
 

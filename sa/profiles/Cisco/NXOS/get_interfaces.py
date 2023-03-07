@@ -8,7 +8,7 @@
 # Python modules
 import re
 from collections import defaultdict
-import xml.etree.ElementTree as ElementTree
+from xml.etree import ElementTree
 from io import StringIO
 
 # NOC modules
