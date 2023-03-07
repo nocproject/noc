@@ -28,7 +28,7 @@ select = [
   # "S", # flake8-bandit
   # "BLE", # flake8-blind-except
   # "B", # flake8-bugbear
-  # "A", # flake8-builtins
+  "A", # flake8-builtins
   # "C4", # flake8-comprehensions 
   # "EM", # flake8-errmsg
   # "ISC", # flake8-implicit-str-concat
@@ -45,7 +45,15 @@ select = [
 ]
 # Always autofix, but never try to fix `F401` (unused imports).
 fix = false #fix = true
-ignore = ["D203", "D212", "D107", "PLR0913"] 
+ignore = [
+  "A001", # A001 Variable `{name}` is shadowing a python builtin
+  "A002", # A002 Argument `{name}` is shadowing a python builtin
+  "A003", # Class attribute `{name}` is shadowing a python builtin"
+  "D203",
+  "D212",
+  "D107",
+  "PLR0913",
+] 
 unfixable = ["F401"] 
 
 [tool.ruff.flake8-quotes]
