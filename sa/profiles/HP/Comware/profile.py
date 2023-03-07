@@ -2,7 +2,7 @@
 # Vendor: HP
 # OS:     Comware
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2016 The NOC Project
+# Copyright (C) 2007-2023 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -44,20 +44,53 @@ class Profile(BaseProfile):
         "vl": "SVI",  # Vlan
     }
 
+    rx_interface_name = re.compile(
+        r"^(?P<type>GE|XGE|FGE|MGE|BAGG|Loop|InLoop|REG|RAGG|Tun|Vsi|Vlan-Int)"
+        r"(?P<number>[\d/]+(\.\d+)?)$"
+    )
+
+    def convert_interface_name(self, s):
+        """
+        >>> Profile().convert_interface_name("GE2/0/0")
+        'GigabitEthernet2/0/0'
+        >>> Profile().convert_interface_name("XGE2/0/0")
+        'Ten-GigabitEthernet2/0/0'
+        >>> Profile().convert_interface_name("BAGG2")
+        'Bridge-Aggregation2'
+        """
+        match = self.rx_interface_name.match(s)
+        if not match:
+            return s
+        return "%s%s" % (
+            {
+                "GE": "GigabitEthernet",
+                "XGE": "Ten-GigabitEthernet",
+                "FGE": "FortyGigE",
+                "MGE": "M-GigabitEthernet",
+                "BAGG": "Bridge-Aggregation",
+                "Loop": "LoopBack",
+                "InLoop": "InLoopBack",
+                "REG": "Register-Tunnel",
+                "RAGG": "Route-Aggregation",
+                "Tun": "Tunnel",
+                "Vsi": "Vsi-interface",
+                "Vlan-int": "Vlan-interface",
+            }[match.group("type")],
+            match.group("number"),
+        )
+
     @classmethod
     def get_interface_type(cls, name):
         if name.startswith("Bridge-Aggregation") or name.startswith("Route-Aggregation"):
             return "aggregated"
         elif name.startswith("LoopBack") or name.startswith("InLoopBack"):
             return "loopback"
-        elif name.startswith("Vsi"):
+        elif name.startswith("Vsi") or name.startswith("Vlan-interface"):
             return "SVI"
-        elif name.startswith("Vlan-interface"):
-            return "SVI"
-        elif name.startswith("Register"):
-            return "other"
         elif name.startswith("NULL"):
-            return "unknown"
+            return "null"
+        elif name.startswith("Tun") or name.startswith("Register-Tunnel"):
+            return "tunnel"
         elif name.startswith("Aux"):
             return "other"
         else:
