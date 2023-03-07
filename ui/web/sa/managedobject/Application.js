@@ -460,17 +460,18 @@ Ext.define('NOC.sa.managedobject.Application', {
                                         text: __("Add to Maintaince"),
                                         glyph: NOC.glyph.plus,
                                         handler: "onAddToMaintaince"
-                                    }
+                                    },
+                                    {
+                                        itemId: "runCmdBtn",
+                                        text: __("Run Commands"),
+                                        glyph: NOC.glyph.play,
+                                        bind: {
+                                            disabled: '{!hasRunCmdPerm}'
+                                        },
+                                        handler: "toNext"
+                                    },
                                 ]
                             })
-                        }, {
-                            itemId: "runCmdBtn",
-                            text: __("Run Commands"),
-                            glyph: NOC.glyph.play,
-                            bind: {
-                                disabled: '{!hasRunCmdPerm}'
-                            },
-                            handler: "toNext"
                         }, {
                             itemId: "createBtn",
                             text: __("Add"),
