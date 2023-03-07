@@ -36,8 +36,8 @@ select = [
   # "PT", # flake8-pytest-style
   # "RET", # flake8-return
   # "SIM", # flake8-simplify
-  # "PLC", # pylint
-  # "PLE", # pylint
+  "PLC", # pylint
+  "PLE", # pylint
   # "PLR", # pylint
   # "PLW", # pylint
   # "PIE", # flake8-pie
@@ -52,7 +52,7 @@ ignore = [
   "D203",
   "D212",
   "D107",
-  "PLR0913",
+  "PLR0913", # Too many arguments to function call
 ] 
 unfixable = ["F401"] 
 
