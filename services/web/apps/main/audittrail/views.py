@@ -62,9 +62,7 @@ class AuditTrailApplication(ExtDocApplication):
                 for ob in model.objects.filter(name=str(query)):
                     if ob:
                         return self.model.objects.filter(model_id=model_id, object=str(ob.id))
-
-            else:
-                return self.model.objects.filter(self.get_Q(request, query))
+            return self.model.objects.filter(self.get_Q(request, query))
         else:
             return self.model.objects.all()
 

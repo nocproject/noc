@@ -30,11 +30,9 @@ class MatcherRule(object):
                 or (match(ctx, self.matchers.get(matcher, [])) and matcher in self.matchers)
                 or getattr(script, matcher, None)
             ):
-                for r in rule.iter_oids(script, metric):
-                    yield r
-                else:
-                    # Only one match
-                    break
+                yield from rule.iter_oids(script, metric)
+                # Only one match
+                break
 
     @classmethod
     def from_json(cls, data):

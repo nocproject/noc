@@ -129,5 +129,4 @@ def iter_time_interval():
         stop = min(end, start.replace(month=next_month, year=year, day=day))
         yield start.replace(day=1), stop.replace(day=1)
         start = start.replace(month=next_month, year=year, day=day)
-    else:
-        yield start.replace(day=1), stop
+    yield start.replace(day=1), stop

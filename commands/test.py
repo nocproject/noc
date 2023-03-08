@@ -7,7 +7,6 @@
 
 # Python modules
 import os
-import subprocess
 import time
 import argparse
 import sys
@@ -174,19 +173,6 @@ class Command(BaseCommand):
         :return:
         """
         return [d for d in dirs if d and os.path.isdir(d)]
-
-    def pull_repos(self, dirs):
-        """
-        Pull each git repo from directory
-        :param dirs:
-        :return:
-        """
-        for d in dirs:
-            if os.path.isdir(os.path.join(d, ".git")):
-                self.print("Pulling %s" % d)
-                subprocess.check_call(["git", "pull"], cwd=d)
-        else:
-            self.print("No directories to pull")
 
     def dump_idea_bookmarks(self, path):
         def is_project_path(p):

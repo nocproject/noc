@@ -335,12 +335,9 @@ class Profile(BaseProfile):
             elif is_part and not is_table:
                 k_v_list.extend(k_v_splitter.findall(line))
             continue
-        else:
-            r[part_name] = dict(k_v_list)
-            if row:
-                r[part_name]["table"] = row
-            # r[part_name] = dict(k_v_list)
-            # r[part_name]["table"] = row
+        r[part_name] = dict(k_v_list)
+        if row:
+            r[part_name]["table"] = row
         return r
 
     @staticmethod
@@ -417,9 +414,7 @@ class Profile(BaseProfile):
                 header[num] = " ".join(["".join(s).strip() for s in head.transpose().tolist()])
                 head = []
             head += [lines]
-        else:
-            # last column
-            head = np.array(head)
-            header[num] = " ".join(["".join(s).strip(" -") for s in head.transpose().tolist()])
-
+        # last column
+        head = np.array(head)
+        header[num] = " ".join(["".join(s).strip(" -") for s in head.transpose().tolist()])
         return header
