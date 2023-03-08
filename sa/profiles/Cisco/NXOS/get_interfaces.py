@@ -8,7 +8,7 @@
 # Python modules
 import re
 from collections import defaultdict
-import xml.etree.ElementTree as ElementTree
+from xml.etree import ElementTree
 from io import StringIO
 
 # NOC modules
@@ -209,7 +209,7 @@ class Script(BaseScript):
                 if event == "start-ns":
                     ns, url = elem
                     nsmap[ns] = url
-                if event == "end":
+                elif event == "end":
                     if elem.tag == self.fixtag("", "interface", nsmap):
                         full_ifname = elem.text.strip()
                         if full_ifname[:2] in ["Vi", "Di", "GM", "CP", "Nv", "Do", "Nu", "fc"]:
@@ -241,10 +241,10 @@ class Script(BaseScript):
                     elif elem.tag == self.fixtag("", "eth_ip_addr", nsmap):
                         row["ip_addr"] = elem.text
 
-            for I in results:
-                if len(I) == 0:
+            for ifdata in results:
+                if not ifdata:
                     continue
-                full_ifname = I["name"]
+                full_ifname = ifdata["name"]
                 ifname = self.profile.convert_interface_name(full_ifname)
                 if ifname[:2] in ["Vi", "Di", "GM", "CP", "Nv", "Do", "Nu", "fc"]:
                     continue
@@ -259,10 +259,10 @@ class Script(BaseScript):
                             "type": "physical",
                             "enabled_protocols": [],
                         }
-                o_stat = I["oper_status"].lower() == "up"
+                o_stat = ifdata["oper_status"].lower() == "up"
                 a_stat = False
-                if "reason" in I:
-                    a_stat = I["reason"].lower() != "administratively down"
+                if "reason" in ifdata:
+                    a_stat = ifdata["reason"].lower() != "administratively down"
                 sub = {
                     "name": ifname,
                     "admin_status": a_stat,
@@ -271,11 +271,11 @@ class Script(BaseScript):
                     "enabled_protocols": [],
                 }
                 # Get description
-                if "description" in I:
-                    sub["description"] = I["description"]
+                if "description" in ifdata:
+                    sub["description"] = ifdata["description"]
                 # Get MAC
-                if "mac" in I:
-                    sub["mac"] = I["mac"]
+                if "mac" in ifdata:
+                    sub["mac"] = ifdata["mac"]
 
                 if ifname in switchports and ifname not in portchannel_members:
                     sub["enabled_afi"] += ["BRIDGE"]
@@ -286,15 +286,15 @@ class Script(BaseScript):
                         sub["tagged_vlans"] = t
 
                 # Static vlans
-                if "vlan_ids" in I:
-                    sub["vlan_ids"] = I["vlan_ids"]
+                if "vlan_ids" in ifdata:
+                    sub["vlan_ids"] = ifdata["vlan_ids"]
                 elif ifname.startswith("Vl "):
                     vlan_id = ifname[3:]
                     if is_int(vlan_id) and int(vlan_id) < 4095:
                         sub["vlan_ids"] = vlan_id
 
                 # IPv4/Ipv6
-                if "ip_addr" in I:
+                if "ip_addr" in ifdata:
                     if ifname in ipv4_interfaces:
                         sub["enabled_afi"] += ["IPv4"]
                         sub["ipv4_addresses"] = ipv4_interfaces[ifname]
@@ -319,8 +319,8 @@ class Script(BaseScript):
                         "subinterfaces": [sub],
                     }
 
-                    if "description" in I:
-                        iface["description"] = I["description"]
+                    if "description" in ifdata:
+                        iface["description"] = ifdata["description"]
                     if "mac" in sub:
                         iface["mac"] = sub["mac"]
                     # Portchannel member
@@ -342,10 +342,10 @@ class Script(BaseScript):
         except self.CLISyntaxError:
             v = self.cli("show interface")
 
-            for I in self.rx_int_split.split(v):
-                if len(I) == 0:
+            for ifdata in self.rx_int_split.split(v):
+                if not ifdata:
                     continue
-                match = self.rx_int_name.search(I)
+                match = self.rx_int_name.search(ifdata)
                 if not match:
                     continue
                 full_ifname = match.group("interface")
@@ -375,7 +375,7 @@ class Script(BaseScript):
                 a_stat = False
                 if match.group("reason"):
                     a_stat = match.group("reason").lower() != "Administratively down"
-                match = self.rx_int_mac.search(I)
+                match = self.rx_int_mac.search(ifdata)
                 hw = match.group("hardw")
                 sub = {
                     "name": ifname,
@@ -385,7 +385,7 @@ class Script(BaseScript):
                     "enabled_protocols": [],
                 }
                 # Get description
-                match = self.rx_int_description.search(I)
+                match = self.rx_int_description.search(ifdata)
                 if match:
                     sub["description"] = match.group("desc")
                 # Get MAC
@@ -401,14 +401,14 @@ class Script(BaseScript):
                         sub["tagged_vlans"] = t
 
                 # Static vlans
-                matchvlan = self.rx_int_vlan.search(I)
+                matchvlan = self.rx_int_vlan.search(ifdata)
                 if matchvlan:
                     encaps = matchvlan.group("encaps")
                     if encaps == "802.1Q":
                         sub["vlan_ids"] = matchvlan.group("vlanid")
 
                 # IPv4/Ipv6
-                matchip = self.rx_int_ip.search(I)
+                matchip = self.rx_int_ip.search(ifdata)
                 if matchip:
                     if ifname in ipv4_interfaces:
                         sub["enabled_afi"] += ["IPv4"]
@@ -433,7 +433,7 @@ class Script(BaseScript):
                         "enabled_protocols": [],
                         "subinterfaces": [sub],
                     }
-                    match = self.rx_int_description.search(I)
+                    match = self.rx_int_description.search(ifdata)
                     if match:
                         iface["description"] = match.group("desc")
                     if "mac" in sub:

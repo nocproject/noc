@@ -384,7 +384,7 @@ class ExtDocApplication(ExtApplication):
                         v = v.strftime("%Y-%m-%d")
                     else:
                         v = None
-                elif not (isinstance(v, str) or isinstance(v, int) or isinstance(v, (bool, dict))):
+                elif not isinstance(v, (bool, dict, int, str)):
                     if hasattr(v, "id"):
                         v = v.id
                     else:

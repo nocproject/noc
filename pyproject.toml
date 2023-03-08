@@ -38,7 +38,7 @@ select = [
   # "SIM", # flake8-simplify
   "PLC", # pylint
   "PLE", # pylint
-  # "PLR", # pylint
+  "PLR", # pylint
   # "PLW", # pylint
   # "PIE", # flake8-pie
   # "RUF", # ruff specific
@@ -52,7 +52,11 @@ ignore = [
   "D203",
   "D212",
   "D107",
+  "PLR0912", # Too many branches
+  "PLR0911", # Too many return statements
   "PLR0913", # Too many arguments to function call
+  "PLR0915", # Too many statements
+  "PLR2004", # Magic value used in comparison, consider replacing {v} with a constant variable
 ] 
 unfixable = ["F401"] 
 

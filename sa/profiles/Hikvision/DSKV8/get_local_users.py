@@ -6,7 +6,7 @@
 # ---------------------------------------------------------------------
 
 # Python modules
-import xml.etree.ElementTree as ElementTree
+from xml.etree import ElementTree
 from copy import copy
 
 # NOC modules

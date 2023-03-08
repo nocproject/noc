@@ -36,15 +36,15 @@ class Script(BaseScript):
                 continue
             if r["interface"] not in interfaces:
                 continue
-            if "address4" in r and "address4" != "":
+            if r.get("address4"):
                 chassis_id_subtype = LLDP_CHASSIS_SUBTYPE_NETWORK_ADDRESS
                 chassis_id = r["address4"]
-            elif "mac-address" in r and "mac-address" != "":
+            elif r.get("mac-address"):
                 chassis_id_subtype = LLDP_CHASSIS_SUBTYPE_MAC
                 chassis_id = r["mac-address"]
             else:
                 raise self.NotSupportedError()
-            if "interface-name" in r and "interface-name" != "":
+            if r.get("interface-name"):
                 port_subtype = LLDP_PORT_SUBTYPE_NAME
                 port = r["interface-name"]
                 port = port.strip(" \x00")
