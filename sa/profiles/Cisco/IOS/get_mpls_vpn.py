@@ -178,39 +178,38 @@ class Script(BaseScript):
                 vrf_block[block] = s[:]
                 tab = 100
                 block = None
-        else:
-            if vrf:
-                vpns += [
-                    {
-                        "type": "VRF",
-                        "vpn_id": "",
-                        "status": True,
-                        "name": vrf.strip(),
-                        "interfaces": [],
-                    }
+        if vrf:
+            vpns += [
+                {
+                    "type": "VRF",
+                    "vpn_id": "",
+                    "status": True,
+                    "name": vrf.strip(),
+                    "interfaces": [],
+                }
+            ]
+            if rd and rd.strip() != "<not set>":
+                vpns[-1]["rd"] = rd.strip()
+            if vrf_block["interfaces:"]:
+                for iface in vrf_block["interfaces:"]:
+                    po_match = self.rx_portchannel.match(iface)
+                    if po_match:
+                        members = self._get_portchannel_members(iface)
+                        vpns[-1]["interfaces"] += members
+                    else:
+                        vpns[-1]["interfaces"] += [iface]
+            if vrf_block["export vpn route-target communities"]:
+                vpns[-1]["rt_export"] = [
+                    ":".join(lll.split(":")[1:])
+                    for lll in vrf_block["export vpn route-target communities"][:]
+                    if lll
                 ]
-                if rd and rd.strip() != "<not set>":
-                    vpns[-1]["rd"] = rd.strip()
-                if vrf_block["interfaces:"]:
-                    for iface in vrf_block["interfaces:"]:
-                        po_match = self.rx_portchannel.match(iface)
-                        if po_match:
-                            members = self._get_portchannel_members(iface)
-                            vpns[-1]["interfaces"] += members
-                        else:
-                            vpns[-1]["interfaces"] += [iface]
-                if vrf_block["export vpn route-target communities"]:
-                    vpns[-1]["rt_export"] = [
-                        ":".join(lll.split(":")[1:])
-                        for lll in vrf_block["export vpn route-target communities"][:]
-                        if lll
-                    ]
-                if vrf_block["import vpn route-target communities"]:
-                    vpns[-1]["rt_import"] = [
-                        ":".join(lll.split(":")[1:])
-                        for lll in vrf_block["import vpn route-target communities"][:]
-                        if lll
-                    ]
+            if vrf_block["import vpn route-target communities"]:
+                vpns[-1]["rt_import"] = [
+                    ":".join(lll.split(":")[1:])
+                    for lll in vrf_block["import vpn route-target communities"][:]
+                    if lll
+                ]
         return vpns
 
     def execute_vrf(self, **kwargs):

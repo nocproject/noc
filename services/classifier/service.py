@@ -658,8 +658,7 @@ class ClassifierService(FastAPIService):
                 event.delete()
                 metrics[CR_DELETED] += 1
                 return True
-        else:
-            return False
+        return False
 
     def check_unclassified_syslog_flood(self, event):
         """

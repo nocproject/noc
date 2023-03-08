@@ -624,11 +624,10 @@ def parse_table_header(v):
             header[num] = header[num].strip()
             head = []
         head += [lines]
-    else:
-        # last column
-        head = array(head)
-        header[num] = " ".join(["".join(s).strip(" -") for s in head.transpose().tolist()])
-        header[num] = header[num].strip()
+    # last column
+    head = array(head)
+    header[num] = " ".join(["".join(s).strip(" -") for s in head.transpose().tolist()])
+    header[num] = header[num].strip()
     return header
 
 
@@ -649,8 +648,7 @@ def split_text(text: str, max_chunk: int) -> Iterable[str]:
             size = 0
             yield "\n".join(result)
             result = [line]
-    else:
-        yield "\n".join(result)
+    yield "\n".join(result)
 
 
 def filter_non_printable(text: str) -> str:
