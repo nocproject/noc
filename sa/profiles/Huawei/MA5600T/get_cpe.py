@@ -61,9 +61,6 @@ class Script(BaseScript):
                     head = parse_table_header(header)
                     del head[2]  # remove empty header
                     tables_data += self.profile.parse_table1(body, head)
-                else:
-                    pass
-                    # summary = parts
                 for t in tables_data:
                     if "Config state" in t and t["Config state"][0] in self.INACTIVE_STATE:
                         continue

@@ -65,9 +65,6 @@ class Script(BaseScript):
                     head = parse_table_header(header)
                     del head[2]  # remove empty header
                     tables_data += self.profile.parse_table1(body, head)
-                else:
-                    pass
-                    # summary = parts
                 for t in tables_data:
                     if "ONT-ID" in t:
                         ont_id = "%s/%s" % (t["F/S/P"][0].replace(" ", ""), t["ONT-ID"][0])
