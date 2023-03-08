@@ -529,7 +529,7 @@ class ResourceGroup(Document):
         """
         from noc.core.validators import is_int, is_objectid
 
-        if isinstance(s, int) or isinstance(s, str):
+        if isinstance(s, (int, str)):
             s = [s]
         if not isinstance(s, list):
             raise ValueError("list required")
