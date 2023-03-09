@@ -9,6 +9,8 @@
 from typing import Optional, List, Literal, Tuple, Dict, Union
 from dataclasses import dataclass, field
 
+# NOC modules
+from noc.core.bi.decorator import bi_hash
 
 @dataclass(frozen=True)
 class MetricItem(object):
@@ -19,13 +21,14 @@ class MetricItem(object):
     is_compose: bool = field(compare=False, default=False)
     interval: int = field(compare=False, default=300)
 
-    def get_effective_collected_interval(self, collected_interval: int):
+    def get_effective_collected_interval(self, collected_interval: int, buckets: int = 1):
         """
         Calculated Effective collected interval
-        :param collected_interval:
+        :param collected_interval: Discovery interval
+        :param buckets: Number of metrics Sources buckets
         :return:
         """
-        return collected_interval * max(1, round(self.interval / collected_interval))
+        return collected_interval * max(1, round(self.interval / collected_interval * buckets))
 
 
 @dataclass(frozen=True)
@@ -62,3 +65,23 @@ class MetricCollectorConfig(object):
         elif self.collector == "cpe":
             return f"cpe:{self.cpe}:{interval}"
         return f"managed_object:{','.join(self.labels or [])}:{interval}"
+
+    def iter_collected_metrics(self, collected_interval: int, buckets: int = 1, run: int = 0):
+        """
+        Iterate collected metrics
+        :param collected_interval: Discovery interval
+        :param buckets: Number Source buckets
+        :param run: Number runs
+        :return:
+        """
+        if buckets != 1 and run and bi_hash(mc.get_source_code(0)) % buckets != run % buckets:
+            # Sharder mode, skip inactive shard
+            return
+        for m in self.metrics:
+            ie = m.get_effective_collected_interval(collected_interval, buckets=buckets)  # Is collected ?
+            if ie != collected_interval:
+                p_sc = ie / collected_interval
+                o_sc = bi_hash(mc.get_source_code(m.interval)) % p_sc
+                if run and run % p_sc != o_sc:  # runs
+                    continue
+            yield m

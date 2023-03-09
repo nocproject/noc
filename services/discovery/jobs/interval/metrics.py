@@ -1,25 +1,22 @@
 # ---------------------------------------------------------------------
 # Metric collector
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2022 The NOC Project
+# Copyright (C) 2007-2023 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
 # Python modules
-import itertools
 import time
 from typing import Any, List, Dict, Iterable, Optional
 
 # Third-party modules
 import orjson
-from noc.core.bi.decorator import bi_hash
 from pymongo import ReadPreference
 
 # NOC modules
 from noc.services.discovery.jobs.base import DiscoveryCheck
 from noc.core.models.cfgmetrics import MetricCollectorConfig
 from noc.inv.models.object import Object
-from noc.inv.models.interfaceprofile import MetricConfig
 from noc.inv.models.sensor import Sensor
 from noc.inv.models.cpe import CPE
 from noc.pm.models.metrictype import MetricType
@@ -41,18 +38,13 @@ MT_COUNTER_DELTA = {MT_COUNTER, MT_DELTA}
 
 class MetricsCheck(DiscoveryCheck):
     """
-    MAC discovery
+    Metric discovery
     """
 
     name = "metrics"
     required_script = "get_metrics"
 
     SLA_CAPS = ["Cisco | IP | SLA | Probes"]
-
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.id_count = itertools.count()
-        self.id_metrics: Dict[str, MetricConfig] = {}
 
     def iter_metric_sources(self) -> Iterable[MetricCollectorConfig]:
         """
@@ -94,16 +86,11 @@ class MetricsCheck(DiscoveryCheck):
         self.job.context["last_run"] = ts
         s_data = {"managed_object": self.object.bi_id}
         interval = self.object.get_metric_discovery_interval()
-        self.logger.debug("Running with interval: %s:%s", interval, self.job.get_runs())
+        runs = self.job.get_runs()
+        self.logger.debug("Running with interval: %s:%s", interval, runs)
         for mc in self.iter_metric_sources():
             mc_metrics = []
-            for m in mc.metrics:
-                ie = m.get_effective_collected_interval(interval)  # Is collected ?
-                if ie != interval:
-                    p_sc = ie / interval
-                    o_sc = bi_hash(mc.get_source_code(m.interval)) % p_sc
-                    if self.job.get_runs() % p_sc != o_sc:  # runs
-                        continue
+            for m in mc.iter_collected_metrics(interval, run=runs):
                 mt_name = m.name.replace(" ", "_")
                 mc_metrics.append(m.name)
                 if f"{m.name}.scope" in s_data:
