@@ -12,6 +12,7 @@ from dataclasses import dataclass, field
 # NOC modules
 from noc.core.bi.decorator import bi_hash
 
+
 @dataclass(frozen=True)
 class MetricItem(object):
     name: str
@@ -78,10 +79,12 @@ class MetricCollectorConfig(object):
             # Sharder mode, skip inactive shard
             return
         for m in self.metrics:
-            ie = m.get_effective_collected_interval(collected_interval, buckets=buckets)  # Is collected ?
-            if ie != collected_interval:
+            ie = m.get_effective_collected_interval(
+                collected_interval, buckets=buckets
+            )  # Is collected ?
+            if run and ie != collected_interval:
                 p_sc = ie / collected_interval
                 o_sc = bi_hash(mc.get_source_code(m.interval)) % p_sc
-                if run and run % p_sc != o_sc:  # runs
+                if run % p_sc != o_sc:  # runs
                     continue
             yield m
