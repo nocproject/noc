@@ -31,6 +31,21 @@ class MetricItem(object):
         """
         return collected_interval * max(1, round(self.interval / collected_interval * buckets))
 
+    def is_run(self, collected_interval, source_code: int, buckets: int = 1, run: int = 0) -> bool:
+        """
+
+        :param source_code:
+        :return:
+        """
+        # Effective collected interval
+        ie = self.get_effective_collected_interval(collected_interval, buckets=buckets)
+        if run and ie != collected_interval:
+            p_sc = ie / collected_interval
+            o_sc = source_code % p_sc
+            if run % p_sc != o_sc:  # runs
+                return False
+        return True
+
 
 @dataclass(frozen=True)
 class MetricCollectorConfig(object):
@@ -67,6 +82,18 @@ class MetricCollectorConfig(object):
             return f"cpe:{self.cpe}:{interval}"
         return f"managed_object:{','.join(self.labels or [])}:{interval}"
 
+    @classmethod
+    def get_buckets(cls, d_interval: int, m_interval: int, sources: int) -> int:
+        """
+        Calculate number of buckets by sources count
+        :param d_interval: Metric discovery interval
+        :param m_interval: Source metric interval
+        :param sources: Source count
+        :return:
+        """
+        r = sources / (m_interval / d_interval)
+        return max(1, r)
+
     def iter_collected_metrics(self, collected_interval: int, buckets: int = 1, run: int = 0):
         """
         Iterate collected metrics
@@ -75,16 +102,8 @@ class MetricCollectorConfig(object):
         :param run: Number runs
         :return:
         """
-        if buckets != 1 and run and bi_hash(mc.get_source_code(0)) % buckets != run % buckets:
-            # Sharder mode, skip inactive shard
-            return
         for m in self.metrics:
-            ie = m.get_effective_collected_interval(
-                collected_interval, buckets=buckets
-            )  # Is collected ?
-            if run and ie != collected_interval:
-                p_sc = ie / collected_interval
-                o_sc = bi_hash(mc.get_source_code(m.interval)) % p_sc
-                if run % p_sc != o_sc:  # runs
-                    continue
+            sc = bi_hash(self.get_source_code(m.interval))
+            if not m.is_run(collected_interval, sc, buckets, run):
+                continue
             yield m

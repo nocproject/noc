@@ -153,47 +153,63 @@ class SLAProbe(Document):
                 managed_object=managed_object, target=target_address
             ).first()
 
-    def iter_collected_metrics(self) -> Iterable[MetricCollectorConfig]:
+    @classmethod
+    def iter_collected_metrics(cls, mo, run: int = 0) -> Iterable[MetricCollectorConfig]:
         """
-        Return metrics setting for colleted by box or periodic
-        :param is_box:
-        :param is_periodic:
+        Return metric settings
         :return:
         """
-        if not self.state.is_productive or not self.managed_object:
+        caps = mo.get_caps()
+        sla_count = caps.get("DB | SLAProbes")
+        if not sla_count:
             return
-        metrics = []
-        for metric in self.profile.metrics:
-            if not metric.interval:
+        buckets = 1
+        d_interval = mo.get_metric_discovery_interval()
+        # Enable sharding
+        if False:
+            m_interval = cls.get_metric_discovery_interval(mo)
+            buckets = max(1, round(m_interval / d_interval))
+            logger.info("Sharding mode activated. Buckets: %d", buckets)
+        for sla in SLAProbe.objects.filter(managed_object=mo.id).read_preference(
+                ReadPreference.SECONDARY_PREFERRED
+        ):
+            if not sla.state.is_productive:
                 continue
-            metrics += [
-                MetricItem(
-                    name=metric.metric_type.name,
-                    field_name=metric.metric_type.field_name,
-                    scope_name=metric.metric_type.scope.table_name,
-                    is_stored=metric.is_stored,
-                    is_compose=metric.metric_type.is_compose,
-                    interval=metric.interval,
-                )
+            if buckets != 1 and run and sla.bi_id % buckets != run % buckets:
+                # Sharder mode, skip inactive shard
+                continue
+            metrics = []
+            for metric in sla.profile.metrics:
+                if not metric.interval:
+                    continue
+                mi = MetricItem(
+                        name=metric.metric_type.name,
+                        field_name=metric.metric_type.field_name,
+                        scope_name=metric.metric_type.scope.table_name,
+                        is_stored=metric.is_stored,
+                        is_compose=metric.metric_type.is_compose,
+                        interval=metric.interval,
+                    )
+                if mi.is_run(d_interval, sla.bi_id, buckets, run):
+                    metrics.append(mi)
+            if not metrics:
+                # self.logger.info("SLA metrics are not configured. Skipping")
+                continue
+            labels, hints = [f"noc::sla::name::{sla.name}"], [
+                f"sla_type::{sla.type}",
+                f"sla_name::{sla.name}",
             ]
-        if not metrics:
-            # self.logger.info("SLA metrics are not configured. Skipping")
-            return
-        labels, hints = [f"noc::sla::name::{self.name}"], [
-            f"sla_type::{self.type}",
-            f"sla_name::{self.name}",
-        ]
-        if self.group:
-            labels += [f"noc::sla::group::{self.group}"]
-            hints += [f"sla_group::{self.group}"]
-        yield MetricCollectorConfig(
-            collector="sla",
-            metrics=tuple(metrics),
-            labels=tuple(labels),
-            hints=hints,
-            sla_probe=self.bi_id,
-            service=self.service,
-        )
+            if self.group:
+                labels += [f"noc::sla::group::{sla.group}"]
+                hints += [f"sla_group::{sla.group}"]
+            yield MetricCollectorConfig(
+                collector="sla",
+                metrics=tuple(metrics),
+                labels=tuple(labels),
+                hints=hints,
+                sla_probe=sla.bi_id,
+                service=sla.service,
+            )
 
     @classmethod
     def get_metric_config(cls, sla_probe: "SLAProbe"):
@@ -228,3 +244,35 @@ class SLAProbe(Document):
         """
         config = self.get_metric_config(self)
         return config.get("metrics") or config.get("items")
+
+    @classmethod
+    def get_metric_discovery_interval(cls, mo: ManagedObject) -> int:
+        coll = cls._get_collection()
+        r = coll.aggregate(
+            [
+                {"$match": {"managed_object": mo.id}},
+                {
+                    "$lookup": {
+                        "from": "slaprofiles",
+                        "localField": "profile",
+                        "foreignField": "_id",
+                        "as": "profiles",
+                    }
+                },
+                {"$unwind": "$profiles"},
+                {"$match": {"profiles.metrics": {"$ne": []}}},
+                {
+                    "$project": {
+                        "interval": {
+                            "$min": [
+                                {"$min": "$profiles.metrics.interval"},
+                                "$profiles.metrics_default_interval",
+                            ]
+                        }
+                    }
+                },
+                {"$group": {"_id": "", "interval": {"$min": "$interval"}}},
+            ]
+        )
+        r = next(r, {})
+        return r.get("interval", 0)

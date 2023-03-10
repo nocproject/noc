@@ -88,9 +88,9 @@ class MetricsCheck(DiscoveryCheck):
         interval = self.object.get_metric_discovery_interval()
         runs = self.job.get_runs()
         self.logger.debug("Running with interval: %s:%s", interval, runs)
-        for mc in self.iter_metric_sources():
+        for mc in self.object.iter_collected_metrics(runs):
             mc_metrics = []
-            for m in mc.iter_collected_metrics(interval, run=runs):
+            for m in mc.metrics:
                 mt_name = m.name.replace(" ", "_")
                 mc_metrics.append(m.name)
                 if f"{m.name}.scope" in s_data:
