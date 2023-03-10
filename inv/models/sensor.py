@@ -235,6 +235,7 @@ class Sensor(Document):
         :return:
         """
         o: List[str] = Object.get_managed(mo).values_list("id")
+        d_interval = mo.get_metric_discovery_interval()
         for sensor in Sensor.objects.filter(object__in=list(o)).read_preference(
             ReadPreference.SECONDARY_PREFERRED
         ):
@@ -247,14 +248,14 @@ class Sensor(Document):
             metrics: List[MetricItem] = []
             for mt_name in ["Sensor | Value", "Sensor | Status"]:
                 mt = MetricType.get_by_name(mt_name)
-                metrics += [
-                    MetricItem(
-                        name=mt_name,
-                        field_name=mt.field_name,
-                        scope_name=mt.scope.table_name,
-                        interval=sensor.profile.collect_interval,
-                    )
-                ]
+                mi = MetricItem(
+                    name=mt_name,
+                    field_name=mt.field_name,
+                    scope_name=mt.scope.table_name,
+                    interval=sensor.profile.collect_interval,
+                )
+                if mi.is_run(d_interval, sensor.bi_id, 1, run):
+                    metrics.append(mi)
             if not metrics:
                 # self.logger.info("SLA metrics are not configured. Skipping")
                 return

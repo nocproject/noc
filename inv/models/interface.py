@@ -517,7 +517,7 @@ class Interface(Document):
         from noc.inv.models.subinterface import SubInterface
 
         caps = mo.get_caps()
-        iface_count = caps.get("DB | CPEs")
+        iface_count = caps.get("DB | Interfaces")
         if not iface_count:
             return
         buckets = 1

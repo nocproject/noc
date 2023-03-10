@@ -2885,20 +2885,19 @@ class ManagedObject(NOCModel):
         from noc.inv.models.sensor import Sensor
 
         metrics: List[MetricItem] = []
-        d_interval = self.object_profile.metrics_default_interval
+        d_interval = self.get_metric_discovery_interval()
         for mc in ManagedObjectProfile.get_object_profile_metrics(self.object_profile.id).values():
-            if not mc.interval and not d_interval:
-                continue
-            metrics.append(
-                MetricItem(
-                    name=mc.metric_type.name,
-                    field_name=mc.metric_type.field_name,
-                    scope_name=mc.metric_type.scope.table_name,
-                    is_stored=mc.is_stored,
-                    is_compose=mc.metric_type.is_compose,
-                    interval=mc.interval or d_interval,
-                )
+            interval = mc.interval or self.object_profile.metrics_default_interval
+            mi = MetricItem(
+                name=mc.metric_type.name,
+                field_name=mc.metric_type.field_name,
+                scope_name=mc.metric_type.scope.table_name,
+                is_stored=mc.is_stored,
+                is_compose=mc.metric_type.is_compose,
+                interval=interval,
             )
+            if interval and mi.is_run(d_interval, int(self.bi_id), 1, run):
+                metrics.append(mi)
         if metrics:
             logger.debug("Object metrics: %s", ",".join(m.name for m in metrics))
             yield MetricCollectorConfig(collector="managed_object", metrics=tuple(metrics))
