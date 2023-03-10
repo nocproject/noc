@@ -375,7 +375,7 @@ Ext.define('NOC.sa.managedobject.Application', {
                 {
                     xtype: 'NOC.Filter',
                     reference: 'filterPanel',
-                    region: 'west',
+                    region: 'east',
                     width: 300,
                     collapsed: true,
                     border: false,
