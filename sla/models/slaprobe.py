@@ -166,7 +166,7 @@ class SLAProbe(Document):
             return
         d_interval = mo.get_metric_discovery_interval()
         for sla in SLAProbe.objects.filter(managed_object=mo.id).read_preference(
-                ReadPreference.SECONDARY_PREFERRED
+            ReadPreference.SECONDARY_PREFERRED
         ):
             if not sla.state.is_productive:
                 continue
@@ -183,13 +183,13 @@ class SLAProbe(Document):
                 if not metric.interval:
                     continue
                 mi = MetricItem(
-                        name=metric.metric_type.name,
-                        field_name=metric.metric_type.field_name,
-                        scope_name=metric.metric_type.scope.table_name,
-                        is_stored=metric.is_stored,
-                        is_compose=metric.metric_type.is_compose,
-                        interval=metric.interval,
-                    )
+                    name=metric.metric_type.name,
+                    field_name=metric.metric_type.field_name,
+                    scope_name=metric.metric_type.scope.table_name,
+                    is_stored=metric.is_stored,
+                    is_compose=metric.metric_type.is_compose,
+                    interval=metric.interval,
+                )
                 if mi.is_run(d_interval, sla.bi_id, buckets, run):
                     metrics.append(mi)
             if not metrics:

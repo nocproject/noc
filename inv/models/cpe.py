@@ -158,7 +158,9 @@ class CPE(Document):
             return CPE.objects.filter(controller=managed_object, local_id=local_id).first()
 
     @classmethod
-    def iter_collected_metrics(cls, mo: "ManagedObject", run: int = 0) -> Iterable[MetricCollectorConfig]:
+    def iter_collected_metrics(
+        cls, mo: "ManagedObject", run: int = 0
+    ) -> Iterable[MetricCollectorConfig]:
         """
         Return metrics setting for collected
         :param mo: MangedObject that run job
