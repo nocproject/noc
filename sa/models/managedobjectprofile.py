@@ -18,6 +18,7 @@ from collections import defaultdict
 import cachetools
 import orjson
 from django.contrib.postgres.fields import ArrayField
+from django.core.validators import MinValueValidator
 from django.db import models
 from django.db.models.query_utils import Q as d_Q
 from pydantic import BaseModel, validator
@@ -659,7 +660,7 @@ class ManagedObjectProfile(NOCModel):
     # Limits
     snmp_rate_limit = models.IntegerField(default=0)
     #
-    metrics_default_interval = models.IntegerField(default=300)
+    metrics_default_interval = models.IntegerField(default=300, validators=[MinValueValidator(0)])
     #
     metrics = PydanticField(
         "Metric Config Items",
@@ -1122,3 +1123,6 @@ def apply_discovery_jobs(profile_id, box_changed, periodic_changed):
                     key=mo_id,
                     pool=pool,
                 )
+
+    def get_metric_discovery_interval(self) -> int:
+        return min([m.get("interval") or 0 for m in self.metrics if m.get("interval")])

@@ -185,4 +185,8 @@ class CPEProfile(Document):
         self._reset_caches(self.id)
 
     def get_metric_discovery_interval(self) -> int:
-        return min([m.interval or 0 for m in self.metrics] + [self.metrics_default_interval])
+        r = []
+        if self.metrics_default_interval:
+            r.append(self.metrics_default_interval)
+        r += [m.interval for m in self.metrics if m.interval]
+        return min(r)

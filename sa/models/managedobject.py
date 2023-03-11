@@ -35,7 +35,7 @@ from django.db.models import (
     CASCADE,
 )
 from pydantic import BaseModel
-from pymongo import ReadPreference, ASCENDING
+from pymongo import ASCENDING
 
 # NOC modules
 from noc.core.model.base import NOCModel
@@ -907,6 +907,7 @@ class ManagedObject(NOCModel):
             pool_name = Pool.get_by_id(self.initial_data["pool"].id).name
             Job.remove("discovery", self.BOX_DISCOVERY_JOB, key=self.id, pool=pool_name)
             Job.remove("discovery", self.PERIODIC_DISCOVERY_JOB, key=self.id, pool=pool_name)
+            Job.remove("discovery", self.INTERVAL_DISCOVERY_JOB, key=self.id, pool=pool_name)
         # Reset matchers
         if (
             "vendor" in self.changed_fields
@@ -3046,7 +3047,7 @@ class ManagedObject(NOCModel):
         from noc.inv.models.interface import Interface
         from noc.inv.models.sensor import Sensor
 
-        r = [self.object_profile.metrics_default_interval]
+        r = [self.object_profile.get_metric_discovery_interval()]
         caps = self.get_caps()
         if caps.get("DB | CPEs"):
             r += [CPE.get_metric_discovery_interval(self)]
@@ -3056,7 +3057,7 @@ class ManagedObject(NOCModel):
             r += [Interface.get_metric_discovery_interval(self)]
         if caps.get("DB | Sensors"):
             r += [Sensor.get_metric_discovery_interval(self)]
-        return max(min(r), config.discovery.min_metric_interval)
+        return max(min(r), self.object_profile.metrics_default_interval, config.discovery.min_metric_interval)
 
 
 @on_save
