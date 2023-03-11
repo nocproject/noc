@@ -3057,7 +3057,11 @@ class ManagedObject(NOCModel):
             r += [Interface.get_metric_discovery_interval(self)]
         if caps.get("DB | Sensors"):
             r += [Sensor.get_metric_discovery_interval(self)]
-        return max(min(r), self.object_profile.metrics_default_interval, config.discovery.min_metric_interval)
+        return max(
+            min(r),
+            self.object_profile.metrics_default_interval,
+            config.discovery.min_metric_interval,
+        )
 
 
 @on_save
