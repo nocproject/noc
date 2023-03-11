@@ -23,6 +23,7 @@ from mongoengine.fields import (
     ReferenceField,
     DictField,
 )
+from pymongo import ReadPreference
 import cachetools
 
 # NOC modules
@@ -163,18 +164,17 @@ class SLAProbe(Document):
         sla_count = caps.get("DB | SLAProbes")
         if not sla_count:
             return
-        buckets = 1
         d_interval = mo.get_metric_discovery_interval()
-        # Enable sharding
-        if False:
-            m_interval = cls.get_metric_discovery_interval(mo)
-            buckets = max(1, round(m_interval / d_interval))
-            logger.info("Sharding mode activated. Buckets: %d", buckets)
         for sla in SLAProbe.objects.filter(managed_object=mo.id).read_preference(
                 ReadPreference.SECONDARY_PREFERRED
         ):
             if not sla.state.is_productive:
                 continue
+            buckets = sla.profile.metrics_interval_buckets
+            if not buckets:
+                # Auto calculate buckets count
+                m_interval = sla.profile.get_metric_discovery_interval()
+                buckets = max(1, round(m_interval / d_interval))
             if buckets != 1 and run and sla.bi_id % buckets != run % buckets:
                 # Sharder mode, skip inactive shard
                 continue
@@ -199,7 +199,7 @@ class SLAProbe(Document):
                 f"sla_type::{sla.type}",
                 f"sla_name::{sla.name}",
             ]
-            if self.group:
+            if sla.group:
                 labels += [f"noc::sla::group::{sla.group}"]
                 hints += [f"sla_group::{sla.group}"]
             yield MetricCollectorConfig(

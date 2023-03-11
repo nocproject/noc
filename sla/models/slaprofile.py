@@ -79,6 +79,8 @@ class SLAProfile(Document):
     bi_id = LongField(unique=True)
     #
     metrics_default_interval = IntField(default=0, min_value=0)
+    # Number interval buckets
+    metrics_interval_buckets = IntField(default=1, min_value=0)
     # Interface profile metrics
     metrics: List[SLAProfileMetrics] = ListField(EmbeddedDocumentField(SLAProfileMetrics))
     # Labels
@@ -156,3 +158,6 @@ class SLAProfile(Document):
         for m in spr.metrics:
             r[m.metric_type.name] = cls.config_from_settings(m, spr.metrics_default_interval)
         return r
+
+    def get_metric_discovery_interval(self) -> int:
+        return min([m.interval or 0 for m in self.metrics] + [self.metrics_default_interval])

@@ -158,9 +158,7 @@ class CPE(Document):
             return CPE.objects.filter(controller=managed_object, local_id=local_id).first()
 
     @classmethod
-    def iter_collected_metrics(
-        cls, mo: "ManagedObject", run: int = 0, force_shard=False
-    ) -> Iterable[MetricCollectorConfig]:
+    def iter_collected_metrics(cls, mo: "ManagedObject", run: int = 0) -> Iterable[MetricCollectorConfig]:
         """
         Return metrics setting for collected
         :param mo: MangedObject that run job
@@ -171,18 +169,18 @@ class CPE(Document):
         cpe_count = caps.get("DB | CPEs")
         if not cpe_count:
             return
-        buckets = 1
         d_interval = mo.get_metric_discovery_interval()
-        # Enable sharding
-        if force_shard:
-            m_interval = cls.get_metric_discovery_interval(mo)
-            buckets = max(1, round(m_interval / d_interval))
-            logger.info("Sharding mode activated. Buckets: %d", buckets)
+        # logger.info("Sharding mode activated. Buckets: %d", buckets)
         for cpe in CPE.objects.filter(controller=mo.id).read_preference(
             ReadPreference.SECONDARY_PREFERRED
         ):
             if not cpe.state.is_productive:
                 continue
+            buckets = cpe.profile.metrics_interval_buckets
+            if not buckets:
+                # Auto calculate buckets count
+                m_interval = cpe.profile.get_metric_discovery_interval()
+                buckets = max(1, round(m_interval / d_interval))
             if buckets != 1 and run and cpe.bi_id % buckets != run % buckets:
                 # Sharder mode, skip inactive shard
                 continue
