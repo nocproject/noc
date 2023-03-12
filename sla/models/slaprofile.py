@@ -47,6 +47,7 @@ class MetricConfig(object):
 
 
 class SLAProfileMetrics(EmbeddedDocument):
+    meta = {"strict": False}
     metric_type: MetricType = ReferenceField(MetricType, required=True)
     # Metric collection settings
     # Enable during box discovery
@@ -164,4 +165,4 @@ class SLAProfile(Document):
         if self.metrics_default_interval:
             r.append(self.metrics_default_interval)
         r += [m.interval for m in self.metrics if m.interval]
-        return min(r)
+        return min(r) if r else 0

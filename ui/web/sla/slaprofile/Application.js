@@ -75,13 +75,41 @@ Ext.define("NOC.sla.slaprofile.Application", {
                     },
                 },
                 {
-                  name: "collect_interval",
+                    xtype: "container",
+                    layout: "hbox",
+                    defaults: {
+                        padding: "0 8 0 0"
+                    },
+                    items: [
+                        {
+                            name: "metrics_default_interval",
+                            xtype: "numberfield",
+                            fieldLabel: __("Default Interval, sec"),
+                            labelWidth: 200,
+                            allowBlank: false,
+                            uiStyle: "small",
+                            minValue: 0,
+                            listeners: {
+                                scope: me,
+                                change: function(_item, newValue, oldValue, eOpts) {
+                                    me.form.findField("metrics_default_interval_calculated").setValue(newValue);
+                                }
+                            }
+                        },
+                        {
+                            name: 'metrics_default_interval_calculated',
+                            xtype: 'displayfield',
+                            renderer: NOC.render.Duration
+                        }
+                    ]
+                },
+                {
+                  name: "metrics_interval_buckets",
                   xtype: "numberfield",
-                  fieldLabel: __("Collect interval"),
+                  fieldLabel: __("Metrics interval Buckets"),
                   allowBlank: true,
                   uiStyle: "medium",
-                  minValue: 20,
-                  maxValue: 3600
+                  minValue: 0
                 },
                 {
                   name: "test_packets_num",

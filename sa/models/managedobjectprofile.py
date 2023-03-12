@@ -929,6 +929,10 @@ class ManagedObjectProfile(NOCModel):
             )
         return r
 
+    def get_metric_discovery_interval(self) -> int:
+        r = [m.get("interval") or 0 for m in self.metrics if m.get("interval")]
+        return min(r) if r else 0
+
 
 def update_diagnostics_alarms(profile_id, box_changed, periodic_changed, alarm_policy_changed):
     """
@@ -1123,6 +1127,3 @@ def apply_discovery_jobs(profile_id, box_changed, periodic_changed):
                     key=mo_id,
                     pool=pool,
                 )
-
-    def get_metric_discovery_interval(self) -> int:
-        return min([m.get("interval") or 0 for m in self.metrics if m.get("interval")])
