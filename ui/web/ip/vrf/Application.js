@@ -21,7 +21,7 @@ Ext.define("NOC.ip.vrf.Application", {
     search: true,
     rowClassField: "row_class",
 
-    initComponent: function () {
+    initComponent: function() {
         var me = this;
 
         me.cardButton = Ext.create("Ext.button.Button", {
