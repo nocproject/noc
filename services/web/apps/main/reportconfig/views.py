@@ -10,7 +10,6 @@ from django.http import HttpResponse, HttpResponseBadRequest
 
 # NOC modules
 from noc.services.web.base.extdocapplication import ExtDocApplication, view
-from noc.sa.interfaces.base import StringParameter, DictParameter
 from noc.main.models.report import Report
 from noc.core.reporter.base import ReportEngine
 from noc.core.reporter.types import RunParams, OutputType
