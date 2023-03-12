@@ -10,9 +10,7 @@ Ext.define("NOC.sa.managedobject.L1Panel", {
     extend: "Ext.panel.Panel",
     requires: [
         "NOC.core.StateField",
-        "NOC.project.project.LookupField",
-        "NOC.inv.interfaceprofile.LookupField",
-        "NOC.wf.state.LookupField"
+        "NOC.core.ComboBox",
     ],
     title: __("Physical"),
     closable: false,
@@ -89,13 +87,19 @@ Ext.define("NOC.sa.managedobject.L1Panel", {
                             text: __("Profile"),
                             dataIndex: "profile",
                             renderer: NOC.render.Lookup("profile"),
-                            editor: "inv.interfaceprofile.LookupField"
+                            editor: {
+                                xtype: "core.combo",
+                                restUrl: "/inv/interfaceprofile/lookup/",
+                            }
                         },
                         {
                             text: __("Project"),
                             dataIndex: "project",
                             renderer: NOC.render.Lookup("project"),
-                            editor: "project.project.LookupField"
+                            editor: {
+                                xtype: "core.combo",
+                                restUrl: "/project/project/lookup/",
+                            },
                         },
                         {
                             text: __("State"),
@@ -217,8 +221,7 @@ Ext.define("NOC.sa.managedobject.L1Panel", {
         });
     },
 
-    onCellClick: function(view, cell, cellIndex, record, row,
-                          rowIndex, e) {
+    onCellClick: function(view, cell, cellIndex, record, row, rowIndex, e) {
         var me = this;
         if(e.target.tagName === "A") {
             var header = view.panel.headerCt.getHeaderAtIndex(cellIndex);

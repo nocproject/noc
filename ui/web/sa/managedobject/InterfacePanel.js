@@ -8,6 +8,7 @@ console.debug("Defining NOC.sa.managedobject.InterfacePanel");
 
 Ext.define("NOC.sa.managedobject.InterfacePanel", {
     extend: "NOC.core.ApplicationPanel",
+    alias: "widget.sa.interfacepanel",
     requires: [
         "NOC.sa.managedobject.L1Store",
         "NOC.sa.managedobject.L2Store",

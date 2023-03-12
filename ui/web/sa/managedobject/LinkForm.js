@@ -9,7 +9,7 @@ console.debug("Defining NOC.sa.managedobject.LinkForm");
 Ext.define("NOC.sa.managedobject.LinkForm", {
     extend: "Ext.Window",
     requires: [
-        "NOC.sa.managedobject.LookupField"
+        "NOC.core.ComboBox",
     ],
     autoShow: true,
     closable: true,
@@ -51,7 +51,9 @@ Ext.define("NOC.sa.managedobject.LinkForm", {
                     xtype: "form",
                     items: [
                         {
-                            xtype: "sa.managedobject.LookupField",
+                            xtype: "core.combo",
+                            restUrl: "/sa/managedobject/lookup/",
+                            uiStyle: "medium-combo",
                             name: "managed_object",
                             emptyText: __("Select managed object ..."),
                             fieldLabel: __("Object"),
@@ -141,7 +143,7 @@ Ext.define("NOC.sa.managedobject.LinkForm", {
             icon: Ext.window.MessageBox.QUESTION,
             modal: true,
             fn: function(button) {
-                if (button == "yes") {
+                if(button == "yes") {
                     Ext.Ajax.request({
                         url: "/inv/interface/unlink/" + me.ifaceId + "/",
                         method: "POST",

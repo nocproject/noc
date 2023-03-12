@@ -9,9 +9,10 @@ console.debug("Defining NOC.sa.managedobject.ConfDBPanel");
 Ext.define("NOC.sa.managedobject.ConfDBPanel", {
     extend: "NOC.core.ApplicationPanel",
     app: null,
+    alias: "widget.sa.confdb",
     requires: [
         "NOC.core.CMText",
-        "NOC.cm.confdbquery.LookupField"
+        "NOC.core.ComboBox",
     ],
     autoScroll: true,
     layout: "border",
@@ -138,7 +139,9 @@ Ext.define("NOC.sa.managedobject.ConfDBPanel", {
         });
 
         me.confDBQueryField = Ext.create({
-            xtype: "cm.confdbquery.LookupField",
+            xtype: "core.combo",
+            restUrl: "/cm/confdbquery/lookup/",
+            uiStyle: "medium-combo",
             listeners: {
                 scope: me,
                 change: function(field, value) {
@@ -281,7 +284,7 @@ Ext.define("NOC.sa.managedobject.ConfDBPanel", {
                         visible = node.isLeaf() ? searchPattern.test(node.get('text')) : false,
                         i;
 
-                    for(i = 0; i < len && !(visible = children[i].get('visible')); i++) ;
+                    for(i = 0; i < len && !(visible = children[i].get('visible')); i++);
 
                     if(visible && node.isLeaf()) {
                         matches++;

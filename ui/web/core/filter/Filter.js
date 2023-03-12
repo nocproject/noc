@@ -11,19 +11,8 @@ Ext.define('NOC.core.filter.Filter', {
     viewModel: 'core.filter',
     requires: [
         'Ext.ux.form.SearchField',
-        'NOC.sa.profile.LookupField',
-        'NOC.main.pool.LookupField',
-        'NOC.sa.vendor.LookupField',
-        'NOC.sa.platform.LookupField',
-        'NOC.sa.administrativedomain.TreeCombo',
-        'NOC.inv.networksegment.TreeCombo',
-        'NOC.inv.firmware.LookupField',
-        'NOC.inv.platform.LookupField',
-        'NOC.inv.vendor.LookupField',
-        'NOC.sa.managedobjectprofile.LookupField',
-        'NOC.inv.resourcegroup.TreeCombo',
-        'NOC.sa.commandsnippet.LookupField',
-        'NOC.sa.actioncommands.LookupField',
+        'NOC.core.ComboBox',
+        'NOC.core.combotree.ComboTree',
         'NOC.core.filter.ViewModel',
         'NOC.core.filter.FilterController'
     ],
@@ -47,52 +36,43 @@ Ext.define('NOC.core.filter.Filter', {
         align: 'right'
     },
     items: [
+        // {
+        //     xtype: 'searchfield',
+        //     isLookupField: true,
+        //     itemId: '__query',  // name of http request query param
+        //     fieldLabel: __('Name'),
+        //     labelWidth: 50,
+        //     triggers: {
+        //         clear: {
+        //             cls: 'x-form-clear-trigger',
+        //             handler: 'cleanFilter'
+        //         }
+        //     },
+        //     listeners: {
+        //         specialkey: 'setFilter'
+        //     }
+        // },
         {
-            xtype: 'searchfield',
-            isLookupField: true,
-            itemId: '__query',  // name of http request query param
-            fieldLabel: __('Name'),
-            labelWidth: 50,
-            triggers: {
-                clear: {
-                    cls: 'x-form-clear-trigger',
-                    handler: 'cleanFilter'
-                }
-            },
-            listeners: {
-                specialkey: 'setFilter'
-            }
-        },
-        {
-            xtype: 'sa.profile.LookupField',
+            xtype: "core.combo",
+            restUrl: "/sa/profile/lookup/",
             itemId: 'profile', // name of http request query param
             fieldLabel: __('By SA Profile:'),
             listeners: {
                 select: 'setFilter'
-            },
-            triggers: {
-                clear: {
-                    cls: 'x-form-clear-trigger',
-                    handler: 'cleanFilter'
-                }
             }
         },
         {
-            xtype: 'sa.managedobjectprofile.LookupField',
+            xtype: "core.combo",
+            restUrl: "/sa/managedobjectprofile/lookup/",
             itemId: 'object_profile', // name of http request query param
             fieldLabel: __('By Obj. Profile:'),
             listeners: {
                 select: 'setFilter'
-            },
-            triggers: {
-                clear: {
-                    cls: 'x-form-clear-trigger',
-                    handler: 'cleanFilter'
-                }
             }
         },
         {
-            xtype: 'sa.administrativedomain.TreeCombo',
+            xtype: "noc.core.combotree",
+            restUrl: "/sa/administrativedomain/",
             isLookupField: true,
             itemId: 'administrative_domain', // name of http request query param
             fieldLabel: __('By Adm. Domain:'),
@@ -102,7 +82,8 @@ Ext.define('NOC.core.filter.Filter', {
             }
         },
         {
-            xtype: 'inv.networksegment.TreeCombo',
+            xtype: "noc.core.combotree",
+            restUrl: "/inv/networksegment/",
             isLookupField: true,
             itemId: 'segment', // name of http request query param
             fieldLabel: __('By Segment:'),
@@ -112,73 +93,63 @@ Ext.define('NOC.core.filter.Filter', {
             }
         },
         {
-            xtype: 'inv.resourcegroup.TreeCombo',
-            itemId: 'resource_group', // name of http request query param
-            fieldLabel:__("By Service Group"),
+            xtype: "noc.core.combotree",
+            restUrl: "/inv/resourcegroup/",
+            isLookupField: true,
+            itemId: 'effective_service_groups', // name of http request query param
+            fieldLabel: __("By Service Group"),
             listeners: {
+                clear: 'setFilter',
                 select: 'setFilter'
-            },
-            triggers: {
-                clear: {
-                    cls: 'x-form-clear-trigger',
-                    handler: 'cleanFilter'
-                }
             }
         },
         {
-            xtype: 'main.pool.LookupField',
+            xtype: "core.combo",
+            restUrl: "/main/pool/lookup/",
             itemId: 'pool', // name of http request query param
             fieldLabel: __('By Pool:'),
             listeners: {
                 select: 'setFilter'
-            },
-            triggers: {
-                clear: {
-                    cls: 'x-form-clear-trigger',
-                    handler: 'cleanFilter'
-                }
             }
         },
         {
-            xtype: 'inv.vendor.LookupField',
+            xtype: "core.combo",
+            restUrl: "/inv/vendor/lookup/",
             itemId: 'vendor',  // name of http request query param
             fieldLabel: __('By Vendor:'),
             listeners: {
                 select: 'setFilter'
-            },
-            triggers: {
-                clear: {
-                    cls: 'x-form-clear-trigger',
-                    handler: 'cleanFilter'
-                }
             }
         },
         {
-            xtype: 'inv.platform.LookupField',
+            xtype: "core.combo",
+            restUrl: "/inv/platform/lookup/",
             itemId: 'platform',  // name of http request query param
             fieldLabel: __('By Platform:'),
             listeners: {
                 select: 'setFilter'
-            },
-            triggers: {
-                clear: {
-                    cls: 'x-form-clear-trigger',
-                    handler: 'cleanFilter'
-                }
             }
         },
         {
-            xtype: 'inv.firmware.LookupField',
+            xtype: "core.combo",
+            restUrl: "/inv/firmware/lookup/",
             itemId: 'version',  // name of http request query param
             fieldLabel: __('By Version:'),
             listeners: {
                 select: 'setFilter'
+            }
+        },
+        {
+            xtype: "labelfield",
+            itemId: 'labels__labels',
+            fieldLabel: __('By Labels:'),
+            isLookupField: true,
+            toBufferTrigger: false,
+            query: {
+                "enable_managedobject": true
             },
-            triggers: {
-                clear: {
-                    cls: 'x-form-clear-trigger',
-                    handler: 'cleanFilter'
-                }
+            listeners: {
+                change: 'setFilter'
             }
         },
         {

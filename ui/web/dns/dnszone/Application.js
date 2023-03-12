@@ -21,7 +21,7 @@ Ext.define("NOC.dns.dnszone.Application", {
     search: true,
     helpId: "reference-dns-zone",
 
-    initComponent: function () {
+    initComponent: function() {
         var me = this;
 
         Ext.apply(me, {
@@ -199,7 +199,7 @@ Ext.define("NOC.dns.dnszone.Application", {
                             text: __("Labels"),
                             dataIndex: "labels",
                             width: 100,
-                            editor: "labelsfield"
+                            editor: "labelfield"
                         }
                     ]
                 }

@@ -10,9 +10,10 @@ from collections import defaultdict
 import zlib
 
 # Third-party modules
-from django.http import HttpResponse
 import orjson
 import cachetools
+from django.http import HttpResponse
+from django.db.models import Q as d_Q
 from mongoengine.queryset import Q as MQ
 
 # NOC modules
@@ -32,6 +33,7 @@ from noc.inv.models.platform import Platform
 from noc.inv.models.firmware import Firmware
 from noc.inv.models.resourcegroup import ResourceGroup
 from noc.inv.models.object import Object
+from noc.main.models.label import Label
 from noc.services.web.base.modelinline import ModelInline
 from noc.services.web.base.repoinline import RepoInline
 from noc.project.models.project import Project
@@ -55,6 +57,8 @@ from noc.fm.models.activealarm import ActiveAlarm
 from noc.fm.models.alarmclass import AlarmClass
 from noc.sa.models.objectstatus import ObjectStatus
 
+JP_CLAUSE_PATTERN = "jsonb_path_exists(caps, '$[*] ? (@.capability == \"{}\") ? (@.value {} {})')"
+
 
 class ManagedObjectApplication(ExtModelApplication):
     """
@@ -71,10 +75,12 @@ class ManagedObjectApplication(ExtModelApplication):
     attrs = ModelInline(ManagedObjectAttribute)
     cfg = RepoInline("config", access="config")
 
-    extra_permissions = ["alarm", "change_interface"]
+    extra_permissions = ["alarm", "change_interface", "commands"]
     implied_permissions = {"read": ["inv:networksegment:lookup", "main:handler:lookup"]}
     diverged_permissions = {"config": "read", "console": "script"}
     order_map = {
+        "link_count": " cardinality(links) ",
+        "-link_count": " cardinality(links) ",
         "address": " cast_test_to_inet(address) ",
         "-address": " cast_test_to_inet(address) ",
         "profile": "CASE %s END"
@@ -211,28 +217,28 @@ class ManagedObjectApplication(ExtModelApplication):
                 x["oper_state__label"] = _("Up")
         return data
 
-    def bulk_field_link_count(self, data):
-        """
-        Apply link_count fields
-        :param data:
-        :return:
-        """
-        mo_ids = [x["id"] for x in data]
-        if not mo_ids:
-            return data
-        # Collect interface counts
-        r = Link._get_collection().aggregate(
-            [
-                {"$match": {"linked_objects": {"$in": mo_ids}}},
-                {"$unwind": "$linked_objects"},
-                {"$group": {"_id": "$linked_objects", "total": {"$sum": 1}}},
-            ]
-        )
-        links_count = {x["_id"]: x["total"] for x in r}
-        # Apply interface counts
-        for x in data:
-            x["link_count"] = links_count.get(x["id"]) or 0
-        return data
+    # def bulk_field_link_count(self, data):
+    #     """
+    #     Apply link_count fields
+    #     :param data:
+    #     :return:
+    #     """
+    #     mo_ids = [x["id"] for x in data]
+    #     if not mo_ids:
+    #         return data
+    #     # Collect interface counts
+    #     r = Link._get_collection().aggregate(
+    #         [
+    #             {"$match": {"linked_objects": {"$in": mo_ids}}},
+    #             {"$unwind": "$linked_objects"},
+    #             {"$group": {"_id": "$linked_objects", "total": {"$sum": 1}}},
+    #         ]
+    #     )
+    #     links_count = {x["_id"]: x["total"] for x in r}
+    #     # Apply interface counts
+    #     for x in data:
+    #         x["link_count"] = links_count.get(x["id"]) or 0
+    #     return data
 
     def instance_to_dict(self, o, fields=None):
         def sg_to_list(items):
@@ -273,6 +279,48 @@ class ManagedObjectApplication(ExtModelApplication):
         )
         return data
 
+    def instance_to_dict_list(self, o: "ManagedObject", fields=None):
+        """
+
+        :param o:
+        :param fields:
+        :return:
+        """
+        return {
+            "id": o.id,
+            "name": o.name,
+            "address": o.address,
+            "is_managed": o.is_managed,
+            "administrative_domain": str(o.administrative_domain.name),
+            "object_profile": str(o.object_profile.name),
+            "segment": str(o.segment.name),
+            "auth_profile": str(o.auth_profile.name) if o.auth_profile else "",
+            "profile": o.profile.name,
+            "pool": str(o.pool.name),
+            "platform": o.platform.name if o.platform else "",
+            "version": o.version.version if o.version else "",
+            "vrf": o.vrf.name if o.vrf else "",
+            "description": o.description or "",
+            "row_class": o.object_profile.style.css_class_name if o.object_profile.style else "",
+            "link_count": len(o.links),
+            "labels": [
+                {
+                    "id": ll.name,
+                    "is_protected": ll.is_protected,
+                    "scope": ll.scope,
+                    "name": ll.name,
+                    "value": ll.value,
+                    "badges": ll.badges,
+                    "bg_color1": f"#{ll.bg_color1:06x}",
+                    "fg_color1": f"#{ll.fg_color1:06x}",
+                    "bg_color2": f"#{ll.bg_color2:06x}",
+                    "fg_color2": f"#{ll.fg_color2:06x}",
+                }
+                for ll in Label.objects.filter(name__in=o.labels).order_by("display_order")
+            ]
+            # "row_class": ""
+        }
+
     def clean(self, data):
         # Clean resource groups
         for fn in self.resource_group_fields:
@@ -308,6 +356,16 @@ class ManagedObjectApplication(ExtModelApplication):
                     )
                 )
             r["id__in"] = list(addr_mo)
+        if "addresses" in r:
+            if isinstance(r["addresses"], list):
+                r["address__in"] = r["addresses"]
+            else:
+                r["address__in"] = [r["addresses"]]
+            del r["addresses"]
+        # Clean Caps
+        for f in list(r):
+            if f.startswith("caps"):
+                r.pop(f)
         return r
 
     def get_Q(self, request, query):
@@ -315,13 +373,75 @@ class ManagedObjectApplication(ExtModelApplication):
         sq = ManagedObject.get_search_Q(query)
         if sq:
             q |= sq
+
         return q
 
     def queryset(self, request, query=None):
-        qs = super().queryset(request, query)
+        if request.method != "POST":
+            nq = {str(k): v[0] if len(v) == 1 else v for k, v in request.GET.lists()}
+        elif self.site.is_json(request.META.get("CONTENT_TYPE")):
+            nq = self.deserialize(request.body)
+        else:
+            nq = {str(k): v[0] if len(v) == 1 else v for k, v in request.POST.lists()}
+
+        q = d_Q()
         if not request.user.is_superuser:
-            qs = qs.filter(UserAccess.Q(request.user))
-        qs = qs.exclude(name__startswith="wiping-")
+            q &= UserAccess.Q(request.user)
+
+        jp_clauses = []
+        for cc in [part for part in nq if part.startswith("caps")]:
+            """
+            Caps: caps0=CapsID,caps1=CapsID:true....
+            cq - caps query
+            mq - main_query
+            caps0=CapsID - caps is exists
+            caps0=!CapsID - caps is not exists
+            caps0=CapsID:true - caps value equal True
+            caps0=CapsID:2~50 - caps value many then 2 and less then 50
+            """
+
+            c = nq.pop(cc)
+            if not c:
+                continue
+
+            self.logger.info("[%s] Caps", c)
+            if "!" in c:
+                # @todo Добавить исключение (только этот) !ID
+                c_id = c[1:]
+                c_query = "nexists"
+            elif ":" not in c:
+                c_id = c
+                c_query = "exists"
+            else:
+                c_id, c_query = c.split(":", 1)
+            caps = Capability.get_by_id(c_id)
+            self.logger.info("[%s] Caps: %s", c, caps)
+
+            if "~" in c_query:
+                l, r = c_query.split("~")
+                if not l:
+                    jp_clauses.append(JP_CLAUSE_PATTERN.format(caps.id, "<=", r))
+                elif not r:
+                    jp_clauses.append(JP_CLAUSE_PATTERN.format(caps.id, ">=", l))
+                else:
+                    # TODO This functionality is not implemented in frontend
+                    jp_clauses.append(JP_CLAUSE_PATTERN.format(caps.id, "<=", r))
+                    jp_clauses.append(JP_CLAUSE_PATTERN.format(caps.id, ">=", l))
+            elif c_query in ("false", "true"):
+                q &= d_Q(caps__contains=[{"capability": str(caps.id), "value": c_query == "true"}])
+            elif c_query == "exists":
+                q &= d_Q(caps__contains=[{"capability": str(caps.id)}])
+                continue
+            elif c_query == "nexists":
+                q &= ~d_Q(caps__contains=[{"capability": str(caps.id)}])
+                continue
+            else:
+                value = caps.clean_value(c_query)
+                q &= d_Q(caps__contains=[{"capability": str(caps.id), "value": value}])
+        qs = super().queryset(request, query)
+        if jp_clauses:
+            qs = qs.extra(where=jp_clauses)
+        qs = qs.filter(q).exclude(name__startswith="wiping-")
         return qs
 
     @view(url=r"^(?P<id>\d+)/links/$", method=["GET"], access="read", api=True)
@@ -1056,3 +1176,11 @@ class ManagedObjectApplication(ExtModelApplication):
                 }
             ]
         return r
+
+    @view(url=r"^full/", method=["GET", "POST"], access="read", api=True)
+    def api_list_full(self, request):
+        return self.list_data(request, self.instance_to_dict)
+
+    @view(url=r"^list/", method=["GET", "POST"], access="read", api=True)
+    def api_list_short(self, request):
+        return self.list_data(request, self.instance_to_dict_list)

@@ -9,6 +9,7 @@ console.debug("Defining NOC.sa.managedobject.LinksPanel");
 Ext.define("NOC.sa.managedobject.LinksPanel", {
     extend: "NOC.core.ApplicationPanel",
     historyHashPrefix: "links",
+    alias: "widget.sa.links",
     requires: [
         "NOC.sa.managedobject.LinksStore"
     ],

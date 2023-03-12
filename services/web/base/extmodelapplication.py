@@ -297,7 +297,7 @@ class ExtModelApplication(ExtApplication):
             ):
                 continue
             v = q[p]
-            if self.in_param in p:
+            if self.in_param in p and isinstance(v, str):
                 v = v.split(",")
             if v == "\x00":
                 v = None
@@ -522,14 +522,16 @@ class ExtModelApplication(ExtApplication):
         new_order = []
         extra_select = {}
         for n, o in enumerate(order):
+            direction = ""
             if o.startswith("-"):
                 fname = o[1:]
+                direction = "-"
             else:
                 fname = o
             if o in self.order_map:
-                no = "%s_order_%d" % (fname, n)
+                no = f"{fname}_order_{n}"
                 extra_select[no] = self.order_map[o]
-                new_order += [no]
+                new_order += [f"{direction}{no}"]
             else:
                 new_order += [o]
         extra = {}
@@ -567,9 +569,12 @@ class ExtModelApplication(ExtApplication):
         """
         return True
 
+    def instance_to_dict_list(self, o, fields=None):
+        return self.instance_to_dict(o, fields=fields)
+
     @view(method=["GET"], url=r"^$", access="read", api=True)
     def api_list(self, request):
-        return self.list_data(request, self.instance_to_dict)
+        return self.list_data(request, self.instance_to_dict_list)
 
     @view(method=["GET"], url=r"^lookup/$", access="lookup", api=True)
     def api_lookup(self, request):

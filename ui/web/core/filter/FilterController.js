@@ -38,9 +38,7 @@ Ext.define('NOC.core.filter.FilterController', {
                     keys.filter(function(e) {
                         return Ext.String.startsWith(e, item.itemId, true);
                     }).map(function(e) {
-                        if(Ext.String.endsWith(item.xtype, 'TreeCombo', true)) {
-                            item.restoreById(filterObject[item.itemId]);
-                        } else if('caps' === item.itemId) {
+                        if('caps' === item.itemId) {
                             var delimiter = filterObject[e].indexOf(':');
                             var condition;
                             var id, value;
@@ -110,12 +108,6 @@ Ext.define('NOC.core.filter.FilterController', {
             }
         }
 
-        if(Ext.String.endsWith(field.xtype, 'TreeCombo', true)) {
-            if(Ext.isFunction(event.get)) { // event -> data
-                value = event.get('id');
-            }
-        }
-
         if('Ext.event.Event' === Ext.getClassName(event)) {
             if(Ext.EventObject.ENTER === event.getKey()) {
                 this.reloadData(field.itemId, value);
@@ -130,9 +122,7 @@ Ext.define('NOC.core.filter.FilterController', {
         Ext.History.add(this.view.appId);
         this.view.viewModel.set('filterObject', {});
         Ext.Array.each(this.lookupFields(), function(item) {
-            if(Ext.String.endsWith(item.xtype, 'TreeCombo', true)) {
-                item.reset();
-            } else if('caps' === item.itemId) {
+            if('caps' === item.itemId) {
                 // skip
             } else {
                 item.setValue('');
@@ -321,5 +311,6 @@ Ext.define('NOC.core.filter.FilterController', {
                 }
             }
         }
-    }
+    },
+    onChange: Ext.emptyFn,
 });

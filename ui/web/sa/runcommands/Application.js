@@ -213,7 +213,7 @@ Ext.define('NOC.sa.runcommands.Application', {
                     ]
                 }, {
                     xtype: 'NOC.Filter',
-                    reference: 'filter-panel',
+                    reference: 'filterPanel',
                     region: 'west',
                     width: 300,
                     collapsed: true,
@@ -295,13 +295,13 @@ Ext.define('NOC.sa.runcommands.Application', {
                             items: [
                                 {
                                     xtype: 'checkboxfield',
-                                    reference: 'ignore-cli-errors',
+                                    reference: 'ignoreCliErrors',
                                     boxLabel: __('Ignore CLI errors'),
                                     checked: true
                                 },
                                 {
                                     xtype: 'combo',
-                                    reference: 'sa-run-commands-mode',
+                                    reference: 'saRunCommandsMode',
                                     fieldLabel: __('Mode'),
                                     labelWidth: 50,
                                     queryMode: 'local',
