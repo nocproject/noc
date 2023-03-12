@@ -180,15 +180,14 @@ class SLAProbe(Document):
                 continue
             metrics = []
             for metric in sla.profile.metrics:
-                if not metric.interval:
-                    continue
+                interval = metric.interval or sla.profile.metrics_default_interval or d_interval
                 mi = MetricItem(
                     name=metric.metric_type.name,
                     field_name=metric.metric_type.field_name,
                     scope_name=metric.metric_type.scope.table_name,
                     is_stored=metric.is_stored,
                     is_compose=metric.metric_type.is_compose,
-                    interval=metric.interval,
+                    interval=interval,
                 )
                 if mi.is_run(d_interval, sla.bi_id, buckets, run):
                     metrics.append(mi)

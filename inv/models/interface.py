@@ -544,14 +544,12 @@ class Interface(Document):
                 continue  # No metrics configured
             metrics: List[MetricItem] = []
             for mc in i_profile.metrics:
-                if not mc.interval and not i_profile.metrics_default_interval:
-                    continue
                 # Check metric collected policy
                 if not i_profile.allow_collected_metric(
                     i.get("admin_status"), i.get("oper_status"), mc.metric_type.name
                 ):
                     continue
-                interval = mc.interval or i_profile.metrics_default_interval
+                interval = mc.interval or i_profile.metrics_default_interval or d_interval
                 iface_code = bi_hash(f"managed_object:{i['name']}:{interval}")
                 mi = MetricItem(
                     name=mc.metric_type.name,

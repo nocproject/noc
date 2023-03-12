@@ -190,16 +190,13 @@ class CPE(Document):
                 continue
             metrics = []
             for metric in cpe.profile.metrics:
-                interval = metric.interval or cpe.profile.metrics_default_interval
-                if not interval:
-                    continue
                 mi = MetricItem(
                     name=metric.metric_type.name,
                     field_name=metric.metric_type.field_name,
                     scope_name=metric.metric_type.scope.table_name,
                     is_stored=metric.is_stored,
                     is_compose=metric.metric_type.is_compose,
-                    interval=interval,
+                    interval=metric.interval or cpe.profile.metrics_default_interval or d_interval,
                 )
                 if mi.is_run(d_interval, cpe.bi_id, buckets, run):
                     metrics.append(mi)
