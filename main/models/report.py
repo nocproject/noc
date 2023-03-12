@@ -178,13 +178,15 @@ class Report(Document):
             return ReportConfig(
                 name=self.name,
                 root_band=ReportBand(name="Root", children=[], source=self.report_source),
-                templates={"DEFAULT": TemplateCfg(
-                    code="DEFAULT",
-                    output_type="html",
-                    formatter="simplereport",
-                    output_name_pattern="report1",
-                    bands_format={},
-                )},
+                templates={
+                    "DEFAULT": TemplateCfg(
+                        code="DEFAULT",
+                        output_type="html",
+                        formatter="simplereport",
+                        output_name_pattern="report1",
+                        bands_format={},
+                    )
+                },
                 parameters=params,
             )
 
