@@ -522,14 +522,16 @@ class ExtModelApplication(ExtApplication):
         new_order = []
         extra_select = {}
         for n, o in enumerate(order):
+            direction = ""
             if o.startswith("-"):
                 fname = o[1:]
+                direction = "-"
             else:
                 fname = o
             if o in self.order_map:
-                no = "%s_order_%d" % (fname, n)
+                no = f"{fname}_order_{n}"
                 extra_select[no] = self.order_map[o]
-                new_order += [no]
+                new_order += [f"{direction}{no}"]
             else:
                 new_order += [o]
         extra = {}

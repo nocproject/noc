@@ -5,31 +5,6 @@
 
 defaultColumns = [
     {
-        text: __('Name'),
-        dataIndex: 'name',
-        width: 200
-    },
-    {
-        text: __('Address'),
-        dataIndex: 'address',
-        width: 100
-    },
-    {
-        text: __('Profile'),
-        dataIndex: 'profile',
-        width: 100
-    },
-    {
-        text: __('Platform'),
-        dataIndex: 'platform',
-        flex: 1
-    },
-    {
-        text: __('Version'),
-        dataIndex: 'version',
-        flex: 1
-    },
-    {
         text: __("S"),
         dataIndex: "oper_state",
         sortable: false,
@@ -53,10 +28,35 @@ defaultColumns = [
         }
     },
     {
+        text: __('Name'),
+        dataIndex: 'name',
+        width: 200
+    },
+    {
         text: __('Managed'),
         dataIndex: 'is_managed',
         width: 30,
         renderer: NOC.render.Bool
+    },
+    {
+        text: __('Address'),
+        dataIndex: 'address',
+        width: 100
+    },
+    {
+        text: __('Profile'),
+        dataIndex: 'profile',
+        width: 100
+    },
+    {
+        text: __('Platform'),
+        dataIndex: 'platform',
+        flex: 1
+    },
+    {
+        text: __('Version'),
+        dataIndex: 'version',
+        flex: 1
     },
     {
         text: __('Obj. Profile'),
@@ -103,7 +103,7 @@ defaultColumns = [
         text: __('Links'),
         dataIndex: 'link_count',
         width: 50,
-        sortable: false,
+        sortable: true,
         align: "right",
         renderer: function(value, metaData) {
             metaData.tdStyle = "text-decoration-line: underline;cursor: pointer;";
