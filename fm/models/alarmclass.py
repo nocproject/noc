@@ -24,6 +24,8 @@ from mongoengine.fields import (
     FloatField,
     LongField,
     ObjectIdField,
+    MapField,
+    DictField,
 )
 from mongoengine.errors import ValidationError
 import cachetools
@@ -190,6 +192,8 @@ class AlarmClass(Document):
     bi_id = LongField(unique=True)
     #
     category = ObjectIdField()
+    # i18n -> description -> ru -> value
+    i18n = MapField(DictField()) # choices=["subject_template", "body_template", "description", "symptoms"])
 
     _id_cache = cachetools.TTLCache(maxsize=1000, ttl=60)
     _bi_id_cache = cachetools.TTLCache(maxsize=1000, ttl=60)
