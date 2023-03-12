@@ -13,13 +13,14 @@ Ext.define("NOC.core.CMTextLayout", {
     renderItems: Ext.emptyFn,
     type: "cmtext",
 
-    beginLayout: function (ownerContext) {
+    beginLayout: function(ownerContext) {
         var me = this;
         me.callParent(arguments);
         ownerContext.editorContext = ownerContext.getEl("containerEl");
+        ownerContext.editorContext.setHeight(ownerContext.ownerCtContext.el.getHeight(), true);
     },
 
-    publishInnerHeight: function (ownerContext, height) {
+    publishInnerHeight: function(ownerContext, height) {
         var me = this;
         ownerContext.editorContext.setHeight(height, true);
     }
@@ -46,7 +47,7 @@ Ext.define("NOC.core.CMText", {
 
     editorWrapCls: Ext.baseCSSPrefix + 'html-editor-wrap ' + Ext.baseCSSPrefix + 'html-editor-input',
 
-    initComponent: function () {
+    initComponent: function() {
         var me = this;
         me.editor = null;
         me.rawValue = null;
@@ -57,22 +58,22 @@ Ext.define("NOC.core.CMText", {
         me.on("beforedestroy", me.onBeforeDestroy, me);
     },
 
-    afterRender: function () {
+    afterRender: function() {
         var me = this;
 
         me.callParent(arguments);
         me.initEditor();
     },
 
-    onFieldResize: function () {
+    onFieldResize: function() {
         var me = this;
 
-        if (me.editor) {
+        if(me.editor) {
             me.editor.refresh();
         }
     },
 
-    getSubTplData: function () {
+    getSubTplData: function() {
         var me = this,
             cssPrefix = Ext.baseCSSPrefix;
 
@@ -88,7 +89,7 @@ Ext.define("NOC.core.CMText", {
         };
     },
 
-    initEditor: function () {
+    initEditor: function() {
         var me = this,
             keyRun = function() {
                 CodeMirror.signal(me.editor, "run");
@@ -105,13 +106,13 @@ Ext.define("NOC.core.CMText", {
         me.setMode(me.mode);
         // change the codemirror css
         var css = Ext.util.CSS.getRule(".CodeMirror");
-        if (css) {
+        if(css) {
             css.style.height = "100%";
             css.style.position = "relative";
             css.style.overflow = "hidden";
         }
         css = Ext.util.CSS.getRule(".CodeMirror-Scroll");
-        if (css) {
+        if(css) {
             css.style.height = "100%";
         }
         me.setTheme(NOC.settings.preview_theme);
@@ -127,9 +128,9 @@ Ext.define("NOC.core.CMText", {
         });
     },
     // Set CodeMirror theme
-    setTheme: function (name) {
+    setTheme: function(name) {
         var me = this;
-        if (name !== "default") {
+        if(name !== "default") {
             Ext.util.CSS.swapStyleSheet(
                 "cmcss-" + me.id,  // Fake one
                 "/ui/pkg/codemirror/theme/" + name + ".css"
@@ -138,49 +139,49 @@ Ext.define("NOC.core.CMText", {
         me.editor.setOption("theme", name);
     },
 
-    renderText: function (text, syntax) {
+    renderText: function(text, syntax) {
         var me = this;
         syntax = syntax || null;
         text = text || "NO DATA";
         CodeMirror.modeURL = "/ui/pkg/codemirror/mode/%N/%N.js";
         me.editor.setValue(text);
-        if (syntax) {
+        if(syntax) {
             me.editor.setOption("mode", syntax);
             CodeMirror.autoLoadMode(me.editor, syntax);
         }
     },
 
-    setValue: function (value) {
+    setValue: function(value) {
         var me = this;
         me.rawValue = value;
-        if (me.editor) {
+        if(me.editor) {
             me.renderText(value);
         }
         return me;
     },
 
-    getValue: function () {
+    getValue: function() {
         var me = this;
         return me.editor ? me.editor.getValue() : null;
     },
 
-    getRawValue: function () {
+    getRawValue: function() {
         var me = this;
         return me.getValue();
     },
 
-    getSubmitValue: function () {
+    getSubmitValue: function() {
         var me = this;
         return me.getValue();
     },
 
-    onBeforeDestroy: function () {
+    onBeforeDestroy: function() {
         var me = this;
         me.un("resize", me.onFieldResize, me);
-        if (me.editor) {
+        if(me.editor) {
             try {
                 delete me.editor;
-            } catch (e) {
+            } catch(e) {
             }
             Ext.destroyMembers("containerEl");
         }

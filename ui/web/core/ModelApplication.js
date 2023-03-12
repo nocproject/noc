@@ -586,12 +586,12 @@ Ext.define("NOC.core.ModelApplication", {
         //
         if(NOC.settings.enableHelp && (me.helpId || me.formHelpId)) {
             me.formHelpButton = Ext.create("Ext.button.Button", {
-                    itemId: "formHelp",
-                    glyph: NOC.glyph.question_circle,
-                    tooltip: __("Form Help"),
-                    scope: me,
-                    handler: NOC.helpOpener(me.formHelpId || me.helpId)
-                }
+                itemId: "formHelp",
+                glyph: NOC.glyph.question_circle,
+                tooltip: __("Form Help"),
+                scope: me,
+                handler: NOC.helpOpener(me.formHelpId || me.helpId)
+            }
             );
             formToolbar = formToolbar.concat("->", me.formHelpButton);
         }
@@ -757,16 +757,16 @@ Ext.define("NOC.core.ModelApplication", {
             result[me.idField] = me.currentRecord.get(me.idField);
         }
         me.inlineStores
-        .filter(function(store) {
-            return store.hasOwnProperty("isLocal") && store.isLocal;
-        })
-        .forEach(function(store) {
-            result[store.rootProperty] = store.getData().items.map(function(item) {
-                var obj = {};
-                obj[store.parentField] = item.get(store.parentField);
-                return obj;
+            .filter(function(store) {
+                return store.hasOwnProperty("isLocal") && store.isLocal;
+            })
+            .forEach(function(store) {
+                result[store.rootProperty] = store.getData().items.map(function(item) {
+                    var obj = {};
+                    obj[store.parentField] = item.get(store.parentField);
+                    return obj;
+                });
             });
-        });
         me.mask("Saving ...");
         // Save data
         Ext.Ajax.request({
@@ -1049,7 +1049,7 @@ Ext.define("NOC.core.ModelApplication", {
                 // WARNING: Will skip other inline editors
                 continue;
             }
-            if(!Ext.isFunction(field.getModelData)){
+            if(!Ext.isFunction(field.getModelData)) {
                 // Skip fields without data, e.g. FieldSet
                 continue;
             }
@@ -1238,7 +1238,7 @@ Ext.define("NOC.core.ModelApplication", {
     },
     //
     onCellClick: function(view, cell, cellIndex, record, row,
-                          rowIndex, e) {
+        rowIndex, e) {
         var me = this;
         if(e.target.tagName == "A") {
             var header = view.panel.headerCt.getHeaderAtIndex(cellIndex);
@@ -1306,9 +1306,9 @@ Ext.define("NOC.core.ModelApplication", {
             }
             item.run(
                 me.grid.getSelectionModel().getSelection()
-                .map(function(o) {
-                    return {object: o.get(me.idField), object__label: o.get('name')}
-                }));
+                    .map(function(o) {
+                        return {object: o.get(me.idField), object__label: o.get('name')}
+                    }));
             return;
         }
         if(item.form) {

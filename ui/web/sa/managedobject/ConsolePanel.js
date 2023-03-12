@@ -9,6 +9,7 @@ console.debug("Defining NOC.sa.managedobject.ConsolePanel");
 Ext.define("NOC.sa.managedobject.ConsolePanel", {
     extend: "Ext.panel.Panel",
     app: null,
+    alias: "widget.sa.console",
     layout: "fit",
     autoScroll: true,
 
@@ -86,6 +87,12 @@ Ext.define("NOC.sa.managedobject.ConsolePanel", {
         me.setTitle(c.join(" "));
         me.clearBody();
         me.prompt = record.get("name") + "> ";
+        if(me.historyHashPrefix) {
+            me.app.setHistoryHash(
+                me.currentRecord.get("id"),
+                me.historyHashPrefix
+            );
+        }
     },
     //
     onSpecialKey: function(field, e) {

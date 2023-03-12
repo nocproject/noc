@@ -29,12 +29,23 @@ Ext.define("NOC.core.label.LabelField", {
     isTree: false,
     pickerPosition: "left", // right | left
     appClass: "main.label",
+    toBufferTrigger: true,
+    clearTrigger: false,
     triggers: {
         toBuffer: {
             cls: "x-form-clipboard-trigger",
             hidden: false,
             weight: -1,
             handler: "toClipboard"
+        },
+        clear: {
+            cls: "x-form-clean-trigger",
+            hidden: true,
+            weight: -1,
+            handler: function(field) {
+                field.setValue(null);
+                field.fireEvent("select", field);
+            }
         },
         create: {
             cls: "x-form-plus-trigger",
@@ -92,6 +103,9 @@ Ext.define("NOC.core.label.LabelField", {
                     me.getTrigger("create").show();
                 }
             };
+        if(this.toBufferTrigger === false) {
+            this.getTrigger("toBuffer").hide();
+        }
         me.triggers.picker.cls = "theme-classic fas fa fa-folder-open-o";
         if(me.isTree) {
             me.treePicker = Ext.create({
@@ -113,11 +127,11 @@ Ext.define("NOC.core.label.LabelField", {
             process(NOC.permissions$.getPermissions(me.appClass));
         } else {
             NOC.permissions$.subscribe({
-                    key: me.appClass,
-                    value: function(perms) {
-                        process(perms);
-                    }
+                key: me.appClass,
+                value: function(perms) {
+                    process(perms);
                 }
+            }
             );
         }
         me.callParent();
@@ -303,8 +317,8 @@ Ext.define("NOC.core.label.LabelField", {
                     }
                 }
             }
-            me.callParent([value, add]);
         }
+        me.callParent([value, add]);
     },
 
     toClipboard: function(btn) {
@@ -396,6 +410,6 @@ Ext.define("NOC.core.label.LabelField", {
 
     getArrayValues: function() {
         var me = this;
-        return this.valueCollection.items.map(function(element) { return element.get(me.valueField)});
+        return this.valueCollection.items.map(function(element) {return element.get(me.valueField)});
     },
 });

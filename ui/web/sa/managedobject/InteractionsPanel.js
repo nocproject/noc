@@ -8,6 +8,7 @@ console.debug("Defining NOC.sa.managedobject.InteractionsPanel");
 
 Ext.define("NOC.sa.managedobject.InteractionsPanel", {
     extend: "Ext.panel.Panel",
+    alias: "widget.sa.interactions",
     app: null,
     layout: "fit",
     autoScroll: true,
@@ -22,7 +23,7 @@ Ext.define("NOC.sa.managedobject.InteractionsPanel", {
             handler: me.onClose
         });
 
-         me.refreshButton = Ext.create("Ext.button.Button", {
+        me.refreshButton = Ext.create("Ext.button.Button", {
             text: __("Refresh"),
             glyph: NOC.glyph.refresh,
             scope: me,
@@ -113,6 +114,12 @@ Ext.define("NOC.sa.managedobject.InteractionsPanel", {
         var me = this;
         me.currentRecord = record;
         me.setTitle(record.get("name") + " commands");
+        if(me.historyHashPrefix) {
+            me.app.setHistoryHash(
+                me.currentRecord.get("id"),
+                me.historyHashPrefix
+            );
+        }
         Ext.Ajax.request({
             url: "/sa/managedobject/" + record.get("id") + "/interactions/",
             method: "GET",

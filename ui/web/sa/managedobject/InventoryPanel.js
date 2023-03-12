@@ -8,6 +8,7 @@ console.debug("Defining NOC.sa.managedobject.InventoryPanel");
 
 Ext.define("NOC.sa.managedobject.InventoryPanel", {
     extend: "NOC.core.ApplicationPanel",
+    alias: "widget.sa.inventory",
     requires: [
         "NOC.sa.managedobject.InventoryModel"
     ],

@@ -251,7 +251,7 @@ Ext.define('NOC.core.RepoPreview', {
     setViewerSize: function() {
         var me = this;
         if(Ext.isFunction(me.viewer.setSize)) {
-            me.viewer.setSize("100%", me.cmContainer.getHeight());
+            me.viewer.setSize(me.cmContainer.getWidth(), me.cmContainer.getHeight());
         }
     },
     //
@@ -413,12 +413,12 @@ Ext.define('NOC.core.RepoPreview', {
             // ToDo refactor!
             getRev(object1, rev1).then(function(rev1Text) {
                 getRev(object2, rev2).then(function(rev2Text) {
-                        me.renderText(rev2Text, 'merge', rev1Text);
-                        mask.hide();
-                    }, function(error) {
-                        NOC.error(error);
-                        mask.hide();
-                    }
+                    me.renderText(rev2Text, 'merge', rev1Text);
+                    mask.hide();
+                }, function(error) {
+                    NOC.error(error);
+                    mask.hide();
+                }
                 );
             }, function(error) {
                 NOC.error(error);

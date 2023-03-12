@@ -83,7 +83,11 @@ Ext.define("NOC.core.Export", {
                     if((index + '__label') in this.item.data) {
                         index += '__label';
                     }
-                    this.record[column.dataIndex] = this.item.get(index);
+                    if(index === 'labels') {
+                        this.record[column.dataIndex] = Ext.Array.map(this.item.get(index), function(label) {return label.id}).join(',');
+                    } else {
+                        this.record[column.dataIndex] = this.item.get(index);
+                    }
                 }
             }, {item: item, record: record});
             this.out.push(record);
@@ -105,7 +109,7 @@ Ext.define("NOC.core.Export", {
             } else {
                 records = grid.getStore().getRange(0);
             }
-            if(cols){
+            if(cols) {
                 columns = cols;
             } else {
                 columns = grid.getVisibleColumns();

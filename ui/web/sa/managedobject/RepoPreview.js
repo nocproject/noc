@@ -8,6 +8,10 @@ console.debug("Defining NOC.sa.managedobject.RepoPreview");
 
 Ext.define("NOC.sa.managedobject.RepoPreview", {
     extend: "NOC.core.RepoPreview",
+    alias: "widget.sa.repopreview",
+    requires: [
+        "NOC.core.ComboBox",
+    ],
     initComponent: function() {
         var me = this, topBar, index;
         me.callParent();
@@ -24,7 +28,9 @@ Ext.define("NOC.sa.managedobject.RepoPreview", {
                 }
             ]
         });
-        me.objectCombo = Ext.create("NOC.sa.managedobject.LookupField", {
+        me.objectCombo = Ext.create("NOC.core.ComboBox", {
+            restUrl: "/sa/managedobject/lookup/",
+            uiStyle: "medium-combo",
             itemId: "objectCombo",
             hidden: true,
             listeners: {
@@ -57,6 +63,12 @@ Ext.define("NOC.sa.managedobject.RepoPreview", {
         var me = this;
         me.callParent(arguments);
         me.menuBtnFn("revision", record.get("id"));
+        if(me.historyHashPrefix) {
+            me.app.setHistoryHash(
+                me.currentRecord.get("id"),
+                me.historyHashPrefix
+            );
+        }
     },
     menuBtnFn: function(type, id) {
         var me = this;
@@ -71,7 +83,9 @@ Ext.define("NOC.sa.managedobject.RepoPreview", {
             case "revision": {
                 me.clearHideCombo(me.objectCombo);
                 me.diffCombo.setValue(null);
-                me.requestRevisions(id);
+                if(Ext.getClassName(id) !== 'Ext.menu.Item') {
+                    me.requestRevisions(id);
+                }
                 me.diffCombo.show();
                 me.menuBtn.setText(Ext.String.format("{0} {1}", __("Compare With"), __("Revision")));
                 break;
