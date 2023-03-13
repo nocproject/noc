@@ -31,20 +31,20 @@ class AlarmClassApplication(ExtDocApplication):
 
     @view(
         method=["PUT"],
-        url=r"^(?P<aid>[0-9a-f]{24})/localisation/?$",
+        url=r"^(?P<aid>[0-9a-f]{24})/localization/?$",
         access="update",
         api=True,
         validate={
             "language": StringParameter(required=True),
-            "localisation": DictParameter(required=True),
+            "localization": DictParameter(required=True),
         },
     )
-    def api_update_i18n(self, request, aid, language: str, localisation: Dict[str, str]):
+    def api_update_i18n(self, request, aid, language: str, localization: Dict[str, str]):
         ac: AlarmClass = self.get_object_or_404(AlarmClass, id=aid)
-        for field in localisation:
+        for field in localization:
             if field not in ac.i18n:
-                ac.i18n[field] = {language: localisation[field]}
+                ac.i18n[field] = {language: localization[field]}
             else:
-                ac.i18n[field][language] = localisation[field]
+                ac.i18n[field][language] = localization[field]
         ac.update(i18n=ac.i18n)
         return self.render_json({"status": True})
