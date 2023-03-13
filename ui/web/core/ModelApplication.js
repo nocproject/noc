@@ -1053,6 +1053,10 @@ Ext.define("NOC.core.ModelApplication", {
                 // Skip fields without data, e.g. FieldSet
                 continue;
             }
+            if(field.xtype === "radiofield" && !field.getValue()) {
+                // Skip unchecked field
+                continue;
+            }
             data = field.getModelData();
             name = field.getName();
             if(Ext.isObject(data)) {

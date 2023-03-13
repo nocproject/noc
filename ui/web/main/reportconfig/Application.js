@@ -120,16 +120,21 @@ Ext.define('NOC.main.reportconfig.Application', {
                                     ]
                                 },
                                 {
-                                    name: "report_format",
-                                    xtype: "radiogroup",
-                                    vertical: true,
+                                    xtype: 'fieldcontainer',
+                                    fieldLabel: 'Size',
+                                    defaultType: 'radiofield',
+                                    layout: 'hbox',
+                                    defaults: {
+                                        flex: 1
+                                    },
                                     fieldLabel: __("Report Format"),
                                     allowBlank: false,
                                     width: 600,
                                     items: [
                                         {boxLabel: __("By Datasource"), inputValue: "B", name: "report_format"},
                                         {boxLabel: __("By Source"), inputValue: "S", name: "report_format"},
-                                        {boxLabel: __("By Template"), inputValue: 'T', name: "report_format", checked: true}]
+                                        {boxLabel: __("By Template"), inputValue: "T", name: "report_format"}
+                                    ]
                                 },
                                 {
                                     name: "report_source",
