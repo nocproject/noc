@@ -47,6 +47,7 @@ class MetricConfig(object):
 
 
 class SLAProfileMetrics(EmbeddedDocument):
+    meta = {"strict": False}
     metric_type: MetricType = ReferenceField(MetricType, required=True)
     # Metric collection settings
     # Enable during box discovery
@@ -79,6 +80,8 @@ class SLAProfile(Document):
     bi_id = LongField(unique=True)
     #
     metrics_default_interval = IntField(default=0, min_value=0)
+    # Number interval buckets
+    metrics_interval_buckets = IntField(default=1, min_value=0)
     # Interface profile metrics
     metrics: List[SLAProfileMetrics] = ListField(EmbeddedDocumentField(SLAProfileMetrics))
     # Labels
@@ -156,3 +159,10 @@ class SLAProfile(Document):
         for m in spr.metrics:
             r[m.metric_type.name] = cls.config_from_settings(m, spr.metrics_default_interval)
         return r
+
+    def get_metric_discovery_interval(self) -> int:
+        r = []
+        if self.metrics_default_interval:
+            r.append(self.metrics_default_interval)
+        r += [m.interval for m in self.metrics if m.interval]
+        return min(r) if r else 0

@@ -28,9 +28,14 @@ Ext.define("NOC.sla.slaprofile.Model", {
             type: "string"
         },
         {
-            name: "collect_interval",
+            name: "metrics_default_interval",
             type: "int",
             defaultValue: 120
+        },
+        {
+            name: "metrics_interval_buckets",
+            type: "int",
+            defaultValue: 1
         },
         {
             name: "test_packets_num",

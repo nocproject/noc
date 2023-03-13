@@ -284,7 +284,7 @@ def iter_sla_collectors(agent: Agent) -> Iterable[ZkConfigCollector]:
                 id=f"zk:{slaprobe.bi_id}:twamp_sender",
                 type="twamp_sender",
                 service=slaprobe.bi_id,
-                interval=slaprobe.profile.collect_interval,
+                interval=slaprobe.profile.metrics_default_interval,
                 labels=[f"noc::sla::name::{slaprobe.name}"]
                 + Label.filter_labels(slaprobe.effective_labels or [], lambda x: x.expose_metric),
                 server=server,

@@ -1,0 +1,8 @@
+{
+    "name": "DB | CPEs",
+    "$collection": "inv.capabilities",
+    "uuid": "3ba66ff2-6448-42e6-bc71-d7367c3827d6",
+    "description": "Number of discovered CPEs",
+    "type": "int",
+    "card_template": null
+}

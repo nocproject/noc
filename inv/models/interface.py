@@ -29,6 +29,7 @@ from noc.config import config
 from noc.core.mongo.fields import ForeignKeyField, PlainReferenceField
 from noc.core.resourcegroup.decorator import resourcegroup
 from noc.core.mx import send_message, MX_LABELS, MX_H_VALUE_SPLITTER
+from noc.core.models.cfgmetrics import MetricCollectorConfig, MetricItem
 from noc.sa.models.managedobject import ManagedObject
 from noc.sa.interfaces.base import MACAddressParameter
 from noc.sa.interfaces.igetinterfaces import IGetInterfaces
@@ -39,6 +40,7 @@ from noc.core.model.decorator import on_delete, on_delete_check
 from noc.core.change.decorator import change
 from noc.core.comp import DEFAULT_ENCODING
 from noc.core.wf.decorator import workflow
+from noc.core.bi.decorator import bi_hash
 from noc.wf.models.state import State
 from .interfaceprofile import InterfaceProfile
 from .coverage import Coverage
@@ -503,6 +505,139 @@ class Interface(Document):
                 enabled_afi__in=["BRIDGE", "IPv4"], interface=instance.parent.id
             ).scalar("effective_labels"):
                 yield el
+
+    @classmethod
+    def iter_collected_metrics(
+        cls, mo: "ManagedObject", run: int = 0
+    ) -> Iterable[MetricCollectorConfig]:
+        """
+        Return metric settings
+        :return:
+        """
+        from noc.inv.models.subinterface import SubInterface
+
+        caps = mo.get_caps()
+        iface_count = caps.get("DB | Interfaces")
+        if not iface_count:
+            return
+        buckets = 1
+        d_interval = mo.get_metric_discovery_interval()
+        for i in (
+            Interface._get_collection()
+            .with_options(read_preference=ReadPreference.SECONDARY_PREFERRED)
+            .find(
+                {"managed_object": mo.id, "type": "physical"},
+                {
+                    "_id": 1,
+                    "name": 1,
+                    "admin_status": 1,
+                    "oper_status": 1,
+                    "ifindex": 1,
+                    "profile": 1,
+                    "service": 1,
+                },
+            )
+        ):
+            i_profile = InterfaceProfile.get_by_id(i["profile"])
+            logger.debug("Interface %s. ipr=%s", i["name"], i_profile)
+            if not i_profile:
+                continue  # No metrics configured
+            metrics: List[MetricItem] = []
+            for mc in i_profile.metrics:
+                # Check metric collected policy
+                if not i_profile.allow_collected_metric(
+                    i.get("admin_status"), i.get("oper_status"), mc.metric_type.name
+                ):
+                    continue
+                interval = mc.interval or i_profile.metrics_default_interval or d_interval
+                iface_code = bi_hash(f"managed_object:{i['name']}:{interval}")
+                mi = MetricItem(
+                    name=mc.metric_type.name,
+                    field_name=mc.metric_type.field_name,
+                    scope_name=mc.metric_type.scope.table_name,
+                    is_stored=mc.is_stored,
+                    is_compose=mc.metric_type.is_compose,
+                    interval=interval,
+                )
+                if (
+                    mi not in metrics
+                    and interval
+                    and mi.is_run(d_interval, iface_code, buckets, run)
+                ):
+                    metrics.append(mi)
+                # Append Compose metrics for collect
+                if mc.metric_type.is_compose:
+                    interval = mc.interval or i_profile.metrics_default_interval
+                    for mt in mc.metric_type.compose_inputs:
+                        mi = MetricItem(
+                            name=mt.name,
+                            field_name=mt.field_name,
+                            scope_name=mc.metric_type.scope.table_name,
+                            is_stored=True,
+                            is_compose=False,
+                            interval=interval,
+                        )
+                        if mi not in metrics and mi.is_run(d_interval, iface_code, buckets, run):
+                            metrics.append(mi)
+            if not metrics:
+                continue
+            ifindex = i.get("ifindex")
+            yield MetricCollectorConfig(
+                collector="managed_object",
+                metrics=tuple(metrics),
+                labels=(f"noc::interface::{i['name']}",),
+                hints=[f"ifindex::{ifindex}"] if ifindex else None,
+                # service=i.get("service"),
+            )
+            if not i_profile.allow_subinterface_metrics:
+                continue
+            for si in (
+                SubInterface._get_collection()
+                .with_options(read_preference=ReadPreference.SECONDARY_PREFERRED)
+                .find({"interface": i["_id"]}, {"name": 1, "interface": 1, "ifindex": 1})
+            ):
+                ifindex = si.get("ifindex")
+                yield MetricCollectorConfig(
+                    collector="managed_object",
+                    metrics=tuple(metrics),
+                    labels=(
+                        f"noc::interface::{i['name']}",
+                        f"noc::subinterface::{si['name']}",
+                    ),
+                    hints=[f"ifindex::{ifindex}"] if ifindex else None,
+                )
+
+    @classmethod
+    def get_metric_discovery_interval(cls, mo: ManagedObject) -> int:
+        coll = cls._get_collection()
+        r = coll.aggregate(
+            [
+                {"$match": {"managed_object": mo.id}},
+                {
+                    "$lookup": {
+                        "from": "noc.interface_profiles",
+                        "localField": "profile",
+                        "foreignField": "_id",
+                        "as": "profiles",
+                    }
+                },
+                {"$unwind": "$profiles"},
+                {"$match": {"profiles.metrics": {"$ne": []}}},
+                {
+                    "$project": {
+                        "interval": {
+                            "$min": [
+                                {"$min": "$profiles.metrics.interval"},
+                                "$profiles.metrics_default_interval",
+                            ]
+                        }
+                    }
+                },
+                {"$group": {"_id": "", "interval": {"$min": "$interval"}}},
+            ]
+        )
+        r = next(r, {})
+        return r.get("interval", 0)
 
 
 # Avoid circular references

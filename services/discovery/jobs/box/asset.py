@@ -488,6 +488,10 @@ class AssetCheck(DiscoveryCheck):
                 ipmi_id=si.get("ipmi_id"),
                 labels=si.get("labels"),
             )
+        self.update_caps(
+            {"DB | Sensors": Sensor.objects.filter(managed_object=self.object.id).count()},
+            source="asset",
+        )
 
     def submit_sensor(
         self,
@@ -504,7 +508,7 @@ class AssetCheck(DiscoveryCheck):
         s = Sensor(
             profile=SensorProfile.get_default_profile(),
             object=obj,
-            managed_object=None if obj else self.object,
+            managed_object=self.object,
             label=label,
             local_id=name,
             units=self.normalize_sensor_units(units),
@@ -570,6 +574,8 @@ class AssetCheck(DiscoveryCheck):
             if remove_labels:
                 sensor.labels = [ll for ll in sensor.labels if ll not in remove_labels]
             sensor.extra_labels["sa"] = labels
+        if sensor.managed_object != self.object:
+            sensor.managed_object = self.object
         sensor.save()
 
     def normalize_sensor_units(self, units: str) -> MeasurementUnits:

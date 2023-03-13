@@ -35,7 +35,7 @@ from django.db.models import (
     CASCADE,
 )
 from pydantic import BaseModel
-from pymongo import ReadPreference, ASCENDING
+from pymongo import ASCENDING
 
 # NOC modules
 from noc.core.model.base import NOCModel
@@ -907,6 +907,7 @@ class ManagedObject(NOCModel):
             pool_name = Pool.get_by_id(self.initial_data["pool"].id).name
             Job.remove("discovery", self.BOX_DISCOVERY_JOB, key=self.id, pool=pool_name)
             Job.remove("discovery", self.PERIODIC_DISCOVERY_JOB, key=self.id, pool=pool_name)
+            Job.remove("discovery", self.INTERVAL_DISCOVERY_JOB, key=self.id, pool=pool_name)
         # Reset matchers
         if (
             "vendor" in self.changed_fields
@@ -2871,118 +2872,40 @@ class ManagedObject(NOCModel):
         """
         self.initial_data = _get_field_snapshot(self.__class__, self)
 
-    def iter_collected_metrics(
-        self,
-    ) -> Iterable[MetricCollectorConfig]:
+    def iter_collected_metrics(self, run: int = 0) -> Iterable[MetricCollectorConfig]:
         """
-        Return metrics setting for colleted by box or periodic
-        :param is_box:
-        :param is_periodic:
+        Return metrics setting for collected by box or periodic
+        :param run:
         :return:
         """
         if not self.is_managed:
             return
+        from noc.inv.models.cpe import CPE
+        from noc.sla.models.slaprobe import SLAProbe
         from noc.inv.models.interface import Interface
-        from noc.inv.models.subinterface import SubInterface
-        from noc.inv.models.interfaceprofile import InterfaceProfile
+        from noc.inv.models.sensor import Sensor
 
         metrics: List[MetricItem] = []
-        d_interval = self.object_profile.metrics_default_interval
+        d_interval = self.get_metric_discovery_interval()
         for mc in ManagedObjectProfile.get_object_profile_metrics(self.object_profile.id).values():
-            if not mc.interval and not d_interval:
-                continue
-            metrics.append(
-                MetricItem(
-                    name=mc.metric_type.name,
-                    field_name=mc.metric_type.field_name,
-                    scope_name=mc.metric_type.scope.table_name,
-                    is_stored=mc.is_stored,
-                    is_compose=mc.metric_type.is_compose,
-                    interval=mc.interval or d_interval,
-                )
+            interval = mc.interval or self.object_profile.metrics_default_interval
+            mi = MetricItem(
+                name=mc.metric_type.name,
+                field_name=mc.metric_type.field_name,
+                scope_name=mc.metric_type.scope.table_name,
+                is_stored=mc.is_stored,
+                is_compose=mc.metric_type.is_compose,
+                interval=interval,
             )
+            if interval and mi.is_run(d_interval, int(self.bi_id), 1, run):
+                metrics.append(mi)
         if metrics:
             logger.debug("Object metrics: %s", ",".join(m.name for m in metrics))
             yield MetricCollectorConfig(collector="managed_object", metrics=tuple(metrics))
-        for i in (
-            Interface._get_collection()
-            .with_options(read_preference=ReadPreference.SECONDARY_PREFERRED)
-            .find(
-                {"managed_object": self.id, "type": "physical"},
-                {
-                    "_id": 1,
-                    "name": 1,
-                    "admin_status": 1,
-                    "oper_status": 1,
-                    "ifindex": 1,
-                    "profile": 1,
-                    "service": 1,
-                },
-            )
-        ):
-            i_profile = InterfaceProfile.get_by_id(i["profile"])
-            logger.debug("Interface %s. ipr=%s", i["name"], i_profile)
-            if not i_profile:
-                continue  # No metrics configured
-            metrics: List[MetricItem] = []
-            for mc in i_profile.metrics:
-                if not mc.interval and not i_profile.metrics_default_interval:
-                    continue
-                # Check metric collected policy
-                if not i_profile.allow_collected_metric(
-                    i.get("admin_status"), i.get("oper_status"), mc.metric_type.name
-                ):
-                    continue
-                mi = MetricItem(
-                    name=mc.metric_type.name,
-                    field_name=mc.metric_type.field_name,
-                    scope_name=mc.metric_type.scope.table_name,
-                    is_stored=mc.is_stored,
-                    is_compose=mc.metric_type.is_compose,
-                    interval=mc.interval or i_profile.metrics_default_interval,
-                )
-                if mi not in metrics:
-                    metrics.append(mi)
-                # Append Compose metrics for collect
-                if mc.metric_type.is_compose:
-                    for mt in mc.metric_type.compose_inputs:
-                        mi = MetricItem(
-                            name=mt.name,
-                            field_name=mt.field_name,
-                            scope_name=mc.metric_type.scope.table_name,
-                            is_stored=True,
-                            is_compose=False,
-                            interval=mc.interval or i_profile.metrics_default_interval,
-                        )
-                        if mi not in metrics:
-                            metrics.append(mi)
-            if not metrics:
-                continue
-            ifindex = i.get("ifindex")
-            yield MetricCollectorConfig(
-                collector="managed_object",
-                metrics=tuple(metrics),
-                labels=(f"noc::interface::{i['name']}",),
-                hints=[f"ifindex::{ifindex}"] if ifindex else None,
-                # service=i.get("service"),
-            )
-            if not i_profile.allow_subinterface_metrics:
-                continue
-            for si in (
-                SubInterface._get_collection()
-                .with_options(read_preference=ReadPreference.SECONDARY_PREFERRED)
-                .find({"interface": i["_id"]}, {"name": 1, "interface": 1, "ifindex": 1})
-            ):
-                ifindex = si.get("ifindex")
-                yield MetricCollectorConfig(
-                    collector="managed_object",
-                    metrics=tuple(metrics),
-                    labels=(
-                        f"noc::interface::{i['name']}",
-                        f"noc::subinterface::{si['name']}",
-                    ),
-                    hints=[f"ifindex::{ifindex}"] if ifindex else None,
-                )
+        yield from CPE.iter_collected_metrics(self, run=run)
+        yield from SLAProbe.iter_collected_metrics(self, run=run)
+        yield from Interface.iter_collected_metrics(self, run=run)
+        yield from Sensor.iter_collected_metrics(self, run=run)
 
     @classmethod
     def get_metric_config(cls, mo: "ManagedObject"):
@@ -3049,18 +2972,9 @@ class ManagedObject(NOCModel):
         Check configured collected metrics
         :return:
         """
-        from noc.sla.models.slaprobe import SLAProbe
-        from noc.inv.models.sensor import Sensor
-        from noc.inv.models.object import Object
-        from mongoengine.queryset import Q as m_Q
-
         if not self.is_managed:
             return False
-        sla_probe = SLAProbe.objects.filter(managed_object=self.id).first()
-        o = Object.get_managed(self)
-        sensor = Sensor.objects.filter(m_Q(managed_object=self.id) | m_Q(object__in=o)).first()
-        config = self.get_metric_config(self)
-        return bool(sla_probe or sensor or config.get("metrics") or config.get("items"))
+        return bool(self.get_metric_discovery_interval())
 
     def get_stencil(self) -> Optional[Stencil]:
         if self.shape:
@@ -3128,13 +3042,26 @@ class ManagedObject(NOCModel):
         Return Metric Discovery interval by MetricConfigs
         :return:
         """
-        intervals = []
-        for mc in self.iter_collected_metrics():
-            intervals += [mi.interval for mi in mc.metrics if mi.interval]
-        r = min(intervals)
-        if r < config.discovery.min_metric_interval:
-            return config.discovery.min_metric_interval
-        return max(r, 0)
+        from noc.inv.models.cpe import CPE
+        from noc.sla.models.slaprobe import SLAProbe
+        from noc.inv.models.interface import Interface
+        from noc.inv.models.sensor import Sensor
+
+        r = [self.object_profile.get_metric_discovery_interval()]
+        caps = self.get_caps()
+        if caps.get("DB | CPEs"):
+            r += [CPE.get_metric_discovery_interval(self)]
+        if caps.get("DB | SLAProbes"):
+            r += [SLAProbe.get_metric_discovery_interval(self)]
+        if caps.get("DB | Interfaces"):
+            r += [Interface.get_metric_discovery_interval(self)]
+        if caps.get("DB | Sensors"):
+            r += [Sensor.get_metric_discovery_interval(self)]
+        return max(
+            min(r),
+            self.object_profile.metrics_default_interval,
+            config.discovery.min_metric_interval,
+        )
 
 
 @on_save
