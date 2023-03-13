@@ -23,6 +23,7 @@ from mongoengine.fields import (
     DictField,
     ReferenceField,
 )
+from pymongo import ReadPreference
 import cachetools
 
 # NOC modules
@@ -225,34 +226,46 @@ class Sensor(Document):
         if instance.managed_object:
             yield list(instance.managed_object.effective_labels)
 
-    def iter_collected_metrics(self) -> Iterable[MetricCollectorConfig]:
+    @classmethod
+    def iter_collected_metrics(
+        cls, mo: "ManagedObject", run: int = 0
+    ) -> Iterable[MetricCollectorConfig]:
         """
-        Return metrics setting for colleted by box or periodic
+        Return metrics setting for collected by box or periodic
         :return:
         """
-        if not self.state.is_productive or not self.profile.enable_collect or not self.snmp_oid:
-            return
-        metrics: List[MetricItem] = []
-        for mt_name in ["Sensor | Value", "Sensor | Status"]:
-            mt = MetricType.get_by_name(mt_name)
-            metrics += [
-                MetricItem(
+        o: List[str] = Object.get_managed(mo).values_list("id")
+        d_interval = mo.get_metric_discovery_interval()
+        for sensor in Sensor.objects.filter(object__in=list(o)).read_preference(
+            ReadPreference.SECONDARY_PREFERRED
+        ):
+            if (
+                not sensor.state.is_productive
+                or not sensor.profile.enable_collect
+                or not sensor.snmp_oid
+            ):
+                return
+            metrics: List[MetricItem] = []
+            for mt_name in ["Sensor | Value", "Sensor | Status"]:
+                mt = MetricType.get_by_name(mt_name)
+                mi = MetricItem(
                     name=mt_name,
                     field_name=mt.field_name,
                     scope_name=mt.scope.table_name,
-                    interval=self.profile.collect_interval,
+                    interval=sensor.profile.collect_interval,
                 )
-            ]
-        if not metrics:
-            # self.logger.info("SLA metrics are not configured. Skipping")
-            return
-        yield MetricCollectorConfig(
-            collector="sensor",
-            metrics=tuple(metrics),
-            labels=(f"noc::sensor::{self.local_id}",),
-            hints=[f"oid::{self.snmp_oid}"],
-            sensor=self.bi_id,
-        )
+                if mi.is_run(d_interval, sensor.bi_id, 1, run):
+                    metrics.append(mi)
+            if not metrics:
+                # self.logger.info("SLA metrics are not configured. Skipping")
+                return
+            yield MetricCollectorConfig(
+                collector="sensor",
+                metrics=tuple(metrics),
+                labels=(f"noc::sensor::{sensor.local_id}",),
+                hints=[f"oid::{sensor.snmp_oid}"],
+                sensor=sensor.bi_id,
+            )
 
     @classmethod
     def get_metric_config(cls, sensor: "Sensor"):
@@ -280,6 +293,28 @@ class Sensor(Document):
             ],
             "items": [],
         }
+
+    @classmethod
+    def get_metric_discovery_interval(cls, mo: ManagedObject) -> int:
+        coll = cls._get_collection()
+        r = coll.aggregate(
+            [
+                {"$match": {"managed_object": mo.id}},
+                {
+                    "$lookup": {
+                        "from": "sensorprofiles",
+                        "localField": "profile",
+                        "foreignField": "_id",
+                        "as": "profiles",
+                    }
+                },
+                {"$unwind": "$profiles"},
+                {"$match": {"profiles.enable_collect": True}},
+                {"$group": {"_id": "", "interval": {"$min": "$collect_interval"}}},
+            ]
+        )
+        r = next(r, {})
+        return r.get("interval", 0)
 
     @property
     def has_configured_metrics(self) -> bool:

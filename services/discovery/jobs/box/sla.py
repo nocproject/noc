@@ -110,3 +110,8 @@ class SLACheck(DiscoveryCheck):
             probe.save()
             if not new_data["status"]:
                 probe.fire_event("down")
+
+        self.update_caps(
+            {"DB | SLAProbes": SLAProbe.objects.filter(managed_object=self.object.id).count()},
+            source="sla",
+        )

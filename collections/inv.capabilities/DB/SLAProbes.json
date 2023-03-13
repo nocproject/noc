@@ -1,0 +1,8 @@
+{
+    "name": "DB | SLAProbes",
+    "$collection": "inv.capabilities",
+    "uuid": "ccd01fa9-dad8-439b-8b02-c3e99b5a7fea",
+    "description": "Number of discovered SLA probes",
+    "type": "int",
+    "card_template": null
+}

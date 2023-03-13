@@ -102,6 +102,8 @@ class CPEProfile(Document):
     cpe_status_discovery = StringField(choices=[("E", "Enable"), ("D", "Disable")], default="E")
     # Metrics
     metrics_default_interval = IntField(default=0, min_value=0)
+    # Number interval buckets
+    metrics_interval_buckets = IntField(default=1, min_value=0)
     # Interface profile metrics
     metrics = ListField(EmbeddedDocumentField(CPEProfileMetrics))
     # Dynamic Profile Classification
@@ -181,3 +183,10 @@ class CPEProfile(Document):
 
     def on_save(self):
         self._reset_caches(self.id)
+
+    def get_metric_discovery_interval(self) -> int:
+        r = []
+        if self.metrics_default_interval:
+            r.append(self.metrics_default_interval)
+        r += [m.interval for m in self.metrics if m.interval]
+        return min(r) if r else 0

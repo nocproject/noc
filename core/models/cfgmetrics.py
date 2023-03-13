@@ -9,6 +9,9 @@
 from typing import Optional, List, Literal, Tuple, Dict, Union
 from dataclasses import dataclass, field
 
+# NOC modules
+from noc.core.bi.decorator import bi_hash
+
 
 @dataclass(frozen=True)
 class MetricItem(object):
@@ -19,13 +22,29 @@ class MetricItem(object):
     is_compose: bool = field(compare=False, default=False)
     interval: int = field(compare=False, default=300)
 
-    def get_effective_collected_interval(self, collected_interval: int):
+    def get_effective_collected_interval(self, collected_interval: int, buckets: int = 1):
         """
         Calculated Effective collected interval
-        :param collected_interval:
+        :param collected_interval: Discovery interval
+        :param buckets: Number of metrics Sources buckets
         :return:
         """
-        return collected_interval * max(1, round(self.interval / collected_interval))
+        return collected_interval * max(1, round(self.interval / collected_interval * buckets))
+
+    def is_run(self, collected_interval, source_code: int, buckets: int = 1, run: int = 0) -> bool:
+        """
+
+        :param source_code:
+        :return:
+        """
+        # Effective collected interval
+        ie = self.get_effective_collected_interval(collected_interval, buckets=buckets)
+        if run and ie != collected_interval:
+            p_sc = ie / collected_interval
+            o_sc = source_code % p_sc
+            if run % p_sc != o_sc:  # runs
+                return False
+        return True
 
 
 @dataclass(frozen=True)
@@ -62,3 +81,29 @@ class MetricCollectorConfig(object):
         elif self.collector == "cpe":
             return f"cpe:{self.cpe}:{interval}"
         return f"managed_object:{','.join(self.labels or [])}:{interval}"
+
+    @classmethod
+    def get_buckets(cls, d_interval: int, m_interval: int, sources: int) -> int:
+        """
+        Calculate number of buckets by sources count
+        :param d_interval: Metric discovery interval
+        :param m_interval: Source metric interval
+        :param sources: Source count
+        :return:
+        """
+        r = sources / (m_interval / d_interval)
+        return max(1, r)
+
+    def iter_collected_metrics(self, collected_interval: int, buckets: int = 1, run: int = 0):
+        """
+        Iterate collected metrics
+        :param collected_interval: Discovery interval
+        :param buckets: Number Source buckets
+        :param run: Number runs
+        :return:
+        """
+        for m in self.metrics:
+            sc = bi_hash(self.get_source_code(m.interval))
+            if not m.is_run(collected_interval, sc, buckets, run):
+                continue
+            yield m

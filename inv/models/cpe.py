@@ -14,7 +14,7 @@ from typing import Optional, Iterable, List, Any, Dict
 
 # Third-party modules
 import cachetools
-from pymongo import UpdateOne
+from pymongo import UpdateOne, ReadPreference
 from mongoengine.document import Document
 from mongoengine.fields import (
     StringField,
@@ -159,48 +159,67 @@ class CPE(Document):
         if local_id:
             return CPE.objects.filter(controller=managed_object, local_id=local_id).first()
 
-    def iter_collected_metrics(self) -> Iterable[MetricCollectorConfig]:
+    @classmethod
+    def iter_collected_metrics(
+        cls, mo: "ManagedObject", run: int = 0
+    ) -> Iterable[MetricCollectorConfig]:
         """
         Return metrics setting for collected
+        :param mo: MangedObject that run job
+        :param run: Number of job run
         :return:
         """
-        if not self.state.is_productive or not self.controller:
+        caps = mo.get_caps()
+        cpe_count = caps.get("DB | CPEs")
+        if not cpe_count:
             return
-        metrics = []
-        for metric in self.profile.metrics:
-            interval = metric.interval or self.profile.metrics_default_interval
-            if not interval:
+        d_interval = mo.get_metric_discovery_interval()
+        # logger.info("Sharding mode activated. Buckets: %d", buckets)
+        for cpe in CPE.objects.filter(controller=mo.id).read_preference(
+            ReadPreference.SECONDARY_PREFERRED
+        ):
+            if not cpe.state.is_productive:
                 continue
-            metrics += [
-                MetricItem(
+            buckets = cpe.profile.metrics_interval_buckets
+            if not buckets:
+                # Auto calculate buckets count
+                m_interval = cpe.profile.get_metric_discovery_interval()
+                buckets = max(1, round(m_interval / d_interval))
+            if buckets != 1 and run and cpe.bi_id % buckets != run % buckets:
+                # Sharder mode, skip inactive shard
+                continue
+            metrics = []
+            for metric in cpe.profile.metrics:
+                mi = MetricItem(
                     name=metric.metric_type.name,
                     field_name=metric.metric_type.field_name,
                     scope_name=metric.metric_type.scope.table_name,
                     is_stored=metric.is_stored,
                     is_compose=metric.metric_type.is_compose,
-                    interval=interval,
+                    interval=metric.interval or cpe.profile.metrics_default_interval or d_interval,
                 )
+                if mi.is_run(d_interval, cpe.bi_id, buckets, run):
+                    metrics.append(mi)
+            if not metrics:
+                logger.debug("CPE metrics are not configured. Skipping")
+                continue
+            labels, hints = [f"noc::chassis::{cpe.global_id}"], [
+                f"cpe_type::{cpe.type}",
+                f"local_id::{cpe.local_id}",
             ]
-        if not metrics:
-            # self.logger.info("SLA metrics are not configured. Skipping")
-            return
-        labels, hints = [f"noc::chassis::{self.global_id}"], [
-            f"cpe_type::{self.type}",
-            f"local_id::{self.local_id}",
-        ]
-        if self.interface:
-            labels += [f"noc::interface::{self.interface}"]
-            iface = self.get_cpe_interface()
-            if iface and iface.ifindex:
-                hints += [f"ifindex::{iface.ifindex}"]
-        yield MetricCollectorConfig(
-            collector="cpe",
-            metrics=tuple(metrics),
-            labels=tuple(labels),
-            hints=hints,
-            cpe=self.bi_id,
-            # service=self.service,
-        )
+            if cpe.interface:
+                labels += [f"noc::interface::{cpe.interface}"]
+                iface = cpe.get_cpe_interface()
+                if iface and iface.ifindex:
+                    hints += [f"ifindex::{iface.ifindex}"]
+            yield MetricCollectorConfig(
+                collector="cpe",
+                metrics=tuple(metrics),
+                labels=tuple(labels),
+                hints=hints,
+                cpe=cpe.bi_id,
+                # service=self.service,
+            )
 
     @classmethod
     def get_metric_config(cls, cpe: "CPE"):
@@ -365,3 +384,35 @@ class CPE(Document):
     @classmethod
     def get_search_result_url(cls, obj_id):
         return f"/api/card/view/cpe/{obj_id}/"
+
+    @classmethod
+    def get_metric_discovery_interval(cls, mo: "ManagedObject") -> int:
+        coll = cls._get_collection()
+        r = coll.aggregate(
+            [
+                {"$match": {"controller": mo.id}},
+                {
+                    "$lookup": {
+                        "from": "cpeprofiles",
+                        "localField": "profile",
+                        "foreignField": "_id",
+                        "as": "profiles",
+                    }
+                },
+                {"$unwind": "$profiles"},
+                {"$match": {"profiles.metrics": {"$ne": []}}},
+                {
+                    "$project": {
+                        "interval": {
+                            "$min": [
+                                {"$min": "$profiles.metrics.interval"},
+                                "$profiles.metrics_default_interval",
+                            ]
+                        }
+                    }
+                },
+                {"$group": {"_id": "", "interval": {"$min": "$interval"}}},
+            ]
+        )
+        r = next(r, {})
+        return r.get("interval", 0)

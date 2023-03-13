@@ -161,6 +161,14 @@ Ext.define("NOC.inv.cpeprofile.Application", {
             ]
         },
         {
+          name: "metrics_interval_buckets",
+          xtype: "numberfield",
+          fieldLabel: __("Metrics interval Buckets"),
+          allowBlank: true,
+          uiStyle: "medium",
+          minValue: 0
+        },
+        {
             name: "metrics",
             xtype: "gridfield",
             fieldLabel: __("Metrics"),
