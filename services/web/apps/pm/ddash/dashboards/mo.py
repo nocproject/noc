@@ -186,15 +186,14 @@ class MODashboard(JinjaDashboard):
 
         om = []
         ocm = []
-        if self.object.object_profile.metrics_default_interval:
-            for m in self.object.object_profile.metrics or []:
-                mt = MetricType.get_by_id(m["metric_type"])
-                if not mt or m.get("interval") == 0:
-                    continue
-                if check_metrics(mt):
-                    ocm += [{"name": mt.name, "metric": mt.field_name}]
-                    continue
-                om += [mt.name]
+        for m in self.object.object_profile.metrics or []:
+            mt = MetricType.get_by_id(m["metric_type"])
+            if not mt:
+                continue
+            if check_metrics(mt):
+                ocm += [{"name": mt.name, "metric": mt.field_name}]
+                continue
+            om += [mt.name]
 
         object_metrics.extend(sorted(om))
         object_check_metrics.extend(sorted(ocm, key=operator.itemgetter("name")))
@@ -256,5 +255,5 @@ class MODashboard(JinjaDashboard):
             "extra_vars": self.extra_vars,
             "selected_types": self.object_data["selected_types"],
             "ping_interval": self.object.object_profile.ping_interval,
-            "discovery_interval": int(self.object.object_profile.periodic_discovery_interval / 2),
+            "discovery_interval": int(self.object.get_metric_discovery_interval() / 2),
         }
