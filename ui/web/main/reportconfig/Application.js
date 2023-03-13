@@ -120,13 +120,11 @@ Ext.define('NOC.main.reportconfig.Application', {
                                     ]
                                 },
                                 {
-                                    // name: "report_format",
+                                    name: "report_format",
                                     xtype: "radiogroup",
-                                    // columns: 3,
                                     vertical: true,
                                     fieldLabel: __("Report Format"),
                                     allowBlank: false,
-                                    // bind: "{report_format}",
                                     width: 600,
                                     items: [
                                         {boxLabel: __("By Datasource"), inputValue: "B", name: "report_format"},

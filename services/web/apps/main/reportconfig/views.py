@@ -39,7 +39,9 @@ class ReportApplication(ExtDocApplication):
                     b.pop("parent")
                 bands += [b]
             r["bands"] = bands
-            r["localization"] = [{"language": lang, "value": value} for lang, value in o.localization.items()]
+            r["localization"] = [
+                {"language": lang, "value": value} for lang, value in o.localization.items()
+            ]
         return r
 
     def clean(self, data):
@@ -114,7 +116,7 @@ class ReportApplication(ExtDocApplication):
         # formats
         return r
 
-    @view(method=["GET"], url="^(?P<report_id>\S+)/run/$", access="launch", api=True)
+    @view(method=["GET"], url=r"^(?P<report_id>\S+)/run/$", access="launch", api=True)
     def api_report_run(self, request, report_id: str):
         """
 
