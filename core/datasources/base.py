@@ -90,7 +90,7 @@ class BaseDataSource(object):
         async for _, f_name, value in cls.iter_query(fields, *args, **kwargs):
             r[f_name].append(value)
         if not r:
-            pl.DataFrame([], columns=[(c.name, c.type.value) for c in cls.fields])
+            return pl.DataFrame([], columns=[(c.name, c.type.value) for c in cls.fields])
         return pl.DataFrame([pl.Series(c.name, r[f_name], dtype=c.type.value) for c in cls.fields])
         # return pl.DataFrame(r, columns=[(c.name, c.type.value) for c in cls.fields])
 
