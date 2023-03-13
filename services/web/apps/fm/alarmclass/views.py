@@ -1,14 +1,18 @@
 # ---------------------------------------------------------------------
 # fm.alarmclass application
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2023 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
+# Python modules
+from typing import Dict
+
 # NOC modules
-from noc.services.web.base.extdocapplication import ExtDocApplication
+from noc.services.web.base.extdocapplication import ExtDocApplication, view
 from noc.fm.models.alarmclass import AlarmClass
 from noc.fm.models.alarmclasscategory import AlarmClassCategory
+from noc.sa.interfaces.base import StringParameter, DictParameter
 from noc.core.translation import ugettext as _
 
 
@@ -24,3 +28,23 @@ class AlarmClassApplication(ExtDocApplication):
     parent_field = "parent"
     query_fields = ["name", "description"]
     query_condition = "icontains"
+
+    @view(
+        method=["PUT"],
+        url=r"^(?P<aid>[0-9a-f]{24})/localisation/?$",
+        access="update",
+        api=True,
+        validate={
+            "language": StringParameter(required=True),
+            "localisation": DictParameter(required=True),
+        },
+    )
+    def api_update_i18n(self, request, aid, language: str, localisation: Dict[str, str]):
+        ac: AlarmClass = self.get_object_or_404(AlarmClass, id=aid)
+        for field in localisation:
+            if field not in ac.i18n:
+                ac.i18n[field] = {language: localisation[field]}
+            else:
+                ac.i18n[field][language] = localisation[field]
+        ac.update(i18n=ac.i18n)
+        return self.render_json({"status": True})
