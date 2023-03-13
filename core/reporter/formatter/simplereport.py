@@ -49,18 +49,7 @@ class TableFormatter(DataFormatter):
         elif self.output_type == OutputType.SSV:
             r = report.to_csv(delimiter=";")
         elif self.output_type == OutputType.HTML:
-            r = [
-                "<head>",
-                '<link rel="stylesheet" type="text/css" href="/ui/pkg/django-media/admin/css/base.css"/>',
-                '<link rel="stylesheet" type="text/css" href="/ui/web/css/django/main.css"/>',
-                '<link rel="stylesheet" type="text/css" href="/ui/pkg/fontawesome/css/font-awesome.min.css"/>',
-                '<link rel="stylesheet" type="text/css" href="/ui/web/css/colors.css"/></head><body>',
-                '<div id="container"><div id="content" class="colM">"',
-            ]
-            r += [report.to_html(include_buttons=False)]
-            r += ["</div></body></html>;"]
-            r = "\n".join(r)
-
+            r += report.to_html(include_buttons=False)
         self.output_stream.write(r.encode("utf8"))
 
     def get_report_data(self, columns: List[str] = None) -> List[Any]:

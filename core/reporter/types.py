@@ -202,5 +202,19 @@ class OutputDocument(BaseModel):
             return "application/pdf"
         return "application/octet-stream"
 
+    def format_django(self) -> str:
+        # CSS
+        r = [
+            "<head>",
+            '<link rel="stylesheet" type="text/css" href="/ui/pkg/django-media/admin/css/base.css"/>',
+            '<link rel="stylesheet" type="text/css" href="/ui/web/css/django/main.css"/>',
+            '<link rel="stylesheet" type="text/css" href="/ui/pkg/fontawesome/css/font-awesome.min.css"/>',
+            '<link rel="stylesheet" type="text/css" href="/ui/web/css/colors.css"/></head><body>',
+            '<div id="container"><div id="content" class="colM">"',
+        ]
+        r += [self.content.decode("utf8")]
+        r += ["</div></body></html>"]
+        return "\n".join(r)
+
 
 ReportBand.update_forward_refs()

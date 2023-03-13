@@ -5,6 +5,9 @@
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
+# Python modules
+from html import escape
+
 # Third-party modules
 from django.http import HttpResponse, HttpResponseBadRequest
 
@@ -79,17 +82,25 @@ class ReportApplication(ExtDocApplication):
             r["preview"] = True
             r["dockedItems"] += [{"text": "Preview", "param": {"output_type": "html"}}]
         for param in report.parameters:
-            cfg = {"name": param.name, "fieldLabel": param.label, "allowBlank": not param.required}
+            cfg = {
+                "name": param.name,
+                "fieldLabel": param.label,
+                "allowBlank": not param.required,
+                "uiStyle": "medium",
+            }
             if param.type == "model":
                 model = get_model(param.model_id)
                 if hasattr(model, "get_path"):
                     cfg["xtype"] = "noc.core.combotree"
                     cfg["restUrl"] = f'/{"/".join(param.model_id.lower().split("."))}/'
+                    cfg["uiStyle"] = "large"
                 else:
                     cfg["xtype"] = "core.combo"
                     cfg["restUrl"] = f'/{"/".join(param.model_id.lower().split("."))}/lookup/'
+                    cfg["uiStyle"] = "medium-combo"
             elif param.type == "integer":
                 cfg["xtype"] = "numberfield"
+                cfg["uiStyle"] = "small"
             elif param.type == "date":
                 cfg["xtype"] = "datefield"
                 cfg["format"] = "d.m.Y"
@@ -133,6 +144,16 @@ class ReportApplication(ExtDocApplication):
             out_doc = report_engine.run_report(r_params=rp)
         except ValueError as e:
             return HttpResponseBadRequest(e)
-        response = HttpResponse(out_doc.content, content_type=out_doc.content_type)
+        if rp.output_type == OutputType.HTML:
+            # Used IFrame for ExtJs App
+            # content = f"""<iframe srcdoc='{escape(out_doc.format_django())}' style="height: 100%;,
+            # width: 100%;,
+            # border: none;"></iframe>"""
+            content = f"""<iframe srcdoc='{escape(out_doc.format_django())}' style="height: 100vh;,
+            width: 100%;,
+            position: absolute;"></iframe>"""
+        else:
+            content = out_doc.content
+        response = HttpResponse(content, content_type=out_doc.content_type)
         response["Content-Disposition"] = f'attachment; filename="{out_doc.document_name}"'
         return response
