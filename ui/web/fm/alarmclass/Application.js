@@ -89,6 +89,85 @@ Ext.define('NOC.fm.alarmclass.Application', {
                     },
                     items: [ // tabs
                         {
+                            title: __('i18n'),
+                            itemId: "i18n",
+                            items: [
+                                {
+                                    xtype: "container",
+                                    layout: "hbox",
+                                    margin: "5 0",
+                                    items: [
+                                        {
+                                            xtype: "core.combo",
+                                            restUrl: "/main/ref/ulanguage/lookup/",
+                                            itemId: 'i18n_language',
+                                            fieldLabel: __('Language'),
+                                            uiStyle: 'medium',
+                                            listeners: {
+                                                scope: me,
+                                                change: me.onLanguageChange,
+                                            }
+                                        },
+                                        {
+                                            xtype: "button",
+                                            text: __("Save"),
+                                            tooltip: __("Save changes"),
+                                            glyph: NOC.glyph.save,
+                                            margin: "0 0 0 10",
+                                            scope: me,
+                                            handler: me.onSaveI18n,
+                                        }
+                                    ]
+                                },
+                                {
+                                    itemId: 'description',
+                                    xtype: 'textarea',
+                                    fieldLabel: __('Description'),
+                                    i18n: true,
+                                    uiStyle: 'extra'
+                                },
+                                {
+                                    itemId: 'subject_template',
+                                    xtype: 'textfield',
+                                    fieldLabel: __('Subject Template'),
+                                    uiStyle: 'extra',
+                                    i18n: true
+                                },
+                                {
+                                    itemId: 'body_template',
+                                    xtype: 'textarea',
+                                    fieldLabel: __('Body Template'),
+                                    uiStyle: 'extra',
+                                    i18n: true
+                                },
+                                {
+                                    itemId: 'symptoms',
+                                    xtype: 'textarea',
+                                    fieldLabel: __('Symptoms'),
+                                    uiStyle: 'extra',
+                                    i18n: true
+                                },
+                                {
+                                    itemId: 'probable_causes',
+                                    xtype: 'textarea',
+                                    fieldLabel: __('Probable Causes'),
+                                    uiStyle: 'extra',
+                                    i18n: true
+                                },
+                                {
+                                    itemId: 'recommended_actions',
+                                    xtype: 'textarea',
+                                    fieldLabel: __('Recommended Actions'),
+                                    uiStyle: 'extra',
+                                    i18n: true
+                                }
+                            ],
+                            listeners: {
+                                scope: me,
+                                activate: me.onActivateI18n
+                            },
+                        }, // i18n
+                        {
                             title: __('Text'),
                             items: [
                                 {
@@ -198,7 +277,8 @@ Ext.define('NOC.fm.alarmclass.Application', {
                                                 query: {
                                                     "allow_wildcard": true,
                                                     "allow_user": false
-                                                }},
+                                                }
+                                            },
                                             width: 200
                                         },
                                         {
@@ -527,5 +607,73 @@ Ext.define('NOC.fm.alarmclass.Application', {
         var me = this;
         me.showItem(me.ITEM_JSON);
         me.jsonPanel.preview(me.currentRecord);
+    },
+    //
+    onLanguageChange: function(self, newValue, oldValue, eOpts) {
+        var me = this;
+
+        me.fillI18nTab(self.up("[itemId=i18n]"), newValue, me.currentRecord);
+    },
+    //
+    onActivateI18n: function(self) {
+        var me = this,
+            langCombo = self.down("[itemId=i18n_language]"),
+            lang = langCombo.getValue();
+
+        if(Ext.isEmpty(lang)) {
+            langCombo.setValue(NOC.settings.language);
+            lang = NOC.settings.language;
+            me.fillI18nTab(self, lang, me.currentRecord);
+        }
+    },
+    //
+    fillI18nTab: function(tab, lang, record) {
+        var fields = Ext.Array.filter(tab.getRefItems(),
+            function(field) {
+                return field.i18n
+            });
+
+        Ext.each(fields,
+            function(field) {
+                field.reset();
+            });
+        Ext.Object.each(record.get('i18n'),
+            function(key, value) {
+                if(value.hasOwnProperty(lang)) {
+                    tab.down("[itemId=" + key + "]").setValue(value[lang]);
+                }
+            });
+    },
+    onSaveI18n: function() {
+        var me = this,
+            result = {},
+            fields = Ext.Array.filter(me.down("[itemId=i18n]").getRefItems(),
+                function(field) {
+                    return field.i18n
+                });
+        Ext.each(fields, function(field) {
+            if(!Ext.isEmpty(field.getValue())) {
+                result[field.itemId] = field.getValue();
+            }
+        });
+        if(!Ext.Object.isEmpty(result)) {
+            var lang = me.down("[itemId=i18n_language]").getValue();
+
+            Ext.Ajax.request({
+                url: "/fm/alarmclass/" + me.currentRecord.id + "/localization/",
+                method: "PUT",
+                scope: me,
+                jsonData: {
+                    language: lang,
+                    localization: result
+                },
+                success: function() {
+                    NOC.msg.complete(__("Saved"));
+                },
+                failure: function() {
+                    NOC.error(__("Failed to save localization data"));
+                }
+            });
+        }
     }
 });
