@@ -38,7 +38,11 @@ Ext.define("NOC.main.reportconfig.Model", {
             type: "string"
         },
         {
-            name: "format",
+            name: "category",
+            type: "string"
+        },
+        {
+            name: "report_format",
             type: "string"
         },
         {

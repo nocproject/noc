@@ -16,6 +16,7 @@ Ext.define('NOC.main.reportconfig.Application', {
         'Ext.ux.form.StringsField',
         'Ext.ux.form.GridField',
         "NOC.main.ref.modelid.LookupField",
+        "NOC.main.ref.ulanguage.LookupField",
         "NOC.main.ref.datasource.LookupField",
         "NOC.main.ref.reportsource.LookupField",
         "NOC.aaa.group.LookupField",
@@ -107,24 +108,30 @@ Ext.define('NOC.main.reportconfig.Application', {
                                     uiStyle: 'large'
                                 },
                                 {
-                                    name: 'category',
-                                    xtype: 'textfield',
-                                    fieldLabel: __('Category'),
+                                    name: "category",
+                                    xtype: "combobox",
+                                    fieldLabel: __("Category"),
                                     allowBlank: true,
-                                    uiStyle: 'large'
+                                    store: [
+                                        ["main", __("Main")],
+                                        ["fm", __("Fault Management")],
+                                        ["sa", __("Service Activation")],
+                                        ["inv", __("Inventory")]
+                                    ]
                                 },
                                 {
-                                    name: "format",
+                                    // name: "report_format",
                                     xtype: "radiogroup",
                                     // columns: 3,
                                     vertical: true,
                                     fieldLabel: __("Report Format"),
                                     allowBlank: false,
+                                    // bind: "{report_format}",
                                     width: 600,
                                     items: [
-                                        {boxLabel: __("By Datasource"), inputValue: 'B'},
-                                        {boxLabel: __("By Source"), inputValue: 'S'},
-                                        {boxLabel: __("By Template"), inputValue: 'T', checked: true}]
+                                        {boxLabel: __("By Datasource"), inputValue: "B", name: "report_format"},
+                                        {boxLabel: __("By Source"), inputValue: "S", name: "report_format"},
+                                        {boxLabel: __("By Template"), inputValue: 'T', name: "report_format", checked: true}]
                                 },
                                 {
                                     name: "report_source",
@@ -496,8 +503,32 @@ Ext.define('NOC.main.reportconfig.Application', {
                                     ]
                                 }
                             ]
-                        } // Components
+                        },
+                        {
+                            title: __('Title'),
+                            items: [
+                                {
+                                    name: 'localization',
+                                    xtype: 'gridfield',
+                                    columns: [
+                                        {
+                                            text: __('Language'),
+                                            dataIndex: 'language',
+                                            renderer: NOC.render.Lookup('language'),
+                                            editor: 'main.ref.ulanguage.LookupField',
+                                            width: 100
+                                        },
+                                        {
+                                            text: __('Value'),
+                                            dataIndex: 'value',
+                                            width: 400,
+                                            editor: 'textfield'
+                                        },
 
+                                    ]
+                                }
+                            ]
+                        } // Localization
                     ]
                 }
             ],

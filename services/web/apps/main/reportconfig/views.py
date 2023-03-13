@@ -39,6 +39,7 @@ class ReportApplication(ExtDocApplication):
                     b.pop("parent")
                 bands += [b]
             r["bands"] = bands
+            r["localization"] = [{"language": lang, "value": value} for lang, value in o.localization.items()]
         return r
 
     def clean(self, data):
@@ -54,6 +55,10 @@ class ReportApplication(ExtDocApplication):
                 b["parent"] = "Root"
             bands += [b]
         data["bands"] = bands
+        localization = {}
+        for row in data.get("localization"):
+            localization[row["language"]] = row["value"]
+        data["localization"] = localization
         return super().clean(data)
 
     @view(url=r"^(?P<report_id>\S+)/form/$", method=["GET"], access="launch", api=True)
