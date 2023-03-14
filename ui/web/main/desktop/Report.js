@@ -44,7 +44,6 @@ Ext.define('NOC.main.desktop.Report', {
         Ext.apply(me, {
             items: [
                 me.form,
-                me.result
             ]
         });
         Ext.Ajax.request({
@@ -88,12 +87,17 @@ Ext.define('NOC.main.desktop.Report', {
                 if(button.param.output_type === "html") {
                     // var htmlWrapperStart = '<head><link rel = "stylesheet" type = "text/css" href = "/ui/pkg/django-media/admin/css/base.css"/><link rel="stylesheet" type="text/css" href="/ui/web/css/django/main.css"/><link rel="stylesheet" type="text/css" href="/ui/pkg/fontawesome/css/font-awesome.min.css"/>    <link rel="stylesheet" type="text/css" href="/ui/web/css/colors.css"/></head><body><div id="container"><div id="content" class="colM">',
                     // htmlWrapperEnd = '</div></body></html >';
-                    this.form.add({
+                    var result = Ext.create({
+                        xtype: "container",
                         itemId: "reportResult",
                         border: false,
-                        html: response.responseText,
+                        html: "<div class='report-result'></div>",
                         anchor: "100%",
                     });
+                    this.form.add(result);
+                    var containerHtml = result.getEl().dom.getElementsByClassName('report-result')[0],
+                        shadowDOM = containerHtml.attachShadow({mode: 'open'});
+                    shadowDOM.innerHTML = response.responseText;
                 } else {
                     window.open(url);
                 }
