@@ -145,13 +145,7 @@ class ReportApplication(ExtDocApplication):
         except ValueError as e:
             return HttpResponseBadRequest(e)
         if rp.output_type == OutputType.HTML:
-            # Used IFrame for ExtJs App
-            # content = f"""<iframe srcdoc='{escape(out_doc.format_django())}' style="height: 100%;,
-            # width: 100%;,
-            # border: none;"></iframe>"""
-            content = f"""<iframe srcdoc='{escape(out_doc.format_django())}' style="height: 100vh;,
-            width: 100%;,
-            position: absolute;"></iframe>"""
+            content = out_doc.format_django()
         else:
             content = out_doc.content
         response = HttpResponse(content, content_type=out_doc.content_type)

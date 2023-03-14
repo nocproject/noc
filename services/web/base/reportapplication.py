@@ -107,6 +107,7 @@ class ReportConfigApplication(Application):
     """
     Report Config application
     """
+
     CATEGORY_MAP = {"main", "fm", "sa", "inv"}
 
     report_id = None
