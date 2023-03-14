@@ -91,7 +91,7 @@ class BaseDataSource(object):
             r[f_name].append(value)
         if not r:
             return pl.DataFrame([], columns=[(c.name, c.type.value) for c in cls.fields])
-        return pl.DataFrame([pl.Series(c.name, r[f_name], dtype=c.type.value) for c in cls.fields])
+        return pl.DataFrame([pl.Series(c.name, r[c.name], dtype=c.type.value) for c in cls.fields])
         # return pl.DataFrame(r, columns=[(c.name, c.type.value) for c in cls.fields])
 
     @classmethod
