@@ -116,7 +116,7 @@ class Report(Document):
     #
     code = StringField()  # Optional code for REST access
     hide = BooleanField()  # Hide from ReportMenu
-    format = StringField(
+    format_source = StringField(
         choices=[("D", "By Datasource"), ("S", "By Source"), ("T", "By Template")]
     )  #
     report_source = StringField()
@@ -174,7 +174,7 @@ class Report(Document):
                 output_name_pattern=t.output_name_pattern,
                 bands_format=b_format_cfg,
             )
-        if self.format == "S" and self.report_source:
+        if self.format_source == "S" and self.report_source:
             return ReportConfig(
                 name=self.name,
                 root_band=ReportBand(name="Root", children=[], source=self.report_source),

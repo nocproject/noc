@@ -131,9 +131,9 @@ Ext.define('NOC.main.reportconfig.Application', {
                                     allowBlank: false,
                                     width: 600,
                                     items: [
-                                        {boxLabel: __("By Datasource"), inputValue: "B", name: "report_format"},
-                                        {boxLabel: __("By Source"), inputValue: "S", name: "report_format"},
-                                        {boxLabel: __("By Template"), inputValue: "T", name: "report_format"}
+                                        {boxLabel: __("By Datasource"), inputValue: "B", name: "format_source"},
+                                        {boxLabel: __("By Source"), inputValue: "S", name: "format_source"},
+                                        {boxLabel: __("By Template"), inputValue: "T", name: "format_source"}
                                     ]
                                 },
                                 {

@@ -107,6 +107,7 @@ class ReportConfigApplication(Application):
     """
     Report Config application
     """
+    CATEGORY_MAP = {"main", "fm", "sa", "inv"}
 
     report_id = None
 
@@ -115,16 +116,21 @@ class ReportConfigApplication(Application):
 
         self.report = Report.get_by_id(self.report_id)
         self.title = self.report.name
-        self.menu = self.report.name
+        self.menu = [_("Reports"), self.report.name]
         self.site = site
         self.service = None  # Set by web
-        self.module = "main"
+        self.module = self.get_module()
         self.app = self.report_id
         self.module_title = self.report.name
         self.app_id = f"{self.module}.{self.app}"
         self.menu_url = None  # Set by site.autodiscover()
         self.logger = logging.getLogger(self.app_id)
         self.j2_env = None
+
+    def get_module(self) -> str:
+        if self.report.category in self.CATEGORY_MAP:
+            return self.report.category
+        return "main"
 
     @classmethod
     def get_app_id(cls):

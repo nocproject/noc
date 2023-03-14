@@ -401,6 +401,8 @@ class Site(object):
         from .reportapplication import ReportConfigApplication
 
         for report in Report.objects.filter():
+            if report.hide:
+                continue
             app = types.new_class("ReportConfigApplication", (ReportConfigApplication,))
             app.report_id = str(report.id)
             self.do_register(app)

@@ -78,7 +78,7 @@ class ReportApplication(ExtDocApplication):
                 {"text": "csv", "param": {"output_type": "csv"}},
             ],
         }
-        if report.format == "S":
+        if report.format_source == "S":
             r["preview"] = True
             r["dockedItems"] += [{"text": "Preview", "param": {"output_type": "html"}}]
         for param in report.parameters:
@@ -114,7 +114,7 @@ class ReportApplication(ExtDocApplication):
             else:
                 cfg["xtype"] = "textfield"
             r["params"] += [cfg]
-        if report.format == "D":
+        if report.format_source == "D":
             ds = report.get_datasource()
             r["params"] += [
                 {
