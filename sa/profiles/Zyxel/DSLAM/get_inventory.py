@@ -1,7 +1,7 @@
 # ---------------------------------------------------------------------
 # Zyxel.DSLAM.get_inventory
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2016 The NOC Project
+# Copyright (C) 2007-2023 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -18,7 +18,7 @@ class Script(BaseScript):
     interface = IGetInventory
 
     rx_hw = re.compile(
-        r"^\s*Model\s*:\s+\S+ / (?P<part_no>\S+)\s*\n"
+        r"^\s*Model\s*:\s+(?P<part_no>\S+)\s*\n"
         r"^.+?\n"
         r"^\s*Hardware version\s*:\s+(?P<revision>\S+)\s*\n"
         r"^\s*Serial number\s*:\s+(?P<serial>\S+)\s*\n",
