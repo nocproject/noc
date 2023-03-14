@@ -5,9 +5,6 @@
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
-# Python modules
-from html import escape
-
 # Third-party modules
 from django.http import HttpResponse, HttpResponseBadRequest
 
