@@ -63,8 +63,8 @@ class BaseDataSource(object):
         :return:
         """
         c_map = {
-            "string": pl.Object,
-            "str": pl.Object,
+            "string": pl.Utf8,
+            "str": pl.Utf8,
             "int64": pl.Int64,
             "bool": pl.Boolean,
             "int": pl.Int32,
@@ -89,7 +89,10 @@ class BaseDataSource(object):
         r = defaultdict(list)
         async for _, f_name, value in cls.iter_query(fields, *args, **kwargs):
             r[f_name].append(value)
-        return pl.DataFrame(r, columns={c.name: c.type.value for c in cls.fields})
+        if not r:
+            return pl.DataFrame([], columns=[(c.name, c.type.value) for c in cls.fields])
+        return pl.DataFrame([pl.Series(c.name, r[c.name], dtype=c.type.value) for c in cls.fields])
+        # return pl.DataFrame(r, columns=[(c.name, c.type.value) for c in cls.fields])
 
     @classmethod
     async def iter_row(

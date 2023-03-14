@@ -4,11 +4,11 @@
 // Copyright (C) 2007-2022 The NOC Project
 // See LICENSE for details
 //---------------------------------------------------------------------
-console.debug("Defining NOC.main.report.Model");
+console.debug("Defining NOC.main.reportconfig.Model");
 
-Ext.define("NOC.main.report.Model", {
+Ext.define("NOC.main.reportconfig.Model", {
     extend: "Ext.data.Model",
-    rest_url: "/main/report/",
+    rest_url: "/main/reportconfig/",
 
     fields: [
         {
@@ -35,6 +35,14 @@ Ext.define("NOC.main.report.Model", {
         },
         {
             name: "code",
+            type: "string"
+        },
+        {
+            name: "category",
+            type: "string"
+        },
+        {
+            name: "format_source",
             type: "string"
         },
         {
