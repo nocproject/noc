@@ -40,7 +40,7 @@ class ReportParam(EmbeddedDocument):
     name = StringField(required=True)
     description = StringField(required=False)
     label = StringField()
-    type = StringField(choices=["integer", "string", "date", "model"], required=True)
+    type = StringField(choices=["integer", "string", "date", "model", "choice"], required=True)
     model_id = StringField()
     required = BooleanField(default=False)
     default = StringField(required=False)
@@ -116,8 +116,8 @@ class Report(Document):
     #
     code = StringField()  # Optional code for REST access
     hide = BooleanField()  # Hide from ReportMenu
-    format = StringField(
-        choices=[("B", "By Datasource"), ("S", "By Source"), ("T", "By Template")]
+    format_source = StringField(
+        choices=[("D", "By Datasource"), ("S", "By Source"), ("T", "By Template")]
     )  #
     report_source = StringField()
     is_system = BooleanField(default=False)  # Report Is System Based
@@ -174,22 +174,29 @@ class Report(Document):
                 output_name_pattern=t.output_name_pattern,
                 bands_format=b_format_cfg,
             )
-        if self.format == "S" and self.report_source:
+        if self.format_source == "S" and self.report_source:
             return ReportConfig(
                 name=self.name,
                 root_band=ReportBand(name="Root", children=[], source=self.report_source),
-                templates=templates,
+                templates={
+                    "DEFAULT": TemplateCfg(
+                        code="DEFAULT",
+                        output_type="html",
+                        formatter="simplereport",
+                        output_name_pattern="report1",
+                        bands_format={},
+                    )
+                },
                 parameters=params,
             )
+
         bands = {"Root": ReportBand(name="Root", children=[])}
         for b in self.bands:
             if b.name in bands:
-                bands[b.name].queries = (
-                    [
-                        ReportQuery(name="q1", datasource=q.datasource, query=q.ds_query)
-                        for q in b.queries
-                    ],
-                )
+                bands[b.name].queries = [
+                    ReportQuery(name="q1", datasource=q.datasource, query=q.ds_query)
+                    for q in b.queries
+                ]
             else:
                 bands[b.name] = ReportBand(
                     name=b.name,
@@ -201,7 +208,7 @@ class Report(Document):
                 )
             if b.name != "Root":
                 parent = b.parent or "Root"
-                bands[b.name].parent = parent
+                bands[b.name].parent = bands[parent]
                 bands[parent].children += [bands[b.name]]
 
         return ReportConfig(
@@ -210,3 +217,8 @@ class Report(Document):
             templates=templates,
             parameters=params,
         )
+
+    def get_datasource(self):
+        from noc.core.datasources.loader import loader
+
+        return loader[self.bands[0].queries[0].datasource]

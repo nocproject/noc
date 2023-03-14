@@ -5,10 +5,14 @@
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
+# Python modules
+import logging
+
 # NOC modules
 from noc.core.translation import ugettext as _
 from noc.core.comp import smart_text
 from .application import Application, view
+from .access import Permit
 
 
 class ReportApplication(Application):
@@ -97,3 +101,58 @@ class ReportApplication(Application):
         if format == "html":
             return self.render(request, "report.html", data=rdata, app=self, is_report=True)
         return self.render_response(rdata, content_type=self.content_types[format])
+
+
+class ReportConfigApplication(Application):
+    """
+    Report Config application
+    """
+
+    CATEGORY_MAP = {"main", "fm", "sa", "inv"}
+
+    report_id = None
+
+    def __init__(self, site):
+        from noc.main.models.report import Report
+
+        self.report = Report.get_by_id(self.report_id)
+        self.title = self.report.name
+        self.menu = [_("Reports"), self.report.name]
+        self.site = site
+        self.service = None  # Set by web
+        self.module = self.get_module()
+        self.app = self.report_id
+        self.module_title = self.report.name
+        self.app_id = f"{self.module}.{self.app}"
+        self.menu_url = None  # Set by site.autodiscover()
+        self.logger = logging.getLogger(self.app_id)
+        self.j2_env = None
+
+    def get_module(self) -> str:
+        if self.report.category in self.CATEGORY_MAP:
+            return self.report.category
+        return "main"
+
+    @classmethod
+    def get_app_id(cls):
+        """
+        Returns application id
+        """
+        return f"main.{cls.report_id}"
+
+    @property
+    def js_app_class(self):
+        return "NOC.main.desktop.Report"
+
+    @property
+    def launch_access(self):
+        return Permit()
+
+    def get_launch_info(self, request):
+        """
+        Return desktop launch information
+        """
+
+        r = super().get_launch_info(request)
+        r["params"]["report_id"] = self.report_id
+        return r

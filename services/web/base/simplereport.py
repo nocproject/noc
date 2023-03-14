@@ -79,7 +79,7 @@ class ReportNode(object):
         """
         return ""
 
-    def to_html(self):
+    def to_html(self, **kwargs):
         """
         Return HTML presentation of Node
         """
@@ -118,12 +118,12 @@ class Report(ReportNode):
         s += [self.format_closing_xml_tag()]
         return "\n".join(s)
 
-    def to_html(self):
+    def to_html(self, include_buttons=True, **kwargs):
         """
         Return HTML code for report
         :return:
         """
-        return "\n".join([s.to_html() for s in self.sections])
+        return "\n".join([s.to_html(include_buttons=include_buttons) for s in self.sections])
 
     def to_csv(self, delimiter=","):
         """
@@ -174,7 +174,7 @@ class TextSection(ReportSection):
         s += [self.format_closing_xml_tag()]
         return "\n".join(s)
 
-    def to_html(self):
+    def to_html(self, include_buttons=True):
         """
         Return HTML presentation of text section
         """
@@ -510,7 +510,7 @@ class TableSection(ReportSection):
         s += [self.format_closing_xml_tag()]
         return "\n".join(s)
 
-    def to_html(self):
+    def to_html(self, include_buttons=True):
         """
         Return HTML representation of table
         :return:
@@ -526,42 +526,45 @@ class TableSection(ReportSection):
             s += ["</tr>"]
             return s
 
-        s = [
-            "<script type='text/javascript' src='/ui/pkg/jquery.table2csv/jquery.table2csv.js'></script>",
-            "<form id='report' action='/main/desktop/dlproxy/' method='POST'>",
-            "<input type='hidden' name='content_type' value='text/csv; charset=utf8'>",
-            "<input type='hidden' name='filename' value='report.csv'>",
-            "<input type='hidden' name='data' id='csv_data'>",
-            "<input class='button' disabled type='button' value='CSV' onclick='getData(\".report-table\", \",\");'>",
-            "<input class='button' disabled type='button' value='"
-            + _("Print")
-            + "'onclick='window.print()'>",
-            "<input class='button' disabled type='button' value='PDF' onclick='getPDFReport(\".report-table\")'>",
-            "<input class='button' disabled type='button' value='SSV' onclick='getData(\".report-table\", \";\");'>",
-            "</form>",
-            "<script>",
-            "function getData(t, delimiter) {",
-            "  $('.button').attr('disabled','disabled');",
-            "  setTimeout(function() {",
-            "      var v = $(t).TableCSVExport({delivery: 'value', separator: delimiter});",
-            "      $('#csv_data').val(v);",
-            "      $('.button').prop('disabled', false);",
-            "      $('#report').submit();",
-            "  }, 0);",
-            "}",
-            "function getPDFReport(t) {",
-            "  $('.button').attr('disabled','disabled');",
-            "  setTimeout(function() {",
-            "      getPDF(t)",
-            "      $('.button').prop('disabled', false);",
-            "  }, 0);",
-            "}",
-            "$( document ).ready(function() {",
-            "   var buttons = $('.button').prop('disabled', false);",
-            "});",
-            "</script>",
-            "<table class='report-table' summary='%s'>" % self.quote(self.name),
-        ]
+        if include_buttons:
+            s = [
+                "<script type='text/javascript' src='/ui/pkg/jquery.table2csv/jquery.table2csv.js'></script>",
+                "<form id='report' action='/main/desktop/dlproxy/' method='POST'>",
+                "<input type='hidden' name='content_type' value='text/csv; charset=utf8'>",
+                "<input type='hidden' name='filename' value='report.csv'>",
+                "<input type='hidden' name='data' id='csv_data'>",
+                "<input class='button' disabled type='button' value='CSV' onclick='getData(\".report-table\", \",\");'>",
+                "<input class='button' disabled type='button' value='"
+                + _("Print")
+                + "'onclick='window.print()'>",
+                "<input class='button' disabled type='button' value='PDF' onclick='getPDFReport(\".report-table\")'>",
+                "<input class='button' disabled type='button' value='SSV' onclick='getData(\".report-table\", \";\");'>",
+                "</form>",
+                "<script>",
+                "function getData(t, delimiter) {",
+                "  $('.button').attr('disabled','disabled');",
+                "  setTimeout(function() {",
+                "      var v = $(t).TableCSVExport({delivery: 'value', separator: delimiter});",
+                "      $('#csv_data').val(v);",
+                "      $('.button').prop('disabled', false);",
+                "      $('#report').submit();",
+                "  }, 0);",
+                "}",
+                "function getPDFReport(t) {",
+                "  $('.button').attr('disabled','disabled');",
+                "  setTimeout(function() {",
+                "      getPDF(t)",
+                "      $('.button').prop('disabled', false);",
+                "  }, 0);",
+                "}",
+                "$( document ).ready(function() {",
+                "   var buttons = $('.button').prop('disabled', false);",
+                "});",
+                "</script>",
+                "<table class='report-table' summary='%s'>" % self.quote(self.name),
+            ]
+        else:
+            s = ["<table class='report-table' summary='%s'>" % self.quote(self.name)]
         # Render header
         s += ["<thead>"]
         s += ["<tr>"]
@@ -704,7 +707,7 @@ class MatrixSection(ReportSection):
         self.data = data or []
         self.enumerate = enumerate
 
-    def to_html(self):
+    def to_html(self, **kwargs):
         # Build rows and columns
         data = {}
         cl = set()
@@ -749,11 +752,11 @@ class SimpleReport(ReportApplication):
         """
         return Report()
 
-    def report_html(self, **kwargs):
+    def report_html(self, include_buttons=True, **kwargs):
         """
         Render HTML
         """
-        return self.get_data(**kwargs).to_html()
+        return self.get_data(**kwargs).to_html(include_buttons=include_buttons)
 
     def report_csv(self, **kwargs):
         """

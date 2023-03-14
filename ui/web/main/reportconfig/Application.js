@@ -4,9 +4,9 @@
 // Copyright (C) 2007-2023 The NOC Project
 // See LICENSE for details
 //---------------------------------------------------------------------
-console.debug('Defining NOC.main.report.Application');
+console.debug('Defining NOC.main.reportconfig.Application');
 
-Ext.define('NOC.main.report.Application', {
+Ext.define('NOC.main.reportconfig.Application', {
     extend: 'NOC.core.ModelApplication',
     requires: [
         'NOC.core.JSONPreview',
@@ -16,12 +16,13 @@ Ext.define('NOC.main.report.Application', {
         'Ext.ux.form.StringsField',
         'Ext.ux.form.GridField',
         "NOC.main.ref.modelid.LookupField",
+        "NOC.main.ref.ulanguage.LookupField",
         "NOC.main.ref.datasource.LookupField",
         "NOC.main.ref.reportsource.LookupField",
         "NOC.aaa.group.LookupField",
         "NOC.aaa.user.LookupField"
     ],
-    model: 'NOC.main.report.Model',
+    model: 'NOC.main.reportconfig.Model',
     search: true,
     rowClassField: 'row_class',
 
@@ -30,7 +31,7 @@ Ext.define('NOC.main.report.Application', {
 
         me.jsonPanel = Ext.create('NOC.core.JSONPreview', {
             app: me,
-            restUrl: new Ext.XTemplate('/main/report/{id}/json/'),
+            restUrl: new Ext.XTemplate('/main/reportconfig/{id}/json/'),
             previewName: new Ext.XTemplate('Report: {name}')
         });
         me.ITEM_JSON = me.registerItem(me.jsonPanel);
@@ -107,24 +108,33 @@ Ext.define('NOC.main.report.Application', {
                                     uiStyle: 'large'
                                 },
                                 {
-                                    name: 'category',
-                                    xtype: 'textfield',
-                                    fieldLabel: __('Category'),
+                                    name: "category",
+                                    xtype: "combobox",
+                                    fieldLabel: __("Category"),
                                     allowBlank: true,
-                                    uiStyle: 'large'
+                                    store: [
+                                        ["main", __("Main")],
+                                        ["fm", __("Fault Management")],
+                                        ["sa", __("Service Activation")],
+                                        ["inv", __("Inventory")]
+                                    ]
                                 },
                                 {
-                                    name: "format",
-                                    xtype: "radiogroup",
-                                    // columns: 3,
-                                    vertical: true,
+                                    xtype: 'fieldcontainer',
+                                    fieldLabel: 'Size',
+                                    defaultType: 'radiofield',
+                                    layout: 'hbox',
+                                    defaults: {
+                                        flex: 1
+                                    },
                                     fieldLabel: __("Report Format"),
                                     allowBlank: false,
                                     width: 600,
                                     items: [
-                                        {boxLabel: __("By Datasource"), inputValue: 'B'},
-                                        {boxLabel: __("By Source"), inputValue: 'S'},
-                                        {boxLabel: __("By Template"), inputValue: 'T', checked: true}]
+                                        {boxLabel: __("By Datasource"), inputValue: "D", name: "format_source"},
+                                        {boxLabel: __("By Source"), inputValue: "S", name: "format_source"},
+                                        {boxLabel: __("By Template"), inputValue: "T", name: "format_source"}
+                                    ]
                                 },
                                 {
                                     name: "report_source",
@@ -496,8 +506,32 @@ Ext.define('NOC.main.report.Application', {
                                     ]
                                 }
                             ]
-                        } // Components
+                        },
+                        {
+                            title: __('Title'),
+                            items: [
+                                {
+                                    name: 'localization',
+                                    xtype: 'gridfield',
+                                    columns: [
+                                        {
+                                            text: __('Language'),
+                                            dataIndex: 'language',
+                                            renderer: NOC.render.Lookup('language'),
+                                            editor: 'main.ref.ulanguage.LookupField',
+                                            width: 100
+                                        },
+                                        {
+                                            text: __('Value'),
+                                            dataIndex: 'value',
+                                            width: 400,
+                                            editor: 'textfield'
+                                        },
 
+                                    ]
+                                }
+                            ]
+                        } // Localization
                     ]
                 }
             ],
