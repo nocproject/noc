@@ -35,7 +35,6 @@ class MODashboard(JinjaDashboard):
         mo: ManagedObject = cls.resolve_object(object_id)
         caps = mo.get_caps()
         dash = cls
-        print(loader.caps_map)
         for capability in loader.caps_map:
             if capability in caps:
                 dash = loader.caps_map[capability]
@@ -189,15 +188,15 @@ class MODashboard(JinjaDashboard):
         ocm = []
         for m in self.object.object_profile.metrics or []:
             mt = MetricType.get_by_id(m["metric_type"])
-            if not mt or not m.get("interval", 0):
+            if not mt:
                 continue
             if check_metrics(mt):
                 ocm += [{"name": mt.name, "metric": mt.field_name}]
                 continue
             om += [mt.name]
+
         object_metrics.extend(sorted(om))
         object_check_metrics.extend(sorted(ocm, key=operator.itemgetter("name")))
-
         # Sensors
         sensor_types = defaultdict(list)
         sensor_enum = []
@@ -256,5 +255,5 @@ class MODashboard(JinjaDashboard):
             "extra_vars": self.extra_vars,
             "selected_types": self.object_data["selected_types"],
             "ping_interval": self.object.object_profile.ping_interval,
-            "discovery_interval": int(self.object.object_profile.periodic_discovery_interval / 2),
+            "discovery_interval": int(self.object.get_metric_discovery_interval() / 2),
         }
