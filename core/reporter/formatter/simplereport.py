@@ -49,7 +49,7 @@ class TableFormatter(DataFormatter):
         elif self.output_type == OutputType.SSV:
             r = report.to_csv(delimiter=";")
         elif self.output_type == OutputType.HTML:
-            r += report.to_html(include_buttons=False)
+            r = report.to_html(include_buttons=False)
         self.output_stream.write(r.encode("utf8"))
 
     def get_report_data(self, columns: List[str] = None) -> List[Any]:
