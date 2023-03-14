@@ -882,9 +882,7 @@ class ManagedObjectProfile(NOCModel):
     @classmethod
     def get_max_metrics_interval(cls, managed_object_profiles=None):
         Q = models.Q
-        op_query = (Q(enable_box_discovery_metrics=True) & Q(enable_box_discovery=True)) | (
-            Q(enable_periodic_discovery=True) & Q(enable_periodic_discovery_metrics=True)
-        )
+        op_query = Q(enable_metrics=True)
         if managed_object_profiles:
             op_query &= Q(id__in=managed_object_profiles)
         r = set()
@@ -893,11 +891,10 @@ class ManagedObjectProfile(NOCModel):
         ):
             if not mop.metrics:
                 continue
+            r.add(mop.metrics_default_interval)
             for m in mop.metrics:
-                if m["enable_box"]:
-                    r.add(mop.box_discovery_interval)
-                if m["enable_periodic"]:
-                    r.add(mop.periodic_discovery_interval)
+                if m.get("interval", 0):
+                    r.add(m["interval"])
         return max(r) if r else 0
 
     @classmethod

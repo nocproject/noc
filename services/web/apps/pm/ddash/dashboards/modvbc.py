@@ -73,9 +73,7 @@ class DVBCDashboard(MODashboard):
         om = []
         for metrics in self.object.object_profile.metrics or []:
             mt = MetricType.get_by_id(metrics["metric_type"])
-            if not mt or not (
-                metrics.get("enable_periodic", False) or metrics.get("enable_box", False)
-            ):
+            if not mt:
                 continue
             om += [mt.name]
         object_metrics.extend(sorted(om))
