@@ -17,7 +17,7 @@ from pymongo import ReadPreference
 
 
 # NOC modules
-from .base import BaseDataSource, FieldInfo
+from .base import BaseDataSource, FieldInfo, FieldType
 from noc.fm.models.activealarm import ActiveAlarm
 from noc.fm.models.alarmclass import AlarmClass
 from noc.fm.models.archivedalarm import ArchivedAlarm
@@ -67,7 +67,7 @@ class ReportDsAlarms(BaseDataSource):
                 name="duration_sec",
                 # label="DURATION_SEC",
                 description="Продолжительность (сек)",
-                type="int",
+                type=FieldType.UINT,
             ),
             FieldInfo(
                 name="object_name",
@@ -133,13 +133,13 @@ class ReportDsAlarms(BaseDataSource):
                 name="objects",
                 # label="OBJECTS",
                 description="Число задетых устройства",
-                type="int",
+                type=FieldType.UINT,
             ),
             FieldInfo(
                 name="subscribers",
                 # label="SUBSCRIBERS",
                 description="Абоненты",
-                type="int",
+                type=FieldType.UINT,
             ),
             FieldInfo(
                 name="tt",
