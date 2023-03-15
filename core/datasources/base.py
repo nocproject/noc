@@ -24,6 +24,7 @@ class FieldType(enum.Enum):
     INT32 = pl.Int32
     FLOAT = pl.Float32
     BOOL = pl.Boolean
+    DATETIME = pl.Datetime
 
 
 @dataclass
@@ -109,9 +110,10 @@ class BaseDataSource(object):
         c_row = 1
         async for row_num, f_name, value in cls.iter_query(fields, *args, **kwargs):
             if c_row != row_num:
-                c_row = row_num
                 yield r
-            r[f_name] = value
+                c_row = row_num
+                r = {}
+            r[f_name] = cls.clean_row_value(value)
 
     @classmethod
     async def iter_query(
@@ -125,3 +127,7 @@ class BaseDataSource(object):
         :return:
         """
         ...
+
+    @classmethod
+    def clean_row_value(cls, value):
+        return value
