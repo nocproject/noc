@@ -113,7 +113,7 @@ class BaseDataSource(object):
                 yield r
                 c_row = row_num
                 r = {}
-            r[f_name] = value
+            r[f_name] = cls.clean_row_value(value)
 
     @classmethod
     async def iter_query(
@@ -127,3 +127,7 @@ class BaseDataSource(object):
         :return:
         """
         ...
+
+    @classmethod
+    def clean_row_value(cls, value):
+        return value
