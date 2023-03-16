@@ -660,7 +660,7 @@ class MetricsService(FastAPIService):
             source = self.get_source(key_ctx["sensor"])
             sensor = key_ctx["sensor"]
             # sensor = self.sources_config.get(key_ctx["sensor"])
-        elif "sla_probe" in key_ctx and  key_ctx["sla_probe"]:
+        elif "sla_probe" in key_ctx and key_ctx["sla_probe"]:
             source = self.get_source(key_ctx["sla_probe"])
             sla_probe = key_ctx["sla_probe"]
             # sla_probe = self.sources_config.get(key_ctx["sla_probe"])

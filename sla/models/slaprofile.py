@@ -1,7 +1,7 @@
 # ---------------------------------------------------------------------
 # SLA Profile models
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2020 The NOC Project
+# Copyright (C) 2007-2023 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -171,9 +171,7 @@ class SLAProfile(Document):
         return min(r) if r else 0
 
     def on_save(self):
-        labels = [
-            ll for ll in self.labels if Label.get_effective_setting(ll, "enable_slaprobe")
-        ]
+        labels = [ll for ll in self.labels if Label.get_effective_setting(ll, "enable_slaprobe")]
         print("ON Save", labels, self._changed_fields)
         if not labels:
             return
