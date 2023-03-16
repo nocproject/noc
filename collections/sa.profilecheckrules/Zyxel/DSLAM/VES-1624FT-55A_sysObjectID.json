@@ -1,0 +1,14 @@
+{
+    "name": "Zyxel | ZyNOS | VES-1624FT-55A sysObjectID",
+    "$collection": "sa.profilecheckrules",
+    "uuid": "74114bf2-d831-42ff-85aa-1815a37e1e74",
+    "description": null,
+    "preference": 10,
+    "method": "snmp_v2c_get",
+    "param": "SNMPv2-MIB::sysObjectID.0",
+    "match_method": "eq",
+    "value": "1.3.6.1.4.1.890.1.5.12.34",
+    "action": "match",
+    "profile__name": "Zyxel.DSLAM"
+}
+
