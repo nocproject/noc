@@ -71,7 +71,7 @@ Ext.define("NOC.sla.slaprofile.Application", {
                     allowBlank: true,
                     uiStyle: "medium",
                     query: {
-                        "enable_slaprofile": true
+                        "enable_slaprobe": true
                     },
                 },
                 {
@@ -110,6 +110,12 @@ Ext.define("NOC.sla.slaprofile.Application", {
                   allowBlank: true,
                   uiStyle: "medium",
                   minValue: 0
+                },
+                {
+                    name: "raise_alarm_to_target",
+                    xtype: "checkbox",
+                    boxLabel: __("Raise Alarm to target"),
+                    allowBlank: true
                 },
                 {
                   name: "test_packets_num",

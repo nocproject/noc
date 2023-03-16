@@ -107,7 +107,7 @@ class AlarmConfig(EmbeddedDocument):
     def json_data(self) -> Dict[str, Any]:
         r = {}
         if self.alarm_class:
-            r["alarm_class"] = self.alarm_class.name
+            r["alarm_class__name"] = self.alarm_class.name
         if self.reference:
             r["reference"] = self.reference
         if self.activation_level != 1.0:

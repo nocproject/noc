@@ -43,6 +43,11 @@ Ext.define("NOC.sla.slaprofile.Model", {
             defaultValue: 10
         },
         {
+            name: "raise_alarm_to_target",
+            type: "bool",
+            defaultValue: false
+        },
+        {
             name: "name",
             type: "string"
         },

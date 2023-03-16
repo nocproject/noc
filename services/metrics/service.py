@@ -125,6 +125,8 @@ class Rule(object):
     configs: Dict[str, Dict[str, Any]]  # NodeId -> Config
 
     def is_matched(self, labels: Set[str]) -> bool:
+        if not self.match_labels and not self.exclude_labels:
+            return True
         return any(labels.issuperset(ml) for ml in self.match_labels)
 
     def is_differ(self, rule: "Rule") -> FrozenSet[str]:
@@ -222,6 +224,7 @@ class SourceInfo(object):
         "bi_id",
         "sensor",
         "sla_probe",
+        "service",
         "fm_pool",
         "labels",
         "metric_labels",
@@ -231,6 +234,7 @@ class SourceInfo(object):
     fm_pool: str
     sla_probe: Optional[str]
     sensor: Optional[str]
+    service: Optional[str]
     labels: Optional[List[str]]
     metric_labels: Optional[List[str]]
     composed_metrics: Optional[List[str]]
@@ -651,19 +655,24 @@ class MetricsService(FastAPIService):
         :return:
         """
         key_ctx, source = dict(k[1]), None
-        sensor, sla_probe = None, None
-        if "sensor" in key_ctx:
+        sensor, sla_probe, service = None, None, None
+        if "sensor" in key_ctx and key_ctx["sensor"]:
             source = self.get_source(key_ctx["sensor"])
+            sensor = key_ctx["sensor"]
             # sensor = self.sources_config.get(key_ctx["sensor"])
-        elif "sla_probe" in key_ctx:
+        elif "sla_probe" in key_ctx and key_ctx["sla_probe"]:
             source = self.get_source(key_ctx["sla_probe"])
+            sla_probe = key_ctx["sla_probe"]
             # sla_probe = self.sources_config.get(key_ctx["sla_probe"])
-        if "agent" in key_ctx:
+        elif "agent" in key_ctx and key_ctx["agent"]:
             source = self.get_source(key_ctx["agent"])
+            # agent = key_ctx["agent"]
             # source = self.sources_config.get(key_ctx["agent"])
         elif "managed_object" in key_ctx:
             source = self.get_source(key_ctx["managed_object"])
             # source = self.sources_config.get(key_ctx["managed_object"])
+        if "service" in key_ctx:
+            service = key_ctx["service"]
         if not source:
             return
         composed_metrics = []
@@ -678,6 +687,7 @@ class MetricsService(FastAPIService):
             bi_id=source.bi_id,
             sensor=sensor,
             sla_probe=sla_probe,
+            service=service,
             fm_pool=source.fm_pool,
             labels=list(source.labels),
             metric_labels=[],
@@ -735,6 +745,7 @@ class MetricsService(FastAPIService):
                         static_config["sla_probe"] = source.sla_probe
                     if source.sensor:
                         static_config["sensor"] = source.sensor
+                    self.logger.debug("Create Alarm Node with config %s", static_config)
                 nodes[node.node_id] = self.clone_and_add_node(
                     node, prefix=self.get_key_hash(k), config=config, static_config=static_config
                 )
