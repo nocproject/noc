@@ -6,6 +6,7 @@
 # ----------------------------------------------------------------------
 
 # Python modules
+import ast
 import os
 import subprocess
 import argparse
@@ -27,13 +28,23 @@ class Command(BaseCommand):
             return self.list_commands()
 
     def list_commands(self):
+        def is_command_file(path: str) -> bool:
+            with open(path, "r") as f:
+                tree = ast.parse(f.read())
+            for node in ast.walk(tree):
+                if isinstance(node, ast.ClassDef) and node.name == "Command":
+                    return True
+            return False
+
         commands = set()
-        for root in ["commands"]:
+        for root in config.get_customized_paths("commands"):
             for f in os.listdir(root):
                 help = ""
                 if f.startswith("_") or f.startswith("."):
                     continue
                 elif f.endswith(".py"):
+                    if not is_command_file(os.path.join(root, f)):
+                        continue
                     try:
                         if root == "commands":
                             h = get_handler("noc.commands.%s" % f[:-3])
