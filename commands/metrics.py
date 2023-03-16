@@ -51,9 +51,15 @@ class Command(BaseCommand):
         cdag_dot_parser = subparsers.add_parser("cdag-dot")
         cdag_dot_parser.add_argument("--output", help="Output path")
         test_action = subparsers.add_parser("test-action")
-        test_action.add_argument("--config", help="Graph config path", action="append", required=True)
-        test_action.add_argument("--start", help="Start metric interval Time", dest="start", required=False)
-        test_action.add_argument("--end", help="End metric interval Time", dest="end", required=False)
+        test_action.add_argument(
+            "--config", help="Graph config path", action="append", required=True
+        )
+        test_action.add_argument(
+            "--start", help="Start metric interval Time", dest="start", required=False
+        )
+        test_action.add_argument(
+            "--end", help="End metric interval Time", dest="end", required=False
+        )
         test_action.add_argument(
             "--input",
             dest="f_input",
@@ -61,10 +67,18 @@ class Command(BaseCommand):
             "iface://<MONAME>::<IFACE_NAME>, cpu://<MONAME>, sla://<SLAPROBE_ID>",
         )
         test_action.add_argument("--output", dest="f_output", help="Output path in JSONLine format")
-        test_service = subparsers.add_parser("test-service", help="Send selected metrics to service")
-        test_service.add_argument("--config", help="Graph config path", action="append", required=True)
-        test_service.add_argument("--start", help="Start metric interval Time", dest="start", required=False)
-        test_service.add_argument("--end", help="End metric interval Time", dest="end", required=False)
+        test_service = subparsers.add_parser(
+            "test-service", help="Send selected metrics to service"
+        )
+        test_service.add_argument(
+            "--config", help="Graph config path", action="append", required=True
+        )
+        test_service.add_argument(
+            "--start", help="Start metric interval Time", dest="start", required=False
+        )
+        test_service.add_argument(
+            "--end", help="End metric interval Time", dest="end", required=False
+        )
         test_service.add_argument(
             "--input",
             dest="f_input",
@@ -145,12 +159,12 @@ class Command(BaseCommand):
                 os.unlink(fn)
 
     def input_from_device(
-            self,
-            source: str,
-            metrics: List[str],
-            start: Optional[datetime.datetime] = None,
-            end: Optional[datetime.datetime] = None,
-            register_metric: bool = False,
+        self,
+        source: str,
+        metrics: List[str],
+        start: Optional[datetime.datetime] = None,
+        end: Optional[datetime.datetime] = None,
+        register_metric: bool = False,
     ):
         """
 
@@ -195,7 +209,12 @@ class Command(BaseCommand):
             self.print("QUERY", query)
             cursor = connection()
             r = cursor.execute(query, return_raw=True, args=q_args)
-            data = {"_units": units, "managed_object": o.managed_object.bi_id, "sla_probe": o.bi_id, "scope": scope}
+            data = {
+                "_units": units,
+                "managed_object": o.managed_object.bi_id,
+                "sla_probe": o.bi_id,
+                "scope": scope,
+            }
             for row in r.splitlines():
                 row = orjson.loads(row)
                 if register_metric:
@@ -213,15 +232,17 @@ class Command(BaseCommand):
                 yield row
 
     def iter_metrics(
-            self,
-            f_input: Optional[str],
-            metrics: Optional[List[str]] = None,
-            start: Optional[datetime.datetime] = None,
-            end: Optional[datetime.datetime] = None,
-            register_metric: bool = False,
+        self,
+        f_input: Optional[str],
+        metrics: Optional[List[str]] = None,
+        start: Optional[datetime.datetime] = None,
+        end: Optional[datetime.datetime] = None,
+        register_metric: bool = False,
     ) -> Iterable[Dict[str, Union[float, str]]]:
         if ":" in f_input:
-            yield from self.input_from_device(f_input, metrics, start=start, end=end, register_metric=register_metric)
+            yield from self.input_from_device(
+                f_input, metrics, start=start, end=end, register_metric=register_metric
+            )
         else:
             yield from self.input_from_file(f_input)
 
@@ -322,7 +343,9 @@ class Command(BaseCommand):
         svc = get_service()
         cdag = self.from_config_paths(config)
         probes = {n.node_id: n for n in cdag.nodes.values() if n.name == "probe"}
-        for data in self.iter_metrics(f_input, metrics=list(probes), start=start, end=end, register_metric=True):
+        for data in self.iter_metrics(
+            f_input, metrics=list(probes), start=start, end=end, register_metric=True
+        ):
             data["ts"] = time.time_ns()
             # data["managed_object"]
             # data["sla_probe"]

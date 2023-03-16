@@ -7,20 +7,14 @@
 
 # Python modules
 import time
-from typing import Any, List, Dict, Iterable, Optional
+from typing import Any, List, Dict, Optional
 
 # Third-party modules
 import orjson
-from pymongo import ReadPreference
 
 # NOC modules
 from noc.services.discovery.jobs.base import DiscoveryCheck
-from noc.core.models.cfgmetrics import MetricCollectorConfig
-from noc.inv.models.object import Object
-from noc.inv.models.sensor import Sensor
-from noc.inv.models.cpe import CPE
 from noc.pm.models.metrictype import MetricType
-from noc.sla.models.slaprobe import SLAProbe
 from noc.config import config
 
 
@@ -45,33 +39,6 @@ class MetricsCheck(DiscoveryCheck):
     required_script = "get_metrics"
 
     SLA_CAPS = ["Cisco | IP | SLA | Probes"]
-
-    def iter_metric_sources(self) -> Iterable[MetricCollectorConfig]:
-        """
-        Iterate sources metric configs
-        :return:
-        """
-        o: List[str] = Object.get_managed(self.object).values_list("id")
-        for mc in self.object.iter_collected_metrics():
-            yield mc
-        for sensor in Sensor.objects.filter(object__in=list(o)).read_preference(
-            ReadPreference.SECONDARY_PREFERRED
-        ):
-            for mc in sensor.iter_collected_metrics():
-                yield mc
-        if not self.has_any_capability(self.SLA_CAPS):
-            self.logger.info("SLA not configured, skipping SLA metrics")
-        else:
-            for sla in SLAProbe.objects.filter(managed_object=self.object.id).read_preference(
-                ReadPreference.SECONDARY_PREFERRED
-            ):
-                for mc in sla.iter_collected_metrics():
-                    yield mc
-        for cpe in CPE.objects.filter(controller=self.object.id).read_preference(
-            ReadPreference.SECONDARY_PREFERRED
-        ):
-            for mc in cpe.iter_collected_metrics():
-                yield mc
 
     def handler(self):
         self.logger.info("Collecting metrics")
