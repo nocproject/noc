@@ -6,12 +6,14 @@
 # ---------------------------------------------------------------------
 
 # Python modules
+import re
 import operator
 import datetime
 from typing import List, Iterable, Optional
 from threading import Lock
 
 # Third-party modules
+import cachetools
 from mongoengine.document import Document
 from mongoengine.fields import (
     StringField,
@@ -24,7 +26,6 @@ from mongoengine.fields import (
     DictField,
 )
 from pymongo import ReadPreference
-import cachetools
 
 # NOC modules
 from .slaprofile import SLAProfile
@@ -40,6 +41,7 @@ from noc.core.bi.decorator import bi_sync
 from noc.core.wf.decorator import workflow
 from noc.core.models.cfgmetrics import MetricCollectorConfig, MetricItem
 from noc.core.model.sql import SQL
+from noc.inv.models.subinterface import SubInterface
 from noc.config import config
 
 PROBE_TYPES = IGetSLAProbes.returns.element.attrs["type"].choices
@@ -123,15 +125,19 @@ class SLAProbe(Document):
             ]
 
     @cachetools.cached(_target_cache, key=lambda x: str(x.id), lock=id_lock)
-    def get_target(self):
+    def get_target(self) -> Optional[ManagedObject]:
         address = self.target
         if ":" in address:
             # port
             address, port = self.target.split(":")
-        # @todo SubInterface search
-        return ManagedObject.objects.filter(
+        mo = ManagedObject.objects.filter(
             SQL(f"cast_test_to_inet(address) <<= '{address}/32'")
         ).first()
+        if mo:
+            return mo
+        si = SubInterface.objects.filter(ipv4_addresses=re.compile(address)).first()
+        if si:
+            return si.managed_object
 
     @classmethod
     def iter_effective_labels(cls, probe: "SLAProbe") -> List[str]:
@@ -223,9 +229,12 @@ class SLAProbe(Document):
         for ll in sla_probe.effective_labels:
             l_c = Label.get_by_name(ll)
             labels.append({"label": ll, "expose_metric": l_c.expose_metric if l_c else False})
+        source = sla_probe
+        if sla_probe.profile.raise_alarm_to_target:
+            source = sla_probe.get_target() or source
         return {
             "type": "sla_probe",
-            "bi_id": sla_probe.bi_id,
+            "bi_id": source.bi_id,
             "fm_pool": sla_probe.managed_object.get_effective_fm_pool().name,
             "labels": labels,
             "metrics": [
