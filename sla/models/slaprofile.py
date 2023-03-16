@@ -30,7 +30,7 @@ import cachetools
 from noc.main.models.style import Style
 from noc.pm.models.metrictype import MetricType
 from noc.core.mongo.fields import ForeignKeyField, PlainReferenceField
-from noc.core.model.decorator import on_delete_check
+from noc.core.model.decorator import on_delete_check, on_save
 from noc.core.bi.decorator import bi_sync
 from noc.main.models.label import Label
 from noc.wf.models.workflow import Workflow
@@ -58,6 +58,7 @@ class SLAProfileMetrics(EmbeddedDocument):
 
 
 @bi_sync
+@on_save
 @on_delete_check(check=[("sla.SLAProbe", "profile")])
 class SLAProfile(Document):
     """
@@ -168,3 +169,18 @@ class SLAProfile(Document):
             r.append(self.metrics_default_interval)
         r += [m.interval for m in self.metrics if m.interval]
         return min(r) if r else 0
+
+    def on_save(self):
+        labels = [
+            ll for ll in self.labels if Label.get_effective_setting(ll, "enable_slaprobe")
+        ]
+        print("ON Save", labels, self._changed_fields)
+        if not labels:
+            return
+        if not hasattr(self, "_changed_fields") or "labels" in self._changed_fields:
+            Label.add_model_labels(
+                "sla.SLAProbe",
+                labels=labels,
+                filter_ids=[self.id],
+                filter_field="profile",
+            )

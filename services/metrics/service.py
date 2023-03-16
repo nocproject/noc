@@ -656,17 +656,17 @@ class MetricsService(FastAPIService):
         """
         key_ctx, source = dict(k[1]), None
         sensor, sla_probe, service = None, None, None
-        if "sensor" in key_ctx:
+        if "sensor" in key_ctx and key_ctx["sensor"]:
             source = self.get_source(key_ctx["sensor"])
             sensor = key_ctx["sensor"]
             # sensor = self.sources_config.get(key_ctx["sensor"])
-        elif "sla_probe" in key_ctx:
+        elif "sla_probe" in key_ctx and  key_ctx["sla_probe"]:
             source = self.get_source(key_ctx["sla_probe"])
             sla_probe = key_ctx["sla_probe"]
             # sla_probe = self.sources_config.get(key_ctx["sla_probe"])
-        if "agent" in key_ctx:
+        elif "agent" in key_ctx and key_ctx["agent"]:
             source = self.get_source(key_ctx["agent"])
-            agent = key_ctx["agent"]
+            # agent = key_ctx["agent"]
             # source = self.sources_config.get(key_ctx["agent"])
         elif "managed_object" in key_ctx:
             source = self.get_source(key_ctx["managed_object"])
