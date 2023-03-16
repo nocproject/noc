@@ -340,7 +340,6 @@ class Command(BaseCommand):
             end = parse(end)
         if start:
             start = parse(start)
-        svc = get_service()
         cdag = self.from_config_paths(config)
         probes = {n.node_id: n for n in cdag.nodes.values() if n.name == "probe"}
         for data in self.iter_metrics(
