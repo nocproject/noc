@@ -79,6 +79,8 @@ class SLAProfile(Document):
     # Object id in BI
     bi_id = LongField(unique=True)
     #
+    raise_alarm_to_target = BooleanField(default=True)
+    #
     metrics_default_interval = IntField(default=0, min_value=0)
     # Number interval buckets
     metrics_interval_buckets = IntField(default=1, min_value=0)

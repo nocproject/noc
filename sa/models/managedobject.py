@@ -3049,14 +3049,18 @@ class ManagedObject(NOCModel):
 
         r = [self.object_profile.get_metric_discovery_interval()]
         caps = self.get_caps()
-        if caps.get("DB | CPEs"):
-            r += [CPE.get_metric_discovery_interval(self)]
-        if caps.get("DB | SLAProbes"):
-            r += [SLAProbe.get_metric_discovery_interval(self)]
-        if caps.get("DB | Interfaces"):
-            r += [Interface.get_metric_discovery_interval(self)]
-        if caps.get("DB | Sensors"):
-            r += [Sensor.get_metric_discovery_interval(self)]
+        for caps_count, source in [
+            ("DB | CPEs", CPE),
+            ("DB | SLAProbes", SLAProbe),
+            ("DB | Interfaces", Interface),
+            ("DB | Sensors", Sensor),
+        ]:
+            count = caps.get(caps_count)
+            if not count:
+                continue
+            interval = source.get_metric_discovery_interval(self)
+            if interval:
+                r += [interval]
         return max(
             min(r),
             self.object_profile.metrics_default_interval,
