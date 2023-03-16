@@ -22,7 +22,12 @@ from typing import Tuple, Dict
 # Third-party modules
 import orjson
 import bson
-from mongoengine.fields import ListField, EmbeddedDocumentField, BinaryField
+from mongoengine.fields import (
+    ListField,
+    EmbeddedDocumentField,
+    BinaryField,
+    EmbeddedDocumentListField,
+)
 from mongoengine.errors import NotUniqueError
 from mongoengine.document import Document
 from pymongo import UpdateOne
@@ -233,7 +238,9 @@ class Collection(object):
             except KeyError:
                 continue  # Ignore unknown fields
             # Dereference ListFields
-            if isinstance(field, ListField) and isinstance(field.field, EmbeddedDocumentField):
+            if (
+                isinstance(field, ListField) and isinstance(field.field, EmbeddedDocumentField)
+            ) or isinstance(field, EmbeddedDocumentListField):
                 edoc = field.field.document_type
                 try:
                     v = [edoc(**self.dereference(x, model=edoc)) for x in d[k]]
@@ -242,7 +249,7 @@ class Collection(object):
                     self.partial_errors[d["uuid"]] = str(e)
             elif isinstance(field, EmbeddedDocumentField):
                 try:
-                    v = field.document_type(**v)
+                    v = field.document_type(**self.dereference(v, model=field.document_type))
                 except ValueError as e:
                     v = None
                     self.partial_errors[d["uuid"]] = str(e)
