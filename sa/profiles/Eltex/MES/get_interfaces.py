@@ -1,7 +1,7 @@
 # ---------------------------------------------------------------------
 # Eltex.MES.get_interfaces
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2022 The NOC Project
+# Copyright (C) 2007-2023 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -203,11 +203,12 @@ class Script(BaseScript):
                 pass
         # Get portchannels
         portchannel_members = {}
-        for pc in self.scripts.get_portchannel():
-            i = pc["interface"]
-            t = pc["type"] == "L"
-            for m in pc["members"]:
-                portchannel_members[m] = (i, t)
+        if self.has_capability("Network | LACP"):
+            for pc in self.scripts.get_portchannel():
+                i = pc["interface"]
+                t = pc["type"] == "L"
+                for m in pc["members"]:
+                    portchannel_members[m] = (i, t)
 
         # Get LLDP interfaces
         lldp = []
