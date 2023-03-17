@@ -9,16 +9,16 @@ msgstr ""
 "Project-Id-Version: The NOC Project VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
 "POT-Creation-Date: 2022-11-06 18:56+0300\n"
-"PO-Revision-Date: 2022-11-06 22:31+0500\n"
+"PO-Revision-Date: 2022-11-06 22:34+0500\n"
 "Last-Translator: Dmitry Volodin <dv@nocproject.org>\n"
 "Language: ru\n"
 "Language-Team: ru <LL@li.org>\n"
-"Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
+"Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && "
+"n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Generated-By: Babel 2.11.0\n"
-"X-Generator: Poedit 3.0\n"
+"Generated-By: Babel 2.9.1\n"
 
 #: ui/web/aaa/apikey/Application.js:26
 msgid "API Key"
@@ -3470,7 +3470,9 @@ msgid "Recover Time (sec)"
 msgstr ""
 
 #: ui/web/fm/alarmclass/Application.js:481
-msgid "Consequence recover time. Root cause will be detached if consequence alarm will not clear itself in *recover_time*"
+msgid ""
+"Consequence recover time. Root cause will be detached if consequence "
+"alarm will not clear itself in *recover_time*"
 msgstr ""
 
 #: ui/web/fm/alarmclass/Application.js:497
@@ -4247,7 +4249,7 @@ msgstr "Архивные аварии (больше 3 месяцев)"
 
 #: ui/web/fm/reportalarmdetail/Application.js:106
 msgid "Exclude MO by Resource Group (Selector)"
-msgstr "Исключить устройство из Группу (Селектора)"
+msgstr "Исключить устройство из Группы (Селектора)"
 
 #: ui/web/fm/reportalarmdetail/Application.js:116
 msgid "Min. Duration"
@@ -4846,8 +4848,14 @@ msgstr "Приоритет протокола доступа"
 
 #: ui/web/inv/firmwarepolicy/Application.js:116
 #: ui/web/sa/managedobject/Application.js:630
-msgid "Preference mode with worked profile script. <br/>!! Work if Device Profile supported. <br/>Profile (default) - use Object Profile settings <br/>S - Use only SNMP when access to deviceCLI Only - Use only CLI when access to deviceSNMP, CLI - Use SNMP, if not avail swithc to CLICLI, SNMP - Use CLI, if not avail swithc to SNMP"
-msgstr "Приоритет при работе скрипта профиля.\n"
+msgid ""
+"Preference mode with worked profile script. <br/>!! Work if Device "
+"Profile supported. <br/>Profile (default) - use Object Profile settings "
+"<br/>S - Use only SNMP when access to deviceCLI Only - Use only CLI when "
+"access to deviceSNMP, CLI - Use SNMP, if not avail swithc to CLICLI, SNMP"
+" - Use CLI, if not avail swithc to SNMP"
+msgstr ""
+"Приоритет при работе скрипта профиля.\n"
 "!!Работает только при реализации в скрипте!!\n"
 " Профиль (по умолчанию) - использовать настройки профиля объекта.\n"
 "* S - использовать исключительно SNMP\n"
@@ -4894,8 +4902,12 @@ msgid "Use object as Port Token"
 msgstr "Искать имя устройства в описании порта"
 
 #: ui/web/inv/ifdescpatterns/Application.js:53
-msgid "If checked discоvery try find port by object_id (Hostname, Address, Name) contains in description"
-msgstr "Если отмечено опрос попробует найти пор по иднтификатору объекта (hostname, IP адрес, имя в системе) содержащееся в описании"
+msgid ""
+"If checked discоvery try find port by object_id (Hostname, Address, Name)"
+" contains in description"
+msgstr ""
+"Если отмечено опрос попробует найти пор по иднтификатору объекта "
+"(hostname, IP адрес, имя в системе) содержащееся в описании"
 
 #: ui/web/inv/interface/Application.js:53
 msgid "Show MACs"
@@ -5175,7 +5187,7 @@ msgstr "Вес аварии"
 
 #: ui/web/inv/interfaceprofile/Application.js:252
 msgid "Status Change Notification"
-msgstr "Уведомление об изменение статуса"
+msgstr "Уведомление об изменении статуса"
 
 #: ui/web/inv/interfaceprofile/Application.js:265
 msgid "Enable Abduct Detection"
@@ -5500,7 +5512,7 @@ msgstr "Соединить"
 
 #: ui/web/inv/inv/plugins/crossing/CrossingPanel.js:32
 msgid "Object Start"
-msgstr "Начальгый объект"
+msgstr "Начальный объект"
 
 #: ui/web/inv/inv/plugins/crossing/CrossingPanel.js:37
 msgid "Object Start Slot"
@@ -5718,7 +5730,10 @@ msgid "Affected"
 msgstr "Влияние"
 
 #: ui/web/inv/macdb/Application.js:23
-msgid "Insert MAC address to this field one of format:<li>FULL: AA:AA:AA:AA:AA:AA</li><li>Left part: AA:AA:</li><li>Right part: :AA:AA</li>"
+msgid ""
+"Insert MAC address to this field one of format:<li>FULL: "
+"AA:AA:AA:AA:AA:AA</li><li>Left part: AA:AA:</li><li>Right part: "
+":AA:AA</li>"
 msgstr ""
 
 #: ui/web/inv/macdb/Application.js:36
@@ -6451,8 +6466,12 @@ msgid "Exclude ports in the status \"down\""
 msgstr "Исключить порты в состоянии \"down\""
 
 #: ui/web/inv/reportifacestatus/Application.js:65
-msgid "Exclude interfaces with the \"default\" name profile (for Selector and Administrative Domain filter)"
-msgstr "Исключить интерфейсы с именем профиля \"default\" (для фильтров по селектору и З.О.)"
+msgid ""
+"Exclude interfaces with the \"default\" name profile (for Selector and "
+"Administrative Domain filter)"
+msgstr ""
+"Исключить интерфейсы с именем профиля \"default\" (для фильтров по "
+"селектору и З.О.)"
 
 #: ui/web/inv/reportifacestatus/Application.js:79
 msgid "IP address"
@@ -7133,7 +7152,9 @@ msgstr "Удалить IP адрес?"
 
 #: ui/web/ip/ipam/view/forms/prefix/AddressPanel.js:308
 msgid "Do you wish to delete address? This operation cannot be undone!"
-msgstr "Вы действительно желаете удалить IP адрес? Действие невозжно будет отменить."
+msgstr ""
+"Вы действительно желаете удалить IP адрес? Действие невозжно будет "
+"отменить."
 
 #: ui/web/ip/ipam/view/forms/prefix/AddressPanel.js:327
 #: ui/web/sa/managedobject/L1Panel.js:269
@@ -7263,7 +7284,9 @@ msgstr "Не удалять"
 
 #: ui/web/ip/ipam/view/forms/prefix/PrefixDeletePanel.js:60
 msgid "Delete prefix and save and relink the nested prefixes and addresses?"
-msgstr "Удалить префикс и сохранить все вложенные префиксы и адреса в родительском?"
+msgstr ""
+"Удалить префикс и сохранить все вложенные префиксы и адреса в "
+"родительском?"
 
 #: ui/web/ip/ipam/view/forms/prefix/PrefixDeletePanel.js:65
 msgid "Delete prefix and all nested prefixes, addresses and permissions?"
@@ -7346,7 +7369,9 @@ msgid "Start zone transfer"
 msgstr ""
 
 #: ui/web/ip/ipam/view/forms/tools/ToolsForm.js:86
-msgid "Upload list of allocated IP addresses from existing DNS servers via AXFR request"
+msgid ""
+"Upload list of allocated IP addresses from existing DNS servers via AXFR "
+"request"
 msgstr ""
 
 #: ui/web/ip/ipam/view/forms/vrf/VRF.js:44 ui/web/ip/vrf/Application.js:111
@@ -7404,8 +7429,12 @@ msgid "Propagate"
 msgstr ""
 
 #: ui/web/ip/prefixprofile/Application.js:133
-msgid "Include special addresses (Network & Broadcast for IPv4) <br/>in prefix range"
-msgstr "Включить особые адреса (Адрес сеть и Широковещательный) в доступные для использования"
+msgid ""
+"Include special addresses (Network & Broadcast for IPv4) <br/>in prefix "
+"range"
+msgstr ""
+"Включить особые адреса (Адрес сеть и Широковещательный) в доступные для "
+"использования"
 
 #: ui/web/ip/prefixprofile/Application.js:135
 msgid "Special addresses"
@@ -8174,9 +8203,9 @@ msgstr ""
 msgid "Workflow State"
 msgstr ""
 
+# | msgid "Mirror Policy"
 #: ui/web/main/label/Application.js:199 ui/web/main/label/Application.js:556
 #, fuzzy
-#| msgid "Mirror Policy"
 msgid "Firmware Policy"
 msgstr "Политика зеркалирования"
 
@@ -8196,9 +8225,9 @@ msgstr ""
 msgid "Autogenerated"
 msgstr ""
 
+# | msgid "No matching"
 #: ui/web/main/label/Application.js:283
 #, fuzzy
-#| msgid "No matching"
 msgid "Is Matching Label"
 msgstr "Не совпадает"
 
@@ -8865,8 +8894,12 @@ msgid "AS or AS-set"
 msgstr ""
 
 #: ui/web/peer/prefixlistbuilder/Application.js:71
-msgid "Enter list valid ASnumber (ex., AS1234) or as sets (ex. AS-MEGASET, AS-MEGA-SET)"
-msgstr "Введите список валидных номеров AS (н-р, AS1234) или набора (н-р. ex. AS-MEGASET, AS-MEGA-SET)"
+msgid ""
+"Enter list valid ASnumber (ex., AS1234) or as sets (ex. AS-MEGASET, AS-"
+"MEGA-SET)"
+msgstr ""
+"Введите список валидных номеров AS (н-р, AS1234) или набора (н-р. ex. AS-"
+"MEGASET, AS-MEGA-SET)"
 
 #: ui/web/peer/rir/Application.js:20 ui/web/peer/rir/Application.js:35
 msgid "whois"
@@ -9072,9 +9105,9 @@ msgstr "Истинный уровень"
 msgid "False Level"
 msgstr "Ложный уровень"
 
+# | msgid "Sibling"
 #: ui/web/pm/metricaction/Application.js:243
 #, fuzzy
-#| msgid "Sibling"
 msgid "Lying"
 msgstr "Родственники"
 
@@ -9182,7 +9215,9 @@ msgid "Enable Time Delta (Require migration)"
 msgstr ""
 
 #: ui/web/pm/metricscope/Application.js:144
-msgid "Required run migration metric Database after changed.That enabled only by deploy."
+msgid ""
+"Required run migration metric Database after changed.That enabled only by"
+" deploy."
 msgstr ""
 
 #: ui/web/pm/metrictype/Application.js:83
@@ -9200,7 +9235,9 @@ msgstr "Единица измерения"
 #: ui/web/pm/metrictype/Application.js:111
 #: ui/web/pm/metrictype/Application.js:148
 #: ui/web/sa/managedobjectprofile/Application.js:309
-msgid "Field on this use in ETL proccess (sync on external system). <br/>Do not Edit field directly!"
+msgid ""
+"Field on this use in ETL proccess (sync on external system). <br/>Do not "
+"Edit field directly!"
 msgstr ""
 
 #: ui/web/pm/metrictype/Application.js:129
@@ -9366,7 +9403,9 @@ msgid "Enable Suggets By Rule"
 msgstr ""
 
 #: ui/web/sa/authprofile/Application.js:124
-msgid "If check - use Credential Check Rules (Service Activation -> Setup -> Credential Check Rules)<br/> for suggest credential"
+msgid ""
+"If check - use Credential Check Rules (Service Activation -> Setup -> "
+"Credential Check Rules)<br/> for suggest credential"
 msgstr ""
 
 #: ui/web/sa/authprofile/Application.js:134
@@ -9746,11 +9785,15 @@ msgid "Effective"
 msgstr "Эффективные"
 
 #: ui/web/sa/managedobject/Application.js:484
-msgid "More settings for worked with devices. <br/>Place on Service Activaton -> Setup -> Object Profile."
+msgid ""
+"More settings for worked with devices. <br/>Place on Service Activaton ->"
+" Setup -> Object Profile."
 msgstr ""
 
 #: ui/web/sa/managedobject/Application.js:545
-msgid "Profile (Adapter) for device work. <br/>!! Auto detect profile by SNMP if Object Profile -> Box -> Profile is set. <br/>"
+msgid ""
+"Profile (Adapter) for device work. <br/>!! Auto detect profile by SNMP if"
+" Object Profile -> Box -> Profile is set. <br/>"
 msgstr ""
 
 #: ui/web/sa/managedobject/Application.js:559
@@ -9772,7 +9815,10 @@ msgid "CLI Session Policy"
 msgstr "Политика работы в CLI"
 
 #: ui/web/sa/managedobject/Application.js:667
-msgid "Use one session worked on device. <br/>Profile (default) - use Object Profile settings <br/>Enable - login when statr job, logout after end.Disable - worked one script - one login. Logout after script end."
+msgid ""
+"Use one session worked on device. <br/>Profile (default) - use Object "
+"Profile settings <br/>Enable - login when statr job, logout after "
+"end.Disable - worked one script - one login. Logout after script end."
 msgstr ""
 
 #: ui/web/sa/managedobject/Application.js:686
@@ -9781,7 +9827,10 @@ msgid "CLI Privilege Policy"
 msgstr "Политика работы с привелегиями CLI"
 
 #: ui/web/sa/managedobject/Application.js:687
-msgid "Do enable if login unprivilege mode on device. <br/>Raise Privileges - send enable<br/>Do not raise - work on current mode (immediately after login)"
+msgid ""
+"Do enable if login unprivilege mode on device. <br/>Raise Privileges - "
+"send enable<br/>Do not raise - work on current mode (immediately after "
+"login)"
 msgstr ""
 
 #: ui/web/sa/managedobject/Application.js:695
@@ -9794,7 +9843,10 @@ msgid "Don't Raise"
 msgstr "Не поднимать привилегии"
 
 #: ui/web/sa/managedobject/Application.js:719
-msgid "Get credentials (user, pass, snmp etc.) from Auth profile.<br/>  Service Activation -> Setup -> Auth Profile. If set - value in field user, password, snmp community will be IGNORED"
+msgid ""
+"Get credentials (user, pass, snmp etc.) from Auth profile.<br/>  Service "
+"Activation -> Setup -> Auth Profile. If set - value in field user, "
+"password, snmp community will be IGNORED"
 msgstr ""
 
 #: ui/web/sa/managedobject/Application.js:775
@@ -9802,19 +9854,29 @@ msgid "Max. Scripts"
 msgstr "Макс. скриптов"
 
 #: ui/web/sa/managedobject/Application.js:802
-msgid "Use this field if you want disable ping check on specified time.<br/>  Main -> Setup -> Time Patterns"
+msgid ""
+"Use this field if you want disable ping check on specified time.<br/>  "
+"Main -> Setup -> Time Patterns"
 msgstr ""
 
 #: ui/web/sa/managedobject/Application.js:832
-msgid "Use for setup User permission on Object. <br/>Place on Service Activaton -> Setup -> Administrative Domain.<br/>Permission on Activaton -> Setup -> Group Access/User Access.<br/>"
+msgid ""
+"Use for setup User permission on Object. <br/>Place on Service Activaton "
+"-> Setup -> Administrative Domain.<br/>Permission on Activaton -> Setup "
+"-> Group Access/User Access.<br/>"
 msgstr ""
 
 #: ui/web/sa/managedobject/Application.js:858
-msgid "Use for shard devices over intersection IP Address spaces. <br/>Create and Set on Tower<br/>"
+msgid ""
+"Use for shard devices over intersection IP Address spaces. <br/>Create "
+"and Set on Tower<br/>"
 msgstr ""
 
 #: ui/web/sa/managedobject/Application.js:884
-msgid "Set device name. If FQDN suffix is not set use dot after name: NAME.<br/>FQND suffix set on Object Profile: Service Activation -> Setup -> Object Profile -> Common<br/>"
+msgid ""
+"Set device name. If FQDN suffix is not set use dot after name: "
+"NAME.<br/>FQND suffix set on Object Profile: Service Activation -> Setup "
+"-> Object Profile -> Common<br/>"
 msgstr ""
 
 #: ui/web/sa/managedobject/Application.js:917
@@ -9846,7 +9908,11 @@ msgid "Address Resolution Policy"
 msgstr "Политика определения адреса управления"
 
 #: ui/web/sa/managedobject/Application.js:932
-msgid "Activate resolve Address by FQND field (or other handler).<br/> Profile - Use profile settings<br/>Disable - Do not resolve FQDN into Address field<br/>Once - Once resolve FQDN (after success settings will be set to Disable)<br/>Enable - Enable resolve address before running Job<br/>"
+msgid ""
+"Activate resolve Address by FQND field (or other handler).<br/> Profile -"
+" Use profile settings<br/>Disable - Do not resolve FQDN into Address "
+"field<br/>Once - Once resolve FQDN (after success settings will be set to"
+" Disable)<br/>Enable - Enable resolve address before running Job<br/>"
 msgstr ""
 
 #: ui/web/sa/managedobject/Application.js:942
@@ -10424,15 +10490,22 @@ msgid "Worked with devices settings"
 msgstr ""
 
 #: ui/web/sa/managedobjectprofile/Application.js:478
-msgid "Protocol priority worked on device. <br/>Warning! Device profile (SA Profile) should support worked in selected mode"
+msgid ""
+"Protocol priority worked on device. <br/>Warning! Device profile (SA "
+"Profile) should support worked in selected mode"
 msgstr ""
 
 #: ui/web/sa/managedobjectprofile/Application.js:498
-msgid "Use one session worked on device. <br/>If disabled - worked one script - one login. Logout after script end."
+msgid ""
+"Use one session worked on device. <br/>If disabled - worked one script - "
+"one login. Logout after script end."
 msgstr ""
 
 #: ui/web/sa/managedobjectprofile/Application.js:517
-msgid "Do enable if login unprivilege mode on device. <br/>Raise Privileges - send enable, Do not raise - work on current mode <br/>(immediately after login)"
+msgid ""
+"Do enable if login unprivilege mode on device. <br/>Raise Privileges - "
+"send enable, Do not raise - work on current mode <br/>(immediately after "
+"login)"
 msgstr ""
 
 #: ui/web/sa/managedobjectprofile/Application.js:525
@@ -10458,7 +10531,9 @@ msgid "Interval, sec"
 msgstr "Интервал, сек"
 
 #: ui/web/sa/managedobjectprofile/Application.js:622
-msgid "Enable or disable ping if working hour on object is set. <br/>Enable - Calc RTT, but do not raise alarm, Disable ping - do not send ICMP"
+msgid ""
+"Enable or disable ping if working hour on object is set. <br/>Enable - "
+"Calc RTT, but do not raise alarm, Disable ping - do not send ICMP"
 msgstr ""
 
 #: ui/web/sa/managedobjectprofile/Application.js:624
@@ -10510,16 +10585,26 @@ msgid "Report ping attempts"
 msgstr "Сохранять ошибки в серии"
 
 #: ui/web/sa/managedobjectprofile/Application.js:752
-msgid "Proccessed syslog/snmp trap message to Classifier service <br/>E - Send message to Classifier<br/>D - Do not send message to Clissifier"
+msgid ""
+"Proccessed syslog/snmp trap message to Classifier service <br/>E - Send "
+"message to Classifier<br/>D - Do not send message to Clissifier"
 msgstr ""
 
 #: ui/web/sa/managedobjectprofile/Application.js:779
-msgid "Enable send syslog message to ClickHouse </b>syslog</b> table. <br/>May be overwritten by ManageObject <b>syslog_archive_policy</b> setting. <br/>E - Send syslog message to ClickHouse<br/>D - Do not send syslog message to ClickHouse"
+msgid ""
+"Enable send syslog message to ClickHouse </b>syslog</b> table. <br/>May "
+"be overwritten by ManageObject <b>syslog_archive_policy</b> setting. "
+"<br/>E - Send syslog message to ClickHouse<br/>D - Do not send syslog "
+"message to ClickHouse"
 msgstr ""
 
 #: ui/web/sa/managedobjectprofile/Application.js:799
-msgid "Enable - allow to escalate alarm for ManagedObject. <br/>As Depended - allow to escalate ManagedObject only as depend (not root) on alarm"
-msgstr "Включить - разрешает эскалацию аварий для Объекта. Как Зависимую - эскалировать аварию только в составе другой аварии (указана первопричина)"
+msgid ""
+"Enable - allow to escalate alarm for ManagedObject. <br/>As Depended - "
+"allow to escalate ManagedObject only as depend (not root) on alarm"
+msgstr ""
+"Включить - разрешает эскалацию аварий для Объекта. Как Зависимую - "
+"эскалировать аварию только в составе другой аварии (указана первопричина)"
 
 #: ui/web/sa/managedobjectprofile/Application.js:818
 msgid "Merge Downlinks"
@@ -10546,7 +10631,11 @@ msgid "Trap Collector Storm Settings"
 msgstr "Поведение при шторме трапов"
 
 #: ui/web/sa/managedobjectprofile/Application.js:879
-msgid "Check Device SNMP Trap storm policy <br/>check trap message count over 60s <br/>B - Block receive trap from ManagedObject Address<br/>R - Raise Alarm to ManagedObject and not block<br/>A - Raise Alarm to ManagedObject and block trap receive<br/>D - Disable Storm Check"
+msgid ""
+"Check Device SNMP Trap storm policy <br/>check trap message count over "
+"60s <br/>B - Block receive trap from ManagedObject Address<br/>R - Raise "
+"Alarm to ManagedObject and not block<br/>A - Raise Alarm to ManagedObject"
+" and block trap receive<br/>D - Disable Storm Check"
 msgstr ""
 
 #: ui/web/sa/managedobjectprofile/Application.js:886
@@ -10613,7 +10702,9 @@ msgid "Caps"
 msgstr ""
 
 #: ui/web/sa/managedobjectprofile/Application.js:1112
-msgid "Set which CAPS will be check in Caps discovery. <br/>Service Activation -> Setup -> Caps Profiles"
+msgid ""
+"Set which CAPS will be check in Caps discovery. <br/>Service Activation "
+"-> Setup -> Caps Profiles"
 msgstr ""
 
 #: ui/web/sa/managedobjectprofile/Application.js:1114
@@ -10641,7 +10732,9 @@ msgstr "Профиль интерфейса"
 
 #: ui/web/sa/managedobjectprofile/Application.js:1187
 #: ui/web/sa/managedobjectprofile/Application.js:2190
-msgid "I - Collect MACs only for allowed interfaces. <br/>(MAC Discovery Policy on Inventory -> Setup -> Interface Profile) <br/>"
+msgid ""
+"I - Collect MACs only for allowed interfaces. <br/>(MAC Discovery Policy "
+"on Inventory -> Setup -> Interface Profile) <br/>"
 msgstr ""
 
 #: ui/web/sa/managedobjectprofile/Application.js:1202
@@ -10678,7 +10771,9 @@ msgid "IfDesc"
 msgstr ""
 
 #: ui/web/sa/managedobjectprofile/Application.js:1318
-msgid "Cache neighbors (get_X_neighbors script result). <br/>When information cached script not execute on device <br/>0 - do not cache"
+msgid ""
+"Cache neighbors (get_X_neighbors script result). <br/>When information "
+"cached script not execute on device <br/>0 - do not cache"
 msgstr ""
 
 #: ui/web/sa/managedobjectprofile/Application.js:1321
@@ -10698,7 +10793,10 @@ msgid "Platform & Version"
 msgstr ""
 
 #: ui/web/sa/managedobjectprofile/Application.js:1387
-msgid "Action when discovery new platform on version discovery. <br/>Create - Create platform and set it on device<br/>Alarm - Do not create platform and raise alarm"
+msgid ""
+"Action when discovery new platform on version discovery. <br/>Create - "
+"Create platform and set it on device<br/>Alarm - Do not create platform "
+"and raise alarm"
 msgstr ""
 
 #: ui/web/sa/managedobjectprofile/Application.js:1390
@@ -10706,7 +10804,12 @@ msgid "On New Platform"
 msgstr "При обновлении платф."
 
 #: ui/web/sa/managedobjectprofile/Application.js:1407
-msgid "Action when discovery firmware denied on FirmwarePolice.Inventory -> Setup -> FirmwarePolicy <br/>Ignore - Ignore and do next discovery<br/>Ignore&Stop - Ignore and stop discovery<br/>Raise Alarm - Raise alarm on ManagedObject and do next discovery<br/>Raise Alarm&Stop - Raise alarm on ManagedObject and stop discovery"
+msgid ""
+"Action when discovery firmware denied on FirmwarePolice.Inventory -> "
+"Setup -> FirmwarePolicy <br/>Ignore - Ignore and do next "
+"discovery<br/>Ignore&Stop - Ignore and stop discovery<br/>Raise Alarm - "
+"Raise alarm on ManagedObject and do next discovery<br/>Raise Alarm&Stop -"
+" Raise alarm on ManagedObject and stop discovery"
 msgstr ""
 
 #: ui/web/sa/managedobjectprofile/Application.js:1463
@@ -10770,7 +10873,9 @@ msgstr "Политика опроса CPE"
 
 #: ui/web/sa/managedobjectprofile/Application.js:1821
 #: ui/web/sa/managedobjectprofile/Application.js:2157
-msgid "Set Policy for CPE Status Discovery. S - Check only CPE Statuses (script get_cpe_status)F - Check ALL CPE info (script get_cpe)"
+msgid ""
+"Set Policy for CPE Status Discovery. S - Check only CPE Statuses (script "
+"get_cpe_status)F - Check ALL CPE info (script get_cpe)"
 msgstr ""
 
 #: ui/web/sa/managedobjectprofile/Application.js:1829
@@ -10831,8 +10936,13 @@ msgid "Proccess Telemetry"
 msgstr "Телеметрика опроса"
 
 #: ui/web/sa/managedobjectprofile/Application.js:2033
-msgid "Sampling value for Box discovery. Interval from 0 to 1. <br/>1 - all jobs will saved, 0 - Not collect telemetry, <br/> 0,99 ... 0,1 - chance to save"
-msgstr "Настройка частоты для Полного опроса. Интервал с 0 до 1. 1 - каждая задача сохранит операции, 0 - отключает. 0,99 .. 0,1 частота сохранения."
+msgid ""
+"Sampling value for Box discovery. Interval from 0 to 1. <br/>1 - all jobs"
+" will saved, 0 - Not collect telemetry, <br/> 0,99 ... 0,1 - chance to "
+"save"
+msgstr ""
+"Настройка частоты для Полного опроса. Интервал с 0 до 1. 1 - каждая "
+"задача сохранит операции, 0 - отключает. 0,99 .. 0,1 частота сохранения."
 
 #: ui/web/sa/managedobjectprofile/Application.js:2079
 msgid "Periodic discovery intervals"
@@ -10853,12 +10963,20 @@ msgid "Periodic CPE Status Policy"
 msgstr ""
 
 #: ui/web/sa/managedobjectprofile/Application.js:2205
-msgid "Set which CAPS will be check in Caps discovery. <br/>VC -> Setup -> VLAN Filter"
+msgid ""
+"Set which CAPS will be check in Caps discovery. <br/>VC -> Setup -> VLAN "
+"Filter"
 msgstr ""
 
 #: ui/web/sa/managedobjectprofile/Application.js:2281
-msgid "Sampling value for Periodic discovery. Interval from 0 to 1. <br/>1 - all jobs will saved, 0 - Not collect telemetry,  0,99 ... 0,1 - chance to save"
-msgstr "Настройка частоты для Периодического опроса. Интервал с 0 до 1. 1 - каждая задача сохранит операции, 0 - отключает. 0,99 .. 0,1 частота сохранения."
+msgid ""
+"Sampling value for Periodic discovery. Interval from 0 to 1. <br/>1 - all"
+" jobs will saved, 0 - Not collect telemetry,  0,99 ... 0,1 - chance to "
+"save"
+msgstr ""
+"Настройка частоты для Периодического опроса. Интервал с 0 до 1. 1 - "
+"каждая задача сохранит операции, 0 - отключает. 0,99 .. 0,1 частота "
+"сохранения."
 
 #: ui/web/sa/managedobjectprofile/Application.js:2300
 msgid "Settings policy for config discovery: Validation and mirroring config"
@@ -10871,7 +10989,9 @@ msgid "Storage"
 msgstr "Хранилище"
 
 #: ui/web/sa/managedobjectprofile/Application.js:2344
-msgid "External storage for config downloading. Setup in Main -> Setup -> Ext. storage"
+msgid ""
+"External storage for config downloading. Setup in Main -> Setup -> Ext. "
+"storage"
 msgstr ""
 
 #: ui/web/sa/managedobjectprofile/Application.js:2356
@@ -10883,7 +11003,10 @@ msgstr "Шаблон пути"
 #: ui/web/sa/managedobjectprofile/Application.js:2358
 #: ui/web/sa/managedobjectprofile/Application.js:2455
 #, python-format
-msgid "Save config path template. Setup on Main -> Setup -> Templates, subject form.Simple is: {{ object.name }}.txt on subject or <br/>{{datetime.datetime.now().strftime(\"%Y-%m-%dT%H:%M:%S\")}} for time"
+msgid ""
+"Save config path template. Setup on Main -> Setup -> Templates, subject "
+"form.Simple is: {{ object.name }}.txt on subject or "
+"<br/>{{datetime.datetime.now().strftime(\"%Y-%m-%dT%H:%M:%S\")}} for time"
 msgstr ""
 
 #: ui/web/sa/managedobjectprofile/Application.js:2373
@@ -10899,7 +11022,10 @@ msgid "Mirror Policy"
 msgstr "Политика зеркалирования"
 
 #: ui/web/sa/managedobjectprofile/Application.js:2412
-msgid "Mirror collected config after Config discovery. <br/>Always Mirror - mirror every discovery run <br/>Mirror on Change - save only if detect config changed"
+msgid ""
+"Mirror collected config after Config discovery. <br/>Always Mirror - "
+"mirror every discovery run <br/>Mirror on Change - save only if detect "
+"config changed"
 msgstr ""
 
 #: ui/web/sa/managedobjectprofile/Application.js:2421
@@ -10912,7 +11038,9 @@ msgstr "Зеркалировать при изменении"
 
 #: ui/web/sa/managedobjectprofile/Application.js:2441
 msgid "External storage for config save. Setup in Main -> Setup -> Ext. storage"
-msgstr "Внешнее хранилище для сохранения конфигурации. Настраивается в Основные -> Настройки -> Внешние хранилища."
+msgstr ""
+"Внешнее хранилище для сохранения конфигурации. Настраивается в Основные "
+"-> Настройки -> Внешние хранилища."
 
 #: ui/web/sa/managedobjectprofile/Application.js:2486
 msgid "Append raw section to confdb"
@@ -10931,7 +11059,9 @@ msgid "Validate on Change"
 msgstr ""
 
 #: ui/web/sa/managedobjectprofile/Application.js:2515
-msgid "Run config validate proccess: <br/>Always Validate - every discovery run<br/>Validate on Change - only if detect config changed"
+msgid ""
+"Run config validate proccess: <br/>Always Validate - every discovery "
+"run<br/>Validate on Change - only if detect config changed"
 msgstr ""
 
 #: ui/web/sa/managedobjectprofile/Application.js:2549
@@ -10947,7 +11077,9 @@ msgid "Collect on Change"
 msgstr "Собирать при изменении"
 
 #: ui/web/sa/managedobjectprofile/Application.js:2592
-msgid "Setup colleced metric on divices (not Interface!). <br/>(Interface Metrics settings Inventory -> Setup -> Interface Profile)"
+msgid ""
+"Setup colleced metric on divices (not Interface!). <br/>(Interface "
+"Metrics settings Inventory -> Setup -> Interface Profile)"
 msgstr ""
 
 #: ui/web/sa/managedobjectprofile/Application.js:2625
@@ -10959,7 +11091,10 @@ msgid "Autosegmentation"
 msgstr "Автосегментация"
 
 #: ui/web/sa/managedobjectprofile/Application.js:2650
-msgid "Settings for autosegmentatin proccess: <br/>Automaticaly detect segment for ManagedObject with this ObjectProfile.<br/>Uses MAC and needed MAC enable in Box"
+msgid ""
+"Settings for autosegmentatin proccess: <br/>Automaticaly detect segment "
+"for ManagedObject with this ObjectProfile.<br/>Uses MAC and needed MAC "
+"enable in Box"
 msgstr ""
 
 #: ui/web/sa/managedobjectprofile/Application.js:2663
@@ -10971,7 +11106,9 @@ msgid "Segmentate for child segment"
 msgstr "Сегментировать в дочерние сегменты"
 
 #: ui/web/sa/managedobjectprofile/Application.js:2671
-msgid "Max level (Common -> Level) there will be changed segment. <br/>(Autosegmentation not worked with ManagedObject less this level"
+msgid ""
+"Max level (Common -> Level) there will be changed segment. "
+"<br/>(Autosegmentation not worked with ManagedObject less this level"
 msgstr ""
 
 #: ui/web/sa/managedobjectprofile/Application.js:2674
@@ -10979,7 +11116,9 @@ msgid "Level Limit"
 msgstr "Ограничить уровень"
 
 #: ui/web/sa/managedobjectprofile/Application.js:2684
-msgid "Jinja template for creating segment name. <br/>Worked with \"Segmentate for object's segment\" and \"Segmentate for child segment\" options"
+msgid ""
+"Jinja template for creating segment name. <br/>Worked with \"Segmentate "
+"for object's segment\" and \"Segmentate for child segment\" options"
 msgstr ""
 
 #: ui/web/sa/managedobjectprofile/Application.js:2688
@@ -11081,7 +11220,10 @@ msgid "State Policy"
 msgstr "Расчёт состояния"
 
 #: ui/web/sa/objectdiagnosticconfig/Application.js:105
-msgid "Policy detect diagnostic Success or Failed state <br/>ALL - ALL Checks and Depended Discovery must Success for Enable state<br/>ANY - ANY Checks and Depended Discovery mush Success for Enable state"
+msgid ""
+"Policy detect diagnostic Success or Failed state <br/>ALL - ALL Checks "
+"and Depended Discovery must Success for Enable state<br/>ANY - ANY Checks"
+" and Depended Discovery mush Success for Enable state"
 msgstr ""
 
 #: ui/web/sa/objectdiagnosticconfig/Application.js:121
@@ -11114,7 +11256,9 @@ msgid "Enable Box"
 msgstr "При полном"
 
 #: ui/web/sa/objectdiagnosticconfig/Application.js:173
-msgid "Condition running diagnostic <br/>Always - Always run diagnostic on Discovery<br/>Failed - Run only Diagnoscti has Unknown or Failed state"
+msgid ""
+"Condition running diagnostic <br/>Always - Always run diagnostic on "
+"Discovery<br/>Failed - Run only Diagnoscti has Unknown or Failed state"
 msgstr ""
 
 #: ui/web/sa/objectdiagnosticconfig/Application.js:177
@@ -11134,7 +11278,9 @@ msgid "Run Order"
 msgstr "Порядок запуска"
 
 #: ui/web/sa/objectdiagnosticconfig/Application.js:197
-msgid "Order run diagnostic in Discovery process. <br/>On Start - Before Discovery checks run<br/>On End - After Discovery checks run"
+msgid ""
+"Order run diagnostic in Discovery process. <br/>On Start - Before "
+"Discovery checks run<br/>On End - After Discovery checks run"
 msgstr ""
 
 #: ui/web/sa/objectdiagnosticconfig/Application.js:201
@@ -11497,12 +11643,18 @@ msgid "Account"
 msgstr "Учётная запись"
 
 #: ui/web/support/account/AccountPanel.js:21
-msgid "Account is not registred. Please register account to get access to additional support and services"
-msgstr "Учётная запись не зарегистрирована. Пожалуйста, зарегистрируйте учётную запись для получения доступа к дополнительной поддержке и сервису"
+msgid ""
+"Account is not registred. Please register account to get access to "
+"additional support and services"
+msgstr ""
+"Учётная запись не зарегистрирована. Пожалуйста, зарегистрируйте учётную "
+"запись для получения доступа к дополнительной поддержке и сервису"
 
 #: ui/web/support/account/AccountPanel.js:22
 msgid "Account is registred. You have access to additional support and serivces"
-msgstr "Учётная запись зарегистрирована. Вы получили доступ к дополнительной поддержке и сервисам"
+msgstr ""
+"Учётная запись зарегистрирована. Вы получили доступ к дополнительной "
+"поддержке и сервисам"
 
 #: ui/web/support/account/AccountPanel.js:39
 #: ui/web/support/account/AttachAccountPanel.js:11
@@ -11546,12 +11698,18 @@ msgid "Failed to change credentials:"
 msgstr "Ошибка при изменении учётных данных:"
 
 #: ui/web/support/account/SystemPanel.js:18
-msgid "System is not registred. Please register your system to get access to additional support and services"
-msgstr "Система не зарегистрирована. Пожалуйста, зарегистрируйте систему для получения доступа к дополнительной поддержки и сервису"
+msgid ""
+"System is not registred. Please register your system to get access to "
+"additional support and services"
+msgstr ""
+"Система не зарегистрирована. Пожалуйста, зарегистрируйте систему для "
+"получения доступа к дополнительной поддержки и сервису"
 
 #: ui/web/support/account/SystemPanel.js:19
 msgid "System is registred. You have access to additional support and services"
-msgstr "Система зарегистрирована. Вы получили доступ к дополнительной поддержке и сервисам"
+msgstr ""
+"Система зарегистрирована. Вы получили доступ к дополнительной поддержке и"
+" сервисам"
 
 #: ui/web/support/crashinfo/Application.js:63
 #: ui/web/support/crashinfo/Application.js:127
@@ -11832,7 +11990,9 @@ msgstr "Не сохранённые данные"
 
 #: ui/web/wf/workflow/WFEditor.js:788
 msgid "You have unsaved changes in inspector. Save or cancel the changes."
-msgstr "В редакторе есть не сохранённые изменения. Сохранить или отменить изменения."
+msgstr ""
+"В редакторе есть не сохранённые изменения. Сохранить или отменить "
+"изменения."
 
 #: ui/web/wf/workflow/WFInspector.js:36
 msgid "Apply changes"
@@ -12279,3 +12439,4 @@ msgstr "Сбросить изменения"
 
 #~ msgid "Enable Multicast"
 #~ msgstr ""
+
