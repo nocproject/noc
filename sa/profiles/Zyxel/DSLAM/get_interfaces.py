@@ -1,7 +1,7 @@
 # ---------------------------------------------------------------------
 # Zyxel.DSLAM.get_interfaces
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2018 The NOC Project
+# Copyright (C) 2007-2023 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -67,7 +67,11 @@ class Script(BaseScript):
                     iface["subinterfaces"][0]["tagged_vlans"] = tagged
             interfaces += [iface]
             port_num += 1
-        for match in self.rx_sub_pvc.finditer(self.cli("adsl pvc show")):
+        try:
+            pvc_show = self.cli("adsl pvc show")
+        except:
+            pvc_show = self.cli("vdsl pvc show")
+        for match in self.rx_sub_pvc.finditer(pvc_show):
             ifname = match.group("sub")
             for i in interfaces:
                 if ifname == i["name"]:
