@@ -277,6 +277,7 @@ class MetricsService(FastAPIService):
         self.lazy_init: bool = True
         self.disable_spool: bool = global_config.metrics.disable_spool
         self.source_metrics: Dict[Tuple[str, int], List[MetricKey]] = defaultdict(list)
+        self.sync_cursor_condition: Optional[asyncio.Condition] = None
 
     async def on_activate(self):
         self.slot_number, self.total_slots = await self.acquire_slot()
@@ -301,7 +302,12 @@ class MetricsService(FastAPIService):
         self.logger.info("Waiting for rules")
         await self.rules_ready_event.wait()
         self.logger.info("Mappings are ready")
-        await self.subscribe_stream("metrics", self.slot_number, self.on_metrics, async_cursor=True)
+        await self.subscribe_stream(
+            "metrics",
+            self.slot_number,
+            self.on_metrics,
+            async_cursor_condition=self.sync_cursor_condition,
+        )
 
     async def on_deactivate(self):
         if self.change_log:
@@ -312,10 +318,13 @@ class MetricsService(FastAPIService):
 
     async def log_runner(self):
         self.logger.info("Run log runner")
+        self.sync_cursor_condition = asyncio.Condition()
         while True:
             await asyncio.sleep(global_config.metrics.flush_interval)
             if self.change_log:
                 await self.change_log.flush()
+                async with self.sync_cursor_condition:
+                    self.sync_cursor_condition.notify_all()
 
     async def compact_runnner(self):
         self.logger.info("Run compact runner")
