@@ -40,15 +40,16 @@ class Command(BaseCommand):
 
         commands = set()
         for root in config.get_customized_paths("commands"):
+            prefix = "" if root == "commands" else "custom/"
             for f in os.listdir(root):
                 if f.startswith("_") or f.startswith("."):
                     continue
                 elif f.endswith(".py"):
-                    commands.add((f[:-3], get_help_from_command(os.path.join(root, f))))
+                    commands.add((prefix, f[:-3], get_help_from_command(os.path.join(root, f))))
                 elif f.endswith(".sh"):
-                    commands.add((f[:-3], ""))
+                    commands.add((prefix, f[:-3], ""))
         for cmd in sorted(commands):
-            self.print("%-20s %s" % cmd)
+            self.print("%-20s %s" % (cmd[0] + cmd[1], cmd[2]))
         return 0
 
     def help_command(self, cmd):
