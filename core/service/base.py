@@ -614,7 +614,7 @@ class BaseService(object):
         cursor_id = cursor_id or self.name
         # Setup cursor setter
         if auto_set_cursor and cursor_id:
-            if async_cursor:
+            if async_cursor or async_cursor_condition:
                 set_cursor = set_cursor_async
                 cursor_cond = async_cursor_condition or asyncio.Condition()
                 cursor_offset: int = -1

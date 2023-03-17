@@ -7,14 +7,14 @@
 
 # Python modules
 import datetime
-from typing import Optional, List, Dict, Callable
 import logging
+from typing import Optional, List, Dict, Callable
 
 # Third-party modules
 from pydantic import BaseModel
 
 # NOC modules
-from .base import BaseCDAGNode, Category
+from .base import BaseCDAGNode, Category, IN_OPTIONAL, IN_REQUIRED
 
 
 class DumpNodeConfig(BaseModel):
@@ -49,5 +49,7 @@ class DumpNode(BaseCDAGNode):
         ts = datetime.datetime.fromtimestamp(ts // NS)
         logger.info(f"[{ts}|{';'.join(labels)}] Inputs: {','.join(r)}")
 
-    def has_input(self, name: str) -> bool:
-        return True
+    def get_input_type(self, name: str) -> int:
+        if name in {"ts", "labels"}:
+            return IN_REQUIRED
+        return IN_OPTIONAL

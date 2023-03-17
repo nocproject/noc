@@ -290,7 +290,6 @@ class MetricsService(FastAPIService):
         self.graph = CDAG("metrics")
         if global_config.metrics.flush_interval > 0:
             asyncio.create_task(self.log_runner())
-            self.sync_cursor_condition = asyncio.Condition()
         if global_config.metrics.compact_interval > 0:
             asyncio.create_task(self.compact_runnner())
         # Start tracking changes
@@ -304,11 +303,7 @@ class MetricsService(FastAPIService):
         await self.rules_ready_event.wait()
         self.logger.info("Mappings are ready")
         await self.subscribe_stream(
-            "metrics",
-            self.slot_number,
-            self.on_metrics,
-            async_cursor=True,
-            async_cursor_condition=self.sync_cursor_condition,
+            "metrics", self.slot_number, self.on_metrics, async_cursor_condition=self.sync_cursor_condition,
         )
 
     async def on_deactivate(self):
@@ -320,11 +315,13 @@ class MetricsService(FastAPIService):
 
     async def log_runner(self):
         self.logger.info("Run log runner")
+        self.sync_cursor_condition = asyncio.Condition()
         while True:
             await asyncio.sleep(global_config.metrics.flush_interval)
             if self.change_log:
                 await self.change_log.flush()
-                self.sync_cursor_condition.notify_all()
+                async with self.sync_cursor_condition:
+                    self.sync_cursor_condition.notify_all()
 
     async def compact_runnner(self):
         self.logger.info("Run compact runner")
