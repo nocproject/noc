@@ -565,6 +565,7 @@ class BaseService(object):
         cursor_id: Optional[str] = None,
         auto_set_cursor: bool = True,
         async_cursor: bool = False,
+        async_cursor_condition: asyncio.Condition = None,
     ) -> None:
         # @todo: Restart on failure
         async def set_cursor_sync(offset: int) -> None:
@@ -591,7 +592,8 @@ class BaseService(object):
             nonlocal cursor_cond, cursor_offset
             async with cursor_cond:
                 cursor_offset = offset
-                cursor_cond.notify_all()
+                if not async_cursor_condition:
+                    cursor_cond.notify_all()
 
         async def cursor_setter() -> None:
             nonlocal cursor_cond, cursor_offset
@@ -612,9 +614,9 @@ class BaseService(object):
         cursor_id = cursor_id or self.name
         # Setup cursor setter
         if auto_set_cursor and cursor_id:
-            if async_cursor:
+            if async_cursor or async_cursor_condition:
                 set_cursor = set_cursor_async
-                cursor_cond = asyncio.Condition()
+                cursor_cond = async_cursor_condition or asyncio.Condition()
                 cursor_offset: int = -1
                 asyncio.get_running_loop().create_task(cursor_setter())
             else:
