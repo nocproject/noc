@@ -6,13 +6,13 @@
 # ----------------------------------------------------------------------
 
 # Python modules
+import ast
 import os
 import subprocess
 import argparse
 
 # NOC modules
 from noc.core.management.base import BaseCommand
-from noc.core.handler import get_handler
 from noc.config import config
 
 
@@ -27,28 +27,29 @@ class Command(BaseCommand):
             return self.list_commands()
 
     def list_commands(self):
+        def get_help_from_command(path: str) -> str:
+            with open(path, "r") as f:
+                tree = ast.parse(f.read())
+            for node in ast.walk(tree):
+                if isinstance(node, ast.ClassDef) and node.name == "Command":
+                    for attr in node.body:
+                        if isinstance(attr, ast.Assign) and attr.targets[0].id == "help":
+                            if isinstance(attr.value, ast.Constant):
+                                return attr.value.value
+            return ""
+
         commands = set()
-        for root in ["commands"]:
+        for root in config.get_customized_paths("commands"):
+            prefix = "" if root == "commands" else "custom/"
             for f in os.listdir(root):
-                help = ""
                 if f.startswith("_") or f.startswith("."):
                     continue
                 elif f.endswith(".py"):
-                    try:
-                        if root == "commands":
-                            h = get_handler("noc.commands.%s" % f[:-3])
-                        else:
-                            h = get_handler("noc.custom.commands.%s" % f[:-3])
-                        ha = getattr(h, "Command", "")
-                        if ha:
-                            help = ha.help
-                    except Exception:
-                        help = ""
-                    commands.add((f[:-3], help))
+                    commands.add((prefix, f[:-3], get_help_from_command(os.path.join(root, f))))
                 elif f.endswith(".sh"):
-                    commands.add((f[:-3], help))
+                    commands.add((prefix, f[:-3], ""))
         for cmd in sorted(commands):
-            self.print("%-20s %s" % cmd)
+            self.print("%-20s %s" % (cmd[0] + cmd[1], cmd[2]))
         return 0
 
     def help_command(self, cmd):
