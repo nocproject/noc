@@ -565,7 +565,7 @@ class BaseService(object):
         cursor_id: Optional[str] = None,
         auto_set_cursor: bool = True,
         async_cursor: bool = False,
-        async_cursor_condition:  asyncio.Condition = None
+        async_cursor_condition: asyncio.Condition = None,
     ) -> None:
         # @todo: Restart on failure
         async def set_cursor_sync(offset: int) -> None:

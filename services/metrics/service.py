@@ -303,7 +303,10 @@ class MetricsService(FastAPIService):
         await self.rules_ready_event.wait()
         self.logger.info("Mappings are ready")
         await self.subscribe_stream(
-            "metrics", self.slot_number, self.on_metrics, async_cursor_condition=self.sync_cursor_condition,
+            "metrics",
+            self.slot_number,
+            self.on_metrics,
+            async_cursor_condition=self.sync_cursor_condition,
         )
 
     async def on_deactivate(self):
