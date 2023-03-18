@@ -33,6 +33,6 @@ class APITokenApplication(ExtApplication):
         api=True,
     )
     def api_set_token(self, request, type, token=None):
-        APIToken._get_collection().update(
+        APIToken._get_collection().update_many(
             {"type": type, "user": request.user.id}, {"$set": {"token": token}}, upsert=True
         )

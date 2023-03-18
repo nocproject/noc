@@ -126,7 +126,7 @@ def document_touch(self, bulk=None):
         bulk += [UpdateOne({"_id": self.pk}, op)]
     else:
         # Direct update
-        self._get_collection().update({"_id": self.pk}, op)
+        self._get_collection().update_one({"_id": self.pk}, op)
 
 
 def model_set_state(self, state, state_changed: datetime.datetime = None, bulk=None):
@@ -170,7 +170,7 @@ def model_set_state(self, state, state_changed: datetime.datetime = None, bulk=N
             obj_labels.update(state_labels)
         set_op["effective_labels"] = list(obj_labels)
     # Update record
-    self.__class__.objects.filter(id=self.id).update(**set_op)
+    self.__class__.objects.filter(id=self.id).update_one(**set_op)
     # Invalidate caches
     ic_handler = getattr(self, "invalidate_caches", None)
     if ic_handler:
@@ -205,7 +205,7 @@ def model_touch(self, bulk=None):
         bulk += [r]
     else:
         # Direct update
-        self.__class__.objects.filter(id=self.pk).update(**opset)
+        self.__class__.objects.filter(id=self.pk).update_one(**opset)
 
 
 def _on_document_post_save(sender, document, *args, **kwargs):
