@@ -105,7 +105,7 @@ class MODiscoveryJob(PeriodicJob):
                 # p["path"] == ""
                 problems[p.check][path] += f"; {p.message}"
 
-        get_db()["noc.joblog"].update(
+        get_db()["noc.joblog"].update_one(
             {"_id": key},
             {
                 "$set": {
