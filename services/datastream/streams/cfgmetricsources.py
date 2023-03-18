@@ -28,7 +28,6 @@ class CfgMetricSourcesDataStream(DataStream):
         if not source:
             raise KeyError(f"Source {source_type} with id {sid} not found")
         if not source.has_configured_metrics:
-            print("Not Configured metrics")
             raise KeyError("Not Configured metrics")
         config = source.get_metric_config(source)
         # Used bi_id as id

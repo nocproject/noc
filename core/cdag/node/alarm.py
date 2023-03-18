@@ -39,6 +39,7 @@ class AlarmNodeConfig(BaseModel):
     managed_object: Optional[str]  # Not user-settable
     sla_probe: Optional[str]  # Not user-settable
     sensor: Optional[str]  # Not user-settable
+    service: Optional[str]  # Not user-settable
     labels: Optional[List[str]]
     error_text_template: Optional[str] = None
     activation_level: float = 1.0
@@ -129,6 +130,8 @@ class AlarmNode(BaseCDAGNode):
             msg["vars"]["sla_probe"] = self.config.sla_probe
         if self.config.sensor:
             msg["vars"]["sensor"] = self.config.sensor
+        if self.config.service:
+            msg["vars"]["service"] = self.config.service
         self.publish_message(msg)
         self.state.active = True
         self.state.last_raise = now.replace(microsecond=0)

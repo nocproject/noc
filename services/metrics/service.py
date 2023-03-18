@@ -7,9 +7,8 @@
 # ----------------------------------------------------------------------
 
 # Python modules
-from dataclasses import dataclass
 from collections import defaultdict
-from typing import Any, Dict, Tuple, List, Optional, Set, Iterable, FrozenSet, Literal, Union
+from typing import Any, Dict, Tuple, List, Optional, Set, Iterable, Union
 import sys
 import asyncio
 import codecs
@@ -32,7 +31,7 @@ from noc.pm.models.metrictype import MetricType
 from noc.core.cdag.node.base import BaseCDAGNode
 from noc.core.cdag.node.probe import ProbeNode, ProbeNodeConfig
 from noc.core.cdag.node.composeprobe import ComposeProbeNode, ComposeProbeNodeConfig
-from noc.core.cdag.node.alarm import AlarmNode, VarItem
+from noc.core.cdag.node.alarm import VarItem
 from noc.core.cdag.graph import CDAG
 from noc.core.cdag.factory.scope import MetricScopeCDAGFactory
 from noc.core.cdag.factory.config import ConfigCDAGFactory, GraphConfig
@@ -40,214 +39,14 @@ from noc.services.metrics.changelog import ChangeLog
 from noc.services.metrics.datastream import MetricsDataStreamClient, MetricRulesDataStreamClient
 from noc.services.datastream.streams.cfgmetricsources import CfgMetricSourcesDataStream
 from noc.config import config as global_config
-
+from .models.card import Card, ScopeInfo
+from .models.rule import Rule
+from .models.source import MetricKey, SourceConfig, SourceInfo, ItemConfig
 # MetricKey - scope, key ctx: (managed_object, <bi_id>), Key Labels
-MetricKey = Tuple[str, Tuple[Tuple[str, Any], ...], Tuple[str, ...]]
 
 
 def unscope(x):
     return sys.intern(x.rsplit("::", 1)[-1])
-
-
-@dataclass
-class ScopeInfo(object):
-    scope: str
-    key_fields: Tuple[str, ...]
-    key_labels: Tuple[str, ...]
-    units: Dict[str, str]
-    enable_timedelta: bool = False
-
-
-@dataclass
-class Card(object):
-    """
-    Store Input probe nodes
-    """
-
-    __slots__ = ("alarms", "probes", "senders", "is_dirty", "affected_rules")
-    probes: Dict[str, BaseCDAGNode]
-    senders: Tuple[BaseCDAGNode]
-    alarms: List[AlarmNode]
-    affected_rules: Set[str]
-    is_dirty: bool
-
-    def get_sender(self, name: str) -> Optional[BaseCDAGNode]:
-        """
-        Get probe sender by name
-        :param name:
-        :return:
-        """
-        return next((s for s in self.senders if s.config.scope == name), None)
-
-    @classmethod
-    def iter_subscribed_nodes(cls, node) -> Iterable[BaseCDAGNode]:
-        """
-        Iterate over nodes subscribed to Probes on Card
-        :return:
-        """
-        for s in node.iter_subscribers():
-            yield s.node
-            yield from cls.iter_subscribed_nodes(s.node)
-
-    def invalidate_card(self):
-        """
-        Remove all subscribed node and set  is_dirty for applied rules
-        :return:
-        """
-        for probe in self.probes.values():
-            for node in self.iter_subscribed_nodes(probe):
-                if node in self.senders or node in self.probes or node in self.alarms:
-                    continue
-                metrics["cdag_nodes", ("type", node.name)] -= 1
-                del node
-            # Cleanup Subscribe
-            for s in list(probe.iter_subscribers()):
-                if s.node in self.senders or s.node in self.probes or s.node in self.alarms:
-                    continue
-                probe.unsubscribe(s.node, s.input)
-        self.set_dirty()
-
-    def set_dirty(self):
-        self.is_dirty = True
-
-
-@dataclass
-class Rule(object):
-    """
-    Store Rule actions, configs and conditions
-    """
-
-    id: str
-    match_labels: FrozenSet[FrozenSet[str]]
-    exclude_labels: Optional[FrozenSet[FrozenSet[str]]]
-    match_scopes: Set[str]
-    graph: CDAG
-    configs: Dict[str, Dict[str, Any]]  # NodeId -> Config
-
-    def is_matched(self, labels: Set[str]) -> bool:
-        if not self.match_labels and not self.exclude_labels:
-            return True
-        return any(labels.issuperset(ml) for ml in self.match_labels)
-
-    def is_differ(self, rule: "Rule") -> FrozenSet[str]:
-        """
-        Diff nodes config - update configs only
-        Diff graph nodes or structure - rebuld Card Rules
-        Diff condition - rebuild or remove Card Rules
-        :return:
-        """
-        r = []
-        if set(self.graph.nodes) != set(rule.graph.nodes):
-            # If compare Graph Node config always diff if change
-            r.append("graph")
-        if self.match_labels != rule.match_labels:
-            r.append("conditions")
-        if self.configs != rule.configs:
-            r.append("configs")
-        return frozenset(r)
-
-    def update_config(self, configs: Dict[str, Dict[str, Any]]) -> Set[str]:
-        """
-        Update node config, return changed node
-        :param configs:
-        :return:
-        """
-        update_configs = set()
-        for node_id in configs:
-            if node_id in self.configs and self.configs[node_id] != configs[node_id]:
-                self.configs[node_id].update(configs[node_id])
-                update_configs.add(node_id)
-            else:
-                self.configs[node_id] = configs[node_id]
-        return update_configs
-
-
-@dataclass(frozen=True)
-class ItemConfig(object):
-    """
-    Metric Source Item Config
-    Match by key_labels
-    """
-
-    __slots__ = ("key_labels", "metric_labels", "metrics", "composed_metrics")
-    key_labels: Tuple[str, ...]  # noc::interface::*, noc::interface::Fa 0/24
-    metric_labels: Optional[Tuple[str, ...]]
-    metrics: Tuple[str, ...]  # Metric Field list setting on source
-    composed_metrics: Tuple[str, ...]  # Metric Field for compose metrics
-
-    def is_match(self, k: MetricKey) -> bool:
-        return not set(self.key_labels) - set(k[2])
-
-
-@dataclass(frozen=True)
-class SourceConfig(object):
-    """
-    Configuration for Metric Source and Items.
-    Contains configured metrics, labels and alarm node config
-    Supported Source:
-    * managed_object
-    * agent
-    * sla_probe
-    * sensor
-    """
-
-    __slots__ = ("type", "bi_id", "fm_pool", "labels", "metrics", "items")
-    type: Literal["managed_object", "sla_probe", "sensor", "agent"]
-    bi_id: int
-    fm_pool: str
-    labels: Optional[Tuple[str]]
-    metrics: Tuple[str]
-    items: List[ItemConfig]
-
-    def is_differ(self, sc: "SourceConfig"):
-        """
-        Compare Source Config
-        * condition - Diff labels
-        * items - Diff items
-        * metrics (additional Compose Metrics)
-        :param sc:
-        :return:
-        """
-        r = []
-        if set(self.labels).difference(sc.labels):
-            r += ["condition"]
-        return r
-
-
-@dataclass(frozen=True)
-class SourceInfo(object):
-    """
-    Source Info for applied metric Card
-    """
-
-    __slots__ = (
-        "bi_id",
-        "sensor",
-        "sla_probe",
-        "service",
-        "fm_pool",
-        "labels",
-        "metric_labels",
-        "composed_metrics",
-    )
-    bi_id: int
-    fm_pool: str
-    sla_probe: Optional[str]
-    sensor: Optional[str]
-    service: Optional[str]
-    labels: Optional[List[str]]
-    metric_labels: Optional[List[str]]
-    composed_metrics: Optional[List[str]]
-
-
-@dataclass
-class ManagedObjectInfo(object):
-    __slots__ = ("id", "bi_id", "fm_pool", "labels", "metric_labels")
-    id: int
-    bi_id: int
-    fm_pool: str
-    labels: Optional[List[str]]
-    metric_labels: Optional[List[str]]
 
 
 class MetricsService(FastAPIService):
@@ -259,25 +58,30 @@ class MetricsService(FastAPIService):
 
     def __init__(self):
         super().__init__()
+        # Metric Configs
         self.scopes: Dict[str, ScopeInfo] = {}
         self.metric_configs: Dict[
             Tuple[str, str], Union[ProbeNodeConfig, ComposeProbeNodeConfig]
         ] = {}
         self.compose_inputs: Dict[str, Set] = {}
-        self.scope_cdag: Dict[str, CDAG] = {}
-        self.cards: Dict[MetricKey, Card] = {}
-        self.graph: Optional[CDAG] = None
+        self.scope_cdag: Dict[str, CDAG] = {}  # Scope graph cache
+        self.cards: Dict[MetricKey, Card] = {}  # Metric cards
+        self.graph: Optional[CDAG] = None  # Service Metric Graph
+        # Graph node State
         self.change_log: Optional[ChangeLog] = None
         self.start_state: Dict[str, Dict[str, Any]] = {}
+        # Source Configs
         self.sources_config: Dict[int, SourceConfig] = {}
-        self.mappings_ready_event = asyncio.Event()
-        self.rules_ready_event = asyncio.Event()
         self.dispose_partitions: Dict[str, int] = {}
         self.rules: Dict[str, Rule] = {}  # Action -> Graph Config
-        self.lazy_init: bool = True
-        self.disable_spool: bool = global_config.metrics.disable_spool
+        # Options
+        self.lazy_init: bool = True  # Load Nodes on processed metrics
+        self.disable_spool: bool = global_config.metrics.disable_spool  # Disable Send metric record to Clickhouse
         self.source_metrics: Dict[Tuple[str, int], List[MetricKey]] = defaultdict(list)
-        self.sync_cursor_condition: Optional[asyncio.Condition] = None
+        # Sync primitives
+        self.mappings_ready_event = asyncio.Event()  # Load Metric Sources
+        self.rules_ready_event = asyncio.Event()  # Load Metric Rules
+        self.sync_cursor_condition: Optional[asyncio.Condition] = None  # Condition for commit stream cursor
 
     async def on_activate(self):
         self.slot_number, self.total_slots = await self.acquire_slot()
@@ -340,14 +144,13 @@ class MetricsService(FastAPIService):
         """
         # Register RPC aliases
         client = MetricsDataStreamClient("cfgmetricsources", service=self)
-        coll = CfgMetricSourcesDataStream.get_collection()
-        r = next(coll.find({}).sort([("change_id", DESCENDING)]), None)
+        # coll = CfgMetricSourcesDataStream.get_collection()
+        # r = next(coll.find({}).sort([("change_id", DESCENDING)]), None)
         # Track stream changes
         while True:
             self.logger.info("Starting to track object mappings")
             try:
                 await client.query(
-                    change_id=str(r["change_id"]) if "change_id" in r else None,
                     limit=global_config.metrics.ds_limit,
                     block=True,
                     filter_policy="delete",
@@ -701,6 +504,7 @@ class MetricsService(FastAPIService):
             labels=list(source.labels),
             metric_labels=[],
             composed_metrics=composed_metrics,
+            rules=source.rules or [],
         )
 
     def apply_rules(self, k: MetricKey, labels: List[str]):
@@ -719,8 +523,12 @@ class MetricsService(FastAPIService):
             return
         s_labels = set(self.merge_labels(source.labels, labels))
         # Appy matched rules
-        for rule_id, rule in self.rules.items():
-            if k[0] not in rule.match_scopes or not rule.is_matched(s_labels):
+        # for rule_id, rule in self.rules.items():
+        for rule_id in source.rules:
+            # if k[0] not in rule.match_scopes or not rule.is_matched(s_labels):
+            #    continue
+            rule = self.rules[rule_id]
+            if not rule or k[0] not in rule.match_scopes:
                 continue
             nodes: Dict[str, BaseCDAGNode] = {}
             # Node
@@ -847,6 +655,7 @@ class MetricsService(FastAPIService):
                 sys.intern(m["name"]) for m in data["metrics"] if not m.get("is_composed")
             ),
             items=[],
+            rules=data.get("rules")
         )
         for item in data.get("items", []):
             sc.items.append(
@@ -859,6 +668,7 @@ class MetricsService(FastAPIService):
                     composed_metrics=tuple(
                         sys.intern(m["name"]) for m in item["metrics"] if m.get("is_composed")
                     ),
+                    rules=item.get("rules")
                 )
             )
         return sc
@@ -867,18 +677,18 @@ class MetricsService(FastAPIService):
         """
         Update source config.
         """
-        if not self.cards:
-            # Initial config
-            return
+        # if not self.cards:
+        #     # Initial config
+        #     return
         sc_id = int(data["id"])
         if "type" not in data:
             self.logger.info("[%s] Bad Source data", sc_id)
             return
         sc = self.get_source_config(data)
+        if sc_id not in self.sources_config:
+            self.sources_config[sc_id] = sc
+            return
         self.invalidate_card_config(sc)
-        # if sc_id not in self.sources_config:
-        #     self.sources_config[sc_id] = sc
-        #     return
         # diff = self.sources_config[sc_id].is_differ(sc)
         # if "condition" in diff:
         #    self.invalidate_card_config(sc)

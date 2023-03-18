@@ -1,13 +1,14 @@
 # ---------------------------------------------------------------------
 # MetricRule model
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2022 The NOC Project
+# Copyright (C) 2007-2023 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
 # Python modules
 import operator
-from typing import List, Dict, Any, Optional
+from collections import defaultdict
+from typing import List, Dict, Any, Optional, Tuple, Set
 from threading import Lock
 
 # Third-party modules
@@ -29,6 +30,7 @@ from noc.pm.models.metricaction import MetricAction
 from noc.config import config
 
 id_lock = Lock()
+rules_lock = Lock()
 
 
 class Match(EmbeddedDocument):
@@ -87,3 +89,30 @@ class MetricRule(Document):
     def iter_changed_datastream(self, changed_fields=None):
         if config.datastream.enable_cfgmetricrules:
             yield "cfgmetricrules", self.id
+
+    @classmethod
+    @cachetools.cachedmethod(operator.attrgetter("_rules_cache"), lock=lambda _: rules_lock)
+    def get_rules(cls) -> Dict[Set[str], List["MetricActionItem"]]:
+        r = defaultdict(list)
+        for rid, match, actions in MetricRule.objects.filter(is_active=True).scalar("id", "match", "actions"):
+            for m in match:
+                for a in actions:
+                    if not a.is_active:
+                        continue
+                    r[frozenset(m.labels)].append([rid, a])
+        return r
+
+    @classmethod
+    def iter_rules_actions(cls, labels) -> Tuple[str, str]:
+        """
+
+        :param labels: Metric Source
+        :return:
+        """
+        labels = set(labels)
+        rules = cls.get_rules()
+        for rlabels, actions in rules.items():
+            if rlabels - labels:
+                continue
+            for rid, a in actions:
+                yield str(rid), str(a.metric_action.id)

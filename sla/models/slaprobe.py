@@ -34,6 +34,7 @@ from noc.sa.models.managedobject import ManagedObject
 from noc.sa.interfaces.igetslaprobes import IGetSLAProbes
 from noc.sa.models.service import Service
 from noc.pm.models.agent import Agent
+from noc.pm.models.metricrule import MetricRule
 from noc.main.models.label import Label
 from noc.core.mongo.fields import ForeignKeyField, PlainReferenceField
 from noc.core.change.decorator import change
@@ -213,7 +214,7 @@ class SLAProbe(Document):
                 labels=tuple(labels),
                 hints=hints,
                 sla_probe=sla.bi_id,
-                service=sla.service,
+                service=sla.service.bi_id if sla.service else None,
             )
 
     @classmethod
@@ -242,6 +243,7 @@ class SLAProbe(Document):
                 for mc in sla_probe.profile.metrics
             ],
             "items": [],
+            "rules": [ma for ma in MetricRule.iter_rules_actions(sla_probe.effective_labels)],
         }
 
     @property

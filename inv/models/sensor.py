@@ -39,6 +39,7 @@ from noc.sa.models.managedobject import ManagedObject
 from noc.pm.models.measurementunits import MeasurementUnits
 from noc.pm.models.agent import Agent
 from noc.pm.models.metrictype import MetricType
+from noc.pm.models.metricrule import MetricRule
 from noc.wf.models.state import State
 from .sensorprofile import SensorProfile
 from noc.config import config
@@ -292,6 +293,7 @@ class Sensor(Document):
                 {"name": "value", "is_stored": True},
             ],
             "items": [],
+            "rules": [ma for ma in MetricRule.iter_rules_actions(sensor.effective_labels)],
         }
 
     @classmethod

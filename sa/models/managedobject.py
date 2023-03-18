@@ -2916,6 +2916,7 @@ class ManagedObject(NOCModel):
         """
         from noc.inv.models.interface import Interface
         from noc.inv.models.interfaceprofile import InterfaceProfile
+        from noc.pm.models.metricrule import MetricRule
 
         if not mo.is_managed:
             return {}
@@ -2943,10 +2944,8 @@ class ManagedObject(NOCModel):
             items.append(
                 {
                     "key_labels": [f"noc::interface::{iface['name']}"],
-                    "labels": [
-                        {"label": ll, "expose_metric": False}
-                        for ll in sorted(iface.get("effective_labels", []))
-                    ],
+                    "labels": [],
+                    "rules": [ma for ma in MetricRule.iter_rules_actions(iface["effective_labels"])],
                     "metrics": metrics,
                 }
             )
@@ -2955,6 +2954,7 @@ class ManagedObject(NOCModel):
             "bi_id": mo.bi_id,
             "fm_pool": mo.get_effective_fm_pool().name,
             "labels": labels,
+            "rules": "",
             "metrics": [
                 {
                     "name": mc.metric_type.field_name,
@@ -2963,6 +2963,7 @@ class ManagedObject(NOCModel):
                 }
                 for mc in s_metrics.values()
             ],
+            "rules": [ma for ma in MetricRule.iter_rules_actions(mo.effective_labels)],
             "items": items,
         }
 
