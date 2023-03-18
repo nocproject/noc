@@ -275,7 +275,9 @@ class ArchivedAlarm(Document):
 
     def set_escalation_close_error(self, error):
         self.escalation_error = error
-        self._get_collection().update_one({"_id": self.id}, {"$set": {"escalation_close_error": error}})
+        self._get_collection().update_one(
+            {"_id": self.id}, {"$set": {"escalation_close_error": error}}
+        )
 
     def close_escalation(self):
         now = datetime.datetime.now()
