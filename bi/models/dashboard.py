@@ -161,7 +161,7 @@ class Dashboard(Document):
             update = {"$pull": {"access": {"group": {"$exists": True}}}}
         else:
             update = {"$pull": "access"}
-        self._get_collection().update(match, update)
+        self._get_collection().update_many(match, update)
 
     def to_json(self) -> str:
         return to_json(

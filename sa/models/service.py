@@ -168,7 +168,7 @@ class Service(Document):
     def unbind_interface(self):
         from noc.inv.models.interface import Interface
 
-        Interface._get_collection().update({"service": self.id}, {"$unset": {"service": ""}})
+        Interface._get_collection().update_many({"service": self.id}, {"$unset": {"service": ""}})
         self._refresh_managed_object()
 
     def get_managed_object(self):

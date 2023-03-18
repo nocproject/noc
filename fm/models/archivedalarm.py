@@ -275,18 +275,18 @@ class ArchivedAlarm(Document):
 
     def set_escalation_close_error(self, error):
         self.escalation_error = error
-        self._get_collection().update({"_id": self.id}, {"$set": {"escalation_close_error": error}})
+        self._get_collection().update_one({"_id": self.id}, {"$set": {"escalation_close_error": error}})
 
     def close_escalation(self):
         now = datetime.datetime.now()
         self.escalation_close_ts = now
-        self._get_collection().update({"_id": self.id}, {"$set": {"escalation_close_ts": now}})
+        self._get_collection().update_one({"_id": self.id}, {"$set": {"escalation_close_ts": now}})
 
     def set_escalation_close_ctx(self):
         current_context, current_span = get_current_span()
         if current_context or self.escalation_close_ctx:
             self.escalation_close_ctx = current_context
-            self._get_collection().update(
+            self._get_collection().update_one(
                 {"_id": self.id}, {"$set": {"escalation_close_ctx": current_context}}
             )
 

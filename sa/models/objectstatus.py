@@ -97,7 +97,7 @@ class ObjectStatus(Document):
         if r["last"] > ts:
             # Oops, out-of-order update
             # Restore correct state
-            coll.update({"object": object.id}, {"status": r["status"], "last": r["last"]})
+            coll.update_one({"object": object.id}, {"status": r["status"], "last": r["last"]})
             return False
         if r["status"] != status:
             # Status changed
