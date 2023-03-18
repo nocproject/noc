@@ -31,12 +31,12 @@ class Card(object):
     Store Input probe nodes
     """
 
-    __slots__ = ("alarms", "probes", "senders", "is_dirty", "affected_rules")
+    __slots__ = ("alarms", "probes", "senders", "is_dirty", "affected_rules", "config")
     probes: Dict[str, BaseCDAGNode]
     senders: Tuple[BaseCDAGNode]
     alarms: List[AlarmNode]
     affected_rules: Set[str]
-    source: Optional[SourceInfo]
+    config: Optional[SourceInfo]
     is_dirty: bool
 
     def get_sender(self, name: str) -> Optional[BaseCDAGNode]:

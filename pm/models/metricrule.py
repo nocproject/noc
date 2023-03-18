@@ -77,6 +77,7 @@ class MetricRule(Document):
     actions: List["MetricActionItem"] = EmbeddedDocumentListField(MetricActionItem)
 
     _id_cache = cachetools.TTLCache(maxsize=100, ttl=60)
+    _rules_cache = cachetools.TTLCache(10, ttl=180)
 
     def __str__(self) -> str:
         return self.name

@@ -37,11 +37,12 @@ from noc.core.cdag.factory.scope import MetricScopeCDAGFactory
 from noc.core.cdag.factory.config import ConfigCDAGFactory, GraphConfig
 from noc.services.metrics.changelog import ChangeLog
 from noc.services.metrics.datastream import MetricsDataStreamClient, MetricRulesDataStreamClient
+from noc.services.metrics.models.card import Card, ScopeInfo
+from noc.services.metrics.models.rule import Rule
+from noc.services.metrics.models.source import MetricKey, SourceConfig, SourceInfo, ItemConfig
 from noc.services.datastream.streams.cfgmetricsources import CfgMetricSourcesDataStream
 from noc.config import config as global_config
-from .models.card import Card, ScopeInfo
-from .models.rule import Rule
-from .models.source import MetricKey, SourceConfig, SourceInfo, ItemConfig
+
 # MetricKey - scope, key ctx: (managed_object, <bi_id>), Key Labels
 
 
@@ -76,12 +77,16 @@ class MetricsService(FastAPIService):
         self.rules: Dict[str, Rule] = {}  # Action -> Graph Config
         # Options
         self.lazy_init: bool = True  # Load Nodes on processed metrics
-        self.disable_spool: bool = global_config.metrics.disable_spool  # Disable Send metric record to Clickhouse
+        self.disable_spool: bool = (
+            global_config.metrics.disable_spool
+        )  # Disable Send metric record to Clickhouse
         self.source_metrics: Dict[Tuple[str, int], List[MetricKey]] = defaultdict(list)
         # Sync primitives
         self.mappings_ready_event = asyncio.Event()  # Load Metric Sources
         self.rules_ready_event = asyncio.Event()  # Load Metric Rules
-        self.sync_cursor_condition: Optional[asyncio.Condition] = None  # Condition for commit stream cursor
+        self.sync_cursor_condition: Optional[
+            asyncio.Condition
+        ] = None  # Condition for commit stream cursor
 
     async def on_activate(self):
         self.slot_number, self.total_slots = await self.acquire_slot()
@@ -393,6 +398,7 @@ class MetricsService(FastAPIService):
             alarms=[],
             affected_rules=set(),
             is_dirty=False,
+            config=None,
         )
 
     async def get_dispose_partitions(self, pool: str) -> int:
@@ -524,9 +530,12 @@ class MetricsService(FastAPIService):
         s_labels = set(self.merge_labels(source.labels, labels))
         # Appy matched rules
         # for rule_id, rule in self.rules.items():
-        for rule_id in source.rules:
+        if source.rules:
+            self.logger.info("Apply Rules: %s", source.rules)
+        for rule_id, action_id in source.rules:
             # if k[0] not in rule.match_scopes or not rule.is_matched(s_labels):
             #    continue
+            rule_id = f"{rule_id}-{action_id}"
             rule = self.rules[rule_id]
             if not rule or k[0] not in rule.match_scopes:
                 continue
@@ -655,7 +664,7 @@ class MetricsService(FastAPIService):
                 sys.intern(m["name"]) for m in data["metrics"] if not m.get("is_composed")
             ),
             items=[],
-            rules=data.get("rules")
+            rules=data.get("rules"),
         )
         for item in data.get("items", []):
             sc.items.append(
@@ -668,7 +677,7 @@ class MetricsService(FastAPIService):
                     composed_metrics=tuple(
                         sys.intern(m["name"]) for m in item["metrics"] if m.get("is_composed")
                     ),
-                    rules=item.get("rules")
+                    rules=item.get("rules"),
                 )
             )
         return sc
@@ -700,8 +709,8 @@ class MetricsService(FastAPIService):
         c_id = int(c_id)
         key_ctx = None
         for source_type in ["managed_object", "sla_probe", "sensor", "agent"]:
-            key_ctx = (source_type, c_id)
             if key_ctx in self.source_metrics:
+                key_ctx = (source_type, c_id)
                 break
         if not key_ctx:
             return
