@@ -110,6 +110,8 @@ class MetricsService(FastAPIService):
     async def subscribe_metrics(self) -> None:
         self.logger.info("Waiting for rules")
         await self.rules_ready_event.wait()
+        self.logger.info("Waiting for mappings")
+        await self.mappings_ready_event.wait()
         self.logger.info("Mappings are ready")
         await self.subscribe_stream(
             "metrics",
@@ -453,7 +455,7 @@ class MetricsService(FastAPIService):
         return p
 
     @cachetools.cached(cachetools.TTLCache(maxsize=128, ttl=60))
-    def get_source(self, s_id):
+    def get_source_db(self, s_id):
         coll = CfgMetricSourcesDataStream.get_collection().with_options(
             read_preference=ReadPreference.SECONDARY_PREFERRED
         )
@@ -461,6 +463,12 @@ class MetricsService(FastAPIService):
         if not data:
             return
         return self.get_source_config(orjson.loads(data["data"]))
+
+    def get_source(self, s_id):
+        if s_id not in self.sources_config:
+            self.logger.info("[%s] Unknown Source", s_id)
+            return None
+        return self.sources_config[s_id]
 
     def get_source_info(self, k: MetricKey) -> Optional[SourceInfo]:
         """
@@ -527,7 +535,9 @@ class MetricsService(FastAPIService):
             self.logger.debug("[%s] Unknown metric source. Skipping apply rules", k)
             metrics["unknown_metric_source"] += 1
             return
-        s_labels = set(self.merge_labels(source.labels, labels))
+        elif not card.config:
+            card.config = source
+        # s_labels = set(self.merge_labels(source.labels, labels))
         # Appy matched rules
         # for rule_id, rule in self.rules.items():
         if source.rules:
