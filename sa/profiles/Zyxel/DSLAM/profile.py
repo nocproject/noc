@@ -2,7 +2,7 @@
 # Vendor: Zyxel
 # OS:     DSLAM
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2018 The NOC Project
+# Copyright (C) 2007-2023 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -20,7 +20,7 @@ class Profile(BaseProfile):
         (rb"Press any key to continue, 'n' to nopause,'e' to exit", b"n"),
         (rb"Press any key to continue, 'e' to exit, 'n' for nopause", b"n"),
     ]
-    config_volatile = [rb"^time\s+(\d+|date).*?^"]
+    config_volatile = [r"^time\s+(\d+|date).*?^"]
     command_exit = "exit"
 
     def convert_interface_name(self, interface):
