@@ -121,7 +121,16 @@ class CPECheck(DiscoveryCheck):
             # Old CPE, bind to current
             mo.cpe_id = str(cpe.id)
             mo.save()
-        if mo and mo.address != cpe.address:
+        elif mo and not cpe.address:
+            self.logger.info(
+                "[%s|%s] CPE Reset address. Change ManagedObject to inactive state", cpe.local_id, cpe.global_id
+            )
+            mo.is_managed = False
+            mo.save()
+            return
+        elif not cpe.address:
+            return
+        elif mo and mo.address != cpe.address:
             self.logger.info(
                 "[%s|%s] Changed ManagedObject Address: %s -> %s",
                 cpe.local_id,
