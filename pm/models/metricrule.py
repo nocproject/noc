@@ -1,13 +1,14 @@
 # ---------------------------------------------------------------------
 # MetricRule model
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2022 The NOC Project
+# Copyright (C) 2007-2023 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
 # Python modules
 import operator
-from typing import List, Dict, Any, Optional
+from collections import defaultdict
+from typing import List, Dict, Any, Optional, Tuple, Set
 from threading import Lock
 
 # Third-party modules
@@ -20,6 +21,8 @@ from mongoengine.fields import (
     BooleanField,
     EmbeddedDocumentListField,
 )
+from mongoengine.queryset.visitor import Q as m_q
+from django.db.models.query_utils import Q as d_q
 
 # NOC modules
 from noc.core.mongo.fields import PlainReferenceField
@@ -29,6 +32,7 @@ from noc.pm.models.metricaction import MetricAction
 from noc.config import config
 
 id_lock = Lock()
+rules_lock = Lock()
 
 
 class Match(EmbeddedDocument):
@@ -75,6 +79,7 @@ class MetricRule(Document):
     actions: List["MetricActionItem"] = EmbeddedDocumentListField(MetricActionItem)
 
     _id_cache = cachetools.TTLCache(maxsize=100, ttl=60)
+    _rules_cache = cachetools.TTLCache(10, ttl=180)
 
     def __str__(self) -> str:
         return self.name
@@ -85,5 +90,65 @@ class MetricRule(Document):
         return MetricRule.objects.filter(id=oid).first()
 
     def iter_changed_datastream(self, changed_fields=None):
+        from noc.inv.models.interface import Interface
+        from noc.sla.models.slaprobe import SLAProbe
+        from noc.inv.models.cpe import CPE
+        from noc.sa.models.managedobject import ManagedObject
+
         if config.datastream.enable_cfgmetricrules:
             yield "cfgmetricrules", self.id
+        if changed_fields and "match" not in changed_fields:
+            return
+        ids = []
+        scopes = set()
+        for a in self.actions:
+            for ci in a.metric_action.compose_inputs:
+                scopes.add(ci.metric_type.scope.table_name)
+        mq = m_q()
+        dq = d_q()
+        for match in self.match:
+            mq |= m_q(effective_labels__all=list(match.labels))
+            dq |= d_q(effective_labels__contains=list(match.labels))
+        if "interface" in scopes:
+            ids = list(Interface.objects.filter(mq).distinct(field="managed_object"))
+            scopes.remove("interface")
+        if ids:
+            dq |= d_q(id__in=ids)
+        if scopes or ids:
+            for bi_id in ManagedObject.objects.filter(dq).values_list("bi_id", flat=True):
+                yield "cfgmetricsources", f"sa.ManagedObject::{bi_id}"
+        if scopes:
+            for bi_id in CPE.objects.filter(mq).distinct(field="bi_id"):
+                yield "cfgmetricsources", f"inv.CPE::{bi_id}"
+        if "sla" in scopes:
+            for bi_id in SLAProbe.objects.filter(mq).distinct(field="bi_id"):
+                yield "cfgmetricsources", f"sla.SLAProbe::{bi_id}"
+
+    @classmethod
+    @cachetools.cachedmethod(operator.attrgetter("_rules_cache"), lock=lambda _: rules_lock)
+    def get_rules(cls) -> Dict[Set[str], List["MetricActionItem"]]:
+        r = defaultdict(list)
+        for rid, match, actions in MetricRule.objects.filter(is_active=True).scalar(
+            "id", "match", "actions"
+        ):
+            for m in match:
+                for a in actions:
+                    if not a.is_active:
+                        continue
+                    r[frozenset(m.labels)].append([rid, a])
+        return r
+
+    @classmethod
+    def iter_rules_actions(cls, labels) -> Tuple[str, str]:
+        """
+
+        :param labels: Metric Source
+        :return:
+        """
+        labels = set(labels)
+        rules = cls.get_rules()
+        for rlabels, actions in rules.items():
+            if rlabels - labels:
+                continue
+            for rid, a in actions:
+                yield str(rid), str(a.metric_action.id)

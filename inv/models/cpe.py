@@ -42,6 +42,7 @@ from noc.wf.models.state import State
 from noc.inv.models.cpeprofile import CPEProfile
 from noc.inv.models.capsitem import CapsItem
 from noc.inv.models.capability import Capability
+from noc.pm.models.metricrule import MetricRule
 from noc.config import config
 
 id_lock = Lock()
@@ -243,6 +244,7 @@ class CPE(Document):
                 {"name": mc.metric_type.field_name, "is_stored": mc.is_stored}
                 for mc in cpe.profile.metrics
             ],
+            "rules": [ma for ma in MetricRule.iter_rules_actions(cpe.effective_labels)],
             "items": [],
         }
 
