@@ -69,7 +69,7 @@ class Script(BaseScript):
             port_num += 1
         try:
             pvc_show = self.cli("adsl pvc show")
-        except:
+        except self.CLISyntaxError::
             pvc_show = self.cli("vdsl pvc show")
         for match in self.rx_sub_pvc.finditer(pvc_show):
             ifname = match.group("sub")
