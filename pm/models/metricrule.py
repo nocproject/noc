@@ -107,10 +107,10 @@ class MetricRule(Document):
         mq = m_q()
         dq = d_q()
         for match in self.match:
-            mq |= m_q(effective_labels__all=match.labels)
-            dq |= d_q(effective_labels__contains=match.labels)
+            mq |= m_q(effective_labels__all=list(match.labels))
+            dq |= d_q(effective_labels__contains=list(match.labels))
         if "interface" in scopes:
-            ids = Interface.objects.filter(mq).distinct(field="managed_object")
+            ids = list(Interface.objects.filter(mq).distinct(field="managed_object"))
             scopes.remove("interface")
         if ids:
             dq |= d_q(id__in=ids)
