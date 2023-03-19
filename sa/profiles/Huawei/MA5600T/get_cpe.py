@@ -1,7 +1,7 @@
 # ---------------------------------------------------------------------
 # Huawei.MA5600T.get_cpe
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2020 The NOC Project
+# Copyright (C) 2007-2023 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -37,6 +37,21 @@ class Script(BaseScript):
         "last down cause": "down_cause",
     }
 
+    # 1. initialization(1)     - Indicates that the ONT configuration resume status is initialization
+    # 2. normal(2)             - Indicates that the ONT configuration resume status is normal
+    # 3. failed(3)             - Indicates that the ONT configuration resume status is failed
+    # 4. noresume(4)           - Indicates that the ONT configuration resume status is not resumed
+    # 5. config(5)             - Indicates that the ONT configuration resume status is configuration
+    # 6. invalid(-1)           - Indicates that the query fails or no information is detected
+
+    config_status_map = {
+        "initialization": "inactive",
+        "normal": "active",
+        "failed": "inactive",
+        "noresume": "inactive",
+        "config": "provisioning",
+    }
+
     def execute_cli(self, **kwargs):
         r = {}
         # v = self.cli("display ont info 0 all")
@@ -62,7 +77,9 @@ class Script(BaseScript):
                     del head[2]  # remove empty header
                     tables_data += self.profile.parse_table1(body, head)
                 for t in tables_data:
-                    if "Config state" in t and t["Config state"][0] in self.INACTIVE_STATE:
+                    if "Config state" in t and self.config_status_map.get(
+                        t["Config state"][0], "other"
+                    ):
                         continue
                     if "ONT-ID" in t:
                         ont_id = "%s/%s" % (t["F/S/P"][0].replace(" ", ""), t["ONT-ID"][0])
