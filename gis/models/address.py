@@ -102,7 +102,7 @@ class Address(Document):
                     nq(document.estate2),
                 ]
             )
-            Building._get_collection().update_many(
+            Building._get_collection().update_one(
                 {"_id": document.building.id}, {"$set": {"sort_order": so}}
             )
 

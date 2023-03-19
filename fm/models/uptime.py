@@ -100,7 +100,7 @@ class Uptime(Document):
                     d["start"],
                     now,
                 )
-                c.update_many({"_id": d["_id"]}, {"$set": {"last": now, "last_value": uptime}})
+                c.update_one({"_id": d["_id"]}, {"$set": {"last": now, "last_value": uptime}})
         else:
             # First uptime
             logger.debug("[%s] First uptime from %s", managed_object.name, now)

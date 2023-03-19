@@ -289,7 +289,7 @@ class NetworkSegment(Document):
         NetworkSegment._get_collection().update_many(filter, {"$set": set_op})
 
     def set_lost_redundancy(self, status):
-        NetworkSegment._get_collection().update_many(
+        NetworkSegment._get_collection().update_one(
             {"_id": self.id}, {"$set": {"lost_redundancy": bool(status)}}
         )
 

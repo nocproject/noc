@@ -141,7 +141,7 @@ class TTSystem(Document):
             return
         d = datetime.datetime.now() + datetime.timedelta(seconds=cooldown)
         logger.info("[%s] Setting failure status till %s", self.name, d)
-        self._get_collection().update_many({"_id": self.id}, {"$set": {"failed_till": d}})
+        self._get_collection().update_one({"_id": self.id}, {"$set": {"failed_till": d}})
 
     @classmethod
     def iter_lazy_labels(cls, ttsystem: "TTSystem"):
