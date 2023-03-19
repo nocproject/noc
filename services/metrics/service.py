@@ -18,7 +18,7 @@ import random
 # Third-party modules
 import orjson
 import cachetools
-from pymongo import DESCENDING, ReadPreference
+from pymongo import ReadPreference
 
 # NOC modules
 from noc.core.service.fastapi import FastAPIService

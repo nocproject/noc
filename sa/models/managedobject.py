@@ -2956,7 +2956,6 @@ class ManagedObject(NOCModel):
             "bi_id": mo.bi_id,
             "fm_pool": mo.get_effective_fm_pool().name,
             "labels": labels,
-            "rules": "",
             "metrics": [
                 {
                     "name": mc.metric_type.field_name,
