@@ -161,6 +161,8 @@ class Script(GetMetricsScript):
                     ("Interface | CBQOS | Packets | Out | Delta", packets),
                     ("Interface | CBQOS | Packets | Out", packets),
                 ]:
+                    if not value:
+                        continue
                     scale = 1
                     self.set_metric(
                         id=(metric, ifaces[ifindex]),
@@ -209,18 +211,18 @@ class Script(GetMetricsScript):
                 if m not in self.SLA_METRICS_CONFIG:
                     continue
                 mc = self.SLA_METRICS_CONFIG[m]
-                if not isinstance(mc.metric, tuple):
+                if not isinstance(mc.oid, tuple):
                     oid = mib[
-                        mc.metric,
+                        mc.oid,
                         key,
                         RPMResultCollection.lastCompletedTest.value,
                     ]
                 else:
                     oid = mib[
-                        mc.metric[0],
+                        mc.oid[0],
                         key,
                         RPMResultCollection.lastCompletedTest.value,
-                        mc.metric[1],
+                        mc.oid[1],
                     ]
                 oids[oid] = (probe, mc)
 
