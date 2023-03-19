@@ -142,6 +142,7 @@ class ManagedObjectApplication(ExtModelApplication):
     DISCOVERY_JOBS = [
         ("box", "noc.services.discovery.jobs.box.job.BoxDiscoveryJob"),
         ("periodic", "noc.services.discovery.jobs.periodic.job.PeriodicDiscoveryJob"),
+        ("interval", "noc.services.discovery.jobs.interval.job.IntervalDiscoveryJob"),
     ]
     clean_fields = {"id": IntParameter(), "address": StringParameter(strip_value=True)}
 
@@ -510,9 +511,13 @@ class ManagedObjectApplication(ExtModelApplication):
 
         for name, jcls in self.DISCOVERY_JOBS:
             job = Job.get_job_data("discovery", jcls=jcls, key=o.id, pool=o.pool.name) or {}
+            if name == "interval":
+                enable = getattr(o.object_profile, "enable_metrics")
+            else:
+                enable = getattr(o.object_profile, f"enable_{name}_discovery")
             d = {
                 "name": name,
-                "enable_profile": getattr(o.object_profile, "enable_%s_discovery" % name),
+                "enable_profile": enable,
                 "status": job.get(Job.ATTR_STATUS),
                 "last_run": self.to_json(job.get(Job.ATTR_LAST)),
                 "last_status": job.get(Job.ATTR_LAST_STATUS),
@@ -561,7 +566,11 @@ class ManagedObjectApplication(ExtModelApplication):
         for name, jcls in self.DISCOVERY_JOBS:
             if name not in r:
                 continue
-            if not getattr(o.object_profile, "enable_%s_discovery" % name):
+            if name == "interval" and not getattr(o.object_profile, "enable_metrics"):
+                continue
+            elif name != "interval" and not getattr(
+                o.object_profile, f"enable_{name}_discovery", None
+            ):
                 continue  # Disabled by profile
             Job.submit("discovery", jcls, key=o.id, pool=o.pool.name)
         return {"success": True}
@@ -577,7 +586,9 @@ class ManagedObjectApplication(ExtModelApplication):
         for name, jcls in self.DISCOVERY_JOBS:
             if name not in r:
                 continue
-            if not getattr(o.object_profile, "enable_%s_discovery" % name):
+            if name == "interval" and not getattr(o.object_profile, "enable_metrics"):
+                continue
+            elif name != "interval" and not getattr(o.object_profile, f"enable_{name}_discovery"):
                 continue  # Disabled by profile
             Job.remove("discovery", jcls, key=o.id, pool=o.pool.name)
         return {"success": True}
