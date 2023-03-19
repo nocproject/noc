@@ -2945,7 +2945,9 @@ class ManagedObject(NOCModel):
                 {
                     "key_labels": [f"noc::interface::{iface['name']}"],
                     "labels": [],
-                    "rules": [ma for ma in MetricRule.iter_rules_actions(iface["effective_labels"])],
+                    "rules": [
+                        ma for ma in MetricRule.iter_rules_actions(iface["effective_labels"])
+                    ],
                     "metrics": metrics,
                 }
             )
