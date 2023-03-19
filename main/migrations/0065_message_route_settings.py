@@ -83,5 +83,5 @@ class Migration(BaseMigration):
             bulk += [InsertOne(route_new)]
             processed.add(name)
         if bulk:
-            mr_coll.remove({}, multi=True)
+            mr_coll.delete_many({}, multi=True)
             mr_coll.bulk_write(bulk)

@@ -87,7 +87,7 @@ class ObjectStatus(Document):
         # Update naively
         # Must work in most cases
         # find_and_modify returns old document or None for upsert
-        r = coll.find_and_modify(
+        r = coll.find_one_and_update(
             {"object": object.id}, update={"$set": {"status": status, "last": ts}}, upsert=True
         )
         if not r:
