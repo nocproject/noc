@@ -84,5 +84,5 @@ class Migration(BaseMigration):
         fn = match.group(1)
         new_name = "config.filter%d" % pyrule_id
         handler = "noc.pyrules.%s.%s" % (new_name, fn)
-        coll.insert({"name": new_name, "source": new_text})
+        coll.insert_one({"name": new_name, "source": new_text})
         return handler

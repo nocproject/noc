@@ -16,7 +16,7 @@ class Migration(BaseMigration):
         for r in c.find(
             {"first_chassis_mac": {"$exists": True}, "last_chassis_mac": {"$exists": True}}
         ):
-            c.update(
+            c.update_one(
                 {"_id": r["_id"]},
                 {
                     "$unset": {"first_chassis_mac": "", "last_chassis_mac": ""},

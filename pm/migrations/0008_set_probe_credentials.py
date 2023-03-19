@@ -52,4 +52,4 @@ class Migration(BaseMigration):
             sys.exit(1)
         uid = self.db.execute("SELECT id FROM auth_user WHERE username=%s", [PROBEUSER])[0][0]
         sid = mdb.noc.pm.storages.find_one({})["_id"]
-        mdb.noc.pm.probe.update({}, {"$set": {"storage": sid, "user": uid}})
+        mdb.noc.pm.probe.update_many({}, {"$set": {"storage": sid, "user": uid}})

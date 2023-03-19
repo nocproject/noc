@@ -26,7 +26,7 @@ class Migration(BaseMigration):
             for h in handlers:
                 name = h.split(".")[-2]
                 proccessed.add(h)
-                coll.insert({"_id": h, "name": name, "allow_config_filter": True})
+                coll.insert_one({"_id": h, "name": name, "allow_config_filter": True})
         handlers = set()
         for (h,) in self.db.execute(
             "SELECT DISTINCT config_validation_handler FROM sa_managedobject"
@@ -38,6 +38,6 @@ class Migration(BaseMigration):
             for h in handlers:
                 name = h.split(".")[-2]
                 if h in proccessed:
-                    coll.update({"_id": h}, {"$set": {"allow_config_validation": True}})
+                    coll.update_one({"_id": h}, {"$set": {"allow_config_validation": True}})
                     continue
-                coll.insert({"_id": h, "name": name, "allow_config_validation": True})
+                coll.insert_one({"_id": h, "name": name, "allow_config_validation": True})

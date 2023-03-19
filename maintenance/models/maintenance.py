@@ -376,7 +376,9 @@ def stop(maintenance_id):
                     subject,
                     body,
                 )
-    Maintenance._get_collection().update_many({"_id": maintenance_id}, {"$set": {"is_completed": True}})
+    Maintenance._get_collection().update_many(
+        {"_id": maintenance_id}, {"$set": {"is_completed": True}}
+    )
     mai_objects: List[int] = list(
         ManagedObject.objects.filter(
             is_managed=True, affected_maintenances__has_key=str(maintenance_id)
