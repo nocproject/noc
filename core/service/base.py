@@ -53,7 +53,7 @@ from noc.core.router.base import Router
 from noc.core.ioloop.util import setup_asyncio
 from noc.core.ioloop.timers import PeriodicCallback
 from noc.core.error import NOCError
-from noc.core.mx import MX_METRICS_SCOPE, MX_METRICS_TYPE, MX_STREAM
+from noc.core.mx import MX_STREAM
 from .rpc import RPCProxy
 from .loader import set_service
 from ..router.datastream import RouteDataStreamClient
