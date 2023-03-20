@@ -358,7 +358,6 @@ class MetricsService(FastAPIService):
             spool_message=global_config.message.enable_metrics
             and ms.table_name in set(global_config.message.enable_metric_scopes),
         )
-        self.logger.info()
         factory.construct()
         self.scope_cdag[k[0]] = cdag
         return cdag

@@ -77,8 +77,10 @@ class MetricsNode(BaseCDAGNode):
             svc.register_message(
                 r,
                 MX_METRICS_TYPE,
-                {MX_METRICS_SCOPE: self.config.scope.encode(encoding="utf-8"),
-                 MX_LABELS: self.config.message_meta["labels"]},
+                {
+                    MX_METRICS_SCOPE: self.config.scope.encode(encoding="utf-8"),
+                    MX_LABELS: self.config.message_meta.pop("labels", None),
+                },
                 r["managed_object"],
             )
         return r

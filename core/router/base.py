@@ -291,6 +291,7 @@ class Router(object):
         with self.lock:
             for msg in self.input_queue:
                 await self.route_message(msg)
+            self.input_queue.clear()
 
     def register_message(self, msg: Message, msg_id: Optional[str] = None):
         """
