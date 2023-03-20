@@ -34,4 +34,4 @@ class Migration(BaseMigration):
                 so["data.asset.part_no"] = part_no
             if order_part_no:
                 so["data.asset.order_part_no"] = order_part_no
-            db.noc.objectmodels.update({"_id": om["_id"]}, {"$set": so, "$unset": uso})
+            db.noc.objectmodels.update_one({"_id": om["_id"]}, {"$set": so, "$unset": uso})

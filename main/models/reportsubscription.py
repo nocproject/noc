@@ -76,7 +76,7 @@ class ReportSubscription(Document):
                     s.send_report(path)
 
     def update_status(self, status):
-        self._get_collection().update(
+        self._get_collection().update_one(
             {"_id": self.id}, {"$set": {"last_status": status, "last_run": datetime.datetime.now()}}
         )
 

@@ -21,7 +21,7 @@ class Migration(BaseMigration):
             "SELECT id, sync_channel FROM dns_dnsserver WHERE sync_channel IS NOT NULL"
         ):
             if ch not in smap:
-                n = c["noc.sync"].insert(
+                n = c["noc.sync"].insert_one(
                     {
                         "name": ch,
                         "is_active": True,

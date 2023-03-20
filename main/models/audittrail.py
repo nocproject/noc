@@ -78,7 +78,7 @@ class AuditTrail(Document):
             return
         now = datetime.datetime.now()
         model_id = get_model_id(sender)
-        cls._get_collection().insert(
+        cls._get_collection().insert_one(
             {
                 "timestamp": now,
                 "user": user.username,
@@ -87,8 +87,7 @@ class AuditTrail(Document):
                 "op": op,
                 "changes": changes,
                 "expires": now + cls._model_ttls[model_id],
-            },
-            w=0,
+            }
         )
 
     @classmethod

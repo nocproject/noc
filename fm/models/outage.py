@@ -51,7 +51,7 @@ class Outage(Document):
         )
         if not status and lo and not lo.get("stop"):
             # Close interval
-            col.update({"_id": lo["_id"]}, {"$set": {"stop": ts}})
+            col.update_many({"_id": lo["_id"]}, {"$set": {"stop": ts}})
         elif status and (not lo or lo.get("stop")):
             # New outage
-            col.insert({"object": object.id, "start": ts, "stop": None})
+            col.insert_one({"object": object.id, "start": ts, "stop": None})

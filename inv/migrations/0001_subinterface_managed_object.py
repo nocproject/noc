@@ -20,4 +20,4 @@ class Migration(BaseMigration):
         # Update subinterface managed object id
         c = db.noc.subinterfaces
         for i_oid in imo:
-            c.update({"interface": i_oid}, {"$set": {"managed_object": imo[i_oid]}})
+            c.update_many({"interface": i_oid}, {"$set": {"managed_object": imo[i_oid]}})

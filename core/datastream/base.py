@@ -83,7 +83,7 @@ class DataStream(object):
         """
         c_name = cls.get_collection_name(fmt)
         coll = cls._collections.get(c_name)
-        if not coll:
+        if coll is None:
             coll = get_db()[c_name]
             cls._collections[c_name] = coll
         return coll

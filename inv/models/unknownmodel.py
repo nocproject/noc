@@ -33,7 +33,7 @@ class UnknownModel(Document):
 
     @classmethod
     def mark_unknown(cls, vendor, managed_object, part_no, description=""):
-        cls._get_collection().find_and_modify(
+        cls._get_collection().find_one_and_update(
             {
                 "vendor": vendor,
                 "managed_object": managed_object.name,

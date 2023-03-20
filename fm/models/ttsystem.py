@@ -26,6 +26,7 @@ import cachetools
 # NOC modules
 from noc.core.model.decorator import on_delete_check
 from noc.core.handler import get_handler
+from noc.core.tt.base import BaseTTSystem
 from noc.main.models.remotesystem import RemoteSystem
 from noc.main.models.label import Label
 
@@ -115,7 +116,7 @@ class TTSystem(Document):
             ]
             cache.delete_many(deleted_cache_keys, version=MANAGEDOBJECT_CACHE_VERSION)
 
-    def get_system(self):
+    def get_system(self) -> BaseTTSystem:
         """
         Return BaseTTSystem instance
         """
@@ -140,7 +141,7 @@ class TTSystem(Document):
             return
         d = datetime.datetime.now() + datetime.timedelta(seconds=cooldown)
         logger.info("[%s] Setting failure status till %s", self.name, d)
-        self._get_collection().update({"_id": self.id}, {"$set": {"failed_till": d}})
+        self._get_collection().update_one({"_id": self.id}, {"$set": {"failed_till": d}})
 
     @classmethod
     def iter_lazy_labels(cls, ttsystem: "TTSystem"):

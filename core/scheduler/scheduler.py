@@ -134,7 +134,7 @@ class Scheduler(object):
         """
         Returns mongo collection instance
         """
-        if not self.collection:
+        if self.collection is None:
             self.logger.debug("Open collection %s", self.collection_name)
             self.collection = get_db()[self.collection_name]
             self.bulk = []
@@ -425,7 +425,7 @@ class Scheduler(object):
             set_op.get(Job.ATTR_TS) or iset_op.get(Job.ATTR_TS),
         )
         self.logger.debug("update(%s, %s, upsert=True)", q, op)
-        self.get_collection().update(q, op, upsert=True)
+        self.get_collection().update_many(q, op, upsert=True)
 
     def set_next_run(
         self,

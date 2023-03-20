@@ -145,5 +145,5 @@ class GeocoderCache(Document):
         if not r or not r.exact:
             sq["expires"] = datetime.datetime.now() + datetime.timedelta(seconds=cls.NEGATIVE_TTL)
         # Write to database
-        c.update({"_id": hash}, {"$set": sq}, upsert=True)
+        c.update_one({"_id": hash}, {"$set": sq}, upsert=True)
         return r

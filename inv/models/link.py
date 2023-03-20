@@ -183,7 +183,7 @@ class Link(Document):
             self.discovery_method = method
             op["discovery_method"] = method
         # Do not save to prevent rebuilding topology
-        self._get_collection().update({"_id": self.id}, {"$set": op})
+        self._get_collection().update_one({"_id": self.id}, {"$set": op})
         # self.save()
 
     @classmethod

@@ -79,7 +79,7 @@ class Address(Document):
 
         if document.is_primary:
             # Reset other primary addresses
-            Address._get_collection().update(
+            Address._get_collection().update_many(
                 {"building": document.building.id, "id": {"$ne": document.id}},
                 {"$set": {"is_primary": False}},
             )
@@ -102,7 +102,7 @@ class Address(Document):
                     nq(document.estate2),
                 ]
             )
-            Building._get_collection().update(
+            Building._get_collection().update_one(
                 {"_id": document.building.id}, {"$set": {"sort_order": so}}
             )
 
