@@ -6,8 +6,8 @@
 # ----------------------------------------------------------------------
 
 # Python modules
-from typing import Optional, List, Dict, Callable
 import time
+from typing import Optional, List, Dict, Callable, Any
 
 # Third-party modules
 from pydantic import BaseModel
@@ -15,12 +15,15 @@ from pydantic import BaseModel
 # NOC modules
 from noc.core.service.loader import get_service
 from noc.core.perf import metrics
+from noc.core.mx import MX_METRICS_TYPE, MX_METRICS_SCOPE
 from .base import BaseCDAGNode, ValueType, Category
 
 
 class MetricsNodeConfig(BaseModel):
     scope: str
     spool: bool = True
+    spool_message: bool = False
+    message_meta: Optional[Dict[str, Any]] = None
 
 
 NS = 1_000_000_000
@@ -65,8 +68,18 @@ class MetricsNode(BaseCDAGNode):
         if labels:
             r["labels"] = labels
         metrics["spooled_metrics", ("scope", self.config.scope)] += 1
+        svc = get_service()
         if self.config.spool:
-            get_service().register_metrics(self.config.scope, [r])
+            svc.register_metrics(self.config.scope, [r])
+        if self.config.spool_message:
+            if self.config.message_meta:
+                r["meta"] = self.config.message_meta
+            svc.register_message(
+                r,
+                MX_METRICS_TYPE,
+                {MX_METRICS_SCOPE: self.config.scope.encode(encoding="utf-8")},
+                r["managed_object"],
+            )
         return r
 
     @staticmethod

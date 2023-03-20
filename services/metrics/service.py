@@ -321,8 +321,9 @@ class MetricsService(FastAPIService):
         cdag = self.get_scope_cdag(k)
         if not cdag:
             return None
+        source = self.get_source_info(k)
         # Apply CDAG to a common graph and collect inputs to the card
-        card = await self.project_cdag(cdag, prefix=self.get_key_hash(k))
+        card = await self.project_cdag(cdag, prefix=self.get_key_hash(k), config=source)
         metrics["project_cards"] += 1
         self.cards[k] = card
         self.source_metrics[k[1][-1]].append(k)
@@ -347,7 +348,12 @@ class MetricsService(FastAPIService):
             return None  # Not found
         cdag = CDAG(f"scope::{k[0]}", {})
         factory = MetricScopeCDAGFactory(
-            cdag, scope=ms, sticky=True, spool=not self.disable_spool, lazy_init=self.lazy_init
+            cdag,
+            scope=ms,
+            sticky=True,
+            spool=not self.disable_spool,
+            lazy_init=self.lazy_init,
+            spool_message=global_config.message.enable_metrics and ms.table_name in set(global_config.message.enable_metric_scopes)
         )
         factory.construct()
         self.scope_cdag[k[0]] = cdag
@@ -371,7 +377,7 @@ class MetricsService(FastAPIService):
         metrics["cdag_nodes", ("type", n.name)] += 1
         return new_node
 
-    async def project_cdag(self, src: CDAG, prefix: str) -> Card:
+    async def project_cdag(self, src: CDAG, prefix: str, config: Optional[SourceConfig] = None) -> Card:
         """
         Project `src` to a current graph and return the controlling Card
         :param src: Applied graph
@@ -382,7 +388,8 @@ class MetricsService(FastAPIService):
         nodes: Dict[str, BaseCDAGNode] = {}
         # Clone nodes
         for node in src.nodes.values():
-            nodes[node.node_id] = self.clone_and_add_node(node, prefix=prefix)
+            # Apply sender nodes
+            nodes[node.node_id] = self.clone_and_add_node(node, prefix=prefix, config={"message_meta": config.meta})
         # Subscribe
         for o_node in src.nodes.values():
             node = nodes[o_node.node_id]
@@ -400,7 +407,7 @@ class MetricsService(FastAPIService):
             alarms=[],
             affected_rules=set(),
             is_dirty=False,
-            config=None,
+            config=config,
         )
 
     async def get_dispose_partitions(self, pool: str) -> int:
@@ -464,7 +471,7 @@ class MetricsService(FastAPIService):
             return
         return self.get_source_config(orjson.loads(data["data"]))
 
-    def get_source(self, s_id):
+    def get_source(self, s_id) -> Optional[SourceConfig]:
         if s_id not in self.sources_config:
             self.logger.info("[%s] Unknown Source", s_id)
             return None
@@ -519,6 +526,7 @@ class MetricsService(FastAPIService):
             metric_labels=[],
             composed_metrics=composed_metrics,
             rules=source.rules or [],
+            meta=source.meta,
         )
 
     def apply_rules(self, k: MetricKey, labels: List[str]):
@@ -529,14 +537,14 @@ class MetricsService(FastAPIService):
         :return:
         """
         card = self.cards[k]
-        # Getting Context
-        source = self.get_source_info(k)
-        if not source:
+        if not card.config:
+            # Getting Context
+            card.config = self.get_source_info(k)
+        if not card.config:
             self.logger.debug("[%s] Unknown metric source. Skipping apply rules", k)
             metrics["unknown_metric_source"] += 1
             return
-        elif not card.config:
-            card.config = source
+        source = card.config
         # s_labels = set(self.merge_labels(source.labels, labels))
         # Appy matched rules
         # for rule_id, rule in self.rules.items():

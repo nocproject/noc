@@ -9,12 +9,13 @@
 import logging
 import operator
 from time import time_ns
-from collections import defaultdict
+from collections import defaultdict, deque
 from typing import List, DefaultDict, Iterator, Dict, Iterable, Optional, Any
 from functools import partial
 
 # Third-party modules
 import orjson
+from threading import Lock
 
 # NOC modules
 from noc.core.mx import MX_MESSAGE_TYPE, MX_SHARDING_KEY, Message
@@ -37,6 +38,8 @@ class Router(object):
         self.stream_partitions: Dict[str, int] = {}
         self.svc = get_service()
         # self.out_queue: Optional[QBuffer] = None
+        self.queue: deque = deque()
+        self.lock = Lock()
 
     def load(self):
         """
@@ -279,3 +282,13 @@ class Router(object):
                     ("message_type", msg.headers.get(MX_MESSAGE_TYPE).decode(DEFAULT_ENCODING)),
                 ] += 1
         # logger.debug("[%s] Finish processing", msg_id)
+
+    def register_message(self, msg: Message, msg_id: Optional[str] = None):
+        """
+        Store message for delay route
+        :param msg:
+        :param msg_id:
+        :return:
+        """
+        logger.info("Register message: %s", msg)
+        self.queue.append(msg)

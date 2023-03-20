@@ -7,7 +7,7 @@
 
 # Python modules
 from dataclasses import dataclass
-from typing import Any, Tuple, List, Optional, Literal
+from typing import Any, Tuple, List, Optional, Literal, Dict
 
 MetricKey = Tuple[str, Tuple[Tuple[str, Any], ...], Tuple[str, ...]]
 
@@ -27,7 +27,7 @@ class SourceInfo(object):
         "labels",
         "metric_labels",
         "composed_metrics",
-        "rules",
+        "meta",
     )
     bi_id: int
     fm_pool: str
@@ -38,6 +38,7 @@ class SourceInfo(object):
     metric_labels: Optional[List[str]]
     composed_metrics: Optional[List[str]]
     rules: Optional[List[str]]
+    meta: Dict[str, Any]
 
 
 @dataclass(frozen=True)
@@ -70,7 +71,7 @@ class SourceConfig(object):
     * sensor
     """
 
-    __slots__ = ("type", "bi_id", "fm_pool", "labels", "metrics", "items", "rules")
+    __slots__ = ("type", "bi_id", "fm_pool", "labels", "metrics", "items", "rules", "meta")
     type: Literal["managed_object", "sla_probe", "sensor", "agent"]
     bi_id: int
     fm_pool: str
@@ -78,6 +79,7 @@ class SourceConfig(object):
     metrics: Tuple[str, ...]
     items: List[ItemConfig]
     rules: List[str]
+    meta: Dict[str, Any]
 
     def is_differ(self, sc: "SourceConfig"):
         """
