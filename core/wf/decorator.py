@@ -126,7 +126,7 @@ def document_touch(self, bulk=None):
         bulk += [UpdateOne({"_id": self.pk}, op)]
     else:
         # Direct update
-        self._get_collection().update({"_id": self.pk}, op)
+        self._get_collection().update_one({"_id": self.pk}, op)
 
 
 def model_set_state(self, state, state_changed: datetime.datetime = None, bulk=None):

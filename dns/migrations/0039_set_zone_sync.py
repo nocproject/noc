@@ -30,7 +30,7 @@ class Migration(BaseMigration):
             if not sc.count_documents(
                 {"sync_id": str(sync_id), "model_id": "dns.DNSZone", "object_id": str(zone_id)}
             ):
-                sc.insert(
+                sc.insert_one(
                     {
                         "uuid": str(uuid.uuid4()),
                         "model_id": "dns.DNSZone",

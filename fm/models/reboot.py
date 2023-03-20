@@ -53,7 +53,7 @@ class Reboot(Document):
         ts = ts or datetime.datetime.now()
         last = last or ts
         logger.debug("[%s] Register reboot at %s", managed_object.name, ts)
-        cls._get_collection().insert({"object": oid, "ts": ts, "last": last})
+        cls._get_collection().insert_one({"object": oid, "ts": ts, "last": last})
         if managed_object.object_profile.box_discovery_on_system_start:
             managed_object.run_discovery(
                 delta=managed_object.object_profile.box_discovery_system_start_delay

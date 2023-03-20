@@ -10,7 +10,7 @@ from noc.inv.models.interface import Interface
 
 
 def _get_interface(object, name):
-    Interface._get_collection().update({"managed_object": object.id})
+    Interface._get_collection().update_many({"managed_object": object.id})
 
 
 def oper_up(event):

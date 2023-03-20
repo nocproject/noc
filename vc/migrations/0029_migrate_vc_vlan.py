@@ -101,7 +101,7 @@ class Migration(BaseMigration):
         # Clean VLANs collection
         v_coll = self.mongo_db["vlans"]
         v_coll.drop_indexes()
-        v_coll.remove({})
+        v_coll.delete_many({})
         l2_domains = []
         l2_domain_map = {1: DEFAULT_L2_DOMAIN_ID}
         for vid, name, description in self.db.execute(

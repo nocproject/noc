@@ -85,10 +85,10 @@ class Uptime(Document):
                     ts - cls.SEC,
                     delta,
                 )
-                c.update({"_id": d["_id"]}, {"$set": {"stop": ts - cls.SEC}})
+                c.update_many({"_id": d["_id"]}, {"$set": {"stop": ts - cls.SEC}})
                 # Start new uptime
                 logger.debug("[%s] Starting new uptime from %s", managed_object.name, ts)
-                c.insert(
+                c.insert_one(
                     {"object": oid, "start": ts, "stop": None, "last": now, "last_value": uptime}
                 )
                 #
@@ -100,11 +100,11 @@ class Uptime(Document):
                     d["start"],
                     now,
                 )
-                c.update({"_id": d["_id"]}, {"$set": {"last": now, "last_value": uptime}})
+                c.update_one({"_id": d["_id"]}, {"$set": {"last": now, "last_value": uptime}})
         else:
             # First uptime
             logger.debug("[%s] First uptime from %s", managed_object.name, now)
-            c.insert(
+            c.insert_one(
                 {
                     "object": oid,
                     "start": now - delta,
