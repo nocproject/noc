@@ -27,6 +27,7 @@ class SourceInfo(object):
         "labels",
         "metric_labels",
         "composed_metrics",
+        "rules",
         "meta",
     )
     bi_id: int

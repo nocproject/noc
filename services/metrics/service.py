@@ -35,6 +35,8 @@ from noc.core.cdag.node.alarm import VarItem
 from noc.core.cdag.graph import CDAG
 from noc.core.cdag.factory.scope import MetricScopeCDAGFactory
 from noc.core.cdag.factory.config import ConfigCDAGFactory, GraphConfig
+from noc.core.mx import MX_H_VALUE_SPLITTER
+from noc.core.comp import DEFAULT_ENCODING
 from noc.services.metrics.changelog import ChangeLog
 from noc.services.metrics.datastream import MetricsDataStreamClient, MetricRulesDataStreamClient
 from noc.services.metrics.models.card import Card, ScopeInfo
@@ -353,8 +355,10 @@ class MetricsService(FastAPIService):
             sticky=True,
             spool=not self.disable_spool,
             lazy_init=self.lazy_init,
-            spool_message=global_config.message.enable_metrics and ms.table_name in set(global_config.message.enable_metric_scopes)
+            spool_message=global_config.message.enable_metrics
+            and ms.table_name in set(global_config.message.enable_metric_scopes),
         )
+        self.logger.info()
         factory.construct()
         self.scope_cdag[k[0]] = cdag
         return cdag
@@ -377,11 +381,14 @@ class MetricsService(FastAPIService):
         metrics["cdag_nodes", ("type", n.name)] += 1
         return new_node
 
-    async def project_cdag(self, src: CDAG, prefix: str, config: Optional[SourceConfig] = None) -> Card:
+    async def project_cdag(
+        self, src: CDAG, prefix: str, config: Optional[SourceConfig] = None
+    ) -> Card:
         """
         Project `src` to a current graph and return the controlling Card
         :param src: Applied graph
         :param prefix: Unique card prefix
+        :param config:
         :return:
         """
 
@@ -389,7 +396,17 @@ class MetricsService(FastAPIService):
         # Clone nodes
         for node in src.nodes.values():
             # Apply sender nodes
-            nodes[node.node_id] = self.clone_and_add_node(node, prefix=prefix, config={"message_meta": config.meta})
+            nodes[node.node_id] = self.clone_and_add_node(
+                node,
+                prefix=prefix,
+                config={
+                    "message_meta": {
+                        "labels": MX_H_VALUE_SPLITTER.join(config.labels).encode(
+                            encoding=DEFAULT_ENCODING
+                        )
+                    }
+                },
+            )
         # Subscribe
         for o_node in src.nodes.values():
             node = nodes[o_node.node_id]
@@ -683,6 +700,7 @@ class MetricsService(FastAPIService):
             ),
             items=[],
             rules=data.get("rules"),
+            meta=data.get("meta"),
         )
         for item in data.get("items", []):
             sc.items.append(

@@ -38,7 +38,7 @@ class Router(object):
         self.stream_partitions: Dict[str, int] = {}
         self.svc = get_service()
         # self.out_queue: Optional[QBuffer] = None
-        self.queue: deque = deque()
+        self.input_queue: deque = deque()
         self.lock = Lock()
 
     def load(self):
@@ -283,6 +283,15 @@ class Router(object):
                 ] += 1
         # logger.debug("[%s] Finish processing", msg_id)
 
+    async def flush_input_queue(self):
+        """
+        Send all input queue messages on queue
+        :return:
+        """
+        with self.lock:
+            for msg in self.input_queue:
+                await self.route_message(msg)
+
     def register_message(self, msg: Message, msg_id: Optional[str] = None):
         """
         Store message for delay route
@@ -290,5 +299,14 @@ class Router(object):
         :param msg_id:
         :return:
         """
-        logger.info("Register message: %s", msg)
-        self.queue.append(msg)
+        logger.debug("Register message: %s", msg)
+        with self.lock:
+            self.input_queue.append(msg)
+
+    def is_empty(self) -> bool:
+        """
+        Check if buffer is empty
+        :return:
+        """
+        with self.lock:
+            return bool(len(self.input_queue))

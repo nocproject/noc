@@ -756,6 +756,8 @@ class BaseService(object):
             t0 = perf_counter()
             for stream, partition, chunk in queue.iter_slice():
                 self.publish(chunk, stream=stream, partition=partition, headers=headers)
+            if self.router and not self.router.is_empty():
+                await self.router.flush_input_queue()
             if not self.publish_queue.to_shutdown:
                 to_sleep = config.msgstream.metrics_send_delay - (perf_counter() - t0)
                 if to_sleep > 0:
