@@ -399,11 +399,10 @@ class MetricsService(FastAPIService):
                 node,
                 prefix=prefix,
                 config={
-                    "message_meta": {
-                        "labels": MX_H_VALUE_SPLITTER.join(config.labels).encode(
-                            encoding=DEFAULT_ENCODING
-                        )
-                    }
+                    "message_meta": config.meta or {},
+                    "message_labels": MX_H_VALUE_SPLITTER.join(config.labels).encode(
+                        encoding=DEFAULT_ENCODING
+                    ),
                 },
             )
         # Subscribe
@@ -699,7 +698,8 @@ class MetricsService(FastAPIService):
             ),
             items=[],
             rules=data.get("rules"),
-            meta=data.get("meta"),
+            meta=data.get("meta") if global_config.message.enable_metrics else None,
+            # Append meta if enable messages
         )
         for item in data.get("items", []):
             sc.items.append(

@@ -24,6 +24,7 @@ class MetricsNodeConfig(BaseModel):
     spool: bool = True
     spool_message: bool = False
     message_meta: Optional[Dict[str, Any]] = None
+    message_labels: Optional[bytes] = None
 
 
 NS = 1_000_000_000
@@ -79,7 +80,7 @@ class MetricsNode(BaseCDAGNode):
                 MX_METRICS_TYPE,
                 {
                     MX_METRICS_SCOPE: self.config.scope.encode(encoding="utf-8"),
-                    MX_LABELS: self.config.message_meta.pop("labels", None),
+                    MX_LABELS: self.config.message_labels,
                 },
                 r["managed_object"],
             )
