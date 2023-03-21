@@ -246,6 +246,7 @@ class SLAProbe(Document):
                 for mc in sla_probe.profile.metrics
             ],
             "items": [],
+            "sharding_key": source.managed_object.bi_id if source.managed_object else None,
             "rules": [ma for ma in MetricRule.iter_rules_actions(sla_probe.effective_labels)],
         }
 

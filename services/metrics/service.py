@@ -161,6 +161,7 @@ class MetricsService(FastAPIService):
             try:
                 await client.query(
                     limit=global_config.metrics.ds_limit,
+                    filters=[f"shard({self.slot_number},{self.total_slots})"],
                     block=True,
                     filter_policy="delete",
                 )
@@ -403,7 +404,7 @@ class MetricsService(FastAPIService):
                     "message_labels": MX_H_VALUE_SPLITTER.join(config.labels).encode(
                         encoding=DEFAULT_ENCODING
                     ),
-                },
+                } if config else None,
             )
         # Subscribe
         for o_node in src.nodes.values():
