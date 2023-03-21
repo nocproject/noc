@@ -157,7 +157,9 @@ class MetricsService(FastAPIService):
         # r = next(coll.find({}).sort([("change_id", DESCENDING)]), None)
         # Track stream changes
         while True:
-            self.logger.info("Starting to track object mappings")
+            self.logger.info(
+                "Starting to track object mappings: %s/%s", self.slot_number, self.total_slots
+            )
             try:
                 await client.query(
                     limit=global_config.metrics.ds_limit,
@@ -404,7 +406,9 @@ class MetricsService(FastAPIService):
                     "message_labels": MX_H_VALUE_SPLITTER.join(config.labels).encode(
                         encoding=DEFAULT_ENCODING
                     ),
-                } if config else None,
+                }
+                if config
+                else None,
             )
         # Subscribe
         for o_node in src.nodes.values():
