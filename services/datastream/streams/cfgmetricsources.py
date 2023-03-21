@@ -1,7 +1,7 @@
 # ----------------------------------------------------------------------
 # cfgmetricsources datastream
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2022 The NOC Project
+# Copyright (C) 2007-2023 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -52,4 +52,8 @@ class CfgMetricSourcesDataStream(DataStream):
     @classmethod
     def filter_shard(cls, instance, n_instances):
         r = super().filter_shard(instance, n_instances)
-        return {"meta.sharding_key": r["_id"]}
+        return {"meta.shard": r["_id"]}
+
+    @classmethod
+    def is_moved(cls, meta, meta_filters) -> bool:
+        return False

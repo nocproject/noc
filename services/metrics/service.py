@@ -163,7 +163,7 @@ class MetricsService(FastAPIService):
             try:
                 await client.query(
                     limit=global_config.metrics.ds_limit,
-                    # filters=[f"shard({self.slot_number},{self.total_slots})"],
+                    filters=[f"shard({self.slot_number},{self.total_slots})"],
                     block=True,
                     filter_policy="delete",
                 )
