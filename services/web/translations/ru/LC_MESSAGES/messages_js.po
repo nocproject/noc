@@ -4247,7 +4247,7 @@ msgstr "Архивные аварии (больше 3 месяцев)"
 
 #: ui/web/fm/reportalarmdetail/Application.js:106
 msgid "Exclude MO by Resource Group (Selector)"
-msgstr "Исключить устройство из Группу (Селектора)"
+msgstr "Исключить устройство из Группы (Селектора)"
 
 #: ui/web/fm/reportalarmdetail/Application.js:116
 msgid "Min. Duration"
@@ -5175,7 +5175,7 @@ msgstr "Вес аварии"
 
 #: ui/web/inv/interfaceprofile/Application.js:252
 msgid "Status Change Notification"
-msgstr "Уведомление об изменение статуса"
+msgstr "Уведомление об изменении статуса"
 
 #: ui/web/inv/interfaceprofile/Application.js:265
 msgid "Enable Abduct Detection"
