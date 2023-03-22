@@ -2340,7 +2340,7 @@
     ],
     "Exclude MO by Resource Group (Selector)": [
         null,
-        "Исключить устройство из Группу (Селектора)"
+        "Исключить устройство из Группы (Селектора)"
     ],
     "Exclude Match Labels": [
         null,
@@ -4352,7 +4352,7 @@
     ],
     "Object Start": [
         null,
-        "Начальгый объект"
+        "Начальный объект"
     ],
     "Object Start Slot": [
         null,
@@ -6040,7 +6040,7 @@
     ],
     "Status Change Notification": [
         null,
-        "Уведомление об изменение статуса"
+        "Уведомление об изменении статуса"
     ],
     "Status Discovery": [
         null,
