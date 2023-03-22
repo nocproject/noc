@@ -26,7 +26,7 @@ msgstr "Печать"
 
 #: services/web/apps/aaa/__init__.py:11
 msgid "AAA"
-msgstr "Пользователи и доступа"
+msgstr "Пользователи и доступ"
 
 #: services/web/apps/aaa/apikey/views.py:20
 msgid "API Keys"
@@ -480,7 +480,7 @@ msgstr "Приоритет MIB"
 #: services/web/apps/fm/monmap/views.py:14
 #: services/web/apps/fm/monmap/views.py:15
 msgid "Monmap"
-msgstr "Карта объктов"
+msgstr "Карта объектов"
 
 #: services/web/apps/fm/oidalias/views.py:19
 #: services/web/apps/fm/oidalias/views.py:20
