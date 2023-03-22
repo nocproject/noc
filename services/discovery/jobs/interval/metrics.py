@@ -91,7 +91,7 @@ class MetricsCheck(DiscoveryCheck):
             collected=metrics,
             streaming={
                 "stream": "metrics",
-                "partition": self.object.id % metrics_svc_slots,
+                "partition": self.object.bi_id % metrics_svc_slots,
                 "utc_offset": config.tz_utc_offset,
                 "data": s_data,
             }
@@ -109,7 +109,7 @@ class MetricsCheck(DiscoveryCheck):
         self.service.publish(
             value=orjson.dumps(self.clean_result(result, time_delta=time_delta)),
             stream="metrics",
-            partition=self.object.id % self.service.get_slot_limits("metrics"),
+            partition=self.object.bi_id % metrics_svc_slots,
             headers={},
         )
         # # Send metrics

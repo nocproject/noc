@@ -52,7 +52,7 @@ class CfgMetricSourcesDataStream(DataStream):
     @classmethod
     def filter_shard(cls, instance, n_instances):
         r = super().filter_shard(instance, n_instances)
-        return {"meta.shard": r["_id"]}
+        return {"meta.sharding_key": r["_id"]}
 
     @classmethod
     def is_moved(cls, meta, meta_filters) -> bool:
