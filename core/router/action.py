@@ -142,10 +142,11 @@ class MetricAction(Action):
         table = msg.headers.get(MX_METRICS_SCOPE)
         if table not in self.mx_metrics_scopes:
             return
-        r = defaultdict(list)
-        for v in msg.value.split(b"\n"):
-            v = self.mx_metrics_scopes[table](orjson.loads(v))
-            r[v["bi_id"]].append(v)
-        for k, v in r.items():
-            self.headers[MX_SHARDING_KEY] = str(k).encode(DEFAULT_ENCODING)
-            yield self.stream, self.headers, v
+        yield self.stream, self.headers, self.mx_metrics_scopes[table](orjson.loads(msg.value))
+        # r = defaultdict(list)
+        # for v in msg.value.split(b"\n"):
+        #     v = self.mx_metrics_scopes[table](orjson.loads(v))
+        #     r[v["bi_id"]].append(v)
+        # for k, v in r.items():
+        #     self.headers[MX_SHARDING_KEY] = str(k).encode(DEFAULT_ENCODING)
+        #     yield self.stream, self.headers, v

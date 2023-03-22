@@ -9,7 +9,7 @@
 import re
 import operator
 import datetime
-from typing import List, Iterable, Optional
+from typing import List, Iterable, Optional, Dict, Any
 from threading import Lock
 
 # Third-party modules
@@ -247,6 +247,7 @@ class SLAProbe(Document):
             ],
             "items": [],
             "sharding_key": sla_probe.managed_object.bi_id if sla_probe.managed_object else None,
+            "meta": sla_probe.get_message_context(),
             "rules": [ma for ma in MetricRule.iter_rules_actions(sla_probe.effective_labels)],
         }
 
@@ -290,3 +291,14 @@ class SLAProbe(Document):
         )
         r = next(r, {})
         return r.get("interval", 0)
+
+    def get_message_context(self) -> Dict[str, Any]:
+        r = {"target": self.target, "tos": self.tos}
+        if self.managed_object:
+            r["source_object"] = self.managed_object.get_message_context()
+        target = self.get_target()
+        if target:
+            r["target_object"] = target.get_message_context()
+        if self.service:
+            r["service"] = self.service.get_message_context()
+        return r

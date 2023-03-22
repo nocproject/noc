@@ -300,7 +300,6 @@ class Router(object):
         :param msg_id:
         :return:
         """
-        logger.debug("Register message: %s", msg)
         with self.lock:
             self.input_queue.append(msg)
 
@@ -310,4 +309,4 @@ class Router(object):
         :return:
         """
         with self.lock:
-            return bool(len(self.input_queue))
+            return not bool(len(self.input_queue))
