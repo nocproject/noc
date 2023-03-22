@@ -12,7 +12,7 @@ import operator
 import logging
 
 # Third-party modules
-from mongoengine.document import Document
+from mongoengine.document import Document, EmbeddedDocument
 from mongoengine.fields import (
     StringField,
     BooleanField,
@@ -20,6 +20,8 @@ from mongoengine.fields import (
     ReferenceField,
     LongField,
     IntField,
+    MapField,
+    EmbeddedDocumentField,
 )
 from mongoengine.queryset.visitor import Q as m_Q
 import cachetools
@@ -41,10 +43,16 @@ logger = logging.getLogger(__name__)
 id_lock = Lock()
 
 STATE_JOB = "noc.core.wf.transition.state_job"
+WIPE_JOB = "noc.sa.wipe.managedobject.wipe"
+
+
+class FeatureSetting(EmbeddedDocument):
+    meta = {"strict": False, "auto_create_index": False}
+    enable = BooleanField(default=True)
+    # raise_alarm = BooleanField(default=True)
 
 
 @bi_sync
-@Label.model
 @change
 @on_delete_check(
     check=[
@@ -62,6 +70,7 @@ STATE_JOB = "noc.core.wf.transition.state_job"
         ("phone.PhoneRange", "state"),
         ("pm.Agent", "state"),
         ("sa.Service", "state"),
+        ("sa.ManagedObject", "state"),
         ("sla.SLAProbe", "state"),
         ("vc.VLAN", "state"),
         ("vc.VPN", "state"),
@@ -104,9 +113,10 @@ class State(Document):
     # WFEditor coordinates
     x = IntField(default=0)
     y = IntField(default=0)
+    #
+    feature_settings = MapField(EmbeddedDocumentField(FeatureSetting))
     # Labels
     labels = ListField(StringField())
-    effective_labels = ListField(StringField())
     # Integration with external NRI and TT systems
     # Reference to remote system object has been imported from
     remote_system = ReferenceField(RemoteSystem)
@@ -261,3 +271,13 @@ class State(Document):
     @classmethod
     def can_set_label(cls, label):
         return Label.get_effective_setting(label, setting="enable_workflowstate")
+
+    def is_enabled_feature(self, name) -> bool:
+        """
+        Check diagnostic state: on/off
+        :param name:
+        :return:
+        """
+        if name in self.feature_settings:
+            return self.feature_settings[name].enable
+        return True

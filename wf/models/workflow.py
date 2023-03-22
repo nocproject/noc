@@ -41,6 +41,7 @@ _default_state_cache = cachetools.TTLCache(maxsize=1000, ttl=1)
         ("phone.PhoneRangeProfile", "workflow"),
         ("pm.AgentProfile", "workflow"),
         ("sa.ServiceProfile", "workflow"),
+        ("sa.ManagedObjectProfile", "workflow"),
         ("sla.SLAProfile", "workflow"),
         ("inv.CPEProfile", "workflow"),
         ("inv.SensorProfile", "workflow"),

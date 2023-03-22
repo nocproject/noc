@@ -51,6 +51,9 @@ from noc.core.wf.diagnostic import (
     SNMPTRAP_DIAG,
     SYSLOG_DIAG,
     HTTP_DIAG,
+    SA_DIAG,
+    FM_DIAG,
+    TT_DIAG,
 )
 from noc.core.checkers.base import CheckData, Check
 from noc.core.mx import send_message, MX_LABELS, MX_H_VALUE_SPLITTER, MX_ADMINISTRATIVE_DOMAIN_ID
@@ -121,6 +124,8 @@ from noc.core.topology.types import (
 )
 from noc.core.models.problem import ProblemItem
 from noc.core.models.cfgmetrics import MetricCollectorConfig, MetricItem
+from noc.core.wf.decorator import workflow
+from noc.wf.models.state import State
 from .administrativedomain import AdministrativeDomain
 from .authprofile import AuthProfile
 from .managedobjectprofile import ManagedObjectProfile
@@ -207,6 +212,7 @@ logger = logging.getLogger(__name__)
 @on_init
 @on_save
 @on_delete
+@workflow
 @change
 @resourcegroup
 @Label.model
@@ -262,6 +268,16 @@ class ManagedObject(NOCModel):
     project = CachedForeignKey(
         Project, verbose_name="Project", on_delete=CASCADE, null=True, blank=True
     )
+    # Workflow
+    state: "State" = DocumentReferenceField(State, null=True, blank=True)
+    # Last state change
+    state_changed = models.DateTimeField("State Changed", null=True, blank=True)
+    # Timestamp expired
+    expired = models.DateTimeField("Expired", null=True, blank=True)
+    # Timestamp of last seen
+    last_seen = models.DateTimeField("Last Seen", null=True, blank=True)
+    # Timestamp of first discovery
+    first_discovered = models.DateTimeField("First Discovered", null=True, blank=True)
     # Optional pool to route FM events
     fm_pool = DocumentReferenceField(Pool, null=True, blank=True)
     profile: "Profile" = DocumentReferenceField(Profile, null=False, blank=False)
@@ -2365,7 +2381,20 @@ class ManagedObject(NOCModel):
         Iterate over object diagnostics
         :return:
         """
-
+        yield DiagnosticConfig(
+            SA_DIAG,
+            display_description="ServiceActivation. Allow active device interaction",
+            blocked=self.state.diagnostic_is_on(SA_DIAG),
+            run_policy="D",
+            reason="",
+        )
+        yield DiagnosticConfig(
+            FM_DIAG,
+            display_description="FaultManagement. Allow FM collector and C interaction",
+            blocked=self.state.diagnostic_is_on(FM_DIAG),
+            run_policy="D",
+            reason="",
+        )
         if not self.is_managed:
             return
         ac = self.get_access_preference()
@@ -3067,6 +3096,21 @@ class ManagedObject(NOCModel):
             config.discovery.min_metric_interval,
         )
 
+    def get_supported_features(self) -> List[str]:
+        """
+        Supported features
+        :return:
+        """
+        return ["SA", "FM", "TT"]
+
+    @property
+    def features(self) -> "FeatureHub":
+        features = getattr(self, "_features", None)
+        if features:
+            return features
+        self._features = FeatureHub(self.state)
+        return self._features
+
 
 @on_save
 class ManagedObjectAttribute(NOCModel):
@@ -3177,6 +3221,27 @@ class MatchersProxy(object):
         if self._data is None:
             self._rebuild()
         return item in self._data
+
+
+class FeatureHub(object):
+    """
+    Return feature state on object
+    If feature is not supported - return None
+    If feature is supported - return enabled/disabled
+    """
+
+    def __init__(self, obj):
+        self.logger = logging.getLogger(__name__)
+        self.__supported_features = set(f.lower() in obj.get_supported_features())
+        self.__state: State = o.state
+
+    def __getattr__(self, name: str, default: Optional[Any] = None) -> Optional[Any]:
+        if name not in self.__supported_features:
+            return None
+        return self.__state.is_enabled_feature(name)
+
+    def __contains__(self, name: str) -> bool:
+        return name in self.__supported_features
 
 
 # Avoid circular references
