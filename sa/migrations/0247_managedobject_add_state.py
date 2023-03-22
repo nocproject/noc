@@ -14,8 +14,8 @@ from noc.core.migration.base import BaseMigration
 
 
 class Migration(BaseMigration):
-
-    WF_FREE = "5a17f61b1bb6270001bd0328"
+    WF_MANAGED = "641b35e6fa01fd032a1f61f1"
+    WF_UNMANAGED = "641b371eb846e3cc661ea8b5"
 
     def migrate(self):
         # Create new ManagedObject.state
@@ -33,4 +33,10 @@ class Migration(BaseMigration):
                 "sa_managedobject",
                 column,
                 models.DateTimeField(column_title, blank=True, null=True),
+            )
+            self.db.execute(
+                "UPDATE sa_managedobject SET state=%s WHERE is_managed=True", [self.WF_MANAGED]
+            )
+            self.db.execute(
+                "UPDATE sa_managedobject SET state=%s WHERE is_managed=False", [self.WF_UNMANAGED]
             )
