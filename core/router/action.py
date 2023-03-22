@@ -8,7 +8,6 @@
 # Python modules
 from typing import Type, Tuple, Dict, Iterator, Literal, Optional, List
 from dataclasses import dataclass
-from collections import defaultdict
 
 # Third-party modules
 import orjson
@@ -16,7 +15,7 @@ import orjson
 # NOC modules
 from noc.core.msgstream.message import Message
 from noc.core.comp import DEFAULT_ENCODING
-from noc.core.mx import MX_MESSAGE_TYPE, NOTIFICATION_METHODS, MX_METRICS_SCOPE, MX_SHARDING_KEY
+from noc.core.mx import MX_MESSAGE_TYPE, NOTIFICATION_METHODS, MX_METRICS_SCOPE
 from noc.config import config
 
 
