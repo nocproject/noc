@@ -110,6 +110,7 @@ Ext.define('NOC.sa.managedobject.form.View', {
                                     name: "state",
                                     xtype: "statefield",
                                     fieldLabel: __("State"),
+                                    restUrl: "sa/managedobject/",
                                     allowBlank: false
                                 },
                                 {

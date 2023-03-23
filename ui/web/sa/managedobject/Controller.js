@@ -729,10 +729,11 @@ Ext.define('NOC.sa.managedobject.Controller', {
                             return;
                         }
                         if(Ext.isFunction(field.cleanValue)) {
-                            r[v] = field.cleanValue(
-                                field.store.getModel().create({[v]: data[v], [v + "__label"]: data[v + "__label"]}),
-                                field.store.rest_url
-                            )
+                            var rest_url = field.restUrl ? field.restUrl : field.store.rest_url,
+                                value = {[v]: data[v], [v + "__label"]: data[v + "__label"], id: data.id},
+                                record = Ext.create("Ext.data.Model", value);
+
+                            r[v] = field.cleanValue(record, rest_url);
                             return;
                         }
                         if(!Ext.isEmpty(data[v])) {
