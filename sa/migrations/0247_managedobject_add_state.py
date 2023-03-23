@@ -5,7 +5,11 @@
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
+# Python modules
+import datetime
+
 # Third-party modules
+import orjson
 from django.db import models
 
 # NOC modules
@@ -16,6 +20,28 @@ from noc.core.migration.base import BaseMigration
 class Migration(BaseMigration):
     WF_MANAGED = "641b35e6fa01fd032a1f61f1"
     WF_UNMANAGED = "641b371eb846e3cc661ea8b5"
+
+    @staticmethod
+    def get_diagnostic(state="blocked"):
+        now = datetime.datetime.now()
+        return orjson.dumps(
+            {
+                "SA": {
+                    "state": state,
+                    "checks": [],
+                    "reason": None,
+                    "changed": now.isoformat(sep=" "),
+                    "diagnostic": "SA",
+                },
+                "FM": {
+                    "state": state,
+                    "checks": [],
+                    "reason": None,
+                    "changed": now.isoformat(sep=" "),
+                    "diagnostic": "FM",
+                },
+            }
+        ).decode("utf-8")
 
     def migrate(self):
         # Create new ManagedObject.state
@@ -34,9 +60,13 @@ class Migration(BaseMigration):
                 column,
                 models.DateTimeField(column_title, blank=True, null=True),
             )
-            self.db.execute(
-                "UPDATE sa_managedobject SET state=%s WHERE is_managed=True", [self.WF_MANAGED]
-            )
-            self.db.execute(
-                "UPDATE sa_managedobject SET state=%s WHERE is_managed=False", [self.WF_UNMANAGED]
-            )
+        # Migrate is_managed
+        self.db.execute(
+            """UPDATE sa_managedobject SET state=%s, diagnostics = diagnostics || %s::jsonb WHERE is_managed=True""",
+            [self.WF_MANAGED, get_diagnostic("enabled")],
+        )
+        self.db.execute(
+            """UPDATE sa_managedobject SET state=%s, diagnostics = diagnostics || %s::jsonb WHERE is_managed=False""",
+            [self.WF_UNMANAGED, get_diagnostic("blocked")],
+        )
+        self.db.delete_column("sa_managedobject", "is_managed")

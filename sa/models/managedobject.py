@@ -33,6 +33,10 @@ from django.db.models import (
     BigIntegerField,
     SET_NULL,
     CASCADE,
+    DateTimeField,
+    When,
+    Case,
+    Manager,
 )
 from pydantic import BaseModel
 from pymongo import ASCENDING
@@ -133,7 +137,7 @@ from .objectstatus import ObjectStatus
 from .objectdiagnosticconfig import ObjectDiagnosticConfig
 
 # Increase whenever new field added or removed
-MANAGEDOBJECT_CACHE_VERSION = 44
+MANAGEDOBJECT_CACHE_VERSION = 45
 CREDENTIAL_CACHE_VERSION = 5
 
 Credentials = namedtuple(
@@ -204,6 +208,43 @@ e_labels_lock = Lock()
 logger = logging.getLogger(__name__)
 
 
+class ManagedObjectManager(Manager):
+    """QuerySet manager for ManagedObject class to add non-database fields.
+
+    A @property in the model cannot be used because QuerySets (eg. return
+    value from .all()) are directly tied to the database Fields -
+    this does not include @property attributes."""
+
+    def get_queryset(self):
+        """Overrides the models.Manager method"""
+        # qs = super().get_queryset().annotate(cli_state=F("diagnostics__CLI__state"))
+        qs = (
+            super()
+            .get_queryset()
+            .annotate(
+                is_managed=Case(
+                    When(
+                        Q(diagnostics__SA__state="blocked") & Q(diagnostics__FM__state="blocked"),
+                        then=Value(False),
+                    ),
+                    default=Value(True),
+                    output_field=BooleanField(),
+                ),
+                has_sa=Case(
+                    When(diagnostics__SA__state="blocked", then=Value(False)),
+                    default=Value(True),
+                    output_field=BooleanField(),
+                ),
+                has_fm=Case(
+                    When(diagnostics__FM__state="blocked", then=Value(False)),
+                    default=Value(True),
+                    output_field=BooleanField(),
+                ),
+            )
+        )
+        return qs
+
+
 @full_text_search
 @Label.dynamic_classification(
     profile_model_id="sa.ManagedObjectProfile", profile_field="object_profile"
@@ -258,7 +299,6 @@ class ManagedObject(NOCModel):
         app_label = "sa"
 
     name = CharField("Name", max_length=64, unique=True)
-    is_managed = BooleanField("Is Managed?", default=True)
     container: "Object" = DocumentReferenceField(Object, null=True, blank=True)
     administrative_domain: "AdministrativeDomain" = CachedForeignKey(
         AdministrativeDomain, verbose_name="Administrative Domain", on_delete=CASCADE
@@ -271,13 +311,13 @@ class ManagedObject(NOCModel):
     # Workflow
     state: "State" = DocumentReferenceField(State, null=True, blank=True)
     # Last state change
-    state_changed = models.DateTimeField("State Changed", null=True, blank=True)
+    state_changed = DateTimeField("State Changed", null=True, blank=True)
     # Timestamp expired
-    expired = models.DateTimeField("Expired", null=True, blank=True)
+    expired = DateTimeField("Expired", null=True, blank=True)
     # Timestamp of last seen
-    last_seen = models.DateTimeField("Last Seen", null=True, blank=True)
+    last_seen = DateTimeField("Last Seen", null=True, blank=True)
     # Timestamp of first discovery
-    first_discovered = models.DateTimeField("First Discovered", null=True, blank=True)
+    first_discovered = DateTimeField("First Discovered", null=True, blank=True)
     # Optional pool to route FM events
     fm_pool = DocumentReferenceField(Pool, null=True, blank=True)
     profile: "Profile" = DocumentReferenceField(Profile, null=False, blank=False)
@@ -669,6 +709,9 @@ class ManagedObject(NOCModel):
         null=True,
         default=dict,
     )
+
+    # Overridden objects manager
+    objects = ManagedObjectManager()
 
     # Event ids
     EV_CONFIG_CHANGED = "config_changed"  # Object's config changed
@@ -2384,14 +2427,14 @@ class ManagedObject(NOCModel):
         yield DiagnosticConfig(
             SA_DIAG,
             display_description="ServiceActivation. Allow active device interaction",
-            blocked=self.state.diagnostic_is_on(SA_DIAG),
+            blocked=self.state.is_enabled_feature(SA_DIAG),
             run_policy="D",
             reason="",
         )
         yield DiagnosticConfig(
             FM_DIAG,
             display_description="FaultManagement. Allow FM collector and C interaction",
-            blocked=self.state.diagnostic_is_on(FM_DIAG),
+            blocked=self.state.is_enabled_feature(FM_DIAG),
             run_policy="D",
             reason="",
         )

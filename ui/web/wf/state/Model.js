@@ -82,6 +82,10 @@ Ext.define("NOC.wf.state.Model", {
             type: "string"
         },
         {
+            name: "feature_settings",
+            type: "auto"
+        },
+        {
             name: "labels",
             type: "auto"
         }

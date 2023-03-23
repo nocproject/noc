@@ -22,7 +22,7 @@ Ext.define("NOC.sa.managedobject.Model", {
         {
             name: "is_managed",
             type: "boolean",
-            defaultValue: true
+            persist: false
         },
         {
             name: "administrative_domain",
@@ -507,6 +507,15 @@ Ext.define("NOC.sa.managedobject.Model", {
         {
             name: "effective_client_groups",
             type: "auto",
+            persist: false
+        },
+        {
+            name: "state",
+            type: "string"
+        },
+        {
+            name: "state__label",
+            type: "string",
             persist: false
         },
         {

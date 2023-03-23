@@ -81,7 +81,7 @@ class FeatureSetting(EmbeddedDocument):
 class State(Document):
     meta = {
         "collection": "states",
-        "indexes": [{"fields": ["workflow", "name"], "unique": True}, "labels", "effective_labels"],
+        "indexes": [{"fields": ["workflow", "name"], "unique": True}, "labels"],
         "strict": False,
         "auto_create_index": False,
     }

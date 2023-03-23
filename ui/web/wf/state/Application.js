@@ -129,6 +129,33 @@ Ext.define("NOC.wf.state.Application", {
                     boxLabel: __("Update Expiration")
                 },
                 {
+                    name: "feature_settings",
+                    xtype: "gridfield",
+                    fieldLabel: __("Features"),
+                    columns: [
+                        {
+                            text: __("Feature"),
+                            dataIndex: "feature",
+                            width: 100,
+                            editor: {
+                                xtype: "combobox",
+                                store: [
+                                    ["SA", "SA"],
+                                    ["FM", "FM"],
+                                    ["TT", "TT"]
+                                ]
+                            }
+                        },
+                        {
+                            text: __("Enable"),
+                            dataIndex: "enable",
+                            editor: "checkbox",
+                            renderer: NOC.render.Bool,
+                            flex: 1
+                        }
+                    ]
+                },
+                {
                     xtype: "fieldset",
                     layout: "hbox",
                     title: __("Integration"),
