@@ -58,7 +58,6 @@ from noc.core.wf.diagnostic import (
     HTTP_DIAG,
     SA_DIAG,
     FM_DIAG,
-    TT_DIAG,
 )
 from noc.core.checkers.base import CheckData, Check
 from noc.core.mx import send_message, MX_LABELS, MX_H_VALUE_SPLITTER, MX_ADMINISTRATIVE_DOMAIN_ID
@@ -3276,8 +3275,8 @@ class FeatureHub(object):
 
     def __init__(self, obj):
         self.logger = logging.getLogger(__name__)
-        self.__supported_features = set(f.lower() in obj.get_supported_features())
-        self.__state: State = o.state
+        self.__supported_features = set(f.lower() for f in obj.get_supported_features())
+        self.__state: State = obj.state
 
     def __getattr__(self, name: str, default: Optional[Any] = None) -> Optional[Any]:
         if name not in self.__supported_features:

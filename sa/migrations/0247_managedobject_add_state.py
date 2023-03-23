@@ -63,10 +63,10 @@ class Migration(BaseMigration):
         # Migrate is_managed
         self.db.execute(
             """UPDATE sa_managedobject SET state=%s, diagnostics = diagnostics || %s::jsonb WHERE is_managed=True""",
-            [self.WF_MANAGED, get_diagnostic("enabled")],
+            [self.WF_MANAGED, self.get_diagnostic("enabled")],
         )
         self.db.execute(
             """UPDATE sa_managedobject SET state=%s, diagnostics = diagnostics || %s::jsonb WHERE is_managed=False""",
-            [self.WF_UNMANAGED, get_diagnostic("blocked")],
+            [self.WF_UNMANAGED, self.get_diagnostic("blocked")],
         )
         self.db.delete_column("sa_managedobject", "is_managed")
