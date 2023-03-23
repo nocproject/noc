@@ -1,0 +1,102 @@
+{
+  "_id": {
+    "$oid": "64189288048505b317a44cf1"
+  },
+  "name": "ttsystem_error_detalization",
+  "category": "fm",
+  "uuid": {
+    "$uuid": "ac6d76f7ce8d4969bbc69615b328a553"
+  },
+  "report_format": "T",
+  "hide": false,
+  "format_source": "T",
+  "is_system": false,
+  "allow_rest": false,
+  "parameters": [
+    {
+      "name": "from_date",
+      "label": "From",
+      "type": "date",
+      "required": true,
+      "localization": {}
+    },
+    {
+      "name": "to_date",
+      "label": "To",
+      "type": "date",
+      "required": true,
+      "localization": {}
+    }
+  ],
+  "templates": [
+    {
+      "output_type": "html",
+      "code": "DEFAULT",
+      "output_name_pattern": ""
+    }
+  ],
+  "bands": [
+    {
+      "name": "Root",
+      "orientation": "H",
+      "queries": [
+        {
+          "datasource": "ttsystemstatds"
+        }
+      ]
+    },
+    {
+      "name": "master_data",
+      "parent": "Root",
+      "orientation": "H",
+      "queries": [
+        {
+          "ds_query": "root_band.rows.filter(pl.col('service').is_in(['create_massive_damage_outer', 'change_massive_damage_outer_close'])).select(['ts', 'server', 'service', 'error_code', 'error_text', 'in_label', 'in_label_2'])"
+        }
+      ]
+    }
+  ],
+  "bands_format": [
+    {
+      "name": "Root",
+      "title_template": "TT System Error Detalization",
+      "column_format": []
+    },
+    {
+      "name": "master_data",
+      "title_template": "",
+      "column_format": [
+        {
+          "name": "ts",
+          "title": "Timestamp"
+        },
+        {
+          "name": "server",
+          "title": "Server"
+        },
+        {
+          "name": "service",
+          "title": "Service"
+        },
+        {
+          "name": "in_label",
+          "title": "Managed object"
+        },
+        {
+          "name": "in_label_2",
+          "title": "TT ID"
+        },
+        {
+          "name": "error_code",
+          "title": "Error code"
+        },
+        {
+          "name": "error_text",
+          "title": "Error text"
+        }
+      ]
+    }
+  ],
+  "permissions": [],
+  "localization": {}
+}

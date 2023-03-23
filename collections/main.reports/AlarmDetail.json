@@ -1,0 +1,243 @@
+{
+  "_id": {
+    "$oid": "63fe3bac5774797899dcc47c"
+  },
+  "name": "AlarmDetail",
+  "category": "fm",
+  "uuid": {
+    "$uuid": "b5a2ba9f2f3e459095a3f4531f332a76"
+  },
+  "hide": false,
+  "format_source": "D",
+  "is_system": false,
+  "allow_rest": false,
+  "parameters": [
+    {
+      "name": "source",
+      "description": "active;both;archived",
+      "label": "Alarm Source",
+      "type": "choice",
+      "required": true,
+      "default": "both",
+      "localization": {}
+    },
+    {
+      "name": "from_date",
+      "label": "From",
+      "type": "date",
+      "required": true,
+      "localization": {}
+    },
+    {
+      "name": "to_date",
+      "label": "To",
+      "type": "date",
+      "required": true,
+      "localization": {}
+    },
+    {
+      "name": "segment",
+      "label": "Segment",
+      "type": "model",
+      "model_id": "inv.NetworkSegment",
+      "required": false,
+      "localization": {}
+    },
+    {
+      "name": "administrative_domain",
+      "label": "By Adm. domain",
+      "type": "model",
+      "model_id": "sa.AdministrativeDomain",
+      "required": false,
+      "localization": {}
+    },
+    {
+      "name": "resource_group",
+      "label": "By Resource Group",
+      "type": "model",
+      "model_id": "inv.ResourceGroup",
+      "required": false,
+      "localization": {}
+    },
+    {
+      "name": "ex_resource_group",
+      "label": "Exclude MO by Resource Group",
+      "type": "model",
+      "model_id": "inv.ResourceGroup",
+      "required": false,
+      "localization": {}
+    },
+    {
+      "name": "min_duration",
+      "label": "Min. Duration",
+      "type": "integer",
+      "required": true,
+      "default": "300",
+      "localization": {}
+    },
+    {
+      "name": "max_duration",
+      "label": "Max. Duration",
+      "type": "integer",
+      "required": true,
+      "default": "0",
+      "localization": {}
+    },
+    {
+      "name": "min_objects",
+      "label": "Min. Objects",
+      "type": "integer",
+      "required": false,
+      "default": "0",
+      "localization": {}
+    },
+    {
+      "name": "min_subscribers",
+      "label": "Min. Subscribers",
+      "type": "integer",
+      "required": false,
+      "default": "0",
+      "localization": {}
+    }
+  ],
+  "templates": [],
+  "bands": [
+    {
+      "name": "Root",
+      "orientation": "H",
+      "queries": [
+        {
+          "datasource": "reportdsalarms"
+        }
+      ]
+    }
+  ],
+  "bands_format": [
+    {
+      "name": "Root",
+      "title_template": "Alarm Detail",
+      "column_format": [
+        {
+          "name": "root_id",
+          "title": "Root ID",
+          "format_type": "string"
+        },
+        {
+          "name": "from_ts",
+          "title": "FROM_TS",
+          "format_type": "string"
+        },
+        {
+          "name": "to_ts",
+          "title": "TO_TS",
+          "format_type": "string"
+        },
+        {
+          "name": "duration_sec",
+          "title": "DURATION_SEC",
+          "format_type": "integer"
+        },
+        {
+          "name": "object_name",
+          "title": "OBJECT_NAME",
+          "format_type": "string"
+        },
+        {
+          "name": "object_address",
+          "title": "OBJECT_ADDRESS",
+          "format_type": "string"
+        },
+        {
+          "name": "object_hostname",
+          "title": "OBJECT_HOSTNAME",
+          "format_type": "string"
+        },
+        {
+          "name": "object_profile",
+          "title": "Profile",
+          "format_type": "string"
+        },
+        {
+          "name": "object_object_profile",
+          "title": "Object Profile",
+          "format_type": "string"
+        },
+        {
+          "name": "object_admdomain",
+          "title": "Administrative Domain",
+          "format_type": "string"
+        },
+        {
+          "name": "object_platform",
+          "title": "Platform",
+          "format_type": "string"
+        },
+        {
+          "name": "object_version",
+          "title": "Version",
+          "format_type": "string"
+        },
+        {
+          "name": "object_project",
+          "title": "Project",
+          "format_type": "string"
+        },
+        {
+          "name": "alarm_class",
+          "title": "Alarm Class",
+          "format_type": "string"
+        },
+        {
+          "name": "alarm_subject",
+          "title": "Alarm Subject",
+          "format_type": "string"
+        },
+        {
+          "name": "maintenance",
+          "title": "Maintenance",
+          "format_type": "string"
+        },
+        {
+          "name": "objects",
+          "title": "Affected Objects",
+          "format_type": "string"
+        },
+        {
+          "name": "subscribers",
+          "title": "Affected Subscriber",
+          "format_type": "string"
+        },
+        {
+          "name": "tt",
+          "title": "TT",
+          "format_type": "string"
+        },
+        {
+          "name": "escalation_ts",
+          "title": "Escalation Time",
+          "format_type": "string"
+        },
+        {
+          "name": "location",
+          "title": "Location",
+          "format_type": "string"
+        },
+        {
+          "name": "container_0",
+          "title": "Container (Level 1)",
+          "format_type": "string"
+        }
+      ]
+    }
+  ],
+  "permissions": [
+    {
+      "user": 301,
+      "edit": false,
+      "launch": true
+    }
+  ],
+  "localization": {
+    "ru": "Детализация аварий"
+  }
+}

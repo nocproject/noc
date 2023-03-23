@@ -1,0 +1,118 @@
+{
+  "_id": {
+    "$oid": "6418269292f76438b14a412d"
+  },
+  "name": "ttsystem_statistics",
+  "category": "fm",
+  "uuid": {
+    "$uuid": "fe8a0495fea94c97a4ad60be78e84a62"
+  },
+  "report_format": "T",
+  "hide": false,
+  "format_source": "T",
+  "is_system": false,
+  "allow_rest": false,
+  "parameters": [
+    {
+      "name": "from_date",
+      "label": "From",
+      "type": "date",
+      "required": true,
+      "localization": {}
+    },
+    {
+      "name": "to_date",
+      "label": "To",
+      "type": "date",
+      "required": true,
+      "localization": {}
+    }
+  ],
+  "templates": [
+    {
+      "output_type": "html",
+      "code": "DEFAULT",
+      "output_name_pattern": ""
+    }
+  ],
+  "bands": [
+    {
+      "name": "Root",
+      "orientation": "H",
+      "queries": [
+        {
+          "datasource": "ttsystemstatds"
+        }
+      ]
+    },
+    {
+      "name": "master_data",
+      "parent": "Root",
+      "orientation": "H",
+      "queries": [
+        {
+          "ds_query": "root_band.rows.groupby(['server', 'service']).agg([pl.count().alias('req_cnt'), pl.col('server').filter(pl.col('error_code') == 0).count().alias('succ_cnt'), pl.col('server').filter(pl.col('error_code') != 0).count().alias('fail_cnt'), (pl.col('server').filter(pl.col('error_code') == 0).count() / pl.count()).alias('succ_pr'), (pl.quantile('duration', 0.25) / 1000).alias('q1'), (pl.quantile('duration', 0.5) / 1000).alias('q2'), (pl.quantile('duration', 0.75) / 1000).alias('q3'), (pl.quantile('duration', 0.95) / 1000).alias('p95'), (pl.max('duration') / 1000).alias('max')])"
+        }
+      ]
+    }
+  ],
+  "bands_format": [
+    {
+      "name": "Root",
+      "title_template": "TT System Statistics",
+      "column_format": []
+    },
+    {
+      "name": "master_data",
+      "title_template": "{{server}}",
+      "column_format": [
+        {
+          "name": "server",
+          "title": "Server"
+        },
+        {
+          "name": "service",
+          "title": "Service"
+        },
+        {
+          "name": "req_cnt",
+          "title": "Request count"
+        },
+        {
+          "name": "succ_cnt",
+          "title": "Success request count"
+        },
+        {
+          "name": "fail_cnt",
+          "title": "Failed request count"
+        },
+        {
+          "name": "succ_pr",
+          "title": "Success request (%)"
+        },
+        {
+          "name": "q1",
+          "title": "Q1 (ms)"
+        },
+        {
+          "name": "q2",
+          "title": "Q2 (ms)"
+        },
+        {
+          "name": "q3",
+          "title": "Q3 (ms)"
+        },
+        {
+          "name": "p95",
+          "title": "p95 (ms)"
+        },
+        {
+          "name": "max",
+          "title": "max (ms)"
+        }
+      ]
+    }
+  ],
+  "permissions": [],
+  "localization": {}
+}
