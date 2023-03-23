@@ -88,6 +88,10 @@ Ext.define("NOC.sa.managedobject.ApplicationModel", {
             persist: false
         },
         {
+            name: "state",
+            type: "string"
+        },
+        {
             name: 'status',
             defaultValue: 'w',
             persist: false

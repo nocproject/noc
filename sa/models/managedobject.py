@@ -36,6 +36,7 @@ from django.db.models import (
     DateTimeField,
     When,
     Case,
+    Value,
     Manager,
 )
 from pydantic import BaseModel

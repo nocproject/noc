@@ -18,6 +18,7 @@ from mongoengine.queryset import Q as MQ
 
 # NOC modules
 from noc.services.web.base.extmodelapplication import ExtModelApplication, view
+from noc.services.web.base.decorators.state import state_handler
 from noc.sa.models.administrativedomain import AdministrativeDomain
 from noc.sa.models.managedobject import ManagedObject, ManagedObjectAttribute
 from noc.sa.models.useraccess import UserAccess
@@ -60,6 +61,7 @@ from noc.sa.models.objectstatus import ObjectStatus
 JP_CLAUSE_PATTERN = "jsonb_path_exists(caps, '$[*] ? (@.capability == \"{}\") ? (@.value {} {})')"
 
 
+@state_handler
 class ManagedObjectApplication(ExtModelApplication):
     """
     ManagedObject application
@@ -297,6 +299,7 @@ class ManagedObjectApplication(ExtModelApplication):
             "segment": str(o.segment.name),
             "auth_profile": str(o.auth_profile.name) if o.auth_profile else "",
             "profile": o.profile.name,
+            "state": str(o.state),
             "pool": str(o.pool.name),
             "platform": o.platform.name if o.platform else "",
             "version": o.version.version if o.version else "",
