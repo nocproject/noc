@@ -12,6 +12,7 @@ from fastapi import APIRouter
 from noc.core.service.jsonrpcapi import JSONRPCAPI, APIError, api
 from noc.core.script.loader import loader
 from noc.core.script.scheme import CLI_PROTOCOLS, HTTP_PROTOCOLS, PROTOCOLS, BEEF
+from noc.core.wf.diagnostic import SA_DIAG
 from noc.sa.models.managedobject import (
     ManagedObject,
     CREDENTIAL_CACHE_VERSION,
@@ -47,7 +48,7 @@ class SAEAPI(JSONRPCAPI):
 
     RUN_SQL = """
         SELECT
-            mo.name, mo.is_managed, mo.profile,
+            mo.name, mo.profile,
             mo.vendor, mo.platform, mo.version,
             mo.scheme, mo.address, mo.port,
             mo."user", mo.password, mo.super_password, mo.remote_path,
@@ -59,7 +60,7 @@ class SAEAPI(JSONRPCAPI):
             mop.cli_privilege_policy, mop.snmp_rate_limit,
             mo.access_preference, mop.access_preference,
             mop.beef_storage, mop.beef_path_template_id,
-            mo.caps
+            mo.caps, mo.diagnostics
         FROM
             sa_managedobject mo
             JOIN sa_managedobjectprofile mop ON (mo.object_profile_id = mop.id)
@@ -159,7 +160,6 @@ class SAEAPI(JSONRPCAPI):
         # Get object credentials
         (
             name,
-            is_managed,
             profile,
             vendor,
             platform,
@@ -190,9 +190,10 @@ class SAEAPI(JSONRPCAPI):
             beef_storage_id,
             beef_path_template_id,
             caps,
+            diagnostics
         ) = data[0]
         # Check object is managed
-        if not is_managed:
+        if SA_DIAG not in diagnostics:
             metrics["error", ("type", "object_not_managed")] += 1
             raise APIError("Object is not managed")
         # Build capabilities
