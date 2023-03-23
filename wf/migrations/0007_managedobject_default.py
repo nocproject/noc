@@ -68,6 +68,11 @@ class Migration(BaseMigration):
                     "labels": [],
                     "effective_labels": [],
                     "bi_id": Int64("478291320657225258"),
+                    "feature_settings": {
+                        "SA": {"enable": False},
+                        "FM": {"enable": False},
+                        "TT": {"enable": False},
+                    },
                 },
                 {
                     "_id": ObjectId("641b371eb846e3cc661ea8b3"),
@@ -86,6 +91,11 @@ class Migration(BaseMigration):
                     "labels": [],
                     "effective_labels": [],
                     "bi_id": Int64("5174969568830998645"),
+                    "feature_settings": {
+                        "SA": {"enable": False},
+                        "FM": {"enable": False},
+                        "TT": {"enable": False},
+                    },
                 },
                 {
                     "_id": ObjectId("641b3c5e219a478783321714"),
@@ -105,6 +115,11 @@ class Migration(BaseMigration):
                     "labels": [],
                     "effective_labels": [],
                     "bi_id": Int64("6008822293393706567"),
+                    "feature_settings": {
+                        "SA": {"enable": False},
+                        "FM": {"enable": False},
+                        "TT": {"enable": False},
+                    },
                 },
             ]
         )

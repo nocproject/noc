@@ -24,7 +24,8 @@ class StateApplication(ExtDocApplication):
         r = super().instance_to_dict(o, fields)
         if "feature_settings" in r:
             r["feature_settings"] = [
-                {"feature": f, "enable": r["feature_settings"][f].enable} for f in r["feature_settings"]
+                {"feature": f, "enable": r["feature_settings"][f].enable}
+                for f in r["feature_settings"]
             ]
         return r
 
