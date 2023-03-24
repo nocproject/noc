@@ -3,7 +3,7 @@
 
     - name: count servers
       set_fact:
-        redpanda_servers_count:  "{{ groups['svc-redpanda-exec'] | length }}"
+        redpanda_servers_count: "{{ groups['svc-redpanda-exec'] | length }}"
 
     - name: Ensure redpanda setup. max server count
       fail:
