@@ -370,7 +370,7 @@ class Scheduler(object):
         Remove job from schedule
         """
         self.logger.info("Remove job %s(%s)", jcls, key)
-        self.get_collection().remove({Job.ATTR_CLASS: jcls, Job.ATTR_KEY: key})
+        self.get_collection().delete_many({Job.ATTR_CLASS: jcls, Job.ATTR_KEY: key})
 
     def remove_job_by_id(self, jid):
         """
