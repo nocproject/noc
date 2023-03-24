@@ -16,10 +16,7 @@ forms:
         - info
         - warn
         - error
-    redpanda_insecure:
-      label: "don't check certificates"
-      type: bool
-      default: false
+
 services:
   redpanda:
     level: system

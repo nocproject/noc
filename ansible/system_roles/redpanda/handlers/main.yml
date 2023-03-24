@@ -4,3 +4,9 @@
   systemd:
     name: redpanda
     daemon_reload: "True"
+
+- name: restart redpanda
+  become: "True"
+  service:
+    name: redpanda
+    state: restarted
