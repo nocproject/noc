@@ -151,7 +151,7 @@ Ext.define("NOC.core.StateField", {
     getValue: function() {
         var me = this;
 
-        if(me.up().xtype === "roweditor") {
+        if(me.up() && me.up().xtype === "roweditor") {
             var rec = me.up().getRecord();
             me.stateId = rec ? rec.id : null;
         }
