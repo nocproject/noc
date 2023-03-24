@@ -15,5 +15,3 @@ redpanda_rpc_port: 33145
 redpanda_admin_api_port: 9644
 
 redpanda_memory_limit: 2
-
-
