@@ -6,7 +6,7 @@ redpanda_config_path: "{{ etc_prefix }}/redpanda"
 redpanda_pid_path: "{{ redpanda_run_path }}/redpanda.pid"
 redpanda_run_path: "/var/run/redpanda/"
 redpanda_bin_path: "/opt/redpanda/bin/"
-redpanda_path_data: "/var/lib/redpanda/data"
+redpanda_data_directory: "/var/lib/redpanda/data"
 redpanda_organization: "noc"
 redpanda_cluster_id: "noc"
 
