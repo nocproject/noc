@@ -171,6 +171,7 @@ class ReportEngine(object):
         :param ctx:
         :param root_band:
         :return:
+
         """
         if not queries:
             return None
@@ -178,6 +179,7 @@ class ReportEngine(object):
         for query in queries:
             data = None
             if query.json_data:
+                # return join fields (last DS
                 data = pl.DataFrame(orjson.loads(query.json_data))
             if query.datasource:
                 data = cls.query_datasource(query, ctx)
@@ -192,7 +194,8 @@ class ReportEngine(object):
                 continue
             if rows is not None:
                 # @todo Linked field!
-                rows = rows.join(data)
+                # df_left_join = df_customers.join(df_orders, on="customer_id", how="left")
+                rows = rows.join(data, on="managed_object_id", how="left")
                 continue
             rows = data
         return rows

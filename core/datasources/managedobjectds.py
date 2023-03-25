@@ -45,7 +45,7 @@ class ManagedObjectDS(BaseDataSource):
     name = "managedobjectds"
 
     fields = [
-        FieldInfo(name="id", description="Object Id", type=FieldType.UINT),
+        FieldInfo(name="managed_object_id", description="Object Id", type=FieldType.UINT),
         FieldInfo(name="name", description="Object Name"),
         FieldInfo(name="profile", description="Profile Name"),
         FieldInfo(
@@ -124,6 +124,12 @@ class ManagedObjectDS(BaseDataSource):
             description="Object physical interfaces",
             internal_name="DB | Interfaces",
             type=FieldType.UINT,
+            is_caps=True,
+        ),
+        FieldInfo(
+            name="object_labels",
+            description="Object Labels",
+            internal_name="labels",
             is_caps=True,
         ),
         # Oper fields

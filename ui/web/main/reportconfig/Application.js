@@ -12,6 +12,7 @@ Ext.define('NOC.main.reportconfig.Application', {
         'NOC.core.JSONPreview',
         "NOC.core.ListFormField",
         "NOC.core.label.LabelField",
+        "NOC.core.StringListField",
         'Ext.ux.form.JSONField',
         'Ext.ux.form.StringsField',
         'Ext.ux.form.GridField',
@@ -95,6 +96,12 @@ Ext.define('NOC.main.reportconfig.Application', {
                             title: __('Common'),
                             items: [
                                 {
+                                    name: 'title',
+                                    xtype: 'textfield',
+                                    fieldLabel: __('Title'),
+                                    uiStyle: 'large'
+                                },
+                                {
                                     name: 'description',
                                     xtype: 'textarea',
                                     fieldLabel: __('Description'),
@@ -117,23 +124,6 @@ Ext.define('NOC.main.reportconfig.Application', {
                                         ["fm", __("Fault Management")],
                                         ["sa", __("Service Activation")],
                                         ["inv", __("Inventory")]
-                                    ]
-                                },
-                                {
-                                    xtype: 'fieldcontainer',
-                                    fieldLabel: 'Size',
-                                    defaultType: 'radiofield',
-                                    layout: 'hbox',
-                                    defaults: {
-                                        flex: 1
-                                    },
-                                    fieldLabel: __("Report Format"),
-                                    allowBlank: false,
-                                    width: 600,
-                                    items: [
-                                        {boxLabel: __("By Datasource"), inputValue: "D", name: "format_source"},
-                                        {boxLabel: __("By Source"), inputValue: "S", name: "format_source"},
-                                        {boxLabel: __("By Template"), inputValue: "T", name: "format_source"}
                                     ]
                                 },
                                 {
@@ -368,6 +358,9 @@ Ext.define('NOC.main.reportconfig.Application', {
                                                     ["integer", __("Integer")],
                                                     ["string", __("String")],
                                                     ["date", __("Date")],
+                                                    ["bool", __("Bool")],
+                                                    ["choice", __("Choice")],
+                                                    ["fields_selector", __("Fields Selector")],
                                                     ["model", __("Model Lookup")]
                                                 ]
                                             },
@@ -375,7 +368,9 @@ Ext.define('NOC.main.reportconfig.Application', {
                                                 "integer": __("Integer"),
                                                 "string": __("String"),
                                                 "date": __("Date"),
-                                                "bool": __("Date"),
+                                                "bool": __("Bool"),
+                                                "choice": __("Choice"),
+                                                "fields_selector": __("Fields Selector"),
                                                 "model": __("Model Lookup")
                                             })
                                         },
@@ -391,12 +386,18 @@ Ext.define('NOC.main.reportconfig.Application', {
                                             dataIndex: 'model_id',
                                             renderer: NOC.render.Lookup('model_id'),
                                             editor: 'main.ref.modelid.LookupField',
-                                            width: 200
+                                            width: 150
+                                        },
+                                        {
+                                            text: __('Choices'),
+                                            dataIndex: 'choices',
+                                            width: 200,
+                                            editor: 'stringlistfield'
                                         },
                                         {
                                             text: __('Default'),
                                             dataIndex: 'default',
-                                            width: 150,
+                                            width: 100,
                                             editor: 'textfield'
                                         },
                                         {
@@ -445,7 +446,7 @@ Ext.define('NOC.main.reportconfig.Application', {
                                                     dataIndex: "title",
                                                     text: __("Title"),
                                                     editor: "textfield",
-                                                    width: 100
+                                                    width: 200
                                                 },
                                                 {
                                                     text: __("Align"),
@@ -508,12 +509,18 @@ Ext.define('NOC.main.reportconfig.Application', {
                             ]
                         },
                         {
-                            title: __('Title'),
+                            title: __('Localization'),
                             items: [
                                 {
                                     name: 'localization',
                                     xtype: 'gridfield',
                                     columns: [
+                                        {
+                                            text: __('Field'),
+                                            dataIndex: 'field',
+                                            width: 300,
+                                            editor: 'textfield'
+                                        },
                                         {
                                             text: __('Language'),
                                             dataIndex: 'language',
@@ -526,8 +533,7 @@ Ext.define('NOC.main.reportconfig.Application', {
                                             dataIndex: 'value',
                                             width: 400,
                                             editor: 'textfield'
-                                        },
-
+                                        }
                                     ]
                                 }
                             ]

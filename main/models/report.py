@@ -8,7 +8,8 @@
 # Python modules
 import operator
 from threading import Lock
-from typing import Dict, Any, Optional, List
+from collections import defaultdict
+from typing import Dict, Any, Optional, List, Set
 
 # Third-party modules
 from mongoengine.document import Document
@@ -21,6 +22,7 @@ from mongoengine.fields import (
     ListField,
     DictField,
     FileField,
+    MapField,
 )
 import cachetools
 
@@ -33,6 +35,7 @@ from noc.aaa.models.user import User
 from noc.aaa.models.group import Group
 
 id_lock = Lock()
+perm_lock = Lock()
 
 
 class ReportParam(EmbeddedDocument):
@@ -40,8 +43,12 @@ class ReportParam(EmbeddedDocument):
     name = StringField(required=True)
     description = StringField(required=False)
     label = StringField()
-    type = StringField(choices=["integer", "string", "date", "model", "choice"], required=True)
+    type = StringField(
+        choices=["integer", "string", "date", "model", "choice", "bool", "fields_selector"],
+        required=True,
+    )
     model_id = StringField()
+    choices = ListField(StringField())
     required = BooleanField(default=False)
     default = StringField(required=False)
     localization = DictField()
@@ -78,6 +85,10 @@ class BandFormat(EmbeddedDocument):
     title_template = StringField()
     column_format = ListField(DictField())
 
+    @property
+    def is_root(self) -> bool:
+        return self.name == "Root"
+
     def __str__(self):
         return self.name
 
@@ -88,6 +99,10 @@ class Band(EmbeddedDocument):
     parent = StringField()
     orientation = StringField(choices=["H", "V", "C", "U"])
     queries = EmbeddedDocumentListField(Query)
+
+    @property
+    def is_root(self) -> bool:
+        return self.name == "Root"
 
 
 class Permission(EmbeddedDocument):
@@ -116,9 +131,7 @@ class Report(Document):
     #
     code = StringField()  # Optional code for REST access
     hide = BooleanField()  # Hide from ReportMenu
-    format_source = StringField(
-        choices=[("D", "By Datasource"), ("S", "By Source"), ("T", "By Template")]
-    )  #
+    title = StringField()  # Menu Title
     report_source = StringField()
     is_system = BooleanField(default=False)  # Report Is System Based
     allow_rest = BooleanField(default=False)  # Available report data from REST API
@@ -129,10 +142,11 @@ class Report(Document):
     bands_format: List["BandFormat"] = EmbeddedDocumentListField(BandFormat)
     #
     permissions = EmbeddedDocumentListField(Permission)
-    localization = DictField()
+    localization = MapField(DictField())
 
     _id_cache = cachetools.TTLCache(maxsize=100, ttl=60)
     _name_cache = cachetools.TTLCache(maxsize=100, ttl=60)
+    _effective_perm_cache = cachetools.TTLCache(maxsize=100, ttl=60)
 
     def __str__(self):
         return self.name
@@ -146,6 +160,13 @@ class Report(Document):
     @cachetools.cachedmethod(operator.attrgetter("_name_cache"), lock=lambda _: id_lock)
     def get_by_name(cls, name: str) -> Optional["Report"]:
         return Report.objects.filter(name=name).first()
+
+    def get_localization(self, field: str, lang: Optional[str] = None):
+        from noc.config import config
+
+        lang = lang or config.language
+        if field in self.localization:
+            return self.localization[field].get(lang)
 
     @property
     def config(self) -> ReportConfig:
@@ -174,7 +195,7 @@ class Report(Document):
                 output_name_pattern=t.output_name_pattern,
                 bands_format=b_format_cfg,
             )
-        if self.format_source == "S" and self.report_source:
+        if self.report_source:
             return ReportConfig(
                 name=self.name,
                 root_band=ReportBand(name="Root", children=[], source=self.report_source),
@@ -218,7 +239,56 @@ class Report(Document):
             parameters=params,
         )
 
-    def get_datasource(self):
+    def get_band_format(self, band: str = "Root") -> "BandFormat":
+        for bf in self.bands_format:
+            if bf.name == band:
+                return bf
+        return None
+
+    def get_band_columns(self, band: str = "Root") -> Dict[str, List[str]]:
         from noc.core.datasources.loader import loader
 
-        return loader[self.bands[0].queries[0].datasource]
+        r = defaultdict(list)
+        for b in self.bands:
+            if b.name != band:
+                continue
+            for num, q in enumerate(b.queries):
+                if not q.datasource:
+                    continue
+                ds = loader[q.datasource]
+                r[q.datasource] = [f.name for f in ds.fields]
+                if not num:
+                    # default
+                    r[""] = [f.name for f in ds.fields]
+            break
+        return r
+
+    def get_root_datasource(self):
+        from noc.core.datasources.loader import loader
+
+        for b in self.bands:
+            if b.is_root and b.queries and b.queries[0].datasource:
+                return loader[b.queries[0].datasource]
+        return None
+
+    @classmethod
+    @cachetools.cachedmethod(operator.attrgetter("_effective_perm_cache"), lock=lambda _: perm_lock)
+    def get_effective_permissions(cls, user) -> Set[str]:
+        """
+        Returns a set of effective user permissions,
+        counting group and implied ones
+        """
+        if user.is_superuser:
+            return {str(rid) for rid in Report.objects.scalar("id")}
+        perms = set()
+        for rid in Report.objects.filter(
+            permissions__user=user.id,
+            permissions__launch=True,
+        ).scalar("id"):
+            perms.add(str(rid))
+        for rid in Report.objects.filter(
+            permissions__group__in=list(user.groups.all().values_list("id", flat=True)),
+            permissions__launch=True,
+        ).scalar("id"):
+            perms.add(str(rid))
+        return perms

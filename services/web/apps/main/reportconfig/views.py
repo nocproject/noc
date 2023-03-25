@@ -5,6 +5,9 @@
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
+# Python modules
+from collections import defaultdict
+
 # Third-party modules
 from django.http import HttpResponse, HttpResponseBadRequest
 
@@ -17,7 +20,7 @@ from noc.core.translation import ugettext as _
 from noc.models import get_model
 
 
-class ReportApplication(ExtDocApplication):
+class ReportConfigApplication(ExtDocApplication):
     """
     Report application
     """
@@ -31,6 +34,12 @@ class ReportApplication(ExtDocApplication):
         if isinstance(o, Report):
             bands = []
             for b in r["bands"]:
+                queries = []
+                for q in b.get("queries") or []:
+                    if q["datasource"]:
+                        q["datasource__label"] = q["datasource"]
+                    queries += [q]
+                b["queries"] = queries
                 if b["name"] == "Root":
                     r["root_orientation"] = b.get("orientation")
                     r["root_queries"] = b.get("queries") or []
@@ -39,9 +48,12 @@ class ReportApplication(ExtDocApplication):
                     b.pop("parent")
                 bands += [b]
             r["bands"] = bands
-            r["localization"] = [
-                {"language": lang, "value": value} for lang, value in o.localization.items()
-            ]
+            r["localization"] = []
+            for field, items in o.localization.items():
+                for lang, value in items.items():
+                    r["localization"] += [
+                        {"field": field, "language": lang, "language__label": lang, "value": value}
+                    ]
         return r
 
     def clean(self, data):
@@ -57,17 +69,65 @@ class ReportApplication(ExtDocApplication):
                 b["parent"] = "Root"
             bands += [b]
         data["bands"] = bands
-        localization = {}
+        localization = defaultdict(dict)
         for row in data.get("localization"):
-            localization[row["language"]] = row["value"]
+            localization[row["field"]][row["language"]] = row["value"]
         data["localization"] = localization
         return super().clean(data)
+
+    @staticmethod
+    def get_columns_filter(report: "Report", checked):
+        """
+        Get columns filter
+        :param report:
+        :return:
+        """
+        r = []
+        checked = checked or {}
+        root_fmt = report.get_band_format()
+        if not root_fmt.column_format:
+            return r
+        columns = report.get_band_columns()
+        for field in root_fmt.column_format:
+            field_name = field["name"]
+            if "." in field_name:
+                q_name, fn = field_name.split(".")
+            else:
+                q_name, fn = "", field_name
+            if q_name not in columns:
+                continue
+            elif fn not in columns[q_name] and fn not in {"all", "*"}:
+                continue
+            r += [(field_name, field.get("title") or field_name, field_name in checked)]
+        return r
+        # Root datasource, Merge fields (by name)
+        # root_ds = {}
+        # root_ds = report.get_root_datasource()
+        # root_band_columns = report.get_band_columns()
+        # root_fmt = None
+        # for bf in report.bands_format:
+        #     if bf.is_root:
+        #         root_fmt = bf
+        #         break
+
+        # columns = {}
+        # for cf in bf.column_format:
+        #     columns[cf["name"]] = cf["title"]
+        # checked = {p.strip() for p in param.default.split(",")}
+        # for query_name in root_band_columns:
+        #     if columns and field.name not in columns:
+        #         continue
+        #     title = report.get_localization(
+        #         f"columns.{field.name}", lang=pref_lang
+        #     ) or columns.get(field.name, field.name)
+        #     cfg["storeData"] += [[field.name, title, field.name in checked]]
 
     @view(url=r"^(?P<report_id>\S+)/form/$", method=["GET"], access="launch", api=True)
     def api_form_report(self, request, report_id):
         report: "Report" = self.get_object_or_404(Report, id=report_id)
+        pref_lang = request.user.preferred_language
         r = {
-            "title": report.name,
+            "title": report.get_localization(field="title", lang=pref_lang),
             "description": report.description,
             "params": [],
             "preview": False,
@@ -75,13 +135,17 @@ class ReportApplication(ExtDocApplication):
                 {"text": "csv", "param": {"output_type": "csv"}},
             ],
         }
-        if report.format_source == "S":
+        if report.report_source:
             r["preview"] = True
             r["dockedItems"] += [{"text": "Preview", "param": {"output_type": "html"}}]
         for param in report.parameters:
             cfg = {
                 "name": param.name,
-                "fieldLabel": param.label,
+                "fieldLabel": report.get_localization(
+                    f"parameters.{param.name}",
+                    lang=pref_lang,
+                )
+                or param.label,
                 "allowBlank": not param.required,
                 "uiStyle": "medium",
             }
@@ -98,6 +162,8 @@ class ReportApplication(ExtDocApplication):
             elif param.type == "integer":
                 cfg["xtype"] = "numberfield"
                 cfg["uiStyle"] = "small"
+                if param.default:
+                    cfg["value"] = int(param.default)
             elif param.type == "date":
                 cfg["xtype"] = "datefield"
                 cfg["format"] = "d.m.Y"
@@ -106,21 +172,17 @@ class ReportApplication(ExtDocApplication):
                 cfg["xtype"] = "radiogroup"
                 cfg["items"] = [
                     {"boxLabel": x, "inputValue": x, "checked": x == param.default}
-                    for x in param.description.split(";")
+                    for x in param.choices
                 ]
+            elif param.type == "fields_selector":
+                cf = self.get_columns_filter(
+                    report, checked={p.strip() for p in param.default.split(",")}
+                )
+                cfg["xtype"] = "reportcolumnselect"
+                cfg["storeData"] = cf
             else:
                 cfg["xtype"] = "textfield"
             r["params"] += [cfg]
-        if report.format_source == "D":
-            ds = report.get_datasource()
-            r["params"] += [
-                {
-                    "name": "fields",
-                    "xtype": "reportcolumnselect",
-                    "fieldLabel": "Fields",
-                    "storeData": [[ff.name, ff.name, False] for ff in ds.fields],
-                }
-            ]
         # formats
         return r
 

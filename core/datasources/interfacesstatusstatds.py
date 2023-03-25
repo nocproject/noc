@@ -17,7 +17,7 @@ from noc.inv.models.interface import Interface
 
 
 class InterfacesStatusStatDS(BaseDataSource):
-    name = "interfacesstatusstat"
+    name = "interfacesstatusstatds"
 
     # "Up/10G", "Up/1G", "Up/100M", "Up/10M", "Down/-", "-"
     fields = [

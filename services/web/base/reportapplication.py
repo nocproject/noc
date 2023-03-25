@@ -10,9 +10,9 @@ import logging
 
 # NOC modules
 from noc.core.translation import ugettext as _
-from noc.core.comp import smart_text
+from noc.core.middleware.tls import get_user
 from .application import Application, view
-from .access import Permit
+from .access import Permission
 
 
 class ReportApplication(Application):
@@ -60,7 +60,7 @@ class ReportApplication(Application):
         """
 
     def get_menu(self):
-        return [_("Reports"), smart_text(self.title)]
+        return [_("Reports"), self.title]
 
     @view(url=r"^$", url_name="view", access="view", menu=get_menu)
     def view_report(self, request, format="html"):
@@ -103,21 +103,17 @@ class ReportApplication(Application):
         return self.render_response(rdata, content_type=self.content_types[format])
 
 
-class ReportConfigApplication(Application):
+class ReportByConfigApplication(Application):
     """
     Report Config application
     """
 
     CATEGORY_MAP = {"main", "fm", "sa", "inv"}
 
-    report_id = None
+    report_id: str = None
+    report_config = None
 
     def __init__(self, site):
-        from noc.main.models.report import Report
-
-        self.report = Report.get_by_id(self.report_id)
-        self.title = self.report.name
-        self.menu = [_("Reports"), self.report.name]
         self.site = site
         self.service = None  # Set by web
         self.module = self.get_module()
@@ -128,9 +124,38 @@ class ReportConfigApplication(Application):
         self.logger = logging.getLogger(self.app_id)
         self.j2_env = None
 
-    def get_module(self) -> str:
-        if self.report.category in self.CATEGORY_MAP:
-            return self.report.category
+    @property
+    def title(self) -> str:
+        user = get_user()
+        return self.report.get_localization(
+            field="title", lang=user.preferred_language if user else None,
+        ) or self.report.title or self.report.name
+
+    @property
+    def menu(self):
+        return [_("Reports"), self.title]
+
+    @classmethod
+    def get_report_config(cls):
+        """
+        Return Report Config by Report Id
+        :return:
+        """
+        from noc.main.models.report import Report
+
+        if not cls.report_config:
+            cls.report_config = Report.get_by_id(cls.report_id)
+        return cls.report_config
+
+    @property
+    def report(self):
+        return self.get_report_config()
+
+    @classmethod
+    def get_module(cls) -> str:
+        report_config = cls.get_report_config()
+        if report_config.category in cls.CATEGORY_MAP:
+            return report_config.category
         return "main"
 
     @classmethod
@@ -146,7 +171,7 @@ class ReportConfigApplication(Application):
 
     @property
     def launch_access(self):
-        return Permit()
+        return ReportPermit()
 
     def get_launch_info(self, request):
         """
@@ -156,3 +181,18 @@ class ReportConfigApplication(Application):
         r = super().get_launch_info(request)
         r["params"]["report_id"] = self.report_id
         return r
+
+    def get_permissions(self):
+        return set()
+
+
+class ReportPermit(Permission):
+    """
+    Always permit
+    """
+
+    def check(self, app: "ReportConfigApplication", user, obj=None) -> bool:
+        from noc.main.models.report import Report
+
+        reports = Report.get_effective_permissions(user)
+        return app.report_id in reports

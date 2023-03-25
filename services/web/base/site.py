@@ -398,12 +398,12 @@ class Site(object):
         :return:
         """
         from noc.main.models.report import Report
-        from .reportapplication import ReportConfigApplication
+        from .reportapplication import ReportByConfigApplication
 
         for report in Report.objects.filter():
             if report.hide:
                 continue
-            app = types.new_class("ReportConfigApplication", (ReportConfigApplication,))
+            app = types.new_class("ReportByConfigApplication", (ReportByConfigApplication,))
             app.report_id = str(report.id)
             self.do_register(app)
 
@@ -513,7 +513,7 @@ class Site(object):
         if content_type in cls.JSON_CONTENT_TYPES:
             return True
         # Complex content-type
-        if ";" in content_type:
+        if content_type and ";" in content_type:
             ct, _ = content_type.rsplit(";", 1)
             return ct.strip() in cls.JSON_CONTENT_TYPES
         return False
