@@ -22,7 +22,7 @@
 
 - name: install redpanda from repository
   yum:
-    name: "redpanda-{{ redpanda_version }}"
+    name: "redpanda-{{ redpanda_version }}*"
     state: present
     update_cache: true
   environment:
