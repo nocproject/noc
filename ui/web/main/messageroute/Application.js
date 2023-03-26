@@ -149,10 +149,10 @@ Ext.define("NOC.main.messageroute.Application", {
                             name: "action",
                             xtype: "combobox",
                             store: [
-                                ["drop", "drop"],
-                                ["dump", "dump"],
-                                ["stream", "stream"],
-                                ["notification", "notificaiton"]
+                                ["drop", "Drop"],
+                                ["dump", "Dump"],
+                                ["stream", "Stream"],
+                                ["notification", "Notificaiton"]
                             ],
                             fieldLabel: __("Action"),
                             uiStyle: "medium",
