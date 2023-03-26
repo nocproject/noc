@@ -189,7 +189,7 @@ class MetricAction(Document):
 
     def clean(self):
         if not self.compose_inputs or not self.compose_inputs[0].metric_type:
-            raise ValidationError({"compose_inputs": f"Empty MetricType"})
+            raise ValidationError({"compose_inputs": "Empty MetricType"})
         if not self.compose_expression:
             return
         try:
