@@ -280,7 +280,10 @@ class Script(BaseScript):
         return list(r.values())
 
     def execute_snmp_mpls_mib(self):
-        names = {x: y for y, x in self.scripts.get_ifindexes().items()}
+        names = {
+            x["ifindex"]: x["interface"]
+            for x in self.scripts.get_interface_properties(enable_ifindex=True)
+        }
         r = {}
         for conf_id, vrf_descr, vrf_rd, vrf_oper in self.snmp.get_tables(
             [

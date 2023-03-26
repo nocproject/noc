@@ -1,7 +1,7 @@
 # ---------------------------------------------------------------------
 # Cisco.IOS.get_cdp_neighbors
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2022 The NOC Project
+# Copyright (C) 2007-2023 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -43,7 +43,7 @@ class Script(BaseScript):
             res.setdefault((vif[int(j)], jo), {})[f] = dv
         for ii in res:
             try:
-                r_device_id = smart_text(res[ii]["6"], errors="replace")
+                r_device_id = smart_text(res[ii]["6"], errors="replace").strip("\x00 ")
                 # check if "()" in device_id and platform starts with "N", then clear out
                 if self.rx_serial_check.match(r_device_id) and res[ii]["8"].startswith("N"):
                     r_device_id = self.rx_serial_check.match(r_device_id).group(1)
