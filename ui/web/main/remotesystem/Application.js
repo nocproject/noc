@@ -154,6 +154,11 @@ Ext.define("NOC.main.remotesystem.Application", {
                             boxLabel: __("Resource Group")
                         },
                         {
+                            name: "enable_l2domain",
+                            xtype: "checkbox",
+                            boxLabel: __("L2 Domain")
+                        },
+                        {
                             name: "enable_ttsystem",
                             xtype: "checkbox",
                             boxLabel: __("TT System")

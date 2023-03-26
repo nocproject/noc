@@ -109,6 +109,10 @@ Ext.define("NOC.main.remotesystem.Model", {
             type: "boolean"
         },
         {
+            name: "enable_l2domain",
+            type: "boolean"
+        },
+        {
             name: "enable_project",
             type: "boolean"
         },
