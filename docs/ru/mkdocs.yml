@@ -20,6 +20,7 @@ nav:
           - OKTMO Codes: user/howto/fias/oktmo_region_codes.md
           - Собственный статичный дашборд с графиками устройства в НОКе: user/howto/how-to-create-custom-device-grafana-dash.md
           - Использование Housekeeper для сбора данных с устройства: user/howto/how-to-use-hk-for-collect-device-data.md
+          - Как импортировать MIB файл в НОК: user/howto/how-to-import-mib-file.md
       - Background:
           - Обзор: user/background/index.md
           - Работа с конфигурацией оборудования: user/background/configuration-management/index.md
