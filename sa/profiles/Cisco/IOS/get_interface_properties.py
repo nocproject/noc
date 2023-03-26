@@ -10,7 +10,6 @@ from noc.sa.profiles.Generic.get_interface_properties import Script as BaseScrip
 
 
 class Script(BaseScript):
-
     name = "Cisco.IOS.get_interface_properties"
 
     def interface_filter(self, interface):
