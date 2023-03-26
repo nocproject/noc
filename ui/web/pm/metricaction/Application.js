@@ -40,7 +40,7 @@ Ext.define("NOC.pm.metricaction.Application", {
                             ["nth", "Nth"],
                             ["mean", "Mean (Average)"]
                         ],
-                        value: "disable",
+                        value: null,
                         listeners: {
                             scope: me,
                             change: Ext.pass(me._setFieldsDisabled, {
@@ -183,7 +183,7 @@ Ext.define("NOC.pm.metricaction.Application", {
                             ["indicator", "Indicator"],
                             ["logistic", "Logistic"]
                         ],
-                        value: "Disable",
+                        value: null,
                         listeners: {
                             scope: me,
                             change: Ext.pass(me._setFieldsDisabled, {

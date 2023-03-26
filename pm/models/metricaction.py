@@ -188,6 +188,8 @@ class MetricAction(Document):
         return MetricAction.objects.filter(id=oid).first()
 
     def clean(self):
+        if not self.compose_inputs or not self.compose_inputs[0].metric_type:
+            raise ValidationError({"compose_inputs": "Empty MetricType"})
         if not self.compose_expression:
             return
         try:
@@ -399,6 +401,8 @@ class MetricAction(Document):
             )
             if dkey_input:
                 nodes["dump"].inputs += [dkey_input]
+        if not nodes:
+            return
         return GraphConfig(nodes=list(nodes.values()))
 
     def iter_changed_datastream(self, changed_fields=None):
