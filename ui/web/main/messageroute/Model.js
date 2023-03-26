@@ -62,7 +62,7 @@ Ext.define("NOC.main.messageroute.Model", {
         {
             name: "action",
             type: "string",
-            defaultValue: "notificaiton"
+            defaultValue: "notification"
         },
         {
             name: "stream",
