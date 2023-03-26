@@ -54,7 +54,6 @@ class SensorProfile(Document):
         "auto_create_index": False,
         "indexes": [
             "labels",
-            "effective_labels",
             "match_rules.labels",
             ("dynamic_classification_policy", "match_rules.labels"),
         ],

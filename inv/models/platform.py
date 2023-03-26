@@ -55,7 +55,6 @@ class Platform(Document):
             {"fields": ["vendor", "name"], "unique": True},
             ("vendor", "aliases"),
             "labels",
-            "effective_labels",
         ],
     }
     vendor = PlainReferenceField(Vendor)

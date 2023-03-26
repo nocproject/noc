@@ -163,7 +163,6 @@ class ObjectModel(Document):
             ("vendor", "data.asset.part_no"),
             ("vendor", "data.asset.order_part_no"),
             "labels",
-            "effective_labels",
         ],
         "json_collection": "inv.objectmodels",
         "json_unique_fields": ["name", "uuid"],

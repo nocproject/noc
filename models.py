@@ -405,9 +405,9 @@ LABEL_MODELS = {
     "inv.Interface": "enable_interface",
     #
     "crm.Subscriber": "enable_subscriber",
-    "crm.SubscriberProfile": "enable_subscriberprofile",
+    "crm.SubscriberProfile": "enable_subscriber",
     "crm.Supplier": "enable_supplier",
-    "crm.SupplierProfile": "enable_supplierprofile",
+    "crm.SupplierProfile": "enable_supplier",
     #
     "dns.DNSZone": "enable_dnszone",
     "dns.DNSZoneRecord": "enable_dnszonerecord",

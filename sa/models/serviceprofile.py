@@ -53,7 +53,7 @@ class ServiceProfile(Document):
         "collection": "noc.serviceprofiles",
         "strict": False,
         "auto_create_index": False,
-        "indexes": ["labels", "effective_labels"],
+        "indexes": ["labels"],
     }
     name = StringField(unique=True)
     description = StringField()

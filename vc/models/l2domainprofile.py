@@ -56,10 +56,7 @@ class L2DomainProfile(Document):
         "collection": "l2domainprofiles",
         "strict": False,
         "auto_create_index": False,
-        "indexes": [
-            "labels",
-            "effective_labels",
-        ],
+        "indexes": ["labels"],
     }
 
     name = StringField(unique=True)

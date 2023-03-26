@@ -41,7 +41,7 @@ class VLANProfile(Document):
         "collection": "vlanprofiles",
         "strict": False,
         "auto_create_index": False,
-        "indexes": ["labels", "effective_labels"],
+        "indexes": ["labels"],
     }
 
     name = StringField(unique=True)
