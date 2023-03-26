@@ -32,6 +32,7 @@ class Script(BaseScript):
 
     name = "Cisco.IOS.get_interfaces"
     interface = IGetInterfaces
+    MAX_REPETITIONS = 15
 
     rx_sh_int = re.compile(
         r"^(?P<interface>.+?)\s+is(?:\s+administratively)?\s+(?P<admin_status>up|down),\s+line\s+"
