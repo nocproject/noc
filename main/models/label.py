@@ -31,14 +31,15 @@ import cachetools
 import orjson
 
 # NOC modules
-from noc.core.model.decorator import on_save, on_delete
+from noc.core.model.decorator import on_save, on_delete, on_delete_check
 from noc.core.mongo.fields import ForeignKeyField, PlainReferenceField
 from noc.core.change.decorator import change
 from noc.main.models.handler import Handler
 from noc.main.models.remotesystem import RemoteSystem
+from noc.main.models.prefixtable import PrefixTable
 from noc.models import get_model, is_document, LABEL_MODELS
 from noc.vc.models.vlanfilter import VLANFilter
-from noc.main.models.prefixtable import PrefixTable
+from noc.models import get_model_id
 
 
 MATCH_OPS = {"=", "<", ">", "&"}
@@ -105,6 +106,31 @@ class PrefixFilterItem(EmbeddedDocument):
 @on_save
 @change
 @on_delete
+@on_delete_check(
+    check=[
+        ("fm.AlarmRule", "match__labels"),
+        ("fm.AlarmRule", "match__exclude_labels"),
+        ("pm.MetricRule", "match__labels"),
+        ("pm.MetricRule", "match__exclude_labels"),
+        ("main.MessageRoute", "match__labels"),
+        ("main.MessageRoute", "match__exclude_labels"),
+        ("sa.ObjectDiagnosticConfig", "match__labels"),
+        ("sa.ObjectDiagnosticConfig", "match__exclude_labels"),
+        ("sa.CredentialCheckRule", "match__labels"),
+        ("sa.CredentialCheckRule", "match__exclude_labels"),
+        ("inv.InterfaceProfile", "match_rules__labels"),
+        ("inv.ResourceGroup", "dynamic_service_labels__labels"),
+        ("inv.ResourceGroup", "dynamic_client_labels__labels"),
+        ("sa.ManagedObjectProfile", "match_rules__labels"),
+    ],
+    clean=[
+        ("sa.ManagedObject", "labels"),
+        ("sa.ManagedObjectProfile", "labels"),
+        ("inv.InterfaceProfile", "labels"),
+        ("inv.InterfaceProfile", "labels"),
+    ],
+    ignore=[],
+)
 class Label(Document):
     """
     Scope
@@ -168,9 +194,7 @@ class Label(Document):
     enable_interface = BooleanField(default=False)
     #
     enable_subscriber = BooleanField(default=False)
-    enable_subscriberprofile = BooleanField(default=False)
     enable_supplier = BooleanField(default=False)
-    enable_supplierprofile = BooleanField(default=False)
     #
     enable_dnszone = BooleanField(default=False)
     enable_dnszonerecord = BooleanField(default=False)
@@ -288,9 +312,7 @@ class Label(Document):
     @classmethod
     def _reset_caches(cls, name):
         try:
-            del cls._name_cache[
-                name,  # Tuple
-            ]
+            del cls._name_cache[name,]  # Tuple
         except KeyError:
             pass
 
@@ -358,12 +380,12 @@ class Label(Document):
         if self.is_builtin and not self.is_matched:
             raise ValueError("Cannot delete builtin label")
         # Check if label added to model
-        for model_id, setting in LABEL_MODELS.items():
-            if not getattr(self, setting):
-                continue
-            r = self.check_label(model_id, self.name)
-            if r:
-                raise ValueError(f"Referred from model {model_id}: {r!r} (id={r.id})")
+        # for model_id, setting in LABEL_MODELS.items():
+        #     if not getattr(self, setting):
+        #         continue
+        #     r = self.check_label(model_id, self.name)
+        #     if r:
+        #         raise ValueError(f"Referred from model {model_id}: {r!r} (id={r.id})")
 
     @classmethod
     def check_label(cls, model, label_name):
@@ -696,8 +718,12 @@ class Label(Document):
 
         def default_iter_effective_labels(instance) -> Iterable[List[str]]:
             yield instance.labels or []
+            if hasattr(instance, "profile"):
+                yield instance.profile.labels or []
 
         def on_pre_save(sender, instance=None, document=None, *args, **kwargs):
+            from noc.inv.models.resourcegroup import ResourceGroup
+
             instance = instance or document
             # Clean up labels
             labels = Label.merge_labels(default_iter_effective_labels(instance))
@@ -719,13 +745,43 @@ class Label(Document):
                     raise ValueError(
                         f"Label on MatchRules and Label at the same time is not allowed: {label}"
                     )
+            # Block effective labels
+            if not hasattr(instance, "effective_labels"):
+                instance.effective_service_groups = instance.static_service_groups or []
+                instance.effective_client_groups = instance.static_client_groups or []
+                return
             # Build and clean up effective labels. Filter can_set_labels
             labels_iter = getattr(sender, "iter_effective_labels", default_iter_effective_labels)
             instance.effective_labels = [
-                ll
-                for ll in Label.merge_labels(labels_iter(instance))
-                if can_set_label(ll) or ll[-1] in MATCH_OPS
+                ll for ll in Label.merge_labels(labels_iter(instance)) if ll[-1] in MATCH_OPS or can_set_label(ll)
             ]
+            # Calculate ResourceGroup
+            if hasattr(instance, "effective_service_groups") or hasattr(instance, "effective_client_groups"):
+                instance.effective_service_groups = ResourceGroup.get_dynamic_service_groups(
+                    instance.effective_labels, get_model_id(instance)
+                )
+                instance.effective_client_groups = ResourceGroup.get_dynamic_client_groups(
+                    instance.effective_labels, get_model_id(instance)
+                )
+                if not document:
+                    instance.effective_service_groups = [str(x) for x in instance.effective_service_groups]
+                    instance.effective_client_groups = [str(x) for x in instance.effective_client_groups]
+                changed = True
+            # Calculate Profile
+            if getattr(instance.profile, "dynamic_classification_policy") == "R":
+                profile = Label.get_instance_profile(instance.profile, instance.effective_labels)
+                if instance.profile != profile:
+                    instance.profile = profile
+                    changed = True
+            # Update Effective labels (from profile and group)
+            if changed:
+                instance.effective_labels = list(
+                sorted(
+                    ll
+                    for ll in Label.merge_labels(labels_iter(instance))
+                    if can_set_label(ll) or ll[-1] in MATCH_OPS
+                )
+            )
 
         # Install handlers
         if is_document(m_cls):

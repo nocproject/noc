@@ -51,7 +51,6 @@ class VLANProfile(Document):
     style = ForeignKeyField(Style)
     # Labels
     labels = ListField(StringField())
-    effective_labels = ListField(StringField())
     # Integration with external NRI and TT systems
     # Reference to remote system object has been imported from
     remote_system = PlainReferenceField(RemoteSystem)
@@ -82,7 +81,7 @@ class VLANProfile(Document):
 
     @classmethod
     def can_set_label(cls, label):
-        return Label.get_effective_setting(label, "enable_vlanprofile")
+        return Label.get_effective_setting(label, "enable_vlan")
 
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_default_cache"), lock=lambda _: id_lock)

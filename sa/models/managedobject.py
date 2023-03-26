@@ -200,15 +200,11 @@ logger = logging.getLogger(__name__)
 
 
 @full_text_search
-@Label.dynamic_classification(
-    profile_model_id="sa.ManagedObjectProfile", profile_field="object_profile"
-)
 @bi_sync
 @on_init
 @on_save
 @on_delete
 @change
-@resourcegroup
 @Label.model
 @on_delete_check(
     check=[
@@ -1018,10 +1014,6 @@ class ManagedObject(NOCModel):
             self.update_diagnostics()
 
     def on_delete(self):
-        # Reset discovery cache
-        from noc.inv.models.discoveryid import DiscoveryID
-
-        DiscoveryID.clean_for_object(self)
         self._reset_caches(self.id, credential=True)
         self.event(self.EV_DELETED)
 

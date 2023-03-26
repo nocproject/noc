@@ -34,7 +34,6 @@ class AllocationGroup(Document):
     description = StringField()
     # Labels
     labels = ListField(StringField())
-    effective_labels = ListField(StringField())
     # Integration with external NRI and TT systems
     # Reference to remote system object has been imported from
     remote_system = PlainReferenceField(RemoteSystem)

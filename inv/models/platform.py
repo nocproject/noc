@@ -80,7 +80,6 @@ class Platform(Document):
     aliases = ListField(StringField())
     # Labels
     labels = ListField(StringField())
-    effective_labels = ListField(StringField())
     # Object id in BI
     bi_id = LongField(unique=True)
 

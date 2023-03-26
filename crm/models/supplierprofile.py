@@ -38,7 +38,6 @@ class SupplierProfile(Document):
     style = ForeignKeyField(Style, required=False)
     # Labels
     labels = ListField(StringField())
-    effective_labels = ListField(StringField())
     # Integration with external NRI and TT systems
     # Reference to remote system object has been imported from
     remote_system = PlainReferenceField(RemoteSystem)
@@ -59,4 +58,4 @@ class SupplierProfile(Document):
 
     @classmethod
     def can_set_label(cls, label):
-        return Label.get_effective_setting(label, setting="enable_supplierprofile")
+        return Label.get_effective_setting(label, setting="enable_supplier")

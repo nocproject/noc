@@ -115,7 +115,6 @@ class CPEProfile(Document):
     match_rules = ListField(EmbeddedDocumentField(MatchRule))
     # Labels
     labels = ListField(StringField())
-    effective_labels = ListField(StringField())
     # BI ID
     bi_id = LongField(unique=True)
 

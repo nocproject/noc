@@ -84,7 +84,6 @@ class L2DomainProfile(Document):
     # local_filter
     # Labels
     labels = ListField(StringField())
-    effective_labels = ListField(StringField())
     # Integration with external NRI and TT systems
     # Reference to remote system object has been imported from
     remote_system = PlainReferenceField(RemoteSystem)
@@ -115,7 +114,7 @@ class L2DomainProfile(Document):
 
     @classmethod
     def can_set_label(cls, label):
-        return Label.get_effective_setting(label, "enable_l2domainprofile")
+        return Label.get_effective_setting(label, "enable_l2domain")
 
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_default_cache"), lock=lambda _: id_lock)

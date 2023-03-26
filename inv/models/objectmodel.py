@@ -183,7 +183,6 @@ class ObjectModel(Document):
     plugins = ListField(StringField(), required=False)
     # Labels
     labels = ListField(StringField())
-    effective_labels = ListField(StringField())
     category = ObjectIdField()
 
     _id_cache = cachetools.TTLCache(maxsize=1000, ttl=60)
