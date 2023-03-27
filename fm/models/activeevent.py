@@ -1,7 +1,7 @@
 # ---------------------------------------------------------------------
 # ActiveEvent model
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2020 The NOC Project
+# Copyright (C) 2007-2023 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -21,7 +21,6 @@ from mongoengine.fields import (
     ListField,
     EmbeddedDocumentField,
     DictField,
-    ObjectIdField,
     BinaryField,
 )
 from bson import ObjectId
@@ -67,7 +66,7 @@ class ActiveEvent(Document):
     vars = DictField()
     log = ListField(EmbeddedDocumentField(EventLog))
     reference = BinaryField(required=False)
-    alarms = ListField(ObjectIdField())
+    alarms = ListField()
     expires = DateTimeField(required=False)
 
     def __str__(self):
@@ -277,6 +276,7 @@ class ActiveEvent(Document):
             raw_vars=d["raw_vars"],
             resolved_vars=d["resolved_vars"],
             vars=d["vars"],
+            alarms=d["alarms"],
         )
 
 
