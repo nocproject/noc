@@ -39,7 +39,6 @@ from noc.main.models.remotesystem import RemoteSystem
 from noc.main.models.prefixtable import PrefixTable
 from noc.models import get_model, is_document, LABEL_MODELS
 from noc.vc.models.vlanfilter import VLANFilter
-from noc.models import get_model_id
 
 
 MATCH_OPS = {"=", "<", ">", "&"}

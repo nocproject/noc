@@ -183,7 +183,7 @@ def on_delete_check(check=None, clean=None, delete=None, ignore=None, clean_lazy
             remove_id = instance.name if setup["is_label"] else instance.id
             if is_document(model) and is_list(model, field):
                 # Simple Array or EmbeddedDocument Array
-                model.objects.filter(**{f"id__in": ids}).update(**{f"pull__{field}": remove_id})
+                model.objects.filter(**{"id__in": ids}).update(**{f"pull__{field}": remove_id})
             elif is_list(model, field):
                 # Django Array field
                 cursor = connection.cursor()
@@ -195,7 +195,7 @@ def on_delete_check(check=None, clean=None, delete=None, ignore=None, clean_lazy
                     [str(remove_id), ids],
                 )
             else:
-                model.objects.filter(**{f"id__in": ids}).update(**{field: None})
+                model.objects.filter(**{"id__in": ids}).update(**{field: None})
 
         # Delete related
         for model, model_id, field in iter_models("delete"):
