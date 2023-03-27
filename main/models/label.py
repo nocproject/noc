@@ -122,12 +122,15 @@ class PrefixFilterItem(EmbeddedDocument):
         ("inv.ResourceGroup", "dynamic_service_labels__labels"),
         ("inv.ResourceGroup", "dynamic_client_labels__labels"),
         ("sa.ManagedObjectProfile", "match_rules__labels"),
+        ("wf.State", "labels"),
     ],
     clean=[
         ("sa.ManagedObject", "labels"),
         ("sa.ManagedObjectProfile", "labels"),
         ("inv.InterfaceProfile", "labels"),
-        ("inv.InterfaceProfile", "labels"),
+        ("pm.Agent", "labels"),
+        ("sla.SLAProbe", "labels"),
+        ("sla.SLAProfile", "labels"),
     ],
     ignore=[],
 )
@@ -375,17 +378,10 @@ class Label(Document):
 
         :return:
         """
-        if self.is_wildcard and any(Label.objects.filter(name__startswith=self.name[:-1])):
+        if self.is_wildcard and Label.objects.filter(name__startswith=self.name[:-1]).first():
             raise ValueError("Cannot delete wildcard label with matched labels")
         if self.is_builtin and not self.is_matched:
             raise ValueError("Cannot delete builtin label")
-        # Check if label added to model
-        # for model_id, setting in LABEL_MODELS.items():
-        #     if not getattr(self, setting):
-        #         continue
-        #     r = self.check_label(model_id, self.name)
-        #     if r:
-        #         raise ValueError(f"Referred from model {model_id}: {r!r} (id={r.id})")
 
     @classmethod
     def check_label(cls, model, label_name):
@@ -744,7 +740,9 @@ class Label(Document):
             # Block effective labels
             if instance._has_effective_labels:
                 # Build and clean up effective labels. Filter can_set_labels
-                labels_iter = getattr(sender, "iter_effective_labels", default_iter_effective_labels)
+                labels_iter = getattr(
+                    sender, "iter_effective_labels", default_iter_effective_labels
+                )
                 instance.effective_labels = list(
                     sorted(
                         ll
