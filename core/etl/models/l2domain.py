@@ -5,12 +5,8 @@
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
-# Python modules
-from typing import Optional
-
 # NOC modules
 from .base import BaseModel
-from .typing import Reference
 
 
 class L2Domain(BaseModel):
