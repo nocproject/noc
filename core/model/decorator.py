@@ -5,10 +5,15 @@
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
-# NOC modules
-from noc.models import get_model
-from noc.core.comp import smart_text
+# Third-party modules
 from django.db.models import JSONField
+from django.contrib.postgres.fields import ArrayField
+from django.db import connection
+from mongoengine.fields import ListField, EmbeddedDocumentListField
+
+# NOC modules
+from noc.models import get_model, get_model_id
+from noc.core.model.fields import ObjectIDArrayField
 
 
 def is_document(klass):
@@ -166,28 +171,32 @@ def on_delete_check(check=None, clean=None, delete=None, ignore=None, clean_lazy
         # Raise value error when referred
         for model, model_id, field in iter_models("check"):
             for ro in iter_related(instance, model, field):
-                raise ValueError(
-                    "Referred from model %s: %s (id=%s)" % (model_id, smart_text(ro), ro.id)
-                )
+                raise ValueError(f"Referred from model {model_id}: {str(ro)} (id={ro.id})")
         # Clean related
         for model, model_id, field in iter_models("clean"):
+            ids = []
             for ro in iter_related(instance, model, field):
-                if is_document(ro) and "__" in field:
-                    # EmbeddedDocument Array
-                    field, e_field = field.split("__")
-                    # ro.objects.update(**{f"pull__{field}": instance.id})
-                    setattr(
-                        ro,
-                        field,
-                        [
-                            ed
-                            for ed in getattr(ro, field, [])
-                            if getattr(ed, e_field, None) != instance
-                        ],
-                    )
-                else:
-                    setattr(ro, field, None)
-                ro.save()
+                ids.append(ro.id)
+            #
+            if not ids:
+                continue
+            remove_id = instance.name if setup["is_label"] else instance.id
+            if is_document(model) and is_list(model, field):
+                # Simple Array or EmbeddedDocument Array
+                model.objects.filter(**{f"id__in": ids}).update(**{f"pull__{field}": remove_id})
+            elif is_list(model, field):
+                # Django Array field
+                cursor = connection.cursor()
+                cursor.execute(
+                    f"""
+                UPDATE {model._meta.db_table}
+                SET {field}=array_remove({field}, %s)
+                WHERE id=ANY (%s)""",
+                    [str(remove_id), ids],
+                )
+            else:
+                model.objects.filter(**{f"id__in": ids}).update(**{field: None})
+
         # Delete related
         for model, model_id, field in iter_models("delete"):
             for ro in iter_related(instance, model, field):
@@ -196,34 +205,62 @@ def on_delete_check(check=None, clean=None, delete=None, ignore=None, clean_lazy
         for ll in iter_lazy_labels(instance):
             ll.delete()
 
-    def iter_lazy_labels(instance):
-        from noc.main.models.label import MATCH_OPS
+    def is_list(model, field) -> bool:
+        """
+        Detect field is array
+        :param model:
+        :param field:
+        :return:
+        """
+        if "__" in field:
+            field, _ = field.split("__", 1)
+        if is_document(model):
+            field = model._fields[field]
+        else:
+            field = model._meta.get_field(field)
+        if isinstance(
+            field, (ListField, EmbeddedDocumentListField, ArrayField, ObjectIDArrayField)
+        ):
+            return True
+        return False
 
+    def iter_lazy_labels(instance):
         model = get_model("main.Label")
         category = cfg.get("clean_lazy_labels")
         if not (hasattr(instance, "iter_lazy_labels") or category):
             return
-        for ops in MATCH_OPS:
-            ll = model.objects.filter(name=f"noc::{category}::{instance.name}::{ops}").first()
-            if not ll:
-                continue
+        for ll in model.objects.filter(name__startswith=f"noc::{category}::{instance.name}::"):
             yield ll
 
+    def get_related_query(o, model, field):
+        """
+        Prepare query for request related objects
+        :param o:
+        :param model:
+        :param field:
+        :return:
+        """
+        if setup["is_label"] and is_document(model):
+            return {f"{field}__contains": o.name}
+        elif setup["is_label"]:
+            return {f"{field}__contains": [o.name]}
+        if not setup["is_document"]:
+            # If checked Django model
+            return {field: o.pk}
+        # Replace dot notation
+        field = field.replace(".", "__")
+        if (
+            not is_document(model)
+            and "__" in field
+            and isinstance(model._meta.get_field(field.split("__")[0]), JSONField)
+        ):
+            # Check Django JSON field
+            m_field, json_field = field.split("__")
+            return {f"{m_field}__contains": [{json_field: str(o.id)}]}
+        return {field: str(o.pk)}
+
     def iter_related(object, model, field):
-        if setup["is_document"]:
-            field = field.replace(".", "__")
-            if (
-                not is_document(model)
-                and "__" in field
-                and isinstance(model._meta.get_field(field.split("__")[0]), JSONField)
-            ):
-                # JSON field
-                m_field, json_field = field.split("__")
-                qs = {f"{m_field}__contains": [{json_field: str(object.id)}]}
-            else:
-                qs = {field: str(object.id)}
-        else:
-            qs = {field: object.pk}
+        qs = get_related_query(object, model, field)
         for ro in model.objects.filter(**qs):
             yield ro
 
@@ -251,7 +288,7 @@ def on_delete_check(check=None, clean=None, delete=None, ignore=None, clean_lazy
                     sender=cls,
                     weak=False,  # Cannot use weak reference due to lost of internal scope
                 )
-
+        setup["is_label"] = get_model_id(cls) == "main.Label"
         cls._on_delete = cfg
         return cls
 
@@ -262,7 +299,7 @@ def on_delete_check(check=None, clean=None, delete=None, ignore=None, clean_lazy
         "ignore": ignore or [],
         "clean_lazy_labels": clean_lazy_labels or None,
     }
-    setup = {"is_document": False}
+    setup = {"is_document": False, "is_label": False}
     return decorator
 
 
@@ -285,7 +322,6 @@ def tree(field="parent"):
 
     def decorator(cls):
         if hasattr(cls, field):
-
             if is_document(cls):
                 from mongoengine import signals as mongo_signals
                 from mongoengine.errors import ValidationError

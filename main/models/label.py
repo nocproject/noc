@@ -718,12 +718,8 @@ class Label(Document):
 
         def default_iter_effective_labels(instance) -> Iterable[List[str]]:
             yield instance.labels or []
-            if hasattr(instance, "profile"):
-                yield instance.profile.labels or []
 
         def on_pre_save(sender, instance=None, document=None, *args, **kwargs):
-            from noc.inv.models.resourcegroup import ResourceGroup
-
             instance = instance or document
             # Clean up labels
             labels = Label.merge_labels(default_iter_effective_labels(instance))
@@ -746,52 +742,43 @@ class Label(Document):
                         f"Label on MatchRules and Label at the same time is not allowed: {label}"
                     )
             # Block effective labels
-            if not hasattr(instance, "effective_labels"):
-                instance.effective_service_groups = instance.static_service_groups or []
-                instance.effective_client_groups = instance.static_client_groups or []
-                return
-            # Build and clean up effective labels. Filter can_set_labels
-            labels_iter = getattr(sender, "iter_effective_labels", default_iter_effective_labels)
-            instance.effective_labels = [
-                ll for ll in Label.merge_labels(labels_iter(instance)) if ll[-1] in MATCH_OPS or can_set_label(ll)
-            ]
-            # Calculate ResourceGroup
-            if hasattr(instance, "effective_service_groups") or hasattr(instance, "effective_client_groups"):
-                instance.effective_service_groups = ResourceGroup.get_dynamic_service_groups(
-                    instance.effective_labels, get_model_id(instance)
-                )
-                instance.effective_client_groups = ResourceGroup.get_dynamic_client_groups(
-                    instance.effective_labels, get_model_id(instance)
-                )
-                if not document:
-                    instance.effective_service_groups = [str(x) for x in instance.effective_service_groups]
-                    instance.effective_client_groups = [str(x) for x in instance.effective_client_groups]
-                changed = True
-            # Calculate Profile
-            if getattr(instance.profile, "dynamic_classification_policy") == "R":
-                profile = Label.get_instance_profile(instance.profile, instance.effective_labels)
-                if instance.profile != profile:
-                    instance.profile = profile
-                    changed = True
-            # Update Effective labels (from profile and group)
-            if changed:
+            if instance._has_effective_labels:
+                # Build and clean up effective labels. Filter can_set_labels
+                labels_iter = getattr(sender, "iter_effective_labels", default_iter_effective_labels)
                 instance.effective_labels = list(
-                sorted(
-                    ll
-                    for ll in Label.merge_labels(labels_iter(instance))
-                    if can_set_label(ll) or ll[-1] in MATCH_OPS
+                    sorted(
+                        ll
+                        for ll in Label.merge_labels(labels_iter(instance))
+                        if ll[-1] in MATCH_OPS or can_set_label(ll)
+                    )
                 )
-            )
+            if instance._has_lazy_labels and instance.name != instance._last_name:
+                for label in Label.objects.filter(
+                    name=re.compile(f"noc::.+::{instance._last_name}::[{''.join(MATCH_OPS)}]")
+                ):
+                    label.delete()
+
+        def on_post_init_set_name(sender, instance=None, document=None, *args, **kwargs):
+            # For rename detect
+            instance = instance or document
+            instance._last_name = instance.name
+
+        m_cls._has_lazy_labels = hasattr(m_cls, "iter_lazy_labels")
+        m_cls._has_effective_labels = hasattr(m_cls, "effective_labels")
 
         # Install handlers
         if is_document(m_cls):
             from mongoengine import signals as mongo_signals
 
             mongo_signals.pre_save.connect(on_pre_save, sender=m_cls, weak=False)
+            if m_cls._has_lazy_labels:
+                mongo_signals.post_init.connect(on_post_init_set_name, sender=m_cls, weak=False)
         else:
             from django.db.models import signals as django_signals
 
             django_signals.pre_save.connect(on_pre_save, sender=m_cls, weak=False)
+            if m_cls._has_lazy_labels:
+                django_signals.post_init.connect(on_post_init_set_name, sender=m_cls, weak=False)
         return m_cls
 
     @classmethod
