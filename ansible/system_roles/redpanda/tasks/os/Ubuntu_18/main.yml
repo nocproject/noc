@@ -14,7 +14,7 @@
 
 - name: add the redpanda repo
   apt_repository:
-    repo: "deb https://packages.vectorized.io/sMIXnoa7DK12JW4A/redpanda/deb/debian {{ ansible_distribution_release }} main"
+    repo: "deb https://packages.vectorized.io/sMIXnoa7DK12JW4A/redpanda/deb/ubuntu {{ ansible_distribution_release }} main"
     state: present
   environment:
     https_proxy: "{{ http_proxy }}"
