@@ -28,6 +28,7 @@ class IGetCPEStatus(BaseInterface):
     returns = DictListParameter(
         attrs={
             "interface": InterfaceNameParameter(required=False),
+            # Identifier over interface
             "local_id": StringParameter(required=True),
             "global_id": StringParameter(),
             "oper_status": BooleanParameter(default=False),

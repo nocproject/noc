@@ -1,7 +1,7 @@
 # ---------------------------------------------------------------------
 # Huawei.MA5600T.get_cpe_status
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2020 The NOC Project
+# Copyright (C) 2007-2023 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -11,7 +11,7 @@ import codecs
 
 # NOC modules
 from noc.core.script.base import BaseScript
-from noc.sa.interfaces.igetcpe import IGetCPE
+from noc.sa.interfaces.igetcpestatus import IGetCPEStatus
 from noc.core.text import parse_table_header
 from noc.core.mib import mib
 from noc.core.snmp.render import render_bin
@@ -20,13 +20,13 @@ from noc.core.comp import smart_text
 
 class Script(BaseScript):
     name = "Huawei.MA5600T.get_cpe_status"
-    interface = IGetCPE
+    interface = IGetCPEStatus
 
     cache = True
 
     splitter = re.compile(r"\s*-+\n")
 
-    status_map = {"online": "active", "offline": "inactive"}  # associated  # disassociating
+    status_map = {"online": True, "offline": False}  # associated  # disassociating
 
     @staticmethod
     def fix_cpe_header(header):
@@ -68,10 +68,10 @@ class Script(BaseScript):
                 for t in tables_data:
                     if "ONT-ID" in t:
                         ont_id = "%s/%s" % (t["F/S/P"][0].replace(" ", ""), t["ONT-ID"][0])
-                        if ont_id in r:
-                            r[ont_id]["description"] = t["Description"][0]
+                        # if ont_id in r:
+                        #    r[ont_id]["description"] = t["Description"][0]
                         continue
-                    status = "other"
+                    status = False
                     if "ONT ID" in t:
                         ont_id, serial = t["ONT ID"][0].split()
                         status = self.status_map[t["Run state"][0]]
@@ -90,13 +90,9 @@ class Script(BaseScript):
                     ont_id = "%s/%s" % (t["F/S/P"][0].replace(" ", ""), ont_id)
                     r[ont_id] = {
                         "interface": t["F/S/P"][0].replace(" ", ""),
-                        "status": status,
-                        "id": ont_id,
+                        "oper_status": status,
+                        "local_id": ont_id,
                         "global_id": serial + t["SN"][0],
-                        "type": "ont",
-                        "serial": serial + t["SN"][0],
-                        "description": "",
-                        "location": "",
                     }
         return list(r.values())
 
@@ -115,13 +111,9 @@ class Script(BaseScript):
             ont_id = "%s/%s" % (names[int(ifindex)], ont_id)
             r[ont_index] = {
                 "interface": names[int(ifindex)],
-                "status": "inactive",
-                "id": ont_id,
+                "oper_status": False,
+                "local_id": ont_id,
                 "global_id": smart_text(codecs.encode(ont_serial, "hex")).upper(),
-                "type": "ont",
-                "serial": smart_text(codecs.encode(ont_serial, "hex")).upper(),
-                "description": ont_descr,
-                "location": "",
             }
         for ont_index, ont_status in self.snmp.get_tables(
             [mib["HUAWEI-XPON-MIB::hwGponDeviceOntControlRunStatus"]]

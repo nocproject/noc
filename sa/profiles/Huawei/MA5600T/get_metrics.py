@@ -5,8 +5,16 @@
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
+# Python modules
+from typing import List
+
 # NOC modules
-from noc.sa.profiles.Generic.get_metrics import Script as GetMetricsScript, metrics
+from noc.sa.profiles.Generic.get_metrics import (
+    Script as GetMetricsScript,
+    metrics,
+    ProfileMetricConfig,
+)
+from noc.core.models.cfgmetrics import MetricCollectorConfig
 from noc.core.text import parse_kv
 from noc.core.mib import mib
 from .oidrules.gpon_ports import GponPortsRule
@@ -60,23 +68,61 @@ class Script(GetMetricsScript):
         "downstream frame bip error count": "optical_errors_bip_in",
     }
 
-    @metrics(
-        [
-            "Interface | DOM | RxPower",
-            "Interface | DOM | TxPower",
-            "Interface | DOM | Voltage",
-            "Interface | DOM | Bias Current",
-            "Interface | DOM | Temperature",
-            "Interface | DOM | Errors | BIP | Upstream",
-            "Interface | DOM | Errors | BIP | Downstream",
-        ],
-        has_capability="Network | PON | OLT",
-        access="C",  # CLI version
-        volatile=False,
-    )
-    def collect_dom_metrics_cli(self, metrics):
-        super().collect_dom_metrics(metrics)
-        self.collect_cpe_metrics_cli(metrics)
+    CPE_METRICS_CONFIG = {
+        "Interface | DOM | Temperature": ProfileMetricConfig(
+            metric="Interface | DOM | Temperature",
+            oid="HUAWEI-XPON-MIB::hwGponOntOpticalDdmTemperature",
+            sla_types=[],
+            scale=1,
+            units="C",
+        ),
+        "Interface | DOM | TxPower": ProfileMetricConfig(
+            metric="Interface | DOM | TxPower",
+            oid="HUAWEI-XPON-MIB::hwGponOntOpticalDdmTxPower",
+            sla_types=[],
+            scale=scale(0.01, 2),
+            units="dBm",
+        ),
+        "Interface | DOM | RxPower": ProfileMetricConfig(
+            metric="Interface | DOM | RxPower",
+            oid="HUAWEI-XPON-MIB::hwGponOntOpticalDdmRxPower",
+            sla_types=[],
+            scale=scale(0.01, 2),
+            units="dBm",
+        ),
+        "Interface | DOM | Voltage": ProfileMetricConfig(
+            metric="Interface | DOM | Voltage",
+            oid="HUAWEI-XPON-MIB::hwGponOntOpticalDdmVoltage",
+            sla_types=[],
+            scale=1,
+            units="VDC",
+        ),
+        "Interface | DOM | Bias Current": ProfileMetricConfig(
+            metric="Interface | DOM | Bias Current",
+            oid="HUAWEI-XPON-MIB::hwGponOntOpticalDdmBiasCurrent",
+            sla_types=[],
+            scale=1,
+            units="m,A",
+        ),
+    }
+
+    # @metrics(
+    #     [
+    #         "Interface | DOM | RxPower",
+    #         "Interface | DOM | TxPower",
+    #         "Interface | DOM | Voltage",
+    #         "Interface | DOM | Bias Current",
+    #         "Interface | DOM | Temperature",
+    #         "Interface | DOM | Errors | BIP | Upstream",
+    #         "Interface | DOM | Errors | BIP | Downstream",
+    #     ],
+    #     has_capability="Network | PON | OLT",
+    #     access="C",  # CLI version
+    #     volatile=False,
+    # )
+    # def collect_dom_metrics_cli(self, metrics):
+    #     super().collect_dom_metrics(metrics)
+    #     # self.collect_cpe_metrics_cli(metrics)
 
     def collect_cpe_metrics_cli(self, metrics):
         # ifaces = set(m.path[-1].split("/")[:2] for m in metrics)
@@ -194,7 +240,7 @@ class Script(GetMetricsScript):
     )
     def collect_dom_metrics_snmp(self, metrics):
         super().collect_dom_metrics(metrics)
-        self.collect_cpe_metrics_snmp(metrics)
+        # self.collect_cpe_metrics_snmp(metrics)
 
     def collect_cpe_metrics_snmp(self, metrics):
         names = {x: y for y, x in self.scripts.get_ifindexes(name_oid="IF-MIB::ifName").items()}
@@ -312,3 +358,38 @@ class Script(GetMetricsScript):
                     value=int(ont_optical_errors_bip_in),
                     multi=True,
                 )
+
+    def collect_cpe_metrics(self, metrics: List[MetricCollectorConfig]):
+        oids = {}
+        ts = self.get_ts()
+        self.logger.info("Collect CPE Metrics: %s", metrics)
+        for probe in metrics:
+            # if m.metric not in self.SLA_METRICS_CONFIG:
+            #    continue
+            hints = probe.get_hints()
+            _, ont_id = hints["local_id"].rsplit("/", 1)
+            for m in probe.metrics:
+                mc = self.CPE_METRICS_CONFIG[m]
+                oid = mib[mc.oid, hints.get("ifindex"), ont_id]
+                oids[oid] = (probe, mc)
+        results = self.snmp.get_chunked(
+            oids=list(oids),
+            chunk_size=self.get_snmp_metrics_get_chunk(),
+            timeout_limits=self.get_snmp_metrics_get_timeout(),
+        )
+        for r in results:
+            if results[r] is None:
+                continue
+            probe, mc = oids[r]
+            self.set_metric(
+                id=probe.cpe,
+                cpe=probe.cpe,
+                metric=mc.metric,
+                value=float(results[r]),
+                ts=ts,
+                labels=probe.labels,
+                multi=True,
+                type="gauge",
+                scale=mc.scale,
+                units=mc.units,
+            )
