@@ -75,15 +75,19 @@ class TopoService(FastAPIService):
             """
             try:
                 with ErrorReport():
-                    changes = self.topo.process()
-                    if changes and not config.topo.dry_run:
+                    affected = self.topo.process()
+                    if affected and not config.topo.dry_run:
                         self.logger.info("Commiting uplink changes")
                         # @todo: RCA neighbors
                         ManagedObject.update_uplinks(
-                            ObjectUplinks(object_id=obj_id, uplinks=list(sorted(uplinks)))
-                            for obj_id, uplinks in changes
+                            ObjectUplinks(
+                                object_id=obj_id,
+                                uplinks=list(sorted(self.topo.get_uplinks(obj_id))),
+                                rca_neighbors=list(sorted(self.topo.get_rca_neighbors(obj_id))),
+                            )
+                            for obj_id in affected
                         )
-                        self.logger.info("%d changes has been commited", len(changes))
+                        self.logger.info("%d changes has been commited", len(affected))
             finally:
                 ev_processed.set()
 

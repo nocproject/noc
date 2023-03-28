@@ -6,7 +6,7 @@
 # ---------------------------------------------------------------------
 
 # Python modules
-from typing import Set, Optional, List, Tuple, Dict, Iterable
+from typing import Set, Optional, Tuple, Dict, Iterable
 from logging import getLogger
 import time
 from collections import defaultdict
@@ -207,12 +207,12 @@ class Topo(object):
         self.set_dirty(u)
         self.set_dirty(v)
 
-    def process(self) -> List[Tuple[int, Set[int]]]:
+    def process(self) -> Set[int]:
         """
         Proceess topology.
 
         Returns:
-            List of tuples: object id, set of uplinks.
+            Set of affected nodes.
         """
         logger.info("Processing topology")
         if not self.dirty_nodes:
@@ -220,7 +220,7 @@ class Topo(object):
             return []
         logger.info("%d dirty nodes found", len(self.dirty_nodes))
         t0 = time.time()
-        changes = []
+        affected: Set[int] = set()
         total_clusters = 0
         processed = 0
         for cc in nx.connected_components(self.graph):
@@ -249,19 +249,21 @@ class Topo(object):
                             ", ".join(sorted(current)),
                             ", ".join(sorted(uplinks)),
                         )
-                        changes.append((n, uplinks))
+                        affected.add(n)
+                        affected |= current
+                        affected |= uplinks
                         # Fix uplinks on graph
                         node["uplinks"] = self.clear_uplinks(uplinks)
-        if changes:
+        if affected:
             # @todo: Bulk update + rebuild datastream
-            logger.info("%d changes detected", len(changes))
-            metrics["obj_uplink_changes"] += len(changes)
+            logger.info("%d affected objects detected", len(affected))
+            metrics["obj_topo_affected"] += len(affected)
         self.reset_dirty()
         dt = time.time() - t0
         logger.info("Processed %d clusters of %d in %2fs", processed, total_clusters, dt)
         metrics["clusters"] = total_clusters
-        metrics["clusters_proceessed"] += processed
-        return changes
+        metrics["clusters_processed"] += processed
+        return affected
 
     def iter_uplinks(self, root: int, uplinks: Dict[int, Set[int]]) -> Iterable[Tuple[int, int]]:
         """
@@ -351,3 +353,36 @@ class Topo(object):
                 uplinks[node].add(uplink)
         logger.info("Found uplinks for %d objects", len(uplinks))
         yield from uplinks.items()
+
+    def get_uplinks(self, obj: int) -> Set[int]:
+        """
+        Get node uplinks.
+
+        Args:
+            obj: Managed object's uplink.
+
+        Returns:
+            Set of object uplinks
+        """
+        uplinks = self.graph.nodes[obj]["uplinks"]
+        if uplinks:
+            return set(uplinks)
+        return set()
+
+    def get_rca_neighbors(self, obj: int) -> Set[int]:
+        """
+        Get RCA neighbors.
+
+        Args:
+            obj: Managed object's uplink.
+
+        Returns:
+            List of RCA neighbors.
+        """
+        uplinks = self.get_uplinks(obj)
+        r: Set[int] = set()
+        for n in self.graph[obj]:
+            r.add(n)
+            if n not in uplinks:
+                r |= self.get_uplinks(n)
+        return r - {obj}
