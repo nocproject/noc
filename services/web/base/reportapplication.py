@@ -127,9 +127,14 @@ class ReportByConfigApplication(Application):
     @property
     def title(self) -> str:
         user = get_user()
-        return self.report.get_localization(
-            field="title", lang=user.preferred_language if user else None,
-        ) or self.report.title or self.report.name
+        return (
+            self.report.get_localization(
+                field="title",
+                lang=user.preferred_language if user else None,
+            )
+            or self.report.title
+            or self.report.name
+        )
 
     @property
     def menu(self):
