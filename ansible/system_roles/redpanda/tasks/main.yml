@@ -30,23 +30,23 @@
 
 - block:
 
-  - name: Ensure settings.yml is exists
-    file:
-      path: "{{ noc_root }}/etc/settings.yml"
-      state: touch
-      owner: root
-    delegate_to: "{{ item }}"
-    with_items: "{{ groups['svc-noc-exec'] }}"
+    - name: Ensure settings.yml is exists
+      file:
+        path: "{{ noc_root }}/etc/settings.yml"
+        state: touch
+        owner: root
+      delegate_to: "{{ item }}"
+      with_items: "{{ groups['svc-noc-exec'] }}"
 
-  - name: Edit settings.yml for redpanda's configuration
-    yedit:
-      src: "{{ noc_root }}/etc/settings.yml"
-      state: present
-      edits:
-        - key: noc.msgstream.client_class
-          value: "noc.core.msgstream.redpanda.RedPandaClient"
-    delegate_to: "{{ item }}"
-    with_items: "{{ groups['svc-noc-exec'] }}"
+    - name: Edit settings.yml for redpanda's configuration
+      yedit:
+        src: "{{ noc_root }}/etc/settings.yml"
+        state: present
+        edits:
+          - key: noc.msgstream.client_class
+            value: "noc.core.msgstream.redpanda.RedPandaClient"
+      delegate_to: "{{ item }}"
+      with_items: "{{ groups['svc-noc-exec'] }}"
 
   when:
     - "'consul://' not in config_order"
