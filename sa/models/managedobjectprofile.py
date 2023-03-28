@@ -673,9 +673,6 @@ class ManagedObjectProfile(NOCModel):
     )
     #
     labels = ArrayField(models.CharField(max_length=250), blank=True, null=True, default=list)
-    effective_labels = ArrayField(
-        models.CharField(max_length=250), blank=True, null=True, default=list
-    )
     # Dynamic Profile Classification
     dynamic_classification_policy = models.CharField(
         _("Dynamic Classification Policy"),

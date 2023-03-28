@@ -67,7 +67,6 @@ class VPNProfile(Document):
     default_prefix_profile = PlainReferenceField("ip.PrefixProfile")
     # Labels
     labels = ListField(StringField())
-    effective_labels = ListField(StringField())
     # Integration with external NRI and TT systems
     # Reference to remote system object has been imported from
     remote_system = PlainReferenceField(RemoteSystem)
@@ -98,4 +97,4 @@ class VPNProfile(Document):
 
     @classmethod
     def can_set_label(cls, label):
-        return Label.get_effective_setting(label, "enable_vpnprofile")
+        return Label.get_effective_setting(label, "enable_vpn")

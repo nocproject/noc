@@ -1018,10 +1018,6 @@ class ManagedObject(NOCModel):
             self.update_diagnostics()
 
     def on_delete(self):
-        # Reset discovery cache
-        from noc.inv.models.discoveryid import DiscoveryID
-
-        DiscoveryID.clean_for_object(self)
         self._reset_caches(self.id, credential=True)
         self.event(self.EV_DELETED)
 

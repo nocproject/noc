@@ -31,14 +31,14 @@ import cachetools
 import orjson
 
 # NOC modules
-from noc.core.model.decorator import on_save, on_delete
+from noc.core.model.decorator import on_save, on_delete, on_delete_check
 from noc.core.mongo.fields import ForeignKeyField, PlainReferenceField
 from noc.core.change.decorator import change
 from noc.main.models.handler import Handler
 from noc.main.models.remotesystem import RemoteSystem
+from noc.main.models.prefixtable import PrefixTable
 from noc.models import get_model, is_document, LABEL_MODELS
 from noc.vc.models.vlanfilter import VLANFilter
-from noc.main.models.prefixtable import PrefixTable
 
 
 MATCH_OPS = {"=", "<", ">", "&"}
@@ -105,6 +105,34 @@ class PrefixFilterItem(EmbeddedDocument):
 @on_save
 @change
 @on_delete
+@on_delete_check(
+    check=[
+        ("fm.AlarmRule", "match__labels"),
+        ("fm.AlarmRule", "match__exclude_labels"),
+        ("pm.MetricRule", "match__labels"),
+        ("pm.MetricRule", "match__exclude_labels"),
+        ("main.MessageRoute", "match__labels"),
+        ("main.MessageRoute", "match__exclude_labels"),
+        ("sa.ObjectDiagnosticConfig", "match__labels"),
+        ("sa.ObjectDiagnosticConfig", "match__exclude_labels"),
+        ("sa.CredentialCheckRule", "match__labels"),
+        ("sa.CredentialCheckRule", "match__exclude_labels"),
+        ("inv.InterfaceProfile", "match_rules__labels"),
+        ("inv.ResourceGroup", "dynamic_service_labels__labels"),
+        ("inv.ResourceGroup", "dynamic_client_labels__labels"),
+        ("sa.ManagedObjectProfile", "match_rules__labels"),
+        ("wf.State", "labels"),
+    ],
+    clean=[
+        ("sa.ManagedObject", "labels"),
+        ("sa.ManagedObjectProfile", "labels"),
+        ("inv.InterfaceProfile", "labels"),
+        ("pm.Agent", "labels"),
+        ("sla.SLAProbe", "labels"),
+        ("sla.SLAProfile", "labels"),
+    ],
+    ignore=[],
+)
 class Label(Document):
     """
     Scope
@@ -168,9 +196,7 @@ class Label(Document):
     enable_interface = BooleanField(default=False)
     #
     enable_subscriber = BooleanField(default=False)
-    enable_subscriberprofile = BooleanField(default=False)
     enable_supplier = BooleanField(default=False)
-    enable_supplierprofile = BooleanField(default=False)
     #
     enable_dnszone = BooleanField(default=False)
     enable_dnszonerecord = BooleanField(default=False)
@@ -289,8 +315,8 @@ class Label(Document):
     def _reset_caches(cls, name):
         try:
             del cls._name_cache[
-                name,  # Tuple
-            ]
+                name,
+            ]  # Tuple
         except KeyError:
             pass
 
@@ -353,17 +379,10 @@ class Label(Document):
 
         :return:
         """
-        if self.is_wildcard and any(Label.objects.filter(name__startswith=self.name[:-1])):
+        if self.is_wildcard and Label.objects.filter(name__startswith=self.name[:-1]).first():
             raise ValueError("Cannot delete wildcard label with matched labels")
         if self.is_builtin and not self.is_matched:
             raise ValueError("Cannot delete builtin label")
-        # Check if label added to model
-        for model_id, setting in LABEL_MODELS.items():
-            if not getattr(self, setting):
-                continue
-            r = self.check_label(model_id, self.name)
-            if r:
-                raise ValueError(f"Referred from model {model_id}: {r!r} (id={r.id})")
 
     @classmethod
     def check_label(cls, model, label_name):
@@ -719,23 +738,46 @@ class Label(Document):
                     raise ValueError(
                         f"Label on MatchRules and Label at the same time is not allowed: {label}"
                     )
-            # Build and clean up effective labels. Filter can_set_labels
-            labels_iter = getattr(sender, "iter_effective_labels", default_iter_effective_labels)
-            instance.effective_labels = [
-                ll
-                for ll in Label.merge_labels(labels_iter(instance))
-                if can_set_label(ll) or ll[-1] in MATCH_OPS
-            ]
+            # Block effective labels
+            if instance._has_effective_labels:
+                # Build and clean up effective labels. Filter can_set_labels
+                labels_iter = getattr(
+                    sender, "iter_effective_labels", default_iter_effective_labels
+                )
+                instance.effective_labels = list(
+                    sorted(
+                        ll
+                        for ll in Label.merge_labels(labels_iter(instance))
+                        if ll[-1] in MATCH_OPS or can_set_label(ll)
+                    )
+                )
+            if instance._has_lazy_labels and instance.name != instance._last_name:
+                for label in Label.objects.filter(
+                    name=re.compile(f"noc::.+::{instance._last_name}::[{''.join(MATCH_OPS)}]")
+                ):
+                    label.delete()
+
+        def on_post_init_set_name(sender, instance=None, document=None, *args, **kwargs):
+            # For rename detect
+            instance = instance or document
+            instance._last_name = instance.name
+
+        m_cls._has_lazy_labels = hasattr(m_cls, "iter_lazy_labels")
+        m_cls._has_effective_labels = hasattr(m_cls, "effective_labels")
 
         # Install handlers
         if is_document(m_cls):
             from mongoengine import signals as mongo_signals
 
             mongo_signals.pre_save.connect(on_pre_save, sender=m_cls, weak=False)
+            if m_cls._has_lazy_labels:
+                mongo_signals.post_init.connect(on_post_init_set_name, sender=m_cls, weak=False)
         else:
             from django.db.models import signals as django_signals
 
             django_signals.pre_save.connect(on_pre_save, sender=m_cls, weak=False)
+            if m_cls._has_lazy_labels:
+                django_signals.post_init.connect(on_post_init_set_name, sender=m_cls, weak=False)
         return m_cls
 
     @classmethod

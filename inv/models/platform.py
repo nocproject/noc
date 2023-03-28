@@ -55,7 +55,6 @@ class Platform(Document):
             {"fields": ["vendor", "name"], "unique": True},
             ("vendor", "aliases"),
             "labels",
-            "effective_labels",
         ],
     }
     vendor = PlainReferenceField(Vendor)
@@ -80,7 +79,6 @@ class Platform(Document):
     aliases = ListField(StringField())
     # Labels
     labels = ListField(StringField())
-    effective_labels = ListField(StringField())
     # Object id in BI
     bi_id = LongField(unique=True)
 
