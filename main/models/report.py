@@ -70,6 +70,8 @@ class Template(EmbeddedDocument):
     code = StringField(default="DEFAULT")
     content = FileField(required=False)
     output_name_pattern = StringField()
+    is_alterable_output = BooleanField(default=True)
+    has_preview = BooleanField(default=False)
     handler = StringField()
 
 

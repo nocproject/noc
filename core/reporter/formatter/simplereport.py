@@ -1,7 +1,7 @@
 # ----------------------------------------------------------------------
-# CSV DataFormatter
+# SimpleReport DataFormatter
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2022 The NOC Project
+# Copyright (C) 2007-2023 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -10,6 +10,7 @@ from typing import List, Any, Optional, Tuple
 
 # Third-party modules
 from jinja2 import Template as Jinja2Template
+from xlsxwriter.workbook import Workbook
 
 # NOC modules
 from .base import DataFormatter
@@ -24,12 +25,15 @@ from noc.services.web.base.simplereport import (
 )
 
 
-class TableFormatter(DataFormatter):
+class SimpleReportFormatter(DataFormatter):
     def render_document(self):
         """
 
         :return:
         """
+        if not self.root_band.has_children:
+            self.render_table()
+            return
         report = Report()
         rband_format = self.get_band_format(self.root_band)
         report.append_section(
@@ -43,14 +47,75 @@ class TableFormatter(DataFormatter):
                 enumerate=False,
             )
         )
-        r = b""
         if self.output_type == OutputType.CSV:
             r = report.to_csv(delimiter=",")
         elif self.output_type == OutputType.SSV:
             r = report.to_csv(delimiter=";")
         elif self.output_type == OutputType.HTML:
             r = report.to_html(include_buttons=False)
+        elif self.output_type == OutputType.XLSX:
+            r = report.to_csv(delimiter=";")
+            workbook = Workbook(self.output_stream)
+            worksheet = workbook.add_worksheet()
+            for r, row in enumerate(r.splitlines()):
+                for c, col in enumerate(row.split(";")):
+                    worksheet.write(r, c, col)
+            workbook.close()
+            return
+        else:
+            raise NotImplementedError(f"Output Type {self.output_type} not supported")
         self.output_stream.write(r.encode("utf8"))
+
+    def render_table(self):
+        """
+        Format for Root Band data as table
+        :return:
+        """
+        r_format = self.report_template.bands_format["Root"]
+        # Column title map
+        HEADER_ROW = {}
+        for col in r_format.columns:
+            HEADER_ROW[col.name] = col.title
+        data = self.root_band.rows
+        if data is None:
+            return
+        out_columns = [c for c in data.columns]
+        if self.output_type in {OutputType.CSV, OutputType.SSV}:
+            r = ";".join(HEADER_ROW.get(cc, cc) for cc in data.columns) + "\n"
+            r += data.select(out_columns).write_csv(
+                # header=[self.HEADER_ROW.get(cc, cc) for cc in out_columns],
+                # columns=out_columns,
+                sep=";",
+                quote='"',
+                has_header=False,
+            )
+            self.output_stream.write(r.encode("utf8"))
+        elif self.output_type == OutputType.XLSX:
+            book = Workbook(self.output_stream)
+            cf1 = book.add_format({"bottom": 1, "left": 1, "right": 1, "top": 1})
+            worksheet = book.add_worksheet("Alarms")
+            for cn, col in enumerate(out_columns):
+                worksheet.write(0, cn, HEADER_ROW.get(col, col), cf1)
+            for cn, col in enumerate(out_columns):
+                worksheet.write_column(1, cn, data[col], cf1)
+            (max_row, max_col) = data.shape
+            worksheet.autofilter(0, 0, max_row, len(out_columns))
+            worksheet.freeze_panes(1, 0)
+            for i, width in enumerate(self.get_col_widths(data)):
+                worksheet.set_column(i, i, width)
+            #
+            book.close()
+
+    @staticmethod
+    def get_col_widths(dataframe, index_filed: Optional[str] = None):
+        # Then, we concatenate this to the max of the lengths
+        # of column name and its values for each column, left to right
+        r = [max([len(str(s)) for s in dataframe[col]] + [len(col)]) for col in dataframe.columns]
+        # First we find the maximum length of the index column
+        if index_filed:
+            idx_max = max([len(str(s)) for s in dataframe[index_filed]] + [len(str(index_filed))])
+            return [idx_max] + r
+        return r
 
     def get_report_data(self, columns: List[str] = None) -> List[Any]:
         """

@@ -437,6 +437,12 @@ class TableColumn(ReportNode):
         """
         return SafeString("<pre>%s</pre>" % pprint.pformat(f))
 
+    def f_string(self, f):
+        """
+        Returns a pretty-printed object
+        """
+        return str(f)
+
     def f_tags(self, f):
         """
         Display and object's tags

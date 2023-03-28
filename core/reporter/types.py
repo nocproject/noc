@@ -7,6 +7,7 @@
 
 # Python modules
 import enum
+import datetime
 from dataclasses import dataclass
 from typing import Dict, List, Optional, Any, Iterable, ForwardRef
 
@@ -91,13 +92,10 @@ class ColumnFormat(BaseModel):
 
     name: str
     title: Optional[str] = None
-    align: ColumnAlign = 1
+    align: ColumnAlign = ColumnAlign(1)
     format_type: Optional[str] = None
     total: str = None  # Calculate summary stat
     total_label: str = "Total"
-
-    def __post_init__(self):
-        self.align = ColumnAlign(self.align)
 
 
 class BandFormat(BaseModel):
@@ -130,8 +128,22 @@ class Parameter(BaseModel):
     name: str  # User friendly name
     alias: str  # for system use
     type: str  # Param Class ?
+    # "integer", "string", "date", "model", "choice", "bool", "fields_selector"
     required: bool = False
     default_value: Optional[str] = None
+
+    def clean_value(self, value):
+        if self.type == "integer":
+            return int(value)
+        if self.type == "date":
+            return datetime.datetime.strptime(value, "%d.%m.%Y")
+        if self.type == "bool":
+            return bool(value)
+        if self.type == "fields_selector":
+            return value.split(",")
+        if self.type == "choice":
+            return value.split(",")
+        return value
 
 
 @dataclass

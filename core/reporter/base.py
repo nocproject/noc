@@ -90,12 +90,16 @@ class ReportEngine(object):
         :param params:
         :return:
         """
-        clean_params = params.copy()
+        # clean_params = params.copy()
+        clean_params = {}
         for p in report.parameters or []:
             name = p.name
             value = params.get(name)
-            if value is None and p.required:
+            if not value and p.required:
                 raise ValueError(f"Required parameter {name} not found")
+            elif not value:
+                continue
+            clean_params[name] = p.clean_value(value)
         return clean_params
 
     def iter_bands_data(
@@ -229,4 +233,4 @@ class ReportEngine(object):
         output_name = template.get_document_name()
         out_type = run_params.output_type or template.output_type
         ctx = root_band.get_data()
-        return f"{Jinja2Template(output_name).render(ctx)}.{out_type.value}"
+        return f"{Jinja2Template(output_name).render(ctx) or 'report'}.{out_type.value}"

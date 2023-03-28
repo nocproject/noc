@@ -274,7 +274,8 @@ Ext.define('NOC.main.reportconfig.Application', {
                                             allowBlank: true,
                                             store: [
                                                 ["csv", __("CSV")],
-                                                ["pdf", __("PDF")],
+                                                // ["pdf", __("PDF")],
+                                                // ["table", __("Table")],
                                                 ["ssv", __("SSV")],
                                                 ["html", __("HTML")]
                                             ]
@@ -283,6 +284,16 @@ Ext.define('NOC.main.reportconfig.Application', {
                                             name: "output_name_pattern",
                                             xtype: "textfield",
                                             fieldLabel: __("Filename pattern")
+                                        },
+                                        {
+                                            name: "is_alterable_output",
+                                            xtype: "checkbox",
+                                            fieldLabel: __("Alterable output")
+                                        },
+                                        {
+                                            name: "has_preview",
+                                            xtype: "checkbox",
+                                            fieldLabel: __("Has Preview")
                                         }
                                     ]
                                 }

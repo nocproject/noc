@@ -126,18 +126,30 @@ class ReportConfigApplication(ExtDocApplication):
     def api_form_report(self, request, report_id):
         report: "Report" = self.get_object_or_404(Report, id=report_id)
         pref_lang = request.user.preferred_language
+        outputs = set()
         r = {
             "title": report.get_localization(field="title", lang=pref_lang),
             "description": report.description,
             "params": [],
             "preview": False,
             "dockedItems": [
-                {"text": "csv", "param": {"output_type": "csv"}},
+                # {"text": "csv", "param": {"output_type": "csv"}},
+                # {"text": "ssv", "param": {"output_type": "xlsx"}},
             ],
         }
-        if report.report_source:
+        tpl = report.templates[0] if report.templates else None
+        if tpl and tpl.output_type:
+            outputs.add(tpl.output_type.lower())
+        if report.report_source or (tpl and tpl.has_preview):
             r["preview"] = True
             r["dockedItems"] += [{"text": "Preview", "param": {"output_type": "html"}}]
+            outputs.discard("html")
+        if report.report_source or (tpl and tpl.is_alterable_output):
+            outputs.update({"ssv", "csv", "xlsx"})
+        if outputs:
+            r["dockedItems"] += [
+                {"text": out.upper(), "param": {"output_type": out}} for out in outputs
+            ]
         for param in report.parameters:
             cfg = {
                 "name": param.name,
