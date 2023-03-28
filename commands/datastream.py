@@ -94,12 +94,12 @@ class Command(BaseCommand):
                     if not d or (match and match["_id"]["$gt"] == d["_id"]):
                         break
                     match = {"_id": {"$gt": d["_id"]}}
-            else:
+            elif as_bi_id:
                 for id, bi_id in m.objects.values_list("id", "bi_id").order_by("id"):
-                    if as_bi_id:
-                        yield f"{model_id}::{bi_id}"
-                    else:
-                        yield id
+                    yield f"{model_id}::{bi_id}"
+            else:
+                for id in m.objects.values_list("id", flat=True).order_by("id"):
+                    yield id
 
     def get_total(self, model):
         if isinstance(model, tuple):
