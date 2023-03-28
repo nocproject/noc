@@ -15,6 +15,7 @@ import contextlib
 import gzip
 
 # Third-party modules
+from fastapi import APIRouter
 import orjson
 
 # NOC modules
@@ -64,7 +65,7 @@ class Command(BaseCommand):
 
     def handle(self, cmd, *args, **options):
         if options.get("local"):
-            self.svc = MIBAPI(ServiceStub(), None, None)
+            self.svc = MIBAPI(APIRouter())
         connect()
         return getattr(self, "handle_%s" % cmd.replace("-", "_"))(*args, **options)
 
