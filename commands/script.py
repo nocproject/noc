@@ -130,8 +130,9 @@ class Command(BaseCommand):
                 "vendor": obj.vendor.name if obj.vendor else None,
                 "platform": obj.platform.name if obj.platform else None,
                 "version": obj.version.version if obj.version else None,
-                "image": obj.software_image if obj.software_image else None,
             }
+            if obj.software_image:
+                version["image"] = obj.software_image if obj.software_image else None
             # if getattr(obj, "get_caps", None):
             #    attrs = {x["key"]: x["value"] for x in obj.managedobjectattribute_set.values()}
             #    if attrs:
