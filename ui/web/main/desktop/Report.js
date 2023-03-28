@@ -79,12 +79,15 @@ Ext.define('NOC.main.desktop.Report', {
             url = "/main/reportconfig/" + this.noc.report_id + "/run?" + params;
 
         this.form.remove(this.down("[itemId=reportResult]"));
+        if(button.param.output_type !== "html") {
+                window.open(url);
+                return 0;
+            }
         Ext.Ajax.request({
             url: url,
             method: "GET",
             scope: this,
             success: function(response) {
-                if(button.param.output_type === "html") {
                     // var htmlWrapperStart = '<head><link rel = "stylesheet" type = "text/css" href = "/ui/pkg/django-media/admin/css/base.css"/><link rel="stylesheet" type="text/css" href="/ui/web/css/django/main.css"/><link rel="stylesheet" type="text/css" href="/ui/pkg/fontawesome/css/font-awesome.min.css"/>    <link rel="stylesheet" type="text/css" href="/ui/web/css/colors.css"/></head><body><div id="container"><div id="content" class="colM">',
                     // htmlWrapperEnd = '</div></body></html >';
                     var result = Ext.create({
@@ -98,9 +101,6 @@ Ext.define('NOC.main.desktop.Report', {
                     var containerHtml = result.getEl().dom.getElementsByClassName('report-result')[0],
                         shadowDOM = containerHtml.attachShadow({mode: 'open'});
                     shadowDOM.innerHTML = response.responseText;
-                } else {
-                    window.open(url);
-                }
             },
             failure: function() {
                 NOC.error(__("Failed to run report"));

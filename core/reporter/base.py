@@ -8,7 +8,7 @@
 # Python modules
 import logging
 from io import BytesIO
-from typing import Dict, Any, Optional, List, Iterable
+from typing import Dict, Any, Optional, List, Iterable, Tuple
 
 # Third-party modules
 import orjson
@@ -90,12 +90,16 @@ class ReportEngine(object):
         :param params:
         :return:
         """
-        clean_params = params.copy()
+        # clean_params = params.copy()
+        clean_params = {}
         for p in report.parameters or []:
             name = p.name
             value = params.get(name)
-            if value is None and p.required:
+            if not value and p.required:
                 raise ValueError(f"Required parameter {name} not found")
+            elif not value:
+                continue
+            clean_params[name] = p.clean_value(value)
         return clean_params
 
     def iter_bands_data(
@@ -161,6 +165,28 @@ class ReportEngine(object):
                 bd_parent.add_child(band)
         return root
 
+    @staticmethod
+    def merge_ctx(ctx: Dict[str, Any], query: ReportQuery, joined: bool = False) -> Dict[str, Any]:
+        """
+        Merge Query context
+        :param ctx:
+        :param query:
+        :param joined:
+        :return:
+        """
+        q_ctx = ctx.copy()
+        if query.params:
+            q_ctx.update(query.params)
+        q_ctx["fields"] = []
+        for f in ctx.get("fields", []):
+            ff, *field = f.split(".", 1)
+            if not field and not joined:
+                # Base datasource
+                q_ctx["fields"].append(ff)
+            elif field and ff == query.datasource and field[0] != "all":
+                q_ctx["fields"] += field
+        return q_ctx
+
     @classmethod
     def get_rows(
         cls, queries: List[ReportQuery], ctx: Dict[str, Any], root_band: Optional[BandData] = None
@@ -171,38 +197,49 @@ class ReportEngine(object):
         :param ctx:
         :param root_band:
         :return:
+
         """
         if not queries:
             return None
         rows = None
-        for query in queries:
-            data = None
+        # key_field = "managed_object_id"
+        for num, query in enumerate(queries):
+            q_ctx = cls.merge_ctx(ctx, query, joined=bool(num))
+            data, key_field = None, None
             if query.json_data:
+                # return join fields (last DS)
                 data = pl.DataFrame(orjson.loads(query.json_data))
-            if query.datasource:
-                data = cls.query_datasource(query, ctx)
+            elif query.datasource:
+                data, key_field = cls.query_datasource(query, q_ctx, joined=len(queries) > 1)
             if query.query:
-                logger.debug("Execute query: %s; Context: %s", query.query, ctx)
+                logger.debug("Execute query: %s; Context: %s", query.query, q_ctx)
                 data = eval(
                     query.query,
                     {"__builtins__": {}},
-                    {"ds": data, "ctx": ctx, "root_band": root_band, "pl": pl},
+                    {"ds": data, "ctx": q_ctx, "root_band": root_band, "pl": pl},
                 )
             if data is None or data.is_empty():
                 continue
-            if rows is not None:
+            if rows is not None and key_field:
                 # @todo Linked field!
-                rows = rows.join(data)
+                # df_left_join = df_customers.join(df_orders, on="customer_id", how="left")
+                rows = rows.join(data, on=key_field, how="left")
                 continue
-            rows = data
+            else:
+                rows = data
+        if key_field and len(queries) > 1:
+            rows = rows.drop(key_field)
         return rows
 
     @classmethod
-    def query_datasource(cls, query: ReportQuery, ctx: Dict[str, Any]) -> Optional[pl.DataFrame]:
+    def query_datasource(
+        cls, query: ReportQuery, ctx: Dict[str, Any], joined: bool = False
+    ) -> Tuple[Optional[pl.DataFrame], str]:
         """
         Resolve Datasource for Query
         :param query:
         :param ctx:
+        :param joined:
         :return:
         """
         from noc.core.datasources.loader import loader as ds_loader
@@ -210,12 +247,11 @@ class ReportEngine(object):
         ds = ds_loader[query.datasource]
         if not ds:
             raise ValueError(f"Unknown Datasource: {query.datasource}")
-        params = query.params or {}
-        params.update(ctx)
-        # if query.fields:
-        #     params["fields"] = query.fields
-        row = ds.query_sync(**params)
-        return row
+        if joined and ctx.get("fields"):
+            ctx["fields"] += [ds.row_index]
+            # Check not row_index
+        row = ds.query_sync(**ctx)
+        return row, ds.row_index
 
     def resolve_output_filename(self, run_params: RunParams, root_band: BandData) -> str:
         """
@@ -226,4 +262,4 @@ class ReportEngine(object):
         output_name = template.get_document_name()
         out_type = run_params.output_type or template.output_type
         ctx = root_band.get_data()
-        return f"{Jinja2Template(output_name).render(ctx)}.{out_type.value}"
+        return f"{Jinja2Template(output_name).render(ctx) or 'report'}.{out_type.value}"

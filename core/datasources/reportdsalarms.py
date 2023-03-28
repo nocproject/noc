@@ -213,44 +213,45 @@ class ReportDsAlarms(BaseDataSource):
             match = {"timestamp": {"$gte": start}}
         else:
             match = {"timestamp": {"$gte": start, "$lte": end}}
-        match_duration, mos_filter, ex_resource_group = {}, {}, None
+        match_middle, mos_filter, ex_resource_group = {}, {}, None
         datenow = datetime.datetime.now()
         alarm_collections = []
-
+        match_duration = {}
         for name in filters:
             # name, values = ff["name"], ff["values"]
-            values = filters[name]
+            value, values = filters[name], [filters[name]]
+            if isinstance(filters[name], list):
+                values = filters[name]
+                value = values[0]
             if name == "source":
                 if "active" in values or "both" in values:
                     alarm_collections += [ActiveAlarm]
                 if "archive" in values or "both" in values:
                     alarm_collections += [ArchivedAlarm]
             elif name == "min_subscribers":
-                match_duration["total_subscribers_sum.sum"] = {"$gte": int(values[0])}
+                match_middle["total_subscribers_sum.sum"] = {"$gte": int(value)}
             elif name == "min_objects":
-                match_duration["total_objects_sum.sum"] = {"$gte": int(values[0])}
+                match_middle["total_objects_sum.sum"] = {"$gte": int(value)}
             elif name == "min_duration":
-                match_duration["duration"] = {"$gte": int(values[0])}
-            elif name == "max_duration":
-                if "duration" in match_duration:
-                    match_duration["duration"]["$lte"] = int(values[0])
-                else:
-                    match_duration["duration"] = {"$lte": int(values[0])}
+                match_duration["$gte"] = int(value)
+            elif name == "max_duration" and int(value) > 0:
+                match_duration["$lte"] = int(value)
             elif name == "alarm_class":
-                match["alarm_class"] = bson.ObjectId(values[0])
+                match["alarm_class"] = bson.ObjectId(value)
             elif name == "adm_path":
                 match["adm_path"] = {"$in": values}
                 mos_filter["administrative_domain__in"] = values
             elif name == "segment":
-                match["segment_path"] = bson.ObjectId(values[0])
+                match["segment_path"] = bson.ObjectId(value)
             elif name == "resource_group":
-                resource_group = ResourceGroup.get_by_id(values[0])
+                resource_group = ResourceGroup.get_by_id(value)
                 mos_filter["effective_service_groups__overlap"] = ResourceGroup.get_nested_ids(
                     resource_group
                 )
             if name == "ex_resource_group":
                 ex_resource_group = ResourceGroup.get_by_id(values[0])
-
+        if match_duration:
+            match_middle["duration"] = match_duration
         if mos_filter:
             mos = ManagedObject.objects.filter(is_managed=True).filter(**mos_filter)
             if ex_resource_group:
@@ -319,8 +320,8 @@ class ReportDsAlarms(BaseDataSource):
                     }
                 },
             ]
-            if match_duration:
-                pipeline += [{"$match": match_duration}]
+            if match_middle:
+                pipeline += [{"$match": match_middle}]
 
             # print(pipeline, alarm_collections)
             for row in (
@@ -362,8 +363,18 @@ class ReportDsAlarms(BaseDataSource):
         maintenance = {}
         # if "maintenance" in fields:
         #     maintenance = Maintenance.currently_affected()
-        container_path_fields = [field for field in fields if field.startswith("container_")]
-        segment_path_fields = [field for field in fields if field.startswith("segment_")]
+        if fields:
+            container_path_fields = [field for field in fields if field.startswith("container_")]
+        else:
+            container_path_fields = [
+                field.name for field in cls.fields if field.name.startswith("container_")
+            ]
+        if fields:
+            segment_path_fields = [field for field in fields if field.startswith("segment_")]
+        else:
+            segment_path_fields = [
+                field.name for field in cls.fields if field.name.startswith("segment_")
+            ]
         subscribers_profile = []
         if not fields or "subscribers" in fields:
             subscribers_profile = [
