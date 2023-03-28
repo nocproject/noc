@@ -89,7 +89,6 @@ class SLAProfile(Document):
     metrics: List[SLAProfileMetrics] = ListField(EmbeddedDocumentField(SLAProfileMetrics))
     # Labels
     labels = ListField(StringField())
-    effective_labels = ListField(StringField())
 
     # Caches
     _id_cache = cachetools.TTLCache(maxsize=100, ttl=60)
@@ -136,7 +135,7 @@ class SLAProfile(Document):
 
     @classmethod
     def can_set_label(cls, label):
-        return Label.get_effective_setting(label, "enable_slaprofile")
+        return Label.get_effective_setting(label, "enable_slaprobe")
 
     @staticmethod
     def config_from_settings(

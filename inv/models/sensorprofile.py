@@ -54,7 +54,6 @@ class SensorProfile(Document):
         "auto_create_index": False,
         "indexes": [
             "labels",
-            "effective_labels",
             "match_rules.labels",
             ("dynamic_classification_policy", "match_rules.labels"),
         ],
@@ -78,7 +77,6 @@ class SensorProfile(Document):
     match_rules = ListField(EmbeddedDocumentField(MatchRule))
     # Labels
     labels = ListField(StringField())
-    effective_labels = ListField(StringField())
     # BI ID
     bi_id = LongField(unique=True)
 

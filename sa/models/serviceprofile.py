@@ -53,7 +53,7 @@ class ServiceProfile(Document):
         "collection": "noc.serviceprofiles",
         "strict": False,
         "auto_create_index": False,
-        "indexes": ["labels", "effective_labels"],
+        "indexes": ["labels"],
     }
     name = StringField(unique=True)
     description = StringField()
@@ -85,7 +85,6 @@ class ServiceProfile(Document):
     bi_id = LongField(unique=True)
     # Labels
     labels = ListField(StringField())
-    effective_labels = ListField(StringField())
 
     _id_cache = cachetools.TTLCache(maxsize=100, ttl=60)
 

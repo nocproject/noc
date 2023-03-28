@@ -46,7 +46,6 @@ class SubscriberProfile(Document):
     show_in_summary = BooleanField(default=True)
     # Labels
     labels = ListField(StringField())
-    effective_labels = ListField(StringField())
     # Alarm weight
     weight = IntField(default=0)
     # Integration with external NRI and TT systems
@@ -69,4 +68,4 @@ class SubscriberProfile(Document):
 
     @classmethod
     def can_set_label(cls, label):
-        return Label.get_effective_setting(label, setting="enable_subscriberprofile")
+        return Label.get_effective_setting(label, setting="enable_subscriber")
