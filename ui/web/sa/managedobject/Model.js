@@ -308,18 +308,6 @@ Ext.define("NOC.sa.managedobject.Model", {
             persist: false
         },
         {
-            name: "last_seen",
-            type: "string"
-        },
-        {
-            name: "local_cpe_id",
-            type: "string"
-        },
-        {
-            name: "global_cpe_id",
-            type: "string"
-        },
-        {
             name: "labels",
             type: "auto"
         },
