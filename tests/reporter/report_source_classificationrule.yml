@@ -3,8 +3,8 @@ args:
   profile: "Cisco.IOS"
   request: "admin"
 parameters:
-  - name: Profile
-    alias: profile
+  - name: profile
+    alias: Profile
     type: string
 templates:
   DEFAULT:

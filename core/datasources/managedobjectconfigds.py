@@ -23,7 +23,7 @@ class ManagedObjectConfigDS(BaseDataSource):
     # "Up/10G", "Up/1G", "Up/100M", "Up/10M", "Down/-", "-"
     fields = [
         FieldInfo(name="managed_object_id", type=FieldType.UINT),
-        FieldInfo(name="last_changed_ts", type=FieldType.UINT64),
+        FieldInfo(name="last_changed_ts", type=FieldType.DATETIME),
     ]
 
     @classmethod

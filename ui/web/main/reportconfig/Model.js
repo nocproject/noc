@@ -42,7 +42,7 @@ Ext.define("NOC.main.reportconfig.Model", {
             type: "string"
         },
         {
-            name: "format_source",
+            name: "title",
             type: "string"
         },
         {
