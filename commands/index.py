@@ -7,6 +7,7 @@
 
 # NOC modules
 from noc.core.management.base import BaseCommand
+from noc.core.mongo.connection import connect
 from noc.main.models.textindex import TextIndex
 from noc.models import FTS_MODELS, get_model
 
@@ -29,7 +30,8 @@ class Command(BaseCommand):
         rebuild_parser = subparsers.add_parser("rebuild", help="Rebuild index")  # noqa
 
     def handle(self, cmd, *args, **options):
-        getattr(self, "handle_%s" % cmd)(*args, **options)
+        connect()
+        getattr(self, f"handle_{cmd}")(*args, **options)
 
     def handle_search(self, query, format, *args, **options):
         r = []

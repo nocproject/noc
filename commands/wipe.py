@@ -204,9 +204,7 @@ class Command(BaseCommand):
         # Clean KB Entry History
         with self.log("Cleaning KB user history"):
             KBEntryHistory.objects.filter(user=o).delete()
-        # Clean Django admin log
-        with self.log("Cleaning Django Admin log"):
-            self.clean_django_log_entry(user=o)
+
         # Finally delete user
         with self.log("Deleting user"):
             o.delete()
