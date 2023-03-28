@@ -580,6 +580,12 @@ class Config(BaseConfig):
         debug = BooleanParameter(default=False)
         max_breadcrumbs = IntParameter(min=1, max=100, default=10)
 
+    class Topo(ConfigSection):
+        ds_limit = IntParameter(default=1000)
+        dry_run = BooleanParameter(default=True)
+        check = BooleanParameter(default=True)
+        interval = SecondsParameter(default=60)
+
     class msgstream(ConfigSection):
         metrics_send_delay = FloatParameter(default=0.25)
         max_message_size = IntParameter(default=921600, help="Max message size for GRPC client")
