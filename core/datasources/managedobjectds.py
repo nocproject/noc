@@ -127,16 +127,15 @@ class ManagedObjectDS(BaseDataSource):
             type=FieldType.UINT,
         ),
         FieldInfo(
+            name="object_labels",
+            description="Object Labels",
+            internal_name="labels",
+        ),
+        FieldInfo(
             name="physical_iface_count",
             description="Object physical interfaces",
             internal_name="DB | Interfaces",
             type=FieldType.UINT,
-            is_caps=True,
-        ),
-        FieldInfo(
-            name="object_labels",
-            description="Object Labels",
-            internal_name="labels",
             is_caps=True,
         ),
         # Oper fields
