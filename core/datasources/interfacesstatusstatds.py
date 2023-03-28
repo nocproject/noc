@@ -104,5 +104,9 @@ class InterfacesStatusStatDS(BaseDataSource):
             row_num += 1
             r = cls.get_result(query_fields, data["result"])
             yield row_num, "managed_object_id", data["_id"]
-            for k, v in r.items():
-                yield row_num, k, v
+            yield row_num, "Up_10G", r.get("Up_10G", 0)
+            yield row_num, "Up_1G", r.get("Up_1G", 0)
+            yield row_num, "Up_100M", r.get("Up_100M", 0)
+            yield row_num, "Up_10M", r.get("Up_10M", 0)
+            yield row_num, "Down_-", r.get("Down_-", 0)
+            yield row_num, "-", r.get("-", 0)

@@ -43,9 +43,16 @@ def get_capabilities() -> Iterable[Tuple[str, str]]:
 
 class ManagedObjectDS(BaseDataSource):
     name = "managedobjectds"
+    row_index = "managed_object_id"
 
     fields = [
-        FieldInfo(name="managed_object_id", description="Object Id", type=FieldType.UINT),
+        FieldInfo(name="id", description="Object Id", type=FieldType.UINT),
+        FieldInfo(
+            name="managed_object_id",
+            description="Object Id",
+            internal_name="id",
+            type=FieldType.UINT,
+        ),
         FieldInfo(name="name", description="Object Name"),
         FieldInfo(name="profile", description="Profile Name"),
         FieldInfo(
@@ -230,6 +237,7 @@ class ManagedObjectDS(BaseDataSource):
         print("Start Main Loop")
         for num, mo in enumerate(mos.values(*q_fields).iterator(), start=1):
             yield num, "id", mo["id"]
+            yield num, "managed_object_id", mo["id"]
             if "name" in mo:
                 yield num, "name", mo["name"]
             if "address" in mo:
@@ -268,5 +276,7 @@ class ManagedObjectDS(BaseDataSource):
                 yield num, "project", Project.get_by_id(mo["project"]).name if mo[
                     "project"
                 ] else None
+            if "labels" in mo:
+                yield num, "object_labels", ",".join(mo["labels"])
             async for c in cls.iter_caps(mo.pop("caps", []), requested_caps=q_caps):
                 yield num, c[0], c[1]

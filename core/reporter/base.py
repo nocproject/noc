@@ -180,19 +180,28 @@ class ReportEngine(object):
         if not queries:
             return None
         rows = None
-        for query in queries:
+        for num, query in enumerate(queries):
+            q_ctx = ctx.copy()
+            q_ctx["fields"] = []
+            for f in ctx.get("fields", []):
+                ff, *field = f.split(".", 1)
+                if not field and not num:
+                    # Base datasource
+                    q_ctx["fields"].append(ff)
+                elif field and ff == query.datasource and field[0] != "all":
+                    q_ctx["fields"] += field
             data = None
             if query.json_data:
-                # return join fields (last DS
+                # return join fields (last DS)
                 data = pl.DataFrame(orjson.loads(query.json_data))
             if query.datasource:
-                data = cls.query_datasource(query, ctx)
+                data = cls.query_datasource(query, q_ctx, joined=len(queries) > 1)
             if query.query:
-                logger.debug("Execute query: %s; Context: %s", query.query, ctx)
+                logger.debug("Execute query: %s; Context: %s", query.query, q_ctx)
                 data = eval(
                     query.query,
                     {"__builtins__": {}},
-                    {"ds": data, "ctx": ctx, "root_band": root_band, "pl": pl},
+                    {"ds": data, "ctx": q_ctx, "root_band": root_band, "pl": pl},
                 )
             if data is None or data.is_empty():
                 continue
@@ -201,15 +210,19 @@ class ReportEngine(object):
                 # df_left_join = df_customers.join(df_orders, on="customer_id", how="left")
                 rows = rows.join(data, on="managed_object_id", how="left")
                 continue
-            rows = data
+            else:
+                rows = data
         return rows
 
     @classmethod
-    def query_datasource(cls, query: ReportQuery, ctx: Dict[str, Any]) -> Optional[pl.DataFrame]:
+    def query_datasource(
+        cls, query: ReportQuery, ctx: Dict[str, Any], joined: bool = False
+    ) -> Optional[pl.DataFrame]:
         """
         Resolve Datasource for Query
         :param query:
         :param ctx:
+        :param joined:
         :return:
         """
         from noc.core.datasources.loader import loader as ds_loader
@@ -219,8 +232,9 @@ class ReportEngine(object):
             raise ValueError(f"Unknown Datasource: {query.datasource}")
         params = query.params or {}
         params.update(ctx)
-        # if query.fields:
-        #     params["fields"] = query.fields
+        if joined and params.get("fields"):
+            params["fields"] += [ds.row_index]
+            # Check not row_index
         row = ds.query_sync(**params)
         return row
 
