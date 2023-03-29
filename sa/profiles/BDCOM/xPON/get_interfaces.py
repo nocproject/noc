@@ -38,6 +38,7 @@ class Script(BaseScript):
         "GigaEthernet-FX": "physical",  # GigabitEthernet
         "Giga-Combo-TX": "physical",  # GigabitEthernet Combo port
         "Giga-Combo-FX": "physical",  # GigabitEthernet Combo port
+        "Giga-Combo-FX-SFP": "physical",  # GigabitEthernet Combo port
         "Giga-TX": "physical",  # GigabitEthernet
         "Giga-FX": "physical",  # GigabitEthernet
         "Giga-FX-SFP": "physical",  # GigabitEthernet
