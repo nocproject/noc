@@ -8,6 +8,7 @@
 # NOC modules
 from collections import defaultdict
 from itertools import chain
+from typing import Iterable
 
 # Third-party modules
 from django.db.models import Q
@@ -31,6 +32,12 @@ class DNSZoneDataStream(DataStream):
     model = DNSZoneDataStreamItem
     clean_id = DataStream.clean_id_int
 
+    @staticmethod
+    def non_dotted(s: str) -> str:
+        if s.endswith("."):
+            return str(s[:-1])
+        return str(s)
+
     @classmethod
     def get_object(cls, id):
         zone = DNSZone.objects.filter(id=id)[:1]
@@ -41,13 +48,13 @@ class DNSZoneDataStream(DataStream):
             "id": str(zone.id),
             "name": str(zone.name),
             "serial": str(zone.serial),
-            "masters": [str(x[:-1]) for x in zone.masters],
-            "slaves": [str(x[:-1]) for x in zone.slaves],
+            "masters": [cls.non_dotted(x) for x in zone.masters],
+            "slaves": [cls.non_dotted(x) for x in zone.slaves],
             "records": cls.get_records(zone),
         }
 
     @classmethod
-    def get_records(cls, zone):
+    def get_records(cls, zone: DNSZone):
         """
         Get zone records
         :param zone:
@@ -63,7 +70,7 @@ class DNSZoneDataStream(DataStream):
         return [x.to_json() for x in chain(*tuple(zone_iters))]
 
     @classmethod
-    def iter_soa(cls, zone):
+    def iter_soa(cls, zone: DNSZone) -> Iterable[RR]:
         """
         Yield SOA record
         :return:
@@ -92,7 +99,7 @@ class DNSZoneDataStream(DataStream):
         )
 
     @classmethod
-    def iter_ns(cls, zone):
+    def iter_ns(cls, zone: DNSZone) -> Iterable[RR]:
         """
         Yield NS records
         :param zone:
@@ -102,7 +109,7 @@ class DNSZoneDataStream(DataStream):
             yield RR(zone=zone.name, name="", ttl=zone.profile.zone_ttl, type="NS", rdata=ns)
 
     @classmethod
-    def iter_forward(cls, zone):
+    def iter_forward(cls, zone: DNSZone) -> Iterable[RR]:
         """
         Yield forward zone records
         :param zone:
@@ -140,7 +147,7 @@ class DNSZoneDataStream(DataStream):
         return chain(cls.iter_ns(zone), cls.iter_rr(zone), cls.iter_ipam_ptr6(zone))
 
     @classmethod
-    def iter_nested_ns(cls, zone):
+    def iter_nested_ns(cls, zone: DNSZone) -> Iterable[RR]:
         """
         Yield NS/A records for nested zones
         :param zone:
@@ -168,7 +175,7 @@ class DNSZoneDataStream(DataStream):
                 yield RR(zone=zone.name, name=name, ttl=z.profile.zone_ttl, type="A", rdata=ip)
 
     @classmethod
-    def iter_rr(cls, zone):
+    def iter_rr(cls, zone: DNSZone) -> Iterable[RR]:
         """
         Yield directly set RRs from database
         :return:
@@ -188,7 +195,7 @@ class DNSZoneDataStream(DataStream):
             )
 
     @classmethod
-    def iter_ipam_a(cls, zone):
+    def iter_ipam_a(cls, zone: DNSZone) -> Iterable[RR]:
         """
         Yield A/AAAA records from IPAM
         :return: (name, type, content, ttl, prio)
@@ -213,7 +220,7 @@ class DNSZoneDataStream(DataStream):
             )
 
     @classmethod
-    def iter_ipam_ptr4(cls, zone):
+    def iter_ipam_ptr4(cls, zone: DNSZone) -> Iterable[RR]:
         """
         Yield IPv4 PTR records from IPAM
         :param zone:
@@ -243,7 +250,7 @@ class DNSZoneDataStream(DataStream):
             )
 
     @classmethod
-    def iter_ipam_ptr6(cls, zone):
+    def iter_ipam_ptr6(cls, zone: DNSZone) -> Iterable[RR]:
         """
         Yield IPv6 PTR records from IPAM
         :return: (name, type, content, ttl, prio)
@@ -262,7 +269,7 @@ class DNSZoneDataStream(DataStream):
             )
 
     @classmethod
-    def iter_missed_ns_a(cls, zone):
+    def iter_missed_ns_a(cls, zone: DNSZone) -> Iterable[RR]:
         """
         Yield missed A record for NS'es
         :param zone:
@@ -290,7 +297,7 @@ class DNSZoneDataStream(DataStream):
             )
 
     @classmethod
-    def iter_classless_delegation(cls, zone):
+    def iter_classless_delegation(cls, zone: DNSZone) -> RR:
         """
         Yield classless zone delegations
         :return:
