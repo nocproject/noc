@@ -217,7 +217,7 @@ class EventApplication(ExtDocApplication):
             subject = o.subject
             repeats = o.repeats
             duration = o.duration
-            alarms = o.alarms
+            alarms = [str(a) for a in o.alarms]
             if alarms:
                 row_class = AlarmSeverity.get_severity_css_class_name(get_severity(alarms))
         else:

@@ -21,6 +21,7 @@ from mongoengine.fields import (
     ListField,
     EmbeddedDocumentField,
     DictField,
+    ObjectIdField,
     BinaryField,
 )
 from bson import ObjectId
@@ -66,7 +67,7 @@ class ActiveEvent(Document):
     vars = DictField()
     log = ListField(EmbeddedDocumentField(EventLog))
     reference = BinaryField(required=False)
-    alarms = ListField()
+    alarms = ListField(ObjectIdField())
     expires = DateTimeField(required=False)
 
     def __str__(self):
