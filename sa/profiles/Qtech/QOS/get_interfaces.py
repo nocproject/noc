@@ -1,7 +1,7 @@
 # ---------------------------------------------------------------------
 # Qtech.QOS.get_interfaces
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2023 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -9,7 +9,7 @@
 import re
 
 # NOC modules
-from noc.core.script.base import BaseScript
+from noc.sa.profiles.Generic.get_interfaces import Script as BaseScript
 from noc.sa.interfaces.igetinterfaces import IGetInterfaces
 from noc.core.text import ranges_to_list
 from noc.core.ip import IPv4
@@ -39,15 +39,15 @@ class Script(BaseScript):
     )
     rx_vlans_ip = re.compile(r"^\s*(?P<iface>\d+)\s+(?P<vlan_id>\d+|none)", re.MULTILINE)
 
-    def execute(self):
+    def execute_cli(self):
         interfaces = []
         v = self.cli("show lldp local config")
         for port in self.rx_port.finditer(v):
             port_no = port.group("port")
             c = self.cli("show interface port-list %s switchport" % port_no)
             match = self.rx_vlan.search(c)
-            iface = {"name": "P%s" % port_no, "type": "physical"}
-            sub = {"name": "P%s" % port_no, "enabled_afi": ["BRIDGE"]}
+            iface = {"name": "port%s" % port_no, "type": "physical"}
+            sub = {"name": "port%s" % port_no, "enabled_afi": ["BRIDGE"]}
             if match.group("op_mode") in ["trunk", "hybrid"]:
                 sub["untagged_vlan"] = int(match.group("trunk_native_vlan"))
                 sub["tagged_vlans"] = ranges_to_list(match.group("op_vlans"))
