@@ -1,0 +1,111 @@
+{
+  "name": "Escalations",
+  "category": "fm",
+  "uuid": {
+    "$uuid": "8182c93c08924ef8b618ea9469a4d5c5"
+  },
+  "description": "Эскалации",
+  "hide": false,
+  "title": "Escalations (New)",
+  "is_system": false,
+  "allow_rest": false,
+  "parameters": [
+    {
+      "name": "from_date",
+      "label": "From",
+      "type": "date",
+      "choices": [],
+      "required": false,
+      "localization": {}
+    },
+    {
+      "name": "to_date",
+      "label": "To",
+      "type": "date",
+      "choices": [],
+      "required": false,
+      "localization": {}
+    }
+  ],
+  "templates": [
+    {
+      "output_type": "html",
+      "code": "DEFAULT",
+      "output_name_pattern": "",
+      "is_alterable_output": true,
+      "has_preview": false
+    }
+  ],
+  "bands": [
+    {
+      "name": "Root",
+      "orientation": "H",
+      "queries": [
+        {
+          "datasource": "escalationsds"
+        }
+      ]
+    },
+    {
+      "name": "master",
+      "parent": "root",
+      "orientation": "H",
+      "queries": [
+        {
+          "ds_query": "root_band.rows.sort('timestamp')"
+        }
+      ]
+    }
+  ],
+  "bands_format": [
+    {
+      "name": "root",
+      "title_template": "",
+      "column_format": []
+    },
+    {
+      "name": "master",
+      "title_template": "",
+      "column_format": [
+        {
+          "name": "timestamp",
+          "title": "Timestamp"
+        },
+        {
+          "name": "escalation_timestamp",
+          "title": "Escalation Timestamp"
+        },
+        {
+          "name": "managed_object",
+          "title": "Managed Object"
+        },
+        {
+          "name": "address",
+          "title": "Address"
+        },
+        {
+          "name": "platform",
+          "title": "Platform"
+        },
+        {
+          "name": "segment",
+          "title": "Segment"
+        },
+        {
+          "name": "tt",
+          "title": "TT"
+        },
+        {
+          "name": "objects",
+          "title": "Objects"
+        },
+        {
+          "name": "subscribers",
+          "title": "Subscribers"
+        }
+      ]
+    }
+  ],
+  "permissions": [],
+  "localization": {}
+}
