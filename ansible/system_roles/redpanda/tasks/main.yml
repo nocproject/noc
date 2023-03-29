@@ -26,7 +26,7 @@
     consul_service_value: "noc.core.msgstream.redpanda.RedPandaClient"
     consul_service_token: None
   when:
-    - "'consul://' in config_order" # Look in noc/tasks/config.yml for local file configuration
+    - "'consul://' in config_order"  #Look in noc/tasks/config.yml for local file configuration
 
 - name: Place redpanda consul check
   import_role:
