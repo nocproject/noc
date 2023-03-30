@@ -28,6 +28,7 @@ class BaseRemoteSystem(object):
         "managedobjectprofile",
         "administrativedomain",
         "authprofile",
+        "l2domain",
         "ttsystem",
         "project",
         "managedobject",

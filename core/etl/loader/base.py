@@ -481,16 +481,14 @@ class BaseLoader(object):
                         "add": list(set(nv[fn]) - set(ov[fn] or [])),
                         "remove": list(set(ov[fn] or []) - set(nv[fn])),
                     }
-        if n.id in self.mappings:
-            o = self.change_object(self.mappings[n.id], changes, inc_changes=incremental_changes)
-            if self.workflow_state_sync:
-                self.change_workflow(
-                    o, getattr(n, "state", None), getattr(n, "state_changed", None)
-                )
-            if o and psf:
-                self.post_save(o, psf)
-        else:
+        if n.id not in self.mappings:
             self.logger.error("Cannot map id '%s'. Skipping.", n.id)
+            return
+        o = self.change_object(self.mappings[n.id], changes, inc_changes=incremental_changes)
+        if self.workflow_state_sync:
+            self.change_workflow(o, getattr(n, "state", None), getattr(n, "state_changed", None))
+        if o and psf:
+            self.post_save(o, psf)
 
     def on_delete(self, item: BaseModel):
         """

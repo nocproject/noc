@@ -19,6 +19,7 @@ from .object import Object
 from .managedobjectprofile import ManagedObjectProfile
 from .networksegment import NetworkSegment
 from .resourcegroup import ResourceGroup
+from .l2domain import L2Domain
 from .ttsystem import TTSystem
 from .project import Project
 
@@ -63,6 +64,7 @@ class ManagedObject(BaseModel):
     syslog_source_ip: Optional[str]
     description: Optional[str]
     auth_profile: Optional[Reference["AuthProfile"]]
+    l2_domain: Optional[Reference["L2Domain"]]
     labels: Optional[List[str]]
     tt_system: Optional[Reference["TTSystem"]]
     tt_queue: Optional[str]
