@@ -126,5 +126,5 @@ class Workflow(Document):
         for mid in self.allowed_models:
             try:
                 get_model(mid)
-            except Exception as e:
-                raise ValueError(f"Unknown model_id {mid}")
+            except AssertionError:
+                raise ValueError(f"Unknown model_id: {mid}")

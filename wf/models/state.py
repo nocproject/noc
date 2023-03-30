@@ -279,8 +279,8 @@ class State(Document):
         for mid in self.workflow.allowed_models:
             try:
                 get_model(mid)
-            except Exception as e:
-                raise ValueError(f"Unknown model_id {mid}")
+            except AssertionError:
+                raise ValueError(f"Unknown model_id: {mid}")
 
     def is_enabled_feature(self, name) -> bool:
         """
