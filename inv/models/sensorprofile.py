@@ -115,13 +115,3 @@ class SensorProfile(Document):
     @classmethod
     def can_set_label(cls, label):
         return Label.get_effective_setting(label, setting="enable_sensorprofile")
-
-    @classmethod
-    def _reset_caches(cls, id):
-        try:
-            del cls._id_cache[str(id),]  # Tuple
-        except KeyError:
-            pass
-
-    def on_save(self):
-        self._reset_caches(self.id)
