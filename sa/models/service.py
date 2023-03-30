@@ -228,3 +228,6 @@ class Service(Document):
                 return svc.agent
             svc = svc.parent
         return None
+
+    def get_message_context(self) -> Dict[str, Any]:
+        return {"caps": self.get_caps()}

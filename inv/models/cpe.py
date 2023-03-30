@@ -245,6 +245,7 @@ class CPE(Document):
                 for mc in cpe.profile.metrics
             ],
             "rules": [ma for ma in MetricRule.iter_rules_actions(cpe.effective_labels)],
+            "sharding_key": cpe.controller.bi_id if cpe.controller else None,
             "items": [],
         }
 
