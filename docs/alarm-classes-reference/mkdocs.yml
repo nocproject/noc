@@ -1,0 +1,217 @@
+INHERIT: ../mkdocs-base.yml
+site_name: "NOC: Alarm Classes Reference"
+site_description: >
+        The reference of the NOC alarm classes
+edit_uri: -/edit/master/docs/alarm-classes-reference/
+site_dir: ../../build/docs/alarm-classes-reference/
+nav:
+        - Overview: index.md
+        - "Chassis":
+                  - "CPU":
+                            - "CPU Exhausted": chassis/cpu/cpu-exhausted.md
+                  - "Clock":
+                            - "Clock Failed": chassis/clock/clock-failed.md
+                  - "Fabric":
+                            - "CRC Errors": chassis/fabric/crc-errors.md
+                  - "Fan":
+                            - "Fan Failed": chassis/fan/fan-failed.md
+                            - "Fan Removed": chassis/fan/fan-removed.md
+                  - "Hardware":
+                            - "Hardware Error": chassis/hardware/hardware-error.md
+                            - "Hardware Port Error": chassis/hardware/hardware-port-error.md
+                            - "Hardware Port Warning": chassis/hardware/hardware-port-warning.md
+                            - "Hardware Warning": chassis/hardware/hardware-warning.md
+                            - "Module":
+                                      - "Invalid Module": chassis/hardware/module/invalid-module.md
+                                      - "Module Error": chassis/hardware/module/module-error.md
+                  - "Linecard":
+                            - "LC Down": chassis/linecard/lc-down.md
+                  - "PSU":
+                            - "PSU Failed": chassis/psu/psu-failed.md
+                            - "Power Failed": chassis/psu/power-failed.md
+                  - "RAM":
+                            - "Insufficient Memory": chassis/ram/insufficient-memory.md
+                            - "RAM Failed": chassis/ram/ram-failed.md
+                  - "Stack":
+                            - "Stack Degraded": chassis/stack/stack-degraded.md
+                  - "Supervisor":
+                            - "Supervisor Down": chassis/supervisor/supervisor-down.md
+                  - "TCAM":
+                            - "TCAM Entry Capacity Exceeded": chassis/tcam/tcam-entry-capacity-exceeded.md
+                            - "TCAM Error": chassis/tcam/tcam-error.md
+        - "Config":
+                  - "Config Download Failed": config/config-download-failed.md
+                  - "Config Sync Failed": config/config-sync-failed.md
+                  - "Config Upload Failed": config/config-upload-failed.md
+                  - "Invalid Config": config/invalid-config.md
+                  - "Policy Violation": config/policy-violation.md
+                  - "Policy Violations": config/policy-violations.md
+        - "Discovery":
+                  - "Error":
+                            - "Auth Failed": discovery/error/auth-failed.md
+                            - "Connection Refused": discovery/error/connection-refused.md
+                            - "Low Privileges": discovery/error/low-privileges.md
+                            - "No Super": discovery/error/no-super.md
+                            - "SSH Protocol": discovery/error/ssh-protocol.md
+                            - "Service Not Available": discovery/error/service-not-available.md
+                            - "Unhandled Exception": discovery/error/unhandled-exception.md
+                  - "Guess":
+                            - "CLI Credentials": discovery/guess/cli-credentials.md
+                            - "Profile": discovery/guess/profile.md
+                            - "SNMP Community": discovery/guess/snmp-community.md
+                  - "Job":
+                            - "Box": discovery/job/box.md
+                            - "Periodic": discovery/job/periodic.md
+        - "Environment":
+                  - "AC Voltage Out of Range": environment/ac-voltage-out-of-range.md
+                  - "Chassis Voltage Out of Range": environment/chassis-voltage-out-of-range.md
+                  - "DC Voltage Out of Range": environment/dc-voltage-out-of-range.md
+                  - "Humidity Out of Range": environment/humidity-out-of-range.md
+                  - "Module Voltage Out of Range": environment/module-voltage-out-of-range.md
+                  - "Temperature Out of Range": environment/temperature-out-of-range.md
+                  - "Total Power Loss": environment/total-power-loss.md
+                  - "UPS":
+                            - "Battery Power Low": environment/ups/battery-power-low.md
+                            - "Input Power Failed": environment/ups/input-power-failed.md
+                            - "Input Power Low": environment/ups/input-power-low.md
+                            - "Self-Test Failed": environment/ups/self-test-failed.md
+        - "NOC":
+                  - "IPAM":
+                            - "VRF Group Address Collision": noc/ipam/vrf-group-address-collision.md
+                  - "Managed Object":
+                            - "Configuration Errors":
+                                      - "Misconfigured SNMP": noc/managed-object/configuration-errors/misconfigured-snmp.md
+                            - "Denied Firmware": noc/managed-object/denied-firmware.md
+                            - "New Platform": noc/managed-object/new-platform.md
+                            - "Ping Failed": noc/managed-object/ping-failed.md
+                  - "PM":
+                            - "High Error": noc/pm/high-error.md
+                            - "High Warning": noc/pm/high-warning.md
+                            - "Low Error": noc/pm/low-error.md
+                            - "Low Warning": noc/pm/low-warning.md
+                            - "Out of Thresholds": noc/pm/out-of-thresholds.md
+                  - "Periodic":
+                            - "Periodic Failed": noc/periodic/periodic-failed.md
+                  - "SA":
+                            - "Activator Pool Degraded": noc/sa/activator-pool-degraded.md
+        - "Network":
+                  - "BFD":
+                            - "Session Down": network/bfd/session-down.md
+                  - "BGP":
+                            - "Peer Down": network/bgp/peer-down.md
+                            - "Prefix Limit Exceeded": network/bgp/prefix-limit-exceeded.md
+                  - "DHCP":
+                            - "Untrusted Server": network/dhcp/untrusted-server.md
+                  - "DNS":
+                            - "Bad Query": network/dns/bad-query.md
+                  - "DOCSIS":
+                            - "BPI Unautorized": network/docsis/bpi-unautorized.md
+                            - "Bad Timing Offset": network/docsis/bad-timing-offset.md
+                            - "Invalid CoS": network/docsis/invalid-cos.md
+                            - "Invalid DOCSIS Message": network/docsis/invalid-docsis-message.md
+                            - "Invalid QoS": network/docsis/invalid-qos.md
+                            - "Invalid Shared Secret": network/docsis/invalid-shared-secret.md
+                            - "Max CPE Reached": network/docsis/max-cpe-reached.md
+                            - "Maximum Capacity Reached": network/docsis/maximum-capacity-reached.md
+                            - "Maximum SIDs": network/docsis/maximum-sids.md
+                  - "EIGRP":
+                            - "Neighbor Down": network/eigrp/neighbor-down.md
+                  - "IMPB":
+                            - "Unauthenticated IP-MAC": network/impb/unauthenticated-ip-mac.md
+                  - "IP":
+                            - "ARP Moved": network/ip/arp-moved.md
+                            - "Address Conflict": network/ip/address-conflict.md
+                            - "IP Flap": network/ip/ip-flap.md
+                  - "IS-IS":
+                            - "Adjacency Down": network/is-is/adjacency-down.md
+                  - "LBD":
+                            - "Loop Detected": network/lbd/loop-detected.md
+                            - "Vlan Loop Detected": network/lbd/vlan-loop-detected.md
+                  - "Link":
+                            - "DOM":
+                                      - "Alarm: Out of Threshold": network/link/dom/alarm-out-of-threshold.md
+                                      - "Warning: Out of Threshold": network/link/dom/warning-out-of-threshold.md
+                            - "Duplex Mismatch": network/link/duplex-mismatch.md
+                            - "Err-Disable": network/link/err-disable.md
+                            - "Half-Duplex": network/link/half-duplex.md
+                            - "Link Down": network/link/link-down.md
+                  - "MAC":
+                            - "Duplicate MAC": network/mac/duplicate-mac.md
+                            - "Invalid MAC": network/mac/invalid-mac.md
+                            - "MAC Flap": network/mac/mac-flap.md
+                            - "MAC Flood": network/mac/mac-flood.md
+                  - "MPLS":
+                            - "LDP Neighbor Down": network/mpls/ldp-neighbor-down.md
+                            - "LSP Down": network/mpls/lsp-down.md
+                            - "Path Down": network/mpls/path-down.md
+                            - "TDP Neighbor Down": network/mpls/tdp-neighbor-down.md
+                  - "MSDP":
+                            - "Peer Down": network/msdp/peer-down.md
+                  - "Monitor":
+                            - "CRC Error Detected": network/monitor/crc-error-detected.md
+                  - "OSPF":
+                            - "Neighbor Down": network/ospf/neighbor-down.md
+                  - "PIM":
+                            - "DR Change": network/pim/dr-change.md
+                            - "Invalid RP": network/pim/invalid-rp.md
+                            - "MSDP Peer Down": network/pim/msdp-peer-down.md
+                            - "Neighbor Down": network/pim/neighbor-down.md
+                  - "Port Security":
+                            - "Port Security Violation": network/port-security/port-security-violation.md
+                  - "RSVP":
+                            - "Neighbor Down": network/rsvp/neighbor-down.md
+                  - "STP":
+                            - "BPDU Guard Violation": network/stp/bpdu-guard-violation.md
+                            - "Root Guard Violation": network/stp/root-guard-violation.md
+                            - "STP Loop Detected": network/stp/stp-loop-detected.md
+                            - "STP Vlan Loop Detected": network/stp/stp-vlan-loop-detected.md
+                  - "Storm Control":
+                            - "Broadcast Storm Detected": network/storm-control/broadcast-storm-detected.md
+                            - "Multicast Storm Detected": network/storm-control/multicast-storm-detected.md
+                            - "Storm Detected": network/storm-control/storm-detected.md
+                            - "Unicast Storm Detected": network/storm-control/unicast-storm-detected.md
+                  - "UDLD":
+                            - "UDLD Protocol Error Detected": network/udld/udld-protocol-error-detected.md
+        - "Security":
+                  - "Abduct":
+                            - "Cable Abduct": security/abduct/cable-abduct.md
+                  - "Access":
+                            - "Case Open": security/access/case-open.md
+                            - "Door Open": security/access/door-open.md
+                  - "Attack":
+                            - "Attack": security/attack/attack.md
+                            - "Blat Attack": security/attack/blat-attack.md
+                            - "IP Spoofing": security/attack/ip-spoofing.md
+                            - "Land Attack": security/attack/land-attack.md
+                            - "Ping Of Death": security/attack/ping-of-death.md
+                            - "Smurf Attack": security/attack/smurf-attack.md
+                            - "TCP SYNFIN Scan": security/attack/tcp-synfin-scan.md
+                            - "Teardrop Attack": security/attack/teardrop-attack.md
+                  - "Authentication":
+                            - "RADIUS server failed": security/authentication/radius-server-failed.md
+                            - "TACACS+ server failed": security/authentication/tacacs+-server-failed.md
+        - "System":
+                  - "Insufficient Memory": system/insufficient-memory.md
+                  - "Process Crashed": system/process-crashed.md
+                  - "Reboot": system/reboot.md
+        - "Vendor":
+                  - "Arista":
+                            - "EOS":
+                                      - "VMTracer":
+                                                - "Failed to connect to vCenter": vendor/arista/eos/vmtracer/failed-to-connect-to-vcenter.md
+                  - "Cisco":
+                            - "IOS":
+                                      - "Network":
+                                                - "Load Balance":
+                                                          - "Server Farm Degraded": vendor/cisco/ios/network/load-balance/server-farm-degraded.md
+                                                          - "vserver Out of Service": vendor/cisco/ios/network/load-balance/vserver-out-of-service.md
+                            - "SCOS":
+                                      - "Security":
+                                                - "Attack":
+                                                          - "Attack Detected": vendor/cisco/scos/security/attack/attack-detected.md
+                  - "f5":
+                            - "BIGIP":
+                                      - "Network":
+                                                - "Load Balance":
+                                                          - "Node Down": vendor/f5/bigip/network/load-balance/node-down.md
+                                                          - "Service Down": vendor/f5/bigip/network/load-balance/service-down.md

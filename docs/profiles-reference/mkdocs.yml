@@ -1,0 +1,431 @@
+INHERIT: ../mkdocs-base.yml
+site_name: "NOC: Profiles Reference"
+site_description: >
+        The reference of the equipment supported by NOC
+        and of supported capabilities.
+edit_uri: -/edit/master/docs/profiles-reference/
+site_dir: ../../build/docs/profiles-reference/
+nav:
+        - Overview: index.md
+        - 3Com:
+                  - Overview: 3Com/index.md
+                  - 3Com.4500: 3Com/3Com.4500.md
+                  - 3Com.SuperStack: 3Com/3Com.SuperStack.md
+                  - 3Com.SuperStack3: 3Com/3Com.SuperStack3.md
+                  - 3Com.SuperStack3_4400: 3Com/3Com.SuperStack3_4400.md
+                  - 3Com.SuperStack3_4500: 3Com/3Com.SuperStack3_4500.md
+        - APC:
+                  - Overview: APC/index.md
+                  - APC.AOS: APC/APC.AOS.md
+        - AcmePacket:
+                  - Overview: AcmePacket/index.md
+                  - AcmePacket.NetNet: AcmePacket/AcmePacket.NetNet.md
+        - AddPac:
+                  - Overview: AddPac/index.md
+                  - AddPac.APOS: AddPac/AddPac.APOS.md
+        - Alcatel:
+                  - Overview: Alcatel/index.md
+                  - Alcatel.7302: Alcatel/Alcatel.7302.md
+                  - Alcatel.7324RU: Alcatel/Alcatel.7324RU.md
+                  - Alcatel.AOS: Alcatel/Alcatel.AOS.md
+                  - Alcatel.OS62xx: Alcatel/Alcatel.OS62xx.md
+                  - Alcatel.Stinger: Alcatel/Alcatel.Stinger.md
+                  - Alcatel.TIMOS: Alcatel/Alcatel.TIMOS.md
+        - Alentis:
+                  - Overview: Alentis/index.md
+                  - Alentis.NetPing: Alentis/Alentis.NetPing.md
+        - AlliedTelesis:
+                  - Overview: AlliedTelesis/index.md
+                  - AlliedTelesis.AT8000: AlliedTelesis/AlliedTelesis.AT8000.md
+                  - AlliedTelesis.AT8000S: AlliedTelesis/AlliedTelesis.AT8000S.md
+                  - AlliedTelesis.AT8100: AlliedTelesis/AlliedTelesis.AT8100.md
+                  - AlliedTelesis.AT8500: AlliedTelesis/AlliedTelesis.AT8500.md
+                  - AlliedTelesis.AT8700: AlliedTelesis/AlliedTelesis.AT8700.md
+                  - AlliedTelesis.AT9400: AlliedTelesis/AlliedTelesis.AT9400.md
+                  - AlliedTelesis.AT9900: AlliedTelesis/AlliedTelesis.AT9900.md
+        - Alstec:
+                  - Overview: Alstec/index.md
+                  - Alstec.24xx: Alstec/Alstec.24xx.md
+                  - Alstec.5440: Alstec/Alstec.5440.md
+                  - Alstec.7200: Alstec/Alstec.7200.md
+                  - Alstec.ALS: Alstec/Alstec.ALS.md
+                  - Alstec.MSPU: Alstec/Alstec.MSPU.md
+        - Angtel:
+                  - Overview: Angtel/index.md
+                  - Angtel.Topaz: Angtel/Angtel.Topaz.md
+        - Arista:
+                  - Overview: Arista/index.md
+                  - Arista.EOS: Arista/Arista.EOS.md
+        - Aruba:
+                  - Overview: Aruba/index.md
+                  - Aruba.ArubaOS: Aruba/Aruba.ArubaOS.md
+        - Audiocodes:
+                  - Overview: Audiocodes/index.md
+                  - Audiocodes.Mediant2000: Audiocodes/Audiocodes.Mediant2000.md
+        - Axis:
+                  - Overview: Axis/index.md
+                  - Axis.VAPIX: Axis/Axis.VAPIX.md
+        - BDCOM:
+                  - Overview: BDCOM/index.md
+                  - BDCOM.IOS: BDCOM/BDCOM.IOS.md
+                  - BDCOM.xPON: BDCOM/BDCOM.xPON.md
+        - Beward:
+                  - Overview: Beward/index.md
+                  - Beward.BD: Beward/Beward.BD.md
+        - Bradbury:
+                  - Overview: Bradbury/index.md
+                  - Bradbury.HighVideo: Bradbury/Bradbury.HighVideo.md
+        - Brocade:
+                  - Overview: Brocade/index.md
+                  - Brocade.ADX: Brocade/Brocade.ADX.md
+                  - Brocade.CER-ADV: Brocade/Brocade.CER-ADV.md
+                  - Brocade.CER: Brocade/Brocade.CER.md
+                  - Brocade.FabricOS: Brocade/Brocade.FabricOS.md
+                  - Brocade.IronWare: Brocade/Brocade.IronWare.md
+        - CData:
+                  - Overview: CData/index.md
+                  - CData.xPON: CData/CData.xPON.md
+        - Cambium:
+                  - Overview: Cambium/index.md
+                  - Cambium.ePMP: Cambium/Cambium.ePMP.md
+        - Carelink:
+                  - Overview: Carelink/index.md
+                  - Carelink.SWG: Carelink/Carelink.SWG.md
+        - Cisco:
+                  - Overview: Cisco/index.md
+                  - Cisco.1900: Cisco/Cisco.1900.md
+                  - Cisco.ASA: Cisco/Cisco.ASA.md
+                  - Cisco.AireOS: Cisco/Cisco.AireOS.md
+                  - Cisco.CatOS: Cisco/Cisco.CatOS.md
+                  - Cisco.DCM: Cisco/Cisco.DCM.md
+                  - Cisco.FWSM: Cisco/Cisco.FWSM.md
+                  - Cisco.IOS: Cisco/Cisco.IOS.md
+                  - Cisco.IOSXR: Cisco/Cisco.IOSXR.md
+                  - Cisco.NXOS: Cisco/Cisco.NXOS.md
+                  - Cisco.SANOS: Cisco/Cisco.SANOS.md
+                  - Cisco.SCOS: Cisco/Cisco.SCOS.md
+                  - Cisco.SMB: Cisco/Cisco.SMB.md
+                  - Cisco.WLC: Cisco/Cisco.WLC.md
+        - DCN:
+                  - Overview: DCN/index.md
+                  - DCN.DCWL: DCN/DCN.DCWL.md
+                  - DCN.DCWS: DCN/DCN.DCWS.md
+        - DLink:
+                  - Overview: DLink/index.md
+                  - DLink.DAS: DLink/DLink.DAS.md
+                  - DLink.DES21xx: DLink/DLink.DES21xx.md
+                  - DLink.DFL: DLink/DLink.DFL.md
+                  - DLink.DGS3100: DLink/DLink.DGS3100.md
+                  - DLink.DIR: DLink/DLink.DIR.md
+                  - DLink.DVG: DLink/DLink.DVG.md
+                  - DLink.DxS: DLink/DLink.DxS.md
+                  - DLink.DxS_Cisco_CLI: DLink/DLink.DxS_Cisco_CLI.md
+                  - DLink.DxS_Industrial_CLI: DLink/DLink.DxS_Industrial_CLI.md
+                  - DLink.DxS_Smart: DLink/DLink.DxS_Smart.md
+        - Dahua:
+                  - Overview: Dahua/index.md
+                  - Dahua.DH: Dahua/Dahua.DH.md
+        - Dell:
+                  - Overview: Dell/index.md
+                  - Dell.Powerconnect55xx: Dell/Dell.Powerconnect55xx.md
+                  - Dell.Powerconnect62xx: Dell/Dell.Powerconnect62xx.md
+        - ECI:
+                  - Overview: ECI/index.md
+                  - ECI.HiFOCuS: ECI/ECI.HiFOCuS.md
+                  - ECI.SAM: ECI/ECI.SAM.md
+                  - ECI.SANI: ECI/ECI.SANI.md
+        - EdgeCore:
+                  - Overview: EdgeCore/index.md
+                  - EdgeCore.ES: EdgeCore/EdgeCore.ES.md
+        - ElectronR:
+                  - Overview: ElectronR/index.md
+                  - ElectronR.KO01M: ElectronR/ElectronR.KO01M.md
+        - Eltex:
+                  - Overview: Eltex/index.md
+                  - Eltex.DSLAM: Eltex/Eltex.DSLAM.md
+                  - Eltex.ESR: Eltex/Eltex.ESR.md
+                  - Eltex.LTE: Eltex/Eltex.LTE.md
+                  - Eltex.LTP: Eltex/Eltex.LTP.md
+                  - Eltex.MA4000: Eltex/Eltex.MA4000.md
+                  - Eltex.MES: Eltex/Eltex.MES.md
+                  - Eltex.MES24xx: Eltex/Eltex.MES24xx.md
+                  - Eltex.MES5448: Eltex/Eltex.MES5448.md
+                  - Eltex.PON: Eltex/Eltex.PON.md
+                  - Eltex.RG: Eltex/Eltex.RG.md
+                  - Eltex.SMG: Eltex/Eltex.SMG.md
+                  - Eltex.TAU: Eltex/Eltex.TAU.md
+                  - Eltex.WOP: Eltex/Eltex.WOP.md
+                  - Eltex.WOPLR: Eltex/Eltex.WOPLR.md
+        - Enterasys:
+                  - Overview: Enterasys/index.md
+                  - Enterasys.EOS: Enterasys/Enterasys.EOS.md
+        - Ericsson:
+                  - Overview: Ericsson/index.md
+                  - Ericsson.MINI_LINK: Ericsson/Ericsson.MINI_LINK.md
+                  - Ericsson.SEOS: Ericsson/Ericsson.SEOS.md
+        - Extreme:
+                  - Overview: Extreme/index.md
+                  - Extreme.ISW: Extreme/Extreme.ISW.md
+                  - Extreme.Summit200: Extreme/Extreme.Summit200.md
+                  - Extreme.XOS: Extreme/Extreme.XOS.md
+        - Force10:
+                  - Overview: Force10/index.md
+                  - Force10.FTOS: Force10/Force10.FTOS.md
+                  - Force10.SFTOS: Force10/Force10.SFTOS.md
+        - Fortinet:
+                  - Overview: Fortinet/index.md
+                  - Fortinet.Fortigate: Fortinet/Fortinet.Fortigate.md
+        - GWD:
+                  - Overview: GWD/index.md
+                  - GWD.GFA: GWD/GWD.GFA.md
+        - H3C:
+                  - Overview: H3C/index.md
+                  - H3C.VRP: H3C/H3C.VRP.md
+        - HP:
+                  - Overview: HP/index.md
+                  - HP.1905: HP/HP.1905.md
+                  - HP.1910: HP/HP.1910.md
+                  - HP.Comware: HP/HP.Comware.md
+                  - HP.GbE2: HP/HP.GbE2.md
+                  - HP.ProCurve: HP/HP.ProCurve.md
+                  - HP.ProCurve9xxx: HP/HP.ProCurve9xxx.md
+                  - HP.iLO2: HP/HP.iLO2.md
+        - Harmonic:
+                  - Overview: Harmonic/index.md
+                  - Harmonic.DiviComElectra: Harmonic/Harmonic.DiviComElectra.md
+                  - Harmonic.ProStream1000: Harmonic/Harmonic.ProStream1000.md
+                  - Harmonic.bNSG9000: Harmonic/Harmonic.bNSG9000.md
+        - Hikvision:
+                  - Overview: Hikvision/index.md
+                  - Hikvision.DS2CD: Hikvision/Hikvision.DS2CD.md
+                  - Hikvision.DSKV8: Hikvision/Hikvision.DSKV8.md
+        - Huawei:
+                  - Overview: Huawei/index.md
+                  - Huawei.MA5300: Huawei/Huawei.MA5300.md
+                  - Huawei.MA5600T: Huawei/Huawei.MA5600T.md
+                  - Huawei.UMG8900: Huawei/Huawei.UMG8900.md
+                  - Huawei.VRP: Huawei/Huawei.VRP.md
+                  - Huawei.VRP3: Huawei/Huawei.VRP3.md
+        - IBM:
+                  - Overview: IBM/index.md
+                  - IBM.NOS: IBM/IBM.NOS.md
+        - IRE-Polus:
+                  - Overview: IRE-Polus/index.md
+                  - IRE-Polus.Taros: IRE-Polus/IRE-Polus.Taros.md
+        - InfiNet:
+                  - Overview: InfiNet/index.md
+                  - InfiNet.WANFlexX: InfiNet/InfiNet.WANFlexX.md
+        - Intracom:
+                  - Overview: Intracom/index.md
+                  - Intracom.UltraLink: Intracom/Intracom.UltraLink.md
+        - Iskratel:
+                  - Overview: Iskratel/index.md
+                  - Iskratel.ESCOM: Iskratel/Iskratel.ESCOM.md
+                  - Iskratel.MBAN: Iskratel/Iskratel.MBAN.md
+                  - Iskratel.MSAN: Iskratel/Iskratel.MSAN.md
+                  - Iskratel.VOIP: Iskratel/Iskratel.VOIP.md
+        - Juniper:
+                  - Overview: Juniper/index.md
+                  - Juniper.EX2500: Juniper/Juniper.EX2500.md
+                  - Juniper.JUNOS: Juniper/Juniper.JUNOS.md
+                  - Juniper.JUNOSe: Juniper/Juniper.JUNOSe.md
+                  - Juniper.SRCPE: Juniper/Juniper.SRCPE.md
+                  - Juniper.ScreenOS: Juniper/Juniper.ScreenOS.md
+        - Linksys:
+                  - Overview: Linksys/index.md
+                  - Linksys.SPS2xx: Linksys/Linksys.SPS2xx.md
+                  - Linksys.SRW: Linksys/Linksys.SRW.md
+                  - Linksys.VoIP: Linksys/Linksys.VoIP.md
+        - Linux:
+                  - Overview: Linux/index.md
+                  - Linux.Alt: Linux/Linux.Alt.md
+                  - Linux.Astra: Linux/Linux.Astra.md
+                  - Linux.Debian: Linux/Linux.Debian.md
+                  - Linux.Openwrt: Linux/Linux.Openwrt.md
+                  - Linux.RHEL: Linux/Linux.RHEL.md
+        - Lucent:
+                  - Overview: Lucent/index.md
+                  - Lucent.Stinger: Lucent/Lucent.Stinger.md
+        - Maipu:
+                  - Overview: Maipu/index.md
+                  - Maipu.OS: Maipu/Maipu.OS.md
+        - Meinberg:
+                  - Overview: Meinberg/index.md
+                  - Meinberg.LANTIME: Meinberg/Meinberg.LANTIME.md
+        - Mellanox:
+                  - Overview: Mellanox/index.md
+                  - Mellanox.Onyx: Mellanox/Mellanox.Onyx.md
+                  - Mellanox.Cumulus: Mellanox/Mellanox.Cumulus.md
+        - MikroTik:
+                  - Overview: MikroTik/index.md
+                  - MikroTik.RouterOS: MikroTik/MikroTik.RouterOS.md
+                  - MikroTik.SwOS: MikroTik/MikroTik.SwOS.md
+        - NAG:
+                  - Overview: NAG/index.md
+                  - NAG.SNR: NAG/NAG.SNR.md
+        - NOC:
+                  - Overview: NOC/index.md
+                  - NOC.SAE: NOC/NOC.SAE.md
+        - NSCComm:
+                  - Overview: NSCComm/index.md
+                  - NSCComm.LPOS: NSCComm/NSCComm.LPOS.md
+        - NSN:
+                  - Overview: NSN/index.md
+                  - NSN.TIMOS: NSN/NSN.TIMOS.md
+                  - NSN.hiX56xx: NSN/NSN.hiX56xx.md
+        - Nateks:
+                  - Overview: Nateks/index.md
+                  - Nateks.FlexGain: Nateks/Nateks.FlexGain.md
+                  - Nateks.FlexGainACE16: Nateks/Nateks.FlexGainACE16.md
+                  - Nateks.FlexGainACE24: Nateks/Nateks.FlexGainACE24.md
+                  - Nateks.NetXpert: Nateks/Nateks.NetXpert.md
+        - NextIO:
+                  - Overview: NextIO/index.md
+                  - NextIO.vNet: NextIO/NextIO.vNet.md
+        - Nortel:
+                  - Overview: Nortel/index.md
+                  - Nortel.BayStack425: Nortel/Nortel.BayStack425.md
+        - OS:
+                  - OS.ESXi: OS/OS.ESXi.md
+                  - OS.FreeBSD: OS/OS.FreeBSD.md
+                  - OS.Linux: OS/OS.Linux.md
+        - OneAccess:
+                  - Overview: OneAccess/index.md
+                  - OneAccess.TDRE: OneAccess/OneAccess.TDRE.md
+        - Opticin:
+                  - Overview: Opticin/index.md
+                  - Opticin.OS: Opticin/Opticin.OS.md
+        - Orion:
+                  - Overview: Orion/index.md
+                  - Orion.NOS: Orion/Orion.NOS.md
+        - Planar:
+                  - Overview: Planar/index.md
+                  - Planar.SDO3000: Planar/Planar.SDO3000.md
+        - Planet:
+                  - Overview: Planet/index.md
+                  - Planet.WGSD: Planet/Planet.WGSD.md
+        - Polygon:
+                  - Overview: Polygon/index.md
+                  - Polygon.IOS: Polygon/Polygon.IOS.md
+        - Proscend:
+                  - Overview: Proscend/index.md
+                  - Proscend.SHDSL: Proscend/Proscend.SHDSL.md
+        - Protei:
+                  - Overview: Protei/index.md
+                  - Protei.MediaGateway: Protei/Protei.MediaGateway.md
+        - Qtech:
+                  - Overview: Qtech/index.md
+                  - Qtech.BFC_PBIC_S: Qtech/Qtech.BFC_PBIC_S.md
+                  - Qtech.QFC: Qtech/Qtech.QFC.md
+                  - Qtech.QOS: Qtech/Qtech.QOS.md
+                  - Qtech.QSW: Qtech/Qtech.QSW.md
+                  - Qtech.QSW2500: Qtech/Qtech.QSW2500.md
+                  - Qtech.QSW2800: Qtech/Qtech.QSW2800.md
+                  - Qtech.QSW8200: Qtech/Qtech.QSW8200.md
+        - Raisecom:
+                  - Overview: Raisecom/index.md
+                  - Raisecom.RCIOS: Raisecom/Raisecom.RCIOS.md
+                  - Raisecom.ROS: Raisecom/Raisecom.ROS.md
+        - Raritan:
+                  - Overview: Raritan/index.md
+                  - Raritan.DominionSX: Raritan/Raritan.DominionSX.md
+        - Rotek:
+                  - Overview: Rotek/index.md
+                  - Rotek.BT: Rotek/Rotek.BT.md
+                  - Rotek.RTBS: Rotek/Rotek.RTBS.md
+                  - Rotek.RTBSv1: Rotek/Rotek.RTBSv1.md
+        - Rubytech:
+                  - Overview: Rubytech/index.md
+                  - Rubytech.l2ms: Rubytech/Rubytech.l2ms.md
+        - Ruckus:
+                  - Overview: Ruckus/index.md
+                  - Ruckus.SmartZone: Ruckus/Ruckus.SmartZone.md
+                  - Ruckus.ZoneDirector: Ruckus/Ruckus.ZoneDirector.md
+        - SKS:
+                  - Overview: SKS/index.md
+                  - SKS.SKS: SKS/SKS.SKS.md
+        - STerra:
+                  - Overview: STerra/index.md
+                  - STerra.Gate: STerra/STerra.Gate.md
+        - SecurityCode:
+                  - Overview: SecurityCode/index.md
+                  - SecurityCode.Kontinent: SecurityCode/SecurityCode.Kontinent.md
+        - Sencore:
+                  - Overview: Sencore/index.md
+                  - Sencore.Probe: Sencore/Sencore.Probe.md
+        - Siklu:
+                  - Overview: Siklu/index.md
+                  - Siklu.EH: Siklu/Siklu.EH.md
+        - Sumavision:
+                  - Overview: Sumavision/index.md
+                  - Sumavision.EMR: Sumavision/Sumavision.EMR.md
+                  - Sumavision.IPQAM: Sumavision/Sumavision.IPQAM.md
+        - Sun:
+                  - Overview: Sun/index.md
+                  - Sun.iLOM3: Sun/Sun.iLOM3.md
+        - Supertel:
+                  - Overview: Supertel/index.md
+                  - Supertel.K2X: Supertel/Supertel.K2X.md
+        - Symbol:
+                  - Overview: Symbol/index.md
+                  - Symbol.AP: Symbol/Symbol.AP.md
+        - TFortis:
+                  - Overview: TFortis/index.md
+                  - TFortis.PSW: TFortis/TFortis.PSW.md
+        - TPLink:
+                  - Overview: TPLink/index.md
+                  - TPLink.EAP: TPLink/TPLink.EAP.md
+                  - TPLink.T2600G: TPLink/TPLink.T2600G.md
+        - Tangram:
+                  - Overview: Tangram/index.md
+                  - Tangram.GT21: Tangram/Tangram.GT21.md
+        - Telindus:
+                  - Overview: Telindus/index.md
+                  - Telindus.SHDSL: Telindus/Telindus.SHDSL.md
+        - Terayon:
+                  - Overview: Terayon/index.md
+                  - Terayon.BW: Terayon/Terayon.BW.md
+        - Ttronics:
+                  - Overview: Ttronics/index.md
+                  - Ttronics.KUB: Ttronics/Ttronics.KUB.md
+        - UTST:
+                  - Overview: UTST/index.md
+                  - UTST.ONU: UTST/UTST.ONU.md
+        - Ubiquiti:
+                  - Overview: Ubiquiti/index.md
+                  - Ubiquiti.AirOS: Ubiquiti/Ubiquiti.AirOS.md
+        - Upvel:
+                  - Overview: Upvel/index.md
+                  - Upvel.UP: Upvel/Upvel.UP.md
+        - Vector:
+                  - Overview: Vector/index.md
+                  - Vector.Lambda: Vector/Vector.Lambda.md
+        - Vitesse:
+                  - Overview: Vitesse/index.md
+                  - Vitesse.VSC: Vitesse/Vitesse.VSC.md
+        - Vyatta:
+                  - Overview: Vyatta/index.md
+                  - Vyatta.Vyatta: Vyatta/Vyatta.Vyatta.md
+        - ZTE:
+                  - Overview: ZTE/index.md
+                  - ZTE.ZXA10: ZTE/ZTE.ZXA10.md
+                  - ZTE.ZXDSL531: ZTE/ZTE.ZXDSL531.md
+                  - ZTE.ZXDSL98xx: ZTE/ZTE.ZXDSL98xx.md
+                  - ZTE.ZXR10: ZTE/ZTE.ZXR10.md
+        - Zebra:
+                  - Overview: Zebra/index.md
+                  - Zebra.Zebra: Zebra/Zebra.Zebra.md
+        - Zhone:
+                  - Overview: Zhone/index.md
+                  - Zhone.Bitstorm: Zhone/Zhone.Bitstorm.md
+                  - Zhone.MXK: Zhone/Zhone.MXK.md
+        - Zyxel:
+                  - Overview: Zyxel/index.md
+                  - Zyxel.DSLAM: Zyxel/Zyxel.DSLAM.md
+                  - Zyxel.MSAN: Zyxel/Zyxel.MSAN.md
+                  - Zyxel.ZyNOS: Zyxel/Zyxel.ZyNOS.md
+                  - Zyxel.ZyNOS_EE: Zyxel/Zyxel.ZyNOS_EE.md
+                  - Zyxel.ZyNOSv2: Zyxel/Zyxel.ZyNOSv2.md
+        - f5:
+                  - Overview: f5/index.md
+                  - f5.BIGIP: f5/f5.BIGIP.md

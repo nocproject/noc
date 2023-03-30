@@ -1,0 +1,59 @@
+INHERIT: ../mkdocs-base.yml
+site_name: "NOC: Capabilities Reference"
+site_description: >
+        The reference of the NOC capabilities
+edit_uri: -/edit/master/docs/caps-reference/
+site_dir: ../../build/docs/caps-reference/
+nav:
+        - Overview: index.md
+        - Bras:
+                  - IPoE: bras/ipoe.md
+                  - L2TP: bras/l2tp.md
+                  - PPPoE: bras/pppoe.md
+                  - PPtP: bras/pptp.md
+        - Cisco:
+                  - ASA security context mode: cisco/asa-security-context-mode.md
+                  - IOS syntax IP SLA: cisco/ios-syntax-ip-sla.md
+                  - IP SLA probes: cisco/ip-sla-probes.md
+                  - IP SLA responder: cisco/ip-sla-responder.md
+        - CPE:
+                  - Controller: cpe/controller.md
+                  - CPE: cpe/cpe.md
+        - DB:
+                  - Interfaces: db/interfaces.md
+        - Huawei:
+                  - NDP: huawei/ndp.md
+        - Juniper:
+                  - RPM probes: juniper/rpm-probes.md
+        - Management:
+                  - Allow sessions: management/allow-sessions.md
+        - Mikrotik:
+                  - Routeros license level: mikrotik/routeros-license-level.md
+                  - Routeros license softwareid: mikrotik/routeros-license-softwareid.md
+                  - Routeros license upgradable to: mikrotik/routeros-license-upgradable-to.md
+        - Network:
+                  - BFD: network/bfd.md
+                  - CDP: network/cdp.md
+                  - FDP: network/fdp.md
+                  - IPv6: network/ipv6.md
+                  - LACP: network/lacp.md
+                  - LLDP: network/lldp.md
+                  - OAM: network/oam.md
+                  - REP: network/rep.md
+                  - STP: network/stp.md
+                  - UDLD: network/udld.md
+        - Oneaccess:
+                  - IP SLA probes: oneaccess/ip-sla-probes.md
+                  - IP SLA responder: oneaccess/ip-sla-responder.md
+        - Slot:
+                  - Member IDs: slot/member-ids.md
+                  - Members: slot/members.md
+        - Snmp:
+                  - Bulk: snmp/bulk.md
+                  - If MIB HC: snmp/if-mib-hc.md
+                  - v1: snmp/v1.md
+                  - v2c: snmp/v2c.md
+                  - v3: snmp/v3.md
+        - Stack:
+                  - Member IDs: stack/member-ids.md
+                  - Members: stack/members.md

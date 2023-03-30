@@ -1,0 +1,21 @@
+INHERIT: ../mkdocs-base.yml
+site_name: "NOC: MX Messages Reference"
+site_description: >
+        The reference of the NOC scripts
+edit_uri: -/edit/master/docs/mx-reference/
+site_dir: ../../build/docs/mx-reference/
+nav:
+        - Overview: index.md
+        - Alarm: alarm.md
+        - Configuration Changed: config_changed.md
+        - Configuration Policy Violation: config_policy_violation.md
+        - Event: event.md
+        - Interface Status Change: interface_status_change.md
+        - Managed Object Inventory: managedobject.md
+        - Managed Object New: object_new.md
+        - Managed Object Deleted: object_deleted.md
+        - metrics: metrics.md
+        - Reboot: reboot.md
+        - SNMPTrap: snmptrap.md
+        - Syslog: syslog.md
+        - Managed Object Version Changed: version_changed.md

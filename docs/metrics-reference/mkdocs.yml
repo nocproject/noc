@@ -1,0 +1,163 @@
+INHERIT: ../mkdocs-base.yml
+site_name: "NOC: Metrics Reference"
+site_description: >
+        The reference of the NOC metrics
+edit_uri: -/edit/master/docs/metrics-reference/
+site_dir: ../../build/docs/metrics-reference/
+nav:
+        - Metric Scopes:
+                  - Overview: scopes/index.md
+                  - CPU: scopes/cpu.md
+                  - Disk: scopes/disk.md
+                  - Environment: scopes/environment.md
+                  - Interface: scopes/interface.md
+                  - Memory: scopes/memory.md
+                  - Neighbors: scopes/neighbors.md
+                  - Object: scopes/object.md
+                  - PhonePeer: scopes/phonepeer.md
+                  - Ping: scopes/ping.md
+                  - Routing: scopes/routing.md
+                  - SLA: scopes/sla.md
+                  - Subscriber: scopes/subscriber.md
+                  - VPN: scopes/vpn.md
+        - Metric Types:
+                  - Overview: types/index.md
+                  - "CPU":
+                            - "Load":
+                                      - "1min": types/cpu/load/1min.md
+                                      - "5min": types/cpu/load/5min.md
+                            - "Usage": types/cpu/usage.md
+                            - "Usage":
+                                      - "5sec": types/cpu/usage/5sec.md
+                  - "Disk":
+                            - "Usage": types/disk/usage.md
+                            - "Usage Percent": types/disk/usage-percent.md
+                  - "Environment":
+                            - "Battery":
+                                      - "Capacity":
+                                                - "Level": types/environment/battery/capacity/level.md
+                            - "Electric Current": types/environment/electric-current.md
+                            - "Energy Consumption": types/environment/energy-consumption.md
+                            - "Power": types/environment/power.md
+                            - "Power":
+                                      - "Input":
+                                                - "Status": types/environment/power/input/status.md
+                            - "Pulse": types/environment/pulse.md
+                            - "Sensor Status": types/environment/sensor-status.md
+                            - "Temperature": types/environment/temperature.md
+                            - "Voltage": types/environment/voltage.md
+                  - "Interface":
+                            - "Broadcast":
+                                      - "In": types/interface/broadcast/in.md
+                                      - "Out": types/interface/broadcast/out.md
+                            - "DOM":
+                                      - "Bias Current": types/interface/dom/bias-current.md
+                                      - "RxPower": types/interface/dom/rxpower.md
+                                      - "Temperature": types/interface/dom/temperature.md
+                                      - "TxPower": types/interface/dom/txpower.md
+                                      - "Voltage": types/interface/dom/voltage.md
+                            - "Discards":
+                                      - "In": types/interface/discards/in.md
+                                      - "Out": types/interface/discards/out.md
+                            - "Errors":
+                                      - "CRC": types/interface/errors/crc.md
+                                      - "Frame": types/interface/errors/frame.md
+                                      - "In": types/interface/errors/in.md
+                                      - "In":
+                                                - "Delta": types/interface/errors/in/delta.md
+                                      - "Out": types/interface/errors/out.md
+                                      - "Out":
+                                                - "Delta": types/interface/errors/out/delta.md
+                            - "Load":
+                                      - "In": types/interface/load/in.md
+                                      - "Out": types/interface/load/out.md
+                            - "Multicast":
+                                      - "In": types/interface/multicast/in.md
+                                      - "Out": types/interface/multicast/out.md
+                            - "Octets":
+                                      - "In": types/interface/octets/in.md
+                                      - "Out": types/interface/octets/out.md
+                            - "Packets":
+                                      - "In": types/interface/packets/in.md
+                                      - "Out": types/interface/packets/out.md
+                            - "RF":
+                                      - "TxPower": types/interface/rf/txpower.md
+                            - "Speed": types/interface/speed.md
+                            - "Status":
+                                      - "Admin": types/interface/status/admin.md
+                                      - "Duplex": types/interface/status/duplex.md
+                                      - "Oper": types/interface/status/oper.md
+                            - "xDSL":
+                                      - "Line":
+                                                - "Attenuation":
+                                                          - "Downstream": types/interface/xdsl/line/attenuation/downstream.md
+                                                          - "Upstream": types/interface/xdsl/line/attenuation/upstream.md
+                                                - "Errors":
+                                                          - "ES":
+                                                                    - "Delta": types/interface/xdsl/line/errors/es/delta.md
+                                                          - "LOF":
+                                                                    - "Delta": types/interface/xdsl/line/errors/lof/delta.md
+                                                          - "LOLS":
+                                                                    - "Delta": types/interface/xdsl/line/errors/lols/delta.md
+                                                          - "LOSS":
+                                                                    - "Delta": types/interface/xdsl/line/errors/loss/delta.md
+                                                          - "LPRS":
+                                                                    - "Delta": types/interface/xdsl/line/errors/lprs/delta.md
+                                                          - "Retrain":
+                                                                    - "Delta": types/interface/xdsl/line/errors/retrain/delta.md
+                                                          - "SES":
+                                                                    - "Delta": types/interface/xdsl/line/errors/ses/delta.md
+                                                          - "UAS":
+                                                                    - "Delta": types/interface/xdsl/line/errors/uas/delta.md
+                                                - "Noise Margin":
+                                                          - "Downstream": types/interface/xdsl/line/noise-margin/downstream.md
+                                                          - "Upstream": types/interface/xdsl/line/noise-margin/upstream.md
+                                                - "SNR":
+                                                          - "Downstream": types/interface/xdsl/line/snr/downstream.md
+                                                          - "Upstream": types/interface/xdsl/line/snr/upstream.md
+                                                - "TxPower":
+                                                          - "Downstream": types/interface/xdsl/line/txpower/downstream.md
+                                                          - "Upstream": types/interface/xdsl/line/txpower/upstream.md
+                  - "Memory":
+                            - "Load":
+                                      - "1min": types/memory/load/1min.md
+                            - "Usage": types/memory/usage.md
+                            - "Usage":
+                                      - "5sec": types/memory/usage/5sec.md
+                  - "Network":
+                            - "STP":
+                                      - "Topology Changes": types/network/stp/topology-changes.md
+                                      - "Topology Changes":
+                                                - "Delta": types/network/stp/topology-changes/delta.md
+                  - "Object":
+                            - "SysUptime": types/object/sysuptime.md
+                  - "Ping":
+                            - "Attempts": types/ping/attempts.md
+                            - "RTT": types/ping/rtt.md
+                  - "Radio":
+                            - "CINR": types/radio/cinr.md
+                            - "Level":
+                                      - "Noise": types/radio/level/noise.md
+                                      - "Signal": types/radio/level/signal.md
+                            - "RSSI": types/radio/rssi.md
+                            - "RxPower": types/radio/rxpower.md
+                            - "TxPower": types/radio/txpower.md
+                  - "SLA":
+                            - "ICMP RTT": types/sla/icmp-rtt.md
+                            - "JITTER": types/sla/jitter.md
+                            - "LOSS": types/sla/loss.md
+                            - "UDP RTT": types/sla/udp-rtt.md
+                  - "Subscribers":
+                            - "IPoE": types/subscribers/ipoe.md
+                            - "L2TP": types/subscribers/l2tp.md
+                            - "PPP": types/subscribers/ppp.md
+                            - "PPPoE": types/subscribers/pppoe.md
+                            - "PPTP": types/subscribers/pptp.md
+                            - "Summary": types/subscribers/summary.md
+                  - "Telephony":
+                            - "SIP":
+                                      - "Register":
+                                                - "Contacts":
+                                                          - "Active": types/telephony/sip/register/contacts/active.md
+                                      - "Sessions":
+                                                - "Active": types/telephony/sip/sessions/active.md

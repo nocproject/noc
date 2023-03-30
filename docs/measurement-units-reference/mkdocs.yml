@@ -1,0 +1,17 @@
+INHERIT: ../mkdocs-base.yml
+site_name: "NOC: Measurement Units Reference"
+site_description: >
+        The reference of the NOC measurement units
+edit_uri: -/edit/master/docs/measurement-units-reference/
+site_dir: ../../build/docs/measurement-units-reference/
+nav:
+        - Overview: index.md
+        - Ampere: ampere.md
+        - Celsius: celsius.md
+        - Hertz: hertz.md
+        - Meter: meter.md
+        - RPM: rpm.md
+        - Second: second.md
+        - Volt AC: volt-ac.md
+        - Volt DC: volt-dc.md
+        - Watt: watt.md

@@ -1,0 +1,65 @@
+INHERIT: ../mkdocs-base.yml
+site_name: "NOC: Scripts Reference"
+site_description: >
+        The reference of the NOC scripts
+edit_uri: -/edit/master/docs/scripts-reference/
+site_dir: ../../build/docs/scripts-reference/
+nav:
+        - Overview: index.md
+        - add_vlan: add_vlan.md
+        - commands: commands.md
+        - configure: configure.md
+        - get_arp: get_arp.md
+        - get_bfd_sessions: get_bfd_sessions.md
+        - get_capabilities: get_capabilities.md
+        - get_cdp_neighbors: get_cdp_neighbors.md
+        - get_chassis_id: get_chassis_id.md
+        - get_config: get_config.md
+        - get_copper_tdr_diag: get_copper_tdr_diag.md
+        - get_cpe: get_cpe.md
+        - get_dhcp_binding: get_dhcp_binding.md
+        - get_discovery_id: get_discovery_id.md
+        - get_dom_status: get_dom_status.md
+        - get_dot11_associations: get_dot11_associations.md
+        - get_fdp_neighbors: get_fdp_neighbors.md
+        - get_fqdn: get_fqdn.md
+        - get_huawei_ndp_neighbors: get_huawei_ndp_neighbors.md
+        - get_ifindexes: get_ifindexes.md
+        - get_interface_index: get_interface_index.md
+        - get_interface_status: get_interface_status.md
+        - get_interface_status_ex: get_interface_status_ex.md
+        - get_interfaces: get_interfaces.md
+        - get_inventory: get_inventory.md
+        - get_ip_discovery: get_ip_discovery.md
+        - get_ipv6_neighbor: get_ipv6_neighbor.md
+        - get_lacp_neighbors: get_lacp_neighbors.md
+        - get_license: get_license.md
+        - get_lldp_neighbors: get_lldp_neighbors.md
+        - get_local_users: get_local_users.md
+        - get_mac_address_table: get_mac_address_table.md
+        - get_metrics: get_metrics.md
+        - get_mpls_vpn: get_mpls_vpn.md
+        - get_oam_status: get_oam_status.md
+        - get_portchannel: get_portchannel.md
+        - get_rep_topology: get_rep_topology.md
+        - get_resolver_config: get_resolver_config.md
+        - get_sla_probes: get_sla_probes.md
+        - get_snmp_get: get_snmp_get.md
+        - get_snmp_getnext: get_snmp_getnext.md
+        - get_spanning_tree: get_spanning_tree.md
+        - get_switch: get_switch.md
+        - get_switchport: get_switchport.md
+        - get_system: get_system.md
+        - get_tech_support: get_tech_support.md
+        - get_udld_neighbors: get_udld_neighbors.md
+        - get_uptime: get_uptime.md
+        - get_version: get_version.md
+        - get_vlans: get_vlans.md
+        - has_vlan: has_vlan.md
+        - login: login.md
+        - ping: ping.md
+        - reboot: reboot.md
+        - remove_vlan: remove_vlan.md
+        - set_switchport: set_switchport.md
+        - sync_prefix_lists: sync_prefix_lists.md
+        - sync_vlans: sync_vlans.md

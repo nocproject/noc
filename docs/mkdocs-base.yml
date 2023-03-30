@@ -1,0 +1,51 @@
+---
+# ---------------------------------------------------------------------
+# mkdocs.yml boilerplate.
+# Should be included with:
+# INHERIT: ../mkdocs-base.yml
+# ---------------------------------------------------------------------
+# Copyright (C) 2007-2020 The NOC Project
+# See LICENSE for details
+# ---------------------------------------------------------------------
+site_author: The NOC Project
+copyright: 2007-2023, The NOC Project
+repo_url: https://code.getnoc.com/noc/noc/
+repo_name: Gitlab
+strict: false
+theme:
+  name: material
+  # features:
+  #   - navigation.instant
+  palette:
+    - scheme: slate
+      toggle:
+        icon: material/toggle-switch
+        name: Switch to light mode
+    - scheme: default
+      toggle:
+        icon: material/toggle-switch-off-outline
+        name: Switch to dark mode
+  logo: _static/logo.svg
+markdown_extensions:
+  - toc:
+      permalink: true
+  - admonition
+  - attr_list
+  - def_list
+  - pymdownx.emoji:
+      emoji_index: !!python/name:materialx.emoji.twemoji
+      emoji_generator: !!python/name:materialx.emoji.to_svg
+plugins:
+  - search
+  - macros:
+      module_name: macros
+      on_error_fail: true
+  - i18n:
+      default_language: en
+      languages:
+        en:
+          name: English
+          build: false
+        ru:
+          name: Русский
+          build: true

@@ -1,0 +1,562 @@
+INHERIT: ../mkdocs-base.yml
+site_name: "NOC: Connection Types Reference"
+site_description: >
+        The reference of the NOC connection types
+edit_uri: -/edit/master/docs/connection-types-reference/
+site_dir: ../../build/docs/conection-types-reference/
+nav:
+        - Overview: index.md
+        - "APC":
+                  - "UPS":
+                            - "BR1200G-JP": apc/ups/br1200g-jp.md
+                            - "EPO": apc/ups/epo.md
+                            - "SS": apc/ups/ss.md
+        - "Alcatel":
+                  - "7302":
+                            - "LINECARD": alcatel/7302/linecard.md
+                  - "7450":
+                            - "CFM": alcatel/7450/cfm.md
+                            - "FAN": alcatel/7450/fan.md
+                            - "IO": alcatel/7450/io.md
+                            - "MDA": alcatel/7450/mda.md
+                            - "PSU": alcatel/7450/psu.md
+        - "Alstec":
+                  - "CB": alstec/cb.md
+        - "Arista":
+                  - "7100":
+                            - "FAN": arista/7100/fan.md
+                            - "PWR": arista/7100/pwr.md
+        - "Brocade":
+                  - "BigIron RX":
+                            - "Line Connector": brocade/bigiron-rx/line-connector.md
+                            - "Mgmt Connector": brocade/bigiron-rx/mgmt-connector.md
+                            - "PS Connector AC": brocade/bigiron-rx/ps-connector-ac.md
+                            - "SFM Connector": brocade/bigiron-rx/sfm-connector.md
+                  - "FastIron SuperX":
+                            - "Line Connector": brocade/fastiron-superx/line-connector.md
+                            - "Mgmt Connector": brocade/fastiron-superx/mgmt-connector.md
+                            - "PS Connector AC": brocade/fastiron-superx/ps-connector-ac.md
+                            - "PS Connector DC": brocade/fastiron-superx/ps-connector-dc.md
+                            - "SFM Connector": brocade/fastiron-superx/sfm-connector.md
+                  - "JetCore":
+                            - "Backplane Connector": brocade/jetcore/backplane-connector.md
+                            - "PS Connector": brocade/jetcore/ps-connector.md
+                  - "Cables": /cables.md
+        - "Carelink":
+                  - "SWG":
+                            - "CL-SWG-1002 sysObjectID 2": carelink/swg/cl-swg-1002-sysobjectid-2.md
+        - "Cisco":
+                  - "1800":
+                            - "MOTHERBOARD": cisco/1800/motherboard.md
+                  - "1921":
+                            - "MOTHERBOARD": cisco/1921/motherboard.md
+                  - "1941-2901":
+                            - "PSU": cisco/1941-2901/psu.md
+                  - "2800":
+                            - "MOTHERBOARD": cisco/2800/motherboard.md
+                            - "PSU": cisco/2800/psu.md
+                  - "2900":
+                            - "MOTHERBOARD": cisco/2900/motherboard.md
+                  - "2900-3900":
+                            - "ISM": cisco/2900-3900/ism.md
+                  - "2911":
+                            - "PSU": cisco/2911/psu.md
+                  - "2921-2951":
+                            - "PSU": cisco/2921-2951/psu.md
+                  - "3560E-3750E":
+                            - "FAN": cisco/3560e-3750e/fan.md
+                  - "3750X":
+                            - "NM": cisco/3750x/nm.md
+                            - "PSU": cisco/3750x/psu.md
+                  - "3800":
+                            - "AIM": cisco/3800/aim.md
+                            - "DCS": cisco/3800/dcs.md
+                            - "MOTHERBOARD": cisco/3800/motherboard.md
+                            - "NM": cisco/3800/nm.md
+                            - "PSU": cisco/3800/psu.md
+                            - "PVDM": cisco/3800/pvdm.md
+                  - "3850":
+                            - "NM": cisco/3850/nm.md
+                            - "PSU": cisco/3850/psu.md
+                  - "3900":
+                            - "PSU": cisco/3900/psu.md
+                            - "SPE": cisco/3900/spe.md
+                  - "4500X":
+                            - "PSU": cisco/4500x/psu.md
+                            - "UM": cisco/4500x/um.md
+                  - "6500":
+                            - "6513-FAN-E": cisco/6500/6513-fan-e.md
+                            - "CLK": cisco/6500/clk.md
+                            - "DFC": cisco/6500/dfc.md
+                            - "FAN-E": cisco/6500/fan-e.md
+                            - "PSU": cisco/6500/psu.md
+                            - "VTT": cisco/6500/vtt.md
+                            - "VTT-E": cisco/6500/vtt-e.md
+                  - "6500-7600":
+                            - "MSFC": cisco/6500-7600/msfc.md
+                            - "PFC": cisco/6500-7600/pfc.md
+                  - "7100":
+                            - "Linecard": cisco/7100/linecard.md
+                            - "MOTHERBOARD": cisco/7100/motherboard.md
+                  - "7200":
+                            - "7201 PWR": cisco/7200/7201-pwr.md
+                            - "Linecard": cisco/7200/linecard.md
+                            - "PWR-7200": cisco/7200/pwr-7200.md
+                            - "Supervisor": cisco/7200/supervisor.md
+                  - "7600":
+                            - "7603 Fan": cisco/7600/7603-fan.md
+                            - "7603-PEM1": cisco/7600/7603-pem1.md
+                            - "7604 Fan": cisco/7600/7604-fan.md
+                            - "7606 Fan": cisco/7600/7606-fan.md
+                            - "7606-S Fan": cisco/7600/7606-s-fan.md
+                            - "7609 Fan": cisco/7600/7609-fan.md
+                            - "7613 Fan": cisco/7600/7613-fan.md
+                            - "Bus Linecard": cisco/7600/bus-linecard.md
+                            - "Bus/Fabric Linecard": cisco/7600/bus-fabric-linecard.md
+                            - "CLK": cisco/7600/clk.md
+                            - "DFC": cisco/7600/dfc.md
+                            - "Fabric Linecard": cisco/7600/fabric-linecard.md
+                            - "Linecard/Supervisor": cisco/7600/linecard-supervisor.md
+                            - "PSU": cisco/7600/psu.md
+                            - "Supervisor": cisco/7600/supervisor.md
+                            - "VTT": cisco/7600/vtt.md
+                  - "7603":
+                            - "PSU": cisco/7603/psu.md
+                  - "7604":
+                            - "PSU": cisco/7604/psu.md
+                  - "ASA":
+                            - "AIP-SSM": cisco/asa/aip-ssm.md
+                            - "PSU": cisco/asa/psu.md
+                  - "ASR1000":
+                            - "ASR1001 PSU": cisco/asr1000/asr1001-psu.md
+                            - "ASR1004 PSU": cisco/asr1000/asr1004-psu.md
+                            - "ASR1006 PSU": cisco/asr1000/asr1006-psu.md
+                            - "ESP": cisco/asr1000/esp.md
+                            - "RP": cisco/asr1000/rp.md
+                            - "SIP": cisco/asr1000/sip.md
+                  - "ASR9001":
+                            - "FAN": cisco/asr9001/fan.md
+                            - "PSU": cisco/asr9001/psu.md
+                  - "ASR9010":
+                            - "FAN": cisco/asr9010/fan.md
+                            - "PEM-V1": cisco/asr9010/pem-v1.md
+                            - "PEM-V2": cisco/asr9010/pem-v2.md
+                  - "ASR9k":
+                            - "Linecard": cisco/asr9k/linecard.md
+                            - "MPA": cisco/asr9k/mpa.md
+                            - "RSP": cisco/asr9k/rsp.md
+                  - "C3560E-C3750E":
+                            - "PSU": cisco/c3560e-c3750e/psu.md
+                  - "C3750ME":
+                            - "PSU": cisco/c3750me/psu.md
+                  - "C3850":
+                            - "NM": cisco/c3850/nm.md
+                            - "PSU": cisco/c3850/psu.md
+                            - "STACKPORT": cisco/c3850/stackport.md
+                  - "C4900":
+                            - "FAN": cisco/c4900/fan.md
+                            - "LINECARD": cisco/c4900/linecard.md
+                            - "PSU": cisco/c4900/psu.md
+                  - "C6500ME":
+                            - "FAN": cisco/c6500me/fan.md
+                            - "MSFC": cisco/c6500me/msfc.md
+                            - "PFC": cisco/c6500me/pfc.md
+                            - "PSU": cisco/c6500me/psu.md
+                  - "Electrical":
+                            - "RSP14": cisco/electrical/rsp14.md
+                            - "RSP22": cisco/electrical/rsp22.md
+                            - "StackWise": cisco/electrical/stackwise.md
+                            - "StackWise 480": cisco/electrical/stackwise-480.md
+                            - "StackWise Plus": cisco/electrical/stackwise-plus.md
+                  - "GEM":
+                            - "GEM2": cisco/gem/gem2.md
+                  - "ISR":
+                            - "AIM": cisco/isr/aim.md
+                            - "DCS": cisco/isr/dcs.md
+                            - "NM": cisco/isr/nm.md
+                            - "PVDM2": cisco/isr/pvdm2.md
+                            - "PVDM3": cisco/isr/pvdm3.md
+                            - "SM": cisco/isr/sm.md
+                  - "ME3400E":
+                            - "PSU": cisco/me3400e/psu.md
+                  - "ME3600":
+                            - "PSU": cisco/me3600/psu.md
+                  - "Nexus 2k":
+                            - "2200 PSU": cisco/nexus-2k/2200-psu.md
+                            - "2232PP/TM FAN": cisco/nexus-2k/2232pp-tm-fan.md
+                            - "C2232PP SUP": cisco/nexus-2k/c2232pp-sup.md
+                  - "Nexus 3k":
+                            - "3064 FAN": cisco/nexus-3k/3064-fan.md
+                            - "3064 SUP": cisco/nexus-3k/3064-sup.md
+                  - "Nexus 5k":
+                            - "5548 FAN": cisco/nexus-5k/5548-fan.md
+                            - "5548 PSU": cisco/nexus-5k/5548-psu.md
+                            - "5596 FAN": cisco/nexus-5k/5596-fan.md
+                            - "5596 PSU": cisco/nexus-5k/5596-psu.md
+                            - "5596UP SUP": cisco/nexus-5k/5596up-sup.md
+                  - "Nexus 6k":
+                            - "6001 FAN": cisco/nexus-6k/6001-fan.md
+                            - "6001 PSU": cisco/nexus-6k/6001-psu.md
+                            - "6001 SUP": cisco/nexus-6k/6001-sup.md
+                  - "PWR-C49-300": cisco/pwr-c49-300.md
+                  - "SCE":
+                            - "SCE8000 Fan": cisco/sce/sce8000-fan.md
+                            - "SCE8000 OPB": cisco/sce/sce8000-opb.md
+                            - "SCE8000 SCM": cisco/sce/sce8000-scm.md
+                  - "SIP": cisco/sip.md
+                  - "SPA": cisco/spa.md
+                  - "Combined": /combined.md
+                  - "Composed": /composed.md
+                  - "Conduits": /conduits.md
+        - "DLink":
+                  - "DES30":
+                            - "Module": dlink/des30/module.md
+                  - "DES32-33":
+                            - "Module": dlink/des32-33/module.md
+                  - "DGS32-33":
+                            - "Module": dlink/dgs32-33/module.md
+                  - "DGS34-36":
+                            - "Module": dlink/dgs34-36/module.md
+                  - "DGS3610":
+                            - "Module": dlink/dgs3610/module.md
+                  - "DXS33":
+                            - "Module": dlink/dxs33/module.md
+                  - "DXS36":
+                            - "Module": dlink/dxs36/module.md
+                  - "Ducts": /ducts.md
+        - "Electrical":
+                  - "2.5mm-jack": electrical/2.5mm-jack.md
+                  - "CENC-36M": electrical/cenc-36m.md
+                  - "CENC-64": electrical/cenc-64.md
+                  - "D-sub": electrical/d-sub.md
+                  - "DB15": electrical/db15.md
+                  - "DB21": electrical/db21.md
+                  - "DB25": electrical/db25.md
+                  - "DB60": electrical/db60.md
+                  - "DB68": electrical/db68.md
+                  - "DB9": electrical/db9.md
+                  - "DVI": electrical/dvi.md
+                  - "F": electrical/f.md
+                  - "HDMI": electrical/hdmi.md
+                  - "IDC-100P": electrical/idc-100p.md
+                  - "MINI-coax": electrical/mini-coax.md
+                  - "MRJ21": electrical/mrj21.md
+                  - "MSTB 2,5/13-ST-5,08": electrical/mstb-2,5-13-st-5,08.md
+                  - "MSTB 2,5/5-ST-5,08": electrical/mstb-2,5-5-st-5,08.md
+                  - "RCA": electrical/rca.md
+                  - "RJ11": electrical/rj11.md
+                  - "RJ12": electrical/rj12.md
+                  - "RJ21": electrical/rj21.md
+                  - "RJ45": electrical/rj45.md
+                  - "RJ48": electrical/rj48.md
+                  - "RJ9": electrical/rj9.md
+                  - "S-Video": electrical/s-video.md
+                  - "SCART": electrical/scart.md
+                  - "SFF-8470": electrical/sff-8470.md
+                  - "SmartSerial": electrical/smartserial.md
+                  - "Telco-50": electrical/telco-50.md
+                  - "USB": electrical/usb.md
+                  - "USB-type-B": electrical/usb-type-b.md
+                  - "V35": electrical/v35.md
+                  - "XLR": electrical/xlr.md
+                  - "micro JST XH 2-pin": electrical/micro-jst-xh-2-pin.md
+                  - "micro-USB": electrical/micro-usb.md
+                  - "mini-DVI": electrical/mini-dvi.md
+                  - "mini-USB": electrical/mini-usb.md
+        - "Eltex":
+                  - "MA4000":
+                            - "Linecard": eltex/ma4000/linecard.md
+                  - "MES":
+                            - "PSU": eltex/mes/psu.md
+        - "Ericsson":
+                  - "SE600":
+                            - "Alarm": ericsson/se600/alarm.md
+                            - "CARD": ericsson/se600/card.md
+                            - "FAN": ericsson/se600/fan.md
+                            - "MGMT": ericsson/se600/mgmt.md
+        - "Extreme":
+                  - "Summit":
+                            - "CLK": extreme/summit/clk.md
+                            - "PSU": extreme/summit/psu.md
+                            - "VIM": extreme/summit/vim.md
+                            - "X460G2":
+                                      - "FAN": extreme/summit/x460g2/fan.md
+                            - "X460G2/X450G2":
+                                      - "PSU": extreme/summit/x460g2-x450g2/psu.md
+                            - "X650":
+                                      - "FAN": extreme/summit/x650/fan.md
+                            - "X670G2":
+                                      - "FAN": extreme/summit/x670g2/fan.md
+        - "Flash":
+                  - "CF": flash/cf.md
+                  - "MMC": flash/mmc.md
+                  - "Memory Stick": flash/memory-stick.md
+                  - "PCMCIA": flash/pcmcia.md
+                  - "SD": flash/sd.md
+                  - "microSD": flash/microsd.md
+                  - "miniSD": flash/minisd.md
+        - "Force10":
+                  - "S":
+                            - "Module": force10/s/module.md
+                            - "Stacking 12G": force10/s/stacking-12g.md
+                            - "Stacking 24G": force10/s/stacking-24g.md
+        - "Huawei":
+                  - "AR 1200":
+                            - "SIC": huawei/ar-1200/sic.md
+                            - "WSIC": huawei/ar-1200/wsic.md
+                  - "AR 2240":
+                            - "FAN": huawei/ar-2240/fan.md
+                            - "POWER": huawei/ar-2240/power.md
+                            - "SIC": huawei/ar-2240/sic.md
+                            - "SRU": huawei/ar-2240/sru.md
+                            - "WSIC": huawei/ar-2240/wsic.md
+                            - "XSIC": huawei/ar-2240/xsic.md
+                  - "CX&NE":
+                            - "CX600 FAN": huawei/cx&ne/cx600-fan.md
+                            - "CX600 PEM": huawei/cx&ne/cx600-pem.md
+                            - "CX600-X3A FAN": huawei/cx&ne/cx600-x3a-fan.md
+                            - "CX600-X3A PEM": huawei/cx&ne/cx600-x3a-pem.md
+                            - "FPIC": huawei/cx&ne/fpic.md
+                            - "LPU": huawei/cx&ne/lpu.md
+                            - "MPU": huawei/cx&ne/mpu.md
+                            - "PIC": huawei/cx&ne/pic.md
+                            - "SFU": huawei/cx&ne/sfu.md
+                            - "SRU": huawei/cx&ne/sru.md
+                  - "CX200-300":
+                            - "CX300-PSU": huawei/cx200-300/cx300-psu.md
+                            - "CX300A-FAN": huawei/cx200-300/cx300a-fan.md
+                            - "CX300B-FAN": huawei/cx200-300/cx300b-fan.md
+                            - "SCU": huawei/cx200-300/scu.md
+                            - "SIC": huawei/cx200-300/sic.md
+                  - "CX600-X1-X2":
+                            - "CX600-X1-M4 FAN": huawei/cx600-x1-x2/cx600-x1-m4-fan.md
+                            - "CX600-X1-M4 PSU": huawei/cx600-x1-x2/cx600-x1-m4-psu.md
+                            - "CX600-X2-M8 FAN": huawei/cx600-x1-x2/cx600-x2-m8-fan.md
+                            - "CX600-X2-M8 PSU": huawei/cx600-x1-x2/cx600-x2-m8-psu.md
+                            - "MPU": huawei/cx600-x1-x2/mpu.md
+                            - "NPU": huawei/cx600-x1-x2/npu.md
+                            - "PIC": huawei/cx600-x1-x2/pic.md
+                  - "CloudEngine":
+                            - "FAN": huawei/cloudengine/fan.md
+                            - "PSU": huawei/cloudengine/psu.md
+                  - "Electrical":
+                            - "Champ 64-pin": huawei/electrical/champ-64-pin.md
+                            - "Delander 64-pin": huawei/electrical/delander-64-pin.md
+                            - "RSP20": huawei/electrical/rsp20.md
+                  - "MA":
+                            - "MA5680T sysObjectID": huawei/ma/ma5680t-sysobjectid.md
+                  - "Quidway S2300":
+                            - "PSU": huawei/quidway-s2300/psu.md
+                  - "Quidway S5300":
+                            - "Front slot": huawei/quidway-s5300/front-slot.md
+                            - "PSU": huawei/quidway-s5300/psu.md
+                            - "Rear slot": huawei/quidway-s5300/rear-slot.md
+                            - "Stack 12G": huawei/quidway-s5300/stack-12g.md
+                  - "Quidway S5700":
+                            - "Extension slot": huawei/quidway-s5700/extension-slot.md
+                            - "FAN": huawei/quidway-s5700/fan.md
+                            - "POWER": huawei/quidway-s5700/power.md
+                            - "Rear slot": huawei/quidway-s5700/rear-slot.md
+                            - "Stack 12G": huawei/quidway-s5700/stack-12g.md
+                  - "Quidway":
+                            - "FAN": huawei/quidway/fan.md
+                  - "S8500":
+                            - "LSB": huawei/s8500/lsb.md
+                            - "SRPU": huawei/s8500/srpu.md
+                  - "S9300":
+                            - "CMU": huawei/s9300/cmu.md
+                            - "LPU": huawei/s9300/lpu.md
+                            - "MPU": huawei/s9300/mpu.md
+                            - "S9300 FAN": huawei/s9300/s9300-fan.md
+                            - "S9303 PEM": huawei/s9300/s9303-pem.md
+                            - "SC": huawei/s9300/sc.md
+                            - "SRU": huawei/s9300/sru.md
+                  - "SmartAX":
+                            - "FAN": huawei/smartax/fan.md
+                            - "MA5105":
+                                      - "CB": huawei/smartax/ma5105/cb.md
+                                      - "SB": huawei/smartax/ma5105/sb.md
+                            - "MA5600T":
+                                      - "FAN-ETSI": huawei/smartax/ma5600t/fan-etsi.md
+                                      - "FAN-IEC": huawei/smartax/ma5600t/fan-iec.md
+                            - "MA5603T":
+                                      - "FAN": huawei/smartax/ma5603t/fan.md
+                            - "MA5608T":
+                                      - "FAN": huawei/smartax/ma5608t/fan.md
+                            - "MA560xT":
+                                      - "DB": huawei/smartax/ma560xt/db.md
+                                      - "GIU": huawei/smartax/ma560xt/giu.md
+                                      - "GPIO": huawei/smartax/ma560xt/gpio.md
+                                      - "MCU": huawei/smartax/ma560xt/mcu.md
+                                      - "PWR": huawei/smartax/ma560xt/pwr.md
+                                      - "SB": huawei/smartax/ma560xt/sb.md
+                                      - "SCU": huawei/smartax/ma560xt/scu.md
+                            - "MA5616":
+                                      - "CCU": huawei/smartax/ma5616/ccu.md
+                                      - "DBPWR": huawei/smartax/ma5616/dbpwr.md
+                                      - "FAN": huawei/smartax/ma5616/fan.md
+                                      - "PWR": huawei/smartax/ma5616/pwr.md
+                                      - "SB": huawei/smartax/ma5616/sb.md
+                                      - "UDB": huawei/smartax/ma5616/udb.md
+                                      - "VDB": huawei/smartax/ma5616/vdb.md
+                            - "Power 3V3": huawei/smartax/power-3v3.md
+                            - "SB": huawei/smartax/sb.md
+                            - "SCU": huawei/smartax/scu.md
+                            - "SubB": huawei/smartax/subb.md
+        - "Infinet":
+                  - "WANFlexX":
+                            - "R5000": infinet/wanflexx/r5000.md
+                  - "Inter-PoP Logical Links": /inter-pop-logical-links.md
+        - "Iskratel":
+                  - "SI2000":
+                            - "SB": iskratel/si2000/sb.md
+                  - "SI3000":
+                            - "SB": iskratel/si3000/sb.md
+        - "Juniper":
+                  - "EX":
+                            - "3400 PSU": juniper/ex/3400-psu.md
+                            - "4200 PSU": juniper/ex/4200-psu.md
+                            - "4300 PSU": juniper/ex/4300-psu.md
+                            - "4500 PSU": juniper/ex/4500-psu.md
+                            - "4500 VC/I": juniper/ex/4500-vc-i.md
+                            - "4550 PSU": juniper/ex/4550-psu.md
+                            - "8200 FPC": juniper/ex/8200-fpc.md
+                            - "8200 PWR": juniper/ex/8200-pwr.md
+                            - "8208 Fan": juniper/ex/8208-fan.md
+                            - "8208 SRE": juniper/ex/8208-sre.md
+                            - "8216 Fan": juniper/ex/8216-fan.md
+                            - "8216 RE": juniper/ex/8216-re.md
+                            - "8216 SF": juniper/ex/8216-sf.md
+                            - "9200 RE": juniper/ex/9200-re.md
+                            - "9200 SF": juniper/ex/9200-sf.md
+                            - "Uplink": juniper/ex/uplink.md
+                            - "VCP": juniper/ex/vcp.md
+                  - "J":
+                            - "Mini-PIM": juniper/j/mini-pim.md
+                            - "PIM": juniper/j/pim.md
+                            - "UPIM": juniper/j/upim.md
+                  - "MX":
+                            - "AFEB": juniper/mx/afeb.md
+                            - "CPU": juniper/mx/cpu.md
+                            - "FPC": juniper/mx/fpc.md
+                            - "FPC/SCB": juniper/mx/fpc-scb.md
+                            - "FPM": juniper/mx/fpm.md
+                            - "MIC": juniper/mx/mic.md
+                            - "MX104 Fan": juniper/mx/mx104-fan.md
+                            - "MX104 PEM": juniper/mx/mx104-pem.md
+                            - "MX104 RE": juniper/mx/mx104-re.md
+                            - "MX204 Fan": juniper/mx/mx204-fan.md
+                            - "MX240 Fan": juniper/mx/mx240-fan.md
+                            - "MX480 Fan": juniper/mx/mx480-fan.md
+                            - "MX480 PEM": juniper/mx/mx480-pem.md
+                            - "MX80 PEM": juniper/mx/mx80-pem.md
+                            - "MX960 Fan": juniper/mx/mx960-fan.md
+                            - "MX960 PEM": juniper/mx/mx960-pem.md
+                            - "PEM": juniper/mx/pem.md
+                            - "QXM": juniper/mx/qxm.md
+                            - "RE": juniper/mx/re.md
+                            - "SCB": juniper/mx/scb.md
+                  - "QFX":
+                            - "5100 EM": juniper/qfx/5100-em.md
+                  - "SRX":
+                            - "Mini-PIM": juniper/srx/mini-pim.md
+        - "NAG":
+                  - "SNR":
+                            - "SNR-S2950-24G sysObjectID.0": nag/snr/snr-s2950-24g-sysobjectid.0.md
+        - "Optical":
+                  - "FC": optical/fc.md
+                  - "FL": optical/fl.md
+                  - "FX": optical/fx.md
+                  - "LC": optical/lc.md
+                  - "SC": optical/sc.md
+                  - "ST": optical/st.md
+                  - "TOSLINK": optical/toslink.md
+        - "Power":
+                  - "CEE 7/16 Type C": power/cee-7-16-type-c.md
+                  - "CEE 7/17 Type C": power/cee-7-17-type-c.md
+                  - "CEE 7/4 Type F": power/cee-7-4-type-f.md
+                  - "CEE 7/5 Type E": power/cee-7-5-type-e.md
+                  - "CEE 7/7 Type E/F": power/cee-7-7-type-e-f.md
+                  - "Dual M6 Lug": power/dual-m6-lug.md
+                  - "Dual M6 Terminal Studs": power/dual-m6-terminal-studs.md
+                  - "IEC 60130-10": power/iec-60130-10.md
+                  - "IEC 60309": power/iec-60309.md
+                  - "IEC 60320 C1": power/iec-60320-c1.md
+                  - "IEC 60320 C13": power/iec-60320-c13.md
+                  - "IEC 60320 C14": power/iec-60320-c14.md
+                  - "IEC 60320 C19": power/iec-60320-c19.md
+                  - "IEC 60320 C2": power/iec-60320-c2.md
+                  - "IEC 60320 C20": power/iec-60320-c20.md
+                  - "IEC 60320 C21": power/iec-60320-c21.md
+                  - "IEC 60320 C22": power/iec-60320-c22.md
+                  - "IEC 60320 C5": power/iec-60320-c5.md
+                  - "IEC 60320 C6": power/iec-60320-c6.md
+                  - "IEC 60320 C7": power/iec-60320-c7.md
+                  - "IEC 60320 C8": power/iec-60320-c8.md
+                  - "M4 Fork": power/m4-fork.md
+                  - "M4 Pin": power/m4-pin.md
+                  - "MSTB 2.5/2-G-5.08": power/mstb-2.5-2-g-5.08.md
+                  - "MSTB 2.5/2-ST-5.08": power/mstb-2.5-2-st-5.08.md
+                  - "MSTB 2.5/3-G-5.08": power/mstb-2.5-3-g-5.08.md
+                  - "MSTB 2.5/3-ST-5.08": power/mstb-2.5-3-st-5.08.md
+                  - "MSTB 2.5/4-G-5.08": power/mstb-2.5-4-g-5.08.md
+                  - "MSTB 2.5/4-ST-5.08": power/mstb-2.5-4-st-5.08.md
+                  - "MSTB 2.5/6-GF-5.08": power/mstb-2.5-6-gf-5.08.md
+                  - "Naked": power/naked.md
+                  - "TB Barrier Screw 2 Pin": power/tb-barrier-screw-2-pin.md
+                  - "TB Barrier Screw 3 Pin": power/tb-barrier-screw-3-pin.md
+                  - "TB Barrier Screw 4 Pin": power/tb-barrier-screw-4-pin.md
+        - "Qtech":
+                  - "QSW":
+                            - "QSW-2500E-10 sysObjectID": qtech/qsw/qsw-2500e-10-sysobjectid.md
+        - "Radio":
+                  - "RF":
+                            - "N": radio/rf/n.md
+                            - "RP SMA": radio/rf/rp-sma.md
+                            - "RP SMB": radio/rf/rp-smb.md
+                            - "SMA": radio/rf/sma.md
+        - "Raisecom":
+                  - "ROS":
+                            - "ALL": raisecom/ros/all.md
+                            - "ISCOM2110EA-MA-WP sysObjectID": raisecom/ros/iscom2110ea-ma-wp-sysobjectid.md
+        - "Rubytech":
+                  - "l2ms":
+                            - "Module": rubytech/l2ms/module.md
+        - "SIM":
+                  - "R-UIM": sim/r-uim.md
+                  - "micro-SIM": sim/micro-sim.md
+                  - "mini-SIM": sim/mini-sim.md
+                  - "nano-SIM": sim/nano-sim.md
+        - "Transceiver":
+                  - "CFP": transceiver/cfp.md
+                  - "CFP":
+                            - "Juniper": transceiver/cfp/juniper.md
+                  - "GBIC": transceiver/gbic.md
+                  - "GBIC":
+                            - "Cisco": transceiver/gbic/cisco.md
+                  - "QSFP+": transceiver/qsfp+.md
+                  - "SFP": transceiver/sfp.md
+                  - "SFP":
+                            - "Cisco": transceiver/sfp/cisco.md
+                  - "SFP+": transceiver/sfp+.md
+                  - "SFP+":
+                            - "Cisco": transceiver/sfp+/cisco.md
+                            - "Force10": transceiver/sfp+/force10.md
+                            - "Juniper": transceiver/sfp+/juniper.md
+                  - "X2": transceiver/x2.md
+                  - "X2":
+                            - "Cisco": transceiver/x2/cisco.md
+                  - "XENPAK": transceiver/xenpak.md
+                  - "XENPAK":
+                            - "Cisco": transceiver/xenpak/cisco.md
+                  - "XFP": transceiver/xfp.md
+                  - "XFP":
+                            - "Cisco": transceiver/xfp/cisco.md
+        - "Zhone":
+                  - "GranDSLAM":
+                            - "card": zhone/grandslam/card.md
+        - "Zyxel":
+                  - "BPS-120 Connector": zyxel/bps-120-connector.md
+                  - "MSAN":
+                            - "Linecard": zyxel/msan/linecard.md
+                            - "MFP": zyxel/msan/mfp.md

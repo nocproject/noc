@@ -1,0 +1,374 @@
+INHERIT: ../mkdocs-base.yml
+site_name: "NOC: Event Classes Reference"
+site_description: >
+        The reference of the NOC event classes
+edit_uri: -/edit/master/docs/event-classes-reference/
+site_dir: ../../build/docs/event-classes-reference/
+nav:
+        - Overview: index.md
+        - "Chassis":
+                  - "CPU":
+                            - "CPU Usage Above Threshold": chassis/cpu/cpu-usage-above-threshold.md
+                            - "CPU Usage Drops Below Threshold": chassis/cpu/cpu-usage-drops-below-threshold.md
+                            - "CoPP Drop": chassis/cpu/copp-drop.md
+                  - "Clock":
+                            - "Clock Failed": chassis/clock/clock-failed.md
+                            - "Clock Recovered": chassis/clock/clock-recovered.md
+                  - "Fabric":
+                            - "CRC Errors": chassis/fabric/crc-errors.md
+                  - "Fan":
+                            - "Fan Failed": chassis/fan/fan-failed.md
+                            - "Fan Inserted": chassis/fan/fan-inserted.md
+                            - "Fan Recovered": chassis/fan/fan-recovered.md
+                            - "Fan Removed": chassis/fan/fan-removed.md
+                  - "Hardware":
+                            - "Hardware Error": chassis/hardware/hardware-error.md
+                            - "Hardware Port Error": chassis/hardware/hardware-port-error.md
+                            - "Hardware Port Error Recover": chassis/hardware/hardware-port-error-recover.md
+                            - "Hardware Port Warning": chassis/hardware/hardware-port-warning.md
+                            - "Hardware Port Warning Recover": chassis/hardware/hardware-port-warning-recover.md
+                            - "Hardware Warning": chassis/hardware/hardware-warning.md
+                            - "Module":
+                                      - "Invalid Module": chassis/hardware/module/invalid-module.md
+                                      - "Module Error": chassis/hardware/module/module-error.md
+                                      - "Module Inserted": chassis/hardware/module/module-inserted.md
+                                      - "Module Present": chassis/hardware/module/module-present.md
+                                      - "Module Removed": chassis/hardware/module/module-removed.md
+                                      - "Module not Present": chassis/hardware/module/module-not-present.md
+                  - "Linecard":
+                            - "LC Down": chassis/linecard/lc-down.md
+                            - "LC Up": chassis/linecard/lc-up.md
+                  - "PSU":
+                            - "Internal Voltage Out of Range": chassis/psu/internal-voltage-out-of-range.md
+                            - "PSU Changed": chassis/psu/psu-changed.md
+                            - "PSU Failed": chassis/psu/psu-failed.md
+                            - "PSU Recovered": chassis/psu/psu-recovered.md
+                            - "Power Failed": chassis/psu/power-failed.md
+                  - "RAM":
+                            - "Insufficient Memory": chassis/ram/insufficient-memory.md
+                            - "RAM Failed": chassis/ram/ram-failed.md
+                  - "Stack":
+                            - "Stack Degraded": chassis/stack/stack-degraded.md
+                            - "Stack is Raised": chassis/stack/stack-is-raised.md
+                  - "Supervisor":
+                            - "Supervisor Down": chassis/supervisor/supervisor-down.md
+                            - "Supervisor Up": chassis/supervisor/supervisor-up.md
+                  - "TCAM":
+                            - "TCAM Entry Capacity Exceeded": chassis/tcam/tcam-entry-capacity-exceeded.md
+                            - "TCAM Error": chassis/tcam/tcam-error.md
+        - "Config":
+                  - "Config Changed": config/config-changed.md
+                  - "Config Corrected": config/config-corrected.md
+                  - "Config Download Failed": config/config-download-failed.md
+                  - "Config Downloaded Successfully": config/config-downloaded-successfully.md
+                  - "Config Sync Failed": config/config-sync-failed.md
+                  - "Config Synced": config/config-synced.md
+                  - "Config Upload Failed": config/config-upload-failed.md
+                  - "Config Uploaded Successfully": config/config-uploaded-successfully.md
+                  - "Entering Configuration Mode": config/entering-configuration-mode.md
+                  - "Exiting Configuration Mode": config/exiting-configuration-mode.md
+                  - "Invalid Config": config/invalid-config.md
+        - "Environment":
+                  - "AC Voltage Out of Range": environment/ac-voltage-out-of-range.md
+                  - "AC Voltage Returned to Normal Range": environment/ac-voltage-returned-to-normal-range.md
+                  - "Chassis Voltage Out of Range": environment/chassis-voltage-out-of-range.md
+                  - "Chassis Voltage Returned to Normal Range": environment/chassis-voltage-returned-to-normal-range.md
+                  - "DC Voltage Out of Range": environment/dc-voltage-out-of-range.md
+                  - "DC Voltage Returned to Normal Range": environment/dc-voltage-returned-to-normal-range.md
+                  - "Humidity Out of Range": environment/humidity-out-of-range.md
+                  - "Humidity Returned to Normal Range": environment/humidity-returned-to-normal-range.md
+                  - "Module Voltage Out of Range": environment/module-voltage-out-of-range.md
+                  - "Module Voltage Returned to Normal Range": environment/module-voltage-returned-to-normal-range.md
+                  - "Temperature Out of Range": environment/temperature-out-of-range.md
+                  - "Temperature Returned to Normal Range": environment/temperature-returned-to-normal-range.md
+                  - "UPS":
+                            - "Battery Power Low": environment/ups/battery-power-low.md
+                            - "Battery Power Normal": environment/ups/battery-power-normal.md
+                            - "Battery Replaced": environment/ups/battery-replaced.md
+                            - "Input Power Failed": environment/ups/input-power-failed.md
+                            - "Input Power Low": environment/ups/input-power-low.md
+                            - "Input Power OK": environment/ups/input-power-ok.md
+                            - "Self-Test Failed": environment/ups/self-test-failed.md
+                            - "Self-Test Passed": environment/ups/self-test-passed.md
+                            - "Self-Test Started": environment/ups/self-test-started.md
+        - "NOC":
+                  - "IPAM":
+                            - "VRF Group Address Collision": noc/ipam/vrf-group-address-collision.md
+                  - "Managed Object":
+                            - "Ping Failed": noc/managed-object/ping-failed.md
+                            - "Ping OK": noc/managed-object/ping-ok.md
+                  - "Periodic":
+                            - "Periodic Failed": noc/periodic/periodic-failed.md
+                            - "Periodic OK": noc/periodic/periodic-ok.md
+                  - "SA":
+                            - "Join Activator Pool": noc/sa/join-activator-pool.md
+                            - "Leave Activator Pool": noc/sa/leave-activator-pool.md
+                  - "Unhandled Exception": noc/unhandled-exception.md
+                  - "Unknown Event Source": noc/unknown-event-source.md
+        - "Network":
+                  - "802.11":
+                            - "Associated": network/802.11/associated.md
+                            - "Disassociated": network/802.11/disassociated.md
+                            - "Max Retries": network/802.11/max-retries.md
+                            - "Roamed": network/802.11/roamed.md
+                  - "BFD":
+                            - "Session Down": network/bfd/session-down.md
+                            - "Session Up": network/bfd/session-up.md
+                  - "BGP":
+                            - "Backward Transition": network/bgp/backward-transition.md
+                            - "Established": network/bgp/established.md
+                            - "Max Prefixes Exceeds": network/bgp/max-prefixes-exceeds.md
+                            - "Max Prefixes Warning": network/bgp/max-prefixes-warning.md
+                            - "Peer Down": network/bgp/peer-down.md
+                            - "Peer State Changed": network/bgp/peer-state-changed.md
+                            - "Prefix Limit Exceeded": network/bgp/prefix-limit-exceeded.md
+                  - "DHCP":
+                            - "Untrusted Server": network/dhcp/untrusted-server.md
+                  - "DNS":
+                            - "Bad Query": network/dns/bad-query.md
+                  - "DOCSIS":
+                            - "BPI Unautorized": network/docsis/bpi-unautorized.md
+                            - "Bad Timing Offset": network/docsis/bad-timing-offset.md
+                            - "Channel Width Changed": network/docsis/channel-width-changed.md
+                            - "Invalid CoS": network/docsis/invalid-cos.md
+                            - "Invalid DOCSIS Message": network/docsis/invalid-docsis-message.md
+                            - "Invalid QoS": network/docsis/invalid-qos.md
+                            - "Invalid Shared Secret": network/docsis/invalid-shared-secret.md
+                            - "Max CPE Reached": network/docsis/max-cpe-reached.md
+                            - "Maximum Capacity Reached": network/docsis/maximum-capacity-reached.md
+                            - "Maximum SIDs": network/docsis/maximum-sids.md
+                            - "Unregistered Modem Deleted": network/docsis/unregistered-modem-deleted.md
+                            - "Upstream Frequency Changed": network/docsis/upstream-frequency-changed.md
+                            - "Upstream Input Power Level Changed": network/docsis/upstream-input-power-level-changed.md
+                  - "EIGRP":
+                            - "Neighbor Down": network/eigrp/neighbor-down.md
+                            - "Neighbor Up": network/eigrp/neighbor-up.md
+                  - "IMPB":
+                            - "Dynamic IMPB entry is conflicting with static": network/impb/dynamic-impb-entry-is-conflicting-with-static.md
+                            - "Recover IMPB stop learning state": network/impb/recover-impb-stop-learning-state.md
+                            - "Unauthenticated IP-MAC": network/impb/unauthenticated-ip-mac.md
+                  - "IP":
+                            - "ARP Moved": network/ip/arp-moved.md
+                            - "ARP Zero MAC": network/ip/arp-zero-mac.md
+                            - "Address Conflict": network/ip/address-conflict.md
+                            - "IP Flap": network/ip/ip-flap.md
+                            - "Port Exhaustion": network/ip/port-exhaustion.md
+                            - "Route Limit Exceeded": network/ip/route-limit-exceeded.md
+                            - "Route Limit Warning": network/ip/route-limit-warning.md
+                  - "IS-IS":
+                            - "Adjacency Down": network/is-is/adjacency-down.md
+                            - "Adjacency Up": network/is-is/adjacency-up.md
+                  - "LAG":
+                            - "Bundle": network/lag/bundle.md
+                            - "Unbundle": network/lag/unbundle.md
+                  - "LBD":
+                            - "Loop Cleared": network/lbd/loop-cleared.md
+                            - "Loop Detected": network/lbd/loop-detected.md
+                            - "Vlan Loop Cleared": network/lbd/vlan-loop-cleared.md
+                            - "Vlan Loop Detected": network/lbd/vlan-loop-detected.md
+                  - "LLDP":
+                            - "Created New Neighbor": network/lldp/created-new-neighbor.md
+                            - "LLDP Aged Out": network/lldp/lldp-aged-out.md
+                            - "Native Vlan Not Match": network/lldp/native-vlan-not-match.md
+                            - "Remote Tables Change": network/lldp/remote-tables-change.md
+                  - "Link":
+                            - "Connection Problem": network/link/connection-problem.md
+                            - "DOM":
+                                      - "Alarm: Out of Threshold": network/link/dom/alarm-out-of-threshold.md
+                                      - "Alarm: Out of Threshold Recovered": network/link/dom/alarm-out-of-threshold-recovered.md
+                                      - "Warning: Out of Threshold": network/link/dom/warning-out-of-threshold.md
+                                      - "Warning: Out of Threshold Recovered": network/link/dom/warning-out-of-threshold-recovered.md
+                            - "Duplex Mismatch": network/link/duplex-mismatch.md
+                            - "Err-Disable": network/link/err-disable.md
+                            - "Full-Duplex": network/link/full-duplex.md
+                            - "Half-Duplex": network/link/half-duplex.md
+                            - "Link Down": network/link/link-down.md
+                            - "Link Flap Error Detected": network/link/link-flap-error-detected.md
+                            - "Link Flap Error Recovery": network/link/link-flap-error-recovery.md
+                            - "Link Up": network/link/link-up.md
+                  - "MAC":
+                            - "Duplicate MAC": network/mac/duplicate-mac.md
+                            - "Invalid MAC": network/mac/invalid-mac.md
+                            - "MAC Aged": network/mac/mac-aged.md
+                            - "MAC Flap": network/mac/mac-flap.md
+                            - "MAC Flood": network/mac/mac-flood.md
+                            - "MAC Learned": network/mac/mac-learned.md
+                            - "MAC Moved": network/mac/mac-moved.md
+                  - "MPLS":
+                            - "LDP Neighbor Down": network/mpls/ldp-neighbor-down.md
+                            - "LDP Neighbor Up": network/mpls/ldp-neighbor-up.md
+                            - "LSP Down": network/mpls/lsp-down.md
+                            - "LSP Up": network/mpls/lsp-up.md
+                            - "Path Down": network/mpls/path-down.md
+                            - "Path Up": network/mpls/path-up.md
+                            - "TDP Neighbor Down": network/mpls/tdp-neighbor-down.md
+                            - "TDP Neighbor Up": network/mpls/tdp-neighbor-up.md
+                  - "MSDP":
+                            - "Peer Down": network/msdp/peer-down.md
+                            - "Peer Up": network/msdp/peer-up.md
+                  - "Monitor":
+                            - "CRC Error Cleared": network/monitor/crc-error-cleared.md
+                            - "CRC Error Detected": network/monitor/crc-error-detected.md
+                  - "NTP":
+                            - "Lost synchronization": network/ntp/lost-synchronization.md
+                            - "NTP Server Reachable": network/ntp/ntp-server-reachable.md
+                            - "NTP Server Unreachable": network/ntp/ntp-server-unreachable.md
+                            - "System Clock Adjusted": network/ntp/system-clock-adjusted.md
+                            - "System Clock Synchronized": network/ntp/system-clock-synchronized.md
+                  - "OAM":
+                            - "Client Clear Remote Failure": network/oam/client-clear-remote-failure.md
+                            - "Client Recieved Remote Failure": network/oam/client-recieved-remote-failure.md
+                            - "Discovery Timeout": network/oam/discovery-timeout.md
+                            - "Enter Session": network/oam/enter-session.md
+                            - "Entering Master Loopback Mode": network/oam/entering-master-loopback-mode.md
+                            - "Entering Slave Loopback Mode": network/oam/entering-slave-loopback-mode.md
+                            - "Exit Session": network/oam/exit-session.md
+                            - "Exiting Master Loopback Mode": network/oam/exiting-master-loopback-mode.md
+                            - "Exiting Slave Loopback Mode": network/oam/exiting-slave-loopback-mode.md
+                            - "Monitoring Error": network/oam/monitoring-error.md
+                  - "OSPF":
+                            - "Neighbor Down": network/ospf/neighbor-down.md
+                            - "Neighbor Up": network/ospf/neighbor-up.md
+                  - "PIM":
+                            - "DR Change": network/pim/dr-change.md
+                            - "Invalid RP": network/pim/invalid-rp.md
+                            - "MSDP Peer Down": network/pim/msdp-peer-down.md
+                            - "MSDP Peer Up": network/pim/msdp-peer-up.md
+                            - "Neighbor Down": network/pim/neighbor-down.md
+                            - "Neighbor Up": network/pim/neighbor-up.md
+                  - "Port Security":
+                            - "Port Security Violation": network/port-security/port-security-violation.md
+                  - "RSVP":
+                            - "Neighbor Down": network/rsvp/neighbor-down.md
+                            - "Neighbor Up": network/rsvp/neighbor-up.md
+                  - "STP":
+                            - "BPDU Guard Recovery": network/stp/bpdu-guard-recovery.md
+                            - "BPDU Guard Violation": network/stp/bpdu-guard-violation.md
+                            - "BPDU Root Violation": network/stp/bpdu-root-violation.md
+                            - "Root Changed": network/stp/root-changed.md
+                            - "Root Guard Recovery": network/stp/root-guard-recovery.md
+                            - "STP Loop Cleared": network/stp/stp-loop-cleared.md
+                            - "STP Loop Detected": network/stp/stp-loop-detected.md
+                            - "STP Port Role Changed": network/stp/stp-port-role-changed.md
+                            - "STP Port State Changed": network/stp/stp-port-state-changed.md
+                            - "STP Vlan Loop Cleared": network/stp/stp-vlan-loop-cleared.md
+                            - "STP Vlan Loop Detected": network/stp/stp-vlan-loop-detected.md
+                            - "STP instances exceeded": network/stp/stp-instances-exceeded.md
+                            - "Topology Changed": network/stp/topology-changed.md
+                  - "Storm Control":
+                            - "Broadcast Storm Cleared": network/storm-control/broadcast-storm-cleared.md
+                            - "Broadcast Storm Detected": network/storm-control/broadcast-storm-detected.md
+                            - "Multicast Storm Cleared": network/storm-control/multicast-storm-cleared.md
+                            - "Multicast Storm Detected": network/storm-control/multicast-storm-detected.md
+                            - "Storm Cleared": network/storm-control/storm-cleared.md
+                            - "Storm Detected": network/storm-control/storm-detected.md
+                            - "Unicast Storm Cleared": network/storm-control/unicast-storm-cleared.md
+                            - "Unicast Storm Detected": network/storm-control/unicast-storm-detected.md
+                  - "UDLD":
+                            - "UDLD Protocol Error Detected": network/udld/udld-protocol-error-detected.md
+                            - "UDLD Protocol Recovery": network/udld/udld-protocol-recovery.md
+                  - "VLAN":
+                            - "VLAN Created": network/vlan/vlan-created.md
+                            - "VLAN Deleted": network/vlan/vlan-deleted.md
+        - "PM":
+                  - "Out of Thresholds": pm/out-of-thresholds.md
+                  - "Returned to Normal Range": pm/returned-to-normal-range.md
+        - "Phone":
+                  - "SCCP":
+                            - "Register": phone/sccp/register.md
+                            - "Register Alarm": phone/sccp/register-alarm.md
+                            - "Register New": phone/sccp/register-new.md
+                            - "Unregister Abnormal": phone/sccp/unregister-abnormal.md
+                            - "Unregister Normal": phone/sccp/unregister-normal.md
+        - "Security":
+                  - "ACL":
+                            - "ACL Deny": security/acl/acl-deny.md
+                            - "ACL Permit": security/acl/acl-permit.md
+                  - "Abduct":
+                            - "Cable Abduct": security/abduct/cable-abduct.md
+                  - "Access":
+                            - "Case Close": security/access/case-close.md
+                            - "Case Open": security/access/case-open.md
+                            - "Door Close": security/access/door-close.md
+                            - "Door Open": security/access/door-open.md
+                  - "Accounting":
+                            - "WebVPN":
+                                      - "Assigned": security/accounting/webvpn/assigned.md
+                                      - "Disconnected": security/accounting/webvpn/disconnected.md
+                  - "Attack":
+                            - "Attack": security/attack/attack.md
+                            - "Blat Attack": security/attack/blat-attack.md
+                            - "IP Spoofing": security/attack/ip-spoofing.md
+                            - "Land Attack": security/attack/land-attack.md
+                            - "Ping Of Death": security/attack/ping-of-death.md
+                            - "Smurf Attack": security/attack/smurf-attack.md
+                            - "TCP SYNFIN Scan": security/attack/tcp-synfin-scan.md
+                            - "Teardrop Attack": security/attack/teardrop-attack.md
+                  - "Audit":
+                            - "Clearing Counters": security/audit/clearing-counters.md
+                            - "Command": security/audit/command.md
+                            - "Cron": security/audit/cron.md
+                  - "Authentication":
+                            - "802.1x failed": security/authentication/802.1x-failed.md
+                            - "Authentication Failed": security/authentication/authentication-failed.md
+                            - "Login": security/authentication/login.md
+                            - "Login Failed": security/authentication/login-failed.md
+                            - "Logout": security/authentication/logout.md
+                            - "Privilege Level Change Fail": security/authentication/privilege-level-change-fail.md
+                            - "Privilege Level Changed": security/authentication/privilege-level-changed.md
+                            - "RADIUS server failed": security/authentication/radius-server-failed.md
+                            - "RADIUS server recovered": security/authentication/radius-server-recovered.md
+                            - "Rejected": security/authentication/rejected.md
+                            - "SNMP Authentication Failure": security/authentication/snmp-authentication-failure.md
+                            - "TACACS+ server failed": security/authentication/tacacs+-server-failed.md
+                            - "TACACS+ server recovered": security/authentication/tacacs+-server-recovered.md
+        - "System":
+                  - "Halt": system/halt.md
+                  - "Process Crashed": system/process-crashed.md
+                  - "Process Exited": system/process-exited.md
+                  - "Process Started": system/process-started.md
+                  - "Reboot": system/reboot.md
+                  - "Started": system/started.md
+        - "Unknown":
+                  - "Default": unknown/default.md
+                  - "Ignore": unknown/ignore.md
+                  - "SNMP Trap": unknown/snmp-trap.md
+                  - "Syslog": unknown/syslog.md
+        - "Vendor":
+                  - "Arista":
+                            - "EOS":
+                                      - "VMTracer":
+                                                - "Failed to connect to vCenter": vendor/arista/eos/vmtracer/failed-to-connect-to-vcenter.md
+                  - "Cisco":
+                            - "ASA":
+                                      - "Network":
+                                                - "Flow Accounting":
+                                                          - "Built Flow": vendor/cisco/asa/network/flow-accounting/built-flow.md
+                                                          - "Duplicate TCP SYN": vendor/cisco/asa/network/flow-accounting/duplicate-tcp-syn.md
+                                                          - "Teardown Flow": vendor/cisco/asa/network/flow-accounting/teardown-flow.md
+                            - "IOS":
+                                      - "Network":
+                                                - "Load Balance":
+                                                          - "Server Farm Degraded": vendor/cisco/ios/network/load-balance/server-farm-degraded.md
+                                                          - "Server Farm is Operate": vendor/cisco/ios/network/load-balance/server-farm-is-operate.md
+                                                          - "vserver In Service": vendor/cisco/ios/network/load-balance/vserver-in-service.md
+                                                          - "vserver Out of Service": vendor/cisco/ios/network/load-balance/vserver-out-of-service.md
+                            - "SCOS":
+                                      - "Security":
+                                                - "Attack":
+                                                          - "Attack Detected": vendor/cisco/scos/security/attack/attack-detected.md
+                                                          - "End-of-attack detected": vendor/cisco/scos/security/attack/end-of-attack-detected.md
+                  - "DLink":
+                            - "DxS":
+                                      - "Chassis":
+                                                - "CPU":
+                                                          - "Safeguard Engine enters EXHAUSTED mode": vendor/dlink/dxs/chassis/cpu/safeguard-engine-enters-exhausted-mode.md
+                                                          - "Safeguard Engine enters NORMAL mode": vendor/dlink/dxs/chassis/cpu/safeguard-engine-enters-normal-mode.md
+                  - "f5":
+                            - "BIGIP":
+                                      - "Network":
+                                                - "Load Balance":
+                                                          - "Node Down": vendor/f5/bigip/network/load-balance/node-down.md
+                                                          - "Node Up": vendor/f5/bigip/network/load-balance/node-up.md
+                                                          - "Service Down": vendor/f5/bigip/network/load-balance/service-down.md
+                                                          - "Service Up": vendor/f5/bigip/network/load-balance/service-up.md
