@@ -53,7 +53,7 @@ from noc.core.router.base import Router
 from noc.core.ioloop.util import setup_asyncio
 from noc.core.ioloop.timers import PeriodicCallback
 from noc.core.error import NOCError
-from noc.core.mx import MX_METRICS_SCOPE, MX_METRICS_TYPE, MX_STREAM
+from noc.core.mx import MX_STREAM
 from .rpc import RPCProxy
 from .loader import set_service
 from ..router.datastream import RouteDataStreamClient
@@ -754,15 +754,10 @@ class BaseService(object):
     ) -> None:
         while not (self.publish_queue.to_shutdown and queue.is_empty()):
             t0 = perf_counter()
-            for stream, partititon, chunk in queue.iter_slice():
-                self.publish(chunk, stream=stream, partition=partititon, headers=headers)
-                table_name = stream.split(".")[1]
-                if config.message.enable_metrics and table_name in self.mx_metrics_scopes:
-                    await self.send_message(
-                        data=chunk,
-                        message_type=MX_METRICS_TYPE,
-                        headers={MX_METRICS_SCOPE: table_name.encode(encoding="utf-8")},
-                    )
+            for stream, partition, chunk in queue.iter_slice():
+                self.publish(chunk, stream=stream, partition=partition, headers=headers)
+            if self.router and not self.router.is_empty():
+                await self.router.flush_input_queue()
             if not self.publish_queue.to_shutdown:
                 to_sleep = config.msgstream.metrics_send_delay - (perf_counter() - t0)
                 if to_sleep > 0:
@@ -833,6 +828,7 @@ class BaseService(object):
         message_type: str,
         headers: Optional[Dict[str, bytes]] = None,
         sharding_key: int = 0,
+        store: bool = False,
     ):
         """
         Build message and schedule to send to mx service
@@ -841,12 +837,41 @@ class BaseService(object):
         :param message_type: Message type
         :param headers: additional message headers
         :param sharding_key: Key for sharding over MX services
+        :param store: Append message to buffer for diliver
         :return:
         """
         msg = Router.get_message(data, message_type, headers, sharding_key)
         self.logger.debug("Send message: %s", msg)
-        if self.router and config.message.embedded_router:
+        if self.router and config.message.embedded_router and store:
+            self.router.register_message(msg)
+        elif self.router and config.message.embedded_router:
             await self.router.route_message(msg)
+        else:
+            self.publish(
+                value=msg.value,
+                stream=MX_STREAM,
+                partition=sharding_key % self.mx_partitions,
+                headers=msg.headers,
+            )
+
+    def register_message(
+        self,
+        data: Any,
+        message_type: str,
+        headers: Optional[Dict[str, bytes]] = None,
+        sharding_key: int = 0,
+    ):
+        """
+        Register message for diliver
+        :param data: Data for transmit
+        :param message_type: Message type
+        :param headers: additional message headers
+        :param sharding_key: Key for sharding over MX services
+        :return:
+        """
+        msg = Router.get_message(data, message_type, headers, sharding_key)
+        if self.router and config.message.embedded_router:
+            self.router.register_message(msg)
         else:
             self.publish(
                 value=msg.value,

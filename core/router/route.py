@@ -176,7 +176,8 @@ class Route(object):
         # Compile transmute part
         # r.transmutations = [Transmutation.from_transmute(t) for t in route.transmute]
         if "transmute_handler" in data:
-            self.transmute_handler = Handler.get_by_id(data["transmute_handler"])
+            h = Handler.get_by_id(data["transmute_handler"])
+            self.transmute_handler = h.get_handler() if h else None
         if "transmute_template" in data:
             template = Template.objects.get(id=data["transmute_template"])
             self.transmute_template = TransmuteTemplate(JTemplate(template.body))

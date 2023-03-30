@@ -55,12 +55,14 @@ class MetricScopeCDAGFactory(BaseCDAGFactory):
         ctx: Optional[FactoryCtx] = None,
         namespace: Optional[str] = None,
         spool: bool = True,
+        spool_message: bool = False,
         sticky: bool = False,
         lazy_init: bool = False,
     ):
         super().__init__(graph, ctx, namespace)
         self.scope = scope
         self.spool = spool
+        self.spool_message = spool_message
         self.sticky = sticky
         self.lazy_init = lazy_init
 
@@ -70,7 +72,9 @@ class MetricScopeCDAGFactory(BaseCDAGFactory):
             sc = ScopeConfig(
                 name=self.scope.table_name,
                 description=f"{self.scope.name} metric sender",
-                config=MetricsNodeConfig(scope=self.scope.table_name, spool=self.spool),
+                config=MetricsNodeConfig(
+                    scope=self.scope.table_name, spool=self.spool, spool_message=self.spool_message
+                ),
                 cleaners={},
                 probes=[],
                 key_fields=[kf.field_name for kf in self.scope.key_fields],

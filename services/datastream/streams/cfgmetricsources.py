@@ -1,7 +1,7 @@
 # ----------------------------------------------------------------------
 # cfgmetricsources datastream
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2022 The NOC Project
+# Copyright (C) 2007-2023 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -41,5 +41,19 @@ class CfgMetricSourcesDataStream(DataStream):
         :param sid:
         :return:
         """
-        source_type, sid = sid.split("::")
+        if "::" in sid:
+            source_type, sid = sid.split("::")
         return {"id": str(sid), "$deleted": True}
+
+    @classmethod
+    def get_meta(cls, data):
+        return {"sharding_key": data.get("sharding_key") or 0}
+
+    @classmethod
+    def filter_shard(cls, instance, n_instances):
+        r = super().filter_shard(instance, n_instances)
+        return {"meta.sharding_key": r["_id"]}
+
+    @classmethod
+    def is_moved(cls, meta, meta_filters) -> bool:
+        return False

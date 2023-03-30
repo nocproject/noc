@@ -35,6 +35,8 @@ from noc.core.cdag.node.alarm import VarItem
 from noc.core.cdag.graph import CDAG
 from noc.core.cdag.factory.scope import MetricScopeCDAGFactory
 from noc.core.cdag.factory.config import ConfigCDAGFactory, GraphConfig
+from noc.core.mx import MX_H_VALUE_SPLITTER
+from noc.core.comp import DEFAULT_ENCODING
 from noc.services.metrics.changelog import ChangeLog
 from noc.services.metrics.datastream import MetricsDataStreamClient, MetricRulesDataStreamClient
 from noc.services.metrics.models.card import Card, ScopeInfo
@@ -155,10 +157,13 @@ class MetricsService(FastAPIService):
         # r = next(coll.find({}).sort([("change_id", DESCENDING)]), None)
         # Track stream changes
         while True:
-            self.logger.info("Starting to track object mappings")
+            self.logger.info(
+                "Starting to track object mappings: %s/%s", self.slot_number, self.total_slots
+            )
             try:
                 await client.query(
                     limit=global_config.metrics.ds_limit,
+                    filters=[f"shard({self.slot_number},{self.total_slots})"],
                     block=True,
                     filter_policy="delete",
                 )
@@ -321,8 +326,9 @@ class MetricsService(FastAPIService):
         cdag = self.get_scope_cdag(k)
         if not cdag:
             return None
+        source = self.get_source_info(k)
         # Apply CDAG to a common graph and collect inputs to the card
-        card = await self.project_cdag(cdag, prefix=self.get_key_hash(k))
+        card = await self.project_cdag(cdag, prefix=self.get_key_hash(k), config=source)
         metrics["project_cards"] += 1
         self.cards[k] = card
         self.source_metrics[k[1][-1]].append(k)
@@ -347,7 +353,13 @@ class MetricsService(FastAPIService):
             return None  # Not found
         cdag = CDAG(f"scope::{k[0]}", {})
         factory = MetricScopeCDAGFactory(
-            cdag, scope=ms, sticky=True, spool=not self.disable_spool, lazy_init=self.lazy_init
+            cdag,
+            scope=ms,
+            sticky=True,
+            spool=not self.disable_spool,
+            lazy_init=self.lazy_init,
+            spool_message=global_config.message.enable_metrics
+            and ms.table_name in set(global_config.message.enable_metric_scopes),
         )
         factory.construct()
         self.scope_cdag[k[0]] = cdag
@@ -371,18 +383,33 @@ class MetricsService(FastAPIService):
         metrics["cdag_nodes", ("type", n.name)] += 1
         return new_node
 
-    async def project_cdag(self, src: CDAG, prefix: str) -> Card:
+    async def project_cdag(
+        self, src: CDAG, prefix: str, config: Optional[SourceConfig] = None
+    ) -> Card:
         """
         Project `src` to a current graph and return the controlling Card
         :param src: Applied graph
         :param prefix: Unique card prefix
+        :param config:
         :return:
         """
 
         nodes: Dict[str, BaseCDAGNode] = {}
         # Clone nodes
         for node in src.nodes.values():
-            nodes[node.node_id] = self.clone_and_add_node(node, prefix=prefix)
+            # Apply sender nodes
+            nodes[node.node_id] = self.clone_and_add_node(
+                node,
+                prefix=prefix,
+                config={
+                    "message_meta": config.meta or {},
+                    "message_labels": MX_H_VALUE_SPLITTER.join(config.labels).encode(
+                        encoding=DEFAULT_ENCODING
+                    ),
+                }
+                if config
+                else None,
+            )
         # Subscribe
         for o_node in src.nodes.values():
             node = nodes[o_node.node_id]
@@ -400,7 +427,7 @@ class MetricsService(FastAPIService):
             alarms=[],
             affected_rules=set(),
             is_dirty=False,
-            config=None,
+            config=config,
         )
 
     async def get_dispose_partitions(self, pool: str) -> int:
@@ -464,7 +491,7 @@ class MetricsService(FastAPIService):
             return
         return self.get_source_config(orjson.loads(data["data"]))
 
-    def get_source(self, s_id):
+    def get_source(self, s_id) -> Optional[SourceConfig]:
         if s_id not in self.sources_config:
             self.logger.info("[%s] Unknown Source", s_id)
             return None
@@ -519,6 +546,7 @@ class MetricsService(FastAPIService):
             metric_labels=[],
             composed_metrics=composed_metrics,
             rules=source.rules or [],
+            meta=source.meta,
         )
 
     def apply_rules(self, k: MetricKey, labels: List[str]):
@@ -529,14 +557,14 @@ class MetricsService(FastAPIService):
         :return:
         """
         card = self.cards[k]
-        # Getting Context
-        source = self.get_source_info(k)
-        if not source:
+        if not card.config:
+            # Getting Context
+            card.config = self.get_source_info(k)
+        if not card.config:
             self.logger.debug("[%s] Unknown metric source. Skipping apply rules", k)
             metrics["unknown_metric_source"] += 1
             return
-        elif not card.config:
-            card.config = source
+        source = card.config
         # s_labels = set(self.merge_labels(source.labels, labels))
         # Appy matched rules
         # for rule_id, rule in self.rules.items():
@@ -675,6 +703,8 @@ class MetricsService(FastAPIService):
             ),
             items=[],
             rules=data.get("rules"),
+            meta=data.get("meta") if global_config.message.enable_metrics else None,
+            # Append meta if enable messages
         )
         for item in data.get("items", []):
             sc.items.append(

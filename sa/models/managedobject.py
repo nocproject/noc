@@ -2962,6 +2962,8 @@ class ManagedObject(NOCModel):
             ],
             "rules": [ma for ma in MetricRule.iter_rules_actions(mo.effective_labels)],
             "items": items,
+            "sharding_key": mo.bi_id,
+            "meta": mo.get_message_context(),
         }
 
     @property
