@@ -13,10 +13,11 @@ from typing import Optional
 
 # Third-party modules
 from mongoengine.document import Document
-from mongoengine.fields import StringField, BooleanField, ReferenceField, LongField
+from mongoengine.fields import StringField, BooleanField, ReferenceField, LongField, ListField
 import cachetools
 
 # NOC modules
+from noc.models import get_model
 from noc.core.model.decorator import on_delete_check
 from noc.core.bi.decorator import bi_sync
 from noc.core.change.decorator import change
@@ -56,6 +57,8 @@ class Workflow(Document):
     name = StringField(unique=True)
     is_active = BooleanField()
     description = StringField()
+    #
+    allowed_models = ListField(StringField())
     # Integration with external NRI and TT systems
     # Reference to remote system object has been imported from
     remote_system = ReferenceField(RemoteSystem)
@@ -118,3 +121,10 @@ class Workflow(Document):
                 del _default_state_cache[key]
             except KeyError:
                 pass
+
+    def clean(self):
+        for mid in self.allowed_models:
+            try:
+                get_model(mid)
+            except Exception as e:
+                raise ValueError(f"Unknown model_id {mid}")

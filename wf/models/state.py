@@ -36,7 +36,7 @@ from noc.core.handler import get_handler
 from noc.core.defer import defer
 from noc.core.hash import hash_int
 from noc.core.change.decorator import change
-from noc.models import get_model_id
+from noc.models import get_model_id, LABEL_MODELS, get_model
 from noc.main.models.label import Label
 
 logger = logging.getLogger(__name__)
@@ -54,6 +54,7 @@ class FeatureSetting(EmbeddedDocument):
 
 @bi_sync
 @change
+@Label.model
 @on_delete_check(
     check=[
         ("wf.Transition", "from_state"),
@@ -85,7 +86,7 @@ class State(Document):
         "strict": False,
         "auto_create_index": False,
     }
-    workflow = PlainReferenceField(Workflow)
+    workflow: "Workflow" = PlainReferenceField(Workflow)
     name = StringField()
     description = StringField()
     # State properties
@@ -129,7 +130,7 @@ class State(Document):
     _bi_id_cache = cachetools.TTLCache(maxsize=100, ttl=60)
 
     def __str__(self):
-        return "%s: %s" % (self.workflow.name, self.name)
+        return f"{self.workflow.name}: {self.name}"
 
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_id_cache"), lock=lambda _: id_lock)
@@ -142,12 +143,14 @@ class State(Document):
         return State.objects.filter(bi_id=id).first()
 
     def on_save(self):
+        chenged_fields = getattr(self, "_changed_fields", None)
         if (
-            (hasattr(self, "_changed_fields") and "is_default" in self._changed_fields)
-            or not hasattr(self, "_changed_field")
+            (chenged_fields and "is_default" in self._changed_fields) or not chenged_fields
         ) and self.is_default:
             # New default
             self.workflow.set_default_state(self)
+        if (chenged_fields and "labels" in chenged_fields) or (not chenged_fields and self.labels):
+            self.sync_reffered_labels()
 
     def on_enter_state(self, obj):
         """
@@ -272,6 +275,13 @@ class State(Document):
     def can_set_label(cls, label):
         return Label.get_effective_setting(label, setting="enable_workflowstate")
 
+    def clean(self):
+        for mid in self.workflow.allowed_models:
+            try:
+                get_model(mid)
+            except Exception as e:
+                raise ValueError(f"Unknown model_id {mid}")
+
     def is_enabled_feature(self, name) -> bool:
         """
         Check diagnostic state: on/off
@@ -281,3 +291,34 @@ class State(Document):
         if name in self.feature_settings:
             return self.feature_settings[name].enable
         return True
+
+    def sync_reffered_labels(self):
+        """
+        Update labels on reffered models
+        * filter - state=state_id
+        * sync resource_group
+        :return:
+        """
+        from noc.inv.models.resourcegroup import ResourceGroup
+
+        for model_id in self.workflow.allowed_models:
+            model = get_model(model_id)
+            removed, add_labels = [], []
+            for ll in Label.objects.filter(
+                **{"enable_workflowstate": True, LABEL_MODELS[model_id]: True}
+            ):
+                # @todo more precisely
+                if ll.name not in self.labels:
+                    removed.append(ll.name)
+            for ll.name in self.labels:
+                if model.can_set_label(ll.name):
+                    add_labels.append(ll.name)
+            if removed:
+                Label.remove_model_labels(model_id, removed, instance_filters=[("state", self.id)])
+            if add_labels:
+                Label.add_model_labels(model_id, add_labels, instance_filters=[("state", self.id)])
+            if not hasattr(model, "effective_service_groups"):
+                continue
+            if removed or add_labels:
+                ResourceGroup.sync_mode_groups(model_id, table_filter=[("state", str(self.id))])
+        # Invalidate cache

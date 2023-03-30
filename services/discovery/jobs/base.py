@@ -121,7 +121,7 @@ class MODiscoveryJob(PeriodicJob):
 
     def can_run(self):
         # Check object is managed
-        if not self.object.is_managed:
+        if not self.object.features.sa:
             self.logger.info("Object is not managed. Skipping job")
             return False
         # Check object status according to policy

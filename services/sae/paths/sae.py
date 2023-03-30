@@ -12,7 +12,6 @@ from fastapi import APIRouter
 from noc.core.service.jsonrpcapi import JSONRPCAPI, APIError, api
 from noc.core.script.loader import loader
 from noc.core.script.scheme import CLI_PROTOCOLS, HTTP_PROTOCOLS, PROTOCOLS, BEEF
-from noc.core.wf.diagnostic import SA_DIAG
 from noc.sa.models.managedobject import (
     ManagedObject,
     CREDENTIAL_CACHE_VERSION,
@@ -24,6 +23,7 @@ from noc.inv.models.platform import Platform
 from noc.inv.models.firmware import Firmware
 from noc.main.models.template import Template
 from noc.main.models.extstorage import ExtStorage
+from noc.wf.models.state import State
 from noc.core.cache.decorator import cachedmethod
 from noc.core.dcs.base import ResolutionError
 from noc.config import config
@@ -60,7 +60,7 @@ class SAEAPI(JSONRPCAPI):
             mop.cli_privilege_policy, mop.snmp_rate_limit,
             mo.access_preference, mop.access_preference,
             mop.beef_storage, mop.beef_path_template_id,
-            mo.caps, mo.diagnostics
+            mo.caps, mo.diagnostics, mo.state
         FROM
             sa_managedobject mo
             JOIN sa_managedobjectprofile mop ON (mo.object_profile_id = mop.id)
@@ -191,9 +191,11 @@ class SAEAPI(JSONRPCAPI):
             beef_path_template_id,
             caps,
             diagnostics,
+            state,
         ) = data[0]
         # Check object is managed
-        if SA_DIAG not in diagnostics:
+        state = State.get_by_id(state)
+        if state.is_enabled_feature("SA"):
             metrics["error", ("type", "object_not_managed")] += 1
             raise APIError("Object is not managed")
         # Build capabilities

@@ -14,7 +14,6 @@ Ext.define("NOC.ip.vrf.Application", {
         "NOC.ip.vrf.Model",
         "NOC.ip.vrfgroup.LookupField",
         "NOC.vc.vpnprofile.LookupField",
-        "NOC.main.resourcestate.LookupField",
         "NOC.project.project.LookupField"
     ],
     model: "NOC.ip.vrf.Model",
@@ -191,7 +190,7 @@ Ext.define("NOC.ip.vrf.Application", {
             title: __("By State"),
             name: "state",
             ftype: "lookup",
-            lookup: "main.resourcestate"
+            lookup: "wf.state"
         },
         {
             title: __("By VRF Group"),

@@ -11,7 +11,9 @@ Ext.define("NOC.wf.workflow.Application", {
     requires: [
         "NOC.wf.workflow.Model",
         "NOC.wf.workflow.WFEditor",
-        "NOC.main.remotesystem.LookupField"
+        "NOC.core.tagfield.Tagfield",
+        "NOC.main.remotesystem.LookupField",
+        "NOC.main.ref.modelid.LookupField"
     ],
     model: "NOC.wf.workflow.Model",
     search: true,
@@ -53,6 +55,16 @@ Ext.define("NOC.wf.workflow.Application", {
                     xtype: "textarea",
                     fieldLabel: __("Description"),
                     allowBlank: true
+                },
+                {
+                    xtype: "core.tagfield",
+                    url: "/main/ref/modelid/lookup/",
+                    fieldLabel: __("Allowed models"),
+                    tooltip: __("Models allowed set workflow"),
+                    name: "allowed_models",
+                    listeners: {
+                        render: me.addTooltip
+                    }
                 },
                 {
                     xtype: "fieldset",

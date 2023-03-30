@@ -138,7 +138,7 @@ from .objectdiagnosticconfig import ObjectDiagnosticConfig
 
 # Increase whenever new field added or removed
 MANAGEDOBJECT_CACHE_VERSION = 45
-CREDENTIAL_CACHE_VERSION = 5
+CREDENTIAL_CACHE_VERSION = 6
 
 Credentials = namedtuple(
     "Credentials", ["user", "password", "super_password", "snmp_ro", "snmp_rw", "snmp_rate_limit"]
@@ -2721,7 +2721,7 @@ class ManagedObject(NOCModel):
                     "sa.ManagedObject",
                     add_labels=add_labels or None,
                     remove_labels=removed_labels or None,
-                    filter_ids=[mo_id],
+                    instance_filters=[("id", mo_id)],
                 )
         cls._reset_caches(mo_id)
 
@@ -3151,7 +3151,7 @@ class ManagedObject(NOCModel):
         features = getattr(self, "_features", None)
         if features:
             return features
-        self._features = FeatureHub(self.state)
+        self._features = FeatureHub(self)
         return self._features
 
 

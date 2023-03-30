@@ -316,9 +316,7 @@ class Label(Document):
     @classmethod
     def _reset_caches(cls, name):
         try:
-            del cls._name_cache[
-                name,
-            ]  # Tuple
+            del cls._name_cache[name,]  # Tuple
         except KeyError:
             pass
 
@@ -714,6 +712,51 @@ class Label(Document):
 
         def default_iter_effective_labels(instance) -> Iterable[List[str]]:
             yield instance.labels or []
+
+        def default_expose_profile_labels(
+            model_id, instance_filters: Optional[List[Tuple[str, str]]] = None
+        ):
+            """
+            Expose profile labels on instances after update
+            :return:
+            """
+            ...
+
+        def on_post_save_profile(
+            sender, instance=None, document=None, instance_model_id: str = None, *args, **kwargs
+        ):
+            """
+
+            :param sender:
+            :param instance:
+            :param document:
+            :param instance_model_id:
+            :param args:
+            :param kwargs:
+            :return:
+            """
+            i_model = get_model(instance_model_id)
+            profile = instance or document
+            add_labels, remove_labels = [], []
+            can_set_label = getattr(i_model, "can_set_label", lambda x: False)
+            for ll in profile.labels:
+                if can_set_label(ll):
+                    add_labels += [ll]
+            for ll in Label.objects.filter():
+                if (
+                    can_set_label(ll.name)
+                    and profile.can_set_label(ll.name)
+                    and ll.name not in profile.labels
+                ):
+                    remove_labels += [ll.name]
+            if add_labels:
+                Label.add_model_labels(
+                    instance_model_id, add_labels, instance_filters=[("profile", profile.id)]
+                )
+            if remove_labels:
+                Label.add_model_labels(
+                    instance_model_id, add_labels, instance_filters=[("profile", profile.id)]
+                )
 
         def on_pre_save(sender, instance=None, document=None, *args, **kwargs):
             instance = instance or document
