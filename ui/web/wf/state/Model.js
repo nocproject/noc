@@ -57,6 +57,10 @@ Ext.define("NOC.wf.state.Model", {
             type: "boolean"
         },
         {
+            name: "wiping",
+            type: "boolean"
+        },
+        {
             name: "remote_system",
             type: "string"
         },

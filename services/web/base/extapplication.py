@@ -7,7 +7,7 @@
 
 # Python modules
 from builtins import str
-from typing import Optional, List  # noqa
+from typing import Optional, List, Dict, Any  # noqa
 import os
 import re
 
@@ -159,18 +159,25 @@ class ExtApplication(Application):
     def instance_to_dict(self, o):
         raise NotImplementedError
 
+    def parse_request_query(self, request) -> Dict[str, Any]:
+        """
+
+        :param request:
+        :return:
+        """
+        if request.method != "POST":
+            q = {str(k): v[0] if len(v) == 1 else v for k, v in request.GET.lists()}
+        elif self.site.is_json(request.META.get("CONTENT_TYPE")):
+            q = self.deserialize(request.body)
+        else:
+            q = {str(k): v[0] if len(v) == 1 else v for k, v in request.POST.lists()}
+        return q
+
     def list_data(self, request, formatter):
         """
         Returns a list of requested object objects
         """
-        # Todo: Fix
-        if request.method == "POST":
-            if self.site.is_json(request.META.get("CONTENT_TYPE")):
-                q = self.deserialize(request.body)
-            else:
-                q = {str(k): v[0] if len(v) == 1 else v for k, v in request.POST.lists()}
-        else:
-            q = {str(k): v[0] if len(v) == 1 else v for k, v in request.GET.lists()}
+        q = self.parse_request_query(request)
         # Apply row limit if necessary
         limit = q.get(self.limit_param, self.unlimited_row_limit)
         if limit:

@@ -442,6 +442,11 @@ Ext.define("NOC.wf.workflow.WFEditor", {
                     boxLabel: __("Productive")
                 },
                 {
+                    name: "wiping",
+                    xtype: "checkbox",
+                    boxLabel: __("Wiping")
+                },
+                {
                     name: "update_last_seen",
                     xtype: "checkbox",
                     boxLabel: __("Update Last Seen")

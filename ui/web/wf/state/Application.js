@@ -44,6 +44,12 @@ Ext.define("NOC.wf.state.Application", {
                     renderer: NOC.render.Bool
                 },
                 {
+                    text: __("Wiping"),
+                    dataIndex: "wiping",
+                    width: 50,
+                    renderer: NOC.render.Bool
+                },
+                {
                     text: __("Update Last Seen"),
                     dataIndex: "is_productive",
                     width: 50,

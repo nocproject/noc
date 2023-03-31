@@ -127,7 +127,7 @@ class CPECheck(DiscoveryCheck):
                 cpe.local_id,
                 cpe.global_id,
             )
-            mo.is_managed = False
+            mo.fire_event("unmanage")
             mo.save()
             return
         elif not cpe.address:
@@ -144,6 +144,7 @@ class CPECheck(DiscoveryCheck):
             mo.save()
             return
         elif mo:
+            mo.fire_event("seen")
             return
         # Create ManagedObject
         self.logger.info("[%s|%s] Created ManagedObject %s", cpe.local_id, cpe.global_id, name)

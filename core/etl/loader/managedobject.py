@@ -51,7 +51,7 @@ class ManagedObjectLoader(BaseLoader):
             self.c_delete += 1
             try:
                 obj = self.model.objects.get(pk=self.mappings[r_id])
-                obj.is_managed = False
+                obj.fire_event("remove")
                 obj.container = None
                 obj.save()
             except self.model.DoesNotExist:

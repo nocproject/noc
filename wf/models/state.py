@@ -94,6 +94,8 @@ class State(Document):
     is_default = BooleanField(default=False)
     # Resource is in productive usage
     is_productive = BooleanField(default=False)
+    # Resource will be wiping after expired
+    wiping = BooleanField(default=False)
     # Discovery should update last_seen field
     update_last_seen = BooleanField(default=False)
     # State time-to-live in seconds

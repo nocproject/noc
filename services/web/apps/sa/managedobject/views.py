@@ -6,6 +6,7 @@
 # ---------------------------------------------------------------------
 
 # Python modules
+from typing import Dict, Any, Tuple, List
 from collections import defaultdict
 import zlib
 
@@ -58,7 +59,7 @@ from noc.fm.models.activealarm import ActiveAlarm
 from noc.fm.models.alarmclass import AlarmClass
 from noc.sa.models.objectstatus import ObjectStatus
 
-JP_CLAUSE_PATTERN = "jsonb_path_exists(caps, '$[*] ? (@.capability == \"{}\") ? (@.value {} {})')"
+JP_CLAUSE_PATTERN = """jsonb_path_exists(caps, '$[*] ? (@.capability == "{}") ? (@.value {} {})')"""
 
 
 @state_handler
@@ -361,27 +362,21 @@ class ManagedObjectApplication(ExtModelApplication):
                 r.pop(f)
         return r
 
-    def get_Q(self, request, query):
-        q = super().get_Q(request, query)
-        sq = ManagedObject.get_search_Q(query)
-        if sq:
-            q |= sq
+    def extra_query(self, q, order):
+        # raise NotImplementedError
+        extra, order = super().extra_query(q, order)
+        _, extra_condition = self.get_caps_Q(q)
+        if extra_condition:
+            extra["where"] = extra_condition
+        return extra, order
 
-        return q
-
-    def queryset(self, request, query=None):
-        if request.method != "POST":
-            nq = {str(k): v[0] if len(v) == 1 else v for k, v in request.GET.lists()}
-        elif self.site.is_json(request.META.get("CONTENT_TYPE")):
-            nq = self.deserialize(request.body)
-        else:
-            nq = {str(k): v[0] if len(v) == 1 else v for k, v in request.POST.lists()}
-
-        q = d_Q()
-        if not request.user.is_superuser:
-            q &= UserAccess.Q(request.user)
-
-        jp_clauses = []
+    def get_caps_Q(self, nq: Dict[str, Any]) -> Tuple["d_Q", List[str]]:
+        """
+        Resolve caps on query to queryset
+        :param nq:
+        :return:
+        """
+        q, jp_clauses = d_Q(), []
         for cc in [part for part in nq if part.startswith("caps")]:
             """
             Caps: caps0=CapsID,caps1=CapsID:true....
@@ -392,12 +387,10 @@ class ManagedObjectApplication(ExtModelApplication):
             caps0=CapsID:true - caps value equal True
             caps0=CapsID:2~50 - caps value many then 2 and less then 50
             """
-
-            c = nq.pop(cc)
+            c = nq.get(cc)
             if not c:
                 continue
 
-            self.logger.info("[%s] Caps", c)
             if "!" in c:
                 # @todo Добавить исключение (только этот) !ID
                 c_id = c[1:]
@@ -409,7 +402,6 @@ class ManagedObjectApplication(ExtModelApplication):
                 c_id, c_query = c.split(":", 1)
             caps = Capability.get_by_id(c_id)
             self.logger.info("[%s] Caps: %s", c, caps)
-
             if "~" in c_query:
                 l, r = c_query.split("~")
                 if not l:
@@ -431,10 +423,23 @@ class ManagedObjectApplication(ExtModelApplication):
             else:
                 value = caps.clean_value(c_query)
                 q &= d_Q(caps__contains=[{"capability": str(caps.id), "value": value}])
+        return q, jp_clauses
+
+    def get_Q(self, request, query):
+        q = super().get_Q(request, query)
+        sq = ManagedObject.get_search_Q(query)
+        if sq:
+            q |= sq
+        return q
+
+    def queryset(self, request, query=None):
         qs = super().queryset(request, query)
-        if jp_clauses:
-            qs = qs.extra(where=jp_clauses)
-        qs = qs.filter(q).exclude(name__startswith="wiping-")
+        if not request.user.is_superuser:
+            qs = qs.filter(UserAccess.Q(request.user))
+        cq, _ = self.get_caps_Q(self.parse_request_query(request))
+        if cq:
+            qs = qs.filter(cq)
+        qs = qs.exclude(name__startswith="wiping-")
         return qs
 
     @view(url=r"^(?P<id>\d+)/links/$", method=["GET"], access="read", api=True)
@@ -545,7 +550,7 @@ class ManagedObjectApplication(ExtModelApplication):
         for o in ids:
             if not o.has_access(request.user):
                 continue
-            o.is_managed = False
+            o.fire_event("unmanage")
             o.save()
         return "Selected objects set to unmanaged state"
 
@@ -775,12 +780,7 @@ class ManagedObjectApplication(ExtModelApplication):
             )
         if not o.has_access(request.user):
             return self.response_forbidden("Access denied")
-        # Run sa.wipe_managed_object job instead
-        o.name = "wiping-%d" % o.id
-        o.is_managed = False
-        o.description = "Wiping! Do not touch!"
-        o.save()
-        defer("noc.sa.wipe.managedobject.wipe", key=o.id, o=o.id)
+        o.fire_event("remove")
         return HttpResponse(orjson.dumps({"status": True}), status=self.DELETED)
 
     @view(
