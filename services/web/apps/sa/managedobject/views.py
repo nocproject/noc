@@ -51,7 +51,6 @@ from noc.sa.models.action import Action
 from noc.core.scheduler.job import Job
 from noc.core.script.loader import loader as script_loader
 from noc.core.mongo.connection import get_db
-from noc.core.defer import defer
 from noc.core.translation import ugettext as _
 from noc.core.comp import smart_text, smart_bytes
 from noc.core.geocoder.loader import loader as geocoder_loader
@@ -257,6 +256,7 @@ class ManagedObjectApplication(ExtModelApplication):
         d_config = {d.diagnostic: d for d in o.iter_diagnostic_configs()}
         if not d_config:
             return data
+        data["is_managed"] = o.is_managed
         data["diagnostics"] = list(
             sorted(
                 [
@@ -780,7 +780,13 @@ class ManagedObjectApplication(ExtModelApplication):
             )
         if not o.has_access(request.user):
             return self.response_forbidden("Access denied")
-        o.fire_event("remove")
+        ws = o.workflow.get_wiping_state()
+        if not ws:
+            return HttpResponse(
+                orjson.dumps({"status": False, "message": "No wiping state on Workflow"}),
+                status=self.FORBIDDEN,
+            )
+        o.set_state(ws)
         return HttpResponse(orjson.dumps({"status": True}), status=self.DELETED)
 
     @view(

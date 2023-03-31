@@ -26,6 +26,7 @@ from noc.main.models.remotesystem import RemoteSystem
 logger = logging.getLogger(__name__)
 id_lock = Lock()
 _default_state_cache = cachetools.TTLCache(maxsize=1000, ttl=1)
+_wiping_state_cache = cachetools.TTLCache(maxsize=1000, ttl=1)
 
 
 @bi_sync
@@ -104,6 +105,29 @@ class Workflow(Document):
         from .state import State
 
         return State.objects.filter(workflow=self.id, is_default=True).first()
+
+    @cachetools.cached(_wiping_state_cache, key=lambda x: str(x.id), lock=id_lock)
+    def get_wiping_state(self):
+        from .state import State
+
+        return State.objects.filter(workflow=self.id, is_wiping=True).first()
+
+    def set_wiping_state(self, state):
+        from .state import State
+
+        logger.info("[%s] Set wiping state to: %s", self.name, state.name)
+        for s in State.objects.filter(workflow=self.id):
+            if s.is_wiping and s.id != state.id:
+                logger.info("[%s] Removing wiping status from: %s", self.name, s.name)
+                s.is_wiping = False
+                s.save()
+        # Invalidate caches
+        key = str(self.id)
+        if key in _wiping_state_cache:
+            try:
+                del _wiping_state_cache[key]
+            except KeyError:
+                pass
 
     def set_default_state(self, state):
         from .state import State

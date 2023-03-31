@@ -142,6 +142,7 @@ class CPECheck(DiscoveryCheck):
             )
             mo.address = cpe.address
             mo.save()
+            mo.fire_event("seen")
             return
         elif mo:
             mo.fire_event("seen")

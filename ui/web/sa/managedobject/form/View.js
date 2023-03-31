@@ -102,9 +102,8 @@ Ext.define('NOC.sa.managedobject.form.View', {
                                     name: "is_managed",
                                     xtype: "checkboxfield",
                                     fieldLabel: __("Is Managed?"),
-                                    allowBlank: true,
+                                    disabled: true,
                                     tabIndex: 30,
-                                    groupEdit: true
                                 },
                                 {
                                     name: "state",

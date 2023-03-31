@@ -45,7 +45,7 @@ Ext.define("NOC.wf.state.Application", {
                 },
                 {
                     text: __("Wiping"),
-                    dataIndex: "wiping",
+                    dataIndex: "is_wiping",
                     width: 50,
                     renderer: NOC.render.Bool
                 },
@@ -114,6 +114,11 @@ Ext.define("NOC.wf.state.Application", {
                     name: "is_productive",
                     xtype: "checkbox",
                     boxLabel: __("Productive")
+                },
+                {
+                    name: "is_wiping",
+                    xtype: "checkbox",
+                    boxLabel: __("Wiping")
                 },
                 {
                     name: "update_last_seen",

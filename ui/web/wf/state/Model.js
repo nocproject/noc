@@ -57,7 +57,7 @@ Ext.define("NOC.wf.state.Model", {
             type: "boolean"
         },
         {
-            name: "wiping",
+            name: "is_wiping",
             type: "boolean"
         },
         {

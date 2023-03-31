@@ -95,7 +95,7 @@ class State(Document):
     # Resource is in productive usage
     is_productive = BooleanField(default=False)
     # Resource will be wiping after expired
-    wiping = BooleanField(default=False)
+    is_wiping = BooleanField(default=False)
     # Discovery should update last_seen field
     update_last_seen = BooleanField(default=False)
     # State time-to-live in seconds
@@ -151,6 +151,11 @@ class State(Document):
         ) and self.is_default:
             # New default
             self.workflow.set_default_state(self)
+        if (
+            (chenged_fields and "is_wiping" in self._changed_fields) or not chenged_fields
+        ) and self.is_wiping:
+            # New default
+            self.workflow.set_wiping_state(self)
         if (chenged_fields and "labels" in chenged_fields) or (not chenged_fields and self.labels):
             self.sync_reffered_labels()
 
@@ -290,6 +295,8 @@ class State(Document):
         :param name:
         :return:
         """
+        if self.is_wiping:
+            return False
         if name in self.feature_settings:
             return self.feature_settings[name].enable
         return True
