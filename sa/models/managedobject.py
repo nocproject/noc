@@ -17,7 +17,7 @@ import datetime
 import warnings
 from dataclasses import dataclass
 from itertools import chain, product
-from typing import Tuple, Iterable, List, Any, Dict, Set, Optional
+from typing import Tuple, Iterable, List, Any, Dict, Set, Optional, Union
 
 # Third-party modules
 import orjson
@@ -59,6 +59,7 @@ from noc.core.wf.diagnostic import (
     SA_DIAG,
     FM_DIAG,
 )
+from noc.core.wf.interaction import Interaction
 from noc.core.checkers.base import CheckData, Check
 from noc.core.mx import send_message, MX_LABELS, MX_H_VALUE_SPLITTER, MX_ADMINISTRATIVE_DOMAIN_ID
 from noc.core.deprecations import RemovedInNOC2301Warning
@@ -805,7 +806,7 @@ class ManagedObject(NOCModel):
                 "id",  # Create object
                 "name",
                 "bi_id",
-                "is_managed",
+                "state",
                 "pool",
                 "fm_pool",
                 "address",
@@ -820,7 +821,7 @@ class ManagedObject(NOCModel):
                 "id",  # Create object
                 "name",
                 "bi_id",
-                "is_managed",
+                "state",
                 "pool",
                 "fm_pool",
                 "address",
@@ -837,7 +838,7 @@ class ManagedObject(NOCModel):
                 "id",  # Create object
                 "name",
                 "bi_id",
-                "is_managed",
+                "state",
                 "pool",
                 "fm_pool",
                 "address",
@@ -849,7 +850,7 @@ class ManagedObject(NOCModel):
         ):
             yield "cfgtrap", self.id
         if config.datastream.enable_cfgmetricsources and changed_fields.intersection(
-            {"id", "bi_id", "is_managed", "pool", "fm_pool", "labels", "effective_labels"}
+            {"id", "bi_id", "state", "pool", "fm_pool", "labels", "effective_labels"}
         ):
             yield "cfgmetricsources", f"sa.ManagedObject::{self.bi_id}"
 
@@ -1052,11 +1053,7 @@ class ManagedObject(NOCModel):
             for ll in Link.object_links(self):
                 ll.save()
         # Handle became unmanaged
-        if (
-            not self.initial_data["id"] is None
-            and "is_managed" in self.changed_fields
-            and not self.is_managed
-        ):
+        if "ALARM" not in self.interactions:
             # Clear alarms
             from noc.fm.models.activealarm import ActiveAlarm
 
@@ -1234,7 +1231,10 @@ class ManagedObject(NOCModel):
         """
         Schedule box discovery
         """
-        if not self.object_profile.enable_box_discovery or not self.is_managed:
+        if (
+            not self.object_profile.enable_box_discovery
+            or Interaction.BoxDiscovery not in self.interactions
+        ):
             return
         logger.debug("[%s] Scheduling box discovery after %ds", self.name, delta)
         Job.submit(
@@ -1696,7 +1696,10 @@ class ManagedObject(NOCModel):
         """
         Check and schedule discovery jobs
         """
-        if self.is_managed and self.object_profile.enable_box_discovery:
+        if (
+            Interaction.BoxDiscovery in self.interactions
+            and self.object_profile.enable_box_discovery
+        ):
             Job.submit(
                 "discovery",
                 self.BOX_DISCOVERY_JOB,
@@ -1708,7 +1711,10 @@ class ManagedObject(NOCModel):
         else:
             Job.remove("discovery", self.BOX_DISCOVERY_JOB, key=self.id, pool=self.pool.name)
             self.reset_diagnostic([PROFILE_DIAG, SNMP_DIAG, CLI_DIAG])
-        if self.is_managed and self.object_profile.enable_periodic_discovery:
+        if (
+            Interaction.PeriodicDiscovery in self.interactions
+            and self.object_profile.enable_periodic_discovery
+        ):
             Job.submit(
                 "discovery",
                 self.PERIODIC_DISCOVERY_JOB,
@@ -1719,7 +1725,10 @@ class ManagedObject(NOCModel):
             )
         else:
             Job.remove("discovery", self.PERIODIC_DISCOVERY_JOB, key=self.id, pool=self.pool.name)
-        if self.is_managed and self.object_profile.enable_metrics:
+        if (
+            Interaction.ServiceActivation in self.interactions
+            and self.object_profile.enable_metrics
+        ):
             Job.submit(
                 "discovery",
                 self.INTERVAL_DISCOVERY_JOB,
@@ -2184,8 +2193,9 @@ class ManagedObject(NOCModel):
     @classmethod
     def iter_effective_labels(cls, instance: "ManagedObject") -> Iterable[List[str]]:
         yield list(instance.labels or [])
-        if instance.is_managed:
+        if Interaction.ServiceActivation in instance.interactions:
             yield ["noc::is_managed::="]
+        yield list(instance.state.labels)
         yield list(AdministrativeDomain.iter_lazy_labels(instance.administrative_domain))
         yield list(Pool.iter_lazy_labels(instance.pool))
         yield list(ManagedObjectProfile.iter_lazy_labels(instance.object_profile))
@@ -2427,110 +2437,110 @@ class ManagedObject(NOCModel):
         yield DiagnosticConfig(
             SA_DIAG,
             display_description="ServiceActivation. Allow active device interaction",
-            blocked=self.state.is_enabled_feature(SA_DIAG),
+            blocked=Interaction.ServiceActivation not in self.interactions,
             run_policy="D",
             reason="",
         )
         yield DiagnosticConfig(
             FM_DIAG,
             display_description="FaultManagement. Allow FM collector and C interaction",
-            blocked=self.state.is_enabled_feature(FM_DIAG),
+            blocked=Interaction.Alarm not in self.interactions,
             run_policy="D",
             reason="",
         )
-        if not self.is_managed:
-            return
-        ac = self.get_access_preference()
-        # SNMP Diagnostic
-        yield DiagnosticConfig(
-            SNMP_DIAG,
-            display_description="Check Device response by SNMP request",
-            checks=[Check(name="SNMPv1"), Check(name="SNMPv2c")],
-            blocked=ac == "C",
-            run_policy="F",
-            run_order="S",
-            discovery_box=True,
-            alarm_class="NOC | Managed Object | Access Lost",
-            alarm_labels=["noc::access::method::SNMP"],
-            reason="Blocked by AccessPreference" if ac == "C" else None,
-        )
-        yield DiagnosticConfig(
-            PROFILE_DIAG,
-            display_description="Check device profile",
-            show_in_display=False,
-            checks=[Check(name="PROFILE")],
-            alarm_class="Discovery | Guess | Profile",
-            blocked=not self.object_profile.enable_box_discovery_profile,
-            run_policy="A",
-            run_order="S",
-            discovery_box=True,
-            reason="Blocked by ObjectProfile AccessPreference"
-            if not self.object_profile.enable_box_discovery_profile
-            else None,
-        )
-        # CLI Diagnostic
-        yield DiagnosticConfig(
-            CLI_DIAG,
-            display_description="Check Device response by CLI (TELNET/SSH) request",
-            checks=[Check(name="TELNET"), Check(name="SSH")],
-            discovery_box=True,
-            alarm_class="NOC | Managed Object | Access Lost",
-            alarm_labels=["noc::access::method::CLI"],
-            blocked=ac == "S" or self.scheme not in {1, 2},
-            run_policy="F",
-            run_order="S",
-            reason="Blocked by AccessPreference"
-            if ac == "S" or self.scheme not in {1, 2}
-            else None,
-        )
-        # HTTP Diagnostic
-        yield DiagnosticConfig(
-            HTTP_DIAG,
-            display_description="Check Device response by HTTP/HTTPS request",
-            show_in_display=False,
-            alarm_class="NOC | Managed Object | Access Lost",
-            alarm_labels=["noc::access::method::HTTP"],
-            checks=[Check("HTTP"), Check("HTTPS")],
-            blocked=False,
-            run_policy="D",  # Not supported
-            run_order="S",
-            reason=None,
-        )
-        # Access Diagnostic (Blocked - block SNMP & CLI Check ?
-        yield DiagnosticConfig(
-            "Access",
-            dependent=["SNMP", "CLI", "HTTP"],
-            show_in_display=False,
-            alarm_class="NOC | Managed Object | Access Degraded",
-        )
-        fm_policy = self.get_event_processing_policy()
-        reason = ""
-        if fm_policy == "d":
-            reason = "Disable by Event Processing policy"
-        elif self.trap_source_type == "d":
-            reason = "Disable by source settings"
-        # FM
-        yield DiagnosticConfig(
-            # Reset if change IP/Policy change
-            SNMPTRAP_DIAG,
-            display_description="Received SNMP Trap from device",
-            blocked=self.trap_source_type == "d" or fm_policy == "d",
-            run_policy="D",
-            reason=reason,
-        )
-        reason = ""
-        if fm_policy == "d":
-            reason = "Disable by Event Processing policy"
-        elif self.syslog_source_type == "d":
-            reason = "Disable by source settings"
-        yield DiagnosticConfig(
-            # Reset if change IP/Policy change
-            SYSLOG_DIAG,
-            display_description="Received SYSLOG from device",
-            blocked=self.syslog_source_type == "d" or fm_policy == "d",
-            run_policy="D",
-            reason=reason,
-        )
+        if Interaction.ServiceActivation in self.interactions:
+            ac = self.get_access_preference()
+            # SNMP Diagnostic
+            yield DiagnosticConfig(
+                SNMP_DIAG,
+                display_description="Check Device response by SNMP request",
+                checks=[Check(name="SNMPv1"), Check(name="SNMPv2c")],
+                blocked=ac == "C",
+                run_policy="F",
+                run_order="S",
+                discovery_box=True,
+                alarm_class="NOC | Managed Object | Access Lost",
+                alarm_labels=["noc::access::method::SNMP"],
+                reason="Blocked by AccessPreference" if ac == "C" else None,
+            )
+            yield DiagnosticConfig(
+                PROFILE_DIAG,
+                display_description="Check device profile",
+                show_in_display=False,
+                checks=[Check(name="PROFILE")],
+                alarm_class="Discovery | Guess | Profile",
+                blocked=not self.object_profile.enable_box_discovery_profile,
+                run_policy="A",
+                run_order="S",
+                discovery_box=True,
+                reason="Blocked by ObjectProfile AccessPreference"
+                if not self.object_profile.enable_box_discovery_profile
+                else None,
+            )
+            # CLI Diagnostic
+            yield DiagnosticConfig(
+                CLI_DIAG,
+                display_description="Check Device response by CLI (TELNET/SSH) request",
+                checks=[Check(name="TELNET"), Check(name="SSH")],
+                discovery_box=True,
+                alarm_class="NOC | Managed Object | Access Lost",
+                alarm_labels=["noc::access::method::CLI"],
+                blocked=ac == "S" or self.scheme not in {1, 2},
+                run_policy="F",
+                run_order="S",
+                reason="Blocked by AccessPreference"
+                if ac == "S" or self.scheme not in {1, 2}
+                else None,
+            )
+            # HTTP Diagnostic
+            yield DiagnosticConfig(
+                HTTP_DIAG,
+                display_description="Check Device response by HTTP/HTTPS request",
+                show_in_display=False,
+                alarm_class="NOC | Managed Object | Access Lost",
+                alarm_labels=["noc::access::method::HTTP"],
+                checks=[Check("HTTP"), Check("HTTPS")],
+                blocked=False,
+                run_policy="D",  # Not supported
+                run_order="S",
+                reason=None,
+            )
+            # Access Diagnostic (Blocked - block SNMP & CLI Check ?
+            yield DiagnosticConfig(
+                "Access",
+                dependent=["SNMP", "CLI", "HTTP"],
+                show_in_display=False,
+                alarm_class="NOC | Managed Object | Access Degraded",
+            )
+        if Interaction.Event in self.interactions:
+            fm_policy = self.get_event_processing_policy()
+            reason = ""
+            if fm_policy == "d":
+                reason = "Disable by Event Processing policy"
+            elif self.trap_source_type == "d":
+                reason = "Disable by source settings"
+            # FM
+            yield DiagnosticConfig(
+                # Reset if change IP/Policy change
+                SNMPTRAP_DIAG,
+                display_description="Received SNMP Trap from device",
+                blocked=self.trap_source_type == "d" or fm_policy == "d",
+                run_policy="D",
+                reason=reason,
+            )
+            reason = ""
+            if fm_policy == "d":
+                reason = "Disable by Event Processing policy"
+            elif self.syslog_source_type == "d":
+                reason = "Disable by source settings"
+            yield DiagnosticConfig(
+                # Reset if change IP/Policy change
+                SYSLOG_DIAG,
+                display_description="Received SYSLOG from device",
+                blocked=self.syslog_source_type == "d" or fm_policy == "d",
+                run_policy="D",
+                reason=reason,
+            )
         #
         for dc in ObjectDiagnosticConfig.iter_object_diagnostics(self):
             yield dc
@@ -2946,7 +2956,7 @@ class ManagedObject(NOCModel):
         :param run:
         :return:
         """
-        if not self.is_managed:
+        if Interaction.ServiceActivation not in self.interactions:
             return
         from noc.inv.models.cpe import CPE
         from noc.sla.models.slaprobe import SLAProbe
@@ -2986,7 +2996,7 @@ class ManagedObject(NOCModel):
         from noc.inv.models.interfaceprofile import InterfaceProfile
         from noc.pm.models.metricrule import MetricRule
 
-        if not mo.is_managed:
+        if Interaction.ServiceActivation not in mo.interactions:
             return {}
         icoll = Interface._get_collection()
         s_metrics = mo.object_profile.get_object_profile_metrics(mo.object_profile.id)
@@ -3044,7 +3054,7 @@ class ManagedObject(NOCModel):
         Check configured collected metrics
         :return:
         """
-        if not self.is_managed:
+        if Interaction.ServiceActivation not in self.interactions:
             return False
         return bool(self.get_metric_discovery_interval())
 
@@ -3139,20 +3149,13 @@ class ManagedObject(NOCModel):
             config.discovery.min_metric_interval,
         )
 
-    def get_supported_features(self) -> List[str]:
-        """
-        Supported features
-        :return:
-        """
-        return ["SA", "FM", "TT"]
-
     @property
-    def features(self) -> "FeatureHub":
-        features = getattr(self, "_features", None)
-        if features:
-            return features
-        self._features = FeatureHub(self)
-        return self._features
+    def interactions(self) -> "InteractionHub":
+        interactions = getattr(self, "_features", None)
+        if interactions:
+            return interactions
+        self._interactions = InteractionHub(self)
+        return self._interactions
 
 
 @on_save
@@ -3266,25 +3269,31 @@ class MatchersProxy(object):
         return item in self._data
 
 
-class FeatureHub(object):
+class InteractionHub(object):
     """
-    Return feature state on object
-    If feature is not supported - return None
-    If feature is supported - return enabled/disabled
+    Return available interaction on object
+    If interaction is not supported - return None
+    If interaction is supported - return enabled/disabled
     """
 
     def __init__(self, obj):
         self.logger = logging.getLogger(__name__)
-        self.__supported_features = set(f.lower() for f in obj.get_supported_features())
+        self.__supported_interactions: Set[Interaction] = self.load_supported_interactions()
         self.__state: State = obj.state
 
-    def __getattr__(self, name: str, default: Optional[Any] = None) -> Optional[Any]:
-        if name not in self.__supported_features:
-            return None
-        return self.__state.is_enabled_feature(name)
+    @staticmethod
+    def load_supported_interactions():
+        return set(i for i in Interaction if "sa.ManagedObject" in i.config.models)
 
-    def __contains__(self, name: str) -> bool:
-        return name in self.__supported_features
+    def __getattr__(self, name: str, default: Optional[Any] = None) -> Optional[Any]:
+        if name not in self.__supported_interactions:
+            return None
+        return self.__state.is_enabled_interaction(name)
+
+    def __contains__(self, interaction: Union[str, Interaction]) -> bool:
+        if interaction not in self.__supported_interactions:
+            return False
+        return self.__state.is_enabled_interaction(interaction)
 
 
 # Avoid circular references

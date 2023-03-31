@@ -36,6 +36,7 @@ from noc.core.handler import get_handler
 from noc.core.defer import defer
 from noc.core.hash import hash_int
 from noc.core.change.decorator import change
+from noc.core.wf.interaction import Interaction
 from noc.models import get_model_id, LABEL_MODELS, get_model
 from noc.main.models.label import Label
 
@@ -46,7 +47,7 @@ STATE_JOB = "noc.core.wf.transition.state_job"
 WIPE_JOB = "noc.sa.wipe.managedobject.wipe"
 
 
-class FeatureSetting(EmbeddedDocument):
+class InteractionSetting(EmbeddedDocument):
     meta = {"strict": False, "auto_create_index": False}
     enable = BooleanField(default=True)
     # raise_alarm = BooleanField(default=True)
@@ -117,7 +118,9 @@ class State(Document):
     x = IntField(default=0)
     y = IntField(default=0)
     #
-    feature_settings = MapField(EmbeddedDocumentField(FeatureSetting))
+    enabled_interactions = MapField(
+        EmbeddedDocumentField(InteractionSetting), choices=[i.value for i in Interaction]
+    )
     # Labels
     labels = ListField(StringField())
     # Integration with external NRI and TT systems
@@ -289,16 +292,18 @@ class State(Document):
             except AssertionError:
                 raise ValueError(f"Unknown model_id: {mid}")
 
-    def is_enabled_feature(self, name) -> bool:
+    def is_enabled_interaction(self, interaction) -> bool:
         """
         Check diagnostic state: on/off
-        :param name:
+        :param interaction:
         :return:
         """
         if self.is_wiping:
             return False
-        if name in self.feature_settings:
-            return self.feature_settings[name].enable
+        if isinstance(interaction, str):
+            interaction = Interaction(interaction.upper())
+        if interaction.value in self.interaction_settings:
+            return self.interaction_settings[interaction.value].enable
         return True
 
     def sync_reffered_labels(self):

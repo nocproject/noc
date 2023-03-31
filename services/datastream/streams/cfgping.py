@@ -9,6 +9,7 @@
 from noc.core.datastream.base import DataStream
 from noc.main.models.pool import Pool
 from noc.main.models.timepattern import TimePattern
+from noc.wf.models.state import State
 from noc.sa.models.managedobject import ManagedObject
 
 
@@ -22,7 +23,7 @@ class CfgPingDataStream(DataStream):
             "id",
             "name",
             "bi_id",
-            "is_managed",
+            "state",
             "pool",
             "fm_pool",
             "address",
@@ -43,7 +44,7 @@ class CfgPingDataStream(DataStream):
             mo_id,
             name,
             bi_id,
-            is_managed,
+            state,
             pool,
             fm_pool,
             address,
@@ -58,8 +59,9 @@ class CfgPingDataStream(DataStream):
             report_ping_rtt,
             report_ping_attempts,
         ) = mo[0]
+        state = State.get_by_id(state)
         if (
-            not is_managed
+            not state.is_enabled_interaction("ALARM")
             or not address
             or not enable_ping
             or not ping_interval

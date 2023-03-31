@@ -86,7 +86,7 @@ Ext.define("NOC.wf.state.Model", {
             type: "string"
         },
         {
-            name: "feature_settings",
+            name: "enabled_interactions",
             type: "auto"
         },
         {

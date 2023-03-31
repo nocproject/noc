@@ -51,13 +51,13 @@ Ext.define("NOC.wf.state.Application", {
                 },
                 {
                     text: __("Update Last Seen"),
-                    dataIndex: "is_productive",
+                    dataIndex: "update_last_seen",
                     width: 50,
                     renderer: NOC.render.Bool
                 },
                 {
                     text: __("Update Expired"),
-                    dataIndex: "is_productive",
+                    dataIndex: "update_expired",
                     width: 50,
                     renderer: NOC.render.Bool
                 },
@@ -140,20 +140,20 @@ Ext.define("NOC.wf.state.Application", {
                     boxLabel: __("Update Expiration")
                 },
                 {
-                    name: "feature_settings",
+                    name: "enabled_interactions",
                     xtype: "gridfield",
-                    fieldLabel: __("Features"),
+                    fieldLabel: __("Interactions"),
                     columns: [
                         {
-                            text: __("Feature"),
-                            dataIndex: "feature",
+                            text: __("Interaction"),
+                            dataIndex: "interaction",
                             width: 100,
                             editor: {
                                 xtype: "combobox",
                                 store: [
                                     ["SA", "SA"],
-                                    ["FM", "FM"],
-                                    ["TT", "TT"]
+                                    ["ALARM", "Alarm"],
+                                    ["EVENT", "Event"]
                                 ]
                             }
                         },

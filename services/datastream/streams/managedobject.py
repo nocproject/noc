@@ -48,10 +48,9 @@ class ManagedObjectDataStream(DataStream):
 
     @classmethod
     def get_object(cls, id):
-        mo = ManagedObject.objects.filter(id=id)[:1]
+        mo: "ManagedObject" = ManagedObject.objects.filter(id=id).first()
         if not mo:
             raise KeyError()
-        mo: ManagedObject = mo[0]
         r = {
             "id": str(id),
             "$version": 1,

@@ -195,7 +195,7 @@ class SAEAPI(JSONRPCAPI):
         ) = data[0]
         # Check object is managed
         state = State.get_by_id(state)
-        if not state.is_enabled_feature("SA"):
+        if not state.is_enabled_interaction("SA"):
             metrics["error", ("type", "object_not_managed")] += 1
             raise APIError("Object is not managed")
         # Build capabilities
