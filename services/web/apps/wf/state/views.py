@@ -8,7 +8,7 @@
 # NOC modules
 from noc.services.web.base.extdocapplication import ExtDocApplication
 from noc.wf.models.workflow import Workflow
-from noc.wf.models.state import State, FeatureSetting
+from noc.wf.models.state import State, InteractionSetting
 from noc.core.translation import ugettext as _
 
 
@@ -40,8 +40,8 @@ class StateApplication(ExtDocApplication):
         return r
 
     def clean(self, data):
-        feature_settings = {}
+        enabled_interactions = {}
         for f in data.get("feature_settings", []):
-            feature_settings[f["feature"]] = FeatureSetting(**{"enable": f["enable"]})
-        data["feature_settings"] = feature_settings
+            enabled_interactions[f["feature"]] = InteractionSetting(**{"enable": f["enable"]})
+        data["enabled_interactions"] = enabled_interactions
         return super().clean(data)

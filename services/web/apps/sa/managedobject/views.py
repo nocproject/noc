@@ -535,7 +535,7 @@ class ManagedObjectApplication(ExtModelApplication):
         for o in ids:
             if not o.has_access(request.user):
                 continue
-            o.is_managed = True
+            o.fire_event("managed")
             o.save()
         return "Selected objects set to managed state"
 
@@ -550,7 +550,7 @@ class ManagedObjectApplication(ExtModelApplication):
         for o in ids:
             if not o.has_access(request.user):
                 continue
-            o.fire_event("unmanage")
+            o.fire_event("unmanaged")
             o.save()
         return "Selected objects set to unmanaged state"
 
