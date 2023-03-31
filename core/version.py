@@ -57,9 +57,15 @@ class Version(object):
         :return:
         """
         if self.has_git:
-            return subprocess.check_output(
-                ["git", "rev-parse", "--abbrev-ref", "HEAD"], encoding="utf-8"
-            ).strip()
+            try:
+                return subprocess.check_output(
+                    ["git", "rev-parse", "--abbrev-ref", "HEAD"], encoding="utf-8"
+                ).strip()
+            except subprocess.CalledProcessError as e:
+                print(
+                    f"Error when detect branch: {e}."
+                    f" Please try execute 'git config --global --add safe.directory /opt/noc' on noc user"
+                )
         return ""
 
     @cachedproperty
@@ -69,9 +75,15 @@ class Version(object):
         :return:
         """
         if self.has_git:
-            return (subprocess.check_output(["git", "rev-parse", "HEAD"], encoding="utf-8"))[
-                :CHANGESET_LEN
-            ]
+            try:
+                return (subprocess.check_output(["git", "rev-parse", "HEAD"], encoding="utf-8"))[
+                    :CHANGESET_LEN
+                ]
+            except subprocess.CalledProcessError as e:
+                print(
+                    f"Error when detect branch: {e}."
+                    f" Please try execute 'git config --global --add safe.directory /opt/noc' on noc user"
+                )
         return ""
 
     @cachedproperty
