@@ -780,7 +780,7 @@ class ManagedObjectApplication(ExtModelApplication):
             )
         if not o.has_access(request.user):
             return self.response_forbidden("Access denied")
-        ws = o.workflow.get_wiping_state()
+        ws = o.object_profile.workflow.get_wiping_state()
         if not ws:
             return HttpResponse(
                 orjson.dumps({"status": False, "message": "No wiping state on Workflow"}),

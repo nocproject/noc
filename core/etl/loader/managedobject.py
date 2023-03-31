@@ -51,9 +51,9 @@ class ManagedObjectLoader(BaseLoader):
             self.c_delete += 1
             try:
                 obj = self.model.objects.get(pk=self.mappings[r_id])
-                ws = obj.workflow.get_wiping_state()
+                ws = obj.object_profile.workflow.get_wiping_state()
                 if ws:
-                    obj.fire_event(ws)
+                    obj.set_state(ws)
                 obj.container = None
                 obj.save()
             except self.model.DoesNotExist:
