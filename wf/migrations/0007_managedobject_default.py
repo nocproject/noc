@@ -32,10 +32,9 @@ class Migration(BaseMigration):
                     "_id": ObjectId("641b35e6fa01fd032a1f61f1"),
                     "workflow": ObjectId("641b35e6fa01fd032a1f61ef"),
                     "name": "Managed",
-                    "description": "",
                     "is_default": True,
                     "is_productive": True,
-                    "update_last_seen": False,
+                    "update_last_seen": True,
                     "ttl": 0,
                     "update_expired": False,
                     "on_enter_handlers": [],
@@ -45,40 +44,11 @@ class Migration(BaseMigration):
                     "labels": [],
                     "effective_labels": [],
                     "bi_id": Int64("2667556019038926839"),
-                    "feature_settings": {
-                        "SA": {"enable": True},
-                        "FM": {"enable": True},
-                        "TT": {"enable": True},
-                    },
                 },
                 {
                     "_id": ObjectId("641b371eb846e3cc661ea8b5"),
                     "workflow": ObjectId("641b35e6fa01fd032a1f61ef"),
                     "name": "Not Managed",
-                    "description": "",
-                    "is_default": False,
-                    "is_productive": False,
-                    "update_last_seen": False,
-                    "ttl": 0,
-                    "update_expired": False,
-                    "on_enter_handlers": [],
-                    "on_leave_handlers": [],
-                    "x": 470,
-                    "y": 200,
-                    "labels": [],
-                    "effective_labels": [],
-                    "bi_id": Int64("478291320657225258"),
-                    "feature_settings": {
-                        "SA": {"enable": False},
-                        "FM": {"enable": False},
-                        "TT": {"enable": False},
-                    },
-                },
-                {
-                    "_id": ObjectId("641b371eb846e3cc661ea8b3"),
-                    "workflow": ObjectId("641b35e6fa01fd032a1f61ef"),
-                    "name": "Removing",
-                    "description": "",
                     "is_default": False,
                     "is_productive": False,
                     "update_last_seen": False,
@@ -86,41 +56,32 @@ class Migration(BaseMigration):
                     "update_expired": False,
                     "on_enter_handlers": [],
                     "on_leave_handlers": [],
-                    "x": 640,
+                    "x": 410,
+                    "y": 200,
+                    "effective_labels": [],
+                    "bi_id": Int64("478291320657225258"),
+                    "disable_all_interaction": True
+                },
+                {
+                    "_id": ObjectId("641b371eb846e3cc661ea8b3"),
+                    "workflow": ObjectId("641b35e6fa01fd032a1f61ef"),
+                    "name": "Removing",
+                    "is_default": False,
+                    "is_productive": False,
+                    "update_last_seen": False,
+                    "ttl": 3600,
+                    "update_expired": False,
+                    "on_enter_handlers": [],
+                    "on_leave_handlers": [],
+                    "x": 540,
                     "y": 460,
                     "labels": [],
                     "effective_labels": [],
                     "bi_id": Int64("5174969568830998645"),
-                    "feature_settings": {
-                        "SA": {"enable": False},
-                        "FM": {"enable": False},
-                        "TT": {"enable": False},
-                    },
-                },
-                {
-                    "_id": ObjectId("641b3c5e219a478783321714"),
-                    "workflow": ObjectId("641b35e6fa01fd032a1f61ef"),
-                    "name": "Wiped",
-                    "description": "",
-                    "is_default": False,
-                    "is_productive": False,
-                    "update_last_seen": False,
-                    "ttl": 0,
-                    "update_expired": False,
-                    "on_enter_handlers": [],
-                    "job_handler": "noc.sa.wipe.managedobject.wipe",
-                    "on_leave_handlers": [],
-                    "x": 640,
-                    "y": 200,
-                    "labels": [],
-                    "effective_labels": [],
-                    "bi_id": Int64("6008822293393706567"),
-                    "feature_settings": {
-                        "SA": {"enable": False},
-                        "FM": {"enable": False},
-                        "TT": {"enable": False},
-                    },
-                },
+                    "is_wiping": True,
+                    "description": ""
+                }
+
             ]
         )
         # Transitions
@@ -138,8 +99,13 @@ class Migration(BaseMigration):
                     "enable_manual": True,
                     "handlers": [],
                     "required_rules": [],
-                    "vertices": [{"x": 390, "y": 480}],
-                    "bi_id": Int64("6196188485054338054"),
+                    "vertices": [
+                        {
+                            "x": 390,
+                            "y": 480
+                        }
+                    ],
+                    "bi_id": Int64("6196188485054338054")
                 },
                 {
                     "_id": ObjectId("641b371eb846e3cc661ea8bb"),
@@ -147,14 +113,14 @@ class Migration(BaseMigration):
                     "from_state": ObjectId("641b371eb846e3cc661ea8b5"),
                     "to_state": ObjectId("641b371eb846e3cc661ea8b3"),
                     "is_active": True,
-                    "event": "remove",
+                    "event": "expired",
                     "label": "Remove",
-                    "description": "",
                     "enable_manual": True,
                     "handlers": [],
                     "required_rules": [],
                     "vertices": [],
                     "bi_id": Int64("8882898918256034369"),
+                    "description": ""
                 },
                 {
                     "_id": ObjectId("641b3c5e219a478783321716"),
@@ -162,29 +128,18 @@ class Migration(BaseMigration):
                     "from_state": ObjectId("641b371eb846e3cc661ea8b5"),
                     "to_state": ObjectId("641b35e6fa01fd032a1f61f1"),
                     "is_active": True,
-                    "event": "manage",
+                    "event": "managed",
                     "label": "Managed",
-                    "description": "",
                     "enable_manual": True,
                     "handlers": [],
                     "required_rules": [],
-                    "vertices": [{"x": 350, "y": 220}],
-                    "bi_id": Int64("7512540641524375121"),
-                },
-                {
-                    "_id": ObjectId("641b3c5e219a478783321718"),
-                    "workflow": ObjectId("641b35e6fa01fd032a1f61ef"),
-                    "from_state": ObjectId("641b371eb846e3cc661ea8b3"),
-                    "to_state": ObjectId("641b3c5e219a478783321714"),
-                    "is_active": True,
-                    "event": "expire",
-                    "label": "Expired",
-                    "description": "",
-                    "enable_manual": True,
-                    "handlers": [],
-                    "required_rules": [],
-                    "vertices": [],
-                    "bi_id": Int64("1132156108578007442"),
+                    "vertices": [
+                        {
+                            "x": 350,
+                            "y": 220
+                        }
+                    ],
+                    "bi_id": Int64("7512540641524375121")
                 },
                 {
                     "_id": ObjectId("641b3c5e219a47878332171a"),
@@ -192,14 +147,13 @@ class Migration(BaseMigration):
                     "from_state": ObjectId("641b35e6fa01fd032a1f61f1"),
                     "to_state": ObjectId("641b371eb846e3cc661ea8b5"),
                     "is_active": True,
-                    "event": "unmanage",
+                    "event": "unmanaged",
                     "label": "Unmanaged",
-                    "description": "",
                     "enable_manual": True,
                     "handlers": [],
                     "required_rules": [],
                     "vertices": [],
-                    "bi_id": Int64("7078692477969553649"),
-                },
+                    "bi_id": Int64("7078692477969553649")
+                }
             ]
         )
