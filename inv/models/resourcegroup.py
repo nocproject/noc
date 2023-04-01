@@ -9,15 +9,17 @@
 import operator
 import threading
 import logging
-from typing import List, Union, Optional
+from typing import List, Union, Optional, Tuple
 
 # Third-party modules
 import bson
+import cachetools
+import orjson
+from django.db import connection as pg_connection
 from mongoengine.document import Document, EmbeddedDocument
 from mongoengine.fields import StringField, LongField, ListField, EmbeddedDocumentField
 from mongoengine.errors import ValidationError
 from pymongo import UpdateMany
-import cachetools
 
 # NOC modules
 from noc.config import config
@@ -156,9 +158,7 @@ class ResourceGroup(Document):
     @classmethod
     def _reset_caches(cls, id):
         try:
-            del cls._id_cache[
-                str(id),  # Tuple
-            ]
+            del cls._id_cache[str(id),]  # Tuple
         except KeyError:
             pass
 
@@ -277,8 +277,6 @@ class ResourceGroup(Document):
         :param is_client: Add to Client Groups
         :return:
         """
-        from django.db import connection
-
         if isinstance(group_id, str):
             group_id = bson.ObjectId(group_id)
 
@@ -295,9 +293,12 @@ class ResourceGroup(Document):
                 ]
             )
         else:
-            sql = f"UPDATE {model._meta.db_table} SET {group_field}=array_remove({group_field}, '{str(group_id)}') WHERE '{str(group_id)}'=ANY ({group_field})"
-            cursor = connection.cursor()
-            cursor.execute(sql)
+            sql = (
+                f"UPDATE {model._meta.db_table} SET {group_field}=array_remove({group_field}, '{str(group_id)}') "
+                f"WHERE '{str(group_id)}'=ANY ({group_field})"
+            )
+            with pg_connection.cursor() as cursor:
+                cursor.execute(sql)
 
     @staticmethod
     def _add_group(
@@ -314,8 +315,6 @@ class ResourceGroup(Document):
         :param is_client: Add to Client Groups
         :return:
         """
-        from django.db import connection
-
         if isinstance(group_id, str):
             group_id = bson.ObjectId(group_id)
 
@@ -333,9 +332,12 @@ class ResourceGroup(Document):
                 ]
             )
         else:
-            sql = f"UPDATE {model._meta.db_table} SET {group_field}=array_append({group_field}, '{str(group_id)}') WHERE %s::varchar[] <@ effective_labels AND NOT ('{str(group_id)}'= ANY ({group_field}))"
-            cursor = connection.cursor()
-            cursor.execute(sql, [labels])
+            sql = (
+                f"UPDATE {model._meta.db_table} SET {group_field}=array_append({group_field}, '{str(group_id)}') "
+                f"WHERE %s::varchar[] <@ effective_labels AND NOT ('{str(group_id)}'= ANY ({group_field}))"
+            )
+            with pg_connection.cursor() as cursor:
+                cursor.execute(sql, [labels])
 
     def unset_service_group(self, model_id: str, changed_ids: Optional[List[str]] = None):
         """
@@ -367,10 +369,13 @@ class ResourceGroup(Document):
             changed_ids += self.get_model_instance_ids(model_id, self.id, is_client=True)
 
     @classmethod
-    def get_dynamic_service_groups(cls, labels: List[str], model: str) -> List[str]:
+    def get_dynamic_service_groups(cls, labels: List[str], model_id: str) -> List[str]:
+        """
+        Getting dynamic service groups by labels
+        """
         coll = cls._get_collection()
         r = []
-        if not model:
+        if not model_id:
             return r
         # print(labels, model)
         for rg in coll.aggregate(
@@ -386,7 +391,7 @@ class ResourceGroup(Document):
                 },
                 {
                     "$match": {
-                        "tech.service_model": model,
+                        "tech.service_model": model_id,
                     }
                 },
                 {
@@ -411,10 +416,13 @@ class ResourceGroup(Document):
         return r
 
     @classmethod
-    def get_dynamic_client_groups(cls, labels: List[str], model: str) -> List[str]:
+    def get_dynamic_client_groups(cls, labels: List[str], model_id: str) -> List[str]:
+        """
+        Getting dynamic client groups by labels
+        """
         coll = cls._get_collection()
         r = []
-        if not model:
+        if not model_id:
             return r
         for rg in coll.aggregate(
             [
@@ -429,7 +437,7 @@ class ResourceGroup(Document):
                 },
                 {
                     "$match": {
-                        "tech.client_model": model,
+                        "tech.client_model": model_id,
                     }
                 },
                 {
@@ -585,6 +593,64 @@ class ResourceGroup(Document):
             resource_id=str(self.id),
             title=self.name,
         )
+
+    @classmethod
+    def iter_model_groups(cls, model_id):
+        model = get_model(model_id)
+        table = model._meta.db_table
+        SQL = f"""
+             SELECT t.id as id, t.effective_service_groups, array_agg(rgs.rg ORDER BY rgs.rg) AS erg FROM {table} AS t
+             LEFT JOIN (select * from jsonb_to_recordset(%s::jsonb) AS x(rg text, ml text[])) AS rgs 
+             ON t.effective_labels::text[] @> rgs.ml GROUP BY t.id 
+             HAVING t.effective_service_groups != t.static_service_groups || array_remove(array_agg(rgs.rg ORDER BY rgs.rg), NULL)
+            """
+        r = []
+        for rg_id, tech, dsl in ResourceGroup.objects.filter(
+            dynamic_service_labels__labels__exists=True
+        ).values_list("id", "technology", "dynamic_service_labels"):
+            if tech.service_model != model_id:
+                continue
+            r += [{"rg": str(rg_id), "ml": list(sl.labels)} for sl in dsl]
+        params = [orjson.dumps(r).decode("utf-8")]
+        with pg_connection.cursor() as cursor:
+            cursor.execute(SQL, params)
+            yield from cursor
+
+    @classmethod
+    def sync_model_groups(cls, model_id: str, table_filter: Optional[List[Tuple[str, str]]] = None):
+        """
+        Sync Groups on records by filter
+        :return:
+        """
+        model = get_model(model_id)
+        if not model:
+            return
+        table = model._meta.db_table
+        where = ""
+        if table_filter:
+            where = "WHERE " + " AND ".join(t[0] for t in table_filter)
+        SQL_SYNC = f"""
+            UPDATE {table} AS update_t SET effective_service_groups = update_t.static_service_groups || array_remove(sq.erg, NULL)
+             FROM (SELECT t.id as id, array_agg(rgs.rg) AS erg FROM {table} AS t
+             LEFT JOIN (select * from jsonb_to_recordset(%s::jsonb) AS x(rg text, ml text[])) AS rgs
+             ON t.effective_labels::text[] @> rgs.ml {where} GROUP BY t.id
+             HAVING t.effective_service_groups != t.static_service_groups || array_remove(sq.erg, NULL)) AS sq
+             WHERE sq.id = update_t.id
+            """
+        r = []
+        for rg_id, tech, dsl in ResourceGroup.objects.filter(
+            dynamic_service_labels__labels__exists=True
+        ).values_list("id", "technology", "dynamic_service_labels"):
+            if tech.service_model != model_id:
+                continue
+            r += [{"rg": str(rg_id), "ml": list(sl.labels)} for sl in dsl]
+        if not r:
+            return
+        params = [orjson.dumps(r).decode("utf-8")]
+        if table_filter:
+            params += [v[1] for v in table_filter]
+        with pg_connection.cursor() as cursor:
+            cursor.execute(SQL_SYNC, params)
 
 
 def invalidate_instance_cache(model_id: str, ids: List[int]):

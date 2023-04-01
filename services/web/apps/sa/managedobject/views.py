@@ -305,18 +305,7 @@ class ManagedObjectApplication(ExtModelApplication):
             "row_class": o.object_profile.style.css_class_name if o.object_profile.style else "",
             "link_count": len(o.links),
             "labels": [
-                {
-                    "id": ll.name,
-                    "is_protected": ll.is_protected,
-                    "scope": ll.scope,
-                    "name": ll.name,
-                    "value": ll.value,
-                    "badges": ll.badges,
-                    "bg_color1": f"#{ll.bg_color1:06x}",
-                    "fg_color1": f"#{ll.fg_color1:06x}",
-                    "bg_color2": f"#{ll.bg_color2:06x}",
-                    "fg_color2": f"#{ll.fg_color2:06x}",
-                }
+                self.format_label(ll)
                 for ll in Label.objects.filter(name__in=o.labels).order_by("display_order")
             ]
             # "row_class": ""

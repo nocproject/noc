@@ -131,6 +131,21 @@ class ExtApplication(Application):
         else:
             return set()
 
+    @staticmethod
+    def format_label(ll):
+        return {
+            "id": ll.name,
+            "is_protected": ll.is_protected,
+            "scope": ll.scope,
+            "name": ll.name,
+            "value": ll.value,
+            "badges": ll.badges,
+            "bg_color1": f"#{ll.bg_color1:06x}",
+            "fg_color1": f"#{ll.fg_color1:06x}",
+            "bg_color2": f"#{ll.bg_color2:06x}",
+            "fg_color2": f"#{ll.fg_color2:06x}",
+        }
+
     def extra_query(self, q, order):
         # raise NotImplementedError
         return {}, order

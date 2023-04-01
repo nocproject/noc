@@ -13,12 +13,12 @@ from typing import Optional, List, Set, Iterable, Dict, Any, Callable, Tuple, Un
 from threading import Lock
 from collections import defaultdict
 from itertools import accumulate
+from functools import partial, partialmethod
 
 # Third-party modules
 from pymongo import UpdateMany
 from mongoengine.document import Document, EmbeddedDocument
 from mongoengine.queryset.visitor import Q as m_Q
-from django.db import connection
 from mongoengine.fields import (
     StringField,
     IntField,
@@ -27,6 +27,7 @@ from mongoengine.fields import (
     ListField,
     EmbeddedDocumentField,
 )
+from django.db import connection as pg_connection
 import cachetools
 import orjson
 
@@ -37,7 +38,7 @@ from noc.core.change.decorator import change
 from noc.main.models.handler import Handler
 from noc.main.models.remotesystem import RemoteSystem
 from noc.main.models.prefixtable import PrefixTable
-from noc.models import get_model, is_document, LABEL_MODELS
+from noc.models import get_model, is_document, get_model_id, LABEL_MODELS
 from noc.vc.models.vlanfilter import VLANFilter
 
 
@@ -128,6 +129,7 @@ class PrefixFilterItem(EmbeddedDocument):
         ("sa.ManagedObjectProfile", "labels"),
         ("inv.InterfaceProfile", "labels"),
         ("pm.Agent", "labels"),
+        ("wf.State", "labels"),
         ("sla.SLAProbe", "labels"),
         ("sla.SLAProfile", "labels"),
     ],
@@ -314,9 +316,7 @@ class Label(Document):
     @classmethod
     def _reset_caches(cls, name):
         try:
-            del cls._name_cache[
-                name,
-            ]  # Tuple
+            del cls._name_cache[name,]  # Tuple
         except KeyError:
             pass
 
@@ -636,9 +636,6 @@ class Label(Document):
         Recalculate labels on model
         :return:
         """
-        from django.db import connection
-        from noc.models import get_model, is_document
-
         r = self.get_match_regex_rules()
         for model_id in set(mid for mid, _ in r):
             # Skipping interface for poor performance for $pull operation
@@ -684,8 +681,8 @@ class Label(Document):
                 )
                 WHERE {condition}
                 """
-                cursor = connection.cursor()
-                cursor.execute(sql, params)
+                with pg_connection.cursor() as cursor:
+                    cursor.execute(sql, params)
 
     @classmethod
     def model(cls, m_cls):
@@ -856,8 +853,7 @@ class Label(Document):
         model_id: str,
         add_labels: List[str] = None,
         remove_labels: List[str] = None,
-        filter_ids: List[int] = None,
-        filter_field: str = None,
+        instance_filters: Optional[List[Tuple[str, Any]]] = None,
         effective_only: bool = True,
     ):
         """
@@ -870,19 +866,15 @@ class Label(Document):
         :param model_id: Model ID
         :param add_labels: Labels for add to effective_labels
         :param remove_labels: Labels for remove from effective_labels
-        :param filter_ids:
-        :param filter_field:
+        :param instance_filters:
         :param effective_only: Apply only effective labels field
         :return:
         """
-        from django.db import connection
-
         model = get_model(model_id)
         if not hasattr(model, "effective_labels"):
             # Model has not supported labels
             return
 
-        filter_field = filter_field or "id"
         params, conditions, query_set = [], [], ""
         if add_labels and not remove_labels:
             # SET effective_labels=ARRAY (SELECT DISTINCT e FROM unnest(effective_labels || %s::varchar[]) AS a(e))
@@ -896,15 +888,21 @@ class Label(Document):
         elif remove_labels and add_labels:
             params += [add_labels, remove_labels]
             query_set = "(SELECT DISTINCT e FROM unnest(effective_labels || %s::varchar[]) AS a(e) EXCEPT SELECT unnest(%s::varchar[]))"
-            if not filter_ids:
+            if not instance_filters:
                 conditions += [" effective_labels && %s::varchar[] "]
         # Construct condition
         # Where str,int - WHERE {field} ~ %s
         # Where List[str] - id = ANY (%s::varchar[])
         # Where List[int] - id = ANY (%s::numeric[])
-        if filter_ids:
-            conditions += [f" {filter_field} = ANY (%s::numeric[])"]
-            params += [filter_ids]
+        for field, ids in instance_filters or []:
+            if isinstance(ids, list) and isinstance(ids[0], int):
+                conditions += [f" {field} = ANY (%s::numeric[])"]
+            elif isinstance(ids, list):
+                conditions += [f" {field} = ANY (%s::text[])"]
+                ids = [str(x) for x in ids]
+            else:
+                conditions += [f" {field} = %s"]
+            params += [ids]
         # Construct query
         sql = f"""
         UPDATE {model._meta.db_table}
@@ -912,8 +910,8 @@ class Label(Document):
         """
         if conditions:
             sql += f" WHERE {' AND '.join(conditions)} "
-        cursor = connection.cursor()
-        cursor.execute(sql, params)
+        with pg_connection.cursor() as cursor:
+            cursor.execute(sql, params)
 
     @classmethod
     def _change_document_labels(
@@ -921,8 +919,7 @@ class Label(Document):
         model_id: str,
         add_labels: List[str] = None,
         remove_labels: List[str] = None,
-        filter_ids: List[int] = None,
-        filter_field: str = None,
+        instance_filters: Optional[List[Tuple[str, Any]]] = None,
         effective_only: bool = True,
     ):
         """
@@ -935,8 +932,7 @@ class Label(Document):
         :param model_id: Model ID
         :param add_labels: Labels for add to effective_labels
         :param remove_labels: Labels for remove from effective_labels
-        :param filter_ids:
-        :param filter_field:
+        :param instance_filters:
         :param effective_only: Apply only effective labels field
         :return:
         """
@@ -945,7 +941,6 @@ class Label(Document):
             # Model has not supported labels
             return
         # Construct match
-        filter_field = filter_field or "_id"
         match, q_set = {}, {}
         if add_labels:
             # {"$addToSet": {"effective_labels": {"$each": add_labels}}}
@@ -953,8 +948,11 @@ class Label(Document):
         if remove_labels:
             q_set["$pull"] = {"effective_labels": {"$in": remove_labels}}
             match["effective_labels"] = {"$in": remove_labels}
-        if filter_ids:
-            match[filter_field] = {"$in": filter_ids}
+        for field, ids in instance_filters or []:
+            if isinstance(ids, list):
+                match[field] = {"$in": ids}
+            else:
+                match[field] = ids
         # Add labels ? bulk
         coll = model._get_collection()
         coll.bulk_write([UpdateMany(match, q_set)])
@@ -964,51 +962,43 @@ class Label(Document):
         cls,
         model_id: str,
         labels: List[str],
-        filter_ids: List[str] = None,
-        filter_field: Optional[str] = None,
+        instance_filters: Optional[List[Tuple[str, Any]]] = None,
     ):
         """
         Add Labels on models effective_labels field
         :param model_id: Model ID
         :param labels: Labels for remove from effective_labels
-        :param filter_ids: Model Instance IDs for reset labels
-        :param filter_field: Model field for filter IDs
+        :param instance_filters: Model instance filters list
         :return:
         """
         model = get_model(model_id)
         if is_document(model):
-            cls._change_document_labels(
-                model_id, labels, filter_ids=filter_ids, filter_field=filter_field
-            )
+            cls._change_document_labels(model_id, labels, instance_filters=instance_filters)
         else:
-            cls._change_model_labels(
-                model_id, labels, filter_ids=filter_ids, filter_field=filter_field
-            )
+            cls._change_model_labels(model_id, labels, instance_filters=instance_filters)
 
     @classmethod
     def remove_model_labels(
         cls,
         model_id: str,
         labels: List[str],
-        filter_ids: List[str] = None,
-        filter_field: Optional[str] = None,
+        instance_filters: Optional[List[Tuple[str, Any]]] = None,
     ):
         """
         Remove labels from effective_labels field on models
         :param model_id: Model ID
         :param labels: Labels for remove from effective_labels
-        :param filter_ids: Model Instance IDs for reset labels
-        :param filter_field: Field name for filter_ids use
+        :param instance_filters: Model instance filters list
         :return:
         """
         model = get_model(model_id)
         if is_document(model):
             cls._change_document_labels(
-                model_id, remove_labels=labels, filter_ids=filter_ids, filter_field=filter_field
+                model_id, remove_labels=labels, instance_filters=instance_filters
             )
         else:
             cls._change_model_labels(
-                model_id, remove_labels=labels, filter_ids=filter_ids, filter_field=filter_field
+                model_id, remove_labels=labels, instance_filters=instance_filters
             )
 
     @staticmethod
@@ -1053,7 +1043,7 @@ class Label(Document):
             ]
             match_profiles = coll.aggregate(pipeline)
         else:
-            with connection.cursor() as cursor:
+            with pg_connection.cursor() as cursor:
                 query = f"""
                                     SELECT pt.id, t.labels, t.dynamic_order, t.handler, match_rules
                                     FROM {profile_model._meta.db_table} as pt
@@ -1082,8 +1072,21 @@ class Label(Document):
                 return profile["_id"]
 
     @classmethod
-    def dynamic_classification(cls, profile_model_id: str, profile_field: Optional[str] = None):
-        def on_post_save(
+    def dynamic_classification(
+        cls,
+        profile_model_id: str,
+        profile_field: str = "profile",
+        sync_profile: bool = True,
+        sync_labels: bool = True,
+    ):
+        """
+        :param profile_model_id: Profile Model, that assigned
+        :param profile_field: Model profile field
+        :param sync_profile: Assigned profile by match rules
+        :param sync_labels: Expose profile labels to reference instances
+        """
+
+        def on_pre_save(
             sender,
             instance=None,
             document=None,
@@ -1123,17 +1126,56 @@ class Label(Document):
                 profile = profile_model.get_by_id(profile_id)
                 setattr(instance, profile_field, profile)
 
+        def on_profile_post_save(
+            sender,
+            instance=None,
+            document=None,
+            instance_model_id=None,
+            profile_field=None,
+            *args,
+            **kwargs,
+        ):
+            instance = instance or document
+            if document:
+                changed_fields = getattr(document, "_changed_fields", None)
+            else:
+                changed_fields = getattr(instance, "changed_fields", None)
+            if (not changed_fields or "labels" in changed_fields) and instance.labels:
+                Label.add_model_labels(
+                    instance_model_id,
+                    labels=instance.labels,
+                    instance_filters=[(f"{profile_field}_id", instance.id)],
+                )
+            if "match_rules" in changed_fields and not document:
+                Label.sync_model_profile(instance_model_id, profile_model_id)
+
         def inner(m_cls):
-            # Install handlers
+            # Install profile set handlers
             if is_document(m_cls):
                 from mongoengine import signals as mongo_signals
 
-                mongo_signals.pre_save.connect(on_post_save, sender=m_cls, weak=False)
+                if sync_profile:
+                    # Profile set handlers
+                    mongo_signals.pre_save.connect(on_pre_save, sender=m_cls, weak=False)
+                if sync_labels:
+                    mongo_signals.post_save.connect(
+                        partial(on_profile_post_save, instance_model_id=get_model_id(m_cls)),
+                        sender=get_model(profile_model_id),
+                        weak=False,
+                    )
             else:
                 from django.db.models import signals as django_signals
 
-                django_signals.pre_save.connect(on_post_save, sender=m_cls, weak=False)
-
+                if sync_profile:
+                    # Profile set handlers
+                    django_signals.pre_save.connect(on_pre_save, sender=m_cls, weak=False)
+                if sync_labels:
+                    django_signals.post_save.connect(
+                        partial(on_profile_post_save, instance_model_id=get_model_id(m_cls)),
+                        sender=get_model(profile_model_id),
+                        weak=False,
+                    )
+            # Install Profile Labels expose
             return m_cls
 
         return inner
@@ -1238,3 +1280,121 @@ class Label(Document):
                         continue
                     rxs += [(rx, ll.name)]
         return tuple(rxs)
+
+    @classmethod
+    def sync_model_profile(
+        cls,
+        model_id: str,
+        model_profile_id: str,
+        table_filter: Optional[List[Tuple[str, str]]] = None,
+    ):
+        """
+        Sync profile by match rule
+        :param model_id:
+        :param model_profile_id: Profile model
+        :param table_filter:
+        :return:
+        """
+        model = get_model(model_id)
+        if not model:
+            return
+        table = model._meta.db_table
+        profile = get_model(model_profile_id)
+        where = ""
+        if table_filter:
+            where = "WHERE " + " AND ".join(t[0] for t in table_filter)
+        SQL = f"""
+            UPDATE {table} AS update_t SET object_profile_id = update_t.erg[0] || array_remove(sq.erg, NULL)
+             FROM (SELECT t.id as id, t.effective_labels, (array_agg(mrs.prof ORDER BY mrs.d_order)) AS erg FROM {table} AS t
+             LEFT JOIN (select * from jsonb_to_recordset(%s::jsonb) AS x(prof int, ml text[], d_order int)) AS mrs
+             ON t.effective_labels::text[] @> mrs.ml {where} GROUP BY t.id
+             HAVING  array_length(array_remove(array_agg(mrs.prof ORDER BY mrs.d_order), NULL), 1) is not NULL) AS sq
+            WHERE sq.id = update_t.id
+            """
+        r = []
+        for p_id, mrs in profile.objects.filter().values_list("id", "match_rules"):
+            for rule in mrs:
+                if not rule["dynamic_order"]:
+                    continue
+                r += [{"prof": p_id, "ml": list(rule["labels"]), "d_order": rule["dynamic_order"]}]
+        params = [orjson.dumps(r).decode("utf-8")]
+        with pg_connection.cursor() as cursor:
+            cursor.execute(SQL, params)
+
+    @classmethod
+    def iter_model_profile(
+        cls,
+        model_id: str,
+        model_profile_id: str,
+        table_filter: Optional[List[Tuple[str, str]]] = None,
+    ):
+        """
+        Sync profile by match rule
+        :param model_id:
+        :param model_profile_id: Profile model
+        :param table_filter:
+        :return:
+        """
+        model = get_model(model_id)
+        if not model:
+            return
+        table = model._meta.db_table
+        profile = get_model(model_profile_id)
+        where = ""
+        if table_filter:
+            where = "WHERE " + " AND ".join(t[0] for t in table_filter)
+        SQL = f"""
+             SELECT t.id as id, t.effective_labels, (array_agg(mrs.prof ORDER BY mrs.d_order))[0] AS erg FROM {table} AS t
+             LEFT JOIN (select * from jsonb_to_recordset(%s::jsonb) AS x(prof int, ml text[], d_order int)) AS mrs
+             ON t.effective_labels::text[] @> mrs.ml {where} GROUP BY t.id
+             HAVING  array_length(array_remove(array_agg(mrs.prof ORDER BY mrs.d_order), NULL), 1) is not NULL
+            """
+        r = []
+        for p_id, mrs in profile.objects.filter().values_list("id", "match_rules"):
+            for rule in mrs:
+                if not rule["dynamic_order"]:
+                    continue
+                r += [{"prof": p_id, "ml": list(rule["labels"]), "d_order": rule["dynamic_order"]}]
+        params = [orjson.dumps(r).decode("utf-8")]
+        with pg_connection.cursor() as cursor:
+            cursor.execute(SQL, params)
+            yield from cursor
+
+    @classmethod
+    def iter_document_profile(
+        cls,
+        model_id: str,
+        model_profile_id: str,
+        query_filter: Optional[List[Tuple[str, str]]] = None,
+    ):
+        """
+        Iterate over instance profile
+        """
+        pipeline = []
+        match = {}
+        for field, ids in query_filter or []:
+            match[field] = ids
+        if match:
+            pipeline += [{"$match": match}]
+
+        model = get_model(model_id)
+        profile_model = get_model(model_profile_id)
+        profile_coll = profile_model._get_collection_name()
+        pipeline += [
+            {
+                "$lookup": {
+                    "from": profile_coll,
+                    "let": {"el": "$effective_labels"},
+                    "pipeline": [
+                        {"$unwind": "$match_rules"},
+                        {"$match": {"$expr": {"$setIsSubset": ["$match_rules.labels", "$$el"]}}},
+                        {"$sort": {"match_rules.dynamic_order": 1}},
+                    ],
+                    "as": "profiles",
+                }
+            },
+            {"$project": {"_id": 1, "p_ids": "$profiles._id"}},
+        ]
+        coll = model._get_collection()
+        for row in coll.aggregate(pipeline):
+            yield row["_id"], row["p_ids"][0] if row["p_ids"] else None
