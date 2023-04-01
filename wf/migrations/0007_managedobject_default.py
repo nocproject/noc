@@ -60,7 +60,7 @@ class Migration(BaseMigration):
                     "y": 200,
                     "effective_labels": [],
                     "bi_id": Int64("478291320657225258"),
-                    "disable_all_interaction": True
+                    "disable_all_interaction": True,
                 },
                 {
                     "_id": ObjectId("641b371eb846e3cc661ea8b3"),
@@ -79,9 +79,8 @@ class Migration(BaseMigration):
                     "effective_labels": [],
                     "bi_id": Int64("5174969568830998645"),
                     "is_wiping": True,
-                    "description": ""
-                }
-
+                    "description": "",
+                },
             ]
         )
         # Transitions
@@ -99,13 +98,8 @@ class Migration(BaseMigration):
                     "enable_manual": True,
                     "handlers": [],
                     "required_rules": [],
-                    "vertices": [
-                        {
-                            "x": 390,
-                            "y": 480
-                        }
-                    ],
-                    "bi_id": Int64("6196188485054338054")
+                    "vertices": [{"x": 390, "y": 480}],
+                    "bi_id": Int64("6196188485054338054"),
                 },
                 {
                     "_id": ObjectId("641b371eb846e3cc661ea8bb"),
@@ -120,7 +114,7 @@ class Migration(BaseMigration):
                     "required_rules": [],
                     "vertices": [],
                     "bi_id": Int64("8882898918256034369"),
-                    "description": ""
+                    "description": "",
                 },
                 {
                     "_id": ObjectId("641b3c5e219a478783321716"),
@@ -133,13 +127,8 @@ class Migration(BaseMigration):
                     "enable_manual": True,
                     "handlers": [],
                     "required_rules": [],
-                    "vertices": [
-                        {
-                            "x": 350,
-                            "y": 220
-                        }
-                    ],
-                    "bi_id": Int64("7512540641524375121")
+                    "vertices": [{"x": 350, "y": 220}],
+                    "bi_id": Int64("7512540641524375121"),
                 },
                 {
                     "_id": ObjectId("641b3c5e219a47878332171a"),
@@ -153,7 +142,7 @@ class Migration(BaseMigration):
                     "handlers": [],
                     "required_rules": [],
                     "vertices": [],
-                    "bi_id": Int64("7078692477969553649")
-                }
+                    "bi_id": Int64("7078692477969553649"),
+                },
             ]
         )
