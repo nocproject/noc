@@ -32,16 +32,16 @@ class StateApplication(ExtDocApplication):
 
     def instance_to_dict(self, o, fields=None, nocustom=False):
         r = super().instance_to_dict(o, fields)
-        if "feature_settings" in r:
-            r["feature_settings"] = [
-                {"feature": f, "enable": r["feature_settings"][f].enable}
-                for f in r["feature_settings"]
+        if "interaction_settings" in r:
+            r["interaction_settings"] = [
+                {"interaction": f, "enable": r["interaction_settings"][f].enable}
+                for f in r["interaction_settings"]
             ]
         return r
 
     def clean(self, data):
-        enabled_interactions = {}
-        for f in data.get("feature_settings", []):
-            enabled_interactions[f["feature"]] = InteractionSetting(**{"enable": f["enable"]})
-        data["enabled_interactions"] = enabled_interactions
+        interaction_settings = {}
+        for f in data.get("interaction_settings", []):
+            interaction_settings[f["interaction"]] = InteractionSetting(**{"enable": f["enable"]})
+        data["interaction_settings"] = interaction_settings
         return super().clean(data)

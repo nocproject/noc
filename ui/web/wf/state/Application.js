@@ -140,9 +140,14 @@ Ext.define("NOC.wf.state.Application", {
                     boxLabel: __("Update Expiration")
                 },
                 {
-                    name: "enabled_interactions",
+                    name: "disable_all_interaction",
+                    xtype: "checkbox",
+                    boxLabel: __("Disable All Interaction")
+                },
+                {
+                    name: "interaction_settings",
                     xtype: "gridfield",
-                    fieldLabel: __("Interactions"),
+                    fieldLabel: __("Interaction Settins"),
                     columns: [
                         {
                             text: __("Interaction"),
@@ -151,18 +156,29 @@ Ext.define("NOC.wf.state.Application", {
                             editor: {
                                 xtype: "combobox",
                                 store: [
-                                    ["SA", "SA"],
+                                    ["SA", "ServiceActivation"],
                                     ["ALARM", "Alarm"],
-                                    ["EVENT", "Event"]
+                                    ["EVENT", "Event"],
+                                    ["TT", "Escalation"],
+                                    ["BOX", "Box Discovery"],
+                                    ["PERIODIC", "Periodic Discovery"]
                                 ]
-                            }
+                            },
+                            renderer: NOC.render.Choices({
+                                "SA": __("ServiceActivation"),
+                                "ALARM": __("Alarm"),
+                                "EVENT": __("Event"),
+                                "TT": __("Escalation"),
+                                "BOX": __("Box Discovery"),
+                                "PERIODIC": __("Periodic Discovery")
+                            })
                         },
                         {
                             text: __("Enable"),
                             dataIndex: "enable",
                             editor: "checkbox",
                             renderer: NOC.render.Bool,
-                            flex: 1
+                            width: 50,
                         }
                     ]
                 },

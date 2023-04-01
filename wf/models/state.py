@@ -117,10 +117,10 @@ class State(Document):
     # WFEditor coordinates
     x = IntField(default=0)
     y = IntField(default=0)
+    # Disable all interaction
+    disable_all_interaction = BooleanField(default=False)
     #
-    enabled_interactions = MapField(
-        EmbeddedDocumentField(InteractionSetting), choices=[i.value for i in Interaction]
-    )
+    interaction_settings = MapField(EmbeddedDocumentField(InteractionSetting))
     # Labels
     labels = ListField(StringField())
     # Integration with external NRI and TT systems
@@ -291,6 +291,13 @@ class State(Document):
                 get_model(mid)
             except AssertionError:
                 raise ValueError(f"Unknown model_id: {mid}")
+        for ia in self.interaction_settings:
+            ia = Interaction(ia)
+            if self.workflow.allowed_models and ia.config.models:
+                if not ia.config.models.intersection(set(self.workflow.allowed_models)):
+                    raise ValueError(
+                        f"Interaction {ia} not allowed for models: {self.workflow.allowed_models}"
+                    )
 
     def is_enabled_interaction(self, interaction) -> bool:
         """
@@ -298,7 +305,7 @@ class State(Document):
         :param interaction:
         :return:
         """
-        if self.is_wiping:
+        if self.is_wiping or self.disable_all_interaction:
             return False
         if isinstance(interaction, str):
             interaction = Interaction(interaction.upper())

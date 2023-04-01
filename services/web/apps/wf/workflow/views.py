@@ -83,7 +83,15 @@ class WorkflowApplication(ExtDocApplication):
                 "enable_manual": t.enable_manual,
                 "handlers": t.handlers,
                 "required_rules": [
-                    {"labels": [self.format_label(ll) for ll in rr.labels], "exclude_labels": []}
+                    {
+                        "labels": [
+                            self.format_label(ll)
+                            for ll in Label.objects.filter(name__in=rr.labels).order_by(
+                                "display_order"
+                            )
+                        ],
+                        "exclude_labels": [],
+                    }
                     for rr in t.required_rules
                 ],
                 "vertices": [{"x": v.x, "y": v.y} for v in t.vertices],

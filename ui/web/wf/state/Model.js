@@ -28,6 +28,11 @@ Ext.define("NOC.wf.state.Model", {
             type: "boolean"
         },
         {
+            name: "disable_all_interaction",
+            type: "boolean",
+            defaultValue: false
+        },
+        {
             name: "on_enter_handlers",
             type: "auto"
         },
@@ -86,7 +91,7 @@ Ext.define("NOC.wf.state.Model", {
             type: "string"
         },
         {
-            name: "enabled_interactions",
+            name: "interaction_settings",
             type: "auto"
         },
         {
