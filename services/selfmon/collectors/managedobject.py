@@ -32,6 +32,10 @@ class ManagedObjectCollector(BaseCollector):
             state = State.get_by_id(state_id)
             if not pool or not state:
                 continue
-            yield ("inventory_managedobject_count", ("pool", pool.name), ("state", state.name)), count
+            yield (
+                "inventory_managedobject_count",
+                ("pool", pool.name),
+                ("state", state.name),
+            ), count
         for pool_name, count in pool_stat.items():
             yield ("inventory_managedobject_total", ("pool", pool_name)), count
