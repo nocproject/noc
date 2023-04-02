@@ -635,8 +635,8 @@ class ResourceGroup(Document):
         table = model._meta.db_table
         SQL = f"""
              SELECT t.id as id, t.effective_service_groups, array_agg(rgs.rg ORDER BY rgs.rg) AS erg FROM {table} AS t
-             LEFT JOIN (select * from jsonb_to_recordset(%s::jsonb) AS x(rg text, ml text[])) AS rgs 
-             ON t.effective_labels::text[] @> rgs.ml GROUP BY t.id 
+             LEFT JOIN (select * from jsonb_to_recordset(%s::jsonb) AS x(rg text, ml text[])) AS rgs
+             ON t.effective_labels::text[] @> rgs.ml GROUP BY t.id
              HAVING t.effective_service_groups != t.static_service_groups || array_remove(array_agg(rgs.rg ORDER BY rgs.rg), NULL)
             """
         r = []

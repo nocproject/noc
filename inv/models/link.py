@@ -282,7 +282,7 @@ class Link(Document):
         rl = set(self.linked_objects) - set(r)
         if rl:
             Label.remove_model_labels(
-                "sa.ManagedObject", ["noc::is_linked::="], instance_filters=[("_id", list(rl))]
+                "sa.ManagedObject", ["noc::is_linked::="], instance_filters=[("id", list(rl))]
             )
         # Assumption that Interface has only one Link :)
         Label.remove_model_labels(
