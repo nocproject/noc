@@ -45,10 +45,10 @@
   when: tower_stop_noc
 
 - name: Setup hostname
-  hostname: name="{{ inventory_hostname }}"
-  when: "'Linux' in ansible_system"
   become: "True"
-  register: hname
+  hostname: 
+    name: "{{ inventory_hostname }}"
+    use: systemd
   tags:
     - config
 

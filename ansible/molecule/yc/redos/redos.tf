@@ -7,14 +7,14 @@ terraform {
 }
 
 provider "yandex" {
-  token     = "{{ molecule_yml.driver.token }}"
-  cloud_id  = "{{ molecule_yml.driver.cloud_id }}"
-  folder_id = "{{ molecule_yml.driver.folder_id }}"
-  zone      = "{{ molecule_yml.driver.zone }}"
+  token     = "t1.9euelZqWx4nJnMqNxpmSzsuMmJKRlO3rnpWal8_JmJGMjM2VjM2Yx4_Pm4_l9PcBK1te-e8FUj353fT3QVlYXvnvBVI9-Q.ocM1g8s7wdSU8_ELdFpn0JehqsGAsG-B7snEIRMaiQOfKm7aDnUMSLh1ZobCkcT2zKSNBJIWLlI6c4ilOQy3Bw"
+  cloud_id  = "b1gi9isncdv608aunpod"
+  folder_id = "b1gupte6966brgu87rp5"
+  zone      = "ru-central1-a"
 }
 
 resource "yandex_compute_instance" "vm-1" {
-  name = "noc-node-{{ item.distr }}-{{ lookup('env','CI_JOB_ID') | default(60|random,true) }}"
+  name = "noc-node-redos-48"
 
   resources {
     cores         = 4
@@ -30,13 +30,13 @@ resource "yandex_compute_instance" "vm-1" {
 
   boot_disk {
     initialize_params {
-      image_id = "{{ molecule_yml.driver.image_id }}"
+      image_id = "fd8q0kjl4l1iovds9f29"
       size     = 20
     }
   }
 
   network_interface {
-    subnet_id = "{{ molecule_yml.driver.subnet_id }}"
+    subnet_id = "e9bbooro15b4mahufr34"
     nat       = true
   }
 

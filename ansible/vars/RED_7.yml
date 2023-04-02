@@ -1,0 +1,22 @@
+# RedOs settings
+---
+ansible_python_interpreter: /usr/bin/python3
+activator_command: "/bin/sh -c 'exec taskset -c $((%(process_num)d %% $(nproc))) ./services/activator/service.py'"
+apt_cache_valid_time: 86400
+
+mongo_arbiter_pid: /var/run/mongodb-arbiter.pid
+mongo_db_path: /var/lib/mongodb/
+mongo_pid: /var/run/mongodb.pid
+nginx_user: www-data
+pgbouncer_path_pid: /var/run/postgresql
+
+postgres_system_service: "postgresql-14.service"
+postgresql_hba_path: /var/lib/pgsql/14/data/pg_hba.conf
+postgresql_conf_path: /var/lib/pgsql/14/data/postgresql.conf
+postgres_bin_dir: /usr/pgsql-{{ postgres_version }}/bin
+postgres_home: /var/lib/pgsql/14
+postgres_data_dir: /var/lib/pgsql/14/data
+postgresql_conf_prefix: /var/lib/pgsql/14/data
+postgres_proccess: postgres
+
+jemalloc_path: /usr/lib/x86_64-linux-gnu/libjemalloc.so.2

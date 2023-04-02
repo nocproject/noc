@@ -13,10 +13,10 @@ driver:
   zone: ${yc_zone}
   network_id: ${yc_network_id}
   subnet_id: ${yc_subnet_id}
-  image_id: ${yc_cen7_disk}
+  image_id: ${yc_redos_disk}
 platforms:
-  - name: noc-node-centos7
-    distr: centos7
+  - name: noc-node-redos
+    distr: redos
     ssh_user: redos
 provisioner:
   name: ansible
@@ -46,7 +46,7 @@ provisioner:
   lint:
     name: ansible-lint
 scenario:
-  name: default
+  name: redos
   test_sequence:
     - create
     - prepare
