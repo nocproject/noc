@@ -37,6 +37,7 @@ from noc.core.defer import defer
 from noc.core.hash import hash_int
 from noc.core.change.decorator import change
 from noc.core.wf.interaction import Interaction
+from noc.config import config
 from noc.models import get_model_id, LABEL_MODELS, get_model, is_document
 from noc.main.models.label import Label
 
