@@ -200,10 +200,14 @@ class Link(Document):
         if not hasattr(self, "_changed_fields") or "interfaces" in self._changed_fields:
             self.update_topology()
             Label.add_model_labels(
-                "inv.Interface", ["noc::is_linked::="], filter_ids=[i.id for i in self.interfaces]
+                "inv.Interface",
+                ["noc::is_linked::="],
+                instance_filters=[("_id", [i.id for i in self.interfaces])],
             )
             Label.add_model_labels(
-                "sa.ManagedObject", ["noc::is_linked::="], filter_ids=self.linked_objects
+                "sa.ManagedObject",
+                ["noc::is_linked::="],
+                instance_filters=[("id", self.linked_objects)],
             )
             ManagedObject.update_links(self.linked_objects)
 
@@ -278,9 +282,11 @@ class Link(Document):
         rl = set(self.linked_objects) - set(r)
         if rl:
             Label.remove_model_labels(
-                "sa.ManagedObject", ["noc::is_linked::="], filter_ids=list(rl)
+                "sa.ManagedObject", ["noc::is_linked::="], instance_filters=[("id", list(rl))]
             )
         # Assumption that Interface has only one Link :)
         Label.remove_model_labels(
-            "inv.Interface", ["noc::is_linked::="], filter_ids=[i.id for i in self.interfaces]
+            "inv.Interface",
+            ["noc::is_linked::="],
+            instance_filters=[("_id", [i.id for i in self.interfaces])],
         )

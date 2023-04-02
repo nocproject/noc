@@ -178,6 +178,5 @@ class SLAProfile(Document):
             Label.add_model_labels(
                 "sla.SLAProbe",
                 labels=labels,
-                filter_ids=[self.id],
-                filter_field="profile",
+                instance_filters=[("profile", self.id)],
             )

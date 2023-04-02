@@ -142,8 +142,9 @@ class FirmwarePolicy(Document):
             Label.add_model_labels(
                 "sa.ManagedObject",
                 labels=labels,
-                filter_ids=[str(fw.id) for fw in self.get_affected_firmwares()],
-                filter_field="version",
+                instance_filters=[
+                    ("version", [str(fw.id) for fw in self.get_affected_firmwares()])
+                ],
             )
             # self.set_labels(labels)
 
@@ -152,8 +153,9 @@ class FirmwarePolicy(Document):
             Label.remove_model_labels(
                 "sa.ManagedObject",
                 labels=self.labels,
-                filter_ids=[str(fw.id) for fw in self.get_affected_firmwares()],
-                filter_field="version",
+                instance_filters=[
+                    ("version", [str(fw.id) for fw in self.get_affected_firmwares()])
+                ],
             )
             # self.reset_labels()
 
