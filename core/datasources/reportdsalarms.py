@@ -203,10 +203,12 @@ class ReportDsAlarms(BaseDataSource):
         return {r["profile"]: r["summary"] for r in items}
 
     @classmethod
-    def iter_data(
-        cls, start, end=None, **filters: Optional[Dict[str, Any]]
+    async def iter_query(
+        cls, fields: Optional[Iterable[str]] = None, **filters: Optional[Dict[str, Any]]
     ) -> Iterable[Dict[str, Any]]:
         # print("Iter Data", start, end, filters)
+        start: datetime.datetime = filters.get("start")
+        end: datetime.datetime = filters.get("end")
         if "objectids" in filters:
             match = {"_id": {"$in": [bson.ObjectId(x) for x in filters["objectids"]]}}
         elif not end:

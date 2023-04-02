@@ -69,12 +69,12 @@ class TTSystemStatDS(BaseDataSource):
     @classmethod
     async def iter_query(
         cls,
-        start: datetime.datetime,
-        end: datetime.datetime,
         fields: Optional[Iterable[str]] = None,
         *args,
         **kwargs,
     ) -> AsyncIterable[Tuple[int, str, Union[str, int]]]:
+        start: datetime.datetime = kwargs.get("start")
+        end: datetime.datetime = kwargs.get("end")
         ts_start = time.mktime(start.timetuple())
         ts_end = time.mktime(end.timetuple())
         tt_systems = TTSystem.objects.filter().scalar("name")
