@@ -316,7 +316,9 @@ class Label(Document):
     @classmethod
     def _reset_caches(cls, name):
         try:
-            del cls._name_cache[name,]  # Tuple
+            del cls._name_cache[
+                name,
+            ]  # Tuple
         except KeyError:
             pass
 
@@ -1250,7 +1252,7 @@ class Label(Document):
         :return:
         """
         mq = m_Q()
-        for vf, condition in VLANFilter.iter_match_vlanfilter(value):
+        for vf, condition in VLANFilter_reset_caches.iter_match_vlanfilter(value):
             condition = "any" if condition != "=" else "all"
             mq |= m_Q(
                 match_vlanfilter__match={
