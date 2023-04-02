@@ -33,12 +33,12 @@ class Migration(BaseMigration):
                     "changed": now.isoformat(sep=" "),
                     "diagnostic": "SA",
                 },
-                "FM": {
+                "ALARM": {
                     "state": state,
                     "checks": [],
                     "reason": None,
                     "changed": now.isoformat(sep=" "),
-                    "diagnostic": "FM",
+                    "diagnostic": "ALARM",
                 },
             }
         ).decode("utf-8")

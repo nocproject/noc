@@ -57,7 +57,7 @@ from noc.core.wf.diagnostic import (
     SYSLOG_DIAG,
     HTTP_DIAG,
     SA_DIAG,
-    FM_DIAG,
+    ALARM_DIAG,
 )
 from noc.core.wf.interaction import Interaction
 from noc.core.checkers.base import CheckData, Check
@@ -225,7 +225,8 @@ class ManagedObjectManager(Manager):
             .annotate(
                 is_managed=Case(
                     When(
-                        Q(diagnostics__SA__state="blocked") & Q(diagnostics__FM__state="blocked"),
+                        Q(diagnostics__SA__state="blocked")
+                        & Q(diagnostics__ALARM__state="blocked"),
                         then=Value(False),
                     ),
                     default=Value(True),
@@ -236,8 +237,8 @@ class ManagedObjectManager(Manager):
                     default=Value(True),
                     output_field=BooleanField(),
                 ),
-                has_fm=Case(
-                    When(diagnostics__FM__state="blocked", then=Value(False)),
+                has_alarm=Case(
+                    When(diagnostics__ALARM__state="blocked", then=Value(False)),
                     default=Value(True),
                     output_field=BooleanField(),
                 ),
@@ -2439,14 +2440,18 @@ class ManagedObject(NOCModel):
             display_description="ServiceActivation. Allow active device interaction",
             blocked=Interaction.ServiceActivation not in self.interactions,
             run_policy="D",
-            reason="",
+            reason="Deny by Allowed interaction by State"
+            if Interaction.ServiceActivation not in self.interactions
+            else "",
         )
         yield DiagnosticConfig(
-            FM_DIAG,
-            display_description="FaultManagement. Allow FM collector and C interaction",
+            ALARM_DIAG,
+            display_description="FaultManagement. Allow Raise Alarm on device",
             blocked=Interaction.Alarm not in self.interactions,
             run_policy="D",
-            reason="",
+            reason="Deny by Allowed interaction by State"
+            if Interaction.Alarm not in self.interactions
+            else "",
         )
         if Interaction.ServiceActivation in self.interactions:
             ac = self.get_access_preference()

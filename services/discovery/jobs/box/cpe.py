@@ -127,7 +127,7 @@ class CPECheck(DiscoveryCheck):
                 cpe.local_id,
                 cpe.global_id,
             )
-            mo.fire_event("unmanage")
+            mo.fire_event("unmanaged")
             mo.save()
             return
         elif not cpe.address:

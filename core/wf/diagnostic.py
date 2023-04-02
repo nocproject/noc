@@ -23,7 +23,8 @@ EVENT_TRANSITION = {
 
 # BuiltIn Diagnostics
 SA_DIAG = "SA"
-FM_DIAG = "FM"
+EVENT_DIAG = "EVENT"
+ALARM_DIAG = "ALARM"
 TT_DIAG = "TT"
 #
 SNMP_DIAG = "SNMP"

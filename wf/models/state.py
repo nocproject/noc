@@ -37,7 +37,7 @@ from noc.core.defer import defer
 from noc.core.hash import hash_int
 from noc.core.change.decorator import change
 from noc.core.wf.interaction import Interaction
-from noc.models import get_model_id, LABEL_MODELS, get_model
+from noc.models import get_model_id, LABEL_MODELS, get_model, is_document
 from noc.main.models.label import Label
 
 logger = logging.getLogger(__name__)
@@ -161,6 +161,22 @@ class State(Document):
             self.workflow.set_wiping_state(self)
         if (chenged_fields and "labels" in chenged_fields) or (not chenged_fields and self.labels):
             self.sync_reffered_labels()
+
+    def iter_changed_datastream(self, changed_fields=None):
+        from noc.sa.models.managedobject import ManagedObject
+
+        if not changed_fields or "sa.ManagedObject" not in self.workflow.allowed_models:
+            return
+        changed_fields = set(changed_fields)
+        if {"is_wiping", "disable_all_interaction", "interaction_settings"}.intersection(
+            changed_fields
+        ):
+            for mo_id, bi_id in ManagedObject.objects.filter(state=str(self.id)).values_list(
+                "id", "bi_id"
+            ):
+                if config.datastream.enable_managedobject:
+                    yield "managedobject", mo_id
+                yield "cfgmetricsources", f"sa.ManagedObject::{bi_id}"
 
     def on_enter_state(self, obj):
         """
@@ -324,6 +340,9 @@ class State(Document):
 
         for model_id in self.workflow.allowed_models:
             model = get_model(model_id)
+            state_id = self.id
+            if not is_document(model):
+                state_id = set(self.id)
             removed, add_labels = [], []
             for ll in Label.objects.filter(
                 **{"enable_workflowstate": True, LABEL_MODELS[model_id]: True}
@@ -335,11 +354,11 @@ class State(Document):
                 if model.can_set_label(ll.name):
                     add_labels.append(ll.name)
             if removed:
-                Label.remove_model_labels(model_id, removed, instance_filters=[("state", self.id)])
+                Label.remove_model_labels(model_id, removed, instance_filters=[("state", state_id)])
             if add_labels:
-                Label.add_model_labels(model_id, add_labels, instance_filters=[("state", self.id)])
+                Label.add_model_labels(model_id, add_labels, instance_filters=[("state", state_id)])
             if not hasattr(model, "effective_service_groups"):
                 continue
             if removed or add_labels:
-                ResourceGroup.sync_mode_groups(model_id, table_filter=[("state", str(self.id))])
+                ResourceGroup.sync_model_groups(model_id, table_filter=[("state", state_id)])
         # Invalidate cache
