@@ -207,7 +207,7 @@ class Link(Document):
             Label.add_model_labels(
                 "sa.ManagedObject",
                 ["noc::is_linked::="],
-                instance_filters=[("_id", self.linked_objects)],
+                instance_filters=[("id", self.linked_objects)],
             )
             ManagedObject.update_links(self.linked_objects)
 
