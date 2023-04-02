@@ -2195,9 +2195,10 @@ class ManagedObject(NOCModel):
     def iter_effective_labels(cls, instance: "ManagedObject") -> Iterable[List[str]]:
         yield list(instance.labels or [])
         yield list(instance.object_profile.labels or [])
-        if instance.is_managed:
+        if getattr(instance, "is_managed", True):
             yield ["noc::is_managed::="]
-        yield list(instance.state.labels)
+        if instance.state:
+            yield list(instance.state.labels)
         yield list(AdministrativeDomain.iter_lazy_labels(instance.administrative_domain))
         yield list(Pool.iter_lazy_labels(instance.pool))
         yield list(ManagedObjectProfile.iter_lazy_labels(instance.object_profile))

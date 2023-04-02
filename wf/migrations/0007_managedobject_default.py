@@ -69,7 +69,7 @@ class Migration(BaseMigration):
                     "is_default": False,
                     "is_productive": False,
                     "update_last_seen": False,
-                    "ttl": 3600,
+                    "ttl": 1800,
                     "update_expired": False,
                     "on_enter_handlers": [],
                     "on_leave_handlers": [],

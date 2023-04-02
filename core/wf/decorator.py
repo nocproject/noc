@@ -332,6 +332,7 @@ def wipe(model_id: str, oid):
             from noc.sa.wipe.managedobject import wipe
 
             wipe(o)
+            return
         o.delete()
     except Exception as e:
         logger.error("[%s] Error when wipe: %s", o, str(e))

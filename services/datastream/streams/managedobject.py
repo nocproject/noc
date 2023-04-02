@@ -486,6 +486,9 @@ class ManagedObjectDataStream(DataStream):
 
     @classmethod
     def get_msg_headers(cls, data: Dict[str, Any]) -> Optional[Dict[str, bytes]]:
+        if "$deleted" in data:
+            # @@todo Meta fields for deleted object
+            return
         return {
             MX_ADMINISTRATIVE_DOMAIN_ID: smart_bytes(data[cls.F_ADM_DOMAIN_META]),
             MX_LABELS: smart_bytes(MX_H_VALUE_SPLITTER.join(data[cls.F_LABELS_META])),

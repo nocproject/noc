@@ -54,6 +54,7 @@ from noc.core.mongo.connection import get_db
 from noc.core.translation import ugettext as _
 from noc.core.comp import smart_text, smart_bytes
 from noc.core.geocoder.loader import loader as geocoder_loader
+from noc.core.validators import is_objectid
 from noc.fm.models.activealarm import ActiveAlarm
 from noc.fm.models.alarmclass import AlarmClass
 from noc.sa.models.objectstatus import ObjectStatus
@@ -205,7 +206,7 @@ class ManagedObjectApplication(ExtModelApplication):
         )
         # Apply oper_state
         for x in data:
-            if not x["is_managed"] or x["id"] in disabled:
+            if not x.get("is_managed") or x["id"] in disabled:
                 # possibly exclude degradated state
                 x["oper_state"] = "disabled"
                 x["oper_state__label"] = _("Disable")
@@ -256,7 +257,7 @@ class ManagedObjectApplication(ExtModelApplication):
         d_config = {d.diagnostic: d for d in o.iter_diagnostic_configs()}
         if not d_config:
             return data
-        data["is_managed"] = o.is_managed
+        data["is_managed"] = getattr(o, "is_managed", True)
         data["diagnostics"] = list(
             sorted(
                 [
@@ -294,7 +295,7 @@ class ManagedObjectApplication(ExtModelApplication):
             "id": o.id,
             "name": o.name,
             "address": o.address,
-            "is_managed": o.is_managed,
+            "is_managed": getattr(o, "is_managed", True),
             "administrative_domain": str(o.administrative_domain.name),
             "object_profile": str(o.object_profile.name),
             "segment": str(o.segment.name),
@@ -388,7 +389,7 @@ class ManagedObjectApplication(ExtModelApplication):
             caps0=CapsID:2~50 - caps value many then 2 and less then 50
             """
             c = nq.get(cc)
-            if not c:
+            if not c or cc in self.clean_fields:
                 continue
 
             if "!" in c:
@@ -400,6 +401,8 @@ class ManagedObjectApplication(ExtModelApplication):
                 c_query = "exists"
             else:
                 c_id, c_query = c.split(":", 1)
+            if not is_objectid(c_id):
+                continue
             caps = Capability.get_by_id(c_id)
             self.logger.info("[%s] Caps: %s", c, caps)
             if "~" in c_query:
