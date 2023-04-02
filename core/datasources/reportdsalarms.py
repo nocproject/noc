@@ -207,6 +207,8 @@ class ReportDsAlarms(BaseDataSource):
         cls, start, end=None, **filters: Optional[Dict[str, Any]]
     ) -> Iterable[Dict[str, Any]]:
         # print("Iter Data", start, end, filters)
+        start: datetime.datetime = filters.get("start")
+        end: datetime.datetime = filters.get("end")
         if "objectids" in filters:
             match = {"_id": {"$in": [bson.ObjectId(x) for x in filters["objectids"]]}}
         elif not end:
