@@ -18,6 +18,7 @@ from noc.core.text import ranges_to_list
 from noc.services.discovery.jobs.base import PolicyDiscoveryCheck
 from noc.core.vpn import get_vpn_id
 from noc.core.service.rpc import RPCError
+from noc.core.change.policy import change_tracker
 from noc.inv.models.forwardinginstance import ForwardingInstance
 from noc.inv.models.interface import Interface
 from noc.inv.models.interfaceprofile import InterfaceProfile
@@ -179,11 +180,13 @@ class InterfaceCheck(PolicyDiscoveryCheck):
                 if hasattr(iface, "_refresh_labels"):
                     iface.save()
                 # Perform interface classification
-                self.interface_classification(iface)
+                # self.interface_classification(iface)
                 # Store for future collation
                 if_map[iface.name] = iface
             # Delete hanging interfaces
             self.seen_interfaces += [i["name"] for i in fi["interfaces"]]
+        # Interface Classification
+        self.interface_classification_bulk(if_map)
         # Delete hanging interfaces
         self.cleanup_interfaces(self.seen_interfaces)
         # Delete hanging forwarding instances
@@ -288,6 +291,8 @@ class InterfaceCheck(PolicyDiscoveryCheck):
                 update_effective_labels=True,
             )
             self.log_changes(f"Interface '{name}' has been changed", changes)
+            if changes:
+                change_tracker.register("update", "inv.Interface", str(iface.id), fields=[])
         else:
             # Create interface
             self.logger.info("Creating interface '%s'", name)
@@ -454,6 +459,40 @@ class InterfaceCheck(PolicyDiscoveryCheck):
             ).first()
             if dsi:
                 dsi.delete()
+
+    def interface_classification_bulk(self, ifaces: Dict[str, Interface]):
+        """ """
+
+        for i_id, i_name, p_id in Label.iter_document_profile(
+            "inv.Interface",
+            "inv.InterfaceProfile",
+            query_filter=[("managed_object", self.object.id), ("type", "physical")],
+        ):
+            iface = ifaces.get(i_name)
+            if not iface:
+                self.logger.warning("Unknown interface: %s", i_name)
+            elif not p_id or p_id == iface.profile.id:
+                continue
+            elif iface.profile_locked:
+                self.logger.info(
+                    "Interface %s profile set by User. That block for classification", iface.name
+                )
+                continue
+            # Change profile
+            profile = InterfaceProfile.get_by_id(p_id)
+            if not profile:
+                self.logger.error(
+                    "Invalid interface profile '%s' for interface '%s'. " "Skipping",
+                    p_id,
+                    iface.name,
+                )
+                return
+            elif profile != iface.profile:
+                self.logger.info(
+                    "Interface %s has been classified as '%s'", iface.name, profile.name
+                )
+                iface.profile = profile
+                iface.save()
 
     def interface_classification(self, iface: "Interface"):
         """

@@ -377,18 +377,7 @@ class ExtModelApplication(ExtApplication):
                     r["%s__label" % f.name] = smart_text(v.title)
             elif f.name in {"labels", "effective_labels"} and isinstance(f, ArrayField):
                 r[f.name] = [
-                    {
-                        "id": ll.name,
-                        "is_protected": ll.is_protected,
-                        "scope": ll.scope,
-                        "name": ll.name,
-                        "value": ll.value,
-                        "badges": ll.badges,
-                        "bg_color1": f"#{ll.bg_color1:06x}",
-                        "fg_color1": f"#{ll.fg_color1:06x}",
-                        "bg_color2": f"#{ll.bg_color2:06x}",
-                        "fg_color2": f"#{ll.fg_color2:06x}",
-                    }
+                    self.format_label(ll)
                     for ll in Label.objects.filter(name__in=getattr(o, f.name, [])).order_by(
                         "display_order"
                     )
