@@ -16,7 +16,7 @@ from noc.core.error import NOCError
 from noc.core.debug import ErrorReport
 from noc.sa.models.managedobject import ManagedObject, ObjectUplinks
 from noc.core.service.fastapi import FastAPIService
-from noc.services.topo.datastream import TopoDataStream
+from noc.services.topo.datastream import TopoDataStreamClient
 from noc.services.topo.topo import Topo
 from noc.services.topo.types import ObjectSnapshot
 
@@ -45,7 +45,7 @@ class TopoService(FastAPIService):
         Coroutine to request object mappings
         """
         self.logger.info("Starting to track object mappings")
-        client = TopoDataStream("managedobject", service=self)
+        client = TopoDataStreamClient("managedobject", service=self)
         # Track stream changes
         while True:
             try:
