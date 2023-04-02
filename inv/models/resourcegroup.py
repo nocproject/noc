@@ -595,8 +595,41 @@ class ResourceGroup(Document):
         )
 
     @classmethod
+    def iter_document_groups(cls, model_id):
+        model = get_model(model_id)
+        if not model:
+            return
+        coll = model._get_collection()
+        pipeline = [
+            {
+                "$lookup": {
+                    "from": "resourcegroups",
+                    "let": {"el": "$effective_labels"},
+                    "pipeline": [
+                        {"$unwind": "$dynamic_service_labels"},
+                        {
+                            "$match": {
+                                "$expr": {
+                                    "$setIsSubset": ["$dynamic_service_labels.labels", "$$el"]
+                                }
+                            }
+                        },
+                    ],
+                    "as": "groups",
+                }
+            },
+            {"$project": {"g": "$groups._id", "effective_service_groups": 1}},
+            {"$match": {"g": {"$ne": []}}},
+        ]
+        # {"$addFields": {"effective_service_groups": {"$concatArrays": ["$g"]}}}
+        r = coll.aggregate(pipeline)
+        yield from r
+
+    @classmethod
     def iter_model_groups(cls, model_id):
         model = get_model(model_id)
+        if not model:
+            return
         table = model._meta.db_table
         SQL = f"""
              SELECT t.id as id, t.effective_service_groups, array_agg(rgs.rg ORDER BY rgs.rg) AS erg FROM {table} AS t

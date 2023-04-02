@@ -1286,13 +1286,15 @@ class Label(Document):
         cls,
         model_id: str,
         model_profile_id: str,
-        table_filter: Optional[List[Tuple[str, str]]] = None,
+        profile_field="profile",
+        query_filter: Optional[List[Tuple[str, str]]] = None,
     ):
         """
-        Sync profile by match rule
+        Update profile by match rule
         :param model_id:
         :param model_profile_id: Profile model
-        :param table_filter:
+        :param profile_field: Field name for profile assigned
+        :param query_filter: Optional filter by list (field, value)
         :return:
         """
         model = get_model(model_id)
@@ -1300,16 +1302,25 @@ class Label(Document):
             return
         table = model._meta.db_table
         profile = get_model(model_profile_id)
-        where = ""
-        if table_filter:
-            where = "WHERE " + " AND ".join(t[0] for t in table_filter)
+        # Build filter
+        where, params = [], []
+        for field, ids in query_filter or []:
+            if isinstance(ids, list) and isinstance(ids[0], int):
+                where += [f"{field} = ANY (%s::numeric[])"]
+            elif isinstance(ids, list):
+                where += [f"{field} = ANY (%s::text[])"]
+            else:
+                where += [f"{field} = %s"]
+            params += [ids]
+        where = ("WHERE " + " AND ".join(where)) if where else ""
+        # Build query
         SQL = f"""
-            UPDATE {table} AS update_t SET object_profile_id = update_t.erg[0] || array_remove(sq.erg, NULL)
-             FROM (SELECT t.id as id, t.effective_labels, (array_agg(mrs.prof ORDER BY mrs.d_order)) AS erg FROM {table} AS t
+            UPDATE {table} AS update_t SET {profile_field} = sq.erg[1]
+             FROM (SELECT t.id as id, t.effective_labels, array_remove(array_agg(mrs.prof ORDER BY mrs.d_order), NULL) AS erg FROM {table} AS t
              LEFT JOIN (select * from jsonb_to_recordset(%s::jsonb) AS x(prof int, ml text[], d_order int)) AS mrs
              ON t.effective_labels::text[] @> mrs.ml {where} GROUP BY t.id
-             HAVING  array_length(array_remove(array_agg(mrs.prof ORDER BY mrs.d_order), NULL), 1) is not NULL) AS sq
-            WHERE sq.id = update_t.id
+             HAVING array_length(array_remove(array_agg(mrs.prof ORDER BY mrs.d_order), NULL), 1) is not NULL) AS sq
+            WHERE sq.id = update_t.id and {profile_field} != sq.erg[1]
             """
         r = []
         for p_id, mrs in profile.objects.filter().values_list("id", "match_rules"):
@@ -1317,7 +1328,7 @@ class Label(Document):
                 if not rule["dynamic_order"]:
                     continue
                 r += [{"prof": p_id, "ml": list(rule["labels"]), "d_order": rule["dynamic_order"]}]
-        params = [orjson.dumps(r).decode("utf-8")]
+        params = [orjson.dumps(r).decode("utf-8")] + params
         with pg_connection.cursor() as cursor:
             cursor.execute(SQL, params)
 
@@ -1326,13 +1337,13 @@ class Label(Document):
         cls,
         model_id: str,
         model_profile_id: str,
-        table_filter: Optional[List[Tuple[str, str]]] = None,
-    ):
+        query_filter: Optional[List[Tuple[str, str]]] = None,
+    ) -> Tuple[str, str, Optional[str]]:
         """
         Sync profile by match rule
-        :param model_id:
+        :param model_id: Instance model_id
         :param model_profile_id: Profile model
-        :param table_filter:
+        :param query_filter: Optional filter by list (field, value)
         :return:
         """
         model = get_model(model_id)
@@ -1340,11 +1351,20 @@ class Label(Document):
             return
         table = model._meta.db_table
         profile = get_model(model_profile_id)
-        where = ""
-        if table_filter:
-            where = "WHERE " + " AND ".join(t[0] for t in table_filter)
+        # Build filter
+        where, params = [], []
+        for field, ids in query_filter or []:
+            if isinstance(ids, list) and isinstance(ids[0], int):
+                where += [f"{field} = ANY (%s::numeric[])"]
+            elif isinstance(ids, list):
+                where += [f"{field} = ANY (%s::text[])"]
+            else:
+                where += [f"{field} = %s"]
+            params += [ids]
+        where = ("WHERE " + " AND ".join(where)) if where else ""
+        # Build query
         SQL = f"""
-             SELECT t.id as id, t.effective_labels, (array_agg(mrs.prof ORDER BY mrs.d_order))[0] AS erg FROM {table} AS t
+             SELECT t.id as id, (array_agg(mrs.prof ORDER BY mrs.d_order))[1] AS erg FROM {table} AS t
              LEFT JOIN (select * from jsonb_to_recordset(%s::jsonb) AS x(prof int, ml text[], d_order int)) AS mrs
              ON t.effective_labels::text[] @> mrs.ml {where} GROUP BY t.id
              HAVING  array_length(array_remove(array_agg(mrs.prof ORDER BY mrs.d_order), NULL), 1) is not NULL
@@ -1355,7 +1375,7 @@ class Label(Document):
                 if not rule["dynamic_order"]:
                     continue
                 r += [{"prof": p_id, "ml": list(rule["labels"]), "d_order": rule["dynamic_order"]}]
-        params = [orjson.dumps(r).decode("utf-8")]
+        params = [orjson.dumps(r).decode("utf-8")] + params
         with pg_connection.cursor() as cursor:
             cursor.execute(SQL, params)
             yield from cursor
@@ -1366,18 +1386,22 @@ class Label(Document):
         model_id: str,
         model_profile_id: str,
         query_filter: Optional[List[Tuple[str, str]]] = None,
-    ):
+    ) -> Tuple[str, str, Optional[str]]:
         """
         Iterate over instance profile
+        :param model_id: Instance model_id
+        :param model_profile_id: Profile model
+        :param query_filter: Optional filter by list (field, value)
         """
+        model = get_model(model_id)
+        if not model:
+            return
         pipeline = []
         match = {}
         for field, ids in query_filter or []:
             match[field] = ids
         if match:
             pipeline += [{"$match": match}]
-
-        model = get_model(model_id)
         profile_model = get_model(model_profile_id)
         profile_coll = profile_model._get_collection_name()
         pipeline += [
@@ -1393,8 +1417,8 @@ class Label(Document):
                     "as": "profiles",
                 }
             },
-            {"$project": {"_id": 1, "p_ids": "$profiles._id"}},
+            {"$project": {"_id": 1, "name": 1, "p_ids": "$profiles._id"}},
         ]
         coll = model._get_collection()
         for row in coll.aggregate(pipeline):
-            yield row["_id"], row["p_ids"][0] if row["p_ids"] else None
+            yield row["_id"], row.get("name"), row["p_ids"][0] if row["p_ids"] else None
