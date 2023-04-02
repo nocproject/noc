@@ -334,5 +334,5 @@ def wipe(model_id: str, oid):
             wipe(o)
         o.delete()
     except Exception as e:
-        logger.error(f"[%s] Error when wipe: %s", o, str(e))
+        logger.error("[%s] Error when wipe: %s", o, str(e))
         Job.retry_after(o.state.ttl or 600)

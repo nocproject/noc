@@ -48,6 +48,8 @@ class Migration(BaseMigration):
         self.db.add_column(
             "sa_managedobject", "state", DocumentReferenceField("wf.State", null=True, blank=True)
         )
+        # Create index
+        self.db.create_index("sa_managedobject", ["state"])
         now = datetime.datetime.now()
         columns = {
             "state_changed": "State Changed",
