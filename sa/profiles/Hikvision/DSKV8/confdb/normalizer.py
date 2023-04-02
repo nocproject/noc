@@ -1,12 +1,13 @@
 # ----------------------------------------------------------------------
 # Hikvision.DSKV8 config normalizer
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2023 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
 # NOC modules
 from noc.core.confdb.normalizer.base import BaseNormalizer, match, ANY, REST
+from noc.core.validators import is_ipv4
 
 
 class HikvisionNormalizer(BaseNormalizer):
@@ -27,7 +28,8 @@ class HikvisionNormalizer(BaseNormalizer):
 
     @match("Time", "NTPServer", ANY, ANY)
     def normalize_ntp_server(self, tokens):
-        yield self.make_ntp_server_address(name=tokens[2], address=tokens[3])
+        if is_ipv4(tokens[3]):
+            yield self.make_ntp_server_address(name=tokens[2], address=tokens[3])
 
     @match("Users", "user", ANY, "userLevel", ANY)
     def normalize_username_access_level(self, tokens):
