@@ -13,7 +13,9 @@ import datetime
 from pymongo import UpdateOne
 
 # NOC modules
-from noc.models import is_document
+from noc.models import is_document, get_model_id, get_model
+from noc.core.scheduler.job import Job
+from noc.core.defer import call_later
 
 logger = logging.getLogger(__name__)
 
@@ -177,6 +179,18 @@ def model_set_state(self, state, state_changed: datetime.datetime = None, bulk=N
         ic_handler()
     # Call state on_enter_handlers
     self.state.on_enter_state(self)
+    #
+    if state.is_wiping and not state.ttl:
+        self.delete()
+    else:
+        call_later(
+            "noc.core.wf.decorator.wipe",
+            delay=state.ttl or 0,
+            scheduler="scheduler",
+            # pool=self.escalate_managed_object.escalator_shard,
+            model_id=get_model_id(self),
+            oid=self.id,
+        )
 
 
 def model_touch(self, bulk=None):
@@ -294,3 +308,31 @@ def workflow(cls):
     cls.fire_transition = fire_transition
     cls.fire_event = fire_event
     return cls
+
+
+def wipe(model_id: str, oid):
+    """
+    Wiping object for delay
+    :param model_id:
+    :param oid:
+    :return:
+    """
+    model = get_model(model_id)
+    o = model.objects.filter(id=oid).first()
+    if not o:
+        logger.info("[%s:%s] Object is not found. End..", model_id, oid)
+        return
+    elif not o.state.is_wiping:
+        logger.info("[%s] Object state: %s is not enable wiping. End..", o, o.state)
+        return
+    logger.info("[%s] Delete...")
+    try:
+        if model_id == "sa.ManagedObject":
+            # Custom delete handler
+            from noc.sa.wipe.managedobject import wipe
+
+            wipe(o)
+        o.delete()
+    except Exception as e:
+        logger.error(f"[%s] Error when wipe: %s", o, str(e))
+        Job.retry_after(o.state.ttl or 600)

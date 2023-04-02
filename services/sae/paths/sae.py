@@ -24,6 +24,7 @@ from noc.inv.models.firmware import Firmware
 from noc.main.models.template import Template
 from noc.main.models.extstorage import ExtStorage
 from noc.wf.models.state import State
+from noc.core.wf.interaction import Interaction
 from noc.core.cache.decorator import cachedmethod
 from noc.core.dcs.base import ResolutionError
 from noc.config import config
@@ -195,7 +196,7 @@ class SAEAPI(JSONRPCAPI):
         ) = data[0]
         # Check object is managed
         state = State.get_by_id(state)
-        if not state.is_enabled_interaction("SA"):
+        if not state.is_enabled_interaction(Interaction.ServiceActivation):
             metrics["error", ("type", "object_not_managed")] += 1
             raise APIError("Object is not managed")
         # Build capabilities

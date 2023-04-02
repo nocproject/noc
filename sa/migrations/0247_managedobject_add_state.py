@@ -33,12 +33,12 @@ class Migration(BaseMigration):
                     "changed": now.isoformat(sep=" "),
                     "diagnostic": "SA",
                 },
-                "ALARM": {
+                "PROC_ALARM": {
                     "state": state,
                     "checks": [],
                     "reason": None,
                     "changed": now.isoformat(sep=" "),
-                    "diagnostic": "ALARM",
+                    "diagnostic": "PROC_ALARM",
                 },
             }
         ).decode("utf-8")
@@ -48,6 +48,7 @@ class Migration(BaseMigration):
         self.db.add_column(
             "sa_managedobject", "state", DocumentReferenceField("wf.State", null=True, blank=True)
         )
+        now = datetime.datetime.now()
         columns = {
             "state_changed": "State Changed",
             "expired": "Expired",
@@ -60,6 +61,11 @@ class Migration(BaseMigration):
                 column,
                 models.DateTimeField(column_title, blank=True, null=True),
             )
+        # Write timestamp
+        self.db.execute(
+            """UPDATE sa_managedobject SET state_changed=%s, last_seen=%s, first_discovered=%s""",
+            [now, now, now],
+        )
         # Migrate is_managed
         self.db.execute(
             """UPDATE sa_managedobject SET state=%s, diagnostics = diagnostics || %s::jsonb WHERE is_managed=True""",

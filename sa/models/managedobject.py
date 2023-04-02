@@ -225,20 +225,20 @@ class ManagedObjectManager(Manager):
             .annotate(
                 is_managed=Case(
                     When(
-                        Q(diagnostics__SA__state="blocked")
-                        & Q(diagnostics__ALARM__state="blocked"),
+                        Q(**{f"diagnostics__{SA_DIAG}__state": "blocked"})
+                        & Q(**{f"diagnostics__{ALARM_DIAG}__state": "blocked"}),
                         then=Value(False),
                     ),
                     default=Value(True),
                     output_field=BooleanField(),
                 ),
                 has_sa=Case(
-                    When(diagnostics__SA__state="blocked", then=Value(False)),
+                    When(**{f"diagnostics__{SA_DIAG}__state": "blocked", "then": Value(False)}),
                     default=Value(True),
                     output_field=BooleanField(),
                 ),
                 has_alarm=Case(
-                    When(diagnostics__ALARM__state="blocked", then=Value(False)),
+                    When(**{f"diagnostics__{ALARM_DIAG}__state": "blocked", "then": Value(False)}),
                     default=Value(True),
                     output_field=BooleanField(),
                 ),

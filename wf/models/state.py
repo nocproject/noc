@@ -6,10 +6,10 @@
 # ----------------------------------------------------------------------
 
 # Python modules
-from threading import Lock
-from typing import Optional
 import operator
 import logging
+from threading import Lock
+from typing import Optional, Union
 
 # Third-party modules
 from mongoengine.document import Document, EmbeddedDocument
@@ -45,7 +45,6 @@ logger = logging.getLogger(__name__)
 id_lock = Lock()
 
 STATE_JOB = "noc.core.wf.transition.state_job"
-WIPE_JOB = "noc.sa.wipe.managedobject.wipe"
 
 
 class InteractionSetting(EmbeddedDocument):
@@ -316,7 +315,7 @@ class State(Document):
                         f"Interaction {ia} not allowed for models: {self.workflow.allowed_models}"
                     )
 
-    def is_enabled_interaction(self, interaction) -> bool:
+    def is_enabled_interaction(self, interaction: Union[str, Interaction]) -> bool:
         """
         Check diagnostic state: on/off
         :param interaction:
