@@ -13,7 +13,7 @@ from typing import Optional, List, Set, Iterable, Dict, Any, Callable, Tuple, Un
 from threading import Lock
 from collections import defaultdict
 from itertools import accumulate
-from functools import partial, partialmethod
+from functools import partial
 
 # Third-party modules
 from pymongo import UpdateMany
@@ -1252,7 +1252,7 @@ class Label(Document):
         :return:
         """
         mq = m_Q()
-        for vf, condition in VLANFilter_reset_caches.iter_match_vlanfilter(value):
+        for vf, condition in VLANFilter._reset_caches.iter_match_vlanfilter(value):
             condition = "any" if condition != "=" else "all"
             mq |= m_Q(
                 match_vlanfilter__match={
