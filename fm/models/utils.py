@@ -20,22 +20,25 @@ def get_event(event_id):
     """
     Get event by event_id
     """
-    sql = """select
+    sql = f"""select
         e.event_id as id,
         e.ts as timestamp,
         e.event_class as event_class_bi_id,
         e.managed_object as managed_object_bi_id,
         e.start_ts as start_timestamp,
-        e.source, e.raw_vars, e.resolved_vars, e.vars
+        e.source, e.raw_vars, e.resolved_vars, e.vars,
+        d.alarms as alarms
         from events e
-        where event_id=%s
-        format JSONEachRow
+        LEFT OUTER JOIN (
+        SELECT event_id, groupArray(alarm_id) as alarms FROM disposelog  where alarm_id != ''  GROUP BY event_id) as d
+        ON e.event_id == d.event_id
+        where event_id='{event_id}'
+        format JSON
     """
     cursor = connection()
-    res = cursor.execute(sql, return_raw=True, args=[event_id]).decode().split("\n")
-    res = [orjson.loads(r) for r in res if r]
+    res = orjson.loads(cursor.execute(sql, return_raw=True))
     if res:
-        return ActiveEvent.create_from_dict(res[0])
+        return ActiveEvent.create_from_dict(res["data"][0])
     return None
 
 

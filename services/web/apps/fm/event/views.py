@@ -1,7 +1,7 @@
 # ---------------------------------------------------------------------
 # fm.event application
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2022 The NOC Project
+# Copyright (C) 2007-2023 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -153,8 +153,12 @@ class EventApplication(ExtDocApplication):
             dictGet('{config.clickhouse.db_dictionaries}.eventclass', ('id', 'name'), e.event_class) as event_class,
             dictGet('{config.clickhouse.db_dictionaries}.managedobject', ('id', 'name'), e.managed_object) as managed_object,
             e.start_ts as start_timestamp,
-            e.source, e.raw_vars, e.resolved_vars, e.vars
+            e.source, e.raw_vars, e.resolved_vars, e.vars,
+            d.alarms as alarms
             from events e
+            LEFT OUTER JOIN (
+            SELECT event_id, groupArray(alarm_id) as alarms FROM disposelog  where alarm_id != ''  GROUP BY event_id) as d
+            ON e.event_id == d.event_id
             {where_section}
             {order_section}
             {limit_section}
@@ -213,14 +217,14 @@ class EventApplication(ExtDocApplication):
             subject = o.subject
             repeats = o.repeats
             duration = o.duration
-            n_alarms = len(o.alarms)
-            if n_alarms:
-                row_class = AlarmSeverity.get_severity_css_class_name(get_severity(o.alarms))
+            alarms = [str(a) for a in o.alarms]
+            if alarms:
+                row_class = AlarmSeverity.get_severity_css_class_name(get_severity(alarms))
         else:
             subject = None
             repeats = None
             duration = None
-            n_alarms = None
+            alarms = None
         d = {
             "id": str(o.id),
             "status": o.status,
@@ -234,7 +238,7 @@ class EventApplication(ExtDocApplication):
             "subject": subject,
             "repeats": repeats,
             "duration": duration,
-            "alarms": n_alarms,
+            "alarms": alarms,
             "row_class": row_class,
         }
         if fields:

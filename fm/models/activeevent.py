@@ -1,7 +1,7 @@
 # ---------------------------------------------------------------------
 # ActiveEvent model
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2020 The NOC Project
+# Copyright (C) 2007-2023 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -277,6 +277,7 @@ class ActiveEvent(Document):
             raw_vars=d["raw_vars"],
             resolved_vars=d["resolved_vars"],
             vars=d["vars"],
+            alarms=d["alarms"],
         )
 
 
