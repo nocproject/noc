@@ -73,6 +73,7 @@ class Workflow(Document):
     _id_cache = cachetools.TTLCache(maxsize=100, ttl=60)
     _name_cache = cachetools.TTLCache(maxsize=100, ttl=60)
     _bi_id_cache = cachetools.TTLCache(maxsize=100, ttl=60)
+    _wiping_states_cache = cachetools.TTLCache(maxsize=100, ttl=900)
 
     def __str__(self):
         return self.name
@@ -113,6 +114,7 @@ class Workflow(Document):
         return State.objects.filter(workflow=self.id, is_wiping=True).first()
 
     @classmethod
+    @cachetools.cachedmethod(operator.attrgetter("_wiping_states_cache"), lock=lambda _: id_lock)
     def get_wiping_states(cls, model: Optional[str] = None):
         from .state import State
 
@@ -120,7 +122,7 @@ class Workflow(Document):
         if model:
             wfs = list(Workflow.objects.filter(allowed_models__in=[model]).scalar("id"))
             w_states = w_states.filter(workflow__in=wfs)
-        return list(w_states)
+        return [s.id for s in w_states]
 
     def set_wiping_state(self, state):
         from .state import State
