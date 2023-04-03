@@ -1,4 +1,15 @@
 ---
+- name: Add redpanda user
+  user:
+    name: "{{ redpanda_user }}"
+    comment: "redpanda user"
+    group: "{{ redpanda_group }}"
+    system: "True"
+    home: "{{ redpanda_home_dir }}"
+    shell: "{{ fake_shell }}"
+  tags:
+    - config
+
 - name: "Include OS-specific tasks"
   include_tasks: "os/{{ ansible_distribution }}_{{ ansible_distribution_major_version }}/main.yml"
   tags:
@@ -7,6 +18,11 @@
 
 - name: Redpanda config
   import_tasks: config.yml
+  tags:
+    - config
+
+- name: Redpanda config
+  import_tasks: dirs.yml
   tags:
     - config
 

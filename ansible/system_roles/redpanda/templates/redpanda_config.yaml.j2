@@ -1,6 +1,3 @@
-  organization: "{{ redpanda_organization }}"
-  cluster_id: "{{ redpanda_cluster_id }}"
-
   redpanda:
     empty_seed_starts_cluster: false
     advertised_kafka_api:
@@ -26,6 +23,9 @@
           port: {{ redpanda_rpc_port }}
 {% endfor %}
   rpk:
+    additional_start_flags:
+       - --smp={{ redpanda_cpu_limit }}
+       - --memory={{ redpanda_memory_limit }}G
     kafka_api:
       brokers:
 {% for host in groups["svc-redpanda-exec"] %}
@@ -36,14 +36,15 @@
 {% for host in groups["svc-redpanda-exec"] %}
       - {{ hostvars[host].ansible_host }}:{{ redpanda_admin_api_port }}
 {% endfor %}
-    tune_network: true
-    tune_disk_scheduler: true
-    tune_disk_nomerges: true
-    tune_disk_write_cache: true
-    tune_disk_irq: true
-    tune_cpu: true
-    tune_aio_events: true
-    tune_clocksource: true
-    tune_swappiness: true
-    tune_ballast_file: true
+    tune_network: false
+    tune_disk_scheduler: false
+    tune_disk_nomerges: false
+    tune_disk_write_cache: false
+    tune_disk_irq: false
+    tune_cpu: false
+    tune_aio_events: false
+    tune_clocksource: false
+    tune_swappiness: false
+    tune_ballast_file: false
+    overprovisioned: true
   pandaproxy: {}
