@@ -2,7 +2,7 @@
 # Vendor: Qtech
 # OS:     QOS
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2023 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -38,15 +38,15 @@ class Profile(BaseProfile):
     command_submit = b"\r"
     pattern_prompt = rb"^(?P<hostname>[a-zA-Z0-9]\S{0,19})(?:[\.\-_\d\w]+)?(?:\(config[^\)]*\))?#"
 
-    rx_ifname = re.compile(r"^(?P<number>\d+)$")
+    rx_ifname = re.compile(r"^P(?P<number>\d+)$")
 
     def convert_interface_name(self, s):
         """
-        >>> Profile().convert_interface_name("1")
-        'P1'
+        >>> Profile().convert_interface_name("P1")
+        'port1'
         """
         match = self.rx_ifname.match(s)
         if match:
-            return "P%d" % int(match.group("number"))
+            return "port%d" % int(match.group("number"))
         else:
             return s
