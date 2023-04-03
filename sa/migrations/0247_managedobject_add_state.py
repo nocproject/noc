@@ -20,6 +20,7 @@ from noc.core.migration.base import BaseMigration
 class Migration(BaseMigration):
     WF_MANAGED = "641b35e6fa01fd032a1f61f1"
     WF_UNMANAGED = "641b371eb846e3cc661ea8b5"
+    WF_REMOVED = "641b371eb846e3cc661ea8b3"
 
     @staticmethod
     def get_diagnostic(state="blocked"):
@@ -74,7 +75,22 @@ class Migration(BaseMigration):
             [self.WF_MANAGED, self.get_diagnostic("enabled")],
         )
         self.db.execute(
+            """UPDATE sa_managedobject SET effective_labels = array_append(effective_labels, %s)
+             WHERE is_managed=True AND NOT effective_labels && %s::varchar[]""",
+            ["noc::is_managed::=", ["noc::is_managed::="]],
+        )
+        self.db.execute(
             """UPDATE sa_managedobject SET state=%s, diagnostics = diagnostics || %s::jsonb WHERE is_managed=False""",
             [self.WF_UNMANAGED, self.get_diagnostic("blocked")],
+        )
+        self.db.execute(
+            """UPDATE sa_managedobject SET effective_labels = array_remove(effective_labels, %s)
+             WHERE is_managed=False AND effective_labels && %s::varchar[]""",
+            ["noc::is_managed::=", ["noc::is_managed::="]],
+        )
+        # Set Wiping object to Remove
+        self.db.execute(
+            """UPDATE sa_managedobject SET state=%s WHERE name LIKE 'wiping-%%'""",
+            [self.WF_REMOVED],
         )
         self.db.delete_column("sa_managedobject", "is_managed")

@@ -224,12 +224,8 @@ class ManagedObjectManager(Manager):
             .get_queryset()
             .annotate(
                 is_managed=Case(
-                    When(
-                        Q(**{f"diagnostics__{SA_DIAG}__state": "blocked"})
-                        & Q(**{f"diagnostics__{ALARM_DIAG}__state": "blocked"}),
-                        then=Value(False),
-                    ),
-                    default=Value(True),
+                    When(Q(effective_labels__contains=["noc::is_managed::="]), then=Value(True)),
+                    default=Value(False),
                     output_field=BooleanField(),
                 ),
                 has_sa=Case(
@@ -2195,10 +2191,11 @@ class ManagedObject(NOCModel):
     def iter_effective_labels(cls, instance: "ManagedObject") -> Iterable[List[str]]:
         yield list(instance.labels or [])
         yield list(instance.object_profile.labels or [])
-        if getattr(instance, "is_managed", True):
-            yield ["noc::is_managed::="]
         if instance.state:
             yield list(instance.state.labels)
+        else:
+            # When create
+            yield ["noc::is_managed::="]
         yield list(AdministrativeDomain.iter_lazy_labels(instance.administrative_domain))
         yield list(Pool.iter_lazy_labels(instance.pool))
         yield list(ManagedObjectProfile.iter_lazy_labels(instance.object_profile))

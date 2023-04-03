@@ -112,6 +112,16 @@ class Workflow(Document):
 
         return State.objects.filter(workflow=self.id, is_wiping=True).first()
 
+    @classmethod
+    def get_wiping_states(cls, model: Optional[str] = None):
+        from .state import State
+
+        w_states = State.objects.filter(is_wiping=True)
+        if model:
+            wfs = list(Workflow.objects.filter(allowed_models__in=[model]).scalar("id"))
+            w_states = w_states.filter(workflow__in=wfs)
+        return list(w_states)
+
     def set_wiping_state(self, state):
         from .state import State
 

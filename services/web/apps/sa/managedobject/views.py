@@ -55,6 +55,7 @@ from noc.core.translation import ugettext as _
 from noc.core.comp import smart_text, smart_bytes
 from noc.core.geocoder.loader import loader as geocoder_loader
 from noc.core.validators import is_objectid
+from noc.wf.models.workflow import Workflow
 from noc.fm.models.activealarm import ActiveAlarm
 from noc.fm.models.alarmclass import AlarmClass
 from noc.sa.models.objectstatus import ObjectStatus
@@ -442,7 +443,11 @@ class ManagedObjectApplication(ExtModelApplication):
         cq, _ = self.get_caps_Q(self.parse_request_query(request))
         if cq:
             qs = qs.filter(cq)
-        qs = qs.exclude(name__startswith="wiping-")
+        # qs = qs.exclude(name__startswith="wiping-")
+        # Filter Wiped
+        w_states = Workflow.get_wiping_states()
+        if w_states:
+            qs = qs.exclude(state__overlap=[str(s.id) for s in w_states])
         return qs
 
     @view(url=r"^(?P<id>\d+)/links/$", method=["GET"], access="read", api=True)

@@ -41,7 +41,7 @@ class Migration(BaseMigration):
                     "on_leave_handlers": [],
                     "x": 280,
                     "y": 360,
-                    "labels": [],
+                    "labels": ["noc::is_managed::="],
                     "effective_labels": [],
                     "bi_id": Int64("2667556019038926839"),
                 },
