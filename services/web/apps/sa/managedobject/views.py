@@ -447,7 +447,7 @@ class ManagedObjectApplication(ExtModelApplication):
         # Filter Wiped
         w_states = Workflow.get_wiping_states()
         if w_states:
-            qs = qs.exclude(state__in=[str(s.id) for s in w_states])
+            qs = qs.exclude(state__in=[str(s) for s in w_states])
         return qs
 
     @view(url=r"^(?P<id>\d+)/links/$", method=["GET"], access="read", api=True)
