@@ -9,6 +9,7 @@ import re
 # NOC modules
 from noc.sa.profiles.Generic.get_capabilities import Script as BaseScript
 from noc.sa.profiles.Generic.get_capabilities import false_on_cli_error, false_on_snmp_error
+from noc.core.mib import mib
 
 
 class Script(BaseScript):
@@ -27,8 +28,11 @@ class Script(BaseScript):
     @false_on_snmp_error
     def has_lldp_snmp(self):
         """
-        Check box has LLDP enabled
+        Check box has lldp enabled
         """
-        r = self.snmp.get("1.0.8802.1.1.2.1.2.2.0")
-        if r:
-            return True
+        try:
+            r = self.snmp.get(mib["LLDP-MIB::lldpStatsRemTablesInserts", 0])
+            if r:
+                return True
+        except self.snmp.TimeOutError:
+            return False
