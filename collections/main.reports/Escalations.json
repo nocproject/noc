@@ -11,7 +11,7 @@
   "allow_rest": false,
   "parameters": [
     {
-      "name": "from_date",
+      "name": "start",
       "label": "From",
       "type": "date",
       "choices": [],
@@ -19,7 +19,7 @@
       "localization": {}
     },
     {
-      "name": "to_date",
+      "name": "end",
       "label": "To",
       "type": "date",
       "choices": [],
@@ -48,7 +48,7 @@
     },
     {
       "name": "master",
-      "parent": "root",
+      "parent": "Root",
       "orientation": "H",
       "queries": [
         {
@@ -59,7 +59,7 @@
   ],
   "bands_format": [
     {
-      "name": "root",
+      "name": "Root",
       "title_template": "",
       "column_format": []
     },
