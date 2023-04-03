@@ -50,6 +50,7 @@ from noc.core.span import Span
 from noc.core.cache.base import cache
 from noc.core.perf import metrics
 from noc.core.comp import smart_bytes
+from noc.core.wf.interaction import Interaction
 
 
 class MODiscoveryJob(PeriodicJob):
@@ -121,8 +122,11 @@ class MODiscoveryJob(PeriodicJob):
 
     def can_run(self):
         # Check object is managed
-        if not self.object.is_managed:
-            self.logger.info("Object is not managed. Skipping job")
+        if (
+            Interaction.BoxDiscovery not in self.object.interactions
+            and Interaction.PeriodicDiscovery not in self.object.interactions
+        ):
+            self.logger.info("Run Discovery on Object is not allowed. Skipping job")
             return False
         # Check object status according to policy
         rp = self.get_running_policy()

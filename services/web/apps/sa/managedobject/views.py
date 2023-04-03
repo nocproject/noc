@@ -6,6 +6,7 @@
 # ---------------------------------------------------------------------
 
 # Python modules
+from typing import Dict, Any, Tuple, List
 from collections import defaultdict
 import zlib
 
@@ -18,6 +19,7 @@ from mongoengine.queryset import Q as MQ
 
 # NOC modules
 from noc.services.web.base.extmodelapplication import ExtModelApplication, view
+from noc.services.web.base.decorators.state import state_handler
 from noc.sa.models.administrativedomain import AdministrativeDomain
 from noc.sa.models.managedobject import ManagedObject, ManagedObjectAttribute
 from noc.sa.models.useraccess import UserAccess
@@ -49,17 +51,19 @@ from noc.sa.models.action import Action
 from noc.core.scheduler.job import Job
 from noc.core.script.loader import loader as script_loader
 from noc.core.mongo.connection import get_db
-from noc.core.defer import defer
 from noc.core.translation import ugettext as _
 from noc.core.comp import smart_text, smart_bytes
 from noc.core.geocoder.loader import loader as geocoder_loader
+from noc.core.validators import is_objectid
+from noc.wf.models.workflow import Workflow
 from noc.fm.models.activealarm import ActiveAlarm
 from noc.fm.models.alarmclass import AlarmClass
 from noc.sa.models.objectstatus import ObjectStatus
 
-JP_CLAUSE_PATTERN = "jsonb_path_exists(caps, '$[*] ? (@.capability == \"{}\") ? (@.value {} {})')"
+JP_CLAUSE_PATTERN = """jsonb_path_exists(caps, '$[*] ? (@.capability == "{}") ? (@.value {} {})')"""
 
 
+@state_handler
 class ManagedObjectApplication(ExtModelApplication):
     """
     ManagedObject application
@@ -203,7 +207,7 @@ class ManagedObjectApplication(ExtModelApplication):
         )
         # Apply oper_state
         for x in data:
-            if not x["is_managed"] or x["id"] in disabled:
+            if not x.get("is_managed") or x["id"] in disabled:
                 # possibly exclude degradated state
                 x["oper_state"] = "disabled"
                 x["oper_state__label"] = _("Disable")
@@ -254,6 +258,7 @@ class ManagedObjectApplication(ExtModelApplication):
         d_config = {d.diagnostic: d for d in o.iter_diagnostic_configs()}
         if not d_config:
             return data
+        data["is_managed"] = getattr(o, "is_managed", True)
         data["diagnostics"] = list(
             sorted(
                 [
@@ -291,12 +296,13 @@ class ManagedObjectApplication(ExtModelApplication):
             "id": o.id,
             "name": o.name,
             "address": o.address,
-            "is_managed": o.is_managed,
+            "is_managed": getattr(o, "is_managed", True),
             "administrative_domain": str(o.administrative_domain.name),
             "object_profile": str(o.object_profile.name),
             "segment": str(o.segment.name),
             "auth_profile": str(o.auth_profile.name) if o.auth_profile else "",
             "profile": o.profile.name,
+            "state": str(o.state),
             "pool": str(o.pool.name),
             "platform": o.platform.name if o.platform else "",
             "version": o.version.version if o.version else "",
@@ -358,27 +364,21 @@ class ManagedObjectApplication(ExtModelApplication):
                 r.pop(f)
         return r
 
-    def get_Q(self, request, query):
-        q = super().get_Q(request, query)
-        sq = ManagedObject.get_search_Q(query)
-        if sq:
-            q |= sq
+    def extra_query(self, q, order):
+        # raise NotImplementedError
+        extra, order = super().extra_query(q, order)
+        _, extra_condition = self.get_caps_Q(q)
+        if extra_condition:
+            extra["where"] = extra_condition
+        return extra, order
 
-        return q
-
-    def queryset(self, request, query=None):
-        if request.method != "POST":
-            nq = {str(k): v[0] if len(v) == 1 else v for k, v in request.GET.lists()}
-        elif self.site.is_json(request.META.get("CONTENT_TYPE")):
-            nq = self.deserialize(request.body)
-        else:
-            nq = {str(k): v[0] if len(v) == 1 else v for k, v in request.POST.lists()}
-
-        q = d_Q()
-        if not request.user.is_superuser:
-            q &= UserAccess.Q(request.user)
-
-        jp_clauses = []
+    def get_caps_Q(self, nq: Dict[str, Any]) -> Tuple["d_Q", List[str]]:
+        """
+        Resolve caps on query to queryset
+        :param nq:
+        :return:
+        """
+        q, jp_clauses = d_Q(), []
         for cc in [part for part in nq if part.startswith("caps")]:
             """
             Caps: caps0=CapsID,caps1=CapsID:true....
@@ -389,12 +389,10 @@ class ManagedObjectApplication(ExtModelApplication):
             caps0=CapsID:true - caps value equal True
             caps0=CapsID:2~50 - caps value many then 2 and less then 50
             """
-
-            c = nq.pop(cc)
-            if not c:
+            c = nq.get(cc)
+            if not c or cc in self.clean_fields:
                 continue
 
-            self.logger.info("[%s] Caps", c)
             if "!" in c:
                 # @todo Добавить исключение (только этот) !ID
                 c_id = c[1:]
@@ -404,9 +402,10 @@ class ManagedObjectApplication(ExtModelApplication):
                 c_query = "exists"
             else:
                 c_id, c_query = c.split(":", 1)
+            if not is_objectid(c_id):
+                continue
             caps = Capability.get_by_id(c_id)
             self.logger.info("[%s] Caps: %s", c, caps)
-
             if "~" in c_query:
                 l, r = c_query.split("~")
                 if not l:
@@ -428,10 +427,27 @@ class ManagedObjectApplication(ExtModelApplication):
             else:
                 value = caps.clean_value(c_query)
                 q &= d_Q(caps__contains=[{"capability": str(caps.id), "value": value}])
+        return q, jp_clauses
+
+    def get_Q(self, request, query):
+        q = super().get_Q(request, query)
+        sq = ManagedObject.get_search_Q(query)
+        if sq:
+            q |= sq
+        return q
+
+    def queryset(self, request, query=None):
         qs = super().queryset(request, query)
-        if jp_clauses:
-            qs = qs.extra(where=jp_clauses)
-        qs = qs.filter(q).exclude(name__startswith="wiping-")
+        if not request.user.is_superuser:
+            qs = qs.filter(UserAccess.Q(request.user))
+        cq, _ = self.get_caps_Q(self.parse_request_query(request))
+        if cq:
+            qs = qs.filter(cq)
+        # qs = qs.exclude(name__startswith="wiping-")
+        # Filter Wiped
+        w_states = Workflow.get_wiping_states()
+        if w_states:
+            qs = qs.exclude(state__in=[str(s.id) for s in w_states])
         return qs
 
     @view(url=r"^(?P<id>\d+)/links/$", method=["GET"], access="read", api=True)
@@ -527,7 +543,7 @@ class ManagedObjectApplication(ExtModelApplication):
         for o in ids:
             if not o.has_access(request.user):
                 continue
-            o.is_managed = True
+            o.fire_event("managed")
             o.save()
         return "Selected objects set to managed state"
 
@@ -542,7 +558,7 @@ class ManagedObjectApplication(ExtModelApplication):
         for o in ids:
             if not o.has_access(request.user):
                 continue
-            o.is_managed = False
+            o.fire_event("unmanaged")
             o.save()
         return "Selected objects set to unmanaged state"
 
@@ -772,12 +788,13 @@ class ManagedObjectApplication(ExtModelApplication):
             )
         if not o.has_access(request.user):
             return self.response_forbidden("Access denied")
-        # Run sa.wipe_managed_object job instead
-        o.name = "wiping-%d" % o.id
-        o.is_managed = False
-        o.description = "Wiping! Do not touch!"
-        o.save()
-        defer("noc.sa.wipe.managedobject.wipe", key=o.id, o=o.id)
+        ws = o.object_profile.workflow.get_wiping_state()
+        if not ws:
+            return HttpResponse(
+                orjson.dumps({"status": False, "message": "No wiping state on Workflow"}),
+                status=self.FORBIDDEN,
+            )
+        o.set_state(ws)
         return HttpResponse(orjson.dumps({"status": True}), status=self.DELETED)
 
     @view(

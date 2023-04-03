@@ -44,7 +44,8 @@ Ext.define("NOC.sa.managedobject.ApplicationModel", {
         },
         {
             name: "is_managed",
-            type: "boolean"
+            type: "boolean",
+            persist: false
         },
         {
             name: "object_profile",
@@ -86,6 +87,10 @@ Ext.define("NOC.sa.managedobject.ApplicationModel", {
             name: "row_class",
             type: "string",
             persist: false
+        },
+        {
+            name: "state",
+            type: "string"
         },
         {
             name: 'status',

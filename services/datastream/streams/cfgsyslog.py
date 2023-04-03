@@ -11,6 +11,7 @@ from noc.main.models.pool import Pool
 from noc.main.models.label import Label
 from noc.main.models.remotesystem import RemoteSystem
 from noc.sa.models.managedobject import ManagedObject
+from noc.wf.models.state import State
 from noc.core.wf.diagnostic import SYSLOG_DIAG
 
 
@@ -25,7 +26,7 @@ class CfgSyslogDataStream(DataStream):
             "id",
             "name",
             "bi_id",
-            "is_managed",
+            "state",
             "pool",
             "fm_pool",
             "administrative_domain",
@@ -50,7 +51,7 @@ class CfgSyslogDataStream(DataStream):
             mo_id,
             name,
             bi_id,
-            is_managed,
+            state,
             pool,
             fm_pool,
             adm_domain,
@@ -69,8 +70,9 @@ class CfgSyslogDataStream(DataStream):
             syslog_archive_policy,
             mop_syslog_archive_policy,
         ) = mo[0]
+        state = State.get_by_id(state)
         # Check if object capable to receive syslog events
-        if not is_managed or str(syslog_source_type) == "d":
+        if not state.is_enabled_interaction("EVENT") or str(syslog_source_type) == "d":
             raise KeyError("Disabled by trap source ManagedObject")
         # Get effective event processing policy
         event_processing_policy = str(event_processing_policy)

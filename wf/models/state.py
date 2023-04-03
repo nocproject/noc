@@ -6,13 +6,13 @@
 # ----------------------------------------------------------------------
 
 # Python modules
-from threading import Lock
-from typing import Optional
 import operator
 import logging
+from threading import Lock
+from typing import Optional, Union
 
 # Third-party modules
-from mongoengine.document import Document
+from mongoengine.document import Document, EmbeddedDocument
 from mongoengine.fields import (
     StringField,
     BooleanField,
@@ -20,6 +20,8 @@ from mongoengine.fields import (
     ReferenceField,
     LongField,
     IntField,
+    MapField,
+    EmbeddedDocumentField,
 )
 from mongoengine.queryset.visitor import Q as m_Q
 import cachetools
@@ -34,7 +36,9 @@ from noc.core.handler import get_handler
 from noc.core.defer import defer
 from noc.core.hash import hash_int
 from noc.core.change.decorator import change
-from noc.models import get_model_id
+from noc.core.wf.interaction import Interaction
+from noc.config import config
+from noc.models import get_model_id, LABEL_MODELS, get_model, is_document
 from noc.main.models.label import Label
 
 logger = logging.getLogger(__name__)
@@ -43,9 +47,15 @@ id_lock = Lock()
 STATE_JOB = "noc.core.wf.transition.state_job"
 
 
+class InteractionSetting(EmbeddedDocument):
+    meta = {"strict": False, "auto_create_index": False}
+    enable = BooleanField(default=True)
+    # raise_alarm = BooleanField(default=True)
+
+
 @bi_sync
-@Label.model
 @change
+@Label.model
 @on_delete_check(
     check=[
         ("wf.Transition", "from_state"),
@@ -62,6 +72,7 @@ STATE_JOB = "noc.core.wf.transition.state_job"
         ("phone.PhoneRange", "state"),
         ("pm.Agent", "state"),
         ("sa.Service", "state"),
+        ("sa.ManagedObject", "state"),
         ("sla.SLAProbe", "state"),
         ("vc.VLAN", "state"),
         ("vc.VPN", "state"),
@@ -72,11 +83,11 @@ STATE_JOB = "noc.core.wf.transition.state_job"
 class State(Document):
     meta = {
         "collection": "states",
-        "indexes": [{"fields": ["workflow", "name"], "unique": True}, "labels", "effective_labels"],
+        "indexes": [{"fields": ["workflow", "name"], "unique": True}, "labels"],
         "strict": False,
         "auto_create_index": False,
     }
-    workflow = PlainReferenceField(Workflow)
+    workflow: "Workflow" = PlainReferenceField(Workflow)
     name = StringField()
     description = StringField()
     # State properties
@@ -84,6 +95,8 @@ class State(Document):
     is_default = BooleanField(default=False)
     # Resource is in productive usage
     is_productive = BooleanField(default=False)
+    # Resource will be wiping after expired
+    is_wiping = BooleanField(default=False)
     # Discovery should update last_seen field
     update_last_seen = BooleanField(default=False)
     # State time-to-live in seconds
@@ -104,9 +117,12 @@ class State(Document):
     # WFEditor coordinates
     x = IntField(default=0)
     y = IntField(default=0)
+    # Disable all interaction
+    disable_all_interaction = BooleanField(default=False)
+    #
+    interaction_settings = MapField(EmbeddedDocumentField(InteractionSetting))
     # Labels
     labels = ListField(StringField())
-    effective_labels = ListField(StringField())
     # Integration with external NRI and TT systems
     # Reference to remote system object has been imported from
     remote_system = ReferenceField(RemoteSystem)
@@ -119,7 +135,7 @@ class State(Document):
     _bi_id_cache = cachetools.TTLCache(maxsize=100, ttl=60)
 
     def __str__(self):
-        return "%s: %s" % (self.workflow.name, self.name)
+        return f"{self.workflow.name}: {self.name}"
 
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_id_cache"), lock=lambda _: id_lock)
@@ -132,12 +148,35 @@ class State(Document):
         return State.objects.filter(bi_id=id).first()
 
     def on_save(self):
+        chenged_fields = getattr(self, "_changed_fields", None)
         if (
-            (hasattr(self, "_changed_fields") and "is_default" in self._changed_fields)
-            or not hasattr(self, "_changed_field")
+            (chenged_fields and "is_default" in self._changed_fields) or not chenged_fields
         ) and self.is_default:
             # New default
             self.workflow.set_default_state(self)
+        if (
+            (chenged_fields and "is_wiping" in self._changed_fields) or not chenged_fields
+        ) and self.is_wiping:
+            # New default
+            self.workflow.set_wiping_state(self)
+        if (chenged_fields and "labels" in chenged_fields) or (not chenged_fields and self.labels):
+            self.sync_reffered_labels()
+
+    def iter_changed_datastream(self, changed_fields=None):
+        from noc.sa.models.managedobject import ManagedObject
+
+        if not changed_fields or "sa.ManagedObject" not in self.workflow.allowed_models:
+            return
+        changed_fields = set(changed_fields)
+        if {"is_wiping", "disable_all_interaction", "interaction_settings"}.intersection(
+            changed_fields
+        ):
+            for mo_id, bi_id in ManagedObject.objects.filter(state=str(self.id)).values_list(
+                "id", "bi_id"
+            ):
+                if config.datastream.enable_managedobject:
+                    yield "managedobject", mo_id
+                yield "cfgmetricsources", f"sa.ManagedObject::{bi_id}"
 
     def on_enter_state(self, obj):
         """
@@ -261,3 +300,65 @@ class State(Document):
     @classmethod
     def can_set_label(cls, label):
         return Label.get_effective_setting(label, setting="enable_workflowstate")
+
+    def clean(self):
+        for mid in self.workflow.allowed_models:
+            try:
+                get_model(mid)
+            except AssertionError:
+                raise ValueError(f"Unknown model_id: {mid}")
+        for ia in self.interaction_settings:
+            ia = Interaction(ia)
+            if self.workflow.allowed_models and ia.config.models:
+                if not ia.config.models.intersection(set(self.workflow.allowed_models)):
+                    raise ValueError(
+                        f"Interaction {ia} not allowed for models: {self.workflow.allowed_models}"
+                    )
+
+    def is_enabled_interaction(self, interaction: Union[str, Interaction]) -> bool:
+        """
+        Check diagnostic state: on/off
+        :param interaction:
+        :return:
+        """
+        if self.is_wiping or self.disable_all_interaction:
+            return False
+        if isinstance(interaction, str):
+            interaction = Interaction(interaction.upper())
+        if interaction.value in self.interaction_settings:
+            return self.interaction_settings[interaction.value].enable
+        return True
+
+    def sync_reffered_labels(self):
+        """
+        Update labels on reffered models
+        * filter - state=state_id
+        * sync resource_group
+        :return:
+        """
+        from noc.inv.models.resourcegroup import ResourceGroup
+
+        for model_id in self.workflow.allowed_models:
+            model = get_model(model_id)
+            state_id = self.id
+            if not is_document(model):
+                state_id = set(self.id)
+            removed, add_labels = [], []
+            for ll in Label.objects.filter(
+                **{"enable_workflowstate": True, LABEL_MODELS[model_id]: True}
+            ):
+                # @todo more precisely
+                if ll.name not in self.labels:
+                    removed.append(ll.name)
+            for ll.name in self.labels:
+                if model.can_set_label(ll.name):
+                    add_labels.append(ll.name)
+            if removed:
+                Label.remove_model_labels(model_id, removed, instance_filters=[("state", state_id)])
+            if add_labels:
+                Label.add_model_labels(model_id, add_labels, instance_filters=[("state", state_id)])
+            if not hasattr(model, "effective_service_groups"):
+                continue
+            if removed or add_labels:
+                ResourceGroup.sync_model_groups(model_id, table_filter=[("state", state_id)])
+        # Invalidate cache

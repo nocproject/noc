@@ -28,6 +28,11 @@ Ext.define("NOC.wf.state.Model", {
             type: "boolean"
         },
         {
+            name: "disable_all_interaction",
+            type: "boolean",
+            defaultValue: false
+        },
+        {
             name: "on_enter_handlers",
             type: "auto"
         },
@@ -57,6 +62,10 @@ Ext.define("NOC.wf.state.Model", {
             type: "boolean"
         },
         {
+            name: "is_wiping",
+            type: "boolean"
+        },
+        {
             name: "remote_system",
             type: "string"
         },
@@ -80,6 +89,10 @@ Ext.define("NOC.wf.state.Model", {
         {
             name: "description",
             type: "string"
+        },
+        {
+            name: "interaction_settings",
+            type: "auto"
         },
         {
             name: "labels",

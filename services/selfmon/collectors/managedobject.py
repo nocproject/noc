@@ -1,12 +1,16 @@
 # ----------------------------------------------------------------------
 # ManagedObjectCollector
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2018 The NOC Project
+# Copyright (C) 2007-2023 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
+# Python modules
+from collections import defaultdict
+
 # NOC modules
 from noc.main.models.pool import Pool
+from noc.wf.models.state import State
 from .base import BaseCollector
 
 
@@ -15,20 +19,23 @@ class ManagedObjectCollector(BaseCollector):
 
     SQL_POOL_MO = """SELECT
       pool AS pool_id,
-      COUNT(CASE WHEN is_managed THEN 1 END) AS pool_managed,
-      COUNT(CASE WHEN NOT is_managed THEN 1 END) AS pool_unmanaged
+      state AS state_id,
+      COUNT(*) AS pool_state_count
     FROM sa_managedobject
-    GROUP BY pool
+    GROUP BY pool, state
     """
 
     def iter_metrics(self):
-        for pool_id, pool_managed, pool_unmanaged in self.pg_execute(self.SQL_POOL_MO):
+        pool_stat = defaultdict(int)
+        for pool_id, state_id, count in self.pg_execute(self.SQL_POOL_MO):
             pool = Pool.get_by_id(pool_id)
-            if not pool:
+            state = State.get_by_id(state_id)
+            if not pool or not state:
                 continue
-            yield ("inventory_managedobject_managed", ("pool", pool.name)), pool_managed
-            yield ("inventory_managedobject_unmanaged", ("pool", pool.name)), pool_unmanaged
             yield (
-                "inventory_managedobject_total",
+                "inventory_managedobject_count",
                 ("pool", pool.name),
-            ), pool_managed + pool_unmanaged
+                ("state", state.name),
+            ), count
+        for pool_name, count in pool_stat.items():
+            yield ("inventory_managedobject_total", ("pool", pool_name)), count

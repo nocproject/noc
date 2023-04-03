@@ -724,7 +724,7 @@ class ExtModelApplication(ExtApplication):
             return self.render_json(
                 {"success": False, "message": "Integrity error"}, status=self.CONFLICT
             )
-        except ValidationError as e:
+        except (ValidationError, ValueError) as e:
             return self.response({"success": False, "message": str(e)}, status=self.BAD_REQUEST)
         if request.is_extjs:
             r = {"success": True, "data": self.instance_to_dict(o)}
