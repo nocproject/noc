@@ -1,0 +1,37 @@
+INHERIT: ../mkdocs-base.yml
+site_name: "NOC: Services Reference"
+site_description: >
+        The reference of the NOC scripts
+edit_uri: -/edit/master/docs/services-reference/
+site_dir: ../../build/docs/services-reference/
+nav:
+        - Overview: index.md
+        - activator: activator.md
+        - bi: bi.md
+        - card: card.md
+        - chwriter: chwriter.md
+        - classifier: classifier.md
+        - correlator: correlator.md
+        - datasource: datasource.md
+        - datastream: datastream.md
+        - discovery: discovery.md
+        - escalator: escalator.md
+        - grafanads: grafanads.md
+        - icqsender: icqsender/index.md
+        - kafkasender: kafkasender.md
+        - login: login.md
+        - mailsender: mailsender.md
+        - metrics: metrics.md
+        - metricscollector: metricscollector.md
+        - mrt: mrt.md
+        - mx: mx.md
+        - nbi: nbi.md
+        - ping: ping.md
+        - sae: sae.md
+        - scheduler: scheduler.md
+        - syslogcollector: syslogcollector.md
+        - tgsender: tgsender.md
+        - trapcollector: trapcollector.md
+        - web: web.md
+        - worker: worker.md
+        - ui: ui.md
