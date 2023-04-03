@@ -8,12 +8,14 @@
     http_proxy: "{{ http_proxy }}"
 
 - name: Add key to repo redpanda
-  yum_key:
-    file: "/tmp/gpg.988A7B0A4918BC85.key"
+  rpm_key:
+    key: "/tmp/gpg.988A7B0A4918BC85.key"
     state: present
 
 - name: add the redpanda repo
   yum_repository:
+    name: redpanda
+    description: redpanda rpm repo
     baseurl: https://packages.vectorized.io/nzc4ZYQK3WRGd9sy/redpanda/rpm/el/7/$basearch
     state: present
   environment:
@@ -22,7 +24,7 @@
 
 - name: install redpanda from repository
   yum:
-    name: redpanda
+    name: "redpanda-{{ redpanda_version }}*"
     state: present
     update_cache: true
   environment:

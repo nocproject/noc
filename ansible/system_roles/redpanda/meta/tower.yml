@@ -1,6 +1,6 @@
 ---
 forms:
-  Redpanda:
+  redpanda:
     description: >
       <strong>Service type</strong>: External <br/>
       <strong>Short description</strong>: Redpanda stream service <br/>
