@@ -58,6 +58,7 @@ from noc.core.topology.types import ShapeOverlayPosition, ShapeOverlayForm
 from noc.pm.models.metrictype import MetricType
 from .capsprofile import CapsProfile
 from noc.vc.models.vlanfilter import VLANFilter
+from noc.wf.models.workflow import Workflow
 from noc.core.service.loader import get_service
 from noc.core.wf.diagnostic import PROFILE_DIAG, SNMP_DIAG, CLI_DIAG, DiagnosticState
 
@@ -143,6 +144,8 @@ class ManagedObjectProfile(NOCModel):
     style = models.ForeignKey(
         Style, verbose_name=_("Style"), blank=True, null=True, on_delete=models.CASCADE
     )
+    # Workflow
+    workflow: "Workflow" = DocumentReferenceField(Workflow, null=True, blank=True)
     # Stencils
     shape = models.CharField(
         _("Shape"), blank=True, null=True, choices=stencil_registry.choices, max_length=128

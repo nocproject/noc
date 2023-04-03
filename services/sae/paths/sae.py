@@ -23,6 +23,8 @@ from noc.inv.models.platform import Platform
 from noc.inv.models.firmware import Firmware
 from noc.main.models.template import Template
 from noc.main.models.extstorage import ExtStorage
+from noc.wf.models.state import State
+from noc.core.wf.interaction import Interaction
 from noc.core.cache.decorator import cachedmethod
 from noc.core.dcs.base import ResolutionError
 from noc.config import config
@@ -47,7 +49,7 @@ class SAEAPI(JSONRPCAPI):
 
     RUN_SQL = """
         SELECT
-            mo.name, mo.is_managed, mo.profile,
+            mo.name, mo.profile,
             mo.vendor, mo.platform, mo.version,
             mo.scheme, mo.address, mo.port,
             mo."user", mo.password, mo.super_password, mo.remote_path,
@@ -59,7 +61,7 @@ class SAEAPI(JSONRPCAPI):
             mop.cli_privilege_policy, mop.snmp_rate_limit,
             mo.access_preference, mop.access_preference,
             mop.beef_storage, mop.beef_path_template_id,
-            mo.caps
+            mo.caps, mo.diagnostics, mo.state
         FROM
             sa_managedobject mo
             JOIN sa_managedobjectprofile mop ON (mo.object_profile_id = mop.id)
@@ -159,7 +161,6 @@ class SAEAPI(JSONRPCAPI):
         # Get object credentials
         (
             name,
-            is_managed,
             profile,
             vendor,
             platform,
@@ -190,9 +191,12 @@ class SAEAPI(JSONRPCAPI):
             beef_storage_id,
             beef_path_template_id,
             caps,
+            diagnostics,
+            state,
         ) = data[0]
         # Check object is managed
-        if not is_managed:
+        state = State.get_by_id(state)
+        if not state.is_enabled_interaction(Interaction.ServiceActivation):
             metrics["error", ("type", "object_not_managed")] += 1
             raise APIError("Object is not managed")
         # Build capabilities

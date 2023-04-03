@@ -23,6 +23,7 @@ Ext.define('NOC.sa.managedobject.form.View', {
         'NOC.core.ComboBox',
         'NOC.core.InlineGrid',
         'NOC.core.InlineModelStore',
+        'NOC.core.StateField',
         'NOC.sa.managedobject.AttributesModel',
         'NOC.sa.managedobject.CapabilitiesModel',
         'NOC.sa.managedobject.form.FormController',
@@ -101,9 +102,15 @@ Ext.define('NOC.sa.managedobject.form.View', {
                                     name: "is_managed",
                                     xtype: "checkboxfield",
                                     fieldLabel: __("Is Managed?"),
-                                    allowBlank: true,
+                                    disabled: true,
                                     tabIndex: 30,
-                                    groupEdit: true
+                                },
+                                {
+                                    name: "state",
+                                    xtype: "statefield",
+                                    fieldLabel: __("State"),
+                                    restUrl: "sa/managedobject/",
+                                    allowBlank: false
                                 },
                                 {
                                     name: "bi_id",

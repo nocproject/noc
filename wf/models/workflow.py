@@ -13,10 +13,11 @@ from typing import Optional
 
 # Third-party modules
 from mongoengine.document import Document
-from mongoengine.fields import StringField, BooleanField, ReferenceField, LongField
+from mongoengine.fields import StringField, BooleanField, ReferenceField, LongField, ListField
 import cachetools
 
 # NOC modules
+from noc.models import get_model
 from noc.core.model.decorator import on_delete_check
 from noc.core.bi.decorator import bi_sync
 from noc.core.change.decorator import change
@@ -25,6 +26,7 @@ from noc.main.models.remotesystem import RemoteSystem
 logger = logging.getLogger(__name__)
 id_lock = Lock()
 _default_state_cache = cachetools.TTLCache(maxsize=1000, ttl=1)
+_wiping_state_cache = cachetools.TTLCache(maxsize=1000, ttl=1)
 
 
 @bi_sync
@@ -41,6 +43,7 @@ _default_state_cache = cachetools.TTLCache(maxsize=1000, ttl=1)
         ("phone.PhoneRangeProfile", "workflow"),
         ("pm.AgentProfile", "workflow"),
         ("sa.ServiceProfile", "workflow"),
+        ("sa.ManagedObjectProfile", "workflow"),
         ("sla.SLAProfile", "workflow"),
         ("inv.CPEProfile", "workflow"),
         ("inv.SensorProfile", "workflow"),
@@ -55,6 +58,8 @@ class Workflow(Document):
     name = StringField(unique=True)
     is_active = BooleanField()
     description = StringField()
+    #
+    allowed_models = ListField(StringField())
     # Integration with external NRI and TT systems
     # Reference to remote system object has been imported from
     remote_system = ReferenceField(RemoteSystem)
@@ -68,6 +73,7 @@ class Workflow(Document):
     _id_cache = cachetools.TTLCache(maxsize=100, ttl=60)
     _name_cache = cachetools.TTLCache(maxsize=100, ttl=60)
     _bi_id_cache = cachetools.TTLCache(maxsize=100, ttl=60)
+    _wiping_states_cache = cachetools.TTLCache(maxsize=100, ttl=900)
 
     def __str__(self):
         return self.name
@@ -101,6 +107,40 @@ class Workflow(Document):
 
         return State.objects.filter(workflow=self.id, is_default=True).first()
 
+    @cachetools.cached(_wiping_state_cache, key=lambda x: str(x.id), lock=id_lock)
+    def get_wiping_state(self):
+        from .state import State
+
+        return State.objects.filter(workflow=self.id, is_wiping=True).first()
+
+    @classmethod
+    @cachetools.cachedmethod(operator.attrgetter("_wiping_states_cache"), lock=lambda _: id_lock)
+    def get_wiping_states(cls, model: Optional[str] = None):
+        from .state import State
+
+        w_states = State.objects.filter(is_wiping=True)
+        if model:
+            wfs = list(Workflow.objects.filter(allowed_models__in=[model]).scalar("id"))
+            w_states = w_states.filter(workflow__in=wfs)
+        return [s.id for s in w_states]
+
+    def set_wiping_state(self, state):
+        from .state import State
+
+        logger.info("[%s] Set wiping state to: %s", self.name, state.name)
+        for s in State.objects.filter(workflow=self.id):
+            if s.is_wiping and s.id != state.id:
+                logger.info("[%s] Removing wiping status from: %s", self.name, s.name)
+                s.is_wiping = False
+                s.save()
+        # Invalidate caches
+        key = str(self.id)
+        if key in _wiping_state_cache:
+            try:
+                del _wiping_state_cache[key]
+            except KeyError:
+                pass
+
     def set_default_state(self, state):
         from .state import State
 
@@ -117,3 +157,10 @@ class Workflow(Document):
                 del _default_state_cache[key]
             except KeyError:
                 pass
+
+    def clean(self):
+        for mid in self.allowed_models:
+            try:
+                get_model(mid)
+            except AssertionError:
+                raise ValueError(f"Unknown model_id: {mid}")

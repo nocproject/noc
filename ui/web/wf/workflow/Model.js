@@ -28,6 +28,10 @@ Ext.define("NOC.wf.workflow.Model", {
             type: "string"
         },
         {
+            name: "allowed_models",
+            type: "auto"
+        },
+        {
             name: "remote_system",
             type: "string"
         },

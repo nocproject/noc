@@ -39,6 +39,10 @@ defaultColumns = [
         renderer: NOC.render.Bool
     },
     {
+        text: __("State"),
+        dataIndex: "state",
+    },
+    {
         text: __('Address'),
         dataIndex: 'address',
         width: 100

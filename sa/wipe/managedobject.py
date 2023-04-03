@@ -62,10 +62,10 @@ def wipe(o):
             a.delete()
     # Wiping MAC DB
     log.debug("Wiping MAC DB")
-    MACDB._get_collection().remove({"managed_object": o.id})
+    MACDB._get_collection().delete_many({"managed_object": o.id})
     # Wiping discovery id cache
     log.debug("Wiping discovery id")
-    DiscoveryID._get_collection().remove({"object": o.id})
+    DiscoveryID._get_collection().delete_many({"object": o.id})
     # Wiping interfaces, subs and links
     # Wipe links
     log.debug("Wiping links")

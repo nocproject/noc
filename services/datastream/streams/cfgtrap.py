@@ -11,6 +11,7 @@ from noc.core.wf.diagnostic import SNMPTRAP_DIAG
 from noc.main.models.pool import Pool
 from noc.main.models.remotesystem import RemoteSystem
 from noc.main.models.label import Label
+from noc.wf.models.state import State
 from noc.sa.models.managedobject import ManagedObject
 
 
@@ -25,7 +26,7 @@ class CfgTrapDataStream(DataStream):
             "id",
             "name",
             "bi_id",
-            "is_managed",
+            "state",
             "pool",
             "fm_pool",
             "administrative_domain",
@@ -51,7 +52,7 @@ class CfgTrapDataStream(DataStream):
             mo_id,
             name,
             bi_id,
-            is_managed,
+            state,
             pool,
             fm_pool,
             adm_domain,
@@ -72,8 +73,9 @@ class CfgTrapDataStream(DataStream):
             mop_trapcollector_storm_threshold,
         ) = mo[0]
         # Process event policy
+        state = State.get_by_id(state)
         if (
-            not is_managed
+            not state.is_enabled_interaction("ALARM")
             or (str(event_processing_policy) == "P" and str(mop_event_processing_policy) != "E")
             or str(event_processing_policy) == "D"
             or str(trap_source_type) == "d"

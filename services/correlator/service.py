@@ -61,6 +61,7 @@ from noc.services.correlator import utils
 from noc.core.perf import metrics
 from noc.core.fm.enum import RCA_RULE, RCA_TOPOLOGY, RCA_DOWNLINK_MERGE
 from noc.core.msgstream.message import Message
+from noc.core.wf.interaction import Interaction
 from noc.services.correlator.rcalock import RCALock
 from noc.services.correlator.alarmrule import GroupItem
 
@@ -417,8 +418,8 @@ class CorrelatorService(FastAPIService):
         scope_label = str(event.id) if event else "DIRECT"
         labels = labels or []
         # @todo: Make configurable
-        if not managed_object.is_managed:
-            self.logger.info("Managed object is not managed. Do not raise alarm")
+        if Interaction.Alarm not in managed_object.interactions:
+            self.logger.info("Managed object is allowed processed Alarm. Do not raise alarm")
             return None
         if not reference:
             reference = self.get_default_reference(

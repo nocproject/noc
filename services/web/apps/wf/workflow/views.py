@@ -11,6 +11,7 @@ from copy import deepcopy
 
 # NOC modules
 from noc.services.web.base.extdocapplication import ExtDocApplication, view
+from noc.main.models.label import Label
 from noc.wf.models.workflow import Workflow
 from noc.wf.models.state import State
 from noc.wf.models.transition import Transition, TransitionVertex
@@ -44,6 +45,7 @@ class WorkflowApplication(ExtDocApplication):
             "is_active": wf.is_active,
             "description": wf.description,
             "states": [],
+            "allowed_models": wf.allowed_models,
             "transitions": [],
         }
         for state in State.objects.filter(workflow=wf.id):
@@ -53,12 +55,17 @@ class WorkflowApplication(ExtDocApplication):
                 "description": state.description,
                 "is_default": state.is_default,
                 "is_productive": state.is_productive,
+                "is_wiping": state.is_wiping,
                 "update_last_seen": state.update_last_seen,
                 "ttl": state.ttl,
                 "update_expired": state.update_expired,
                 "on_enter_handlers": state.on_enter_handlers,
                 "job_handler": state.job_handler,
                 "on_leave_handlers": state.on_leave_handlers,
+                "labels": [
+                    self.format_label(ll)
+                    for ll in Label.objects.filter(name__in=state.labels).order_by("display_order")
+                ],
                 "bi_id": str(state.bi_id) if state.bi_id else None,
                 "x": state.x,
                 "y": state.y,
@@ -75,6 +82,18 @@ class WorkflowApplication(ExtDocApplication):
                 "description": t.description,
                 "enable_manual": t.enable_manual,
                 "handlers": t.handlers,
+                "required_rules": [
+                    {
+                        "labels": [
+                            self.format_label(ll)
+                            for ll in Label.objects.filter(name__in=rr.labels).order_by(
+                                "display_order"
+                            )
+                        ],
+                        "exclude_labels": [],
+                    }
+                    for rr in t.required_rules
+                ],
                 "vertices": [{"x": v.x, "y": v.y} for v in t.vertices],
                 "bi_id": str(t.bi_id) if t.bi_id else None,
             }
@@ -90,6 +109,7 @@ class WorkflowApplication(ExtDocApplication):
             "name": StringParameter(),
             "description": StringParameter(default=""),
             "is_active": BooleanParameter(default=False),
+            "allowed_models": StringListParameter(),
             "states": DictListParameter(
                 attrs={
                     "id": StringParameter(default=""),
@@ -97,11 +117,13 @@ class WorkflowApplication(ExtDocApplication):
                     "description": StringParameter(default=""),
                     "is_default": BooleanParameter(default=False),
                     "is_productive": BooleanParameter(default=False),
+                    "is_wiping": BooleanParameter(default=False),
                     "update_last_seen": BooleanParameter(default=False),
                     "ttl": IntParameter(default=0),
                     "update_expired": BooleanParameter(default=False),
                     "on_enter_handlers": StringListParameter(),
                     "job_handler": StringParameter(required=False),
+                    "labels": StringListParameter(required=False),
                     "on_leave_handlers": StringListParameter(),
                     "x": IntParameter(),
                     "y": IntParameter(),
@@ -117,6 +139,12 @@ class WorkflowApplication(ExtDocApplication):
                     "label": StringParameter(),
                     "description": StringParameter(default=""),
                     "enable_manual": BooleanParameter(),
+                    "required_rules": DictListParameter(
+                        attrs={
+                            "labels": StringListParameter(),
+                            "exclude_labels": StringListParameter(),
+                        }
+                    ),
                     "handlers": StringListParameter(),
                     "vertices": DictListParameter(attrs={"x": IntParameter(), "y": IntParameter()}),
                 }
@@ -124,7 +152,16 @@ class WorkflowApplication(ExtDocApplication):
         },
     )
     def api_save_config(
-        self, request, id, name, description, is_active, states, transitions, **kwargs
+        self,
+        request,
+        id,
+        name,
+        description,
+        is_active,
+        states,
+        transitions,
+        allowed_models,
+        **kwargs,
     ):
         if id == self.NEW_ID:
             wf = Workflow()
@@ -134,6 +171,7 @@ class WorkflowApplication(ExtDocApplication):
         wf.name = name
         wf.description = description
         wf.is_active = is_active
+        wf.allowed_models = allowed_models
         wf.save()
         # Get current state
         current_states = {}  # str(id) -> state
@@ -224,6 +262,7 @@ class WorkflowApplication(ExtDocApplication):
         # Clone workflow
         new_wf = deepcopy(wf)
         new_wf.name = name
+        new_wf.allowed_models = []
         new_wf.id = None
         new_wf.bi_id = None
         new_wf.save()

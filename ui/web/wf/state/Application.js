@@ -44,14 +44,20 @@ Ext.define("NOC.wf.state.Application", {
                     renderer: NOC.render.Bool
                 },
                 {
+                    text: __("Wiping"),
+                    dataIndex: "is_wiping",
+                    width: 50,
+                    renderer: NOC.render.Bool
+                },
+                {
                     text: __("Update Last Seen"),
-                    dataIndex: "is_productive",
+                    dataIndex: "update_last_seen",
                     width: 50,
                     renderer: NOC.render.Bool
                 },
                 {
                     text: __("Update Expired"),
-                    dataIndex: "is_productive",
+                    dataIndex: "update_expired",
                     width: 50,
                     renderer: NOC.render.Bool
                 },
@@ -110,6 +116,11 @@ Ext.define("NOC.wf.state.Application", {
                     boxLabel: __("Productive")
                 },
                 {
+                    name: "is_wiping",
+                    xtype: "checkbox",
+                    boxLabel: __("Wiping")
+                },
+                {
                     name: "update_last_seen",
                     xtype: "checkbox",
                     boxLabel: __("Update Last Seen")
@@ -127,6 +138,49 @@ Ext.define("NOC.wf.state.Application", {
                     name: "update_expired",
                     xtype: "checkbox",
                     boxLabel: __("Update Expiration")
+                },
+                {
+                    name: "disable_all_interaction",
+                    xtype: "checkbox",
+                    boxLabel: __("Disable All Interaction")
+                },
+                {
+                    name: "interaction_settings",
+                    xtype: "gridfield",
+                    fieldLabel: __("Interaction Settins"),
+                    columns: [
+                        {
+                            text: __("Interaction"),
+                            dataIndex: "interaction",
+                            width: 100,
+                            editor: {
+                                xtype: "combobox",
+                                store: [
+                                    ["SA", "ServiceActivation"],
+                                    ["ALARM", "Alarm"],
+                                    ["EVENT", "Event"],
+                                    ["TT", "Escalation"],
+                                    ["BOX", "Box Discovery"],
+                                    ["PERIODIC", "Periodic Discovery"]
+                                ]
+                            },
+                            renderer: NOC.render.Choices({
+                                "SA": __("ServiceActivation"),
+                                "ALARM": __("Alarm"),
+                                "EVENT": __("Event"),
+                                "TT": __("Escalation"),
+                                "BOX": __("Box Discovery"),
+                                "PERIODIC": __("Periodic Discovery")
+                            })
+                        },
+                        {
+                            text: __("Enable"),
+                            dataIndex: "enable",
+                            editor: "checkbox",
+                            renderer: NOC.render.Bool,
+                            width: 50,
+                        }
+                    ]
                 },
                 {
                     xtype: "fieldset",

@@ -9,7 +9,10 @@ console.debug("Defining NOC.wf.workflow.WFEditor");
 Ext.define("NOC.wf.workflow.WFEditor", {
     extend: "NOC.core.ApplicationPanel",
     requires: [
-        "Ext.ux.form.StringsField"
+        "Ext.ux.form.StringsField",
+        "NOC.core.label.LabelField",
+        "NOC.core.tagfield.Tagfield",
+        "NOC.main.ref.modelid.LookupField"
     ],
     config: {
         scriptsLoaded: false
@@ -176,6 +179,7 @@ Ext.define("NOC.wf.workflow.WFEditor", {
                 name: "New Workflow",
                 description: "New Workflow diagram",
                 is_active: true,
+                allowed_models: [],
                 states: [],
                 transitions: []
             });
@@ -372,6 +376,13 @@ Ext.define("NOC.wf.workflow.WFEditor", {
                     allowBlank: true
                 },
                 {
+                    name: "allowed_models",
+                    xtype: "core.tagfield",
+                    url: "/main/ref/modelid/lookup/",
+                    fieldLabel: __("Allowed models"),
+                    tooltip: __("Models allowed set workflow")
+                },
+                {
                     xtype: "fieldset",
                     layout: "vbox",
                     title: __("Integration"),
@@ -429,6 +440,11 @@ Ext.define("NOC.wf.workflow.WFEditor", {
                     name: "is_productive",
                     xtype: "checkbox",
                     boxLabel: __("Productive")
+                },
+                {
+                    name: "is_wiping",
+                    xtype: "checkbox",
+                    boxLabel: __("Wiping")
                 },
                 {
                     name: "update_last_seen",
@@ -730,7 +746,8 @@ Ext.define("NOC.wf.workflow.WFEditor", {
                 name: stateName,
                 on_enter_handlers: [],
                 on_leave_handlers: [],
-                job_handler: null
+                job_handler: null,
+                labels: [],
             };
         rect.prop({data: data});
         rect.set("position", me.menuPosition);
