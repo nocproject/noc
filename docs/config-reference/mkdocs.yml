@@ -1,0 +1,73 @@
+INHERIT: ../mkdocs-base.yml
+site_name: "NOC: Config Reference"
+site_description: >
+        The reference of the NOC configuration
+edit_uri: -/edit/master/docs/config-reference/
+site_dir: ../../build/docs/config-reference/
+nav:
+        - Overview: index.md
+        - Date and Time Formats: admin/reference/datetime-format.md
+        - Global Configuration: global.md
+        - "[activator] Section": activator.md
+        - "[audit] section": audit.md
+        - "[backup] section": backup.md
+        - "[bi] section": bi.md
+        - "[biosegmentation] section": biosegmentation.md
+        - "[cache] section": cache.md
+        - "[card] section": card.md
+        - "[chwriter] section": chwriter.md
+        - "[classifier] section": classifier.md
+        - "[clickhouse] section": clickhouse.md
+        - "[collections] section": collections.md
+        - "[consul] section": consul.md
+        - "[correlator] section": correlator.md
+        - "[customization] section": customization.md
+        - "[datasource] section": datasource.md
+        - "[datastream] section": datastream.md
+        - "[dcs] section": dcs.md
+        - "[discovery] section": discovery.md
+        - "[dns] section": dns.md
+        - "[escalator] section": escalator.md
+        - "[etl] section": etl.md
+        - "[features] section": features.md
+        - "[fm] section": fm.md
+        - "[geocoding] section": geocoding.md
+        - "[gis] section": gis.md
+        - "[grafanads] section": grafanads.md
+        - "[help] section": help.md
+        - "[http_client] section": http_client.md
+        - "[icqsender] section": icqsender.md
+        - "[initial] section": initial.md
+        - "[kafkasender] section": kafkasender.md
+        - "[layout] section": layout.md
+        - "[liftbridge] section": liftbridge.md
+        - "[logging] section": logging.md
+        - "[login] section": login.md
+        - "[mailsender] section": mailsender.md
+        - "[memcached] section": memcached.md
+        - "[message] section": message.md
+        - "[metrics] section": metrics.md
+        - "[mongo] section": mongo.md
+        - "[mrt] section": mrt.md
+        - "[nbi] section": nbi.md
+        - "[path] section": path.md
+        - "[peer] section": peer.md
+        - "[performance] section": performance.md
+        - "[pg] section": pg.md
+        - "[ping] section": ping.md
+        - "[proxy] section": proxy.md
+        - "[redis] section": redis.md
+        - "[rpc] section": rpc.md
+        - "[sae] section": sae.md
+        - "[scheduler] section": scheduler.md
+        - "[script] section": script.md
+        - "[selfmon] section": selfmon.md
+        - "[sentry] section": sentry.md
+        - "[syslogcollector] section": syslogcollector.md
+        - "[tests] section": tests.md
+        - "[tgsender] section": tgsender.md
+        - "[threadpool] section": threadpool.md
+        - "[traceback] section": traceback.md
+        - "[trapcollector] section": trapcollector.md
+        - "[ui] section": ui.md
+        - "[web] section": web.md
