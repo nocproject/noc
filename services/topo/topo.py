@@ -109,7 +109,7 @@ class Topo(object):
             uplinks=self.clear_uplinks(obj.uplinks),
         )
         metrics["obj_add"] += 1
-        metrics["obj_level", obj.level] += 1
+        metrics["obj_level", ("level", obj.level)] += 1
         self.set_dirty(obj.id)
 
     @staticmethod
@@ -170,6 +170,8 @@ class Topo(object):
         """
         Remove Managed Object from topology.
         """
+        if obj_id not in self.graph:
+            return
         for adj in self.graph[obj_id]:
             self.set_dirty(adj)
         node = self.graph.nodes[obj_id]

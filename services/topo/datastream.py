@@ -28,7 +28,7 @@ class TopoDataStreamClient(DataStreamClient):
             links=links or None,
             uplinks=uplinks or None,
         )
-        await self.service.topo.on_change(snapshot)
+        self.service.topo.sync_object(snapshot)
 
     async def on_delete(self, data):
         await self.service.on_delete(int(data["id"]))

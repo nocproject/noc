@@ -580,7 +580,7 @@ class Config(BaseConfig):
         debug = BooleanParameter(default=False)
         max_breadcrumbs = IntParameter(min=1, max=100, default=10)
 
-    class Topo(ConfigSection):
+    class topo(ConfigSection):
         ds_limit = IntParameter(default=1000)
         dry_run = BooleanParameter(default=True)
         check = BooleanParameter(default=True)

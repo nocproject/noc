@@ -39,6 +39,7 @@ class TopoService(FastAPIService):
         Request topology.
         """
         self.logger.info("Starting to track topology")
+        asyncio.get_running_loop().create_task(self.get_object_mappings())
 
     async def get_object_mappings(self):
         """
