@@ -466,7 +466,7 @@ class ResourceGroup(Document):
     @classmethod
     @cachetools.cachedmethod(
         operator.attrgetter("_lazy_labels_cache"),
-        key=lambda x: tuple(x),
+        key=lambda s, x: tuple(x),
         lock=lambda _: rx_labels_lock,
     )
     def get_lazy_labels(cls, resource_groups: List[str]) -> List[str]:
