@@ -158,7 +158,7 @@ class Platform(Document):
     @classmethod
     @cachetools.cachedmethod(
         operator.attrgetter("_ensure_cache"),
-        key=lambda s, v, n, strict=False, labels=None: "%s-%s" % (v.id, n),
+        key=lambda c, v, n, strict=False, labels=None: f"{v.id}-{n}",
         lock=lambda _: id_lock,
     )
     def ensure_platform(cls, vendor, name, strict=False, labels=None):

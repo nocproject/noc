@@ -1196,7 +1196,9 @@ class Label(Document):
 
     @classmethod
     @cachetools.cachedmethod(
-        operator.attrgetter("_rx_cache"), key=lambda c, ri: getattr(ri, "regex", None), lock=lambda _: re_lock
+        operator.attrgetter("_rx_cache"),
+        key=lambda c, ri: getattr(ri, "regex", None),
+        lock=lambda _: re_lock,
     )
     def _get_re(cls, rxi: "RegexItem") -> Optional[re.Pattern]:
         try:
