@@ -54,6 +54,15 @@ Ext.define('NOC.core.filter.Filter', {
         // },
         {
             xtype: "core.combo",
+            restUrl: "/wf/state/lookup/",
+            itemId: "state",
+            fieldLabel: __("By State:"),
+            listeners: {
+                select: 'setFilter'
+            }
+        },
+        {
+            xtype: "core.combo",
             restUrl: "/sa/profile/lookup/",
             itemId: 'profile', // name of http request query param
             fieldLabel: __('By SA Profile:'),
