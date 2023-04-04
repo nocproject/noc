@@ -499,6 +499,8 @@ class Interface(Document):
             yield ["noc::is_linked::="]
         if instance.type == "aggregated":
             # Set only has members ?
+            yield ["noc::is_aggregate_interface::="]
+        if instance.aggregated_interface:
             yield ["noc::is_member_interface::="]
         if instance.parent.id:
             # When create id is None
