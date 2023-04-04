@@ -219,7 +219,7 @@ class Topo(object):
         logger.info("Processing topology")
         if not self.dirty_nodes:
             logger.info("No dirty nodes, stopping")
-            return []
+            return set()
         logger.info("%d dirty nodes found", len(self.dirty_nodes))
         t0 = time.time()
         affected: Set[int] = set()
@@ -391,4 +391,4 @@ class Topo(object):
 
     @staticmethod
     def format_join(ids: Iterable[int]) -> str:
-        return ", ".join([str(x) for x in ids])
+        return ", ".join([str(x) for x in sorted(ids)])
