@@ -10,7 +10,6 @@ import asyncio
 from typing import Optional, Dict, Any, List
 
 # Third-party modules
-import orjson
 from fastapi import APIRouter
 from gufo.ping import Ping
 
