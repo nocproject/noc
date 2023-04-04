@@ -615,6 +615,9 @@ Ext.define('NOC.sa.managedobject.Controller', {
                         field.initValue();
                     }
                 }, this);
+                if(view.noc.hasOwnProperty("protected_field")) {
+                    this.setProtectedField(view.noc.protected_field);
+                }
             },
             failure: function() {
                 if(gridView) {
@@ -755,6 +758,9 @@ Ext.define('NOC.sa.managedobject.Controller', {
                     }
                     this.setFormTitle(formView.changeTitle, data.id);
                     this.showMapHandler(record);
+                }
+                if(view.noc.hasOwnProperty("protected_field")) {
+                    this.setProtectedField(view.noc.protected_field);
                 }
                 if(gridView) {
                     gridView.unmask();
@@ -929,5 +935,20 @@ Ext.define('NOC.sa.managedobject.Controller', {
             var query = Ext.Object.fromQueryString(queryStr, true);
             this.getView().down('[itemId=' + param + ']').setValue(query[param]);
         }
+    },
+    setProtectedField(fields) {
+        Ext.Object.each(fields, function(fieldName, value) {
+            var field = this.getView().down("[name=" + fieldName + "]");
+
+            switch(value) {
+                case 0:
+                    field.setHidden(true);
+                    break;
+                case 1:
+                case 2:
+                    field.setDisabled(true);
+                    break;
+            }
+        }, this);
     }
 });
