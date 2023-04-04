@@ -10,12 +10,12 @@ import re
 
 # NOC modules
 from noc.core.script.base import BaseScript
-from noc.sa.interfaces.igetcpestatus import IGetCPEStatus
+from noc.sa.interfaces.igetcpe import IGetCPE
 
 
 class Script(BaseScript):
     name = "BDCOM.xPON.get_cpe_status"
-    interface = IGetCPEStatus
+    interface = IGetCPE
 
     cache = True
     splitter = re.compile(r"\s*-+\n")
