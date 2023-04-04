@@ -7,14 +7,14 @@ terraform {
 }
 
 provider "yandex" {
-  token     = "t1.9euelZqPm5XJkszGnJrGz5iSlsqck-3rnpWal8_JmJGMjM2VjM2Yx4_Pm4_l9Pd9N3Ve-e9qW1PJ3fT3PWZyXvnvaltTyQ.byrRJtNBbTd-60NN5syvEcH_ARPhFdKqCYAKzhsEEpVtgqWyhnsVg_kJL1kxMhHVpUfOSfWs0NsQUNFBMuybCw"
+  token     = "t1.9euelZqJj5fLkouVmIzOmseWyIuaje3rnpWal8_JmJGMjM2VjM2Yx4_Pm4_l9PdmbFVe-e9VP0D43fT3JhtTXvnvVT9A-A.O5EmITUCpcG7nCRhZabsrpmNTh7xwhFToPPUrbKZKEGP_Jmb8sXW8LtQEpX2nOJ7OPM5QX9FnhAElQD6AzmCCw"
   cloud_id  = "b1gi9isncdv608aunpod"
   folder_id = "b1gupte6966brgu87rp5"
   zone      = "ru-central1-a"
 }
 
 resource "yandex_compute_instance" "vm-1" {
-  name = "noc-node-debian11-4"
+  name = "noc-node-debian11-12"
 
   resources {
     cores         = 4

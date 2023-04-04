@@ -1,0 +1,49 @@
+# That file is managed by consul-template.
+#
+# Please do not edit.
+
+upstream noc-web {
+   server 127.0.0.1:65535; # check consul for web service
+}
+
+upstream login {
+   server 127.0.0.1:65535; # check consul for login service
+}
+
+upstream ui {
+   server 127.0.0.1:65535; # check consul for ui service
+}
+
+upstream card {
+   server 127.0.0.1:65535; # check consul for card service
+}
+
+upstream datastream {
+   server 127.0.0.1:65535; # check consul for datastream service
+}
+
+upstream nbi {
+   server 127.0.0.1:65535; # check consul for nbi service
+}
+
+upstream mrt {
+   server 127.0.0.1:65535; # check consul for mrt service
+}
+
+upstream bi {
+   server 127.0.0.1:65535; # check consul for bi service
+}
+
+upstream grafana {
+   server 10.10.11.17:8002 weight=1 max_fails=3 fail_timeout=10;
+   
+}
+
+upstream grafanads {
+   server 127.0.0.1:65535; # check consul for grafanads service
+}
+
+upstream notebook {
+   server 127.0.0.1:65535; # check consul for notebook service
+}
+

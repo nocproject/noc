@@ -13,7 +13,7 @@ mongo_arbiter_pid: /var/run/mongodb/mongod-arbiter.pid
 mongo_db_path: /var/lib/mongo/
 mongo_fork: "false"
 mongo_log_path: /var/log/mongodb/mongod.log
-mongo_pid: /var/run/mongod.pid
+mongo_pid: /var/run/mongod/mongod.pid
 mongod_arbiter_system_service: mongod-arbiter
 mongod_path: /usr/bin/mongod
 mongod_system_service: mongod

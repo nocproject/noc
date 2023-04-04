@@ -1,16 +1,4 @@
 ---
-- name: Add PostgreSQL repository Centos
-  yum:
-    name: "{{ rpm_path }}"
-    state: present
-  vars:
-    rpm_path: https://download.postgresql.org/pub/repos/yum/reporpms/EL-{{ ansible_distribution_major_version }}-{{ ansible_architecture }}/pgdg-redhat-repo-latest.noarch.rpm
-  environment:
-    http_proxy: "{{ http_proxy }}"
-    https_proxy: "{{ http_proxy }}"
-  tags:
-    - repo
-
 - name: Add sclo repo
   yum_repository:
     name: sclo
@@ -26,20 +14,20 @@
   tags:
     - requirements
 
-- name: Install CentOS system packages 1/2
-  yum:
-    name: "{{ packages }}"
-    state: present
-    update_cache: "True"
-  become: "True"
-  vars:
-    packages:
-      - epel-release
-  environment:
-    https_proxy: "{{ http_proxy }}"
-    http_proxy: "{{ http_proxy }}"
-  tags:
-    - requirements
+#- name: Install CentOS system packages 1/2
+#  yum:
+#    name: "{{ packages }}"
+#    state: present
+#    update_cache: "True"
+#  become: "True"
+#  vars:
+#    packages:
+#      - epel-release
+#  environment:
+#    https_proxy: "{{ http_proxy }}"
+#    http_proxy: "{{ http_proxy }}"
+#  tags:
+#    - requirements
 
 - name: Install CentOS system packages 2/2
   yum:
@@ -52,9 +40,9 @@
       - patch
       - python-virtualenv
       - gcc
-      - postgresql{{ postgres_version|replace(".","") }}
-      - postgresql-devel
-      - postgresql{{ postgres_version|replace(".","") }}-devel
+#      - postgresql{{ postgres_version|replace(".","") }}
+#      - postgresql-devel
+#      - postgresql{{ postgres_version|replace(".","") }}-devel
       - libffi
       - libffi-devel
       - libmemcached

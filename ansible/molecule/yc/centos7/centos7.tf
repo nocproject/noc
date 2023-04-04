@@ -7,14 +7,14 @@ terraform {
 }
 
 provider "yandex" {
-  token     = "t1.9euelZqKk5rLyZSJjYyYlMjIlIvLke3rnpWal8_JmJGMjM2VjM2Yx4_Pm4_l8_czAXBe-e9eUC0b_d3z93MvbV75715QLRv9.A-D4Zf4p-ZUF4VNzWzDYF5s3qCigu_nLCbR55ieux6urx08aPWEkXKylWJii2Pbyw6-8cujmFVC4xgZOKiCsAQ"
+  token     = "t1.9euelZqRkpLHyMqYks_GjImdxomMyO3rnpWal8_JmJGMjM2VjM2Yx4_Pm4_l8_due1Ne-e9kNEkp_d3z9y4qUV7572Q0SSn9.8zX79R7kQ0ABZBRZimKH6_aOy94m_J9v4bZHq6eSBWSMsoCfDMTe2V9YzM2FKPJ_lRqU3TU2ebARE3YyacC3Cg"
   cloud_id  = "b1gi9isncdv608aunpod"
   folder_id = "b1gupte6966brgu87rp5"
   zone      = "ru-central1-a"
 }
 
 resource "yandex_compute_instance" "vm-1" {
-  name = "noc-node-centos7-19"
+  name = "noc-node-centos7-53"
 
   resources {
     cores         = 4

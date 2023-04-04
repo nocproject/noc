@@ -14,6 +14,21 @@
     - config
     - requirements
 
+- name: install library postgresql14-devel
+  become: "True"
+  dnf:
+    name: 
+      - postgresql14-devel
+      - python-devel 
+      - python3-devel
+    state: latest
+
+- name: install library psycopg2
+  pip:
+    name: psycopg2-binary
+  environment:
+    PATH: "{{ ansible_env.PATH }}:/usr/pgsql-{{ postgres_version }}/bin/"
+
 - name: create grafana users
   include_role:
     name: postgres

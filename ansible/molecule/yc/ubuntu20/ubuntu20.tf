@@ -7,14 +7,14 @@ terraform {
 }
 
 provider "yandex" {
-  token     = "t1.9euelZqPm5XJkszGnJrGz5iSlsqck-3rnpWal8_JmJGMjM2VjM2Yx4_Pm4_l9Pd9N3Ve-e9qW1PJ3fT3PWZyXvnvaltTyQ.byrRJtNBbTd-60NN5syvEcH_ARPhFdKqCYAKzhsEEpVtgqWyhnsVg_kJL1kxMhHVpUfOSfWs0NsQUNFBMuybCw"
+  token     = "t1.9euelZqRkpLHyMqYks_GjImdxomMyO3rnpWal8_JmJGMjM2VjM2Yx4_Pm4_l8_due1Ne-e9kNEkp_d3z9y4qUV7572Q0SSn9.8zX79R7kQ0ABZBRZimKH6_aOy94m_J9v4bZHq6eSBWSMsoCfDMTe2V9YzM2FKPJ_lRqU3TU2ebARE3YyacC3Cg"
   cloud_id  = "b1gi9isncdv608aunpod"
   folder_id = "b1gupte6966brgu87rp5"
   zone      = "ru-central1-a"
 }
 
 resource "yandex_compute_instance" "vm-1" {
-  name = "noc-node-ubuntu20-51"
+  name = "noc-node-ubuntu20-35"
 
   resources {
     cores         = 4
