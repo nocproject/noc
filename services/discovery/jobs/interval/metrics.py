@@ -9,10 +9,8 @@
 import time
 from typing import Any, List, Dict, Optional
 
-# Third-party modules
-import orjson
-
 # NOC modules
+from noc.core.jsonutils import iter_chunks
 from noc.services.discovery.jobs.base import DiscoveryCheck
 from noc.pm.models.metrictype import MetricType
 from noc.config import config
@@ -106,12 +104,13 @@ class MetricsCheck(DiscoveryCheck):
             return
         self.logger.info("Collected metrics: %s", len(result))
         # Send metrics
-        self.service.publish(
-            value=orjson.dumps(self.clean_result(result, time_delta=time_delta)),
-            stream="metrics",
-            partition=self.object.bi_id % metrics_svc_slots,
-            headers={},
-        )
+        for d in iter_chunks(self.clean_result(result, time_delta=time_delta), max_size=config.msgstream.max_message_size):
+            self.service.publish(
+                value=d,
+                stream="metrics",
+                partition=self.object.bi_id % metrics_svc_slots,
+                headers={},
+            )
         # # Send metrics
         # if n_metrics:
         #   self.logger.info("Spooling %d metrics", n_metrics)

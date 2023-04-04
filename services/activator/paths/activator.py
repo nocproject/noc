@@ -25,6 +25,7 @@ from noc.core.http.client import fetch
 from noc.core.perf import metrics
 from noc.config import config
 from noc.core.comp import smart_text
+from noc.core.jsonutils import iter_chunks
 from ..models.streaming import StreamingConfig
 
 BULK_PING_TIMEOUT = 5
@@ -112,12 +113,14 @@ class ActivatorAPI(JSONRPCAPI):
             raise APIError("Script error: %s" % e.__doc__)
         if not streaming or not result:
             return result
-        self.service.publish(
-            value=orjson.dumps(result),
-            stream=streaming.stream,
-            partition=streaming.partition,
-            headers={},
-        )
+        # Split large result
+        for d in iter_chunks(result, max_size=config.msgstream.max_message_size):
+            self.service.publish(
+                value=d,
+                stream=streaming.stream,
+                partition=streaming.partition,
+                headers={},
+            )
         return []
 
     @staticmethod
