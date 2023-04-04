@@ -248,8 +248,8 @@ class Topo(object):
                         logger.info(
                             "Uplinks changed for %d: {%s} -> {%s}",
                             n,
-                            self.format_join(current),
-                            self.format_join(uplinks),
+                            self.to_join(current),
+                            self.to_join(uplinks),
                         )
                         affected.add(n)
                         affected |= current
@@ -347,7 +347,7 @@ class Topo(object):
             roots = cc
         else:
             roots = {n for n in cc if self.graph.nodes[n]["level"] == max_level}
-        logger.debug("Roots: %s at level %d", self.format_join(roots), max_level)
+        logger.debug("Roots: %s at level %d", self.to_join(roots), max_level)
         uplinks = defaultdict(set)
         for root in roots:
             logger.debug("Processig from root {root}", root)
@@ -390,5 +390,5 @@ class Topo(object):
         return r - {obj}
 
     @staticmethod
-    def format_join(ids: Iterable[int]) -> str:
+    def to_join(ids: Iterable[int]) -> str:
         return ", ".join([str(x) for x in sorted(ids)])
