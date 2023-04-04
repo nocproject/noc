@@ -56,7 +56,7 @@ Ext.define("NOC.core.ModelStore", {
                 type: "json"
             },
             listeners: {
-                exception: function(self, request, operation, eOpts) {
+                exception: function(self, request) {
                     NOC.error(request.status + " : " + request.statusText);
                 }
             }
