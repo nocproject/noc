@@ -497,6 +497,11 @@ class Interface(Document):
         if instance.parent.id and instance.type == "physical" and instance.is_linked:
             # Idle Discovery When create Aggregate interface (fixed not use lag_members)
             yield ["noc::is_linked::="]
+        if instance.type == "aggregated":
+            # Set only has members ?
+            yield ["noc::is_aggregate_interface::="]
+        if instance.aggregated_interface:
+            yield ["noc::is_member_interface::="]
         if instance.parent.id:
             # When create id is None
             # Do not use SECONDARY_PREFERRED, when update labels right after
