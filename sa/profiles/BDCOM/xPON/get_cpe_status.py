@@ -14,7 +14,7 @@ from noc.sa.interfaces.igetcpestatus import IGetCPEStatus
 
 
 class Script(BaseScript):
-    name = "BDCOM.xPON.get_cpe"
+    name = "BDCOM.xPON.get_cpe_status"
     interface = IGetCPEStatus
 
     cache = True

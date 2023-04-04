@@ -17,8 +17,6 @@ class Script(BaseScript):
     name = "BDCOM.xPON.get_cpe"
     interface = IGetCPE
 
-    cache = True
-
     splitter = re.compile(r"\s*-+\n")
 
     status_map = {
