@@ -110,7 +110,9 @@ class Command(BaseCommand):
                 #     print("[%s|%s] Failed getting data for partition: %s" % (stream.name, p, e))
                 #     continue
                 print("    Leader        : %s" % p_meta.leader)
-                print("    Replicas      : %s" % ", ".join([str(x) for x in sorted(p_meta.replicas)]))
+                print(
+                    "    Replicas      : %s" % ", ".join([str(x) for x in sorted(p_meta.replicas)])
+                )
                 print("    ISR           : %s" % ", ".join([str(x) for x in sorted(p_meta.isr)]))
                 # print("    HighWatermark : %s" % p_meta.high_watermark)
                 # print("    NewestOffset  : %s" % p_meta.newest_offset)
