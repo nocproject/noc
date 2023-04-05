@@ -63,6 +63,12 @@ Ext.define('NOC.sa.managedobject.form.View', {
                 maxWidth: 1000,
             },
             scrollable: true,
+            listeners: {
+                scope: this,
+                validitychange: function(me, isValid) {
+                    Ext.each(Ext.ComponentQuery.query("[itemId$=aveBtn]"), function(button) {button.setDisabled(!isValid)});
+                }
+            },
             items: [
                 {
                     xtype: "container",

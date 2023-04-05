@@ -43,6 +43,7 @@ from noc.core.validators import is_int
 from noc.models import is_document
 from noc.main.models.tag import Tag
 from noc.core.stencil import stencil_registry
+from noc.core.debug import error_report
 from noc.aaa.models.permission import Permission
 from noc.aaa.models.modelprotectionprofile import ModelProtectionProfile
 from noc.main.models.label import Label
@@ -563,7 +564,11 @@ class ExtModelApplication(ExtApplication):
 
     @view(method=["GET"], url=r"^$", access="read", api=True)
     def api_list(self, request):
-        return self.list_data(request, self.instance_to_dict_list)
+        try:
+            return self.list_data(request, self.instance_to_dict_list)
+        except Exception as e:
+            error_report()
+            return self.response({"status": False, "message": str(e)}, status=self.INTERNAL_ERROR)
 
     @view(method=["GET"], url=r"^lookup/$", access="lookup", api=True)
     def api_lookup(self, request):
@@ -571,6 +576,9 @@ class ExtModelApplication(ExtApplication):
             return self.list_data(request, self.instance_to_lookup)
         except ValueError:
             return self.response(self.lookup_default, status=self.OK)
+        except Exception as e:
+            error_report()
+            return self.response({"status": False, "message": str(e)}, status=self.INTERNAL_ERROR)
 
     @view(method=["POST"], url=r"^$", access="create", api=True)
     def api_create(self, request):
@@ -652,7 +660,11 @@ class ExtModelApplication(ExtApplication):
         only = request.GET.get(self.only_param)
         if only:
             only = only.split(",")
-        return self.response(self.instance_to_dict(o, fields=only), status=self.OK)
+        try:
+            return self.response(self.instance_to_dict(o, fields=only), status=self.OK)
+        except Exception as e:
+            error_report()
+            return self.response({"status": False, "message": str(e)}, status=self.INTERNAL_ERROR)
 
     @view(method=["PUT"], url=r"^(?P<id>\d+)/?$", access="update", api=True)
     def api_update(self, request, id):
@@ -671,6 +683,9 @@ class ExtModelApplication(ExtApplication):
                 {"success": False, "message": "Bad request", "traceback": str(e)},
                 status=self.BAD_REQUEST,
             )
+        except Exception as e:
+            error_report()
+            return self.response({"status": False, "message": str(e)}, status=self.INTERNAL_ERROR)
         # Find object
         try:
             o = self.queryset(request).get(**{self.pk: int(id)})
@@ -720,12 +735,15 @@ class ExtModelApplication(ExtApplication):
             if file_attrs:
                 # Save uploaded file
                 self.update_file(request.FILES, o, file_attrs)
-        except IntegrityError:
+        except IntegrityError as e:
             return self.render_json(
-                {"success": False, "message": "Integrity error"}, status=self.CONFLICT
+                {"success": False, "message": f"Integrity error {str(e)}"}, status=self.CONFLICT
             )
         except (ValidationError, ValueError) as e:
             return self.response({"success": False, "message": str(e)}, status=self.BAD_REQUEST)
+        except Exception as e:
+            error_report()
+            return self.response({"status": False, "message": str(e)}, status=self.INTERNAL_ERROR)
         if request.is_extjs:
             r = {"success": True, "data": self.instance_to_dict(o)}
         else:
