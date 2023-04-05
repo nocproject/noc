@@ -131,6 +131,30 @@ class RedPandaClient(object):
             metadata=s_meta,
         )
 
+    async def fetch_partition_metadata(
+        self, stream: str, partition: int, wait_for_stream: bool = False
+    ) -> PartitionMetadata:
+        r = await self.fetch_metadata(stream)
+        r = r.metadata[stream][partition]
+        newest_offset, high_watermark = None, None
+        # Fetch newest offset
+        con = await self.get_consumer()
+        # await con.start()
+        offsets = await con.end_offsets(TopicPartition(topic=stream, partition=partition))
+        for tp, offset in offsets.items():
+            newest_offset = offset
+            high_watermark = offset
+        # await con.stop()
+        return PartitionMetadata(
+            topic=stream,
+            partition=partition,
+            leader=r.leader,
+            replicas=list(r.replicas),
+            isr=list(r.isr),
+            high_watermark=newest_offset,
+            newest_offset=high_watermark,
+        )
+
     async def get_producer(self) -> AIOKafkaProducer:
         """
         Returns connected kafka producer
@@ -323,7 +347,6 @@ class RedPandaClient(object):
                 await consumer.seek_to_end(tp)
         # async with consumer as c:
         async for msg in consumer:
-            logger.info("Consume message")
             yield Message(
                 value=msg.value,
                 subject=msg.topic,

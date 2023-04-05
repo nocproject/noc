@@ -16,7 +16,6 @@ from noc.core.management.base import BaseCommand
 from noc.core.ioloop.util import run_sync
 from noc.core.msgstream.client import MessageStreamClient
 from noc.core.msgstream.metadata import Metadata
-from noc.core.text import alnum_key
 
 TS_NS = 1000_0000_00
 

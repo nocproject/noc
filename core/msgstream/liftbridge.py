@@ -82,6 +82,7 @@ class LiftBridgeClient(GugoLiftbridgeClient):
         group: Optional[str] = None,
         partitions: int = 0,
         replication_factor: int = 0,
+        **kwargs,
     ) -> None:
         """
         Create Stream by settings
@@ -98,103 +99,11 @@ class LiftBridgeClient(GugoLiftbridgeClient):
             **self.get_topic_config(name=name, replication_factor=replication_factor),
         )
 
-    async def alter_stream(
-        self,
-        name: str,
-        current_meta: Dict[int, PartitionMetadata],
-        new_partitions: Optional[int] = None,
-        replication_factor: Optional[int] = None,
-    ) -> bool:
-        old_partitions = len(current_meta)
-        n_msg: Dict[int, int] = {}  # partition -> copied messages
-        s = get_stream(name)
-        logger.info("Altering stream %s", name)
-        # Create temporary stream with same structure, as original one
-        tmp_stream = f"__tmp-{name}"
-        logger.info("Creating temporary stream %s", tmp_stream)
+    async def delete_stream(self, name: str):
         try:
-            await self.delete_stream(tmp_stream)
+            await super().delete_stream(name)
         except ErrorNotFound:
             pass
-        await super().create_stream(
-            subject=tmp_stream,
-            name=tmp_stream,
-            partitions=old_partitions,
-            replication_factor=1,
-        )
-        # Copy all unread data to temporary stream as is
-        for partition in range(old_partitions):
-            logger.info("Copying partition %s:%s to %s:%s", name, partition, tmp_stream, partition)
-            n_msg[partition] = 0
-            # Get current offset
-            p_meta = await self.get_partition_metadata(name, partition)
-            newest_offset = p_meta.newest_offset or 0
-            # Fetch cursor
-            current_offset = await self.get_cursor(
-                stream=name,
-                partition=partition,
-                cursor_id=s.cursor_name,
-            )
-            if current_offset > newest_offset:
-                # Fix if cursor not set properly
-                current_offset = newest_offset
-            logger.info(
-                "Start copying from current_offset: %s to newest offset: %s",
-                current_offset,
-                newest_offset,
-            )
-            if current_offset < newest_offset:
-                async for msg in self.subscribe(
-                    stream=name, partition=partition, start_offset=current_offset
-                ):
-                    await self.publish(
-                        msg.value,
-                        stream=tmp_stream,
-                        partition=partition,
-                    )
-                    n_msg[partition] += 1
-                    if msg.offset == newest_offset:
-                        break
-            if n_msg[partition]:
-                logger.info("  %d messages has been copied", n_msg[partition])
-            else:
-                logger.info("  nothing to copy")
-        # Drop original stream
-        logger.info("Dropping original stream %s", name)
-        await self.delete_stream(name)
-        # Create new stream with required structure
-        logger.info("Creating stream %s", name)
-        await super().create_stream(
-            subject=name,
-            name=name,
-            partitions=new_partitions,
-            replication_factor=replication_factor,
-        )
-        # Copy data from temporary stream to a new one
-        for partition in range(old_partitions):
-            logger.info("Restoring partition %s:%s to %s" % (tmp_stream, partition, new_partitions))
-            # Re-route dropped partitions to partition 0
-            dest_partition = partition if partition < new_partitions else 0
-            n = n_msg[partition]
-            if n > 0:
-                async for msg in self.subscribe(
-                    stream=tmp_stream,
-                    partition=partition,
-                    start_position=StartPosition.EARLIEST,
-                ):
-                    await self.publish(msg.value, stream=name, partition=dest_partition)
-                    n -= 1
-                    if not n:
-                        break
-                logger.info("  %s messages restored", n_msg[partition])
-            else:
-                logger.info("  nothing to restore")
-        # Drop temporary stream
-        logger.info("Dropping temporary stream %s", tmp_stream)
-        await self.delete_stream(tmp_stream)
-        # Uh-oh
-        logger.info("Stream %s has been altered", name)
-        return True
 
     async def fetch_metadata(
         self, stream: Optional[str] = None, wait_for_stream: bool = False
@@ -229,6 +138,7 @@ class LiftBridgeClient(GugoLiftbridgeClient):
         cursor_id: Optional[str] = None,
         timeout: Optional[int] = None,
         allow_isr: bool = False,
+        **kwargs,
     ) -> AsyncIterable[Message]:
         if cursor_id:
             start_position = StartPosition.RESUME
@@ -244,3 +154,8 @@ class LiftBridgeClient(GugoLiftbridgeClient):
             allow_isr=allow_isr,
         ):
             yield msg
+
+    async def fetch_partition_metadata(
+        self, stream: str, partition: int, wait_for_stream: bool = False
+    ) -> PartitionMetadata:
+        return await self.get_partition_metadata(stream, partition, wait_for_stream)
