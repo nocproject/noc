@@ -246,22 +246,6 @@ Ext.define('NOC.sa.managedobject.form.View', {
                         {
                             items: [
                                 {
-                                    name: "profile",
-                                    xtype: "core.combo",
-                                    restUrl: "/sa/profile/lookup/",
-                                    uiStyle: "medium-combo",
-                                    fieldLabel: __("SA Profile"),
-                                    tooltip: __(
-                                        "Profile (Adapter) for device work. <br/>" +
-                                        "!! Auto detect profile by SNMP if Object Profile -> Box -> Profile is set. <br/>"
-                                    ),
-                                    allowBlank: true,
-                                    tabIndex: 60,
-                                    groupEdit: true,
-                                    listeners: {
-                                        render: 'addTooltip'
-                                    }
-                                }, {
                                     name: "vendor",
                                     xtype: "core.combo",
                                     restUrl: "/inv/vendor/lookup/",
@@ -317,6 +301,24 @@ Ext.define('NOC.sa.managedobject.form.View', {
                     items: [
                         {
                             items: [
+                                {
+                                    name: "profile",
+                                    xtype: "core.combo",
+                                    restUrl: "/sa/profile/lookup/",
+                                    uiStyle: "medium-combo",
+                                    fieldLabel: __("SA Profile"),
+                                    labelStyle: "font-weight:bold",
+                                    tooltip: __(
+                                        "Profile (Adapter) for device work. <br/>" +
+                                        "!! Auto detect profile by SNMP if Object Profile -> Box -> Profile is set. <br/>"
+                                    ),
+                                    allowBlank: true,
+                                    tabIndex: 60,
+                                    groupEdit: true,
+                                    listeners: {
+                                        render: 'addTooltip'
+                                    }
+                                },
                                 {
                                     name: "scheme",
                                     xtype: "sa.managedobject.SchemeLookupField",
