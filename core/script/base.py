@@ -11,8 +11,12 @@ import logging
 import itertools
 import operator
 from functools import reduce
+from collections import defaultdict
 from time import perf_counter
 from typing import Any, Optional, Set, Union
+
+# Third-party modules
+from atomicl import AtomicLong
 
 # NOC modules
 from noc.core.log import PrefixLoggerAdapter
@@ -228,6 +232,8 @@ class BaseScript(object, metaclass=BaseScriptMetaclass):
         #
         if self.profile.setup_script:
             self.profile.setup_script(self)
+        # Script perf metrics
+        self.script_metrics = defaultdict(lambda: AtomicLong(0))
 
     def __call__(self, *args, **kwargs):
         self.args = kwargs
@@ -342,6 +348,7 @@ class BaseScript(object, metaclass=BaseScriptMetaclass):
             self.logger.debug("Result: %s", result)
             runtime = perf_counter() - self.start_time
             self.logger.info("Complete (%.2fms)", runtime * 1000)
+            self.script_metrics["duration_ms"] = runtime * 1000
             if self.streaming:
                 result = self.clean_streaming_result(result)
         return result
@@ -1244,6 +1251,18 @@ class BaseScript(object, metaclass=BaseScriptMetaclass):
             self.labels.remove(label)
         except KeyError:
             self.logger.warning("Can't remove a label '%s' from labels", label)
+
+    def apply_metrics(self, d):
+        """
+        Apply metrics value to dictionary d
+        :param d: Dictionary
+        :return:
+        """
+        for k, v in self.metrics.items():
+            if isinstance(v, AtomicLong):
+                v = v.value
+            d[k] = v
+        return d
 
 
 class ScriptsHub(object):

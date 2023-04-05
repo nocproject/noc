@@ -732,6 +732,7 @@ class Script(BaseScript, metaclass=MetricScriptBase):
             id = mc.id
             if not multi and id in self.seen_ids:
                 return  # Already seen
+        self.script_metrics["n_metrics"] += 1
         self.metrics += [
             {
                 "id": id,
@@ -741,7 +742,7 @@ class Script(BaseScript, metaclass=MetricScriptBase):
                 "value": value,
                 "type": type,
                 "units": units,
-                "scale": scale,
+                # "scale": scale,
                 "sensor": sensor,
                 "sla_probe": sla_probe,
                 "cpe": cpe,
