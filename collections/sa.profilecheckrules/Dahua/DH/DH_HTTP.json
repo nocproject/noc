@@ -1,0 +1,13 @@
+{
+    "name": "Dahua | DH | HTTP",
+    "$collection": "sa.profilecheckrules",
+    "uuid": "df58bd7e-69be-4962-a78e-ec67fd7592e4",
+    "description": null,
+    "preference": 1000,
+    "method": "http_get",
+    "param": "/",
+    "match_method": "re",
+    "value": "platformHtm",
+    "action": "match",
+    "profile__name": "Dahua.DH"
+}

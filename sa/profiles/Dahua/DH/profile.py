@@ -25,13 +25,16 @@ class Profile(BaseProfile):
     config_tokenizer_settings = {"line_comment": "#", "rewrite": [(re.compile(r"[\.=\[\]]"), " ")]}
     config_normalizer = "DHNormalizer"
 
-    matchers = {"is_rvi": {"platform": {"$regex": "RVi.+"}}}
+    matchers = {
+        "is_rvi": {"platform": {"$regex": "RVi.+"}},
+        "is_vto": {"platform": {"$regex": "VTO.+"}},
+    }
 
     rx_depth = re.compile(r"\S+(\[[\S\d]+\])")
 
     @staticmethod
     def parse_equal_output(string):
-        r = dict(l.split("=", 1) for l in string.splitlines())
+        r = dict(line.split("=", 1) for line in string.splitlines())
         return r
 
     def parse_tokens(self, string):
