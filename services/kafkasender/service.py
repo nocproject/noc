@@ -2,16 +2,19 @@
 # ----------------------------------------------------------------------
 # kafkasender service
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2020 The NOC Project
+# Copyright (C) 2007-2023 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
 # Python modules
+import asyncio
+import random
 from typing import Optional
 
 # Third-party modules
 from aiokafka import AIOKafkaProducer
-from aiokafka.errors import KafkaError
+from aiokafka.errors import KafkaError, KafkaConnectionError
+from kafka.errors import NodeNotReadyError
 
 # NOC modules
 from noc.config import config
@@ -73,26 +76,54 @@ class KafkaSenderService(FastAPIService):
         except KafkaError as e:
             metrics["messages_sent_error", ("topic", topic)] += 1
             self.logger.error("Failed to send to topic %s: %s", topic, e)
+        except AttributeError as e:
+            # Internal error
+            metrics["messages_sent_error", ("topic", topic)] += 1
+            self.logger.error("Fatal error when send message: %s", e)
+            await self.producer.stop()
+            self.producer = None
 
     async def get_producer(self) -> AIOKafkaProducer:
         """
         Returns connected kafka producer
         :return:
         """
-        if not self.producer:
-            bootstrap = [x.strip() for x in config.kafkasender.bootstrap_servers.split(",")]
-            self.logger.info("Connecting to producer using bootstrap services %s", bootstrap)
-            self.producer = AIOKafkaProducer(
-                bootstrap_servers=bootstrap,
-                acks="all",
-                max_batch_size=config.kafkasender.max_batch_size,
-                sasl_mechanism=config.kafkasender.sasl_mechanism,
-                security_protocol=config.kafkasender.security_protocol,
-                sasl_plain_username=config.kafkasender.username,
-                sasl_plain_password=config.kafkasender.password,
-            )
-            await self.producer.start()
+        if self.producer:
+            return self.producer
+        bootstrap = [x.strip() for x in config.kafkasender.bootstrap_servers.split(",")]
+        self.logger.info("Connecting to producer using bootstrap services %s", bootstrap)
+        self.producer = AIOKafkaProducer(
+            bootstrap_servers=bootstrap,
+            acks=1,
+            max_batch_size=config.kafkasender.max_batch_size,
+            sasl_mechanism=config.kafkasender.sasl_mechanism,
+            security_protocol=config.kafkasender.security_protocol,
+            sasl_plain_username=config.kafkasender.username,
+            sasl_plain_password=config.kafkasender.password,
+            retry_backoff_ms=10000,
+        )
+        while True:
+            try:
+                self.logger.info("Try starting producer")
+                await self.producer.start()
+                break
+            except (KafkaConnectionError, NodeNotReadyError) as e:
+                # KafkaConnectionError: No connection to node with id 1
+                metrics["errors", ("type", "kafka_producer_start")] += 1
+                self.logger.error("Failed to connect producer: %s", e)
+            await self._sleep_on_error(10)
         return self.producer
+
+    @staticmethod
+    async def _sleep_on_error(delay: float = 1.0, deviation: float = 0.5):
+        """
+        Wait random time on error.
+
+        Args:
+            delay: Average delay in seecods.
+            deviation: Deviation from delay in seconds.
+        """
+        await asyncio.sleep(delay - deviation + 2 * deviation * random.random())
 
 
 if __name__ == "__main__":
