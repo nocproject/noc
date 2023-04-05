@@ -56,7 +56,6 @@ from noc.core.comp import smart_text, smart_bytes
 from noc.core.geocoder.loader import loader as geocoder_loader
 from noc.core.validators import is_objectid
 from noc.core.debug import error_report
-from noc.wf.models.workflow import Workflow
 from noc.fm.models.activealarm import ActiveAlarm
 from noc.fm.models.alarmclass import AlarmClass
 from noc.sa.models.objectstatus import ObjectStatus
