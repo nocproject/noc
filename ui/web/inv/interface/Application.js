@@ -34,11 +34,11 @@ Ext.define("NOC.inv.interface.Application", {
                 '<td class="' + Ext.baseCSSPrefix + 'grid-subtable-cell"><div class="'
                 + Ext.baseCSSPrefix + 'grid-cell-inner">{.}</div></td>'),
             subInterfaceCellArrayValue = new Ext.XTemplate(
-              '<td class="' + Ext.baseCSSPrefix + 'grid-subtable-cell">',
+                '<td class="' + Ext.baseCSSPrefix + 'grid-subtable-cell">',
                 '<tpl for=".">',
-                  '<div class="' + Ext.baseCSSPrefix + 'grid-cell-inner">{.}</div>',
+                '<div class="' + Ext.baseCSSPrefix + 'grid-cell-inner">{.}</div>',
                 '</tpl>',
-              '</td>'
+                '</td>'
             );
 
         Ext.apply(me, {
@@ -145,53 +145,53 @@ Ext.define("NOC.inv.interface.Application", {
                     headerWidth: 32,
                     emptyText: __("No SubInterfaces"),
                     columns: [
-                      {
-                           text: __("Name"),
-                           dataIndex: "name"
-                      },
-                      {
-                           text: __("Untagged"),
-                           dataIndex: "untagged_vlan"
-                      },
-                      {
-                           text: __("Tagged"),
-                           dataIndex: "tagged_vlans"
-                      },
-                      {
-                          text: __("L2 Domain"),
-                          dataIndex: "l2_domain",
-                          renderer: NOC.render.ObjectLookup("l2_domain"),
-                      },
-                      {
-                          text: __("VFR"),
-                          dataIndex: "vrf"
-                      },
-                      {
-                          text: __("IPv4"),
-                          dataIndex: "ipv4_addresses",
-                          renderer: NOC.render.Join(",")
-                      },
-                      {
-                          text: __("IPv6"),
-                          dataIndex: "ipv6_addresses",
-                          renderer: NOC.render.Join(",")
-                      },
-                      {
-                          text: __("Project"),
-                          dataIndex: "project",
-                          renderer: NOC.render.ObjectLookup("project"),
-                          editor: "project.project.LookupField"
-                      },
-                      {
-                          text: __("Service"),
-                          dataIndex: "service",
-                          renderer: NOC.render.ObjectLookup("service"),
-                          editor: "sa.service.LookupField"
-                      },
-                      {
-                           text: __("Description"),
-                           dataIndex: "description"
-                      },
+                        {
+                            text: __("Name"),
+                            dataIndex: "name"
+                        },
+                        {
+                            text: __("Untagged"),
+                            dataIndex: "untagged_vlan"
+                        },
+                        {
+                            text: __("Tagged"),
+                            dataIndex: "tagged_vlans"
+                        },
+                        {
+                            text: __("L2 Domain"),
+                            dataIndex: "l2_domain",
+                            renderer: NOC.render.ObjectLookup("l2_domain"),
+                        },
+                        {
+                            text: __("VFR"),
+                            dataIndex: "vrf"
+                        },
+                        {
+                            text: __("IPv4"),
+                            dataIndex: "ipv4_addresses",
+                            renderer: NOC.render.Join(",")
+                        },
+                        {
+                            text: __("IPv6"),
+                            dataIndex: "ipv6_addresses",
+                            renderer: NOC.render.Join(",")
+                        },
+                        {
+                            text: __("Project"),
+                            dataIndex: "project",
+                            renderer: NOC.render.ObjectLookup("project"),
+                            editor: "project.project.LookupField"
+                        },
+                        {
+                            text: __("Service"),
+                            dataIndex: "service",
+                            renderer: NOC.render.ObjectLookup("service"),
+                            editor: "sa.service.LookupField"
+                        },
+                        {
+                            text: __("Description"),
+                            dataIndex: "description"
+                        },
                     ]
                 }
             ],
@@ -357,12 +357,16 @@ Ext.define("NOC.inv.interface.Application", {
     },
     //
     showMACForm: function(data, scope) {
-        Ext.create("NOC.inv.interface.MACForm", {
-            objectId: scope.currentRecord.get("managed_object"),
-            data: data,
-            name: scope.currentRecord.get("name"),
-            title: Ext.String.format("MACs on {0}",
-              scope.currentRecord.get("name"))
-        });
+        if(data) {
+            Ext.create("NOC.inv.interface.MACForm", {
+                objectId: scope.currentRecord.get("managed_object"),
+                data: data,
+                name: scope.currentRecord.get("name"),
+                title: Ext.String.format("MACs on {0}",
+                    scope.currentRecord.get("name"))
+            });
+        } else {
+            NOC.error(__("Failed to get data"));
+        }
     }
 });
