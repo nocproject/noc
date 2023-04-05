@@ -1,0 +1,13 @@
+{
+    "name": "Dahua | DH | HTTP | VTO",
+    "$collection": "sa.profilecheckrules",
+    "uuid": "07716399-201c-4717-91cc-1e7476ac8164",
+    "description": null,
+    "preference": 1000,
+    "method": "http_get",
+    "param": "/js/merge.js",
+    "match_method": "re",
+    "value": "Dahua",
+    "action": "match",
+    "profile__name": "Dahua.DH"
+}
