@@ -279,7 +279,6 @@ Ext.define('NOC.sa.managedobject.Controller', {
                         NOC.error(__('Empty command'))
                     }
                 },
-
                 failure: function(response) {
                     NOC.error(__('server-side failure with status code ' + response.status));
                 }
@@ -373,7 +372,6 @@ Ext.define('NOC.sa.managedobject.Controller', {
                     // commandForm.removeAll();
                     commandForm.add(obj);
                 },
-
                 failure: function(response) {
                     NOC.error(__('server-side failure with status code ' + response.status));
                 }

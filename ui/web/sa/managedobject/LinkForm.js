@@ -157,6 +157,9 @@ Ext.define("NOC.sa.managedobject.LinkForm", {
                             } else {
                                 NOC.error(data.message);
                             }
+                        },
+                        failure: function() {
+                            NOC.error(__("Unlink failure"));
                         }
                     });
                 }

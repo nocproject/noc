@@ -22,7 +22,7 @@ Ext.define("NOC.core.ModelStore", {
             model = Ext.create(config.model),
             fields = model.fields.items.concat(config.customFields || []),
             defaultValues = {};
-        for(var i=0; i < fields.length; i++) {
+        for(var i = 0; i < fields.length; i++) {
             var field = fields[i],
                 dv = field.defaultValue;
             if(dv !== undefined && dv !== "") {
@@ -37,25 +37,30 @@ Ext.define("NOC.core.ModelStore", {
         });
         me.rest_url = model.rest_url;
         var proxy = Ext.create("Ext.data.RestProxy", {
-                url: model.rest_url,
-                pageParam: "__page",
-                startParam: "__start",
-                limitParam: "__limit",
-                sortParam: "__sort",
-                extraParams: {
-                    "__format": "ext"
-                },
-                reader: {
-                    type: "json",
-                    rootProperty: "data",
-                    totalProperty: "total",
-                    successProperty: "success",
-                    messageProperty : "message"
-                },
-                writer: {
-                    type: "json"
+            url: model.rest_url,
+            pageParam: "__page",
+            startParam: "__start",
+            limitParam: "__limit",
+            sortParam: "__sort",
+            extraParams: {
+                "__format": "ext"
+            },
+            reader: {
+                type: "json",
+                rootProperty: "data",
+                totalProperty: "total",
+                successProperty: "success",
+                messageProperty: "message"
+            },
+            writer: {
+                type: "json"
+            },
+            listeners: {
+                exception: function(self, request) {
+                    NOC.error(request.status + " : " + request.statusText);
                 }
-            }),
+            }
+        }),
             modelName = config.model + "-sm",
             schema = Ext.data.schema.Schema.get("default"),
             sModel = schema.getEntity(modelName);
@@ -94,8 +99,8 @@ Ext.define("NOC.core.ModelStore", {
     getOpConfig: function(config) {
         var me = this;
         return Ext.apply({
-                params: Ext.apply({}, me.filterParams),
-            }, config);
+            params: Ext.apply({}, me.filterParams),
+        }, config);
     },
 
     prefetch: function(config) {

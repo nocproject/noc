@@ -247,12 +247,17 @@ Ext.define('NOC.sa.managedobject.form.FormController', {
                 NOC.msg.complete(__("Saved"));
             },
             failure: function(record, operation) {
-                var message = "Error saving record";
+                var message = __("Error saving record");
                 me.getView().unmask();
-                if(operation && operation.error && operation.error.response && operation.error.response.responseText) {
-                    var response = Ext.decode(operation.error.response.responseText);
-                    if(response && response.message) {
-                        message = response.message;
+                if(operation && operation.error && operation.error.response) {
+                    if(operation.error.status !== 500 && operation.error.response.responseText) {
+                        var response = Ext.decode(operation.error.response.responseText);
+                        if(response && response.message) {
+                            message = response.message;
+                        }
+                    }
+                    if(operation.error.status === 500) {
+                        message = __("Internal Error");
                     }
                 }
                 NOC.error(message);
