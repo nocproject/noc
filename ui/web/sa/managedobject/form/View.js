@@ -255,7 +255,7 @@ Ext.define('NOC.sa.managedobject.form.View', {
                                         "Profile (Adapter) for device work. <br/>" +
                                         "!! Auto detect profile by SNMP if Object Profile -> Box -> Profile is set. <br/>"
                                     ),
-                                    allowBlank: false,
+                                    allowBlank: true,
                                     tabIndex: 60,
                                     groupEdit: true,
                                     listeners: {
