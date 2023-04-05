@@ -50,6 +50,10 @@ class LiftBridgeClient(GugoLiftbridgeClient):
     async def __aexit__(self, exc_type, exc_val, exc_tb):
         await super().__aexit__(exc_type, exc_val, exc_tb)
 
+    @classmethod
+    def get_replication_factor(cls, meta) -> int:
+        return min(len(meta.brokers), 2)
+
     @staticmethod
     def get_topic_config(name, replication_factor: Optional[int] = 0) -> Dict[str, int]:
         """

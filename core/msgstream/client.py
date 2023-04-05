@@ -145,6 +145,10 @@ class MessageStreamClient(object):
     async def delete_stream(self, name: str) -> None:
         await self.client.delete_stream(name)
 
+    @classmethod
+    def get_replication_factor(cls, meta) -> int:
+        return min(len(meta.brokers), 2)
+
     async def ensure_stream(self, name: str, partitions: Optional[int] = None) -> bool:
         """
         Ensure stream settings
@@ -161,7 +165,7 @@ class MessageStreamClient(object):
             logger.info("Stream '%s' without partition. Skipping..", name)
             return False
         meta = await self.fetch_metadata(name)
-        rf = min(len(meta.brokers), 3)
+        rf = self.client.get_replication_factor(meta)
         stream_meta = meta.metadata[name] if name in meta.metadata else None
         if stream_meta and len(stream_meta) == partitions:
             return False
@@ -173,7 +177,7 @@ class MessageStreamClient(object):
                 len(stream_meta),
                 partitions,
             )
-            return await self.client.alter_stream(
+            return await self.alter_stream(
                 name, stream_meta, new_partitions=partitions, replication_factor=rf
             )
         logger.info("Creating stream %s with %s partitions", name, partitions)
@@ -257,10 +261,13 @@ class MessageStreamClient(object):
             p_meta = await self.fetch_partition_metadata(name, partition)
             newest_offset = p_meta.newest_offset or 0
             # Fetch cursor
-            current_offset = await self.fetch_cursor(
-                stream=name,
-                partition=partition,
-                cursor_id=s.cursor_name,
+            current_offset = (
+                await self.fetch_cursor(
+                    stream=name,
+                    partition=partition,
+                    cursor_id=s.cursor_name,
+                )
+                or 0
             )
             if current_offset > newest_offset:
                 # Fix if cursor not set properly

@@ -82,6 +82,16 @@ class RedPandaClient(object):
         # if self.client:
         #    await self.client.close()
 
+    @classmethod
+    def get_replication_factor(cls, meta) -> int:
+        """
+        Only Odd number
+        """
+        rf = len(meta.brokers)
+        if not rf % 2:
+            rf += 1
+        return rf
+
     @staticmethod
     async def _sleep_on_error(delay: float = 1.0, deviation: float = 0.5):
         """
@@ -140,7 +150,7 @@ class RedPandaClient(object):
         # Fetch newest offset
         con = await self.get_consumer()
         # await con.start()
-        offsets = await con.end_offsets(TopicPartition(topic=stream, partition=partition))
+        offsets = await con.end_offsets([TopicPartition(topic=stream, partition=partition)])
         for tp, offset in offsets.items():
             newest_offset = offset
             high_watermark = offset
@@ -230,6 +240,8 @@ class RedPandaClient(object):
         :param name:
         :return:
         """
+        if name.startswith("__"):
+            return {}
         cfg = get_stream(name)
         r = {}
         if cfg.config.retention_bytes:
