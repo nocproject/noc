@@ -100,6 +100,9 @@ class MetricsCheck(DiscoveryCheck):
         if config.discovery.proxy_metric and not result:
             self.logger.info("No metrics found")
             return
+        elif not config.discovery.proxy_metric and "metrics" in result:
+            self.logger.info("Collected metrics: %s", result["metrics"]["n_measurements"])
+            return
         elif not config.discovery.proxy_metric:
             return
         self.logger.info("Collected metrics: %s", len(result))

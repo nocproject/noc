@@ -1258,7 +1258,7 @@ class BaseScript(object, metaclass=BaseScriptMetaclass):
         :param d: Dictionary
         :return:
         """
-        for k, v in self.metrics.items():
+        for k, v in self.script_metrics.items():
             if isinstance(v, AtomicLong):
                 v = v.value
             d[k] = v
