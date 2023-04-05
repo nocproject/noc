@@ -55,6 +55,7 @@ from noc.core.translation import ugettext as _
 from noc.core.comp import smart_text, smart_bytes
 from noc.core.geocoder.loader import loader as geocoder_loader
 from noc.core.validators import is_objectid
+from noc.core.debug import error_report
 from noc.wf.models.workflow import Workflow
 from noc.fm.models.activealarm import ActiveAlarm
 from noc.fm.models.alarmclass import AlarmClass
@@ -259,6 +260,7 @@ class ManagedObjectApplication(ExtModelApplication):
         if not d_config:
             return data
         data["is_managed"] = getattr(o, "is_managed", True)
+        data["is_wiping"] = o.state.is_wiping
         data["diagnostics"] = list(
             sorted(
                 [
@@ -445,9 +447,9 @@ class ManagedObjectApplication(ExtModelApplication):
             qs = qs.filter(cq)
         # qs = qs.exclude(name__startswith="wiping-")
         # Filter Wiped
-        w_states = Workflow.get_wiping_states()
-        if w_states:
-            qs = qs.exclude(state__in=[str(s) for s in w_states])
+        # w_states = Workflow.get_wiping_states()
+        # if w_states:
+        #    qs = qs.exclude(state__in=[str(s) for s in w_states])
         return qs
 
     @view(url=r"^(?P<id>\d+)/links/$", method=["GET"], access="read", api=True)
@@ -1196,8 +1198,16 @@ class ManagedObjectApplication(ExtModelApplication):
 
     @view(url=r"^full/", method=["GET", "POST"], access="read", api=True)
     def api_list_full(self, request):
-        return self.list_data(request, self.instance_to_dict)
+        try:
+            return self.list_data(request, self.instance_to_dict)
+        except Exception as e:
+            error_report()
+            return self.response({"status": False, "message": str(e)}, status=self.INTERNAL_ERROR)
 
     @view(url=r"^list/", method=["GET", "POST"], access="read", api=True)
     def api_list_short(self, request):
-        return self.list_data(request, self.instance_to_dict_list)
+        try:
+            return self.list_data(request, self.instance_to_dict_list)
+        except Exception as e:
+            error_report()
+            return self.response({"status": False, "message": str(e)}, status=self.INTERNAL_ERROR)
