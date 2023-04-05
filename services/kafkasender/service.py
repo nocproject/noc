@@ -2,12 +2,13 @@
 # ----------------------------------------------------------------------
 # kafkasender service
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2020 The NOC Project
+# Copyright (C) 2007-2023 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
 # Python modules
 import asyncio
+import random
 from typing import Optional
 
 # Third-party modules
@@ -110,8 +111,19 @@ class KafkaSenderService(FastAPIService):
                 # KafkaConnectionError: No connection to node with id 1
                 metrics["errors", ("type", "kafka_producer_start")] += 1
                 self.logger.error("Failed to connect producer: %s", e)
-            await asyncio.sleep(10)
+            await self._sleep_on_error(10)
         return self.producer
+
+    @staticmethod
+    async def _sleep_on_error(delay: float = 1.0, deviation: float = 0.5):
+        """
+        Wait random time on error.
+
+        Args:
+            delay: Average delay in seecods.
+            deviation: Deviation from delay in seconds.
+        """
+        await asyncio.sleep(delay - deviation + 2 * deviation * random.random())
 
 
 if __name__ == "__main__":
