@@ -10,6 +10,7 @@ import datetime
 import operator
 from threading import Lock
 from itertools import chain
+from functools import partial
 from dataclasses import dataclass
 from typing import Optional, List, Dict, Tuple
 from collections import defaultdict
@@ -145,7 +146,12 @@ class ManagedObjectProfile(NOCModel):
         Style, verbose_name=_("Style"), blank=True, null=True, on_delete=models.CASCADE
     )
     # Workflow
-    workflow: "Workflow" = DocumentReferenceField(Workflow, null=True, blank=True)
+    workflow: "Workflow" = DocumentReferenceField(
+        Workflow,
+        null=True,
+        blank=True,
+        default=partial(Workflow.get_default_workflow, "sa.ManagedObject"),
+    )
     # Stencils
     shape = models.CharField(
         _("Shape"), blank=True, null=True, choices=stencil_registry.choices, max_length=128
@@ -710,6 +716,8 @@ class ManagedObjectProfile(NOCModel):
     _id_cache = cachetools.TTLCache(maxsize=100, ttl=60)
     _bi_id_cache = cachetools.TTLCache(maxsize=100, ttl=60)
     _object_profile_metrics = cachetools.TTLCache(maxsize=1000, ttl=60)
+
+    DEFAULT_WORKFLOW_NAME = "ManagedObject Default"
 
     def __str__(self):
         return self.name
