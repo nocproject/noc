@@ -66,6 +66,10 @@ Ext.define("NOC.wf.state.Model", {
             type: "boolean"
         },
         {
+            name: "hide_with_state",
+            type: "boolean"
+        },
+        {
             name: "remote_system",
             type: "string"
         },

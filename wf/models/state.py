@@ -97,6 +97,8 @@ class State(Document):
     is_productive = BooleanField(default=False)
     # Resource will be wiping after expired
     is_wiping = BooleanField(default=False)
+    # Hide record with state from list
+    hide_with_state = BooleanField(default=False)
     # Discovery should update last_seen field
     update_last_seen = BooleanField(default=False)
     # State time-to-live in seconds

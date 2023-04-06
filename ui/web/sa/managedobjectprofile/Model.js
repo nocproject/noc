@@ -814,6 +814,15 @@ Ext.define("NOC.sa.managedobjectprofile.Model", {
             defaultValue: "D"
         },
         {
+            name: "workflow",
+            type: "string"
+        },
+        {
+            name: "workflow__label",
+            type: "string",
+            persist: false
+        },
+        {
             name: "object_validation_policy",
             type: "string"
         },
