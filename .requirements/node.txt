@@ -28,7 +28,7 @@ manhole==1.7.0
 markerlib==0.6.0
 mongoengine==0.27.0
 motor==3.1.1
-networkx==2.8.7
+networkx==3.1.0
 numpy==1.24.0
 orjson==3.8.7
 progressbar2==4.0.0
