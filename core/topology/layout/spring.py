@@ -49,7 +49,7 @@ class SpringLayout(LayoutBase):
         # return 2 * cls.DEFAULT_LEVEL * (l1 + l2) / cls.L
 
 
-@nx.utils.random_state(10)
+@nx.utils.np_random_state(10)
 def fruchterman_reingold_layout(
     G,
     k=None,
