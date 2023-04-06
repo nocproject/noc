@@ -158,8 +158,8 @@ class Topo(object):
         if obj.level != node["level"]:
             node["level"] = obj.level
             changed = True
-            metrics["obj_level", node["level"]] -= 1
-            metrics["obj_level", obj.level] += 1
+            metrics["obj_level", ("level", node["level"])] -= 1
+            metrics["obj_level", ("level", obj.level)] += 1
         if self.to_set(node["uplinks"]) != self.to_set(obj.uplinks):
             node["uplinks"] = self.clear_uplinks(obj.uplinks)
             changed = True
@@ -177,7 +177,7 @@ class Topo(object):
             self.set_dirty(adj)
         node = self.graph.nodes[obj_id]
         self.graph.remove_node(obj_id)
-        metrics["obj_level", node["level"]] -= 1
+        metrics["obj_level", ("level", node["level"])] -= 1
         metrics["obj_remove"] += 1
 
     def add_link(self, u: int, v: int) -> None:
