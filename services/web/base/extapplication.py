@@ -14,6 +14,7 @@ import re
 # Third-party modules
 from django.http import HttpResponse
 from django.db.models.query import QuerySet
+from cachetools import cachedmethod, TTLCache
 import orjson
 
 # NOC modules
@@ -133,7 +134,9 @@ class ExtApplication(Application):
         else:
             return set()
 
-    def get_exclude_states(self, user):
+    @cachedmethod(TTLCache(ttl=900))
+    @staticmethod
+    def get_exclude_states():
         from noc.wf.models.state import State
 
         return list(State.objects.filter(hide_with_state=True).scalar("id"))
@@ -257,7 +260,7 @@ class ExtApplication(Application):
                 data = data.exclude(id__in=fav_items)
             else:  # Doc
                 data = data.filter(id__nin=fav_items)
-        if self.wf_state:
+        if self.wf_state and "state" not in q:
             states = self.get_exclude_states(request.user)
             if states and is_document(self.model):
                 data = data.exclude(state__in=states)
