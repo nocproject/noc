@@ -62,7 +62,8 @@ class Topo(object):
             self.remove_link(obj.id, n)
         # Update statistics
         metrics["obj"] = len(self.graph.nodes)
-        metrics["links"] = len(self.graph.edges)
+        # Too expensive calculate
+        # metrics["links"] = len(self.graph.edges)
 
     def has_dirty(self) -> bool:
         """
@@ -349,6 +350,8 @@ class Topo(object):
             roots = {n for n in cc if self.graph.nodes[n]["level"] == max_level}
         logger.debug("Roots: %s at level %d", self.to_join(roots), max_level)
         uplinks = defaultdict(set)
+        if len(roots) == 1:
+            uplinks[list(roots)[0]] = set()
         for root in roots:
             logger.debug("Processig from root {root}", root)
             for node, uplink in self.iter_uplinks(root, uplinks):
