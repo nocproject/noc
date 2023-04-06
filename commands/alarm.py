@@ -30,13 +30,14 @@ CLEAN_WINDOW = datetime.timedelta(weeks=1)
 
 
 class AlarmItem(BaseModel):
-    op: str = "raise"  # raise, clear
+    op: str = "raise"  # raise, clear, set_status
     managed_object: str
     alarm_class: str = "NOC | Managed Object | Ping Failed"
     reference: Optional[str] = None
     vars: Optional[Dict[str, Any]] = None
     delay: int = 1
     labels: Optional[List[str]] = None
+    status: bool = False
 
     def get_message(self):
         r = {
@@ -48,6 +49,18 @@ class AlarmItem(BaseModel):
             return r
         if self.op == "raise" and self.alarm_class:
             r["alarm_class"] = self.alarm_class
+        if self.op == "set_status":
+            return {
+                "$op": "set_status",
+                "statuses": [
+                    {
+                        "timestamp": datetime.datetime.now(),
+                        "managed_object": self.managed_object,
+                        "status": self.status,
+                        "labels": self.labels,
+                    }
+                ],
+            }
         if self.vars:
             r["vars"] = self.vars
         if self.labels:

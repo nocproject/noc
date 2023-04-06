@@ -16,6 +16,7 @@ class StatusItem(BaseModel):
     managed_object: str
     status: bool
     timestamp: Optional[str]
+    labels: Optional[List[str]]
 
 
 class SetStatusRequest(BaseModel):
