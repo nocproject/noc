@@ -148,9 +148,9 @@ class ManagedObjectProfile(NOCModel):
     # Workflow
     workflow: "Workflow" = DocumentReferenceField(
         Workflow,
-        null=True,
-        blank=True,
-        default=partial(Workflow.get_default_workflow, "sa.ManagedObject"),
+        null=False,
+        blank=False,
+        default=partial(Workflow.get_default_workflow, "sa.ManagedObjectProfile"),
     )
     # Stencils
     shape = models.CharField(

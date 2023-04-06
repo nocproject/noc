@@ -237,6 +237,7 @@ Ext.define("NOC.sa.managedobjectprofile.Application", {
                                   name: "workflow",
                                   xtype: "wf.workflow.LookupField",
                                   fieldLabel: __("WorkFlow"),
+                                  uiStyle: "medium",
                                   allowBlank: true
                                 },
                                 {

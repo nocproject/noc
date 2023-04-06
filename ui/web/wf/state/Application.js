@@ -50,6 +50,12 @@ Ext.define("NOC.wf.state.Application", {
                     renderer: NOC.render.Bool
                 },
                 {
+                    text: __("Hide Records With State"),
+                    dataIndex: "hide_with_state",
+                    width: 50,
+                    renderer: NOC.render.Bool
+                },
+                {
                     text: __("Update Last Seen"),
                     dataIndex: "update_last_seen",
                     width: 50,
