@@ -751,6 +751,7 @@ class ManagedObjectProfile(NOCModel):
                 "enable_periodic_discovery",
                 "enable_ping",
                 "labels",
+                "level",
             }
         ):
             for mo_id in ManagedObject.objects.filter(object_profile=self).values_list(
