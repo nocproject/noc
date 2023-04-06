@@ -134,7 +134,7 @@ class ExtApplication(Application):
         else:
             return set()
 
-    @cachedmethod(TTLCache(ttl=900))
+    @cachedmethod(TTLCache(maxsize=12, ttl=900))
     @staticmethod
     def get_exclude_states():
         from noc.wf.models.state import State
