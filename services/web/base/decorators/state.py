@@ -63,4 +63,5 @@ class StateHandlerDecorator(BaseAppDecorator):
 
 def state_handler(cls):
     StateHandlerDecorator(cls)
+    cls.wf_state = True
     return cls

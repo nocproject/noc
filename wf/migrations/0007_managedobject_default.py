@@ -22,6 +22,7 @@ class Migration(BaseMigration):
                 "name": "ManagedObject Default",
                 "is_active": True,
                 "description": "ManagedObject Default Workflow",
+                "allowed_models": ["sa.ManagedObject"],
                 "bi_id": Int64("2858828191196989734"),
             }
         )

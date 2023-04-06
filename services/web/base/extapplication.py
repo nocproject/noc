@@ -14,12 +14,14 @@ import re
 # Third-party modules
 from django.http import HttpResponse
 from django.db.models.query import QuerySet
+from cachetools import cachedmethod, TTLCache
 import orjson
 
 # NOC modules
 from noc.main.models.favorites import Favorites
 from noc.main.models.slowop import SlowOp
 from noc.config import config
+from noc.models import is_document
 from .application import Application, view
 from .access import HasPerm, PermitLogged
 
@@ -52,6 +54,7 @@ class ExtApplication(Application):
     only_param = "__only"
     in_param = "__in"
     fav_status = "fav_status"
+    wf_state = False
     default_ordering = []
     exclude_fields: Optional[List[str]] = []
 
@@ -130,6 +133,13 @@ class ExtApplication(Application):
             return set(f.favorites)
         else:
             return set()
+
+    @cachedmethod(TTLCache(maxsize=12, ttl=900))
+    @staticmethod
+    def get_exclude_states():
+        from noc.wf.models.state import State
+
+        return list(State.objects.filter(hide_with_state=True).scalar("id"))
 
     @staticmethod
     def format_label(ll):
@@ -250,6 +260,12 @@ class ExtApplication(Application):
                 data = data.exclude(id__in=fav_items)
             else:  # Doc
                 data = data.filter(id__nin=fav_items)
+        if self.wf_state and "state" not in q:
+            states = self.get_exclude_states(request.user)
+            if states and is_document(self.model):
+                data = data.exclude(state__in=states)
+            elif states:
+                data = data.exclude(state__in=[str(x) for x in states])
         # Store unpaged/unordered queryset
         unpaged_data = data
         # Select related records when fetching for models

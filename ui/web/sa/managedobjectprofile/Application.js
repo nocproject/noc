@@ -34,7 +34,8 @@ Ext.define("NOC.sa.managedobjectprofile.Application", {
         "NOC.core.label.LabelField",
         "NOC.core.ListFormField",
         "Ext.ux.form.MultiIntervalField",
-        "Ext.ux.form.GridField"
+        "Ext.ux.form.GridField",
+        "NOC.wf.workflow.LookupField"
     ],
     model: "NOC.sa.managedobjectprofile.Model",
     search: true,
@@ -231,6 +232,13 @@ Ext.define("NOC.sa.managedobjectprofile.Application", {
                                     query: {
                                         "enable_managedobjectprofile": true
                                     },
+                                },
+                                {
+                                  name: "workflow",
+                                  xtype: "wf.workflow.LookupField",
+                                  fieldLabel: __("WorkFlow"),
+                                  uiStyle: "medium",
+                                  allowBlank: true
                                 },
                                 {
                                     xtype: "fieldset",
@@ -1111,7 +1119,7 @@ Ext.define("NOC.sa.managedobjectprofile.Application", {
                                             tooltip: __("Set which CAPS will be check in Caps discovery. <br/>" +
                                                 'Service Activation -> Setup -> Caps Profiles'),
                                             fieldLabel: __("Caps Profile"),
-                                            allowBlank: false,
+                                            allowBlank: true,
                                             bind: {
                                                 disabled: "{!enableBoxDiscoveryCaps.checked}"
                                             },
