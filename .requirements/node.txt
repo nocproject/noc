@@ -49,4 +49,3 @@ tornado==6.0.4
 uvicorn==0.21.1
 yappi==1.4.0
 gufo-liftbridge==0.1.0
-gufo-traceroute==0.2.0
