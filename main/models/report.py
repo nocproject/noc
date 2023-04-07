@@ -31,6 +31,7 @@ from noc.core.mongo.fields import ForeignKeyField
 from noc.core.reporter.types import ReportConfig, Parameter, ReportBand, ReportQuery
 from noc.core.reporter.types import Template as TemplateCfg
 from noc.core.reporter.types import BandFormat as BandFormatCfg
+from noc.core.prettyjson import to_json
 from noc.aaa.models.user import User
 from noc.aaa.models.group import Group
 
@@ -58,7 +59,18 @@ class ReportParam(EmbeddedDocument):
 
     @property
     def json_data(self) -> Dict[str, Any]:
-        r = {"name": self.name, "description": self.description}
+        r = {
+            "name": self.name,
+            "description": self.description,
+            "label": self.label,
+            "type": self.type,
+        }
+        if self.model_id:
+            r["model_id"] = self.model_id
+        if self.choices:
+            r["choices"] = self.choices
+        if self.required:
+            r["required"] = self.required
         if self.default:
             r["default"] = self.default
         return r
@@ -74,11 +86,34 @@ class Template(EmbeddedDocument):
     has_preview = BooleanField(default=False)
     handler = StringField()
 
+    @property
+    def json_data(self) -> Dict[str, Any]:
+        r = {
+            "code": self.code,
+            "output_type": self.output_type,
+            "is_alterable_output": self.is_alterable_output,
+            "has_preview": self.has_preview,
+        }
+        if self.output_name_pattern:
+            r["output_name_pattern"] = self.output_name_pattern
+        return r
+
 
 class Query(EmbeddedDocument):
     datasource = StringField()
     ds_query = StringField()
     json = StringField()
+
+    @property
+    def json_data(self) -> Dict[str, Any]:
+        r = {}
+        if self.datasource:
+            r["datasource"] = self.datasource
+        if self.ds_query:
+            r["ds_query"] = self.ds_query
+        if self.datasource:
+            r["json"] = self.json
+        return r
 
 
 class BandFormat(EmbeddedDocument):
@@ -94,6 +129,16 @@ class BandFormat(EmbeddedDocument):
     def __str__(self):
         return self.name
 
+    @property
+    def json_data(self) -> Dict[str, Any]:
+        r = {
+            "name": self.name,
+            "title_template": self.title_template,
+        }
+        if self.column_format:
+            r["column_format"] = [x for x in self.column_format]
+        return r
+
 
 class Band(EmbeddedDocument):
     meta = {"strict": False, "auto_create_index": False}
@@ -105,6 +150,18 @@ class Band(EmbeddedDocument):
     @property
     def is_root(self) -> bool:
         return self.name == "Root"
+
+    @property
+    def json_data(self) -> Dict[str, Any]:
+        r = {
+            "name": self.name,
+            "orientation": self.orientation,
+        }
+        if self.parent:
+            r["parent"] = self.parent
+        if self.queries:
+            r["queries"] = [x.json_data for x in self.queries]
+        return r
 
 
 class Permission(EmbeddedDocument):
@@ -169,6 +226,43 @@ class Report(Document):
         lang = lang or config.language
         if field in self.localization:
             return self.localization[field].get(lang)
+
+    @property
+    def json_data(self) -> Dict[str, Any]:
+        r = {
+            "name": self.name,
+            "$collection": self._meta["json_collection"],
+            "uuid": self.uuid,
+            "description": self.description,
+            "code": self.code,
+            "hide": self.hide,
+            "title": self.title,
+        }
+        if self.report_source:
+            r["report_source"] = self.report_source
+        if self.localization:
+            r["localization"] = {ll: dd for ll, dd in self.localization.items()}
+        if self.parameters:
+            r["parameters"] = [p.json_data for p in self.parameters]
+        if self.templates:
+            r["templates"] = [p.json_data for p in self.templates]
+        if self.bands:
+            r["bands"] = [p.json_data for p in self.bands]
+        if self.bands_format:
+            r["bands_format"] = [p.json_data for p in self.bands_format]
+        return r
+
+    def to_json(self) -> str:
+        return to_json(
+            self.json_data,
+            order=[
+                "name",
+                "$collection",
+                "uuid",
+                "title",
+                "description",
+            ],
+        )
 
     @property
     def config(self) -> ReportConfig:

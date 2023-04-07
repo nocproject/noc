@@ -1,36 +1,29 @@
 {
-  "_id": {
-    "$oid": "63fe44755774797899dcc47d"
-  },
-  "name": "reportclassificationrule",
-  "category": "fm",
-  "uuid": {
-    "$uuid": "7b2fad91840946a6adcf39d4e12c39f3"
-  },
-  "hide": false,
-  "format_source": "S",
-  "report_source": "reportclassificationrule",
-  "is_system": false,
-  "allow_rest": false,
-  "parameters": [
-    {
-      "name": "profile",
-      "label": "Profile",
-      "type": "model",
-      "model_id": "sa.Profile",
-      "required": true,
-      "localization": {}
-    }
-  ],
-  "templates": [],
-  "bands": [
-    {
-      "name": "Root",
-      "orientation": "H",
-      "queries": []
-    }
-  ],
-  "bands_format": [],
-  "permissions": [],
-  "localization": {}
+    "name": "Event Classification Rule",
+    "$collection": "main.reportes",
+    "uuid": "7b2fad91-8409-46a6-adcf-39d4e12c39f3",
+    "title": "Classification Rules (New)",
+    "description": "Покрытие правил классификации событий",
+    "bands": [{
+        "name": "Root",
+        "orientation": "H"
+    }],
+    "code": null,
+    "hide": false,
+    "localization": {
+        "title": {
+            "ru": "Правила Классификации Событий (Новый)"
+        }
+    },
+    "parameters": [
+        {
+            "name": "profile",
+            "description": null,
+            "label": "Profile",
+            "model_id": "sa.Profile",
+            "required": true,
+            "type": "model"
+        }
+    ],
+    "report_source": "reportclassificationrule"
 }

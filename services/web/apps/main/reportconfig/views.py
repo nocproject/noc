@@ -6,6 +6,7 @@
 # ----------------------------------------------------------------------
 
 # Python modules
+from typing import Optional, Set
 from collections import defaultdict
 
 # Third-party modules
@@ -76,10 +77,16 @@ class ReportConfigApplication(ExtDocApplication):
         return super().clean(data)
 
     @staticmethod
-    def get_columns_filter(report: "Report", checked):
+    def get_columns_filter(
+        report: "Report",
+        checked: Optional[Set[str]] = None,
+        pref_lang: Optional[str] = None,
+    ):
         """
         Get columns filter
         :param report:
+        :param checked:
+        :param pref_lang:
         :return:
         """
         r = []
@@ -98,29 +105,13 @@ class ReportConfigApplication(ExtDocApplication):
                 continue
             elif fn not in columns[q_name] and fn not in {"all", "*"}:
                 continue
-            r += [(field_name, field.get("title") or field_name, field_name in checked)]
+            title = (
+                report.get_localization(f"columns.{field_name}", lang=pref_lang)
+                or field.get("title")
+                or field_name
+            )
+            r += [(field_name, title, field_name in checked)]
         return r
-        # Root datasource, Merge fields (by name)
-        # root_ds = {}
-        # root_ds = report.get_root_datasource()
-        # root_band_columns = report.get_band_columns()
-        # root_fmt = None
-        # for bf in report.bands_format:
-        #     if bf.is_root:
-        #         root_fmt = bf
-        #         break
-
-        # columns = {}
-        # for cf in bf.column_format:
-        #     columns[cf["name"]] = cf["title"]
-        # checked = {p.strip() for p in param.default.split(",")}
-        # for query_name in root_band_columns:
-        #     if columns and field.name not in columns:
-        #         continue
-        #     title = report.get_localization(
-        #         f"columns.{field.name}", lang=pref_lang
-        #     ) or columns.get(field.name, field.name)
-        #     cfg["storeData"] += [[field.name, title, field.name in checked]]
 
     @view(url=r"^(?P<report_id>\S+)/form/$", method=["GET"], access="launch", api=True)
     def api_form_report(self, request, report_id):
@@ -186,9 +177,14 @@ class ReportConfigApplication(ExtDocApplication):
                     {"boxLabel": x, "inputValue": x, "checked": x == param.default}
                     for x in param.choices
                 ]
+            elif param.type == "bool":
+                cfg["xtype"] = "checkbox"
+                cfg["uiStyle"] = "small"
             elif param.type == "fields_selector":
                 cf = self.get_columns_filter(
-                    report, checked={p.strip() for p in param.default.split(",")}
+                    report,
+                    checked={p.strip() for p in param.default.split(",")},
+                    pref_lang=pref_lang,
                 )
                 cfg["xtype"] = "reportcolumnselect"
                 cfg["storeData"] = cf

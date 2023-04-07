@@ -103,10 +103,10 @@ class ManagedObjectDS(BaseDataSource):
             description="Object Administrative Domain",
             internal_name="administrative_domain__name",
         ),
-        # FieldInfo(
-        #     name="container",
-        #     description="Object Container Name",
-        # ),
+        FieldInfo(
+            name="container",
+            description="Object Container Name",
+        ),
         FieldInfo(
             name="segment",
             description="Object Segment Name",
@@ -233,7 +233,6 @@ class ManagedObjectDS(BaseDataSource):
                 .with_options(read_preference=ReadPreference.SECONDARY_PREFERRED)
                 .find({"object": {"$exists": 1}}, {"object": 1, "status": 1})
             }
-        print("Start Main Loop")
         for num, mo in enumerate(mos.values(*q_fields).iterator(), start=1):
             yield num, "id", mo["id"]
             yield num, "managed_object_id", mo["id"]
@@ -277,5 +276,7 @@ class ManagedObjectDS(BaseDataSource):
                 ] else None
             if "labels" in mo:
                 yield num, "object_labels", ",".join(mo["labels"])
+            if "container" in mo:
+                yield num, "container", ""
             async for c in cls.iter_caps(mo.pop("caps", []), requested_caps=q_caps):
                 yield num, c[0], c[1]
