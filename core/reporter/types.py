@@ -8,6 +8,9 @@
 # Python modules
 import enum
 import datetime
+from io import BytesIO
+from zipfile import ZipFile, ZIP_DEFLATED
+from tempfile import TemporaryFile
 from dataclasses import dataclass
 from typing import Dict, List, Optional, Any, Iterable, ForwardRef
 
@@ -29,6 +32,7 @@ class OutputType(enum.Enum):
     HTML = "html"
     XLSX = "xlsx"
     CSV = "csv"
+    CSV_ZIP = "csv+zip"
     SSV = "ssv"
     PDF = "pdf"
 
@@ -221,6 +225,8 @@ class OutputDocument(BaseModel):
             return "application/vnd.ms-excel"
         elif self.output_type == OutputType.PDF:
             return "application/pdf"
+        elif self.output_type == OutputType.CSV_ZIP:
+            return "application/zip"
         return "application/octet-stream"
 
     def format_django(self) -> str:
@@ -236,6 +242,22 @@ class OutputDocument(BaseModel):
         r += [self.content.decode("utf8")]
         r += ["</div></body></html>"]
         return "\n".join(r)
+
+    def get_content(self, raw: bool = False):
+        if raw:
+            return self.content
+        if self.output_type == OutputType.HTML:
+            return self.format_django()
+        elif self.output_type == OutputType.CSV_ZIP:
+            f = TemporaryFile(mode="w+b")
+            f.write(self.content)
+            response = BytesIO()
+            with ZipFile(self.content, "w", compression=ZIP_DEFLATED) as zf:
+                zf.writestr(f"{self.document_name}.csv", f.read())
+                zf.filename = f"{self.document_name}.zip"
+            response.seek(0)
+            return response.getvalue()
+        return self.content
 
 
 ReportBand.update_forward_refs()

@@ -136,7 +136,7 @@ class ReportConfigApplication(ExtDocApplication):
             r["dockedItems"] += [{"text": "Preview", "param": {"output_type": "html"}}]
             outputs.discard("html")
         if report.report_source or (tpl and tpl.is_alterable_output):
-            outputs.update({"ssv", "csv", "xlsx"})
+            outputs.update({"csv", "csv+zip", "xlsx"})
         if outputs:
             r["dockedItems"] += [
                 {"text": out.upper(), "param": {"output_type": out}} for out in outputs
@@ -211,10 +211,7 @@ class ReportConfigApplication(ExtDocApplication):
             out_doc = report_engine.run_report(r_params=rp)
         except ValueError as e:
             return HttpResponseBadRequest(e)
-        if rp.output_type == OutputType.HTML:
-            content = out_doc.format_django()
-        else:
-            content = out_doc.content
+        content = out_doc.get_content()
         response = HttpResponse(content, content_type=out_doc.content_type)
         response["Content-Disposition"] = f'attachment; filename="{out_doc.document_name}"'
         return response

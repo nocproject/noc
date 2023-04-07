@@ -6,7 +6,6 @@
 # ----------------------------------------------------------------------
 
 # Python modules
-import logging
 from typing import List, Any, Optional, Tuple
 
 # Third-party modules
@@ -49,7 +48,7 @@ class SimpleReportFormatter(DataFormatter):
             )
         )
         if self.output_type == OutputType.CSV:
-            r = report.to_csv(delimiter=",")
+            r = report.to_csv(delimiter=self.csv_delimiter)
         elif self.output_type == OutputType.SSV:
             r = report.to_csv(delimiter=";")
         elif self.output_type == OutputType.HTML:
@@ -81,12 +80,12 @@ class SimpleReportFormatter(DataFormatter):
         if data is None:
             return
         out_columns = [c for c in data.columns]
-        if self.output_type in {OutputType.CSV, OutputType.SSV}:
-            r = ";".join(HEADER_ROW.get(cc, cc) for cc in data.columns) + "\n"
+        if self.output_type in {OutputType.CSV, OutputType.SSV, OutputType.CSV_ZIP}:
+            r = self.csv_delimiter.join(HEADER_ROW.get(cc, cc) for cc in data.columns) + "\n"
             r += data.select(out_columns).write_csv(
                 # header=[self.HEADER_ROW.get(cc, cc) for cc in out_columns],
                 # columns=out_columns,
-                sep=";",
+                sep=self.csv_delimiter,
                 quote='"',
                 has_header=False,
             )
