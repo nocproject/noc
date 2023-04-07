@@ -3,7 +3,7 @@ templates:
   DEFAULT:
     code: DEFAULT
     formatter: simplereport
-    output_type: ssv
+    output_type: html
 root_band:
     name: Root
     children:
