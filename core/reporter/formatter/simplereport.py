@@ -6,6 +6,7 @@
 # ----------------------------------------------------------------------
 
 # Python modules
+import logging
 from typing import List, Any, Optional, Tuple
 
 # Third-party modules
@@ -31,7 +32,7 @@ class SimpleReportFormatter(DataFormatter):
 
         :return:
         """
-        if not self.root_band.has_children:
+        if self.report_template.output_type != OutputType.HTML:
             self.render_table()
             return
         report = Report()

@@ -121,7 +121,7 @@ class Template(BaseModel):
     custom: bool = False
 
     def get_document_name(self):
-        return self.output_name_pattern
+        return self.output_name_pattern or "report"
 
 
 class Parameter(BaseModel):

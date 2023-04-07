@@ -144,10 +144,10 @@ class ManagedObjectDS(BaseDataSource):
             description="Object Availability Status",
             internal_name="id",
         ),
-    ] + [
-        FieldInfo(name=c_name, type=c_type, internal_name=str(c_id), is_caps=True)
-        for c_id, c_type, c_name in get_capabilities()
-    ]
+    ]#  + [
+     #    FieldInfo(name=c_name, type=c_type, internal_name=str(c_id), is_caps=True)
+     #    for c_id, c_type, c_name in get_capabilities()
+     # ]
 
     @classmethod
     async def iter_caps(
@@ -196,16 +196,16 @@ class ManagedObjectDS(BaseDataSource):
             if fields and f.name not in fields and f.name != "id":
                 continue
             if f.is_caps:
-                c = (
-                    Capability.get_by_id(f.internal_name)
-                    if is_objectid(f.internal_name)
-                    else Capability.get_by_name(f.internal_name)
-                )
+                if is_objectid(f.internal_name):
+                    c = Capability.get_by_id(f.internal_name)
+                else:
+                    c = Capability.get_by_name(f.internal_name)
                 if not c:
                     continue
                 q_caps[str(c.id)] = (f.name, cls.get_caps_default(c))
             else:
                 q_fields.append(f.internal_name or f.name)
+        print("QC", q_caps)
         if q_caps and "caps" not in q_fields:
             q_fields.append("caps")
         mos = ManagedObject.objects.filter()
@@ -251,9 +251,9 @@ class ManagedObjectDS(BaseDataSource):
             if "platform" in mo:
                 platform = mo["platform"]
                 yield num, "model", Platform.get_by_id(platform).name if platform else None
-            if "sw_version" in mo:
-                sw_version = mo["sw_version"]
-                yield num, "version", Firmware.get_by_id(sw_version).version if sw_version else None
+            if "version" in mo:
+                sw_version = mo["version"]
+                yield num, "sw_version", Firmware.get_by_id(sw_version).version if sw_version else None
             if "vendor" in mo:
                 yield num, "vendor", Vendor.get_by_id(mo["vendor"]).name if mo["vendor"] else None
             if hostname_map:

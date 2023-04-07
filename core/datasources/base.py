@@ -102,7 +102,7 @@ class BaseDataSource(object):
             [
                 pl.Series(c.name, r[c.name], dtype=c.type.value)
                 for c in cls.fields
-                if not fields or c.name in fields
+                if (not fields or c.name in fields) and len(r[c.name])
             ]
         )
         # return pl.DataFrame(r, columns=[(c.name, c.type.value) for c in cls.fields])

@@ -4,11 +4,12 @@
 # Copyright (C) 2007-2022 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
+import datetime
 
 # Python modules
 import logging
 from io import BytesIO
-from typing import Dict, Any, Optional, List, Iterable, Tuple
+from typing import Dict, Any, Optional, List, Iterable, Tuple, Set
 
 # Third-party modules
 import orjson
@@ -54,13 +55,72 @@ class ReportEngine(object):
         template = r_params.get_template()
         out_type = r_params.output_type or template.output_type
         cleaned_param = self.clean_param(report, r_params.get_params())
+        start = datetime.datetime.now()
         self.logger.info("[%s] Running report with parameter: %s", report, cleaned_param)
-        data = self.load_data(report, cleaned_param)
-        self.generate_report(report, template, out_type, out, cleaned_param, data)
+        try:
+            data = self.load_data(report, cleaned_param)
+        except Exception as e:
+            self.register_execute(
+                report, start, cleaned_param, error_text=f"Error when load Data: {str(e)}"
+            )
+            return
+        try:
+            self.generate_report(report, template, out_type, out, cleaned_param, data)
+        except Exception as e:
+            self.register_execute(
+                report, start, cleaned_param, error_text=f"Error when format result: {str(e)}"
+            )
+            return
         self.logger.info("[%s] Finished report with parameter: %s", report, cleaned_param)
+        self.register_execute(report, start, cleaned_param, successfully=True)
         output_name = self.resolve_output_filename(run_params=r_params, root_band=data)
         return OutputDocument(
             content=out.getvalue(), document_name=output_name, output_type=out_type
+        )
+
+    def register_execute(
+        self,
+        report: ReportConfig,
+        start: datetime.datetime,
+        params: Dict[str, Any],
+        end: Optional[datetime.datetime] = None,
+        successfully: bool = False,
+        canceled: bool = False,
+        error_text: Optional[str] = None,
+    ):
+        """
+        :param report:
+        :param start:
+        :param end:
+        :param params:
+        :param successfully:
+        :param canceled:
+        :param error_text:
+        :return:
+        """
+        from noc.core.service.loader import get_service
+
+        svc = get_service()
+
+        end = end or datetime.datetime.now()
+        svc.register_metrics(
+            "reportexecutionhistory",
+            [
+                {
+                    "date": start.date().isoformat(),
+                    "start": start.replace(microsecond=0).isoformat(),
+                    "end": end.replace(0).isoformat(),
+                    "duration": (start - end).total_seconds(),
+                    "report": report.name,
+                    "name": report.name,
+                    "code": "",
+                    "user": "",
+                    "successfully": successfully,
+                    "canceled": canceled,
+                    "params": params,
+                    "error": error_text or "",
+                }
+            ],
         )
 
     def generate_report(
@@ -166,7 +226,11 @@ class ReportEngine(object):
         return root
 
     @staticmethod
-    def merge_ctx(ctx: Dict[str, Any], query: ReportQuery, joined: bool = False) -> Dict[str, Any]:
+    def merge_ctx(
+        ctx: Dict[str, Any],
+        query: ReportQuery,
+        joined: bool = False,
+    ) -> Tuple[Dict[str, Any], Set[str]]:
         """
         Merge Query context
         :param ctx:
@@ -177,7 +241,7 @@ class ReportEngine(object):
         q_ctx = ctx.copy()
         if query.params:
             q_ctx.update(query.params)
-        q_ctx["fields"] = []
+        q_ctx["fields"], dss = [], set()
         for f in ctx.get("fields", []):
             ff, *field = f.split(".", 1)
             if not field and not joined:
@@ -185,7 +249,9 @@ class ReportEngine(object):
                 q_ctx["fields"].append(ff)
             elif field and ff == query.datasource and field[0] != "all":
                 q_ctx["fields"] += field
-        return q_ctx
+            if field:
+                dss.add(ff)
+        return q_ctx, dss
 
     @classmethod
     def get_rows(
@@ -204,12 +270,15 @@ class ReportEngine(object):
         rows = None
         # key_field = "managed_object_id"
         for num, query in enumerate(queries):
-            q_ctx = cls.merge_ctx(ctx, query, joined=bool(num))
+            q_ctx, dss = cls.merge_ctx(ctx, query, joined=bool(num))
             data, key_field = None, None
             if query.json_data:
                 # return join fields (last DS)
                 data = pl.DataFrame(orjson.loads(query.json_data))
+            elif num and query.datasource and dss and query.datasource not in dss:
+                continue
             elif query.datasource:
+                logger.info("[%s] Query datasource", query.datasource)
                 data, key_field = cls.query_datasource(query, q_ctx, joined=len(queries) > 1)
             if query.query:
                 logger.debug("Execute query: %s; Context: %s", query.query, q_ctx)
