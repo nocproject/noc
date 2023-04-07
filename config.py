@@ -737,6 +737,9 @@ class Config(BaseConfig):
         heatmap_zoom = StringParameter(default="4")
         max_image_size = BytesParameter(default="2M")
         topology_map_grid_size = IntParameter(min=5, default=25)
+        enable_report_history = BooleanParameter(
+            default=False, help="Enable Save Report Execution history"
+        )
 
     class ui(ConfigSection):
         max_avatar_size = BytesParameter(default="256K")

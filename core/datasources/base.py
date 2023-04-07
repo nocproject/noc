@@ -10,7 +10,7 @@ import enum
 from dataclasses import dataclass
 from functools import partial
 from collections import defaultdict
-from typing import Tuple, Union, Optional, Iterable, List, Dict, AsyncIterable
+from typing import Tuple, Union, Optional, Iterable, List, Dict, AsyncIterable, Set
 
 # Third-party modules
 import polars as pl
@@ -29,11 +29,17 @@ class FieldType(enum.Enum):
 
 @dataclass
 class FieldInfo(object):
-    name: str
+    """
+    Datasource Field description
+    """
+
+    name: str  # Name for external interaction
     description: Optional[str] = None
-    internal_name: Optional[str] = None
-    type: FieldType = FieldType.STRING
-    is_caps: bool = False
+    internal_name: Optional[str] = None  # Name for internal DataSource used
+    type: FieldType = FieldType.STRING  # Field type
+    is_caps: bool = False  # Capability field
+    is_virtual: bool = False  # Virtual Field not sending to output
+    is_vector: bool = False  # Multiple column by requested one field
 
 
 class BaseDataSource(object):
@@ -79,6 +85,22 @@ class BaseDataSource(object):
         return r
 
     @classmethod
+    def is_out_field(cls, f: FieldInfo, fields: Optional[Set[str]] = None) -> bool:
+        """
+        Check field allowed to out
+        """
+        if f.is_virtual:
+            # Virtual Field
+            return False
+        if not fields:
+            # Not filtered field
+            return True
+        elif f.name not in fields:
+            # Not filtered field
+            return False
+        return True
+
+    @classmethod
     async def query(cls, fields: Optional[Iterable[str]] = None, *args, **kwargs) -> pl.DataFrame:
         """
         Method for query report data. Return pandas dataframe.
@@ -94,15 +116,13 @@ class BaseDataSource(object):
         if not r:
             return pl.DataFrame(
                 [],
-                columns=[
-                    (c.name, c.type.value) for c in cls.fields if not fields or c.name in fields
-                ],
+                columns=[(c.name, c.type.value) for c in cls.fields if cls.is_out_field(c, fields)],
             )
         return pl.DataFrame(
             [
                 pl.Series(c.name, r[c.name], dtype=c.type.value)
                 for c in cls.fields
-                if (not fields or c.name in fields) and len(r[c.name])
+                if len(r[c.name]) and (cls.is_out_field(c, fields) or (c.is_vector and c.name in r))
             ]
         )
         # return pl.DataFrame(r, columns=[(c.name, c.type.value) for c in cls.fields])

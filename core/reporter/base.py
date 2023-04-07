@@ -4,10 +4,10 @@
 # Copyright (C) 2007-2022 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
-import datetime
 
 # Python modules
 import logging
+import datetime
 from io import BytesIO
 from typing import Dict, Any, Optional, List, Iterable, Tuple, Set
 
@@ -17,6 +17,8 @@ import polars as pl
 from jinja2 import Template as Jinja2Template
 
 # NOC modules
+from noc.main.reportsources.loader import loader as r_source_loader
+from noc.core.debug import error_report
 from .types import (
     Template,
     OutputType,
@@ -27,7 +29,6 @@ from .types import (
     OutputDocument,
 )
 from .report import BandData
-from noc.main.reportsources.loader import loader as r_source_loader
 
 
 logger = logging.getLogger(__name__)
@@ -39,14 +40,15 @@ class ReportEngine(object):
     RunParams -> ReportEngine -> load_data -> DataBand -> Formatter -> DocumentFile
     """
 
-    def __init__(self):
+    def __init__(self, report_execution_history: bool = False, report_print_error: bool = False):
         self.logger = logger
+        self.report_execution_history = report_execution_history
+        self.report_print_error = report_print_error
 
     def run_report(self, r_params: RunParams):
         """
         Run report withs params
         :param r_params: Report params
-        :param out: Output document
         :return:
         """
         # Handler param
@@ -55,31 +57,33 @@ class ReportEngine(object):
         template = r_params.get_template()
         out_type = r_params.output_type or template.output_type
         cleaned_param = self.clean_param(report, r_params.get_params())
-        start = datetime.datetime.now()
+        error, start = None, datetime.datetime.now()
         self.logger.info("[%s] Running report with parameter: %s", report, cleaned_param)
         try:
             data = self.load_data(report, cleaned_param)
-        except Exception as e:
-            self.register_execute(
-                report, start, cleaned_param, error_text=f"Error when load Data: {str(e)}"
-            )
-            return
-        try:
             self.generate_report(report, template, out_type, out, cleaned_param, data)
         except Exception as e:
+            error = str(e)
+            if self.report_print_error:
+                error_report()
+        if self.report_execution_history:
             self.register_execute(
-                report, start, cleaned_param, error_text=f"Error when format result: {str(e)}"
+                report, start, cleaned_param, successfully=not error, error_text=error
+            )
+        if error:
+            self.logger.error(
+                "[%s] Finished report with error: %s ; Params:%s", report, error, cleaned_param
             )
             return
         self.logger.info("[%s] Finished report with parameter: %s", report, cleaned_param)
-        self.register_execute(report, start, cleaned_param, successfully=True)
         output_name = self.resolve_output_filename(run_params=r_params, root_band=data)
         return OutputDocument(
             content=out.getvalue(), document_name=output_name, output_type=out_type
         )
 
+    @classmethod
     def register_execute(
-        self,
+        cls,
         report: ReportConfig,
         start: datetime.datetime,
         params: Dict[str, Any],
@@ -268,17 +272,16 @@ class ReportEngine(object):
         if not queries:
             return None
         rows = None
-        # key_field = "managed_object_id"
         for num, query in enumerate(queries):
             q_ctx, dss = cls.merge_ctx(ctx, query, joined=bool(num))
             data, key_field = None, None
             if query.json_data:
                 # return join fields (last DS)
                 data = pl.DataFrame(orjson.loads(query.json_data))
-            elif num and query.datasource and dss and query.datasource not in dss:
+            elif num and query.datasource and query.datasource not in dss:
                 continue
             elif query.datasource:
-                logger.info("[%s] Query datasource", query.datasource)
+                logger.info("[%s] Query DataSource", query.datasource)
                 data, key_field = cls.query_datasource(query, q_ctx, joined=len(queries) > 1)
             if query.query:
                 logger.debug("Execute query: %s; Context: %s", query.query, q_ctx)

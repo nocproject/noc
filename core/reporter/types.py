@@ -14,6 +14,9 @@ from typing import Dict, List, Optional, Any, Iterable, ForwardRef
 # Third-party modules
 from pydantic import BaseModel
 
+# NOC modules
+from noc.models import get_model, is_document
+
 
 class BandOrientation(enum.Enum):
     HORIZONTAL = "H"
@@ -131,6 +134,7 @@ class Parameter(BaseModel):
     # "integer", "string", "date", "model", "choice", "bool", "fields_selector"
     required: bool = False
     default_value: Optional[str] = None
+    model_id: Optional[str] = None
 
     def clean_value(self, value):
         if self.type == "integer":
@@ -143,6 +147,11 @@ class Parameter(BaseModel):
             return value.split(",")
         if self.type == "choice":
             return value.split(",")
+        if self.type == "model" and self.model_id and value:
+            model = get_model(self.model_id)
+            if not is_document(model):
+                value = int(value)
+            value = model.objects.filter(id=value).first()
         return value
 
 

@@ -277,6 +277,7 @@ class Report(Document):
                     type=p.type,
                     required=p.required,
                     default_value=p.default,
+                    model_id=p.model_id,
                 )
             )
         b_format_cfg = {}
