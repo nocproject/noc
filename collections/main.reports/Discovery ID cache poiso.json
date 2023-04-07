@@ -1,6 +1,6 @@
 {
     "name": "Discovery ID cache poison",
-    "$collection": "main.reportes",
+    "$collection": "main.reports",
     "uuid": "76c8f27e-6523-421a-8fa5-d57557a2681b",
     "title": "Discovery ID cache poison (New)",
     "description": "Список дубликатов MAC адресов устройств",
@@ -70,6 +70,7 @@
             "title_template": ""
         }
     ],
+    "category": "inv",
     "code": null,
     "hide": false,
     "localization": {

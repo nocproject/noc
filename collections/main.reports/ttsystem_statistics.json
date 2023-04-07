@@ -1,6 +1,6 @@
 {
     "name": "TT system statistics",
-    "$collection": "main.reportes",
+    "$collection": "main.reports",
     "uuid": "fe8a0495-fea9-4c97-a4ad-60be78e84a62",
     "title": "TT system statistics (New)",
     "description": "Статистика по эскалациям",
@@ -69,6 +69,7 @@
             "title_template": "TT System Statistics"
         }
     ],
+    "category": "fm",
     "code": null,
     "hide": true,
     "parameters": [

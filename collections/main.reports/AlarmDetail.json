@@ -1,6 +1,6 @@
 {
     "name": "Alarm Detail",
-    "$collection": "main.reportes",
+    "$collection": "main.reports",
     "uuid": "b5a2ba9f-2f3e-4590-95a3-f4531f332a76",
     "title": "Alarm Detail (New)",
     "description": "Детализация аварий",
@@ -137,6 +137,7 @@
             "title_template": "Alarm Detail"
         }
     ],
+    "category": "fm",
     "code": null,
     "hide": false,
     "localization": {

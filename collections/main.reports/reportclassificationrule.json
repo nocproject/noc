@@ -1,6 +1,6 @@
 {
     "name": "Event Classification Rule",
-    "$collection": "main.reportes",
+    "$collection": "main.reports",
     "uuid": "7b2fad91-8409-46a6-adcf-39d4e12c39f3",
     "title": "Classification Rules (New)",
     "description": "Покрытие правил классификации событий",
@@ -8,6 +8,7 @@
         "name": "Root",
         "orientation": "H"
     }],
+    "category": "fm",
     "code": null,
     "hide": false,
     "localization": {

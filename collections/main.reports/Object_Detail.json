@@ -1,6 +1,6 @@
 {
     "name": "Object Detail",
-    "$collection": "main.reportes",
+    "$collection": "main.reports",
     "uuid": "bc620fa7-7242-46b4-9c45-ec3d77e6ff9a",
     "title": "Object Detail (New)",
     "description": "Детализация по объектам (ManagedObject)",
@@ -185,6 +185,7 @@
             "title_template": ""
         }
     ],
+    "category": "sa",
     "code": null,
     "hide": false,
     "localization": {

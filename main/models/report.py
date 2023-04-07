@@ -177,7 +177,7 @@ class Report(Document):
         "collection": "noc.reports",
         "strict": False,
         "auto_create_index": False,
-        "json_collection": "main.reportes",
+        "json_collection": "main.reports",
         "json_unique_fields": ["name"],
     }
 
@@ -238,6 +238,8 @@ class Report(Document):
             "hide": self.hide,
             "title": self.title,
         }
+        if self.category:
+            r["category"] = self.category
         if self.report_source:
             r["report_source"] = self.report_source
         if self.localization:

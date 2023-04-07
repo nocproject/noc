@@ -120,6 +120,7 @@ _MODELS = {
     "main.RefBookData": "noc.main.models.refbookdata.RefBookData",
     "main.RefBookField": "noc.main.models.refbookfield.RefBookField",
     "main.RemoteSystem": "noc.main.models.remotesystem.RemoteSystem",
+    "main.Report": "noc.main.models.report.Report",
     "main.ReportSubscription": "noc.main.models.reportsubscription.ReportSubscription",
     "main.ResourceState": "noc.main.models.resourcestate.ResourceState",
     "main.SlowOp": "noc.main.models.slowop.SlowOp",
@@ -381,6 +382,7 @@ COLLECTIONS = [
     "bi.DashboardLayout",
     "bi.Dashboard",
     "cm.ConfDBQuery",
+    "main.Report",
 ]
 
 # Model -> Setting
