@@ -334,4 +334,7 @@ class ReportEngine(object):
         output_name = template.get_document_name()
         out_type = run_params.output_type or template.output_type
         ctx = root_band.get_data()
-        return f"{Jinja2Template(output_name).render(ctx) or 'report'}.{out_type.value}"
+        extension = out_type.value
+        if out_type == OutputType.CSV_ZIP:
+            extension = OutputType.CSV.value
+        return f"{Jinja2Template(output_name).render(ctx) or 'report'}.{extension}"

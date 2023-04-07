@@ -251,10 +251,12 @@ class OutputDocument(BaseModel):
         elif self.output_type == OutputType.CSV_ZIP:
             f = TemporaryFile(mode="w+b")
             f.write(self.content)
+            f.seek(0)
             response = BytesIO()
-            with ZipFile(self.content, "w", compression=ZIP_DEFLATED) as zf:
+            with ZipFile(response, "w", compression=ZIP_DEFLATED) as zf:
                 zf.writestr(f"{self.document_name}.csv", f.read())
                 zf.filename = f"{self.document_name}.zip"
+                self.document_name += ".zip"
             response.seek(0)
             return response.getvalue()
         return self.content

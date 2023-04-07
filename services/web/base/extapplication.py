@@ -14,7 +14,7 @@ import re
 # Third-party modules
 from django.http import HttpResponse
 from django.db.models.query import QuerySet
-from cachetools import cachedmethod, TTLCache, cached
+from cachetools import TTLCache, cached
 import orjson
 
 # NOC modules
