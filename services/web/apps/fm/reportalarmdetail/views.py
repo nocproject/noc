@@ -265,7 +265,7 @@ class ReportAlarmDetailApplication(ExtApplication):
             worksheet.autofilter(0, 0, max_row, len(out_columns))
             worksheet.freeze_panes(1, 0)
             if enable_autowidth:
-                for i, width in enumerate(get_col_widths(data, "alarm_id")):
+                for i, width in enumerate(get_col_widths(data)):
                     worksheet.set_column(i, i, width)
             #
             book.close()

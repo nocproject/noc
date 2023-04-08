@@ -19,6 +19,7 @@ from noc.core.reporter.base import ReportEngine
 from noc.core.reporter.types import RunParams, OutputType
 from noc.core.translation import ugettext as _
 from noc.models import get_model
+from noc.config import config
 
 
 class ReportConfigApplication(ExtDocApplication):
@@ -113,7 +114,7 @@ class ReportConfigApplication(ExtDocApplication):
             r += [(field_name, title, field_name in checked)]
         return r
 
-    @view(url=r"^(?P<report_id>\S+)/form/$", method=["GET"], access="launch", api=True)
+    @view(url=r"^(?P<report_id>\S+)/form/$", method=["GET"], access="run", api=True)
     def api_form_report(self, request, report_id):
         report: "Report" = self.get_object_or_404(Report, id=report_id)
         pref_lang = request.user.preferred_language
@@ -194,18 +195,19 @@ class ReportConfigApplication(ExtDocApplication):
         # formats
         return r
 
-    @view(method=["GET"], url=r"^(?P<report_id>\S+)/run/$", access="launch", api=True)
+    @view(method=["GET"], url=r"^(?P<report_id>\S+)/run/$", access="run", api=True)
     def api_report_run(self, request, report_id: str):
         """
 
         :param request:
         :param report_id:
-        :param query:
         :return:
         """
         q = {str(k): v[0] if len(v) == 1 else v for k, v in request.GET.lists()}
         report: "Report" = self.get_object_or_404(Report, id=report_id)
-        report_engine = ReportEngine()
+        report_engine = ReportEngine(
+            report_execution_history=config.web.enable_report_history,
+        )
         rp = RunParams(report=report.config, output_type=OutputType(q.get("output_type")), params=q)
         try:
             out_doc = report_engine.run_report(r_params=rp)

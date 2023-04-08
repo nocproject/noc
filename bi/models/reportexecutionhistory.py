@@ -34,6 +34,6 @@ class ReportExecutionHistory(Model):
     output_document = StringField(description="Link to output document")
     successfully = BooleanField(description="Successful execute")
     canceled = BooleanField(description="Report was cancelled")
-    params = MapField(StringField(), description="Report Params")
+    params = StringField(description="Report Params")
     error = StringField(description="Execution error")
     process_id = StringField("Process endpoint")

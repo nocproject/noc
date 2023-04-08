@@ -202,13 +202,43 @@ class ReportDsAlarms(BaseDataSource):
         """
         return {r["profile"]: r["summary"] for r in items}
 
+    @staticmethod
+    def get_ads_filter(filters: Dict[str, Any]) -> Optional[List[int]]:
+        """
+        Build Administrative Domain filter
+        """
+        from noc.sa.models.useraccess import UserAccess
+        from noc.sa.models.administrativedomain import AdministrativeDomain
+
+        ads = set()
+        user = filters.pop("user", None)
+        adm_path = set(filters.pop("adm_path", []))
+        adm_domain: "AdministrativeDomain" = filters.pop("administrative_domain", None)
+        if adm_domain:
+            ads |= set(AdministrativeDomain.get_nested_ids(adm_domain.id))
+        if ads and adm_path:
+            ads = set(adm_path) & ads
+        elif not ads:
+            ads = set(adm_path)
+        if user and user.is_superuser:
+            return list(ads) or None
+        user_ads = set(UserAccess.get_domains(user))
+        if not ads:
+            return list(user_ads)
+        ads = ads & user_ads
+        if not ads:
+            raise ValueError(
+                "<html><body>Permission denied: Invalid Administrative Domain</html></body>"
+            )
+        return list(ads) or None
+
     @classmethod
     def iter_data(
-        cls, start, end=None, **filters: Optional[Dict[str, Any]]
+        cls,
+        start: datetime.datetime,
+        end: Optional[datetime.datetime],
+        **filters: Optional[Dict[str, Any]],
     ) -> Iterable[Dict[str, Any]]:
-        # print("Iter Data", start, end, filters)
-        start: datetime.datetime = filters.get("start")
-        end: datetime.datetime = filters.get("end")
         if "objectids" in filters:
             match = {"_id": {"$in": [bson.ObjectId(x) for x in filters["objectids"]]}}
         elif not end:
@@ -219,6 +249,12 @@ class ReportDsAlarms(BaseDataSource):
         datenow = datetime.datetime.now()
         alarm_collections = []
         match_duration = {}
+        # Administrative domain filter
+        ads = cls.get_ads_filter(filters)
+        if ads:
+            match["adm_path"] = {"$in": list(ads)}
+            mos_filter["administrative_domain__in"] = list(ads)
+        # Main filters
         for name in filters:
             # name, values = ff["name"], ff["values"]
             value, values = filters[name], [filters[name]]
@@ -240,9 +276,6 @@ class ReportDsAlarms(BaseDataSource):
                 match_duration["$lte"] = int(value)
             elif name == "alarm_class":
                 match["alarm_class"] = bson.ObjectId(value)
-            elif name == "adm_path":
-                match["adm_path"] = {"$in": values}
-                mos_filter["administrative_domain__in"] = values
             elif name == "segment":
                 match["segment_path"] = bson.ObjectId(value)
             elif name == "resource_group":

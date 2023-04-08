@@ -109,6 +109,11 @@ class ManagedObjectDS(BaseDataSource):
                 description="Object Adm path",
                 is_virtual=True,
             ),
+            FieldInfo(
+                name="caps",
+                description="Object Capabilities",
+                is_virtual=True,
+            ),
             # Location Fields
             FieldInfo(
                 name="administrativedomain",
@@ -158,7 +163,9 @@ class ManagedObjectDS(BaseDataSource):
             ),
         ]
         + [
-            FieldInfo(name=c_name, type=c_type, internal_name=str(c_id), is_caps=True)
+            FieldInfo(
+                name=c_name, type=c_type, internal_name=str(c_id), is_caps=True, is_vector=True
+            )
             for c_id, c_type, c_name in iter_capabilities()
         ]
         + [
@@ -251,7 +258,6 @@ class ManagedObjectDS(BaseDataSource):
         cls, fields: Optional[Iterable[str]] = None, *args, user=None, **kwargs
     ) -> AsyncIterable[Tuple[str, str]]:
         fields = set(fields or [])
-        q_filter = cls.get_filter(kwargs)
         q_fields, q_caps = [], defaultdict(list)
         # Getting requested fields
         for f in cls.fields:
@@ -269,6 +275,11 @@ class ManagedObjectDS(BaseDataSource):
                 q_fields.append(f.internal_name or f.name)
         if q_caps and "caps" not in q_fields:
             q_fields.append("caps")
+        if not fields or "adm_path" in fields:
+            adm_paths = cls.load_adm_path()
+            if "administrative_domain__name" not in q_fields:
+                q_fields.append("administrative_domain__name")
+        q_filter = cls.get_filter(kwargs)
         mos = ManagedObject.objects.filter(**q_filter)
         if user and not user.is_superuser:
             mos = mos.filter(administrative_domain__in=UserAccess.get_domains(user))
@@ -297,10 +308,6 @@ class ManagedObjectDS(BaseDataSource):
                 .with_options(read_preference=ReadPreference.SECONDARY_PREFERRED)
                 .find({"object": {"$exists": 1}}, {"object": 1, "status": 1})
             }
-        if not fields or "adm_path" in fields:
-            adm_paths = cls.load_adm_path()
-            if "administrative_domain__name" not in q_fields:
-                q_fields.append("administrative_domain__name")
         for num, mo in enumerate(mos.values(*q_fields).iterator(), start=1):
             yield num, "id", mo["id"]
             yield num, "managed_object_id", mo["id"]

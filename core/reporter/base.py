@@ -19,6 +19,7 @@ from jinja2 import Template as Jinja2Template
 # NOC modules
 from noc.main.reportsources.loader import loader as r_source_loader
 from noc.core.debug import error_report
+from noc.core.middleware.tls import get_user
 from .types import (
     Template,
     OutputType,
@@ -45,10 +46,11 @@ class ReportEngine(object):
         self.report_execution_history = report_execution_history
         self.report_print_error = report_print_error
 
-    def run_report(self, r_params: RunParams):
+    def run_report(self, r_params: RunParams, user: Optional[Any] = None):
         """
         Run report withs params
         :param r_params: Report params
+        :param user: Execute from user
         :return:
         """
         # Handler param
@@ -56,26 +58,34 @@ class ReportEngine(object):
         report = r_params.report
         template = r_params.get_template()
         out_type = r_params.output_type or template.output_type
+        user = user or get_user()
         cleaned_param = self.clean_param(report, r_params.get_params())
+        if user:
+            cleaned_param["user"] = user
         error, start = None, datetime.datetime.now()
-        self.logger.info("[%s] Running report with parameter: %s", report, cleaned_param)
+        self.logger.info("[%s] Running report with parameter: %s", report.name, cleaned_param)
         try:
             data = self.load_data(report, cleaned_param)
             self.generate_report(report, template, out_type, out, cleaned_param, data)
         except Exception as e:
             error = str(e)
             if self.report_print_error:
-                error_report()
+                error_report(logger=self.logger, suppress_log=True)
         if self.report_execution_history:
             self.register_execute(
-                report, start, cleaned_param, successfully=not error, error_text=error
+                report,
+                start,
+                r_params.get_params(),
+                successfully=not error,
+                error_text=error,
+                user=str(user),
             )
         if error:
             self.logger.error(
-                "[%s] Finished report with error: %s ; Params:%s", report, error, cleaned_param
+                "[%s] Finished report with error: %s ; Params:%s", report.name, error, cleaned_param
             )
-            return
-        self.logger.info("[%s] Finished report with parameter: %s", report, cleaned_param)
+            raise ValueError(error)
+        self.logger.info("[%s] Finished report with parameter: %s", report.name, cleaned_param)
         output_name = self.resolve_output_filename(run_params=r_params, root_band=data)
         return OutputDocument(
             content=out.getvalue(), document_name=output_name, output_type=out_type
@@ -91,6 +101,7 @@ class ReportEngine(object):
         successfully: bool = False,
         canceled: bool = False,
         error_text: Optional[str] = None,
+        user: Optional[str] = None,
     ):
         """
         :param report:
@@ -100,6 +111,7 @@ class ReportEngine(object):
         :param successfully:
         :param canceled:
         :param error_text:
+        :param user:
         :return:
         """
         from noc.core.service.loader import get_service
@@ -113,15 +125,15 @@ class ReportEngine(object):
                 {
                     "date": start.date().isoformat(),
                     "start": start.replace(microsecond=0).isoformat(),
-                    "end": end.replace(0).isoformat(),
-                    "duration": (start - end).total_seconds(),
+                    "end": end.replace(microsecond=0).isoformat(),
+                    "duration": int(abs((end - start).total_seconds()) * 1000),
                     "report": report.name,
                     "name": report.name,
                     "code": "",
-                    "user": "",
+                    "user": str(user),
                     "successfully": successfully,
                     "canceled": canceled,
-                    "params": params,
+                    "params": orjson.dumps(params).decode("utf-8"),
                     "error": error_text or "",
                 }
             ],
