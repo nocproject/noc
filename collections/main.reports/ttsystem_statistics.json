@@ -1,0 +1,99 @@
+{
+    "name": "TT system statistics",
+    "$collection": "main.reports",
+    "uuid": "fe8a0495-fea9-4c97-a4ad-60be78e84a62",
+    "title": "TT system statistics (New)",
+    "description": "Статистика по эскалациям",
+    "bands": [
+        {
+            "name": "Root",
+            "orientation": "H",
+            "queries": [
+                {
+                    "datasource": "ttsystemstatds",
+                    "ds_query": "ds.groupby(['server', 'service']).agg([pl.count().alias('req_cnt'), pl.col('server').filter(pl.col('error_code') == 0).count().alias('succ_cnt'), pl.col('server').filter(pl.col('error_code') != 0).count().alias('fail_cnt'), (pl.col('server').filter(pl.col('error_code') == 0).count() / pl.count()).alias('succ_pr'), (pl.quantile('duration', 0.25) / 1000).alias('q1'), (pl.quantile('duration', 0.5) / 1000).alias('q2'), (pl.quantile('duration', 0.75) / 1000).alias('q3'), (pl.quantile('duration', 0.95) / 1000).alias('p95'), (pl.max('duration') / 1000).alias('max')])",
+                    "json": null
+                }
+            ]
+        }
+    ],
+    "bands_format": [
+        {
+            "name": "Root",
+            "column_format": [
+                {
+                    "name": "server",
+                    "title": "Server"
+                },
+                {
+                    "name": "service",
+                    "title": "Service"
+                },
+                {
+                    "name": "req_cnt",
+                    "title": "Request count"
+                },
+                {
+                    "name": "succ_cnt",
+                    "title": "Success request count"
+                },
+                {
+                    "name": "fail_cnt",
+                    "title": "Failed request count"
+                },
+                {
+                    "name": "succ_pr",
+                    "title": "Success request (%)"
+                },
+                {
+                    "name": "q1",
+                    "title": "Q1 (ms)"
+                },
+                {
+                    "name": "q2",
+                    "title": "Q2 (ms)"
+                },
+                {
+                    "name": "q3",
+                    "title": "Q3 (ms)"
+                },
+                {
+                    "name": "p95",
+                    "title": "p95 (ms)"
+                },
+                {
+                    "name": "max",
+                    "title": "max (ms)"
+                }
+            ],
+            "title_template": "TT System Statistics"
+        }
+    ],
+    "category": "fm",
+    "code": null,
+    "hide": true,
+    "parameters": [
+        {
+            "name": "start",
+            "description": null,
+            "label": "From",
+            "required": true,
+            "type": "date"
+        },
+        {
+            "name": "end",
+            "description": null,
+            "label": "To",
+            "required": true,
+            "type": "date"
+        }
+    ],
+    "templates": [
+        {
+            "code": "DEFAULT",
+            "has_preview": true,
+            "is_alterable_output": true,
+            "output_type": "html"
+        }
+    ]
+}

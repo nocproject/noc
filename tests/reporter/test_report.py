@@ -12,7 +12,7 @@ import yaml
 
 # NOC modules
 from noc.core.reporter.base import ReportEngine
-from noc.core.reporter.types import ReportConfig, RunParams
+from noc.core.reporter.types import ReportConfig, RunParams, OutputType
 from noc.core.mongo.connection import connect
 
 
@@ -23,7 +23,7 @@ def test_report(report):
         cfg = yaml.safe_load(f)
     # r = yaml.safe_load(report_config)
     report_engine = ReportEngine()
-    rp = RunParams(report=ReportConfig(**cfg))
+    rp = RunParams(report=ReportConfig(**cfg), output_type=OutputType.CSV)
     connect()
     out_doc = report_engine.run_report(r_params=rp)
     re_out = out_doc.content.decode("utf8")

@@ -11,6 +11,7 @@ from io import BytesIO
 # NOC modules
 from ..types import Template, OutputType
 from noc.core.reporter.report import BandData
+from noc.config import config
 
 
 class DataFormatter(object):
@@ -30,6 +31,7 @@ class DataFormatter(object):
         self.report_template = template
         self.output_type = output_type
         self.output_stream: BytesIO = output_stream or BytesIO()
+        self.csv_delimiter = config.web.report_csv_delimiter
 
     def render_document(self):
         """

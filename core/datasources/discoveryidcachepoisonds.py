@@ -38,6 +38,8 @@ class DiscoveryIDCachePoisonDS(BaseDataSource):
     async def iter_query(
         cls, fields: Optional[Iterable[str]] = None, *args, **kwargs
     ) -> AsyncIterable[Tuple[str, str]]:
+        filter_dup_macs = "filter_dup_macs" in kwargs
+        pool = kwargs.get("pool")
         # Find object with equal ID
         find = DiscoveryID._get_collection().aggregate(
             [
@@ -67,6 +69,10 @@ class DiscoveryIDCachePoisonDS(BaseDataSource):
                     reason = _("MO is move")
             if reason == "Other" and MACBlacklist.is_banned_mac(row["macs"][0], is_duplicated=True):
                 on_blacklist = True
+            if filter_dup_macs and on_blacklist:
+                continue
+            if pool and data and str(pool.id) != data[0]["pool"]:
+                continue
             for mo in data:
                 row_num += 1
                 yield row_num, "managed_object", mo["id"]

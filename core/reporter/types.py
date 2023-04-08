@@ -8,11 +8,17 @@
 # Python modules
 import enum
 import datetime
+from io import BytesIO
+from zipfile import ZipFile, ZIP_DEFLATED
+from tempfile import TemporaryFile
 from dataclasses import dataclass
 from typing import Dict, List, Optional, Any, Iterable, ForwardRef
 
 # Third-party modules
 from pydantic import BaseModel
+
+# NOC modules
+from noc.models import get_model, is_document
 
 
 class BandOrientation(enum.Enum):
@@ -26,6 +32,7 @@ class OutputType(enum.Enum):
     HTML = "html"
     XLSX = "xlsx"
     CSV = "csv"
+    CSV_ZIP = "csv+zip"
     SSV = "ssv"
     PDF = "pdf"
 
@@ -121,7 +128,7 @@ class Template(BaseModel):
     custom: bool = False
 
     def get_document_name(self):
-        return self.output_name_pattern
+        return self.output_name_pattern or "report"
 
 
 class Parameter(BaseModel):
@@ -131,6 +138,7 @@ class Parameter(BaseModel):
     # "integer", "string", "date", "model", "choice", "bool", "fields_selector"
     required: bool = False
     default_value: Optional[str] = None
+    model_id: Optional[str] = None
 
     def clean_value(self, value):
         if self.type == "integer":
@@ -143,6 +151,11 @@ class Parameter(BaseModel):
             return value.split(",")
         if self.type == "choice":
             return value.split(",")
+        if self.type == "model" and self.model_id and value:
+            model = get_model(self.model_id)
+            if not is_document(model):
+                value = int(value)
+            value = model.objects.filter(id=value).first()
         return value
 
 
@@ -212,6 +225,8 @@ class OutputDocument(BaseModel):
             return "application/vnd.ms-excel"
         elif self.output_type == OutputType.PDF:
             return "application/pdf"
+        elif self.output_type == OutputType.CSV_ZIP:
+            return "application/zip"
         return "application/octet-stream"
 
     def format_django(self) -> str:
@@ -227,6 +242,24 @@ class OutputDocument(BaseModel):
         r += [self.content.decode("utf8")]
         r += ["</div></body></html>"]
         return "\n".join(r)
+
+    def get_content(self, raw: bool = False):
+        if raw:
+            return self.content
+        if self.output_type == OutputType.HTML:
+            return self.format_django()
+        elif self.output_type == OutputType.CSV_ZIP:
+            f = TemporaryFile(mode="w+b")
+            f.write(self.content)
+            f.seek(0)
+            response = BytesIO()
+            with ZipFile(response, "w", compression=ZIP_DEFLATED) as zf:
+                zf.writestr(f"{self.document_name}.csv", f.read())
+                zf.filename = f"{self.document_name}.zip"
+                self.document_name += ".zip"
+            response.seek(0)
+            return response.getvalue()
+        return self.content
 
 
 ReportBand.update_forward_refs()
