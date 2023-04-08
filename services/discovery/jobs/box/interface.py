@@ -511,7 +511,10 @@ class InterfaceCheck(PolicyDiscoveryCheck):
         self.logger.debug("Classified members interfaces: %s", members)
         # Processed members
         for iface, p_id in members.items():
-            if iface.aggregated_interface in aggregated and iface.profile != aggregated[iface.aggregated_interface]:
+            if (
+                iface.aggregated_interface in aggregated
+                and iface.profile != aggregated[iface.aggregated_interface]
+            ):
                 self.logger.info(
                     "[%s] Interface has been classified from members '%s'",
                     iface.name,
