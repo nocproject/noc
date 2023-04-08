@@ -62,7 +62,7 @@ class Command(BaseCommand):
     @staticmethod
     def get_interfaces(mo):
         return sorted(
-            Interface.objects.filter(managed_object=mo.id, type="physical"),
+            Interface.objects.filter(managed_object=mo.id, type__in=["physical", "aggregated"]),
             key=lambda x: alnum_key(x.name),
         )
 
@@ -70,15 +70,16 @@ class Command(BaseCommand):
     def get_interface_template(interfaces):
         il = max(len(i.name) for i in interfaces)
         il = max(il, 15)
-        tps = "    %%-%ds  %%-12s  %%-30s  %%s\n" % il
+        tps = "    %%-%ds  %%-12s  %%-30s  %%s ;%%s\n" % il
         return tps
 
-    def show_interface(self, tpl, i, status):
+    def show_interface(self, tpl, i, status, effective_labels=None):
         if i.description:
             d = i.description[:30]
         else:
             d = ""
-        self.stdout.write(tpl % (i.name, i.status, d, status))
+        el = ",".join(effective_labels or [])
+        self.stdout.write(tpl % (i.name, i.status, d, status, el))
 
     def handle_show(self, moo, *args, **options):
         for o in self.get_objects(moo):
@@ -87,11 +88,11 @@ class Command(BaseCommand):
             )
             ifaces = self.get_interfaces(o)
             if not ifaces:
-                self.stdout.write("No ifaces on object\n")
+                self.stdout.write("No interfaces on object\n")
                 continue
             tps = self.get_interface_template(ifaces)
             for i in ifaces:
-                self.show_interface(tps, i, i.profile.name if i.profile else "-")
+                self.show_interface(tps, i, i.profile.name if i.profile else "-", [])
 
     def handle_reset(self, moo, *args, **kwargs):
         for o in self.get_objects(moo):
@@ -105,6 +106,47 @@ class Command(BaseCommand):
                     i.save()
 
     def handle_apply(self, moo, *args, **kwargs):
+        default_profile = InterfaceProfile.get_default_profile()
+        for o in self.get_objects(moo):
+            self.stdout.write(f"{o.name} ({getattr(o, 'platform', '')}), {o.effective_labels}:\n")
+            ifaces = self.get_interfaces(o)
+            if not ifaces:
+                self.stdout.write("No ifaces on object\n")
+                continue
+            i_cache = {i.id: i for i in ifaces}
+            tps = self.get_interface_template(ifaces)
+            pcache = {}
+            members = {}
+            for i_id, i_name, pn in Label.iter_document_profile(
+                "inv.Interface",
+                "inv.InterfaceProfile",
+                query_filter=[("managed_object", o.id), ("type", ["physical", "aggregated"])],
+            ):
+                i = i_cache.get(i_id)
+                # pn = InterfaceProfile.get_by_id(p_id)
+                if i.aggregated_interface:
+                    members[i] = pn
+                if pn and pn == i.profile.id:
+                    v = f"Already Set: {i.profile.name}"
+                elif pn:
+                    p = pcache.get(pn)
+                    if not p:
+                        p = InterfaceProfile.get_by_id(pn)
+                        pcache[pn] = p
+                    i.profile = p
+                    i.save()
+                    v = f"Set {p.name}"
+                else:
+                    v = "Not matched"
+                    if kwargs.get("reset_default") and i.profile != default_profile:
+                        i.profile = default_profile
+                        i.save()
+                        v = "Not matched. Reset to default"
+                self.show_interface(
+                    tps, i, v, None
+                )  # set(i.effective_labels) - set(o.effective_labels))
+
+    def handle_apply_direct(self, moo, *args, **kwargs):
         # sol = config.get("interface_discovery", "get_interface_profile")
         # @todo Classification pyrule
         default_profile = InterfaceProfile.get_default_profile()
@@ -119,24 +161,28 @@ class Command(BaseCommand):
                 self.stdout.write("No ifaces on object\n")
                 continue
             tps = self.get_interface_template(ifaces)
+            oel = set(o.effective_labels or [])
             for i in ifaces:
                 if not i.profile or not i.profile_locked:
-                    pn = get_profile(Label.merge_labels(Interface.iter_effective_labels(i)))
-                    if pn:
+                    el = Label.merge_labels(Interface.iter_effective_labels(i))
+                    pn = get_profile(el)
+                    if pn and pn == i.profile.id:
+                        v = f"Already Set: {i.profile.name}"
+                    elif pn:
                         p = pcache.get(pn)
                         if not p:
                             p = InterfaceProfile.get_by_id(pn)
                             pcache[pn] = p
                         i.profile = p
                         i.save()
-                        v = "Set %s" % p.name
+                        v = f"Set {p.name}"
                     else:
                         v = "Not matched"
                         if kwargs.get("reset_default") and i.profile != default_profile:
                             i.profile = default_profile
                             i.save()
                             v = "Not matched. Reset to default"
-                    self.show_interface(tps, i, v)
+                    self.show_interface(tps, i, v, set(el) - oel)
 
 
 if __name__ == "__main__":

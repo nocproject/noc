@@ -1403,7 +1403,10 @@ class Label(Document):
         pipeline = []
         match = {}
         for field, ids in query_filter or []:
-            match[field] = ids
+            if isinstance(ids, list):
+                match[f"{field}"] = {"$in": ids}
+            else:
+                match[field] = ids
         if match:
             pipeline += [{"$match": match}]
         profile_model = get_model(model_profile_id)
