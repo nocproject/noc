@@ -85,6 +85,13 @@ class BaseDataSource(object):
         return r
 
     @classmethod
+    def has_field(cls, name) -> bool:
+        for f in cls.fields:
+            if f.name == name:
+                return True
+        return False
+
+    @classmethod
     def is_out_field(cls, f: FieldInfo, fields: Optional[Set[str]] = None) -> bool:
         """
         Check field allowed to out

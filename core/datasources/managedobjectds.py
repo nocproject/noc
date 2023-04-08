@@ -107,6 +107,7 @@ class ManagedObjectDS(BaseDataSource):
             FieldInfo(
                 name="adm_path",
                 description="Object Adm path",
+                internal_name="administrative_domain__name",
                 is_virtual=True,
             ),
             FieldInfo(
@@ -259,11 +260,13 @@ class ManagedObjectDS(BaseDataSource):
     ) -> AsyncIterable[Tuple[str, str]]:
         fields = set(fields or [])
         q_fields, q_caps = [], defaultdict(list)
+        adm_paths = {}
         # Getting requested fields
         for f in cls.fields:
-            if fields and f.name not in fields and f.name != "id":
+            f_query_name = f.internal_name or f.name
+            if f_query_name in q_fields:
                 continue
-            if f.is_caps:
+            if f.is_caps and (not fields or "caps" in fields or f.name in fields):
                 if is_objectid(f.internal_name):
                     c = Capability.get_by_id(f.internal_name)
                 else:
@@ -271,21 +274,16 @@ class ManagedObjectDS(BaseDataSource):
                 if not c:
                     continue
                 q_caps[str(c.id)] += [(f.name, cls.get_caps_default(c))]
-            else:
-                q_fields.append(f.internal_name or f.name)
+            elif not fields or f.name in fields or f.name == "id":
+                q_fields.append(f_query_name)
         if q_caps and "caps" not in q_fields:
             q_fields.append("caps")
-        if not fields or "adm_path" in fields:
-            adm_paths = cls.load_adm_path()
-            if "administrative_domain__name" not in q_fields:
-                q_fields.append("administrative_domain__name")
         q_filter = cls.get_filter(kwargs)
         mos = ManagedObject.objects.filter(**q_filter)
         if user and not user.is_superuser:
             mos = mos.filter(administrative_domain__in=UserAccess.get_domains(user))
         # Dictionaries
         hostname_map, segment_map, avail_map = {}, {}, {}
-        adm_paths = {}
         # Lookup fields dictionaries
         if not fields or "hostname" in fields:
             hostname_map = {
@@ -308,6 +306,8 @@ class ManagedObjectDS(BaseDataSource):
                 .with_options(read_preference=ReadPreference.SECONDARY_PREFERRED)
                 .find({"object": {"$exists": 1}}, {"object": 1, "status": 1})
             }
+        if not fields or "adm_path" in fields:
+            adm_paths = cls.load_adm_path()
         for num, mo in enumerate(mos.values(*q_fields).iterator(), start=1):
             yield num, "id", mo["id"]
             yield num, "managed_object_id", mo["id"]

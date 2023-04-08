@@ -20,6 +20,7 @@ from jinja2 import Template as Jinja2Template
 from noc.main.reportsources.loader import loader as r_source_loader
 from noc.core.debug import error_report
 from noc.core.middleware.tls import get_user
+from noc.core.datasources.base import BaseDataSource
 from .types import (
     Template,
     OutputType,
@@ -283,7 +284,7 @@ class ReportEngine(object):
         """
         if not queries:
             return None
-        rows = None
+        rows, joined, joined_field = None, len(queries) > 1, None
         for num, query in enumerate(queries):
             q_ctx, dss = cls.merge_ctx(ctx, query, joined=bool(num))
             data, key_field = None, None
@@ -291,10 +292,13 @@ class ReportEngine(object):
                 # return join fields (last DS)
                 data = pl.DataFrame(orjson.loads(query.json_data))
             elif num and query.datasource and query.datasource not in dss:
+                # Skip not requested DataSource
                 continue
             elif query.datasource:
                 logger.info("[%s] Query DataSource", query.datasource)
-                data, key_field = cls.query_datasource(query, q_ctx, joined=len(queries) > 1)
+                data, key_field = cls.query_datasource(query, q_ctx, joined_field=joined_field)
+                if not joined_field:
+                    joined_field = key_field
             if query.query:
                 logger.debug("Execute query: %s; Context: %s", query.query, q_ctx)
                 data = eval(
@@ -303,37 +307,47 @@ class ReportEngine(object):
                     {"ds": data, "ctx": q_ctx, "root_band": root_band, "pl": pl},
                 )
             if data is None or data.is_empty():
+                if not num:
+                    # If first query is empty, nothing to join
+                    return rows
                 continue
-            if rows is not None and key_field:
-                # @todo Linked field!
+            if rows is not None and joined_field:
                 # df_left_join = df_customers.join(df_orders, on="customer_id", how="left")
-                rows = rows.join(data, on=key_field, how="left")
-                continue
+                rows = rows.join(data, on=joined_field, how="left")
             else:
                 rows = data
-        if key_field and len(queries) > 1:
-            rows = rows.drop(key_field)
+        if joined and joined_field:
+            rows = rows.drop(joined_field)
         return rows
 
     @classmethod
     def query_datasource(
-        cls, query: ReportQuery, ctx: Dict[str, Any], joined: bool = False
+        cls,
+        query: ReportQuery,
+        ctx: Dict[str, Any],
+        joined_field: Optional[str] = None,
     ) -> Tuple[Optional[pl.DataFrame], str]:
         """
         Resolve Datasource for Query
         :param query:
         :param ctx:
-        :param joined:
+        :param joined_field:
         :return:
         """
         from noc.core.datasources.loader import loader as ds_loader
 
-        ds = ds_loader[query.datasource]
+        ds: "BaseDataSource" = ds_loader[query.datasource]
         if not ds:
-            raise ValueError(f"Unknown Datasource: {query.datasource}")
-        if joined and ctx.get("fields"):
-            ctx["fields"] += [ds.row_index]
+            raise ValueError(f"Unknown DataSource: {query.datasource}")
+        if joined_field and not ds.has_field(joined_field):
+            # Joined is not supported
+            logger.warning("[%s] Joined field '%s' not available", ds.name, joined_field)
+            return None, ""
+        elif joined_field and ctx.get("fields"):
+            ctx["fields"] += [joined_field]
             # Check not row_index
+        elif not joined_field and ctx.get("fields"):
+            ctx["fields"] += [ds.row_index]
         row = ds.query_sync(**ctx)
         return row, ds.row_index
 

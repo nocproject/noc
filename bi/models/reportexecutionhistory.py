@@ -13,7 +13,6 @@ from noc.core.clickhouse.fields import (
     StringField,
     UInt32Field,
     BooleanField,
-    MapField,
 )
 from noc.core.clickhouse.engines import MergeTree
 
