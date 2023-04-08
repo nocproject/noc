@@ -291,10 +291,11 @@ def excepthook(t, v, tb):
     sys.stdout.flush()
 
 
-def error_report(reverse=config.traceback.reverse, logger=logger):
+def error_report(reverse=config.traceback.reverse, logger=logger, suppress_log=False):
     fp = error_fingerprint()
     r = get_traceback(reverse=reverse, fp=fp)
-    logger.error(r)
+    if not suppress_log:
+        logger.error(r)
     metrics["errors"] += 1
     if config.sentry.url and sentry_sdk:
         try:

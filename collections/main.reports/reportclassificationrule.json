@@ -1,0 +1,30 @@
+{
+    "name": "Event Classification Rule",
+    "$collection": "main.reports",
+    "uuid": "7b2fad91-8409-46a6-adcf-39d4e12c39f3",
+    "title": "Classification Rules (New)",
+    "description": "Покрытие правил классификации событий",
+    "bands": [{
+        "name": "Root",
+        "orientation": "H"
+    }],
+    "category": "fm",
+    "code": null,
+    "hide": false,
+    "localization": {
+        "title": {
+            "ru": "Правила Классификации Событий (Новый)"
+        }
+    },
+    "parameters": [
+        {
+            "name": "profile",
+            "description": null,
+            "label": "Profile",
+            "model_id": "sa.Profile",
+            "required": true,
+            "type": "model"
+        }
+    ],
+    "report_source": "reportclassificationrule"
+}

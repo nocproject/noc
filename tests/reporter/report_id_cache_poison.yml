@@ -3,7 +3,7 @@ templates:
   DEFAULT:
     code: DEFAULT
     formatter: simplereport
-    output_type: ssv
+    output_type: html
     bands_format:
       master_data:
         title_template: '{{ mac }} {{ reason }}'

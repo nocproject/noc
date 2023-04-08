@@ -9,7 +9,7 @@ parameters:
 templates:
   DEFAULT:
     formatter: simplereport
-    output_type: csv
+    output_type: html
 root_band:
   name: Root
   source: reportclassificationrule
