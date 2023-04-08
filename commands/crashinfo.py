@@ -77,7 +77,7 @@ class Command(BaseCommand):
                         "time": t,
                         "status": "*" if uts and ts > uts else " ",
                         "service": service,
-                        "exception": x,
+                        "exception": x.decode(),
                     }
                 ]
         fs = "%s %36s  %19s  %-29s %-s\n"
