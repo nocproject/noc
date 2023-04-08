@@ -82,6 +82,16 @@ class RedPandaClient(object):
         # if self.client:
         #    await self.client.close()
 
+    @classmethod
+    def get_replication_factor(cls, meta) -> int:
+        """
+        Only Odd number
+        """
+        rf = len(meta.brokers)
+        if not rf % 2:
+            rf += 1
+        return rf
+
     @staticmethod
     async def _sleep_on_error(delay: float = 1.0, deviation: float = 0.5):
         """
@@ -129,6 +139,30 @@ class RedPandaClient(object):
         return Metadata(
             brokers=[Broker(id=b.nodeId, host=b.host, port=b.port) for b in r.brokers()],
             metadata=s_meta,
+        )
+
+    async def fetch_partition_metadata(
+        self, stream: str, partition: int, wait_for_stream: bool = False
+    ) -> PartitionMetadata:
+        r = await self.fetch_metadata(stream)
+        r = r.metadata[stream][partition]
+        newest_offset, high_watermark = None, None
+        # Fetch newest offset
+        con = await self.get_consumer()
+        # await con.start()
+        offsets = await con.end_offsets([TopicPartition(topic=stream, partition=partition)])
+        for tp, offset in offsets.items():
+            newest_offset = offset
+            high_watermark = offset
+        # await con.stop()
+        return PartitionMetadata(
+            topic=stream,
+            partition=partition,
+            leader=r.leader,
+            replicas=list(r.replicas),
+            isr=list(r.isr),
+            high_watermark=newest_offset,
+            newest_offset=high_watermark,
         )
 
     async def get_producer(self) -> AIOKafkaProducer:
@@ -206,6 +240,8 @@ class RedPandaClient(object):
         :param name:
         :return:
         """
+        if name.startswith("__"):
+            return {}
         cfg = get_stream(name)
         r = {}
         if cfg.config.retention_bytes:
@@ -323,7 +359,6 @@ class RedPandaClient(object):
                 await consumer.seek_to_end(tp)
         # async with consumer as c:
         async for msg in consumer:
-            logger.info("Consume message")
             yield Message(
                 value=msg.value,
                 subject=msg.topic,
