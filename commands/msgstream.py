@@ -16,7 +16,6 @@ from noc.core.management.base import BaseCommand
 from noc.core.ioloop.util import run_sync
 from noc.core.msgstream.client import MessageStreamClient
 from noc.core.msgstream.metadata import Metadata
-from noc.core.text import alnum_key
 
 TS_NS = 1000_0000_00
 
@@ -110,8 +109,10 @@ class Command(BaseCommand):
                 #     print("[%s|%s] Failed getting data for partition: %s" % (stream.name, p, e))
                 #     continue
                 print("    Leader        : %s" % p_meta.leader)
-                print("    Replicas      : %s" % ", ".join(sorted(p_meta.replicas, key=alnum_key)))
-                print("    ISR           : %s" % ", ".join(sorted(p_meta.isr, key=alnum_key)))
+                print(
+                    "    Replicas      : %s" % ", ".join([str(x) for x in sorted(p_meta.replicas)])
+                )
+                print("    ISR           : %s" % ", ".join([str(x) for x in sorted(p_meta.isr)]))
                 # print("    HighWatermark : %s" % p_meta.high_watermark)
                 # print("    NewestOffset  : %s" % p_meta.newest_offset)
 
