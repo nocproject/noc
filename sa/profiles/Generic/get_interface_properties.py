@@ -22,7 +22,7 @@ class Script(BaseScript):
     cache = True
     requires = []
 
-    MAX_REPETITIONS = 40
+    MAX_REPETITIONS = 20
     MAX_GETNEXT_RETIRES = 0
 
     SNMP_NAME_TABLE = "IF-MIB::ifDescr"
