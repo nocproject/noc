@@ -22,6 +22,19 @@ class Migration(BaseMigration):
             (ObjectId("606eafb1d179a5da7e340a3f"), "sa.Service"),
             (ObjectId("607a7dddff3a857a47600b9b"), "sla.SLAProbe"),
             (ObjectId("610bcff0902971a3863306fb"), "pm.Agent"),
+            (
+                ObjectId("5a01d980b6f529000100d37a"),
+                [
+                    "ip.Address",
+                    "ip.Prefix",
+                    "ip.VRF",
+                    "vc.VLAN",
+                    "vc.VPN",
+                    "vc.L2Domain",
+                    "crm.Subscriber",
+                    "crm.Supplier",
+                ],
+            ),
         ]:
             bulk += [UpdateOne({"_id": wid}, {"$set": {"allowed_models": [model_id]}})]
         if bulk:

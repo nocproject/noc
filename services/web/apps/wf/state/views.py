@@ -19,6 +19,7 @@ class StateApplication(ExtDocApplication):
 
     title = _("States")
     menu = [_("Setup"), _("States")]
+    query_condition = "icontains"
     model = State
 
     def cleaned_query(self, q):
@@ -28,6 +29,11 @@ class StateApplication(ExtDocApplication):
                 Workflow.objects.filter(allowed_models=f"{m1}.{m2.capitalize()}").values_list("id")
             )
             q.pop("id__referred")
+        elif "allowed_models" in q:
+            q["workflow__in"] = list(
+                Workflow.objects.filter(allowed_models=q["allowed_models"]).values_list("id")
+            )
+            q.pop("allowed_models")
         return super().cleaned_query(q)
 
     def instance_to_dict(self, o, fields=None, nocustom=False):

@@ -59,7 +59,10 @@ Ext.define('NOC.core.filter.Filter', {
             fieldLabel: __("By State:"),
             listeners: {
                 select: 'setFilter'
-            }
+            },
+            query: {
+                "allowed_models": "sa.ManagedObject"
+            },
         },
         {
             xtype: "core.combo",
