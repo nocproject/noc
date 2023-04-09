@@ -3,7 +3,6 @@
   hosts: svc-redpanda-exec
   become: "True"
   any_errors_fatal: "False"
-  serial: 30%
   gather_facts: "True"
   tags:
     - redpanda

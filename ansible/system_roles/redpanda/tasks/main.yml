@@ -10,6 +10,11 @@
   tags:
     - config
 
+- name: Redpanda directories
+  import_tasks: dirs.yml
+  tags:
+    - config
+
 - name: "Include OS-specific tasks"
   include_tasks: "os/{{ ansible_distribution }}_{{ ansible_distribution_major_version }}/main.yml"
   tags:
@@ -32,17 +37,17 @@
     enabled: true
     state: started
 
-- name: call consul to setup redpanda
-  run_once: true
-  include_role:
-    name: consul
-    tasks_from: service_config_set
-  vars:
-    consul_service_key: "noc/msgstream/client_class"
-    consul_service_value: "noc.core.msgstream.redpanda.RedPandaClient"
-    consul_service_token: None
-  when:
-    - "'consul://' in config_order"  #Look in noc/tasks/config.yml for local file configuration
+#- name: call consul to setup redpanda
+#  run_once: true
+#  include_role:
+#    name: consul
+#    tasks_from: service_config_set
+#  vars:
+#    consul_service_key: "noc/msgstream/client_class"
+#    consul_service_value: "noc.core.msgstream.redpanda.RedPandaClient"
+#    consul_service_token: None
+#  when:
+#    - "'consul://' in config_order"  #Look in noc/tasks/config.yml for local file configuration
 
 - name: Place redpanda consul check
   import_role:
