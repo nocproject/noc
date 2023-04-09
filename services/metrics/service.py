@@ -636,7 +636,7 @@ class MetricsService(FastAPIService):
             read_preference=ReadPreference.SECONDARY_PREFERRED
         )
         data = coll.find_one({"_id": str(s_id)})
-        if not data:
+        if not data or "$deleted" in data:
             return
         return self.get_source_config(orjson.loads(data["data"]))
 
