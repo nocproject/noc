@@ -263,7 +263,7 @@ class ExtApplication(Application):
         if self.wf_state and "state" not in q:
             states = self.get_exclude_states()
             if states and is_document(self.model):
-                data = data.exclude(state__in=states)
+                data = data.filter(state__nin=states)
             elif states:
                 data = data.exclude(state__in=[str(x) for x in states])
         # Store unpaged/unordered queryset

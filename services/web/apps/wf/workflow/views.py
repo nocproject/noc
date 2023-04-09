@@ -45,7 +45,7 @@ class WorkflowApplication(ExtDocApplication):
             "is_active": wf.is_active,
             "description": wf.description,
             "states": [],
-            "allowed_models": wf.allowed_models,
+            "allowed_models": [{"id": am, "label": am} for am in wf.allowed_models],
             "transitions": [],
         }
         for state in State.objects.filter(workflow=wf.id):
@@ -109,7 +109,9 @@ class WorkflowApplication(ExtDocApplication):
             "name": StringParameter(),
             "description": StringParameter(default=""),
             "is_active": BooleanParameter(default=False),
-            "allowed_models": StringListParameter(),
+            "allowed_models": DictListParameter(
+                attrs={"id": StringParameter(), "label": StringParameter()}
+            ),
             "states": DictListParameter(
                 attrs={
                     "id": StringParameter(default=""),
@@ -171,7 +173,7 @@ class WorkflowApplication(ExtDocApplication):
         wf.name = name
         wf.description = description
         wf.is_active = is_active
-        wf.allowed_models = allowed_models
+        wf.allowed_models = [x["id"] for x in allowed_models or []]
         wf.save()
         # Get current state
         current_states = {}  # str(id) -> state
