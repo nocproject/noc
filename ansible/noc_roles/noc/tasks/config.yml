@@ -71,15 +71,15 @@
         state: touch
         owner: root
 
-#    - name: Edit settings.yml for redpanda's configuration
-#      yedit:
-#        src: "{{ noc_root }}/etc/settings.yml"
-#        state: present
-#        edits:
-#          - key: noc.msgstream.client_class
-#            value: "noc.core.msgstream.redpanda.RedPandaClient"
-#      when:
-#        - "'svc-redpanda-exec' in groups"
+#  - name: Edit settings.yml for redpanda's configuration
+#  yedit:
+#  src: "{{ noc_root }}/etc/settings.yml"
+#  state: present
+#  edits:
+#  - key: noc.msgstream.client_class
+#  value: "noc.core.msgstream.redpanda.RedPandaClient"
+#  when:
+#  - "'svc-redpanda-exec' in groups"
 
   when:
     - "'consul://' not in config_order"
