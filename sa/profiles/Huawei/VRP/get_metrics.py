@@ -438,4 +438,3 @@ class Script(GetMetricsScript):
     #             self.set_metric(id=("Interface | Errors | CRC", ipath), value=int(data["CRC"]))
     #         if "Frames" in data:
     #             self.set_metric(id=("Interface | Errors | Frame", ipath), value=int(data["Frames"]))
-
