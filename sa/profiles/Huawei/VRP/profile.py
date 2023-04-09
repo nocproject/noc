@@ -191,6 +191,7 @@ class Profile(BaseProfile):
         "Virtual-Template": "template",
         "Bridge-Template": "template",
         "Bridge-template": "template",
+        "Bridge-if": "SVI",
         "Vlanif": "SVI",
         "Vlan-interface": "SVI",
         "NULL": "null",
