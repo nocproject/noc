@@ -14,8 +14,6 @@ from typing import Optional, Iterable, Tuple, AsyncIterable
 from .base import FieldInfo, FieldType, BaseDataSource
 from noc.fm.models.activealarm import ActiveAlarm
 from noc.fm.models.archivedalarm import ArchivedAlarm
-from noc.inv.models.networksegment import NetworkSegment
-from noc.inv.models.platform import Platform
 from noc.sa.models.managedobject import ManagedObject
 
 MOInfo = namedtuple("MOInfo", ["name", "address", "platform", "segment"])
@@ -49,23 +47,12 @@ class EscalationsDS(BaseDataSource):
             "timestamp": {"$gte": start, "$lte": end},
             "escalation_tt": {"$exists": True},
         }
-        mos = {
-            mo[0]: MOInfo(
-                name=mo[1],
-                address=mo[2],
-                platform=str(Platform.get_by_id(mo[3])) if mo[3] else "",
-                segment=NetworkSegment.get_by_id(mo[4]).name,
-            )
-            for mo in ManagedObject.objects.all().values_list(
-                "id", "name", "address", "platform", "segment"
-            )
-        }
         row_num = 0
         for ac in (ActiveAlarm, ArchivedAlarm):
             for d in ac._get_collection().find(q):
-                if d["managed_object"] not in mos:
+                mo = ManagedObject.get_by_id(d["managed_object"])
+                if not mo:
                     continue
-                mo = mos[d["managed_object"]]
                 row_num += 1
                 yield row_num, "timestamp", d["timestamp"].strftime("%Y-%m-%d %H:%M:%S")
                 yield row_num, "escalation_timestamp", d["escalation_ts"].strftime(
@@ -73,8 +60,8 @@ class EscalationsDS(BaseDataSource):
                 )
                 yield row_num, "managed_object", mo.name.split("#", 1)[0]
                 yield row_num, "address", mo.address
-                yield row_num, "platform", mo.platform
-                yield row_num, "segment", mo.segment
+                yield row_num, "platform", str(mo.platform) if mo.platform else ""
+                yield row_num, "segment", mo.segment.name
                 yield row_num, "tt", d["escalation_tt"]
                 yield row_num, "objects", sum(ss["summary"] for ss in d["total_objects"])
                 yield row_num, "subscribers", sum(ss["summary"] for ss in d["total_subscribers"])
