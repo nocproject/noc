@@ -279,7 +279,6 @@ Ext.define('NOC.sa.managedobject.Controller', {
                         NOC.error(__('Empty command'))
                     }
                 },
-
                 failure: function(response) {
                     NOC.error(__('server-side failure with status code ' + response.status));
                 }
@@ -373,7 +372,6 @@ Ext.define('NOC.sa.managedobject.Controller', {
                     // commandForm.removeAll();
                     commandForm.add(obj);
                 },
-
                 failure: function(response) {
                     NOC.error(__('server-side failure with status code ' + response.status));
                 }
@@ -615,6 +613,9 @@ Ext.define('NOC.sa.managedobject.Controller', {
                         field.initValue();
                     }
                 }, this);
+                if(view.noc.hasOwnProperty("protected_field")) {
+                    this.setProtectedField(view.noc.protected_field);
+                }
             },
             failure: function() {
                 if(gridView) {
@@ -753,8 +754,11 @@ Ext.define('NOC.sa.managedobject.Controller', {
                     if(suffix) {
                         formView.getController().itemPreview('sa-' + suffix);
                     }
-                    this.setFormTitle(formView.changeTitle, data.id);
+                    this.setFormTitle(formView.changeTitle, data);
                     this.showMapHandler(record);
+                }
+                if(view.noc.hasOwnProperty("protected_field")) {
+                    this.setProtectedField(view.noc.protected_field);
                 }
                 if(gridView) {
                     gridView.unmask();
@@ -769,15 +773,19 @@ Ext.define('NOC.sa.managedobject.Controller', {
         });
     },
     // Set edit form title
-    setFormTitle: function(tpl, itemId) {
+    setFormTitle: function(tpl, data) {
         var t = "<b>" + Ext.String.format(tpl, this.view.appTitle) + "</b>",
-            formTitle = this.view.down('[itemId=formTitle]');
+            formTitle = this.view.down('[itemId=formTitle]'),
+            itemId = data.id;
         if(itemId !== "NEW" && itemId !== "CLONE") {
             itemId = "<b>ID:</b>" + itemId;
         } else {
             itemId = "<b>" + itemId + "</b>";
         }
         t += "<span style='float:right'>" + itemId + "</span>";
+        if(data.is_wiping) {
+            t += "<br/><span style='float:left'>" + __("Device is wiping and will be removed soon") + "</span>";
+        }
         formTitle.update(t);
     },
     resetInlineStore: function(formPanel, defaults) {
@@ -929,5 +937,20 @@ Ext.define('NOC.sa.managedobject.Controller', {
             var query = Ext.Object.fromQueryString(queryStr, true);
             this.getView().down('[itemId=' + param + ']').setValue(query[param]);
         }
+    },
+    setProtectedField(fields) {
+        Ext.Object.each(fields, function(fieldName, value) {
+            var field = this.getView().down("[name=" + fieldName + "]");
+
+            switch(value) {
+                case 0:
+                    field.setHidden(true);
+                    break;
+                case 1:
+                case 2:
+                    field.setDisabled(true);
+                    break;
+            }
+        }, this);
     }
 });

@@ -465,6 +465,11 @@ Ext.define("NOC.wf.workflow.WFEditor", {
                     boxLabel: __("Update Expiration")
                 },
                 {
+                    name: "labels",
+                    xtype: "labelfield",
+                    fieldLabel: __("Labels")
+                },
+                {
                     name: "job_handler",
                     xtype: "textfield",
                     fieldLabel: __("Job Handler")
@@ -662,30 +667,30 @@ Ext.define("NOC.wf.workflow.WFEditor", {
                 return cell.data.type === "state"
             }),
             transitions = data.cells
-            .filter(function(cell) {
-                return cell.data.type === "transition"
-            })
-            .map(function(element) {
-                element.from_state = findStateNameById(element.source.id);
-                element.to_state = findStateNameById(element.target.id);
-                element.data["vertices"] = [];
-                if(element.hasOwnProperty("vertices")) {
-                    element.data["vertices"] = element.vertices;
-                }
-                if(element.data.hasOwnProperty("remote_system") && element.data["remote_system"].length === 0) {
-                    delete element.data["remote_system"];
-                }
-                if(element.data.hasOwnProperty("remote_id") && element.data["remote_id"].length === 0) {
-                    delete element.data["remote_id"];
-                }
-                delete element.data["bi_id"];
-                delete element.data["remote_system__label"];
-                delete element.data["workflow__label"];
-                delete element.data["from_state__label"];
-                delete element.data["to_state__label"];
-                delete element.data["type"];
-                return element.data;
-            });
+                .filter(function(cell) {
+                    return cell.data.type === "transition"
+                })
+                .map(function(element) {
+                    element.from_state = findStateNameById(element.source.id);
+                    element.to_state = findStateNameById(element.target.id);
+                    element.data["vertices"] = [];
+                    if(element.hasOwnProperty("vertices")) {
+                        element.data["vertices"] = element.vertices;
+                    }
+                    if(element.data.hasOwnProperty("remote_system") && element.data["remote_system"].length === 0) {
+                        delete element.data["remote_system"];
+                    }
+                    if(element.data.hasOwnProperty("remote_id") && element.data["remote_id"].length === 0) {
+                        delete element.data["remote_id"];
+                    }
+                    delete element.data["bi_id"];
+                    delete element.data["remote_system__label"];
+                    delete element.data["workflow__label"];
+                    delete element.data["from_state__label"];
+                    delete element.data["to_state__label"];
+                    delete element.data["type"];
+                    return element.data;
+                });
         if(!me.configId) {
             NOC.error(__("Create new diagram not implement"));
             return;

@@ -43,6 +43,7 @@ class Script(BaseScript):
         "Giga-FX": "physical",  # GigabitEthernet
         "Giga-FX-SFP": "physical",  # GigabitEthernet
         "10Giga-FX": "physical",  # TGigaEthernet port
+        "10Giga-FX-SFP": "physical",  # TGigaEthernet SFP port
         "GigaEthernet-PON": "physical",  # EPON port
         "GigaEthernet-LLID": "other",  # EPON ONU port
         "Giga-PON": "physical",  # EPON port
@@ -98,9 +99,11 @@ class Script(BaseScript):
                 sub["enabled_afi"] = ["BRIDGE"]
                 c = self.cli("show vlan interface %s" % match.group("ifname"))
                 for r in parse_table(c, allow_wrap=True, n_row_delim=","):
-                    if is_int(r[2]):
-                        untagged = int(r[2])
-                        sub["untagged_vlan"] = untagged
+                    if not is_int(r[2]):
+                        continue
+                    untagged = int(r[2])
+                    sub["untagged_vlan"] = untagged
+                    if r[3] != "none":
                         tagged = self.expand_rangelist(r[3])
                         tagged = [item for item in tagged if int(item) != untagged]
                         if tagged:

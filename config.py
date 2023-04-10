@@ -580,6 +580,12 @@ class Config(BaseConfig):
         debug = BooleanParameter(default=False)
         max_breadcrumbs = IntParameter(min=1, max=100, default=10)
 
+    class topo(ConfigSection):
+        ds_limit = IntParameter(default=1000)
+        dry_run = BooleanParameter(default=True)
+        check = BooleanParameter(default=True)
+        interval = SecondsParameter(default=60)
+
     class msgstream(ConfigSection):
         metrics_send_delay = FloatParameter(default=0.25)
         max_message_size = IntParameter(default=921600, help="Max message size for GRPC client")
@@ -731,6 +737,10 @@ class Config(BaseConfig):
         heatmap_zoom = StringParameter(default="4")
         max_image_size = BytesParameter(default="2M")
         topology_map_grid_size = IntParameter(min=5, default=25)
+        report_csv_delimiter = StringParameter(choices=[";", ","], default=";")
+        enable_report_history = BooleanParameter(
+            default=False, help="Enable Save Report Execution history"
+        )
 
     class ui(ConfigSection):
         max_avatar_size = BytesParameter(default="256K")

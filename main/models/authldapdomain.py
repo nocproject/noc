@@ -28,7 +28,7 @@ class AuthLDAPServer(EmbeddedDocument):
     address = StringField()
     port = IntField()
     use_tls = BooleanField()
-    connect_timeout = IntField(default=10, min_value=0)
+    connect_timeout = IntField(default=5, min_value=0)
 
     def __str__(self):
         return self.name or self.address
@@ -94,7 +94,7 @@ class AuthLDAPDomain(Document):
     # if you set active=True while defining the ServerPool the strategy will check for server availability,
     # you can also set this attribute to the maximum number of cycles to try before
     # giving up with an LDAPServerPoolExhaustedError exception.
-    pool_active = IntField()
+    pool_active = IntField(default=1)
     # With exhaust=True if a server is not active it will be removed by the pool,
     # if you set it to a number this will be the number of seconds an unreachable server is considered offline.
     # When this timout expires the server is reinserted in the pool and checked again for availability. The

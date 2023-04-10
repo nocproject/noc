@@ -141,6 +141,12 @@ class LdapBackend(BaseAuthBackend):
             if s.use_tls:
                 kwargs["use_ssl"] = True
             servers += [ldap3.Server(**kwargs)]
+        ldap3.set_config_parameter("POOLING_LOOP_TIMEOUT", 3)
+        self.logger.debug(
+            "Connect to Servers: %s, %s",
+            servers,
+            ldap3.get_config_parameter("POOLING_LOOP_TIMEOUT"),
+        )
         if not servers:
             self.logger.error("No active servers configured for domain '%s'", ldap_domain.name)
             return None

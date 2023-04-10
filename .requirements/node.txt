@@ -13,7 +13,7 @@ XlsxWriter==3.0.9
 atomicl==0.1.1
 blinker==1.5
 bsdiff4==1.2.3
-cachetools==4.2.4
+cachetools==5.3.0
 crontab==0.22.9
 csiphash==0.0.5
 demjson3==3.0.6
@@ -28,7 +28,7 @@ manhole==1.7.0
 markerlib==0.6.0
 mongoengine==0.27.0
 motor==3.1.1
-networkx==2.8.7
+networkx==3.1.0
 numpy==1.24.0
 orjson==3.8.7
 progressbar2==4.0.0

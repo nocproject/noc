@@ -50,6 +50,12 @@ Ext.define("NOC.wf.state.Application", {
                     renderer: NOC.render.Bool
                 },
                 {
+                    text: __("Hide Records"),
+                    dataIndex: "hide_with_state",
+                    width: 50,
+                    renderer: NOC.render.Bool
+                },
+                {
                     text: __("Update Last Seen"),
                     dataIndex: "update_last_seen",
                     width: 50,
@@ -121,6 +127,11 @@ Ext.define("NOC.wf.state.Application", {
                     boxLabel: __("Wiping")
                 },
                 {
+                    name: "hide_with_state",
+                    xtype: "checkbox",
+                    boxLabel: __("Hide Records")
+                },
+                {
                     name: "update_last_seen",
                     xtype: "checkbox",
                     boxLabel: __("Update Last Seen")
@@ -147,7 +158,7 @@ Ext.define("NOC.wf.state.Application", {
                 {
                     name: "interaction_settings",
                     xtype: "gridfield",
-                    fieldLabel: __("Interaction Settins"),
+                    fieldLabel: __("Interaction Settings"),
                     columns: [
                         {
                             text: __("Interaction"),

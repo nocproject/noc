@@ -151,6 +151,9 @@ Ext.define("NOC.sa.managedobject.ConfDBPanel", {
                         success: function(response) {
                             var data = Ext.decode(response.responseText);
                             me.queryField.setValue(data.query)
+                        },
+                        failure: function() {
+                            NOC.error(__("Failed to load data"));
                         }
                     })
                 }

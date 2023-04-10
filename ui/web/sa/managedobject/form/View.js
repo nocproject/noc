@@ -63,6 +63,12 @@ Ext.define('NOC.sa.managedobject.form.View', {
                 maxWidth: 1000,
             },
             scrollable: true,
+            listeners: {
+                scope: this,
+                validitychange: function(me, isValid) {
+                    Ext.each(Ext.ComponentQuery.query("[itemId$=aveBtn]"), function(button) {button.setDisabled(!isValid)});
+                }
+            },
             items: [
                 {
                     xtype: "container",
@@ -102,7 +108,7 @@ Ext.define('NOC.sa.managedobject.form.View', {
                                     name: "is_managed",
                                     xtype: "checkboxfield",
                                     fieldLabel: __("Is Managed?"),
-                                    disabled: true,
+                                    readOnly: true,
                                     tabIndex: 30,
                                 },
                                 {

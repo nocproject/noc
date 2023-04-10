@@ -471,6 +471,7 @@ class InterfaceCheck(PolicyDiscoveryCheck):
             iface = ifaces.get(i_name)
             if not iface:
                 self.logger.warning("Unknown interface: %s", i_name)
+                continue
             elif not p_id or p_id == iface.profile.id:
                 continue
             elif iface.profile_locked:

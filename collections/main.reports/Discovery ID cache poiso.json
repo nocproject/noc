@@ -1,0 +1,104 @@
+{
+    "name": "Discovery ID cache poison",
+    "$collection": "main.reports",
+    "uuid": "76c8f27e-6523-421a-8fa5-d57557a2681b",
+    "title": "Discovery ID cache poison (New)",
+    "description": "Список дубликатов MAC адресов устройств",
+    "bands": [
+        {
+            "name": "Root",
+            "orientation": "H",
+            "queries": [{
+                "datasource": "discoveryidcachepoisonds",
+                "json": null
+            }]
+        },
+        {
+            "name": "master_data",
+            "orientation": "H",
+            "parent": "Root",
+            "queries": [
+                {
+                    "ds_query": "root_band.rows.groupby(by=\"mac\").agg(pl.first('reason')).sort(\"mac\")"
+                }
+            ]
+        },
+        {
+            "name": "duplicate_detail",
+            "orientation": "H",
+            "parent": "master_data",
+            "queries": [
+                {
+                    "ds_query": "root_band.rows.filter(pl.col('mac') == ctx['mac']).sort(\"name\")"
+                }
+            ]
+        }
+    ],
+    "bands_format": [
+        {
+            "name": "Root",
+            "title_template": "Discovery ID cache poison"
+        },
+        {
+            "name": "master_data",
+            "title_template": "{{ mac }} {{ reason }}"
+        },
+        {
+            "name": "duplicate_detail",
+            "column_format": [
+                {
+                    "name": "name",
+                    "title": "Managed Object"
+                },
+                {
+                    "name": "address",
+                    "title": "Address"
+                },
+                {
+                    "name": "profile",
+                    "title": "Profile"
+                },
+                {
+                    "name": "pool",
+                    "title": "Pool"
+                },
+                {
+                    "name": "is_managed",
+                    "title": "is managed"
+                }
+            ],
+            "title_template": ""
+        }
+    ],
+    "category": "inv",
+    "code": null,
+    "hide": false,
+    "localization": {
+        "title": {
+            "ru": "Дубликаты в кэше Идентификаторов (Новый)"
+        }
+    },
+    "parameters": [
+        {
+            "name": "pool",
+            "description": null,
+            "label": "Pool",
+            "model_id": "main.Pool",
+            "type": "model"
+        },
+        {
+            "name": "filter_dup_macs",
+            "description": null,
+            "label": "Exclude on MAC Black List",
+            "type": "bool"
+        }
+    ],
+    "templates": [
+        {
+            "code": "DEFAULT",
+            "has_preview": true,
+            "is_alterable_output": true,
+            "output_type": "html"
+        }
+    ]
+}

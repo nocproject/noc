@@ -14,7 +14,7 @@ from bson import ObjectId
 
 class RCACondition(object):
     def __init__(self, alarm_class, condition):
-        self.name = "%s::%s" % (alarm_class.name, condition.name)
+        self.name = f"{alarm_class.name}::{condition.name}"
         self.window = condition.window
         self.root = condition.root
         self.same_object = False
@@ -22,23 +22,23 @@ class RCACondition(object):
         self.condition = compile(condition.condition, "<string>", "eval")
         # Build match condition expression
         x = [
-            "'alarm_class': ObjectId('%s')" % self.root.id,
-            "'timestamp__gte': alarm.timestamp - datetime.timedelta(seconds=%d)" % self.window,
-            "'timestamp__lte': alarm.timestamp + datetime.timedelta(seconds=%d)" % self.window,
+            f"'alarm_class': ObjectId('{self.root.id}')",
+            f"'timestamp__gte': alarm.timestamp - datetime.timedelta(seconds={self.window})",
+            f"'timestamp__lte': alarm.timestamp + datetime.timedelta(seconds={self.window})",
         ]
         if self.root.id == alarm_class.id:
             x += ["'id__ne': alarm.id"]
         for k, v in condition.match_condition.items():
             if k == "managed_object" and v == "alarm.managed_object.id":
                 self.same_object = True
-            x += ["'%s': %s" % (k, v)]
+            x += [f"'{k}': {v}"]
         self.match_condition = compile("{%s}" % ", ".join(x), "<string>", "eval")
         # Build reverse match condition expression
         x = [
-            "'alarm_class': ObjectId('%s')" % alarm_class.id,
+            f"'alarm_class': ObjectId('{alarm_class.id}')",
             "'root__exists': False",
-            "'timestamp__gte': alarm.timestamp - datetime.timedelta(seconds=%d)" % self.window,
-            "'timestamp__lte': alarm.timestamp + datetime.timedelta(seconds=%d)" % self.window,
+            f"'timestamp__gte': alarm.timestamp - datetime.timedelta(seconds={self.window})",
+            f"'timestamp__lte': alarm.timestamp + datetime.timedelta(seconds={self.window})",
         ]
         if self.root.id == alarm_class.id:
             x += ["'id__ne': alarm.id"]

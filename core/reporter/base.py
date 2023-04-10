@@ -7,8 +7,9 @@
 
 # Python modules
 import logging
+import datetime
 from io import BytesIO
-from typing import Dict, Any, Optional, List, Iterable, Tuple
+from typing import Dict, Any, Optional, List, Iterable, Tuple, Set
 
 # Third-party modules
 import orjson
@@ -16,6 +17,10 @@ import polars as pl
 from jinja2 import Template as Jinja2Template
 
 # NOC modules
+from noc.main.reportsources.loader import loader as r_source_loader
+from noc.core.debug import error_report
+from noc.core.middleware.tls import get_user
+from noc.core.datasources.base import BaseDataSource
 from .types import (
     Template,
     OutputType,
@@ -26,7 +31,6 @@ from .types import (
     OutputDocument,
 )
 from .report import BandData
-from noc.main.reportsources.loader import loader as r_source_loader
 
 
 logger = logging.getLogger(__name__)
@@ -38,14 +42,16 @@ class ReportEngine(object):
     RunParams -> ReportEngine -> load_data -> DataBand -> Formatter -> DocumentFile
     """
 
-    def __init__(self):
+    def __init__(self, report_execution_history: bool = False, report_print_error: bool = False):
         self.logger = logger
+        self.report_execution_history = report_execution_history
+        self.report_print_error = report_print_error
 
-    def run_report(self, r_params: RunParams):
+    def run_report(self, r_params: RunParams, user: Optional[Any] = None):
         """
         Run report withs params
         :param r_params: Report params
-        :param out: Output document
+        :param user: Execute from user
         :return:
         """
         # Handler param
@@ -53,14 +59,85 @@ class ReportEngine(object):
         report = r_params.report
         template = r_params.get_template()
         out_type = r_params.output_type or template.output_type
+        user = user or get_user()
         cleaned_param = self.clean_param(report, r_params.get_params())
-        self.logger.info("[%s] Running report with parameter: %s", report, cleaned_param)
-        data = self.load_data(report, cleaned_param)
-        self.generate_report(report, template, out_type, out, cleaned_param, data)
-        self.logger.info("[%s] Finished report with parameter: %s", report, cleaned_param)
+        if user:
+            cleaned_param["user"] = user
+        error, start = None, datetime.datetime.now()
+        self.logger.info("[%s] Running report with parameter: %s", report.name, cleaned_param)
+        try:
+            data = self.load_data(report, cleaned_param)
+            self.generate_report(report, template, out_type, out, cleaned_param, data)
+        except Exception as e:
+            error = str(e)
+            if self.report_print_error:
+                error_report(logger=self.logger, suppress_log=True)
+        if self.report_execution_history:
+            self.register_execute(
+                report,
+                start,
+                r_params.get_params(),
+                successfully=not error,
+                error_text=error,
+                user=str(user),
+            )
+        if error:
+            self.logger.error(
+                "[%s] Finished report with error: %s ; Params:%s", report.name, error, cleaned_param
+            )
+            raise ValueError(error)
+        self.logger.info("[%s] Finished report with parameter: %s", report.name, cleaned_param)
         output_name = self.resolve_output_filename(run_params=r_params, root_band=data)
         return OutputDocument(
             content=out.getvalue(), document_name=output_name, output_type=out_type
+        )
+
+    @classmethod
+    def register_execute(
+        cls,
+        report: ReportConfig,
+        start: datetime.datetime,
+        params: Dict[str, Any],
+        end: Optional[datetime.datetime] = None,
+        successfully: bool = False,
+        canceled: bool = False,
+        error_text: Optional[str] = None,
+        user: Optional[str] = None,
+    ):
+        """
+        :param report:
+        :param start:
+        :param end:
+        :param params:
+        :param successfully:
+        :param canceled:
+        :param error_text:
+        :param user:
+        :return:
+        """
+        from noc.core.service.loader import get_service
+
+        svc = get_service()
+
+        end = end or datetime.datetime.now()
+        svc.register_metrics(
+            "reportexecutionhistory",
+            [
+                {
+                    "date": start.date().isoformat(),
+                    "start": start.replace(microsecond=0).isoformat(),
+                    "end": end.replace(microsecond=0).isoformat(),
+                    "duration": int(abs((end - start).total_seconds()) * 1000),
+                    "report": report.name,
+                    "name": report.name,
+                    "code": "",
+                    "user": str(user),
+                    "successfully": successfully,
+                    "canceled": canceled,
+                    "params": orjson.dumps(params).decode("utf-8"),
+                    "error": error_text or "",
+                }
+            ],
         )
 
     def generate_report(
@@ -166,7 +243,11 @@ class ReportEngine(object):
         return root
 
     @staticmethod
-    def merge_ctx(ctx: Dict[str, Any], query: ReportQuery, joined: bool = False) -> Dict[str, Any]:
+    def merge_ctx(
+        ctx: Dict[str, Any],
+        query: ReportQuery,
+        joined: bool = False,
+    ) -> Tuple[Dict[str, Any], Set[str]]:
         """
         Merge Query context
         :param ctx:
@@ -177,7 +258,7 @@ class ReportEngine(object):
         q_ctx = ctx.copy()
         if query.params:
             q_ctx.update(query.params)
-        q_ctx["fields"] = []
+        q_ctx["fields"], dss = [], set()
         for f in ctx.get("fields", []):
             ff, *field = f.split(".", 1)
             if not field and not joined:
@@ -185,7 +266,9 @@ class ReportEngine(object):
                 q_ctx["fields"].append(ff)
             elif field and ff == query.datasource and field[0] != "all":
                 q_ctx["fields"] += field
-        return q_ctx
+            if field:
+                dss.add(ff)
+        return q_ctx, dss
 
     @classmethod
     def get_rows(
@@ -201,16 +284,21 @@ class ReportEngine(object):
         """
         if not queries:
             return None
-        rows = None
-        # key_field = "managed_object_id"
+        rows, joined, joined_field = None, len(queries) > 1, None
         for num, query in enumerate(queries):
-            q_ctx = cls.merge_ctx(ctx, query, joined=bool(num))
+            q_ctx, dss = cls.merge_ctx(ctx, query, joined=bool(num))
             data, key_field = None, None
             if query.json_data:
                 # return join fields (last DS)
                 data = pl.DataFrame(orjson.loads(query.json_data))
+            elif num and query.datasource and query.datasource not in dss:
+                # Skip not requested DataSource
+                continue
             elif query.datasource:
-                data, key_field = cls.query_datasource(query, q_ctx, joined=len(queries) > 1)
+                logger.info("[%s] Query DataSource", query.datasource)
+                data, key_field = cls.query_datasource(query, q_ctx, joined_field=joined_field)
+                if not joined_field:
+                    joined_field = key_field
             if query.query:
                 logger.debug("Execute query: %s; Context: %s", query.query, q_ctx)
                 data = eval(
@@ -219,37 +307,47 @@ class ReportEngine(object):
                     {"ds": data, "ctx": q_ctx, "root_band": root_band, "pl": pl},
                 )
             if data is None or data.is_empty():
+                if not num:
+                    # If first query is empty, nothing to join
+                    return rows
                 continue
-            if rows is not None and key_field:
-                # @todo Linked field!
+            if rows is not None and joined_field:
                 # df_left_join = df_customers.join(df_orders, on="customer_id", how="left")
-                rows = rows.join(data, on=key_field, how="left")
-                continue
+                rows = rows.join(data, on=joined_field, how="left")
             else:
                 rows = data
-        if key_field and len(queries) > 1:
-            rows = rows.drop(key_field)
+        if joined and joined_field:
+            rows = rows.drop(joined_field)
         return rows
 
     @classmethod
     def query_datasource(
-        cls, query: ReportQuery, ctx: Dict[str, Any], joined: bool = False
+        cls,
+        query: ReportQuery,
+        ctx: Dict[str, Any],
+        joined_field: Optional[str] = None,
     ) -> Tuple[Optional[pl.DataFrame], str]:
         """
         Resolve Datasource for Query
         :param query:
         :param ctx:
-        :param joined:
+        :param joined_field:
         :return:
         """
         from noc.core.datasources.loader import loader as ds_loader
 
-        ds = ds_loader[query.datasource]
+        ds: "BaseDataSource" = ds_loader[query.datasource]
         if not ds:
-            raise ValueError(f"Unknown Datasource: {query.datasource}")
-        if joined and ctx.get("fields"):
-            ctx["fields"] += [ds.row_index]
+            raise ValueError(f"Unknown DataSource: {query.datasource}")
+        if joined_field and not ds.has_field(joined_field):
+            # Joined is not supported
+            logger.warning("[%s] Joined field '%s' not available", ds.name, joined_field)
+            return None, ""
+        elif joined_field and ctx.get("fields"):
+            ctx["fields"] += [joined_field]
             # Check not row_index
+        elif not joined_field and ctx.get("fields"):
+            ctx["fields"] += [ds.row_index]
         row = ds.query_sync(**ctx)
         return row, ds.row_index
 
@@ -262,4 +360,7 @@ class ReportEngine(object):
         output_name = template.get_document_name()
         out_type = run_params.output_type or template.output_type
         ctx = root_band.get_data()
-        return f"{Jinja2Template(output_name).render(ctx) or 'report'}.{out_type.value}"
+        extension = out_type.value
+        if out_type == OutputType.CSV_ZIP:
+            extension = OutputType.CSV.value
+        return f"{Jinja2Template(output_name).render(ctx) or 'report'}.{extension}"

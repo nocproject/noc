@@ -1,0 +1,331 @@
+{
+    "name": "Object Detail",
+    "$collection": "main.reports",
+    "uuid": "bc620fa7-7242-46b4-9c45-ec3d77e6ff9a",
+    "title": "Object Detail (New)",
+    "description": "Детализация по объектам (ManagedObject)",
+    "bands": [
+        {
+            "name": "Root",
+            "orientation": "H",
+            "queries": [
+                {
+                    "datasource": "managedobjectds",
+                    "json": null
+                },
+                {
+                    "datasource": "managedobjectconfigds",
+                    "json": null
+                },
+                {
+                    "datasource": "interfacesstatusstatds",
+                    "json": null
+                },
+                {
+                    "datasource": "managedobjectcapsds",
+                    "json": null
+                },
+                {
+                    "datasource": "managedobjectlabelsstatds",
+                    "json": null
+                }
+            ]
+        }
+    ],
+    "bands_format": [
+        {
+            "name": "Root",
+            "column_format": [
+                {
+                    "name": "id",
+                    "title": "ID",
+                    "format_type": "string"
+                },
+                {
+                    "name": "name",
+                    "title": "Object Name",
+                    "format_type": "string"
+                },
+                {
+                    "name": "address",
+                    "title": "IP",
+                    "format_type": "string"
+                },
+                {
+                    "name": "hostname",
+                    "title": "Object Hostname",
+                    "format_type": "string"
+                },
+                {
+                    "name": "status",
+                    "title": "Object Status",
+                    "format_type": "string"
+                },
+                {
+                    "name": "profile",
+                    "title": "Profile",
+                    "format_type": "string"
+                },
+                {
+                    "name": "object_profile",
+                    "title": "Object Profile",
+                    "format_type": "string"
+                },
+                {
+                    "name": "vendor",
+                    "title": "Vendor",
+                    "format_type": "string"
+                },
+                {
+                    "name": "model",
+                    "title": "Platform",
+                    "format_type": "string"
+                },
+                {
+                    "name": "attr_hwversion",
+                    "title": "Add. attributes: HW Version",
+                    "format_type": "string"
+                },
+                {
+                    "name": "sw_version",
+                    "title": "SW Version",
+                    "format_type": "string"
+                },
+                {
+                    "name": "attr_bootprom",
+                    "title": "Add. attributes: BootPROM Version",
+                    "format_type": "string"
+                },
+                {
+                    "name": "attr_serialnumber",
+                    "title": "Serial Number",
+                    "format_type": "string"
+                },
+                {
+                    "name": "attr_patch",
+                    "title": "Add. attributes: sw. patch",
+                    "format_type": "string"
+                },
+                {
+                    "name": "auth_profile",
+                    "title": "Auth Profile",
+                    "format_type": "string"
+                },
+                {
+                    "name": "avail",
+                    "title": "Avail",
+                    "format_type": "string"
+                },
+                {
+                    "name": "administrativedomain",
+                    "title": "Admin. Domain",
+                    "format_type": "string"
+                },
+                {
+                    "name": "container",
+                    "title": "Container",
+                    "format_type": "string"
+                },
+                {
+                    "name": "segment",
+                    "title": "Segment",
+                    "format_type": "string"
+                },
+                {
+                    "name": "phys_interface_count",
+                    "title": "Physical Iface Count",
+                    "format_type": "string"
+                },
+                {
+                    "name": "link_count",
+                    "title": "Link Count",
+                    "format_type": "string"
+                },
+                {
+                    "name": "managedobjectconfigds.last_changed_ts",
+                    "title": "Last Config get Timestamp",
+                    "format_type": "string"
+                },
+                {
+                    "name": "adm_path",
+                    "title": "Adm Path",
+                    "format_type": "string"
+                },
+                {
+                    "name": "interfacesstatusstatds.all",
+                    "title": "Interface count by type",
+                    "format_type": "string"
+                },
+                {
+                    "name": "managedobjectcapsds.all",
+                    "title": "Object capabilities",
+                    "format_type": "string"
+                },
+                {
+                    "name": "object_labels",
+                    "title": "Object Labels",
+                    "format_type": "string"
+                },
+                {
+                    "name": "managedobjectlabelsstatds.all",
+                    "title": "Sorted Labels",
+                    "format_type": "string"
+                },
+                {
+                    "name": "discovery_problem",
+                    "title": "Discovery Problem",
+                    "format_type": "string"
+                },
+                {
+                    "name": "project",
+                    "title": "Project",
+                    "format_type": "string"
+                }
+            ],
+            "title_template": ""
+        }
+    ],
+    "category": "sa",
+    "code": null,
+    "hide": false,
+    "localization": {
+        "title": {
+            "ru": "Детализация по объектам (Новая)"
+        },
+        "columns.address": {
+            "ru": "IP"
+        },
+        "columns.adm_path": {
+            "ru": "Adm. Path"
+        },
+        "columns.administrativedomain": {
+            "ru": "З.О."
+        },
+        "columns.attr_bootprom": {
+            "ru": "Дополнительный аттрибут (версия BootPROM)"
+        },
+        "columns.attr_hwversion": {
+            "ru": "Дополнительный аттрибут (HW версия)"
+        },
+        "columns.attr_patch": {
+            "ru": "Дополнительный аттрибут (номер патча)"
+        },
+        "columns.attr_serialnumber": {
+            "ru": "Серийный номер"
+        },
+        "columns.auth_profile": {
+            "ru": "Профиль авторизации"
+        },
+        "columns.avail": {
+            "ru": "Доступность"
+        },
+        "columns.container": {
+            "ru": "Контейнер"
+        },
+        "columns.discovery_problem": {
+            "ru": "Проблемы опроса"
+        },
+        "columns.hostname": {
+            "ru": "Hostname"
+        },
+        "columns.interfacesstatusstatds.all": {
+            "ru": "Кол-во интерфейсов по скорости"
+        },
+        "columns.link_count": {
+            "ru": "Кол-во линков"
+        },
+        "columns.managedobjectcapsds.all": {
+            "ru": "Возможности объекта"
+        },
+        "columns.managedobjectconfigds.last_changed_ts": {
+            "ru": "Время последнего изменения конфигурации"
+        },
+        "columns.managedobjectlabelsstatds.all": {
+            "ru": "Метки (одтельными колонками)"
+        },
+        "columns.model": {
+            "ru": "Платформа"
+        },
+        "columns.name": {
+            "ru": "Имя устройства"
+        },
+        "columns.object_labels": {
+            "ru": "Метки (одной строкой)"
+        },
+        "columns.object_profile": {
+            "ru": "Профиль объекта"
+        },
+        "columns.phys_interface_count": {
+            "ru": "Кол-во интерфейсов"
+        },
+        "columns.profile": {
+            "ru": "Профиль"
+        },
+        "columns.project": {
+            "ru": "Проект"
+        },
+        "columns.segment": {
+            "ru": "Сегмент"
+        },
+        "columns.status": {
+            "ru": "Статус объекта"
+        },
+        "columns.sw_version": {
+            "ru": "Версия ПО"
+        },
+        "columns.vendor": {
+            "ru": "Производитель"
+        },
+        "parameters.administrative_domain": {
+            "ru": "По З.О."
+        },
+        "parameters.fields": {
+            "ru": "Колонки"
+        },
+        "parameters.resource_group": {
+            "ru": "По Группу устройств (Селектор)"
+        },
+        "parameters.segment": {
+            "ru": "Сегмент"
+        }
+    },
+    "parameters": [
+        {
+            "name": "segment",
+            "description": null,
+            "label": "Segment",
+            "model_id": "inv.NetworkSegment",
+            "type": "model"
+        },
+        {
+            "name": "administrative_domain",
+            "description": null,
+            "label": "By Adm. domain",
+            "model_id": "sa.AdministrativeDomain",
+            "type": "model"
+        },
+        {
+            "name": "resource_group",
+            "description": null,
+            "label": "By Resource Group (Selector)",
+            "model_id": "inv.ResourceGroup",
+            "type": "model"
+        },
+        {
+            "name": "fields",
+            "description": null,
+            "default": "name,address,hostname,status,profile,administrativedomain,segment",
+            "label": "Fields",
+            "type": "fields_selector"
+        }
+    ],
+    "templates": [
+        {
+            "code": "DEFAULT",
+            "has_preview": false,
+            "is_alterable_output": true,
+            "output_name_pattern": "object_detail",
+            "output_type": "csv"
+        }
+    ]
+}
