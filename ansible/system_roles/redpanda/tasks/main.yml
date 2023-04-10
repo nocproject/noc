@@ -1,4 +1,11 @@
 ---
+
+- name: Add redpanda group
+  group:
+    name: "{{ redpanda_group }}"
+  tags:
+    - config
+
 - name: Add redpanda user
   user:
     name: "{{ redpanda_user }}"
