@@ -1,0 +1,15 @@
+file:
+  {{ redpanda_config_path }}/redpanda.yaml:
+    exists: true
+    mode: "0644"
+    owner: {{ redpanda_user }}
+    group: {{ redpanda_group }}
+    filetype: file
+    contains: []
+service:
+  redpanda:
+    enabled: true
+    running: true
+process:
+  redpanda:
+    running: true

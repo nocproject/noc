@@ -1066,6 +1066,9 @@ all:
     svc-liftbridge-exec:
       hosts:
         noc-node-debian10: {}
+    svc-redpanda-exec:
+      hosts:
+        noc-node-debian10: {}
     svc-mailsender:
       children:
         cfg-mailsender-noc-node-debian10:
