@@ -18,6 +18,8 @@ from pymongo import ReadPreference
 
 # NOC modules
 from noc.core.mongo.fields import ForeignKeyField
+from noc.core.change.decorator import change
+from noc.config import config
 from noc.sa.models.managedobject import ManagedObject
 from noc.inv.models.interface import Interface
 from noc.inv.models.subinterface import SubInterface
@@ -39,6 +41,7 @@ class MACRange(EmbeddedDocument):
         return "%s - %s" % (self.first_mac, self.last_mac)
 
 
+@change
 @on_delete
 class DiscoveryID(Document):
     """
@@ -65,6 +68,10 @@ class DiscoveryID(Document):
 
     def __str__(self):
         return self.object.name
+
+    def iter_changed_datastream(self, changed_fields=None):
+        if config.datastream.enable_managedobject:
+            yield "managedobject", self.object.id
 
     @staticmethod
     def _macs_as_ints(ranges=None, additional=None):
