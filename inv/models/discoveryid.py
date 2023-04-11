@@ -7,8 +7,9 @@
 
 # Python modules
 import operator
-from threading import Lock
 import bisect
+from threading import Lock
+from typing import Optional
 
 # Third-party modules
 import cachetools
@@ -18,6 +19,8 @@ from pymongo import ReadPreference
 
 # NOC modules
 from noc.core.mongo.fields import ForeignKeyField
+from noc.core.change.decorator import change
+from noc.config import config
 from noc.sa.models.managedobject import ManagedObject
 from noc.inv.models.interface import Interface
 from noc.inv.models.subinterface import SubInterface
@@ -27,6 +30,7 @@ from noc.core.cache.base import cache
 from noc.core.mac import MAC
 from noc.core.model.decorator import on_delete
 
+id_lock = Lock()
 mac_lock = Lock()
 
 
@@ -39,6 +43,7 @@ class MACRange(EmbeddedDocument):
         return "%s - %s" % (self.first_mac, self.last_mac)
 
 
+@change
 @on_delete
 class DiscoveryID(Document):
     """
@@ -60,11 +65,21 @@ class DiscoveryID(Document):
     #
     macs = ListField(LongField())
 
+    _id_cache = cachetools.TTLCache(maxsize=100, ttl=60)
     _mac_cache = cachetools.TTLCache(maxsize=10000, ttl=60)
     _udld_cache = cachetools.TTLCache(maxsize=1000, ttl=60)
 
     def __str__(self):
         return self.object.name
+
+    @classmethod
+    @cachetools.cachedmethod(operator.attrgetter("_id_cache"), lock=lambda _: id_lock)
+    def get_by_id(cls, id) -> Optional["DiscoveryID"]:
+        return DiscoveryID.objects.filter(id=id).first()
+
+    def iter_changed_datastream(self, changed_fields=None):
+        if config.datastream.enable_managedobject:
+            yield "managedobject", self.object.id
 
     @staticmethod
     def _macs_as_ints(ranges=None, additional=None):
