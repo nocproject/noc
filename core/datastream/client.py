@@ -62,6 +62,7 @@ class DataStreamClient(object):
         filters=None,
         block: bool = False,
         limit: Optional[int] = None,
+        ds_format: Optional[str] = None,
         filter_policy: Optional[str] = None,
     ):
         """
@@ -70,6 +71,7 @@ class DataStreamClient(object):
         :param filters: List of strings with filter expression
         :param block:
         :param limit: Records limit
+        :param ds_format: DataStream Format
         :param filter_policy: Metadata changed policy. Behavior if metadata change out of filter scope
                    * default - no changes
                    * delete - return $delete message
@@ -84,6 +86,8 @@ class DataStreamClient(object):
             base_qs += [f"filter={x}" for x in filters]
         if limit:
             base_qs += [f"limit={limit}"]
+        if ds_format:
+            base_qs += [f"format={ds_format}"]
         if filter_policy:
             base_qs += [f"filter_policy={filter_policy}"]
         req_headers = {"X-NOC-API-Access": f"datastream:{self.name}"}

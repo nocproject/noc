@@ -464,6 +464,30 @@ class ManagedObjectDataStream(DataStream):
             r["remote_id"] = str(svc.remote_id)
         iface["services"] = [r]
 
+    @staticmethod
+    def iter_topology(data):
+        """
+        DataStream only with topology info
+        """
+        yield {
+            "id": data["id"],
+            "object_profile": data["object_profile"],
+            "bi_id": data["bi_id"],
+            "interfaces": [
+                {
+                    "name": iface["name"],
+                    "link": iface["link"],
+                }
+                for iface in data.get("interfaces", [])
+                if iface.get("link")
+            ],
+        }
+
+    @classmethod
+    def iter_formats(cls):
+        yield "topology", cls.iter_topology
+        yield from super().iter_formats()
+
     @classmethod
     def get_meta(cls, data):
         return {
