@@ -2,7 +2,7 @@
 # Vendor: TPLink
 # OS:     T2600G
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2016 The NOC Project
+# Copyright (C) 2007-2023 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -32,7 +32,7 @@ class Profile(BaseProfile):
     command_exit = "exit"
     command_save_config = "copy running-config startup-config\n"
     requires_netmask_conversion = True
-    rx_ifname = re.compile(r"^((Gi|.*)\d\/\d\/)*(?P<number>\d+).*$")
+    rx_ifname = re.compile(r"^((?P<type>Gi|Te|.*)\d\/\d\/)*(?P<number>\d+).*$")
     matchers = {"is_platform_T2600G": {"platform": {"$regex": r"T2600G.*"}}}
 
     def convert_interface_name(self, s):
@@ -41,9 +41,13 @@ class Profile(BaseProfile):
         'Gi1/0/24'
         >>> Profile().convert_interface_name("24")
         'Gi1/0/24'
+        >>> Profile().convert_interface_name("ten-gigabitEthernet 1/0/25")
+        'Te1/0/25
         """
         match = self.rx_ifname.match(s)
         if match:
+            if "Te" in match.group("type") or "ten" in match.group("type"):
+                return "Te1/0/%s" % int(match.group("number"))
             return "Gi1/0/%d" % int(match.group("number"))
         else:
             return s
