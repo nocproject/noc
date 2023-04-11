@@ -57,7 +57,9 @@ Ext.define("NOC.core.ModelStore", {
             },
             listeners: {
                 exception: function(self, request) {
-                    NOC.error(request.status + " : " + request.statusText);
+                    if(request.status >= 400) {
+                        NOC.error(request.status + " : " + request.statusText);
+                    }
                 }
             }
         }),
