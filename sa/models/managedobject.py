@@ -318,7 +318,12 @@ class ManagedObject(NOCModel):
     first_discovered = DateTimeField("First Discovered", null=True, blank=True)
     # Optional pool to route FM events
     fm_pool = DocumentReferenceField(Pool, null=True, blank=True)
-    profile: "Profile" = DocumentReferenceField(Profile, null=False, blank=False)
+    profile: "Profile" = DocumentReferenceField(
+        Profile,
+        null=False,
+        blank=False,
+        default=Profile.get_default_profile,
+    )
     vendor: "Vendor" = DocumentReferenceField(Vendor, null=True, blank=True)
     platform: "Platform" = DocumentReferenceField(Platform, null=True, blank=True)
     version: "Firmware" = DocumentReferenceField(Firmware, null=True, blank=True)
