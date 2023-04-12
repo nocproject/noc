@@ -142,6 +142,14 @@ class AddressCheck(DiscoveryCheck):
         Get addresses from interface discovery artifact
         :return:
         """
+
+        def get_vpn_id(vpn_id):
+            if vpn_id:
+                return vpn_id
+            if self.object.vrf:
+                return self.object.vrf.vpn_id
+            return GLOBAL_VRF
+
         self.logger.debug("Getting interface addresses")
         if not self.object.object_profile.address_profile_interface:
             self.logger.info(
@@ -154,7 +162,7 @@ class AddressCheck(DiscoveryCheck):
             return []
         return [
             DiscoveredAddress(
-                vpn_id=a.get("vpn_id", GLOBAL_VRF) or GLOBAL_VRF,
+                vpn_id=get_vpn_id(a.get("vpn_id")),
                 address=a["address"].rsplit("/", 1)[0],
                 profile=self.object.object_profile.address_profile_interface,
                 source=SRC_INTERFACE,
