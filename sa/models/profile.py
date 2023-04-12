@@ -7,6 +7,7 @@
 
 # Python modules
 import os
+import uuid
 import threading
 import operator
 
@@ -56,6 +57,7 @@ class Profile(Document):
     _id_cache = cachetools.TTLCache(1000, ttl=60)
     _bi_id_cache = cachetools.TTLCache(1000, ttl=60)
     _name_cache = cachetools.TTLCache(1000, ttl=60)
+    _default_cache = cachetools.TTLCache(maxsize=100, ttl=60)
 
     def __str__(self):
         return self.name
@@ -109,3 +111,15 @@ class Profile(Document):
     @classmethod
     def iter_lazy_labels(cls, profile: "Profile"):
         yield f"noc::profile::{profile.name}::="
+
+    @classmethod
+    @cachetools.cachedmethod(operator.attrgetter("_default_cache"), lock=lambda _: id_lock)
+    def get_default_profile(cls) -> str:
+        sap = Profile.objects.filter(name=GENERIC_PROFILE).first()
+        if not sap:
+            sap = Profile(
+                name=GENERIC_PROFILE,
+                uuid=uuid.UUID("50f75316-8a79-41f5-85ed-da313b9ca83b"),
+            )
+            sap.save()
+        return str(sap.id)
