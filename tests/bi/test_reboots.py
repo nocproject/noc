@@ -17,6 +17,7 @@ MODEL = Reboots
 FIELDS = [
     ("date", "Date"),
     ("ts", "DateTime"),
+    ("last", "DateTime"),
     ("managed_object", "UInt64"),
     ("pool", "UInt64"),
     ("ip", "UInt32"),
@@ -35,6 +36,7 @@ FIELDS = [
 SQL = """CREATE TABLE IF NOT EXISTS raw_reboots (
 date Date,
 ts DateTime,
+last DateTime,
 managed_object UInt64,
 pool UInt64,
 ip UInt32,
