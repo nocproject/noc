@@ -256,6 +256,13 @@ class AddressCheck(DiscoveryCheck):
         Return addresses from ARP/IPv6 ND
         :return:
         """
+        def get_vpn_id(vpn_id):
+            if vpn_id:
+                return vpn_id
+            if self.object.vrf:
+                return self.object.vrf.vpn_id
+            return GLOBAL_VRF
+
         if not self.object.object_profile.address_profile_neighbor:
             self.logger.info(
                 "Default neighbor address profile is not set. Skipping neighbor address discovery"
@@ -271,7 +278,7 @@ class AddressCheck(DiscoveryCheck):
             for a in vpn["addresses"]:
                 r += [
                     DiscoveredAddress(
-                        vpn_id=vpn.get("vpn_id", GLOBAL_VRF) or GLOBAL_VRF,
+                        vpn_id=get_vpn_id(vpn.get("vpn_id")),
                         address=a["ip"],
                         profile=self.object.object_profile.address_profile_neighbor,
                         source=SRC_NEIGHBOR,
