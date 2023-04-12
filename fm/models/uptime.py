@@ -1,7 +1,7 @@
 # ---------------------------------------------------------------------
 # Uptime report
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2020 The NOC Project
+# Copyright (C) 2007-2023 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -16,6 +16,7 @@ from mongoengine.fields import IntField, DateTimeField, FloatField
 
 # NOC modules
 from noc.sa.models.managedobject import ManagedObject
+from noc.core.service.loader import get_service
 from .reboot import Reboot
 
 logger = logging.getLogger(__name__)
@@ -93,6 +94,7 @@ class Uptime(Document):
                 )
                 #
                 Reboot.register(managed_object, ts, d["last"])
+                cls.send_reboot(managed_object, ts, d["last"])
             else:
                 logger.debug(
                     "[%s] Refreshing existing uptime (%s - %s)",
@@ -114,3 +116,31 @@ class Uptime(Document):
                 }
             )
         return ts
+
+    @staticmethod
+    def send_reboot(mo, ts: datetime.datetime, last: datetime.datetime):
+        svc = get_service()
+        # Send reboot
+        svc.register_metrics(
+            "reboots",
+            [
+                {
+                    "ts": ts.replace(microsecond=0).isoformat(),
+                    "last": last.replace(microsecond=0).isoformat() if last else None,
+                    "managed_object": mo.bi_id,
+                    "pool": mo.pool.bi_id,
+                    "ip": mo.address,
+                    "profile": mo.profile.bi_id,
+                    "object_profile": mo.object_profile.bi_id,
+                    "vendor": mo.vendor.bi_id if mo.vendor else None,
+                    "platform": mo.platform.bi_id if mo.platform else None,
+                    "version": mo.version.bi_id if mo.version else None,
+                    "administrative_domain": mo.administrative_domain.bi_id,
+                    "segment": mo.segment.bi_id,
+                    "container": mo.container.bi_id if mo.container else None,
+                    "x": mo.x,
+                    "y": mo.y,
+                }
+            ],
+            key=mo.bi_id,
+        )

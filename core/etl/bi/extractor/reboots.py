@@ -65,3 +65,7 @@ class RebootsExtractor(BaseExtractor):
         if not d:
             return None
         return d.get("ts")
+
+    @classmethod
+    def is_enabled(cls):
+        return False

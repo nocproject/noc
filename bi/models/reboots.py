@@ -37,6 +37,7 @@ class Reboots(Model):
 
     date = DateField(description=_("Date"))
     ts = DateTimeField(description=_("Created"))
+    last = DateTimeField(description=_("Last register"))
     managed_object = ReferenceField(ManagedObject, description=_("Object Name"))
     pool = ReferenceField(Pool, description=_("Pool Name"))
     ip = IPv4Field(description=_("IP Address"))
