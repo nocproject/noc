@@ -256,6 +256,7 @@ class AddressCheck(DiscoveryCheck):
         Return addresses from ARP/IPv6 ND
         :return:
         """
+
         def get_vpn_id(vpn_id):
             if vpn_id:
                 return vpn_id
