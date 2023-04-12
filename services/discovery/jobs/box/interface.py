@@ -117,7 +117,7 @@ class InterfaceCheck(PolicyDiscoveryCheck):
                     agg = icache.get(i["aggregated_interface"])
                     if not agg:
                         self.logger.error(
-                            "Cannot find aggregated interface '%s'. " "Skipping %s",
+                            "Cannot find aggregated interface '%s'. Skipping %s",
                             i["aggregated_interface"],
                             i["name"],
                         )
@@ -461,39 +461,70 @@ class InterfaceCheck(PolicyDiscoveryCheck):
                 dsi.delete()
 
     def interface_classification_bulk(self, ifaces: Dict[str, Interface]):
-        """ """
+        """
+        Assign Interface Profile by Effective Label
+        For Aggregate members profile inheritance from aggregate interface, if not has profile Member label
+        """
 
+        members: Dict[Interface, str] = {}
+        aggregated: Dict[Interface, InterfaceProfile] = {}
         for i_id, i_name, p_id in Label.iter_document_profile(
             "inv.Interface",
             "inv.InterfaceProfile",
-            query_filter=[("managed_object", self.object.id), ("type", "physical")],
+            query_filter=[("managed_object", self.object.id), ("type", ["physical", "aggregated"])],
         ):
             iface = ifaces.get(i_name)
             if not iface:
-                self.logger.warning("Unknown interface: %s", i_name)
-                continue
-            elif not p_id or p_id == iface.profile.id:
+                self.logger.warning("[%s] Unknown interface", i_name)
                 continue
             elif iface.profile_locked:
                 self.logger.info(
-                    "Interface %s profile set by User. That block for classification", iface.name
+                    "[%s] Interface %s profile set by User. That block for classification",
+                    iface.name,
+                    iface.profile.name,
                 )
+                continue
+            elif iface.aggregated_interface:
+                # Classification later
+                members[iface] = p_id
+                continue
+            if not p_id:
+                self.logger.debug("[%s] Nothing profile for match", iface.name)
                 continue
             # Change profile
             profile = InterfaceProfile.get_by_id(p_id)
             if not profile:
                 self.logger.error(
-                    "Invalid interface profile '%s' for interface '%s'. " "Skipping",
-                    p_id,
+                    "[%s] Invalid interface profile '%s'. Skipping",
                     iface.name,
+                    p_id,
                 )
-                return
+                continue
             elif profile != iface.profile:
                 self.logger.info(
-                    "Interface %s has been classified as '%s'", iface.name, profile.name
+                    "[%s] Interface has been classified as '%s'", iface.name, profile.name
                 )
                 iface.profile = profile
                 iface.save()
+            if iface.type == "aggregated":
+                aggregated[iface] = iface.profile
+        self.logger.debug("Classified members interfaces: %s", members)
+        # Processed members
+        for iface, p_id in members.items():
+            if (
+                iface.aggregated_interface in aggregated
+                and iface.profile != aggregated[iface.aggregated_interface]
+            ):
+                self.logger.info(
+                    "[%s] Interface has been classified from members '%s'",
+                    iface.name,
+                    aggregated[iface.aggregated_interface].name,
+                )
+                iface.profile = aggregated[iface.aggregated_interface]
+            elif iface.aggregated_interface not in aggregated and p_id:
+                if iface.profile.id != p_id:
+                    iface.profile = InterfaceProfile.get_by_id(p_id)
+                    iface.save()
 
     def interface_classification(self, iface: "Interface"):
         """

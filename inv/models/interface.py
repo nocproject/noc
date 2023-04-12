@@ -531,7 +531,7 @@ class Interface(Document):
             Interface._get_collection()
             .with_options(read_preference=ReadPreference.SECONDARY_PREFERRED)
             .find(
-                {"managed_object": mo.id, "type": "physical"},
+                {"managed_object": mo.id, "type": {"$in": ["physical", "aggregated"]}},
                 {
                     "_id": 1,
                     "name": 1,
