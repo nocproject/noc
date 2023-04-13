@@ -1,7 +1,7 @@
 # ---------------------------------------------------------------------
 # Eltex.MES5448.get_inventory
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2022 The NOC Project
+# Copyright (C) 2007-2023 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -32,7 +32,7 @@ class Script(BaseScript):
             res[-1]["revision"] = revision
         try:
             v = self.cli("show fiber-ports optical-transceiver-info all")
-            for i in parse_table(v):
+            for i in parse_table(v, line_wrapper=None):
                 r = {
                     "type": "XCVR",
                     "number": i[0].split("/")[-1],
@@ -43,8 +43,16 @@ class Script(BaseScript):
                 if i[2] == "OEM":
                     if i[9] in ["1000LX", "1GBase-LX"]:
                         r["part_no"] = "NoName | Transceiver | 1G | SFP LX"
+                    elif i[9] in ["1GBase-BX10"]:  # Only BX10U and BX10D exist
+                        r["part_no"] = "NoName | Transceiver | 1G | SFP"
+                    elif i[9] in ["1GBase-T"]:
+                        r["part_no"] = "NoName | Transceiver | 1G | SFP T"
+                    elif i[9] == "10GBase-SR":
+                        r["part_no"] = "NoName | Transceiver | 10G | SFP+ SR"
                     elif i[9] == "10GBase-LR":
                         r["part_no"] = "NoName | Transceiver | 10G | SFP+ LR"
+                    elif i[9] == "10GBase-ER":
+                        r["part_no"] = "NoName | Transceiver | 10G | SFP+ ER"
                     else:
                         raise self.NotSupportedError()
                 if i[8]:
