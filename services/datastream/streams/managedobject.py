@@ -471,7 +471,11 @@ class ManagedObjectDataStream(DataStream):
         """
         yield {
             "id": data["id"],
-            "object_profile": data["object_profile"],
+            "object_profile": {
+                "id": data["object_profile"]["id"],
+                "name": data["object_profile"]["name"],
+                "level": data["object_profile"]["level"],
+            },
             "bi_id": data["bi_id"],
             "interfaces": [
                 {
