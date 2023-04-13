@@ -33,7 +33,7 @@ class Migration(BaseMigration):
             SET profile = %s
             WHERE profile_name = %s
             """,
-                [pmap[p], p],
+                [pmap.get(p, pmap["Generic.Host"]), p],
             )
         # Set profile as not null
         self.db.execute("ALTER TABLE peer_peeringpoint ALTER profile SET NOT NULL")
