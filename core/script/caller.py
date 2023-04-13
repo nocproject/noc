@@ -38,7 +38,7 @@ class ScriptCaller(object):
                 return session(self.name, kwargs, streaming=streaming)
         # Direct call
         return open_sync_rpc("sae", calling_service=config.script.calling_service).script(
-            self.object_id, self.name, kwargs, None, streaming  # params  # timeout
+            self.object_id, self.name, kwargs, None, streaming, False  # params  # timeout
         )
 
 
@@ -62,7 +62,7 @@ class Session(object):
         except ResolutionError:
             raise RPCNoService("activator-%s" % self._pool)
 
-    def __call__(self, name, args, timeout=None, streaming=None):
+    def __call__(self, name, args, timeout=None, streaming=None, return_metrics=False):
         # Call SAE for credentials
         data = open_sync_rpc("sae", calling_service=CALLING_SERVICE).get_credentials(
             self._object_id
@@ -83,6 +83,7 @@ class Session(object):
             self._id,
             self._idle_timeout,
             streaming,
+            return_metrics,
         )
 
     def close(self):

@@ -63,6 +63,7 @@ class ActivatorAPI(JSONRPCAPI):
         session: Optional[str] = None,
         session_idle_timeout: Optional[int] = None,
         streaming: Optional[StreamingConfig] = None,
+        return_metrics: bool = False,
     ):
         """
         Execute SA script
@@ -86,6 +87,7 @@ class ActivatorAPI(JSONRPCAPI):
         :param session_idle_timeout: Hold CLI stream up to
             session_idle_timeout seconds after script completion
         :param streaming: Send result to stream for processed on service
+        :param return_metrics: Return execution metrics
         """
         script_class = loader.get_script(name)
         if not script_class:
@@ -111,6 +113,8 @@ class ActivatorAPI(JSONRPCAPI):
             metrics["error", ("type", "script_error")] += 1
             raise APIError("Script error: %s" % e.__doc__)
         if not streaming or not result:
+            if return_metrics:
+                return {"metrics": script.apply_metrics({}), "result": result}
             return result
         # Split large result
         for d in iter_chunks(result, max_size=config.msgstream.max_message_size):
@@ -120,7 +124,7 @@ class ActivatorAPI(JSONRPCAPI):
                 partition=streaming.partition,
                 headers={},
             )
-        return []
+        return {"metrics": script.apply_metrics({}), "result": []}
 
     @staticmethod
     def script_get_label(name: str, credentials, *args, **kwargs):

@@ -38,7 +38,7 @@ from noc.core.perf import metrics as noc_metrics
 from noc.core.mib import mib
 
 NS = 1000_000_000.0
-SNMP_OVERLOAD_VALUE = 18446744073709551615  # '0xffffffffffffffff' for 64-bit counter
+SNMP_OVERLOAD_VALUE = 0xFFFFFFFFFFFFFFFF  # 18446744073709551615 for 64-bit counter
 PROFILES_PATH = os.path.join("sa", "profiles")
 
 
@@ -478,6 +478,7 @@ class Script(BaseScript, metaclass=MetricScriptBase):
         s_data = self.streaming.get_data()
         self.streaming.data = None
         managed_object = s_data["managed_object"]
+        self.script_metrics["n_metrics"] = 0
         for rr in self.metrics:
             data_mt = rr["metric"].replace(" ", "_")
             if data_mt not in s_data:
@@ -506,6 +507,7 @@ class Script(BaseScript, metaclass=MetricScriptBase):
                     data[mm]["managed_object"] = rr["cpe"]
                 if "time_delta" in s_data[data_mt]:
                     data[mm]["time_delta"] = s_data[data_mt]["time_delta"]
+                self.script_metrics["n_metrics"] += 1
             data[mm][field_name] = rr["value"]
             data[mm]["_units"][field_name] = rr["units"]
         return list(data.values())
@@ -732,6 +734,7 @@ class Script(BaseScript, metaclass=MetricScriptBase):
             id = mc.id
             if not multi and id in self.seen_ids:
                 return  # Already seen
+        self.script_metrics["n_measurements"] += 1
         self.metrics += [
             {
                 "id": id,
@@ -741,7 +744,7 @@ class Script(BaseScript, metaclass=MetricScriptBase):
                 "value": value,
                 "type": type,
                 "units": units,
-                "scale": scale,
+                # "scale": scale,
                 "sensor": sensor,
                 "sla_probe": sla_probe,
                 "cpe": cpe,
@@ -751,6 +754,7 @@ class Script(BaseScript, metaclass=MetricScriptBase):
         self.seen_ids.add(id)
 
     def get_metrics(self):
+        self.script_metrics["n_metrics"] = len(self.metrics)
         return self.metrics
 
     @classmethod
