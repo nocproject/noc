@@ -27,7 +27,7 @@ class Script(BaseScript):
         version = self.snmp.get("1.3.6.1.4.1.11863.6.1.1.6.0")
         serial = self.snmp.get("1.3.6.1.4.1.11863.6.1.1.8.0")
         r = {
-            "vendor": "TP-Link",
+            "vendor": "TPLink",
             "platform": platform,
             "version": version,
             "attributes": {"Serial Number": serial},
@@ -41,6 +41,6 @@ class Script(BaseScript):
         match = rx_version.search(ver)
         version = match.group("version")
 
-        r = {"vendor": "TP-Link", "platform": platform, "version": version}
+        r = {"vendor": "TPLink", "platform": platform, "version": version}
 
         return r
