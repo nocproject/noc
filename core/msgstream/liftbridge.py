@@ -62,6 +62,8 @@ class LiftBridgeClient(GugoLiftbridgeClient):
         :param replication_factor:
         :return:
         """
+        if name.startswith("__"):
+            return {}
         s = get_stream(name)
         r = {}
         minisr = 0

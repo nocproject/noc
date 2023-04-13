@@ -269,6 +269,8 @@ class MessageStreamClient(object):
                 )
                 or 0
             )
+            # For -1 as nothing messages
+            current_offset = max(0, current_offset)
             if current_offset > newest_offset:
                 # Fix if cursor not set properly
                 current_offset = newest_offset
