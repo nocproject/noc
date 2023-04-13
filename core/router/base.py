@@ -253,8 +253,11 @@ class Router(object):
                 partitions = self.stream_partitions.get(stream)
                 if partitions is None:
                     # Request amount of partitions
-                    sc = get_stream(stream)
-                    partitions = sc.get_partitions()
+                    try:
+                        sc = get_stream(stream)
+                        partitions = sc.get_partitions()
+                    except ValueError:
+                        partitions = 1
                     self.stream_partitions[stream] = partitions
                 if not partitions:
                     logger.info("[%s] No partition for stream: %s. Skipping...", msg, stream)
