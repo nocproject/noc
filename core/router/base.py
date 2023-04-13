@@ -248,10 +248,13 @@ class Router(object):
                 # Determine sharding channel
                 sharding_key = int(headers.get(MX_SHARDING_KEY, b"0"))
                 partitions = self.stream_partitions.get(stream)
-                if not partitions:
+                if not partitions and stream in STREAM_CONFIG:
                     # Request amount of partitions
                     sc = STREAM_CONFIG[stream]
                     partitions = sc.get_partitions()
+                    self.stream_partitions[stream] = partitions
+                elif not partitions:
+                    partitions = 1
                     self.stream_partitions[stream] = partitions
                 partition = sharding_key % partitions
                 # Single message may be transmuted in zero or more messages
