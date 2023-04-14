@@ -23,7 +23,7 @@ from typing import Optional, Dict, Any, List, Union, Iterable, Tuple, Callable
 # NOC modules
 from noc.core.perf import metrics
 from noc.core.mongo.connection import get_db
-from noc.core.comp import smart_text, smart_bytes
+from noc.core.comp import smart_text, DEFAULT_ENCODING
 from noc.models import get_model
 from noc.core.hash import hash_int
 from noc.core.mx import send_message, MX_CHANGE_ID
@@ -181,8 +181,10 @@ class DataStream(object):
             fmt_bulk = {}
             # Apply default format
             for obj_id in chunk:
-                data, meta = cls._get_current_data(obj_id)
-                cls._update_object(data=data, meta=meta, state=current_state, bulk=bulk)
+                data, meta, meta_h = cls._get_current_data(obj_id)
+                cls._update_object(
+                    data=data, meta=meta, meta_headers=meta_h, state=current_state, bulk=bulk
+                )
                 # Process formats
                 for fmt in fmt_handler:
                     fmt_data[fmt] += list(fmt_handler[fmt](data))
@@ -248,18 +250,26 @@ class DataStream(object):
         meta=None,
         fmt: Optional[str] = None,
         state=None,
+        meta_headers=None,
         bulk: Optional[List[Any]] = None,
     ) -> bool:
+        """
+        Check calculate data changed and save it to collection
+        :param data: Object Data
+        :param meta: Filter metadata
+        :param fmt: Format
+        :param state: Current saved data state
+        :param meta_headers: Headers for changed message
+        :param bulk: Bulk accumulator
+        :return:
+        """
+
         def is_changed(d, h):
             return not d or d.get(cls.F_HASH) != h
 
         obj_id = cls.clean_id(data["id"])
         if meta is None and "$meta" in data:
             meta = data.pop("$meta")
-        message_headers = None
-        if cls.enable_message:
-            message_headers = cls.get_msg_headers(data)
-        cls.clean_meta_fields(data)
         m_name = f"{cls.name}_{fmt}" if fmt else cls.name
         l_name = f"{cls.name}|{obj_id}|{fmt}" if fmt else f"{cls.name}|{obj_id}"
         metrics[f"ds_{m_name}_updated"] += 1
@@ -287,7 +297,7 @@ class DataStream(object):
             "$set": {
                 cls.F_CHANGEID: change_id,
                 cls.F_HASH: hash,
-                cls.F_DATA: smart_text(orjson.dumps(data)),
+                cls.F_DATA: orjson.dumps(data).decode(DEFAULT_ENCODING),
             }
         }
         if meta:
@@ -304,25 +314,29 @@ class DataStream(object):
         if cls.enable_message:
             # Build MX message
             logger.info("[%s] Sending message", l_name)
-            cls.send_message(data, change_id, message_headers)
+            cls.send_message(
+                data, change_id, mtype=fmt or cls.name, additional_headers=meta_headers
+            )
         return True
 
     @classmethod
     def _get_current_data(
         cls, obj_id, delete=False
-    ) -> Tuple[Dict[str, Any], Optional[Dict[str, Any]]]:
+    ) -> Tuple[Dict[str, Any], Optional[Dict[str, Any]], Optional[Dict[str, Any]]]:
         if delete:
-            return cls.get_deleted_object(obj_id), None
+            return cls.get_deleted_object(obj_id), None, None
         try:
             data = cls.get_object(obj_id)
             meta = cls.get_meta(data)
+            meta_headers = cls.get_meta_headers(data)
+            data = cls.clean_meta_fields(data)
             if cls.DIAGNOSTIC:
                 cls.update_diagnostic_state(obj_id, state=DiagnosticState.unknown)
-            return data, meta
+            return data, meta, meta_headers
         except KeyError as e:
             if cls.DIAGNOSTIC:
                 cls.update_diagnostic_state(obj_id, state=DiagnosticState.blocked, reason=str(e))
-            return cls.get_deleted_object(obj_id), None
+            return cls.get_deleted_object(obj_id), None, None
 
     @classmethod
     def update_object(cls, id, delete=False) -> bool:
@@ -332,11 +346,11 @@ class DataStream(object):
         :param delete: Object must be marked as deleted
         :return: True if object has been updated
         """
-        data, meta = cls._get_current_data(id, delete=delete)
-        r = cls._update_object(data=data, meta=meta)
+        data, meta, meta_h = cls._get_current_data(id, delete=delete)
+        r = cls._update_object(data=data, meta=meta, meta_headers=meta_h)
         for fmt, handler in cls.iter_formats():
             for f_data in handler(data):
-                r |= cls._update_object(data=f_data, fmt=fmt)
+                r |= cls._update_object(data=f_data, fmt=fmt, meta=meta, meta_headers=meta_h)
         return r
 
     @classmethod
@@ -679,7 +693,12 @@ class DataStream(object):
         return None
 
     @classmethod
-    def get_msg_headers(cls, data: Dict[str, Any]) -> Optional[Dict[str, bytes]]:
+    def get_meta_headers(cls, data: Dict[str, Any]) -> Optional[Dict[str, bytes]]:
+        """
+        Return MetaData for message headers
+        :param data:
+        :return:
+        """
         return None
 
     @classmethod
@@ -687,6 +706,7 @@ class DataStream(object):
         cls,
         data: Dict[str, Any],
         change_id: bson.ObjectId,
+        mtype: Optional[str] = None,
         additional_headers: Optional[Dict[str, bytes]] = None,
     ) -> None:
         """
@@ -694,20 +714,21 @@ class DataStream(object):
 
         :param data:
         :param change_id:
+        :param mtype: Message Type
         :param additional_headers:
         :return:
         """
         data["$changeid"] = str(change_id)
         # Build headers
         headers = {
-            MX_CHANGE_ID: smart_bytes(change_id),
+            MX_CHANGE_ID: str(change_id).encode(DEFAULT_ENCODING),
         }
         if additional_headers:
             headers.update(additional_headers)
         # Schedule to send
         send_message(
             data,
-            message_type=cls.name,
+            message_type=mtype or cls.name,
             headers=headers,
             sharding_key=hash_int(data["id"]) & 0xFFFFFFFF,
         )
