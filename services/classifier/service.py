@@ -793,9 +793,9 @@ class ClassifierService(FastAPIService):
             SYSLOG_DIAG not in mo.diagnostics
             or mo.diagnostics[SYSLOG_DIAG]["state"] == DiagnosticState.unknown
         ):
-            mo.set_diagnostic_state(
+            mo.diagnostic.set_state(
                 diagnostic=SYSLOG_DIAG,
-                state=True,
+                state=DiagnosticState.enabled,
                 reason=f"Receive Syslog from address: {data.get('source_address')}",
                 changed_ts=event_ts,
             )
@@ -803,9 +803,9 @@ class ClassifierService(FastAPIService):
             SNMPTRAP_DIAG not in mo.diagnostics
             or mo.diagnostics[SNMPTRAP_DIAG]["state"] == DiagnosticState.unknown
         ):
-            mo.set_diagnostic_state(
+            mo.diagnostic.set_state(
                 diagnostic=SNMPTRAP_DIAG,
-                state=True,
+                state=DiagnosticState.enabled,
                 reason=f"Receive Syslog from address: {data.get('source_address')}",
                 changed_ts=event_ts,
             )

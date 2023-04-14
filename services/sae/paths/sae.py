@@ -91,14 +91,17 @@ class SAEAPI(JSONRPCAPI):
             return None
 
     @api
-    async def script(self, object_id, script, args=None, timeout=None, streaming=None):
+    async def script(
+        self, object_id, script, args=None, timeout=None, streaming=None, return_metrics=False
+    ):
         """
         Execute SA script against ManagedObject
         :param object_id: Managed Object id
         :param script: Script name (Either with or without profile)
         :param args: Dict with input arguments
         :param timeout: Script timeout in seconds
-        :param streaming:
+        :param streaming: Send script result to stream
+        :param return_metrics: Return execution metrics with result
         """
         # Resolve object data
         data = self.get_object_data(object_id)
@@ -129,6 +132,7 @@ class SAEAPI(JSONRPCAPI):
                 None,  # session
                 None,  # session_timeout
                 streaming,
+                return_metrics,
             ],
         )
 

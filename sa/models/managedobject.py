@@ -48,8 +48,8 @@ from noc.config import config
 from noc.core.wf.diagnostic import (
     DiagnosticState,
     DiagnosticConfig,
+    diagnostic,
     DIAGNOCSTIC_LABEL_SCOPE,
-    DIAGNOSTIC_CHECK_STATE,
     PROFILE_DIAG,
     SNMP_DIAG,
     CLI_DIAG,
@@ -60,7 +60,7 @@ from noc.core.wf.diagnostic import (
     ALARM_DIAG,
 )
 from noc.core.wf.interaction import Interaction
-from noc.core.checkers.base import CheckData, Check
+from noc.core.checkers.base import Check
 from noc.core.mx import send_message, MX_LABELS, MX_H_VALUE_SPLITTER, MX_ADMINISTRATIVE_DOMAIN_ID
 from noc.core.deprecations import RemovedInNOC2301Warning
 from noc.aaa.models.user import User
@@ -224,7 +224,11 @@ class ManagedObjectManager(Manager):
             .get_queryset()
             .annotate(
                 is_managed=Case(
-                    When(Q(effective_labels__contains=["noc::is_managed::="]), then=Value(True)),
+                    When(
+                        Q(effective_labels__contains=["noc::is_managed::="])
+                        | Q(diagnostics__SA__state="enabled"),
+                        then=Value(True),
+                    ),
                     default=Value(False),
                     output_field=BooleanField(),
                 ),
@@ -252,6 +256,7 @@ class ManagedObjectManager(Manager):
 @on_save
 @on_delete
 @workflow
+@diagnostic
 @change
 @resourcegroup
 @Label.model
@@ -762,8 +767,6 @@ class ManagedObject(NOCModel):
         "user",
         "password",
         "super_password",
-        "snmp_ro",
-        "snmp_rw",
         "access_preference",
         "cli_privilege_policy",
     }
@@ -982,6 +985,8 @@ class ManagedObject(NOCModel):
         if (
             self.initial_data["id"] is None
             or self._access_fields.intersection(set(self.changed_fields))
+            or "snmp_ro" in self.changed_fields
+            or "snmp_rw" in self.changed_fields
             or "profile" in self.changed_fields
             or "vendor" in self.changed_fields
             or "platform" in self.changed_fields
@@ -1001,7 +1006,7 @@ class ManagedObject(NOCModel):
             or "snmp_rw" in self.changed_fields
             or "address" in self.changed_fields
         ):
-            diagnostics += ["SNMP"]
+            diagnostics += ["SNMP", "Access"]
         # Rebuild paths
         if (
             self.initial_data["id"] is None
@@ -1054,7 +1059,7 @@ class ManagedObject(NOCModel):
             for ll in Link.object_links(self):
                 ll.save()
         # Handle became unmanaged
-        if "ALARM" not in self.interactions:
+        if Interaction.Alarm not in self.interactions:
             # Clear alarms
             from noc.fm.models.activealarm import ActiveAlarm
 
@@ -1066,13 +1071,11 @@ class ManagedObject(NOCModel):
             DiscoveryID.clean_for_object(self)
         if "effective_labels" in self.changed_fields:
             # Update configured diagnostic
-            self.update_diagnostics()
+            self.diagnostic.refresh_diagnostics()
         # Update configured state on diagnostics
         if diagnostics:
             # Reset changed diagnostic
-            self.reset_diagnostic(diagnostics)
-            # Update complex diagnostics
-            self.update_diagnostics()
+            self.diagnostic.reset_diagnostics(diagnostics)
 
     def on_delete(self):
         self._reset_caches(self.id, credential=True)
@@ -1711,7 +1714,7 @@ class ManagedObject(NOCModel):
             )
         else:
             Job.remove("discovery", self.BOX_DISCOVERY_JOB, key=self.id, pool=self.pool.name)
-            self.reset_diagnostic([PROFILE_DIAG, SNMP_DIAG, CLI_DIAG])
+            self.diagnostic.reset_diagnostics([PROFILE_DIAG, SNMP_DIAG, CLI_DIAG])
         if (
             Interaction.PeriodicDiscovery in self.interactions
             and self.object_profile.enable_periodic_discovery
@@ -2235,8 +2238,7 @@ class ManagedObject(NOCModel):
             # Interface = 39.4 µs
             yield ["noc::is_linked::="]
         if instance.diagnostics:
-            for d in instance.diagnostics:
-                d = instance.get_diagnostic(d)
+            for d in instance.diagnostic:
                 yield Label.ensure_labels(
                     [f"{DIAGNOCSTIC_LABEL_SCOPE}::{d.diagnostic}::{d.state}"],
                     enable_managedobject=True,
@@ -2391,49 +2393,6 @@ class ManagedObject(NOCModel):
             "object_profile": {"id": str(self.object_profile.id), "name": self.object_profile.name},
         }
 
-    def set_diagnostic_state(
-        self,
-        diagnostic: str,
-        state: bool,
-        reason: Optional[str] = None,
-        changed_ts: Optional[datetime.datetime] = None,
-        data: Optional[Dict[str, Any]] = None,
-        bulk: Optional[List[DiagnosticItem]] = None,
-    ):
-        """
-        Set diagnostic ok/fail state
-        :param diagnostic: Diagnotic Name
-        :param state: True - Enabled; False - Failed
-        :param reason: Reason state changed
-        :param changed_ts: Timestamp changed
-        :param data: Collected checks data
-        :param bulk: Return changed diagnostic without saved
-        :return:
-        """
-        state = DIAGNOSTIC_CHECK_STATE[state]
-        if diagnostic not in self.diagnostics:
-            # logger.info("[%s] Adding diagnostic", dc.diagnostic)
-            d = DiagnosticItem(diagnostic=diagnostic)
-        else:
-            d = self.get_diagnostic(diagnostic)
-        if d.state.is_blocked or d.state == state:
-            return
-        logger.info("[%s] Change diagnostic state: %s -> %s", diagnostic, d.state, state)
-        last_state = d.state
-        changed = changed_ts or datetime.datetime.now()
-        d.state = state
-        d.reason = reason
-        d.changed = changed.isoformat(sep=" ")
-        self.diagnostics[diagnostic] = d.dict()
-        if bulk is not None:
-            bulk += [d]
-        else:
-            self.save_diagnostics(self.id, [d])
-            self.sync_diagnostic_alarm([d.diagnostic])
-            self.register_diagnostic_change(
-                d.diagnostic, d.state, from_state=last_state, data=data, reason=reason, ts=changed
-            )
-
     def iter_diagnostic_configs(self) -> Iterable[DiagnosticConfig]:
         """
         Iterate over object diagnostics
@@ -2443,6 +2402,7 @@ class ManagedObject(NOCModel):
             SA_DIAG,
             display_description="ServiceActivation. Allow active device interaction",
             blocked=Interaction.ServiceActivation not in self.interactions,
+            default_state=DiagnosticState.enabled,
             run_policy="D",
             reason="Deny by Allowed interaction by State"
             if Interaction.ServiceActivation not in self.interactions
@@ -2452,6 +2412,7 @@ class ManagedObject(NOCModel):
             ALARM_DIAG,
             display_description="FaultManagement. Allow Raise Alarm on device",
             blocked=Interaction.Alarm not in self.interactions,
+            default_state=DiagnosticState.enabled,
             run_policy="D",
             reason="Deny by Allowed interaction by State"
             if Interaction.Alarm not in self.interactions
@@ -2514,13 +2475,13 @@ class ManagedObject(NOCModel):
                 run_order="S",
                 reason=None,
             )
-            # Access Diagnostic (Blocked - block SNMP & CLI Check ?
-            yield DiagnosticConfig(
-                "Access",
-                dependent=["SNMP", "CLI", "HTTP"],
-                show_in_display=False,
-                alarm_class="NOC | Managed Object | Access Degraded",
-            )
+        # Access Diagnostic (Blocked - block SNMP & CLI Check ?
+        yield DiagnosticConfig(
+            "Access",
+            dependent=["SNMP", "CLI", "HTTP"],
+            show_in_display=False,
+            alarm_class="NOC | Managed Object | Access Degraded",
+        )
         if Interaction.Event in self.interactions:
             fm_policy = self.get_event_processing_policy()
             reason = ""
@@ -2553,133 +2514,6 @@ class ManagedObject(NOCModel):
         #
         for dc in ObjectDiagnosticConfig.iter_object_diagnostics(self):
             yield dc
-
-    def update_diagnostics(
-        self, checks: List[CheckData] = None, bulk: Optional[List[DiagnosticItem]] = None
-    ):
-        """
-        Update diagnostics by Checks Result ?Source - discovery/manual
-
-        If dependent and checks set -  checks dependent first
-        :param checks: List check status
-        :param bulk: Return changed diagnostic without saved
-        :return:
-        """
-        now = datetime.datetime.now()
-        checks = checks or []
-        diagnostics: Dict[str, DiagnosticItem] = {}
-        processed = set()
-        dependency: List[Tuple[DiagnosticConfig, DiagnosticItem]] = []
-        last_state = {}
-        # check_result = {c.name: c for c in checks}
-        for dc in self.iter_diagnostic_configs():
-            # Filter checks
-            # dc_checks = [cr for cr in checks if dc.checks and cr.name in dc.checks]
-            dc_checks = [
-                CheckStatus(
-                    name=cr.name, status=cr.status, skipped=cr.skipped, error=cr.error, arg0=cr.arg0
-                )
-                for cr in checks
-                if dc.checks and Check(name=cr.name, arg0=cr.arg0) in dc.checks
-            ]
-            # Get or Create DiagnosticItem
-            if dc.diagnostic not in self.diagnostics:
-                # logger.info("[%s] Adding diagnostic", dc.diagnostic)
-                d = DiagnosticItem(diagnostic=dc.diagnostic, checks=dc_checks)
-            else:
-                d = self.get_diagnostic(dc.diagnostic)
-            last_state[d.diagnostic] = d.state
-            processed.add(dc.diagnostic)
-            # Calculate state
-            state = None
-            if dc.blocked:
-                state = DiagnosticState.blocked
-            elif dc_checks or dc.dependent:
-                check_statuses = [c.status for c in dc_checks if not c.skipped]
-                # Check first
-                if check_statuses:
-                    # ANY or ALL policy apply
-                    c_state = (
-                        any(check_statuses) if dc.state_policy == "ANY" else all(check_statuses)
-                    )
-                    state = DIAGNOSTIC_CHECK_STATE[c_state]
-                # Defer Dependent
-                if dc.dependent:
-                    if state:
-                        d.state = state
-                    dependency.append((dc, d))
-                    continue
-            else:
-                logger.debug("[%s] Not calculate state. Skipping", dc.diagnostic)
-                continue
-            # Compare state and update
-            if not state or d.state == state:
-                logger.debug("[%s] State is same", dc.diagnostic)
-                continue
-            logger.info("[%s] Change diagnostic state: %s -> %s", dc.diagnostic, d.state, state)
-            d.state = state
-            d.changed = now.replace(microsecond=0).isoformat(sep=" ")
-            d.checks = dc_checks
-            diagnostics[dc.diagnostic] = d
-        # Remove
-        removed: List[str] = []
-        for d in set(self.diagnostics) - set(processed):
-            del self.diagnostics[d]
-            removed += [d]
-        # Calculate State for defer Dependent
-        for dc, d in dependency:
-            d_states = [d.state]
-            # Dependency states
-            for dd in dc.dependent:
-                if dd in diagnostics:
-                    dd = diagnostics[dd]
-                elif dd in self.diagnostics:
-                    dd = self.get_diagnostic(dd)
-                else:
-                    logger.warning("[%s] Unknown dependency: %s", dc.diagnostic, dd)
-                    continue
-                if dd.state.is_blocked:
-                    # Skipping ?
-                    continue
-                d_states.append(dd.state)
-            # Calculate State
-            state = DiagnosticState.enabled
-            if DiagnosticState.enabled not in d_states and DiagnosticState.failed not in d_states:
-                state = DiagnosticState.unknown
-            elif dc.state_policy == "ANY" and DiagnosticState.enabled not in d_states:
-                state = DiagnosticState.failed
-            elif dc.state_policy == "ALL" and DiagnosticState.failed in d_states:
-                state = DiagnosticState.failed
-            if state == DiagnosticState.unknown and dc.diagnostic in self.diagnostics:
-                # Unknown state, Remove
-                removed += [dc.diagnostic]
-                del self.diagnostics[dc.diagnostic]
-                continue
-            elif state != d.state:
-                logger.info(
-                    "[%s] Change complex diagnostic state: %s -> %s", dc.diagnostic, d.state, state
-                )
-                d.state = state
-                d.changed = now.replace(microsecond=0).isoformat(sep=" ")
-                diagnostics[dc.diagnostic] = d
-        # Update
-        if not diagnostics and not removed:
-            return
-        self.diagnostics.update({d: dd.dict() for d, dd in diagnostics.items()})
-        if bulk is not None:
-            bulk += list(diagnostics.values())
-        else:
-            self.save_diagnostics(self.id, list(diagnostics.values()), removed)
-            self.sync_diagnostic_alarm(list(diagnostics))
-            # Register changed message
-            for di in diagnostics.values():
-                self.register_diagnostic_change(
-                    di.diagnostic,
-                    state=di.state,
-                    from_state=last_state.get(di.diagnostic, DiagnosticState.unknown),
-                    reason=di.reason,
-                    ts=di.changed,
-                )
 
     @classmethod
     def save_diagnostics(
@@ -2743,214 +2577,6 @@ class ManagedObject(NOCModel):
                     instance_filters=[("id", mo_id)],
                 )
         cls._reset_caches(mo_id)
-
-    def get_diagnostic(self, diagnostic) -> Optional[DiagnosticItem]:
-        if diagnostic not in self.diagnostics:
-            return
-        if isinstance(self.diagnostics[diagnostic], DiagnosticItem):
-            return self.diagnostics[diagnostic]
-        return DiagnosticItem.parse_obj(self.diagnostics[diagnostic])
-
-    def reset_diagnostic(self, diagnostics: List[str]):
-        """
-
-        :param diagnostics:
-        :return:
-        """
-        from django.db import connection as pg_connection
-
-        removed, states = [], [s.value for s in DiagnosticState]
-        ts = datetime.datetime.now()
-        for d in diagnostics:
-            if d in self.diagnostics:
-                d = self.get_diagnostic(d)
-                self.register_diagnostic_change(
-                    d.diagnostic, state=DiagnosticState.unknown, from_state=d.state, ts=ts
-                )
-                removed.append(d.diagnostic)
-        # If Failed state - clear alarm
-        if not removed:
-            return
-        logger.debug("[%s] Removed diagnostics", ";".join(removed))
-        self.sync_diagnostic_alarm(removed)
-        params = []
-        for r in removed:
-            params.append("{%s}" % r)
-        params += [
-            [f"{DIAGNOCSTIC_LABEL_SCOPE}::{d}::{s}" for d, s in product(removed, states)],
-            self.id,
-        ]
-        with pg_connection.cursor() as cursor:
-            cursor.execute(
-                f"""
-                 UPDATE sa_managedobject
-                 SET diagnostics = diagnostics {" #- %s " * len(removed)},
-                 effective_labels = ARRAY (SELECT unnest(effective_labels) EXCEPT SELECT unnest(%s::varchar[]))
-                 WHERE id = %s""",
-                params,
-            )
-        for d in removed:
-            # Do after sync-alarm and register_changed
-            del self.diagnostics[d]
-        self._reset_caches(self.id)
-
-    def sync_diagnostic_alarm(self, diagnostics: Optional[List[str]] = None):
-        """
-        Raise & clear Alarm for diagnostic. Only diagnostics with alarm_class set will be synced.
-        If diagnostics param is set and alarm_class is not set - clear alarm
-         For dependent - Group alarm base on diagnostic with alarm for depended
-        :param diagnostics: If set - sync only params diagnostic and depends
-        :return:
-        """
-        from noc.core.service.loader import get_service
-
-        now = datetime.datetime.now()
-        # Group Alarms
-        groups = {}
-        #
-        alarms = {}
-        alarm_config: Dict[str, Dict[str, Any]] = {}  # diagnostic -> AlarmClass Map
-        messages: List[Dict[str, Any]] = []  # Messages for send dispose
-        processed = set()
-        diagnostics = set(diagnostics or [])
-        for dc in self.iter_diagnostic_configs():
-            if not dc.alarm_class:
-                continue
-            alarm_config[dc.diagnostic] = {
-                "alarm_class": dc.alarm_class,
-                "alarm_labels": dc.alarm_labels or [],
-            }
-            if dc.diagnostic in processed:
-                continue
-            if diagnostics and not dc.dependent and dc.diagnostic not in diagnostics:
-                # Skip non-changed diagnostics
-                continue
-            if diagnostics and dc.dependent and not diagnostics.intersection(set(dc.dependent)):
-                # Skip non-affected depended diagnostics
-                continue
-            d = self.get_diagnostic(dc.diagnostic)
-            if dc.dependent:
-                groups[dc.diagnostic] = []
-                for d_name in dc.dependent:
-                    dd = self.get_diagnostic(d_name)
-                    if dd and dd.state == DiagnosticState.failed:
-                        groups[dc.diagnostic] += [{"diagnostic": d_name, "reason": dd.reason or ""}]
-                    processed.add(d_name)
-            elif d and d.state == d.state.failed:
-                alarms[dc.diagnostic] = {
-                    "timestamp": now,
-                    "reference": f"dc:{self.id}:{d.diagnostic}",
-                    "managed_object": self.id,
-                    "$op": "raise",
-                    "alarm_class": dc.alarm_class,
-                    "labels": dc.alarm_labels or [],
-                    "vars": {"reason": d.reason or ""},
-                }
-            else:
-                alarms[dc.diagnostic] = {
-                    "timestamp": now,
-                    "reference": f"dc:{self.id}:{dc.diagnostic}",
-                    "$op": "clear",
-                }
-        # Group Alarm
-        for d in groups:
-            messages += [
-                {
-                    "$op": "ensure_group",
-                    "reference": f"dc:{d}:{self.id}",
-                    "alarm_class": alarm_config[d]["alarm_class"],
-                    "alarms": [
-                        {
-                            "reference": f'dc:{dd["diagnostic"]}:{self.id}',
-                            "alarm_class": alarm_config[dd["diagnostic"]]["alarm_class"],
-                            "managed_object": self.id,
-                            "timestamp": now,
-                            "labels": alarm_config[dd["diagnostic"]]["alarm_labels"],
-                            "vars": {"reason": dd["reason"] or ""},
-                        }
-                        for dd in groups[d]
-                    ],
-                }
-            ]
-        # Other
-        for d in alarms:
-            if d in processed:
-                continue
-            messages += [alarms[d]]
-        # Send Dispose
-        svc = get_service()
-        for msg in messages:
-            stream, partition = self.alarms_stream_and_partition
-            svc.publish(
-                orjson.dumps(msg),
-                stream=stream,
-                partition=partition,
-            )
-            logger.debug(
-                "Dispose: %s", orjson.dumps(msg, option=orjson.OPT_INDENT_2).decode("utf-8")
-            )
-
-    def register_diagnostic_change(
-        self,
-        diagnostic: str,
-        state: str,
-        from_state: str = DiagnosticState.unknown,
-        reason: Optional[str] = None,
-        data: Optional[Dict[str, Any]] = None,
-        ts: Optional[datetime.datetime] = None,
-    ):
-        """
-        Save diagnostic state changes to Archive.
-        1. Send data to BI Model
-        2. Register MX Message
-        3. Register object notification
-        :param diagnostic: - Diagnostic name
-        :param state: Current state
-        :param from_state: Previous State
-        :param data: Checked data
-        :param reason:
-        :param ts:
-        :return:
-        """
-        from noc.core.service.loader import get_service
-
-        svc = get_service()
-        if isinstance(ts, str):
-            ts = datetime.datetime.fromisoformat(ts)
-        now = ts or datetime.datetime.now()
-        # Send Data
-        dd = {
-            "date": now.date().isoformat(),
-            "ts": now.replace(microsecond=0).isoformat(sep=" "),
-            "managed_object": self.bi_id,
-            "diagnostic_name": diagnostic,
-            "state": state,
-            "from_state": from_state,
-        }
-        if reason:
-            dd["reason"] = reason
-        if data:
-            dd["data"] = orjson.dumps(data).decode(DEFAULT_ENCODING)
-        svc.register_metrics("diagnostichistory", [dd], key=self.bi_id)
-        # Send Stream
-        # ? always send (from policy)
-        if config.message.enable_diagnostic_change:
-            send_message(
-                data={
-                    "name": diagnostic,
-                    "state": state,
-                    "from_state": from_state,
-                    "reason": reason,
-                    "managed_object": self.get_message_context(),
-                },
-                message_type="diagnostic_change",
-                headers={
-                    MX_LABELS: MX_H_VALUE_SPLITTER.join(self.effective_labels).encode(
-                        encoding=DEFAULT_ENCODING
-                    ),
-                },
-            )
-        # Send Notification
 
     def update_init(self):
         """

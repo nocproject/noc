@@ -51,6 +51,7 @@ from noc.core.cache.base import cache
 from noc.core.perf import metrics
 from noc.core.comp import smart_bytes
 from noc.core.wf.interaction import Interaction
+from noc.core.wf.diagnostic import DiagnosticState, DiagnosticHub
 
 
 class MODiscoveryJob(PeriodicJob):
@@ -344,24 +345,27 @@ class MODiscoveryJob(PeriodicJob):
             is_box=self.is_box, is_periodic=self.is_periodic
         )
         self.logger.info("Updating diagnostics statuses")
-        bulk = []
         now = datetime.datetime.now()
         processed = set()
         # Processed failed diagnostics
-        for p in problems:
-            if p.diagnostic and p.diagnostic in discovery_diagnostics:
-                self.object.set_diagnostic_state(
-                    p.diagnostic, state=False, reason=p.message, changed_ts=now, bulk=bulk
-                )
-                processed.add(p.diagnostic)
+        with DiagnosticHub(self.object, sync_alarm=self.can_update_alarms()) as d:
+            for p in problems:
+                if p.diagnostic and p.diagnostic in discovery_diagnostics:
+                    d.set_state(
+                        p.diagnostic,
+                        state=DiagnosticState.failed,
+                        reason=p.message,
+                        changed_ts=now,
+                    )
+                    processed.add(p.diagnostic)
         # Set OK state
         # for diagnostic in discovery_diagnostics - processed:
         #     self.object.set_diagnostic_state(diagnostic, state=True, changed_ts=now, bulk=bulk)
-        if bulk:
-            self.logger.info("Diagnostic changed: %s", ", ".join(di.diagnostic for di in bulk))
-            self.object.save_diagnostics(self.object.id, bulk)
-            if self.can_update_alarms():
-                self.object.sync_diagnostic_alarm([d.diagnostic for d in bulk])
+        # if bulk:
+        #     self.logger.info("Diagnostic changed: %s", ", ".join(di.diagnostic for di in bulk))
+        #     self.object.save_diagnostics(self.object.id, bulk)
+        #     if self.can_update_alarms():
+        #         self.object.sync_diagnostic_alarm([d.diagnostic for d in bulk])
 
     def update_alarms(
         self, problems: List[ProblemItem], group_cls: str = None, group_reference: str = None
