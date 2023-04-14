@@ -81,7 +81,7 @@ class Command(BaseCommand):
     }
 
     def add_arguments(self, parser):
-        subparsers = parser.add_subparsers(dest="cmd")
+        subparsers = parser.add_subparsers(dest="cmd", required=True)
         #
         run_parser = subparsers.add_parser("run")
         run_parser.add_argument(

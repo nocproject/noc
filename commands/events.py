@@ -69,7 +69,7 @@ class Command(BaseCommand):
         parser.add_argument(
             "-l", "--limit", dest="limit", default=0, type=int, help="Limit action to N records"
         )
-        subparsers = parser.add_subparsers(dest="cmd")
+        subparsers = parser.add_subparsers(dest="cmd", required=True)
         subparsers.add_parser("show")
         subparsers.add_parser("json")
         subparsers.add_parser("reclassify")

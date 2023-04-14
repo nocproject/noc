@@ -7,13 +7,14 @@
 
 # Python modules
 import argparse
-from time import perf_counter
 import asyncio
+from time import perf_counter
 
 # NOC modules
 from noc.core.management.base import BaseCommand
 from noc.core.validators import is_ipv4
 from noc.core.ioloop.snmp import snmp_get, SNMPError
+from noc.core.ioloop.util import run_sync
 from noc.core.snmp.version import SNMP_v1, SNMP_v2c
 from noc.sa.interfaces.base import MACAddressParameter
 
@@ -24,16 +25,23 @@ class Command(BaseCommand):
     VERSION_MAP = {"v1": SNMP_v1, "v2c": SNMP_v2c}
 
     def add_arguments(self, parser):
-        parser.add_argument("--in", action="append", dest="input", help="File with addresses")
-        parser.add_argument(
+        subparsers = parser.add_subparsers(dest="cmd", required=True)
+        get = subparsers.add_parser("get")
+        get.add_argument("--community", help="SNMP community")
+        get.add_argument("--address", help="Object address")
+        get.add_argument("--timeout", type=int, default=5, help="SNMP GET timeout")
+        get.add_argument("oids", nargs=argparse.REMAINDER, help="SNMP GET OID")
+        poll = subparsers.add_parser("poll")
+        poll.add_argument("--in", action="append", dest="input", help="File with addresses")
+        poll.add_argument(
             "--jobs", action="store", type=int, default=100, dest="jobs", help="Concurrent jobs"
         )
-        parser.add_argument("--community", action="append", help="SNMP community")
-        parser.add_argument("--oid", default=self.DEFAULT_OID, help="SNMP GET OID")
-        parser.add_argument("--timeout", type=int, default=5, help="SNMP GET timeout")
-        parser.add_argument("addresses", nargs=argparse.REMAINDER, help="Object name")
-        parser.add_argument("--convert", type=bool, default=False, help="convert mac address")
-        parser.add_argument(
+        poll.add_argument("--community", action="append", help="SNMP community")
+        poll.add_argument("--oid", default=self.DEFAULT_OID, help="SNMP GET OID")
+        poll.add_argument("--timeout", type=int, default=5, help="SNMP GET timeout")
+        poll.add_argument("addresses", nargs=argparse.REMAINDER, help="Object name")
+        poll.add_argument("--convert", type=bool, default=False, help="convert mac address")
+        poll.add_argument(
             "--version",
             type=str,
             default="v2c",
@@ -41,7 +49,27 @@ class Command(BaseCommand):
             help="version snmp check",
         )
 
-    def handle(
+    def handle(self, *args, **options):
+        cmd = options["cmd"]
+        return getattr(self, f'handle_{cmd.replace("-", "_")}')(*args, **options)
+
+    def handle_get(self, address, community, timeout, oids, *args, **options):
+        """ """
+
+        async def main():
+            r = await snmp_get(
+                address=address,
+                oids={x: x for x in oids},
+                community=community,
+                version=SNMP_v2c,
+                timeout=timeout,
+            )
+            return r
+
+        x = run_sync(main)
+        self.print(f"Result {x}")
+
+    def handle_poll(
         self, input, addresses, jobs, community, oid, timeout, convert, version, *args, **options
     ):
         async def main():
