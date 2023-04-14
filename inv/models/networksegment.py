@@ -32,7 +32,6 @@ from noc.main.models.remotesystem import RemoteSystem
 from noc.sa.models.servicesummary import ServiceSummary, SummaryItem, ObjectSummaryItem
 from noc.core.model.decorator import on_delete_check, on_save, tree
 from noc.core.change.decorator import change
-from noc.core.defer import call_later
 from noc.core.bi.decorator import bi_sync
 from .networksegmentprofile import NetworkSegmentProfile
 from .allocationgroup import AllocationGroup
@@ -374,10 +373,6 @@ class NetworkSegment(Document):
             # Propagate to parents
             if self.parent:
                 self.parent.update_access()
-
-    def update_uplinks(self):
-        # if self.profile.is_persistent:
-        call_later("noc.core.topology.uplink.update_uplinks", 60, segment_id=self.id)
 
     def get_horizontal_transit_policy(self):
         if self.horizontal_transit_policy in ("E", "C"):
