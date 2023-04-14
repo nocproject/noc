@@ -471,8 +471,6 @@ class ManagedObjectDataStream(DataStream):
         """
         yield {
             "id": data["id"],
-            cls.F_LABELS_META: data[cls.F_LABELS_META],
-            cls.F_ADM_DOMAIN_META: data[cls.F_ADM_DOMAIN_META],
             "object_profile": {
                 "id": data["object_profile"]["id"],
                 "name": data["object_profile"]["name"],
@@ -515,7 +513,7 @@ class ManagedObjectDataStream(DataStream):
         return {f"{cls.F_META}.client_groups": {"$elemMatch": {"$elemMatch": {"$in": [name]}}}}
 
     @classmethod
-    def get_msg_headers(cls, data: Dict[str, Any]) -> Optional[Dict[str, bytes]]:
+    def get_meta_headers(cls, data: Dict[str, Any]) -> Optional[Dict[str, bytes]]:
         if "$deleted" in data:
             # @@todo Meta fields for deleted object
             return
