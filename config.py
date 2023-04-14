@@ -585,6 +585,7 @@ class Config(BaseConfig):
         dry_run = BooleanParameter(default=True)
         check = BooleanParameter(default=True)
         interval = SecondsParameter(default=60)
+        enable_scheduler_task = BooleanParameter(default=True)
 
     class msgstream(ConfigSection):
         metrics_send_delay = FloatParameter(default=0.25)

@@ -1,21 +1,43 @@
 # ----------------------------------------------------------------------
-# Caclulate topology uplinks
+# Calculate topology uplinks
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2022 The NOC Project
+# Copyright (C) 2007-2023 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
+# Python modules
+import logging
+
 # NOC modules
-from noc.sa.models.managedobject import ManagedObject
-from .map.segment import SegmentTopology, logger
+from noc.sa.models.managedobject import ManagedObject, ObjectUplinks
+from noc.core.debug import ErrorReport
+from noc.config import config
+
+logger = logging.getLogger(__name__)
 
 
-def update_uplinks(segment_id: str):
-    from noc.inv.models.networksegment import NetworkSegment
+def update_uplinks(**kwargs):
+    from noc.services.topo.topo import Topo
+    from noc.services.topo.types import ObjectSnapshot
 
-    segment = NetworkSegment.get_by_id(segment_id)
-    if not segment:
-        logger.warning("Segment with id: %s does not exist" % segment_id)
-        return
-    st = SegmentTopology(segment)
-    ManagedObject.update_uplinks(st.iter_uplinks())
+    topo = Topo(check=True)
+    for mo_id, level, links, uplinks in ManagedObject.objects.filter(is_managed=True).values_list(
+        "id", "object_profile__level", "links", "uplinks"
+    ):
+        topo.sync_object(
+            ObjectSnapshot(id=mo_id, level=level, links=links or None, uplinks=uplinks or None)
+        )
+    with ErrorReport():
+        affected = topo.process()
+        if affected and not config.topo.dry_run:
+            # logger.info("Commiting uplink changes")
+            # @todo: RCA neighbors
+            ManagedObject.update_uplinks(
+                ObjectUplinks(
+                    object_id=obj_id,
+                    uplinks=list(sorted(topo.get_uplinks(obj_id))),
+                    rca_neighbors=list(sorted(topo.get_rca_neighbors(obj_id))),
+                )
+                for obj_id in affected
+            )
+            logger.info("%d changes has been commited", len(affected))

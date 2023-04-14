@@ -1046,7 +1046,6 @@ class ManagedObject(NOCModel):
                 iseg = NetworkSegment.get_by_id(iseg)
             if iseg:
                 iseg.update_access()
-                iseg.update_uplinks()
             self.segment.update_access()
             self.update_topology()
             # Refresh links
@@ -1746,7 +1745,8 @@ class ManagedObject(NOCModel):
         """
         Rebuild topology caches
         """
-        self.segment.update_uplinks()
+        if config.topo.enable_scheduler_task:
+            call_later("noc.core.topology.uplink.update_uplinks", 30)
         # Rebuild PoP links
         container = self.container
         for o in Object.get_managed(self):
