@@ -1,6 +1,6 @@
 #!./bin/python
 # ----------------------------------------------------------------------
-# beholder service
+# BH service
 # ----------------------------------------------------------------------
 # Copyright (C) 2007-2023 The NOC Project
 # See LICENSE for details
@@ -10,9 +10,9 @@
 from noc.core.service.fastapi import FastAPIService
 
 
-class BeholderService(FastAPIService):
-    name = "beholder"
+class BHService(FastAPIService):
+    name = "bh"
 
 
 if __name__ == "__main__":
-    BeholderService().start()
+    BHService().start()
