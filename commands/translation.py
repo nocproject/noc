@@ -46,7 +46,7 @@ class Command(BaseCommand):
     COPYRIGHT = "The NOC Project"
 
     def add_arguments(self, parser):
-        subparsers = parser.add_subparsers(dest="cmd")
+        subparsers = parser.add_subparsers(dest="cmd", required=True)
         #
         extract_parser = subparsers.add_parser("extract")
         extract_parser.add_argument(

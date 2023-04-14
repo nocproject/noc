@@ -499,7 +499,6 @@ class Command(BaseCommand):
     def get_bucket_ldur(
         scheduler, slots=None, max_slots=None, min_duration: int = 5, buckets: int = 5
     ):
-
         pipeline = [
             {"$project": {"slot": {"$mod": ["$key", max_slots]}, "key": 1, "jcls": 1, "ldur": 1}},
             {
@@ -524,7 +523,6 @@ class Command(BaseCommand):
     def get_bucket_late(
         scheduler, slots=None, max_slots=None, min_duration: int = 5, buckets: int = 5
     ):
-
         now = datetime.now()
         pipeline = [
             {

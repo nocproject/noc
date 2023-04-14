@@ -11,11 +11,11 @@ from io import StringIO
 
 # Third-party modules
 from django.db import models
-from noc.core.comp import smart_text
 
 # NOC modules
 from noc.core.model.util import is_related_field
-
+from noc.core.comp import smart_text
+from noc.models import get_model
 
 # CSV import conflict resolution constants
 IR_FAIL = 0  # Fail on first conflict
@@ -67,8 +67,11 @@ def get_model_fields(model):
                         break
                 fields += [(f.name, required, f.remote_field.model, k)]
         elif hasattr(f, "document"):
-            k = f.document._meta["id_field"]
-            for ff, fi in f.document._fields.items():
+            document = f.document
+            if isinstance(document, str):
+                document = get_model(document)
+            k = document._meta["id_field"]
+            for ff, fi in document._fields.items():
                 if fi.name != k and fi.unique and fi.name not in IGNORED_FIELDS:
                     k = fi.name
                     break
