@@ -9,7 +9,6 @@
 import datetime
 import operator
 from threading import Lock
-from itertools import chain
 from functools import partial
 from dataclasses import dataclass
 from typing import Optional, List, Dict, Tuple

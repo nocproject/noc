@@ -582,7 +582,7 @@ class Config(BaseConfig):
 
     class topo(ConfigSection):
         ds_limit = IntParameter(default=1000)
-        dry_run = BooleanParameter(default=True)
+        dry_run = BooleanParameter(default=False)
         check = BooleanParameter(default=True)
         interval = SecondsParameter(default=60)
         enable_scheduler_task = BooleanParameter(default=True)
