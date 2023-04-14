@@ -9,7 +9,6 @@
 import datetime
 import operator
 from threading import Lock
-from itertools import chain
 from functools import partial
 from dataclasses import dataclass
 from typing import Optional, List, Dict, Tuple
@@ -803,7 +802,6 @@ class ManagedObjectProfile(NOCModel):
 
     def on_save(self):
         from .managedobject import CREDENTIAL_CACHE_VERSION
-        from noc.inv.models.link import Link
 
         box_changed = self.initial_data["enable_box_discovery"] != self.enable_box_discovery
         periodic_changed = (
@@ -846,16 +844,8 @@ class ManagedObjectProfile(NOCModel):
             self.initial_data["enable_rca_downlink_merge"] != self.enable_rca_downlink_merge
             or self.initial_data["rca_downlink_merge_window"] != self.rca_downlink_merge_window
         ):
-            for x in set(
-                chain.from_iterable(
-                    Link.objects.filter(
-                        linked_objects__in=list(
-                            set(self.managedobject_set.values_list("id", flat=True))
-                        )
-                    ).scalar("linked_segments")
-                )
-            ):
-                call_later("noc.core.topology.uplink.update_uplinks", 60, segment_id=x)
+            if config.topo.enable_scheduler_task:
+                call_later("noc.core.topology.uplink.update_uplinks", 30)
 
     def can_escalate(self, depended=False):
         """
