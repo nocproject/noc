@@ -1,0 +1,136 @@
+{
+    "name": "Escalations",
+    "$collection": "main.reports",
+    "uuid": "8182c93c-0892-4ef8-b618-ea9469a4d5c5",
+    "title": "Escalations (New)",
+    "description": "Эскалации",
+    "bands": [
+        {
+            "name": "Root",
+            "orientation": "H",
+            "queries": [{
+                "datasource": "escalationsds",
+                "json": null
+            }]
+        },
+        {
+            "name": "master",
+            "orientation": "H",
+            "parent": "Root",
+            "queries": [{
+                "ds_query": "root_band.rows.sort('timestamp')"
+            }]
+        }
+    ],
+    "bands_format": [
+        {
+            "name": "Root",
+            "title_template": ""
+        },
+        {
+            "name": "master",
+            "column_format": [
+                {
+                    "name": "timestamp",
+                    "title": "Timestamp"
+                },
+                {
+                    "name": "escalation_timestamp",
+                    "title": "Escalation Timestamp"
+                },
+                {
+                    "name": "managed_object",
+                    "title": "Managed Object"
+                },
+                {
+                    "name": "address",
+                    "title": "Address"
+                },
+                {
+                    "name": "platform",
+                    "title": "Platform"
+                },
+                {
+                    "name": "segment",
+                    "title": "Segment"
+                },
+                {
+                    "name": "tt",
+                    "title": "TT"
+                },
+                {
+                    "name": "objects",
+                    "title": "Objects"
+                },
+                {
+                    "name": "subscribers",
+                    "title": "Subscribers"
+                }
+            ],
+            "title_template": ""
+        }
+    ],
+    "category": "fm",
+    "code": null,
+    "hide": false,
+    "localization": {
+        "title": {
+            "ru": "Эскалации (Новый)"
+        },
+        "columns.address": {
+            "ru": "Адрес"
+        },
+        "columns.escalation_timestamp": {
+            "ru": "Время эскалации"
+        },
+        "columns.managed_object": {
+            "ru": "Объект управления"
+        },
+        "columns.objects": {
+            "ru": "Объекты"
+        },
+        "columns.platform": {
+            "ru": "Платформа"
+        },
+        "columns.segment": {
+            "ru": "Сегмент"
+        },
+        "columns.subscribers": {
+            "ru": "Абоненты"
+        },
+        "columns.timestamp": {
+            "ru": "Время"
+        },
+        "columns.tt": {
+            "ru": "Номер TT"
+        },
+        "parameters.end": {
+            "ru": "По"
+        },
+        "parameters.start": {
+            "ru": "С"
+        }
+    },
+    "parameters": [
+        {
+            "name": "start",
+            "description": null,
+            "label": "From",
+            "type": "date"
+        },
+        {
+            "name": "end",
+            "description": null,
+            "label": "To",
+            "type": "date"
+        }
+    ],
+    "templates": [
+        {
+            "code": "DEFAULT",
+            "has_preview": true,
+            "is_alterable_output": true,
+            "output_type": "html"
+        }
+    ]
+}
