@@ -1,6 +1,6 @@
 #!./bin/python
 # ----------------------------------------------------------------------
-# bulkhandler service
+# beholder service
 # ----------------------------------------------------------------------
 # Copyright (C) 2007-2023 The NOC Project
 # See LICENSE for details
@@ -10,9 +10,9 @@
 from noc.core.service.fastapi import FastAPIService
 
 
-class BulkHandlerService(FastAPIService):
-    name = "bulkhandler"
+class BeholderService(FastAPIService):
+    name = "beholder"
 
 
 if __name__ == "__main__":
-    BulkHandlerService().start()
+    BeholderService().start()

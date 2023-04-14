@@ -1,5 +1,5 @@
 # ----------------------------------------------------------------------
-# bulkhandler endpoints
+# beholder endpoints
 # ----------------------------------------------------------------------
 # Copyright (C) 2007-2023 The NOC Project
 # See LICENSE for details
@@ -24,7 +24,7 @@ BULK_PING_MAX_JOBS = 6
 router = APIRouter()
 
 
-@router.post("/api/bulkhandler/bulk_ping/")
+@router.post("/api/beholder/bulk_ping/")
 async def bulk_ping(req: PingRequest):
     async def ping_worker():
         nonlocal result
@@ -50,7 +50,7 @@ async def bulk_ping(req: PingRequest):
     return PingResponse(items=result)
 
 
-@router.post("/api/bulkhandler/traceroute/")
+@router.post("/api/beholder/traceroute/")
 async def traceroute(req: TracerouteRequest):
     hops = []
     async with Traceroute(timeout=req.timeout, tos=req.tos) as tr:
