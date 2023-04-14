@@ -64,7 +64,7 @@ class VersionCheck(DiscoveryCheck):
             # Invalidate neighbor cache
             self.invalidate_neighbor_cache()
             # Reset diagnostics
-            self.object.reset_diagnostic([SNMPTRAP_DIAG, SYSLOG_DIAG])
+            self.object.diagnostic.reset_diagnostics([SNMPTRAP_DIAG, SYSLOG_DIAG])
         # Sync version
         version = Firmware.ensure_firmware(self.object.profile, vendor, result["version"])
         if not self.object.version or version.id != self.object.version.id:

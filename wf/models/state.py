@@ -325,6 +325,8 @@ class State(Document):
         """
         if self.is_wiping or self.disable_all_interaction:
             return False
+        if not self.interaction_settings:
+            return True
         if isinstance(interaction, str):
             interaction = Interaction(interaction.upper())
         if interaction.value in self.interaction_settings:

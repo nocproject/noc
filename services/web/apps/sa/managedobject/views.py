@@ -255,35 +255,29 @@ class ManagedObjectApplication(ExtModelApplication):
         # Expand resource groups fields
         for fn in self.resource_group_fields:
             data[fn] = sg_to_list(data.get(fn) or [])
-        d_config = {d.diagnostic: d for d in o.iter_diagnostic_configs()}
-        if not d_config:
-            return data
         data["is_managed"] = getattr(o, "is_managed", True)
         data["is_wiping"] = o.state.is_wiping
-        data["diagnostics"] = list(
-            sorted(
-                [
-                    {
-                        "name": d["diagnostic"][:6],
-                        "description": d_config[d["diagnostic"]].display_description,
-                        "state": d["state"],
-                        "state__label": d["state"],
-                        "details": [
-                            {
-                                "name": c["name"],
-                                "state": {True: "OK", False: "Error"}[c["status"]],
-                                "error": c["error"],
-                            }
-                            for c in d["checks"] or []
-                        ],
-                        "reason": d["reason"] or "",
-                    }
-                    for d in o.diagnostics.values()
-                    if d["diagnostic"] in d_config and d_config[d["diagnostic"]].show_in_display
-                ],
-                key=lambda x: d_config[x["name"]].display_order if x["name"] in d_config else 99,
+        data["diagnostics"] = []
+        for d in sorted(o.diagnostic, key=lambda x: x.config.display_order):
+            if not d.config.show_in_display:
+                continue
+            data["diagnostics"].append(
+                {
+                    "name": d.diagnostic[:6],
+                    "description": d.config.display_description,
+                    "state": d.state.value,
+                    "state__label": d.state.value,
+                    "details": [
+                        {
+                            "name": c.name,
+                            "state": {True: "OK", False: "Error"}[c.status],
+                            "error": c.error,
+                        }
+                        for c in d.checks or []
+                    ],
+                    "reason": d.reason or "",
+                }
             )
-        )
         return data
 
     def instance_to_dict_list(self, o: "ManagedObject", fields=None):

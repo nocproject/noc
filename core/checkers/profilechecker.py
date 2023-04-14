@@ -33,13 +33,13 @@ class ProfileChecker(ObjectChecker):
 
     def iter_result(self, checks=None) -> Iterable[CheckResult]:
         if (
-            SNMP_DIAG in self.object.diagnostics
-            and self.object.get_diagnostic(SNMP_DIAG).state == DiagnosticState.enabled
+            SNMP_DIAG in self.object.diagnostic
+            and self.object.diagnostic[SNMP_DIAG].state == DiagnosticState.enabled
         ):
             snmp_community = self.object.credentials.snmp_ro
             snmp_version = [
                 self.CHECK_SNMP_VERSION_MAP[check.name]
-                for check in self.object.get_diagnostic(SNMP_DIAG).checks or []
+                for check in self.object.diagnostic[SNMP_DIAG].checks or []
                 if check.status
             ]
         else:

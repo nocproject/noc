@@ -24,7 +24,7 @@ from noc.core.checkers.base import (
     MetricValue,
 )
 from noc.core.checkers.loader import loader
-from noc.core.wf.diagnostic import DiagnosticState
+from noc.core.wf.diagnostic import DiagnosticState, DiagnosticHub
 from noc.core.debug import error_report
 from noc.sa.models.profile import Profile
 from noc.pm.models.metrictype import MetricType
@@ -59,92 +59,74 @@ class DiagnosticCheck(DiscoveryCheck):
     def handler(self):
         # Loading checkers
         self.load_checkers()
-        bulk = []
         metrics: List[MetricValue] = []
         # Diagnostic Data
         d_data: Dict[str, Any] = defaultdict(dict)  # Diagnostic -> Data
-        last_state: Dict[str, DiagnosticState] = {}
         # Processed Check ? Filter param
-        for dc in self.object.iter_diagnostic_configs():
-            # Check on Discovery run
-            if (self.is_box and not dc.discovery_box) or (
-                self.is_periodic and not dc.discovery_periodic
-            ):
-                continue
-            if dc.run_order != self.run_order:
-                continue
-            if not dc.checks or dc.blocked:
-                # Diagnostic without checks
-                continue
-            if dc.run_policy not in {"A", "F"}:
-                self.logger.info("[%s] Diagnostic for manual run. Skipping", dc.diagnostic)
-                continue
-            if (
-                dc.run_policy == "F"
-                and dc.diagnostic in self.object.diagnostics
-                and self.object.get_diagnostic(dc.diagnostic).state == DiagnosticState.enabled
-                and self.object.get_diagnostic(dc.diagnostic).checks
-            ):
-                self.logger.info("[%s] Diagnostic with enabled state. Skipping", dc.diagnostic)
-                continue
-            # Get checker
-            checks: List[CheckResult] = []
-            actions: List[CLICredentialSet] = []
-            for cr in self.iter_checks(dc.checks):
-                if cr.action and not hasattr(self, f"action_{cr.action.action}"):
-                    self.logger.warning(
-                        "[%s|%s] Unknown action: %s", dc.diagnostic, cr.check, cr.action.action
-                    )
-                elif cr.action:
-                    actions.append(cr.action)
-                checks.append(cr)
-                m_labels = [f"noc::check::name::{cr.check}", f"noc::diagnostic::{dc.diagnostic}"]
-                if cr.arg0:
-                    m_labels += [f"noc::check::arg0::{cr.arg0}"]
-                if not cr.skipped:
-                    metrics += [
-                        MetricValue("Check | Status", value=int(cr.status), labels=m_labels)
-                    ]
-                if cr.metrics:
-                    metrics += cr.metrics
-                if cr.data:
-                    d_data[dc.diagnostic].update(cr.data)
-            # Apply actions
-            for a in actions:
-                h = getattr(self, f"action_{a.action}")
-                h(a)
-            # Update diagnostics
-            self.object.update_diagnostics(
-                [
-                    CheckData(
-                        name=cr.check,
-                        arg0=cr.arg0,
-                        status=cr.status,
-                        skipped=cr.skipped,
-                        error=cr.error,
-                        data=cr.data,
-                    )
-                    for cr in checks
-                ],
-                bulk=bulk,
-            )
-        if bulk:
-            self.logger.info("Diagnostic changed: %s", ", ".join(di.diagnostic for di in bulk))
-            self.object.save_diagnostics(
-                self.object.id, bulk, sync_labels=config.discovery.sync_diagnostic_labels
-            )
-            if self.job.can_update_alarms():
-                self.object.sync_diagnostic_alarm([d.diagnostic for d in bulk])
-            for di in bulk:
-                self.object.register_diagnostic_change(
-                    di.diagnostic,
-                    state=di.state,
-                    from_state=last_state.get(di.diagnostic, DiagnosticState.unknown),
-                    data=d_data.get(di.diagnostic),
-                    reason=di.reason,
-                    ts=di.changed,
+        with DiagnosticHub(
+            self.object,
+            sync_alarm=self.job.can_update_alarms(),
+            sync_labels=config.discovery.sync_diagnostic_labels,
+            logger=self.logger,
+        ) as dhub:
+            for d in dhub:
+                dc = d.config
+                # Check on Discovery run
+                if (self.is_box and not dc.discovery_box) or (
+                    self.is_periodic and not dc.discovery_periodic
+                ):
+                    continue
+                if dc.run_order != self.run_order:
+                    continue
+                if not dc.checks or dc.blocked:
+                    # Diagnostic without checks
+                    continue
+                if dc.run_policy not in {"A", "F"}:
+                    self.logger.info("[%s] Diagnostic for manual run. Skipping", d.diagnostic)
+                    continue
+                if dc.run_policy == "F" and d.state == DiagnosticState.enabled and d.checks:
+                    self.logger.info("[%s] Diagnostic with enabled state. Skipping", d.diagnostic)
+                    continue
+                # Get checker
+                checks: List[CheckResult] = []
+                actions: List[CLICredentialSet] = []
+                for cr in self.iter_checks(dc.checks):
+                    if cr.action and not hasattr(self, f"action_{cr.action.action}"):
+                        self.logger.warning(
+                            "[%s|%s] Unknown action: %s", d.diagnostic, cr.check, cr.action.action
+                        )
+                    elif cr.action:
+                        actions.append(cr.action)
+                    checks.append(cr)
+                    m_labels = [f"noc::check::name::{cr.check}", f"noc::diagnostic::{d.diagnostic}"]
+                    if cr.arg0:
+                        m_labels += [f"noc::check::arg0::{cr.arg0}"]
+                    if not cr.skipped:
+                        metrics += [
+                            MetricValue("Check | Status", value=int(cr.status), labels=m_labels)
+                        ]
+                    if cr.metrics:
+                        metrics += cr.metrics
+                    if cr.data:
+                        d_data[d.diagnostic].update(cr.data)
+                # Apply actions
+                for a in actions:
+                    h = getattr(self, f"action_{a.action}")
+                    h(a)
+                # Update diagnostics
+                dhub.update_checks(
+                    [
+                        CheckData(
+                            name=cr.check,
+                            arg0=cr.arg0,
+                            status=cr.status,
+                            skipped=cr.skipped,
+                            error=cr.error,
+                            data=cr.data,
+                        )
+                        for cr in checks
+                    ],
                 )
-        #
         if metrics:
             self.register_diagnostic_metrics(metrics)
         # Fire workflow event diagnostic ?

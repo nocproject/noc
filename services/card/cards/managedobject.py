@@ -73,7 +73,6 @@ class ManagedObjectCard(BaseCard):
 
     # get data function
     def get_data(self):
-
         intervals = (
             ("y", 31557617),  # 60 * 60 * 24 * 7 * 52
             ("w", 604800),  # 60 * 60 * 24 * 7
@@ -451,7 +450,28 @@ class ManagedObjectCard(BaseCard):
             version = self.object.version.version
         else:
             version = ""
-
+        # Diagnostics
+        diagnostics = []
+        for d in sorted(self.object.diagnostic, key=lambda x: x.config.display_order):
+            if not d.config.show_in_display:
+                continue
+            diagnostics.append(
+                {
+                    "name": d.diagnostic[:6],
+                    "description": d.config.display_description,
+                    "state": d.state.value,
+                    "state__label": d.state.value,
+                    "details": [
+                        {
+                            "name": c.name,
+                            "state": {True: "OK", False: "Error"}[c.status],
+                            "error": c.error,
+                        }
+                        for c in d.checks or []
+                    ],
+                    "reason": d.reason or "",
+                }
+            )
         r = {
             "id": self.object.id,
             "object": self.object,
@@ -491,19 +511,7 @@ class ManagedObjectCard(BaseCard):
             "attributes": list(
                 ManagedObjectAttribute.objects.filter(managed_object=self.object.id)
             ),
-            "diagnostics": [
-                {
-                    "name": d["diagnostic"],
-                    "state": d["state"],
-                    "state__label": d["state"],
-                    "details": [
-                        {"name": c["name"], "state": c["status"], "error": c["error"]}
-                        for c in d["checks"] or []
-                    ],
-                    "reason": d["reason"] or "",
-                }
-                for d in self.object.diagnostics.values()
-            ],
+            "diagnostics": diagnostics,
             "confdb": None,
         }
         try:
