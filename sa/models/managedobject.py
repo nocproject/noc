@@ -1586,7 +1586,7 @@ class ManagedObject(NOCModel):
             cn = c.name
             seen.add(cn)
             if scope and scope != css:
-                logger.info(
+                logger.debug(
                     "[%s] Not changing capability %s: from other scope '%s'",
                     o_label,
                     cn,
@@ -2585,7 +2585,9 @@ class ManagedObject(NOCModel):
         """
         self.initial_data = _get_field_snapshot(self.__class__, self)
 
-    def iter_collected_metrics(self, run: int = 0) -> Iterable[MetricCollectorConfig]:
+    def iter_collected_metrics(
+        self, run: int = 0, d_interval: Optional[int] = None
+    ) -> Iterable[MetricCollectorConfig]:
         """
         Return metrics setting for collected by box or periodic
         :param run:
@@ -2599,7 +2601,7 @@ class ManagedObject(NOCModel):
         from noc.inv.models.sensor import Sensor
 
         metrics: List[MetricItem] = []
-        d_interval = self.get_metric_discovery_interval()
+        d_interval = d_interval or self.get_metric_discovery_interval()
         for mc in ManagedObjectProfile.get_object_profile_metrics(self.object_profile.id).values():
             interval = mc.interval or self.object_profile.metrics_default_interval
             mi = MetricItem(
@@ -2615,10 +2617,10 @@ class ManagedObject(NOCModel):
         if metrics:
             logger.debug("Object metrics: %s", ",".join(m.name for m in metrics))
             yield MetricCollectorConfig(collector="managed_object", metrics=tuple(metrics))
-        yield from CPE.iter_collected_metrics(self, run=run)
-        yield from SLAProbe.iter_collected_metrics(self, run=run)
-        yield from Interface.iter_collected_metrics(self, run=run)
-        yield from Sensor.iter_collected_metrics(self, run=run)
+        yield from CPE.iter_collected_metrics(self, run=run, d_interval=d_interval)
+        yield from SLAProbe.iter_collected_metrics(self, run=run, d_interval=d_interval)
+        yield from Interface.iter_collected_metrics(self, run=run, d_interval=d_interval)
+        yield from Sensor.iter_collected_metrics(self, run=run, d_interval=d_interval)
 
     @classmethod
     def get_metric_config(cls, mo: "ManagedObject"):

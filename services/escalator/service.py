@@ -57,6 +57,7 @@ class EscalatorService(FastAPIService):
                 pool=sn,
                 reset_running=True,
                 max_threads=shard_threads[sn],
+                check_time=config.escalator.job_check_interval,
                 service=self,
                 sample=config.escalator.sample,
             )

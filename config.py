@@ -246,6 +246,7 @@ class Config(BaseConfig):
         )
         sample = IntParameter(default=0)
         min_metric_interval = IntParameter(default=60)
+        job_check_interval = IntParameter(default=1000, min=1000)
 
     class dns(ConfigSection):
         warn_before_expired = SecondsParameter(default="30d")
@@ -257,6 +258,7 @@ class Config(BaseConfig):
         ets = SecondsParameter(default="60s")
         wait_tt_check_interval = SecondsParameter(default="60s")
         sample = IntParameter(default=0)
+        job_check_interval = IntParameter(default=5000, min=1000)
 
     class etl(ConfigSection):
         compression = StringParameter(choices=["plain", "gzip", "bz2", "lzma"], default="gzip")

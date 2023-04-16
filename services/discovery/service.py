@@ -40,6 +40,7 @@ class DiscoveryService(FastAPIService):
             pool=config.pool,
             reset_running=True,
             max_threads=config.discovery.max_threads,
+            check_time=config.discovery.job_check_interval,
             filter=ifilter,
             service=self,
             sample=config.discovery.sample,
