@@ -103,6 +103,7 @@ class Transition(Document):
 
     _id_cache = cachetools.TTLCache(maxsize=100, ttl=60)
     _bi_id_cache = cachetools.TTLCache(maxsize=100, ttl=60)
+    _active_transition_cache = cachetools.TTLCache(maxsize=100, ttl=600)
 
     def __str__(self):
         return "%s: %s -> %s [%s]" % (
@@ -167,3 +168,10 @@ class Transition(Document):
                         self.label,
                         hn,
                     )
+
+    @classmethod
+    @cachetools.cachedmethod(
+        operator.attrgetter("_active_transition_cache"), lock=lambda _: id_lock
+    )
+    def get_active_transitions(cls, state: str, event: str) -> List["Transition"]:
+        return list(Transition.objects.filter(from_state=state, event=event, is_active=True))

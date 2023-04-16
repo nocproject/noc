@@ -269,21 +269,8 @@ class State(Document):
         """
         from .transition import Transition
 
-        for t in Transition.objects.filter(
-            m_Q(
-                from_state=self.id,
-                event=event,
-                required_rules__labels__exists=False,
-                is_active=True,
-            )
-            | m_Q(
-                from_state=self.id,
-                is_active=True,
-                event=event,
-                required_rules__labels__in=getattr(obj, "effective_labels", []),
-            )
-        ):
-            if not t.is_allowed:
+        for t in Transition.get_active_transitions(self.id, event):
+            if not t.is_allowed(labels=getattr(obj, "effective_labels", [])):
                 logger.info(
                     "[%s|%s] Transition '%s' not allowed for '%s'. Skipping",
                     obj,
