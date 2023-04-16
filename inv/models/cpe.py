@@ -143,9 +143,7 @@ class CPE(Document):
     @classmethod
     def _reset_caches(cls, cpe_id: int):
         try:
-            del cls._id_cache[
-                str(cpe_id),
-            ]
+            del cls._id_cache[str(cpe_id),]
         except KeyError:
             pass
 
@@ -162,7 +160,7 @@ class CPE(Document):
 
     @classmethod
     def iter_collected_metrics(
-        cls, mo: "ManagedObject", run: int = 0
+        cls, mo: "ManagedObject", run: int = 0, d_interval: Optional[int] = None
     ) -> Iterable[MetricCollectorConfig]:
         """
         Return metrics setting for collected
@@ -174,7 +172,7 @@ class CPE(Document):
         cpe_count = caps.get("DB | CPEs")
         if not cpe_count:
             return
-        d_interval = mo.get_metric_discovery_interval()
+        d_interval = d_interval or mo.get_metric_discovery_interval()
         # logger.info("Sharding mode activated. Buckets: %d", buckets)
         for cpe in CPE.objects.filter(controller=mo.id).read_preference(
             ReadPreference.SECONDARY_PREFERRED
