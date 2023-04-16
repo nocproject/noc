@@ -22,8 +22,6 @@ from noc.core.change.policy import change_tracker
 class IntervalDiscoveryJob(MODiscoveryJob):
     name = "interval"
 
-    _interval_cache = cachetools.TTLCache(maxsize=30000, ttl=3600)
-
     def handler(self, **kwargs):
         with Span(sample=self.object.periodic_telemetry_sample), change_tracker.bulk_changes():
             if self.allow_sessions():
@@ -43,12 +41,8 @@ class IntervalDiscoveryJob(MODiscoveryJob):
     def get_running_policy(self):
         return self.object.get_effective_periodic_discovery_running_policy()
 
-    @cachetools.cachedmethod(operator.attrgetter("_interval_cache"), key=lambda s: s.object.id)
     def get_interval(self):
-        if self.object:
-            return self.object.get_metric_discovery_interval()
-        # Dereference error
-        return random.randint(60, 120)
+        return self.get_metric_interval()
 
     def get_failed_interval(self):
         return self.object.get_metric_discovery_interval()

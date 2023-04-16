@@ -13,6 +13,7 @@ import zlib
 import datetime
 import types
 import operator
+import random
 from io import StringIO
 from time import perf_counter
 
@@ -66,6 +67,8 @@ class MODiscoveryJob(PeriodicJob):
     # Get diagnostics with enabled discovery (Box/Periodic filtered)
     discovery_diagnostics = set()
 
+    _metric_interval_cache = cachetools.TTLCache(maxsize=5000, ttl=43200)
+
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.out_buffer = StringIO()
@@ -77,6 +80,16 @@ class MODiscoveryJob(PeriodicJob):
         self.service = self.scheduler.service
         # Additional artefacts can be passed between checks in one session
         self.artefacts = {}
+
+    @cachetools.cachedmethod(operator.attrgetter("_metric_interval_cache"), key=lambda s: s.object.id)
+    def get_metric_interval(self) -> int:
+        """
+        Return calculated object metrics interval
+        :return:
+        """
+        if self.object:
+            return self.object.get_metric_discovery_interval()
+        return random.randint(60, 120)
 
     def schedule_next(self, status):
         if self.check_timings:

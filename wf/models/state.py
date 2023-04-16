@@ -340,7 +340,7 @@ class State(Document):
                 # @todo more precisely
                 if ll.name not in self.labels:
                     removed.append(ll.name)
-            for ll.name in self.labels:
+            for ll in self.labels:
                 if model.can_set_label(ll.name):
                     add_labels.append(ll.name)
             if removed:
