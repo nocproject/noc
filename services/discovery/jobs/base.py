@@ -81,7 +81,9 @@ class MODiscoveryJob(PeriodicJob):
         # Additional artefacts can be passed between checks in one session
         self.artefacts = {}
 
-    @cachetools.cachedmethod(operator.attrgetter("_metric_interval_cache"), key=lambda s: s.object.id)
+    @cachetools.cachedmethod(
+        operator.attrgetter("_metric_interval_cache"), key=lambda s: s.object.id
+    )
     def get_metric_interval(self) -> int:
         """
         Return calculated object metrics interval

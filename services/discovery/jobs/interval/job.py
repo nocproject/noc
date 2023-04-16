@@ -5,13 +5,6 @@
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
-# Python modules
-import operator
-import random
-
-# Third-party modules
-import cachetools
-
 # NOC modules
 from ..base import MODiscoveryJob
 from .metrics import MetricsCheck
