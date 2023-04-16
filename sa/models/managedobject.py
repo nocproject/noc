@@ -2780,7 +2780,6 @@ class ManagedObject(NOCModel):
             interval = source.get_metric_discovery_interval(self)
             if interval:
                 r += [interval]
-        print("XXXX MO get discovery_interval", self)
         return max(
             min(r),
             self.object_profile.metrics_default_interval,
