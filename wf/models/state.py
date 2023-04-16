@@ -23,7 +23,6 @@ from mongoengine.fields import (
     MapField,
     EmbeddedDocumentField,
 )
-from mongoengine.queryset.visitor import Q as m_Q
 import cachetools
 
 # NOC modules
