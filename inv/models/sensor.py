@@ -229,14 +229,14 @@ class Sensor(Document):
 
     @classmethod
     def iter_collected_metrics(
-        cls, mo: "ManagedObject", run: int = 0
+        cls, mo: "ManagedObject", run: int = 0, d_interval: Optional[int] = None
     ) -> Iterable[MetricCollectorConfig]:
         """
         Return metrics setting for collected by box or periodic
         :return:
         """
         o: List[str] = Object.get_managed(mo).values_list("id")
-        d_interval = mo.get_metric_discovery_interval()
+        d_interval = d_interval or mo.get_metric_discovery_interval()
         for sensor in Sensor.objects.filter(object__in=list(o)).read_preference(
             ReadPreference.SECONDARY_PREFERRED
         ):

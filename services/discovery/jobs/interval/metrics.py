@@ -50,10 +50,10 @@ class MetricsCheck(DiscoveryCheck):
             self.job.context["time_delta"] = time_delta
         self.job.context["last_run"] = ts
         s_data = {"managed_object": self.object.bi_id}
-        interval = self.object.get_metric_discovery_interval()
+        interval = self.job.get_interval() or self.object.get_metric_discovery_interval()
         runs = self.job.get_runs()
         self.logger.debug("Running with interval: %s:%s", interval, runs)
-        for mc in self.object.iter_collected_metrics(runs):
+        for mc in self.object.iter_collected_metrics(runs, d_interval=interval):
             mc_metrics = []
             for m in mc.metrics:
                 mt_name = m.name.replace(" ", "_")

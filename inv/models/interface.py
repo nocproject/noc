@@ -513,7 +513,7 @@ class Interface(Document):
 
     @classmethod
     def iter_collected_metrics(
-        cls, mo: "ManagedObject", run: int = 0
+        cls, mo: "ManagedObject", run: int = 0, d_interval: Optional[int] = None
     ) -> Iterable[MetricCollectorConfig]:
         """
         Return metric settings
@@ -526,7 +526,7 @@ class Interface(Document):
         if not iface_count:
             return
         buckets = 1
-        d_interval = mo.get_metric_discovery_interval()
+        d_interval = d_interval or mo.get_metric_discovery_interval()
         for i in (
             Interface._get_collection()
             .with_options(read_preference=ReadPreference.SECONDARY_PREFERRED)

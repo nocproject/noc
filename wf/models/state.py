@@ -23,7 +23,6 @@ from mongoengine.fields import (
     MapField,
     EmbeddedDocumentField,
 )
-from mongoengine.queryset.visitor import Q as m_Q
 import cachetools
 
 # NOC modules
@@ -269,21 +268,8 @@ class State(Document):
         """
         from .transition import Transition
 
-        for t in Transition.objects.filter(
-            m_Q(
-                from_state=self.id,
-                event=event,
-                required_rules__labels__exists=False,
-                is_active=True,
-            )
-            | m_Q(
-                from_state=self.id,
-                is_active=True,
-                event=event,
-                required_rules__labels__in=getattr(obj, "effective_labels", []),
-            )
-        ):
-            if not t.is_allowed:
+        for t in Transition.get_active_transitions(self.id, event):
+            if not t.is_allowed(labels=getattr(obj, "effective_labels", [])):
                 logger.info(
                     "[%s|%s] Transition '%s' not allowed for '%s'. Skipping",
                     obj,
@@ -354,7 +340,7 @@ class State(Document):
                 # @todo more precisely
                 if ll.name not in self.labels:
                     removed.append(ll.name)
-            for ll.name in self.labels:
+            for ll in self.labels:
                 if model.can_set_label(ll.name):
                     add_labels.append(ll.name)
             if removed:

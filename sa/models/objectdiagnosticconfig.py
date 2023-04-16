@@ -48,6 +48,13 @@ class Match(EmbeddedDocument):
     def get_labels(self):
         return list(Label.objects.filter(name__in=self.labels))
 
+    def is_match(self, labels: List[str]):
+        if self.exclude_labels and not set(self.exclude_labels) - set(labels):
+            return False
+        if not set(self.labels) - set(labels):
+            return True
+        return False
+
 
 class DiagnosticCheck(EmbeddedDocument):
     check = StringField(required=True)
@@ -105,6 +112,7 @@ class ObjectDiagnosticConfig(Document):
 
     _id_cache = cachetools.TTLCache(maxsize=100, ttl=60)
     _bi_id_cache = cachetools.TTLCache(maxsize=100, ttl=60)
+    _active_diagnostic_cache = cachetools.TTLCache(maxsize=10, ttl=600)
 
     def __str__(self):
         return self.name
@@ -118,6 +126,26 @@ class ObjectDiagnosticConfig(Document):
     @cachetools.cachedmethod(operator.attrgetter("_bi_id_cache"), lock=lambda _: id_lock)
     def get_by_bi_id(cls, oid) -> Optional["ObjectDiagnosticConfig"]:
         return ObjectDiagnosticConfig.objects.filter(bi_id=oid).first()
+
+    @classmethod
+    @cachetools.cachedmethod(
+        operator.attrgetter("_active_diagnostic_cache"), lock=lambda _: id_lock
+    )
+    def get_active_diagnostics(cls) -> List["ObjectDiagnosticConfig"]:
+        return list(ObjectDiagnosticConfig.objects.filter())
+
+    def is_allowed(self, labels: List[str]) -> bool:
+        """
+        Check transition allowed
+        :param labels:
+        :return:
+        """
+        if not self.match:
+            return True
+        for match in self.match:
+            if match.is_match(labels):
+                return True
+        return False
 
     def clean(self):
         if self in self.diagnostics:
@@ -162,8 +190,8 @@ class ObjectDiagnosticConfig(Document):
     def get_json_path(self) -> str:
         return f"{self.name}.json"
 
-    def get_diagnostic_config(self) -> "DiagnosticConfig":
-
+    @property
+    def d_config(self) -> "DiagnosticConfig":
         return DiagnosticConfig(
             diagnostic=self.name,
             checks=[Check(name=c.check, arg0=c.arg0) for c in self.checks],
@@ -190,8 +218,10 @@ class ObjectDiagnosticConfig(Document):
         :return:
         """
         deferred = list()
-        for odc in ObjectDiagnosticConfig.objects.filter(match__labels__in=object.effective_labels):
-            dc = odc.get_diagnostic_config()
+        for odc in cls.get_active_diagnostics():
+            if not odc.is_allowed(labels=getattr(object, "effective_labels", [])):
+                continue
+            dc = odc.d_config
             if odc.diagnostics:
                 deferred.append(dc)
                 continue

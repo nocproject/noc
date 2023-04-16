@@ -165,7 +165,9 @@ class SLAProbe(Document):
             ).first()
 
     @classmethod
-    def iter_collected_metrics(cls, mo, run: int = 0) -> Iterable[MetricCollectorConfig]:
+    def iter_collected_metrics(
+        cls, mo, run: int = 0, d_interval: Optional[int] = None
+    ) -> Iterable[MetricCollectorConfig]:
         """
         Return metric settings
         :return:
@@ -174,7 +176,7 @@ class SLAProbe(Document):
         sla_count = caps.get("DB | SLAProbes")
         if not sla_count:
             return
-        d_interval = mo.get_metric_discovery_interval()
+        d_interval = d_interval or mo.get_metric_discovery_interval()
         for sla in SLAProbe.objects.filter(managed_object=mo.id).read_preference(
             ReadPreference.SECONDARY_PREFERRED
         ):
