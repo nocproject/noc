@@ -2297,6 +2297,8 @@ nav:
           - Supported Standards: about/standards.md
           - Releases:
                 - NOC Release and Tagging Policy: about/releases/policy.md
+                - NOC 23.1 Generation:
+                      - NOC 23.1: about/releases/23.1.md
                 - NOC 22.2 Generation:
                       - NOC 22.2: about/releases/22.2.md
                       - NOC 22.2.1: about/releases/22.2.1.md
