@@ -303,7 +303,7 @@ class Command(BaseCommand):
 
         SQL = """SELECT mo.pool, mop.%s_discovery_interval, count(*)
                  FROM sa_managedobject mo, sa_managedobjectprofile mop
-                 WHERE mo.object_profile_id = mop.id and mop.enable_%s_discovery = true and mo.is_managed = true
+                 WHERE mo.object_profile_id = mop.id and mop.enable_%s_discovery = true
                  GROUP BY mo.pool, mop.%s_discovery_interval;
         """
         r = defaultdict(dict)
