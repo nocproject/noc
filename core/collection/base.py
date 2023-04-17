@@ -323,7 +323,7 @@ class Collection(object):
                             % (self.name, data["uuid"], o.uuid, getattr(o, self.name_field))
                         )
                         o.uuid = data["uuid"]
-                        o.save()
+                        o.save(clean=bool(o.uuid))
                         # Try again
                         return self.update_item(data)
                     self.stdout.write("Not find object by query: %s\n" % qs)
