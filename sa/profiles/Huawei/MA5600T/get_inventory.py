@@ -453,6 +453,7 @@ class Script(BaseScript):
         if not v:
             parse_result = self.execute_inventory_board()
         #     raise NotImplementedError("Not supported 'display elabel' command")
+        chassis_sn = set()  # Chassis SN set
         for item in parse_result:
             self.logger.debug("Inventory item: %s", item)
             num = item.num
@@ -464,6 +465,8 @@ class Script(BaseScript):
             elif item_name.startswith("fan"):
                 i_type = "FAN"
             elif item_name.startswith("slot") and "PWC" in item.type:
+                i_type = "PWR"
+            elif item.type.startswith("PDC"):
                 i_type = "PWR"
             elif (
                 "board" in item.description.lower() or item_name.startswith("main_board")
@@ -481,6 +484,13 @@ class Script(BaseScript):
                 "serial": item.barcode,
                 "description": item.description,
             }
+            # Dislike MA5801-GP16 has CHASSIS to Rack, SubRack and motherboard are same
+            if i_type == "CHASSIS" and item.barcode and item.barcode in chassis_sn:
+                continue
+            elif i_type == "CHASSIS" and item.barcode:
+                chassis_sn.add(item.barcode)
+            elif item.barcode and item.barcode in chassis_sn:
+                data["builtin"] = True
             if item.mnf_date:
                 try:
                     mfg_date = parse(item.mnf_date)
