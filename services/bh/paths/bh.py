@@ -14,12 +14,9 @@ from gufo.ping import Ping
 from gufo.traceroute import Traceroute
 
 # NOC modules
+from noc.config import config
 from ..models.bulk_ping import PingRequest, PingResponse
 from ..models.traceroute import TracerouteRequest, TracerouteResponse
-
-BULK_PING_TIMEOUT = 5
-BULK_PING_INTERVAL = 0.1
-BULK_PING_MAX_JOBS = 6
 
 router = APIRouter()
 
@@ -34,17 +31,19 @@ async def bulk_ping(req: PingRequest):
                     break  # Done
                 address = req.addresses.pop(0)
             rtt_list = []
-            async for rtt in ping.iter_rtt(address, interval=BULK_PING_INTERVAL, count=req.n):
+            async for rtt in ping.iter_rtt(
+                address, interval=config.bh.bulk_ping_interval, count=req.n
+            ):
                 rtt_list += [rtt]
             result += [{"address": address, "rtt": rtt_list}]
 
-    timeout = req.timeout or BULK_PING_TIMEOUT
+    timeout = req.timeout or config.bh.bulk_ping_timeout
     result = []
     ping = Ping(tos=req.tos, timeout=timeout)
     lock = asyncio.Lock()
     tasks = [
         asyncio.create_task(ping_worker(), name=f"ping-{i}")
-        for i in range(min(BULK_PING_MAX_JOBS, len(req.addresses)))
+        for i in range(min(config.bh.bulk_ping_max_jobs, len(req.addresses)))
     ]
     await asyncio.gather(*tasks)
     return PingResponse(items=result)
@@ -54,7 +53,7 @@ async def bulk_ping(req: PingRequest):
 async def traceroute(req: TracerouteRequest):
     items = []
     async with Traceroute(timeout=req.timeout, tos=req.tos) as tr:
-        async for hop_info in tr.traceroute(req.address, tries=3):
+        async for hop_info in tr.traceroute(req.address, tries=config.bh.traceroute_tries):
             items += [hop_info]
     address = {h.addr for h in hop_info.hops if h is not None}
     if len(address) == 1:
