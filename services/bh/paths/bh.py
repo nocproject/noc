@@ -52,16 +52,15 @@ async def bulk_ping(req: PingRequest):
 
 @router.post("/api/bh/traceroute/")
 async def traceroute(req: TracerouteRequest):
-    hops = []
+    items = []
     async with Traceroute(timeout=req.timeout, tos=req.tos) as tr:
-        async for hop in tr.traceroute(req.address, tries=3):
-            address = {h.addr for h in hop.hops if h is not None}
-            if len(address) == 1:
-                address = address.pop()
-            elif len(address) == 0:
-                address = ""
-            else:
-                address = str(address)
-            hop = {"hop": hop.ttl, "address": address}
-            hops += [hop]
-    return TracerouteResponse(status=address == req.address, end_address=address, items=hops)
+        async for hop_info in tr.traceroute(req.address, tries=3):
+            items += [hop_info]
+    address = {h.addr for h in hop_info.hops if h is not None}
+    if len(address) == 1:
+        address = address.pop()  # single address
+    elif len(address) == 0:
+        address = ""  # empty address
+    else:
+        address = str(address)  # set of addresses
+    return TracerouteResponse(status=address == req.address, end_address=address, items=items)

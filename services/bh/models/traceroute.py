@@ -9,6 +9,7 @@
 from typing import Optional, List
 
 # Third-party modules
+from gufo.traceroute import HopInfo
 from pydantic import BaseModel
 
 
@@ -18,12 +19,7 @@ class TracerouteRequest(BaseModel):
     tos: Optional[int]
 
 
-class PointItem(BaseModel):
-    hop: int
-    address: str
-
-
 class TracerouteResponse(BaseModel):
     status: bool
     end_address: str
-    items: List[PointItem]
+    items: List[HopInfo]
