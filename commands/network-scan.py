@@ -217,7 +217,6 @@ class Command(BaseCommand):
         self.count_net = 0
 
         # options by-default
-        is_managed = "True"
         # administrative_domain = "default"
         profile = "Generic.Host"
         # object_profile = "default"
