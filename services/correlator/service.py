@@ -983,7 +983,12 @@ class CorrelatorService(FastAPIService):
                     await self.clear_by_reference(ref, ts=ts)
                 else:
                     await self.raise_alarm(
-                        managed_object=mo, timestamp=ts, alarm_class=ac, reference=ref, vars={}
+                        managed_object=mo,
+                        timestamp=ts,
+                        alarm_class=ac,
+                        reference=ref,
+                        vars={},
+                        labels=item.labels,
                     )
             except Exception:
                 metrics["alarm_dispose_error"] += 1
