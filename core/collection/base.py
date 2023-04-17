@@ -322,11 +322,8 @@ class Collection(object):
                             "[%s|%s] Changing local uuid %s (%s)\n"
                             % (self.name, data["uuid"], o.uuid, getattr(o, self.name_field))
                         )
-                        clean = True
-                        if not o.uuid:
-                            clean = False
                         o.uuid = data["uuid"]
-                        o.save(clean=clean)
+                        o.save(clean=bool(o.uuid))
                         # Try again
                         return self.update_item(data)
                     self.stdout.write("Not find object by query: %s\n" % qs)
