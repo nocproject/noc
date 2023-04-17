@@ -349,7 +349,6 @@ class Command(BaseCommand):
                 if autoadd:
                     m = ManagedObject(
                         name=x12 if not x12 or x12 != "" else ipx,
-                        is_managed=is_managed,
                         administrative_domain=self.adm_domain,
                         profile=self.profile,
                         description=description,
