@@ -66,7 +66,9 @@ class Profile(BaseProfile):
 
     matchers = {
         "is_has_image": {"image": {"$regex": r"^\S+"}},
-        "is_has_chgroup": {"version": {"$regex": r"^([12]\.[15]\.4[4-9]|4\.0\.[1,5-9]|6\.1\.2)"}},
+        "is_has_chgroup": {
+            "version": {"$regex": r"^([12]\.[15]\.4[4-9]|4\.0\.[1,5-9]|6\.[12,4]\.[12])"}
+        },
         "is_3124": {"platform": {"$regex": "3[13](24|48)"}},
     }
 
@@ -109,6 +111,9 @@ class Profile(BaseProfile):
         "136": "MES-5316A",
         "142": "MES-3348F",  # rev.B
         "190": "MES-3324F",  # rev.B
+        "192": "MES-2324FB",
+        "235": "MES-2348P",
+
     }
 
     def setup_session(self, script):
