@@ -2,7 +2,7 @@
 # Vendor: Eltex
 # OS:     MES
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2022 The NOC Project
+# Copyright (C) 2007-2023 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -35,7 +35,8 @@ class Profile(BaseProfile):
         rb"Wrong number of parameters or invalid range, size or "
         rb"characters entered)"
     )
-    command_disable_pager = "terminal datadump"
+    pattern_operation_error = rb"command authorization failed"
+    # command_disable_pager = "terminal datadump"
     command_super = b"enable"
     command_enter_config = "configure"
     command_leave_config = "end"
@@ -65,9 +66,7 @@ class Profile(BaseProfile):
 
     matchers = {
         "is_has_image": {"image": {"$regex": r"^\S+"}},
-        "is_has_chgroup": {
-            "version": {"$regex": r"^([12]\.[15]\.4[4-9]|4\.0\.[1,5-9]|6\.[12,4]\.[12])"}
-        },
+        "is_has_chgroup": {"version": {"$regex": r"^([12]\.[15]\.4[4-9]|4\.0\.[1,5-9]|6\.1\.2)"}},
         "is_3124": {"platform": {"$regex": "3[13](24|48)"}},
     }
 
@@ -110,9 +109,14 @@ class Profile(BaseProfile):
         "136": "MES-5316A",
         "142": "MES-3348F",  # rev.B
         "190": "MES-3324F",  # rev.B
-        "192": "MES-2324FB",
-        "235": "MES-2348P",
     }
+
+    def setup_session(self, script):
+        try:
+            script.cli("terminal datadump")
+            script.cli("")  # "сommand authorization failed" - not syntax error
+        except script.CLISyntaxError:
+            pass
 
     REVISIONS = {"190": "rev.B"}
 
