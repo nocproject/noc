@@ -6,6 +6,7 @@
 # ----------------------------------------------------------------------
 
 # Python modules
+import datetime
 from typing import Optional, List, Union
 from enum import Enum
 from pydantic import IPvAnyAddress, validator
@@ -42,6 +43,12 @@ class ManagedObject(BaseModel):
     id: str
     name: str
     is_managed: bool
+    # Workflow state
+    state: Optional[str]
+    # Last state change
+    state_changed: Optional[datetime.datetime]
+    # Workflow event
+    event: Optional[str]
     container: Optional[Reference["Object"]]
     administrative_domain: Reference["AdministrativeDomain"]
     pool: str

@@ -28,6 +28,8 @@ class ManagedObjectLoader(BaseLoader):
     data_model = ManagedObject
     post_save_fields = {"capabilities"}
     label_enable_setting = "enable_managedobject"
+    workflow_delete_event = "remove"
+    workflow_state_sync = True
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
