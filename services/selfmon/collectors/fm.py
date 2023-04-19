@@ -28,21 +28,6 @@ class FMObjectCollector(BaseCollector):
     ping_failed_ac = AlarmClass.objects.get(name="NOC | Managed Object | Ping Failed").id
     discovery_failed_ac = {ac.id for ac in AlarmClass.objects.filter(name__contains="Discovery")}
 
-    late_alarm_pipeline = [
-        {"$match": {"alarm_class": ping_failed_ac}},
-        # AlarmClass.objects.get(name="NOC | Managed Object | Ping Failed") bson.ObjectId("5717afcdcc044b7708f53c2f")
-        {
-            "$lookup": {
-                "from": "noc.cache.object_status",
-                "localField": "managed_object",
-                "foreignField": "object",
-                "as": "st",
-            }
-        },
-        {"$match": {"$and": [{"st.status": True}]}},
-        {"$count": "late_alarm"},
-    ]
-
     pool_mappings = [
         (p.name, set(ManagedObject.objects.filter(pool=p).values_list("id", flat=True)))
         for p in Pool.objects.filter()
@@ -76,8 +61,6 @@ class FMObjectCollector(BaseCollector):
             yield ("fm_alarms_active_last_lag_seconds",), self.calc_lag(
                 time.mktime(last_alarm["timestamp"].timetuple()), now
             )
-        late_alarm = next(db.noc.alarms.active.aggregate(self.late_alarm_pipeline), None)
-        yield ("fm_alarms_active_late_count",), late_alarm["late_alarm"] if late_alarm else 0
         alarms_rooted = set()
         alarms_nroored = set()
         alarms_ping = set()
