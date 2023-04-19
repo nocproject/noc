@@ -8,9 +8,12 @@
 
 # Python modules
 import datetime
-from typing import List, Dict, Tuple, Optional
+import operator
+from threading import Lock
+from typing import List, Dict, Tuple, Optional, Set
 
 # Third-party modules
+import cachetools
 from mongoengine.document import Document
 from mongoengine.fields import IntField, BooleanField, DateTimeField
 from pymongo import UpdateOne
@@ -18,6 +21,8 @@ from pymongo import UpdateOne
 # NOC modules
 from noc.core.service.loader import get_service
 from noc.fm.models.outage import Outage
+
+id_lock = Lock()
 
 
 class ObjectStatus(Document):
@@ -35,19 +40,33 @@ class ObjectStatus(Document):
     # Last update
     last = DateTimeField()
 
+    _failed_object_cache = cachetools.TTLCache(maxsize=10, ttl=60)
+
     def __str__(self):
         return f"{self.object}: {self.status}"
 
     @classmethod
-    def get_status(cls, object):
+    def get_status(cls, object) -> bool:
         d = ObjectStatus._get_collection().find_one({"object": object.id})
         if d:
             return d["status"]
-        else:
-            return True
+        return True
 
     @classmethod
-    def get_last_status(cls, object):
+    @cachetools.cachedmethod(operator.attrgetter("_failed_object_cache"), lock=lambda _: id_lock)
+    def get_failed_objects(cls) -> Set[int]:
+        return set(d["object"] for d in ObjectStatus._get_collection().find({"status": False}))
+
+    @classmethod
+    def is_failed(cls, oid: int) -> bool:
+        """
+        Check Object status is failed
+        :param oid: Object Id
+        """
+        return oid in cls.get_failed_objects()
+
+    @classmethod
+    def get_last_status(cls, object) -> Tuple[Optional[bool], Optional[datetime.datetime]]:
         """
         Returns last registred status and update time
         :param object: Managed Object id
@@ -56,8 +75,7 @@ class ObjectStatus(Document):
         d = ObjectStatus._get_collection().find_one({"object": object.id})
         if d:
             return d["status"], d.get("last")
-        else:
-            return None, None
+        return None, None
 
     @classmethod
     def get_statuses(cls, objects: List[int]) -> Dict[int, bool]:

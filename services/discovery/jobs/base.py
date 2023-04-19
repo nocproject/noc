@@ -30,6 +30,7 @@ from noc.core.scheduler.periodicjob import PeriodicJob
 from noc.core.models.problem import ProblemItem
 from noc.main.models.label import Label, MATCH_OPS
 from noc.sa.models.managedobject import ManagedObject
+from noc.sa.models.objectstatus import ObjectStatus
 from noc.inv.models.subinterface import SubInterface
 from noc.inv.models.interfaceprofile import InterfaceProfile
 from noc.core.debug import error_report
@@ -147,7 +148,7 @@ class MODiscoveryJob(PeriodicJob):
         # Check object status according to policy
         rp = self.get_running_policy()
         if rp == "R" or (rp == "r" and self.object.object_profile.enable_ping):
-            if not self.object.get_status():
+            if ObjectStatus.is_failed(self.object.id):
                 self.logger.info("Object is down. Skipping job")
                 return False
         return True
