@@ -247,7 +247,10 @@ class Config(BaseConfig):
         sample = IntParameter(default=0)
         min_metric_interval = IntParameter(default=60)
         job_check_interval = IntParameter(default=1000, min=1000)
-        object_status_cache_ttl = SecondsParameter(default=30, min=10)
+        object_status_cache_ttl = SecondsParameter(
+            default=30,
+            help="TTL for object status cache. Used when check run discovery",
+        )
 
     class dns(ConfigSection):
         warn_before_expired = SecondsParameter(default="30d")
