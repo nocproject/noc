@@ -14,7 +14,7 @@ Ext.define('NOC.core.filter.Filter', {
         'NOC.core.ComboBox',
         'NOC.core.combotree.ComboTree',
         'NOC.core.filter.ViewModel',
-        'NOC.core.filter.FilterController'
+        'NOC.core.filter.FilterController',
     ],
     initComponent: function() {
         this.defaults = {
@@ -53,9 +53,99 @@ Ext.define('NOC.core.filter.Filter', {
         //     }
         // },
         {
+            xtype: "container",
+            title: __("Favorites"),
+            itemId: "fav_status",
+            layout: {
+                type: "hbox"
+            },
+            value: undefined,
+            items: [
+                {
+                    xtype: "displayfield",
+                    fieldLabel: __("Favorites"),
+                    allowBlank: true,
+                    flex: 2
+                },
+                {
+                    xtype: "button",
+                    glyph: NOC.glyph.star,
+                    cls: "noc-starred",
+                    toggleGroup: "favgroup",
+                    handler: function() {
+                        this.up().value = this.pressed ? "true" : undefined;
+                        this.up().fireEvent("setFilter", this.up());
+                    }
+                },
+                {
+                    xtype: "button",
+                    glyph: NOC.glyph.star,
+                    cls: "noc-unstarred",
+                    toggleGroup: "favgroup",
+                    handler: function() {
+                        this.up().value = this.pressed ? "false" : undefined;
+                        this.up().fireEvent("setFilter", this.up());
+                    }
+                }
+            ],
+            listeners: {
+                setFilter: 'setFilter'
+            },
+            setValue(value) {
+                this.value = value;
+                if(value === undefined) { // clean
+                    Ext.Array.each(this.query('[toggleGroup=favgroup]'), function(button) {button.setPressed(false)});
+                    return;
+                }
+                if(value === "true") {
+                    this.down("[cls=noc-starred]").setPressed(true);
+                }
+                if(value === "false") {
+                    this.down("[cls=noc-unstarred]").setPressed(true);
+                }
+            },
+            getValue: function() {
+                return this.value;
+            },
+        },
+        {
+            xtype: "core.combo",
+            restUrl: "/gis/geocoder/lookup/",
+            itemId: "__geoaddress", // name of request query param
+            fieldLabel: __("By Geo Address:"),
+            typeAheadDelay: 500,
+            minChars: 4,
+            pageSize: 0,
+            hideTrigger: true,
+            hideTriggerCreate: true,
+            hideTriggerUpdate: true,
+            dataFields: ["id", "label", "style", "is_loose"],
+            tpl:
+                '<tpl for=".">' +
+                '<div class="x-boundlist-item {style}">{label}</div>' +
+                "</tpl>",
+            triggers: {
+                clear: {
+                    cls: 'x-form-clear-trigger',
+                    hidden: true,
+                    weight: -1,
+                    handler: function(field) {
+                        field.setValue(null);
+                        field.fireEvent("select", field);
+                    }
+                },
+            },
+            listeners: {
+                select: 'setFilter'
+            },
+            initField: function() {
+                this.setHidden(!NOC.settings.has_geocoder);
+            }
+        },
+        {
             xtype: "core.combo",
             restUrl: "/wf/state/lookup/",
-            itemId: "state",
+            itemId: "state", // name of request query param
             fieldLabel: __("By State:"),
             listeners: {
                 select: 'setFilter'
