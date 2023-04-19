@@ -80,12 +80,12 @@ class ManagedObject(BaseModel):
 
     class Config:
         fields = {"labels": "tags"}
+        exclude = {"is_managed"}
         allow_population_by_field_name = True
 
     _csv_fields = [
         "id",
         "name",
-        "is_managed",
         "container",
         "administrative_domain",
         "pool",
