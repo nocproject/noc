@@ -28,6 +28,5 @@ class Label(BaseModel):
     enable_service: Optional[bool]
     enable_serviceprofile: Optional[bool]
     enable_subscriber: Optional[bool]
-    enable_subscriberprofile: Optional[bool]
 
     _csv_fields = ["id", "name", "description"]
