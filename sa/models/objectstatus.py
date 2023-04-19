@@ -21,6 +21,7 @@ from pymongo import UpdateOne
 # NOC modules
 from noc.core.service.loader import get_service
 from noc.fm.models.outage import Outage
+from noc.config import config
 
 id_lock = Lock()
 
@@ -40,7 +41,9 @@ class ObjectStatus(Document):
     # Last update
     last = DateTimeField()
 
-    _failed_object_cache = cachetools.TTLCache(maxsize=10, ttl=60)
+    _failed_object_cache = cachetools.TTLCache(
+        maxsize=10, ttl=config.discovery.object_status_cache_ttl
+    )
 
     def __str__(self):
         return f"{self.object}: {self.status}"
@@ -55,7 +58,18 @@ class ObjectStatus(Document):
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_failed_object_cache"), lock=lambda _: id_lock)
     def get_failed_objects(cls) -> Set[int]:
-        return set(d["object"] for d in ObjectStatus._get_collection().find({"status": False}))
+        r = next(
+            ObjectStatus._get_collection().aggregate(
+                [
+                    {"$match": {"status": False}},
+                    {"$group": {"_id": 1, "objects": {"$push": "$object"}}},
+                ]
+            ),
+            None,
+        )
+        if not r:
+            return set()
+        return set(r["objects"])
 
     @classmethod
     def is_failed(cls, oid: int) -> bool:
