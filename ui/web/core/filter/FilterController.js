@@ -29,7 +29,12 @@ Ext.define('NOC.core.filter.FilterController', {
             var selectionStore = view.getViewModel().getStore(selectionStoreName);
             //
             if(queryStr) {
-                this.view.viewModel.set('filterObject', Ext.Object.fromQueryString(queryStr, true));
+                var params = Ext.Object.fromQueryString(queryStr, true);
+                //
+                this.view.viewModel.set('filterObject', params);
+                if(params.hasOwnProperty('fav_status')) {
+                    this.view.down('[itemId=fav_status]').setValue(params['fav_status']);
+                }
                 Ext.Array.each(this.lookupFields(), function(item) {
                     var self = this;
                     var filterObject = self.view.viewModel.get('filterObject');
@@ -121,6 +126,7 @@ Ext.define('NOC.core.filter.FilterController', {
     cleanAllFilters: function() {
         Ext.History.add(this.view.appId);
         this.view.viewModel.set('filterObject', {});
+        this.onCleanFavorite();
         Ext.Array.each(this.lookupFields(), function(item) {
             if('caps' === item.itemId) {
                 // skip
@@ -312,5 +318,13 @@ Ext.define('NOC.core.filter.FilterController', {
             }
         }
     },
+
+    onCleanFavorite: function() {
+        var field = this.view.down('[itemId=fav_status]')
+        if(field) {
+            field.setValue(undefined);
+        }
+    },
+
     onChange: Ext.emptyFn,
 });

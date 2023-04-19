@@ -63,6 +63,8 @@ Ext.define("NOC.core.ComboBox", {
     isLookupField: true,
     restUrl: null,
     askPermission: true,
+    hideTriggerUpdate: false,
+    hideTriggerCreate: false,
     query: {},
 
     initComponent: function() {
@@ -126,14 +128,14 @@ Ext.define("NOC.core.ComboBox", {
                 me.getTrigger("clear").show();
                 if(value == null || value === "") {
                     if(Ext.Array.contains(perms, "create")) {
-                        me.getTrigger("create").show();
+                        if(!me.hideTriggerCreate) me.getTrigger("create").show();
                     }
                     me.getTrigger("clear").hide();
                     me.getTrigger("update").hide();
                     return;
                 }
                 if(Ext.Array.contains(perms, "launch")) {
-                    me.getTrigger("update").show();
+                    if(!me.hideTriggerUpdate) me.getTrigger("update").show();
                 }
             };
 
