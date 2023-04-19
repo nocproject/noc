@@ -30,6 +30,8 @@ class YAMLProtocol(BaseProtocol):
         super().__init__(config, url)
         if self.parsed_url.path == "/":
             self.path = ""
+        elif os.name == "nt":
+            self.path = self.parsed_url.netloc
         else:
             self.path = self.parsed_url.path
 
