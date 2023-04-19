@@ -678,6 +678,20 @@ Ext.define('NOC.sa.managedobject.Controller', {
     onEdit: function(gridView, rowIndex, colIndex, item, e, record) {
         this.editManagedObject(gridView.up('[itemId=sa-managedobject]'), record.id);
     },
+    onFavItem: function(gridView, rowIndex, colIndex, item, e, record) {
+        var action = record.get("fav_status") ? "reset" : "set",
+            url = "/sa/managedobject/favorites/item/" + record.id + "/" + action + "/";
+
+        Ext.Ajax.request({
+            url: url,
+            method: "POST",
+            success: function() {
+                // Invert current status
+                record.set("fav_status", !record.get("fav_status"));
+                gridView.refresh();
+            }
+        });
+    },
     //
     onNewRecord: function() {
         var view = this.getView(),

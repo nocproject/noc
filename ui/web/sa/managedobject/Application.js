@@ -185,11 +185,22 @@ Ext.define('NOC.sa.managedobject.Application', {
                             emptyText: __('Not Found'),
                             columns: [{
                                 xtype: 'glyphactioncolumn',
-                                width: 25,
-                                items: [{
-                                    glyph: NOC.glyph.edit,
-                                    handler: 'onEdit'
-                                }]
+                                width: 50,
+                                items: [
+                                    {
+                                        glyph: NOC.glyph.star,
+                                        tooltip: __('Mark/Unmark'),
+                                        getColor: function(cls, meta, r) {
+                                            return r.get("fav_status") ? NOC.colors.starred : NOC.colors.unstarred;
+                                        },
+                                        handler: 'onFavItem'
+                                    },
+                                    {
+                                        glyph: NOC.glyph.edit,
+                                        tooltip: __('Edit'),
+                                        handler: 'onEdit'
+                                    }
+                                ]
                             }].concat(this.defaultColumns),
                             bind: {
                                 store: '{selectionStore}',
