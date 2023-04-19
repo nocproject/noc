@@ -39,7 +39,6 @@ from noc.main.models.label import Label
 from noc.services.web.base.modelinline import ModelInline
 from noc.services.web.base.repoinline import RepoInline
 from noc.project.models.project import Project
-from noc.core.text import alnum_key
 from noc.sa.interfaces.base import (
     ListOfParameter,
     ModelParameter,
@@ -56,6 +55,8 @@ from noc.core.comp import smart_text, smart_bytes
 from noc.core.geocoder.loader import loader as geocoder_loader
 from noc.core.validators import is_objectid
 from noc.core.debug import error_report
+from noc.core.text import alnum_key
+from noc.core.middleware.tls import get_user
 from noc.fm.models.activealarm import ActiveAlarm
 from noc.fm.models.alarmclass import AlarmClass
 from noc.sa.models.objectstatus import ObjectStatus
@@ -157,6 +158,13 @@ class ManagedObjectApplication(ExtModelApplication):
 
     def field_row_class(self, o):
         return o.object_profile.style.css_class_name if o.object_profile.style else ""
+
+    def bulk_field_fav_status(self, data):
+        user = get_user()
+        fav_items = self.get_favorite_items(user)
+        for r in data:
+            r[self.fav_status] = r[self.pk] in fav_items
+        return data
 
     def bulk_field_interface_count(self, data):
         """

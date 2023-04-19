@@ -111,7 +111,7 @@ Ext.define('NOC.core.filter.Filter', {
         {
             xtype: "core.combo",
             restUrl: "/gis/geocoder/lookup/",
-            itemId: "geoaddress", // name of request query param
+            itemId: "__geoaddress", // name of request query param
             fieldLabel: __("By Geo Address:"),
             typeAheadDelay: 500,
             minChars: 4,
@@ -140,9 +140,6 @@ Ext.define('NOC.core.filter.Filter', {
             },
             initField: function() {
                 this.setHidden(!NOC.settings.has_geocoder);
-            },
-            getValue: function() {
-                return this.getRawValue();
             }
         },
         {
