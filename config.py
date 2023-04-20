@@ -248,7 +248,7 @@ class Config(BaseConfig):
         min_metric_interval = IntParameter(default=60)
         job_check_interval = IntParameter(default=1000, min=1000)
         object_status_cache_ttl = SecondsParameter(
-            default=30,
+            default=10,
             help="TTL for object status cache. Used when check run discovery",
         )
 
