@@ -10,6 +10,7 @@ from pickle import loads, dumps, HIGHEST_PROTOCOL
 
 # Third-party modules
 import psycopg2
+import orjson
 from pydantic import BaseModel, ValidationError
 from psycopg2.extensions import adapt
 from django.db import models
@@ -21,9 +22,9 @@ from bson import ObjectId
 
 # NOC Modules
 from noc.core.ip import IP
-from noc.sa.interfaces.base import MACAddressParameter
 from noc.core.comp import smart_text
 from noc.core.validators import is_objectid
+from noc.sa.interfaces.base import MACAddressParameter
 from noc.models import get_model
 
 
@@ -384,6 +385,11 @@ class PydanticField(models.JSONField):
             except ValidationError as e:
                 raise ValueError(e)
         return super().get_db_prep_value(value, connection, prepared=prepared)
+
+    def get_prep_value(self, value):
+        if value is None:
+            return value
+        return orjson.dumps(value, option=orjson.OPT_NAIVE_UTC).decode("utf-8")
 
     def validate(self, value, model_instance):
         # Only form.full_clean execute
