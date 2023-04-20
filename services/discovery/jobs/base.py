@@ -14,6 +14,7 @@ import datetime
 import types
 import operator
 import random
+from threading import Lock
 from io import StringIO
 from time import perf_counter
 
@@ -22,7 +23,7 @@ import bson
 import cachetools
 import orjson
 from pymongo import UpdateOne
-from typing import List, Dict, Any, Optional, Tuple
+from typing import List, Dict, Any, Optional, Tuple, Set
 from builtins import str, object
 
 # NOC modules
@@ -30,6 +31,7 @@ from noc.core.scheduler.periodicjob import PeriodicJob
 from noc.core.models.problem import ProblemItem
 from noc.main.models.label import Label, MATCH_OPS
 from noc.sa.models.managedobject import ManagedObject
+from noc.sa.models.objectstatus import ObjectStatus
 from noc.inv.models.subinterface import SubInterface
 from noc.inv.models.interfaceprofile import InterfaceProfile
 from noc.core.debug import error_report
@@ -53,6 +55,9 @@ from noc.core.perf import metrics
 from noc.core.comp import smart_bytes
 from noc.core.wf.interaction import Interaction
 from noc.core.wf.diagnostic import DiagnosticState, DiagnosticHub
+from noc.config import config
+
+fallen_object_lock = Lock()
 
 
 class MODiscoveryJob(PeriodicJob):
@@ -68,6 +73,9 @@ class MODiscoveryJob(PeriodicJob):
     discovery_diagnostics = set()
 
     _metric_interval_cache = cachetools.TTLCache(maxsize=5000, ttl=43200)
+    _fallen_object_cache = cachetools.TTLCache(
+        maxsize=10, ttl=config.discovery.object_status_cache_ttl
+    )
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -136,6 +144,40 @@ class MODiscoveryJob(PeriodicJob):
     def get_running_policy(self):
         raise NotImplementedError
 
+    @cachetools.cachedmethod(
+        operator.attrgetter("_fallen_object_cache"), lock=lambda _: fallen_object_lock
+    )
+    def get_fallen_objects(self) -> Set[int]:
+        """
+        Getting failed ping ManagedObject from cache
+        :param shard:
+        :param shard_count:
+        """
+        match = {"status": False}
+        match["object"] = {"$mod": [self.service.total_slots, self.service.slot_number]}
+        r = next(
+            ObjectStatus._get_collection().aggregate(
+                [
+                    {"$match": match},
+                    {"$group": {"_id": 1, "objects": {"$push": "$object"}}},
+                ]
+            ),
+            None,
+        )
+        if not r:
+            return set()
+        return set(r["objects"])
+
+    @property
+    def is_object_down(self) -> bool:
+        """
+        Check Object status is failed
+        :param oid: Object Id
+        """
+        if not self.object:
+            return True
+        return self.object.id in self.get_fallen_objects()
+
     def can_run(self):
         # Check object is managed
         if (
@@ -147,7 +189,7 @@ class MODiscoveryJob(PeriodicJob):
         # Check object status according to policy
         rp = self.get_running_policy()
         if rp == "R" or (rp == "r" and self.object.object_profile.enable_ping):
-            if not self.object.get_status():
+            if self.is_object_down:
                 self.logger.info("Object is down. Skipping job")
                 return False
         return True
