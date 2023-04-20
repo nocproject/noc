@@ -293,7 +293,8 @@ class DiagnosticHub(object):
             "[%s] Change diagnostic state: %s -> %s", diagnostic, d.state.value, state.value
         )
         # last_state = d.state
-        d.changed = changed_ts or datetime.datetime.now().replace(microsecond=0)
+        d.changed = changed_ts or datetime.datetime.now()
+        d.changed = d.changed.replace(microsecond=0, tzinfo=None)
         d.state = state
         d.reason = reason
         # Update dependent
@@ -357,7 +358,7 @@ class DiagnosticHub(object):
         """
         Reset diagnostic data.
         * update config for resetting diagnostic
-        * syncronize diagnostics config
+        * synchronize diagnostics config
         """
         self.logger.info("[%s] Reset diagnostics: %s", str(self.__object), diagnostics)
         for d in diagnostics:
