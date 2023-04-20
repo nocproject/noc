@@ -389,7 +389,7 @@ class PydanticField(models.JSONField):
     def get_prep_value(self, value):
         if value is None:
             return value
-        return orjson.dumps(value, option=orjson.OPT_NAIVE_UTC).decode("utf-8")
+        return orjson.dumps(value).decode("utf-8")
 
     def validate(self, value, model_instance):
         # Only form.full_clean execute
