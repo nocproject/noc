@@ -115,6 +115,12 @@ class Script(BaseScript):
                 if not v:
                     continue
                 neigh = dict(zip(neighb, v[2:]))
+                index = v[0].split(".")
+                if len(index) == 2:
+                    # Bug on TPLINK T2600, index without TimeMark
+                    port_num, port_index = index
+                else:
+                    _, port_num, port_index = index
                 # cleaning
                 if neigh["remote_port_subtype"] == LLDP_PORT_SUBTYPE_COMPONENT:
                     neigh["remote_port_subtype"] = LLDP_PORT_SUBTYPE_ALIAS
@@ -140,7 +146,7 @@ class Script(BaseScript):
                     )
                 r += [
                     {
-                        "local_interface": local_ports[v[0].split(".")[1]]["local_interface"],
+                        "local_interface": local_ports[port_num]["local_interface"],
                         # @todo if local interface subtype != 5
                         # "local_interface_id": 5,
                         "neighbors": [neigh],
