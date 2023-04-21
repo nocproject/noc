@@ -77,6 +77,8 @@ class Config(BaseConfig):
         bulk_ping_timeout = SecondsParameter(default="5s")
         bulk_ping_interval = FloatParameter(default=0.1)
         bulk_ping_max_jobs = IntParameter(default=6)
+        bulk_snmp_timeout = SecondsParameter(default="10s")
+        bulk_snmp_max_jobs = IntParameter(default=6)
         traceroute_tries = IntParameter(default=3)
 
     class bi(ConfigSection):

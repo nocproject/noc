@@ -11,11 +11,13 @@ import asyncio
 # Third-party modules
 from fastapi import APIRouter
 from gufo.ping import Ping
+from gufo.snmp import SnmpSession
 from gufo.traceroute import Traceroute
 
 # NOC modules
 from noc.config import config
 from ..models.bulk_ping import PingRequest, PingResponse
+from ..models.bulk_snmp import SNMPRequest, SNMPResponse
 from ..models.traceroute import TracerouteRequest, TracerouteResponse
 
 router = APIRouter()
@@ -47,6 +49,39 @@ async def bulk_ping(req: PingRequest):
     ]
     await asyncio.gather(*tasks)
     return PingResponse(items=result)
+
+
+@router.post("/api/bh/bulk_snmp/")
+async def bulk_snmp(req: SNMPRequest):
+    async def snmp_worker():
+        nonlocal result
+        while True:
+            async with lock:
+                if not req.addresses:
+                    break  # Done
+                addr = req.addresses.pop(0)
+            objects_list = []
+            try:
+                async with SnmpSession(
+                    addr=addr.address, community=addr.community, timeout=timeout, tos=tos
+                ) as session:
+                    async for oid, value in session.getbulk(req.oid_filter):
+                        objects_list += [(oid, value)]
+                error_code = None
+            except TimeoutError:
+                error_code = "Timeout reached"
+            result += [{"address": addr.address, "objects": objects_list, "error_code": error_code}]
+
+    timeout = req.timeout or config.bh.bulk_snmp_timeout
+    tos = req.tos or 0
+    result = []
+    lock = asyncio.Lock()
+    tasks = [
+        asyncio.create_task(snmp_worker(), name=f"snmp-{i}")
+        for i in range(min(config.bh.bulk_snmp_max_jobs, len(req.addresses)))
+    ]
+    await asyncio.gather(*tasks)
+    return SNMPResponse(items=result)
 
 
 @router.post("/api/bh/traceroute/")
