@@ -15,6 +15,7 @@ from threading import Lock
 import cachetools
 from mongoengine.document import Document, EmbeddedDocument
 from mongoengine.fields import (
+    FloatField,
     ListField,
     DictField,
     StringField,
@@ -28,7 +29,9 @@ from django.db.models.query_utils import Q as d_q
 from noc.core.mongo.fields import PlainReferenceField
 from noc.core.change.decorator import change
 from noc.main.models.label import Label
+from noc.pm.models.metrictype import MetricType
 from noc.pm.models.metricaction import MetricAction
+from noc.fm.models.alarmclass import AlarmClass
 from noc.config import config
 
 id_lock = Lock()
@@ -46,16 +49,33 @@ class Match(EmbeddedDocument):
         return list(Label.objects.filter(name__in=self.labels))
 
 
+class ThresholdConfig(EmbeddedDocument):
+    # Open condition
+    op = StringField(choices=["<", "<=", ">=", ">"])
+    value = FloatField(default=1.0, null=True)
+    # Closing condition
+    clear_value = FloatField(default=None, null=True)
+    # Alarm class
+    alarm_class = PlainReferenceField(AlarmClass)
+    #
+    alarm_labels = ListField(StringField())
+
+
 class MetricActionItem(EmbeddedDocument):
-    metric_action: "MetricAction" = PlainReferenceField(MetricAction)
     is_active = BooleanField(default=True)
+    metric_type: "MetricType" = PlainReferenceField(MetricType)
+    metric_action: "MetricAction" = PlainReferenceField(MetricAction)
     metric_action_params: Dict[str, Any] = DictField()
+    thresholds: List["ThresholdConfig"] = EmbeddedDocumentListField(ThresholdConfig)
 
     def __str__(self) -> str:
         return str(self.metric_action)
 
     def clean(self):
         ma_params = {}
+        if not self.metric_action:
+            self.metric_action_params = {}
+            return
         for param in self.metric_action.params:
             if param.name not in self.metric_action_params:
                 continue
@@ -102,6 +122,11 @@ class MetricRule(Document):
         ids = []
         scopes = set()
         for a in self.actions:
+            if a.metric_type:
+                scopes.add(a.metric_type.scope.table_name)
+                continue
+            elif not a.metric_action:
+                continue
             for ci in a.metric_action.compose_inputs:
                 scopes.add(ci.metric_type.scope.table_name)
         mq = m_q()

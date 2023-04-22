@@ -35,6 +35,8 @@ class MetricRuleApplication(ExtDocApplication):
     def params_to_list(action, params):
         params = params or {}
         r = []
+        if not action.metric_action:
+            return r
         for p in action.metric_action.params:
             r += [
                 {
