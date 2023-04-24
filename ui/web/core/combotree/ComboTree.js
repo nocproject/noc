@@ -77,7 +77,6 @@ Ext.define("NOC.core.combotree.ComboTree", {
                 sortParam: "__sort",
                 extraParams: {
                     __format: "ext",
-                    parent: "",
                 },
                 reader: readerCfg
             };
@@ -112,9 +111,9 @@ Ext.define("NOC.core.combotree.ComboTree", {
         // typeahead store
         me.bindStore(storeCfg);
         // tree panel store
-        treeProxyCfg = Ext.apply({
-            url: me.restUrl + "lookup/"
-        }, Ext.clone(defaultProxyCfg), true);
+        treeProxyCfg = Ext.clone(defaultProxyCfg);
+        treeProxyCfg.url = me.restUrl + "lookup/";
+        treeProxyCfg.extraParams.parent = "";
         var treeStoreCfg = Ext.merge(
             Ext.clone(storeCfg),
             {
