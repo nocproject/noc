@@ -88,6 +88,8 @@ class ObjectLevelNeighborTopology(TopologyBase):
         }
         o_mos = set(object_mos)
         for mo in mos.values():
+            if mo.state.is_wiping:
+                continue
             n = mo.get_topology_node()
             if mo.id not in o_mos:
                 n.portal = Portal(generator=self.name, id=str(mo.id))

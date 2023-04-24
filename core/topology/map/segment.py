@@ -200,6 +200,8 @@ class SegmentTopology(TopologyBase):
             mo_id for mo_id in all_mos if mos[mo_id].segment.id == self.segment.id
         )
         for mo in mos.values():
+            if mo.state.is_wiping:
+                continue
             n = mo.get_topology_node()
             role = self.get_role(mo)
             if role == "uplink":
