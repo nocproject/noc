@@ -23,7 +23,7 @@ class Migration(BaseMigration):
         l_bulk, ac_bulk = [], []
         # Add severities labels
         for row in s_coll.find():
-            severity_weight_map[row["name"].lower()] = row.get("min_weight", 0)
+            severity_weight_map[row["name"].lower()] = row.get("severity", 0)
             l_name = f'noc::severity::{row["name"].lower()}'
             ac_bulk += [
                 UpdateMany({"default_severity": row["_id"]}, {"$set": {"labels": [l_name]}})
@@ -72,7 +72,11 @@ class Migration(BaseMigration):
                         ],
                         "groups": [],
                         "actions": [
-                            {"when": "raise", "policy": "continue", "severity": s_weight + 1}
+                            {
+                                "when": "raise",
+                                "policy": "continue",
+                                "severity": max(s_weight - 1001, 1) if s_weight else 0,
+                            }
                         ],
                         "bi_id": Int64(bi_hash(ar_id)),
                     }
