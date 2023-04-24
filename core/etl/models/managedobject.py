@@ -42,7 +42,6 @@ class CapsItem(_BaseModel):
 class ManagedObject(BaseModel):
     id: str
     name: str
-    is_managed: bool
     # Workflow state
     state: Optional[str]
     # Last state change
