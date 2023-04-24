@@ -16,6 +16,7 @@ from pymongo import UpdateOne
 from noc.models import is_document, get_model_id, get_model
 from noc.core.scheduler.job import Job
 from noc.core.defer import call_later
+from noc.core.wf.interaction import Interaction
 
 logger = logging.getLogger(__name__)
 
@@ -182,10 +183,20 @@ def model_set_state(self, state, state_changed: datetime.datetime = None, bulk=N
     #
     if state.is_wiping and not state.ttl:
         self.delete()
-    else:
+    elif state.is_wiping:
         call_later(
             "noc.core.wf.decorator.wipe",
             delay=state.ttl or 0,
+            scheduler="scheduler",
+            # pool=self.escalate_managed_object.escalator_shard,
+            model_id=get_model_id(self),
+            oid=self.id,
+        )
+    # Handle became unmanaged
+    if not state.is_enabled_interaction(Interaction.Alarm):
+        call_later(
+            "noc.core.wf.decorator.wipe_alarm",
+            delay=10,
             scheduler="scheduler",
             # pool=self.escalate_managed_object.escalator_shard,
             model_id=get_model_id(self),
@@ -337,3 +348,19 @@ def wipe(model_id: str, oid):
     except Exception as e:
         logger.error("[%s] Error when wipe: %s", o, str(e))
         Job.retry_after(o.state.ttl or 600)
+
+
+def wipe_alarm(model_id: str, oid):
+    """
+    Wiping Active Alarm
+    :param model_id:
+    :param oid:
+    :return:
+    """
+    # Clear alarms
+    from noc.fm.models.activealarm import ActiveAlarm
+
+    if model_id != "sa.ManagedObject":
+        return
+    for aa in ActiveAlarm.objects.filter(managed_object=int(oid)):
+        aa.clear_alarm("Management is disabled")
