@@ -499,7 +499,10 @@ class BaseLoader(object):
     def change_workflow(self, o, state: str, changed_date: Optional[datetime.datetime] = None):
         if not o:
             return
-        state = self.clean_wf_state(o.profile.workflow, state)
+        if hasattr(o, "object_profile"):
+            state = self.clean_wf_state(o.object_profile.workflow, state)
+        else:
+            state = self.clean_wf_state(o.profile.workflow, state)
         if state and o.state != state:
             self.logger.debug("Change workflow state: %s -> %s", o.state, state)
             o.set_state(state, changed_date)
