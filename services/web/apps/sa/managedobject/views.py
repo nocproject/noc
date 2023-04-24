@@ -327,6 +327,13 @@ class ManagedObjectApplication(ExtModelApplication):
                 del data[fn]
                 continue
             data[fn] = [x["group"] for x in (data.get(fn) or [])]
+        # Ignore on Save Fields
+        for f in ManagedObject._ignore_on_save:
+            if f in data:
+                del data[f]
+        # Ignore Effective labes field
+        if "effective_labels" in data:
+            del data["effective_labels"]
         # Clean other
         return super().clean(data)
 
