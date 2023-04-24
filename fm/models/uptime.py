@@ -8,6 +8,8 @@
 # Python modules
 import datetime
 import logging
+import socket
+import struct
 from typing import Optional
 
 # Third-party modules
@@ -129,7 +131,7 @@ class Uptime(Document):
                     "last": last.replace(microsecond=0).isoformat() if last else None,
                     "managed_object": mo.bi_id,
                     "pool": mo.pool.bi_id,
-                    "ip": mo.address,
+                    "ip": struct.unpack("!I", socket.inet_aton(mo.address))[0],
                     "profile": mo.profile.bi_id,
                     "object_profile": mo.object_profile.bi_id,
                     "vendor": mo.vendor.bi_id if mo.vendor else None,
