@@ -17,6 +17,6 @@ class MessageRouteApplication(ExtDocApplication):
     """
 
     title = "Message Route"
-    menu = [_("Setup"), _("Message Routes")]
+    menu = [_("Message Routes")]
     model = MessageRoute
     glyph = "arrows-alt"

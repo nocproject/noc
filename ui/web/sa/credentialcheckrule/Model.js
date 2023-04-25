@@ -56,6 +56,11 @@ Ext.define("NOC.sa.credentialcheckrule.Model", {
         {
             name: "suggest_snmp_oids",
             type: "auto"
+        },
+        {
+            name: "match_expression",
+            type: "auto",
+            persist: false
         }
     ]
 });

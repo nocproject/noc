@@ -27,7 +27,7 @@ Ext.define("NOC.sa.credentialcheckrule.Application", {
             text: __("Active"),
             dataIndex: "is_active",
             renderer: NOC.render.Bool,
-            width: 100,
+            width: 40,
             align: "left"
         },
         {
@@ -38,9 +38,31 @@ Ext.define("NOC.sa.credentialcheckrule.Application", {
             align: "right"
         },
         {
+            text: __("Match Expression"),
+            dataIndex: "match_expression",
+            width: 400,
+            renderer: function(v, _x) {
+                var labels = [], text;
+                Ext.each(v, function(label) {
+                    labels.push(NOC.render.Label({
+                        badges: label.badges,
+                        name: label.name,
+                        description: label.description || "",
+                        bg_color1: label.bg_color1 || 0,
+                        fg_color1: label.fg_color1 || 0,
+                        bg_color2: label.bg_color2 || 0,
+                        fg_color2: label.fg_color2 || 0
+                    }));
+                });
+                text = labels.join("");
+                return '<span data-qtitle="Match Expression" ' +
+                    'data-qtip="' + text + '">' + text + '</span>';
+            }
+        },
+        {
             text: __("Description"),
             dataIndex: "description",
-            flex: 200
+            width: 200,
         }
     ],
     fields: [
@@ -164,6 +186,27 @@ Ext.define("NOC.sa.credentialcheckrule.Application", {
                     }
                 },
             ]
+        }
+    ],
+    filters: [
+        {
+            title: __("By Match Rules Labels"),
+            name: "match",
+            ftype: "label",
+            lookup: "main.handler.LookupField",
+            pickerPosition: "left",
+            isTree: true,
+            filterProtected: false,
+            treePickerWidth: 400,
+            query_filter: {
+                "allow_matched": true
+            }
+        },
+        {
+            title: __("By Object"),
+            name: "managed_object",
+            ftype: "lookup",
+            lookup: "sa.managedobject"
         }
     ]
 });
