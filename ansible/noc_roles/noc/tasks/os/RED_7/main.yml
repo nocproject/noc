@@ -14,22 +14,7 @@
   tags:
     - requirements
 
-#- name: Install CentOS system packages 1/2
-#  yum:
-#    name: "{{ packages }}"
-#    state: present
-#    update_cache: "True"
-#  become: "True"
-#  vars:
-#    packages:
-#      - epel-release
-#  environment:
-#    https_proxy: "{{ http_proxy }}"
-#    http_proxy: "{{ http_proxy }}"
-#  tags:
-#    - requirements
-
-- name: Install CentOS system packages 2/2
+- name: Install RedOS system packages 2/2
   yum:
     name: "{{ packages }}"
     state: present
@@ -58,7 +43,7 @@
   tags:
     - requirements
 
-- name: Install CentOS system packages for python3
+- name: Install RedOS system packages for python3
   yum:
     name: "{{ packages }}"
     state: present

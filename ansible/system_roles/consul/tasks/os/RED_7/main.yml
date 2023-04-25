@@ -1,5 +1,5 @@
 ---
-- name: Install CentOS consul depends
+- name: Install RedOS consul depends
   yum:
     name: python-virtualenv
     state: present

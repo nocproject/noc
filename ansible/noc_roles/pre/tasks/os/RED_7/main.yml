@@ -17,7 +17,7 @@
     policy: targeted
     state: disabled
 
-- name: Install CentOS system packages pre
+- name: Install RedOS system packages pre
   yum:
     name: "{{ packages }}"
     state: latest

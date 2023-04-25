@@ -12,16 +12,6 @@
   no_log: "{{ tower_show_secrets }}"
   tags:
     - config
-    - requirements
-
-- name: install library postgresql14-devel
-  become: "True"
-  dnf:
-    name: 
-      - postgresql14-devel
-      - python-devel 
-      - python3-devel
-    state: latest
 
 - name: install library psycopg2
   pip:

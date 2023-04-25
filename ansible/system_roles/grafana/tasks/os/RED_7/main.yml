@@ -13,6 +13,17 @@
   tags:
     - repo
 
+#- name: install library postgresql14-devel
+#  become: "True"
+#  yum:
+#    name:
+#      - postgresql14-devel
+#      - python-devel
+#      - python3-devel
+#    state: latest
+#  when:
+#      - ansible_distribution == 'RED_7'
+
 - name: Install Grafana
   yum:
     name: "{{ packages }}"
