@@ -415,7 +415,7 @@ class ManagedObjectDataStream(DataStream):
             "part_no": o.get_data("asset", "part_no") or [],
             "order_part_no": o.get_data("asset", "order_part_no") or [],
             "revision": rev,
-            "data": get_asset_data(o.data),
+            "data": get_asset_data(o.get_effective_data()),
             "slots": [],
         }
         if_map = {c.name: c.interface_name for c in o.connections if c.interface_name}
