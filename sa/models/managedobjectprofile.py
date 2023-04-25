@@ -11,7 +11,7 @@ import operator
 from threading import Lock
 from functools import partial
 from dataclasses import dataclass
-from typing import Optional, List, Dict, Tuple, Iterable
+from typing import Optional, List, Dict, Tuple, Iterable, Any
 from collections import defaultdict
 
 # Third-party modules
@@ -1038,66 +1038,17 @@ class ManagedObjectProfile(NOCModel):
 class GenericObject(object):
     id: int
     object_profile: int
-    diagnostics = {}
-    pool: int = "default"
+    diagnostics: Dict[str, Any]
+    pool: str = "default"
     access_preference = "S"
-
-    @property
-    def diagnostic(self) -> "DiagnosticHub":
-        diagnostics = getattr(self, "_diagnostics", None)
-        if diagnostics:
-            return diagnostics
-        self._diagnostics = DiagnosticHub(self, dry_run=True)
-        return self._diagnostics
 
     @property
     def alarms_stream_and_partition(self):
         return f"dispose.{self.pool}", 0
 
     def iter_diagnostic_configs(self):
-        mop = ManagedObjectProfile.get_by_id(self.id)
+        mop = ManagedObjectProfile.get_by_id(int(self.object_profile))
         yield from mop.iter_diagnostic_configs()
-
-
-def update_diagnostics_alarms2(profile_id, box_changed, periodic_changed, alarm_policy_changed):
-    """
-    Update diagnostic statuses
-    * if disable box - cleanup access alarms and reset diagnostic
-    * if alarm_policy disabled - cleanup access alarms
-    * if alarm_policy enabled - raise access alarms
-    :param profile_id:
-    :param box_changed:
-    :param periodic_changed:
-    :param alarm_policy_changed:
-    :return:
-    """
-
-    def iter_objects() -> Iterable[GenericObject]:
-        for o_id, pool_id, fm_pool_id, diagnostics, box_alarm, periodic_alarm in (
-            ManagedObject.objects.filter(is_managed=True, object_profile=profile_id)
-            .filter(
-                d_Q(diagnostics__CLI__state=DiagnosticState.failed.value)
-                | d_Q(diagnostics__SNMP__state=DiagnosticState.failed.value)
-                | d_Q(diagnostics__PROFILE__state=DiagnosticState.failed.value)
-            )
-            .values_list(
-                "id",
-                "pool",
-                "fm_pool",
-                "diagnostics",
-                "object_profile__box_discovery_alarm_policy",
-                "object_profile__periodic_discovery_alarm_policy",
-            )
-        ):
-            yield GenericObject(
-                id=o_id, object_profile=int(profile_id), diagnostics=diagnostics, pool="default"
-            )
-
-    from noc.sa.models.managedobject import ManagedObject
-
-    for o in iter_objects():
-        with DiagnosticHub(o, dry_run=True) as d:
-            d.sync_alarm()
 
 
 def update_diagnostics_alarms(profile_id, box_changed, periodic_changed, alarm_policy_changed):
@@ -1112,138 +1063,32 @@ def update_diagnostics_alarms(profile_id, box_changed, periodic_changed, alarm_p
     :param alarm_policy_changed:
     :return:
     """
+    from noc.sa.models.managedobject import ManagedObject
 
-    def iter_objects() -> Tuple[int, bool, str, Dict[str, str], bool, bool]:
-        pool_cache = cachetools.LRUCache(maxsize=200)
-        pool_cache.__missing__ = lambda x: Pool.objects.get(id=x)
-        for o_id, is_managed, pool_id, fm_pool_id, diagnostics, box_alarm, periodic_alarm in (
-            ManagedObject.objects.filter(is_managed=True, object_profile=profile_id)
-            .filter(
-                d_Q(diagnostics__CLI__state=DiagnosticState.failed.value)
-                | d_Q(diagnostics__SNMP__state=DiagnosticState.failed.value)
-                | d_Q(diagnostics__PROFILE__state=DiagnosticState.failed.value)
-            )
-            .values_list(
-                "id",
-                "is_managed",
-                "pool",
-                "fm_pool",
-                "diagnostics",
-                "object_profile__box_discovery_alarm_policy",
-                "object_profile__periodic_discovery_alarm_policy",
-            )
-        ):
-            fm_pool = pool_cache[fm_pool_id] if fm_pool_id else pool_cache[pool_id]
-            yield o_id, is_managed, fm_pool, diagnostics, box_alarm == "E", periodic_alarm == "E"
+    for o_id, pool_id, fm_pool_id, diagnostics, box_alarm, periodic_alarm in (
+        ManagedObject.objects.filter(is_managed=True, object_profile=profile_id)
+        .filter(
+            d_Q(diagnostics__CLI__state=DiagnosticState.failed.value)
+            | d_Q(diagnostics__SNMP__state=DiagnosticState.failed.value)
+            | d_Q(diagnostics__PROFILE__state=DiagnosticState.failed.value)
+        )
+        .values_list(
+            "id",
+            "pool",
+            "fm_pool",
+            "diagnostics",
+            "object_profile__box_discovery_alarm_policy",
+            "object_profile__periodic_discovery_alarm_policy",
+        )
+    ):
+        fm_pool = fm_pool_id or pool_id
+        fm_pool = Pool.get_by_id(fm_pool)
+        o = GenericObject(
+            id=o_id, object_profile=int(profile_id), diagnostics=diagnostics, pool=fm_pool.name
+        )
 
-    from django.db import connection as pg_connection
-
-    # No delete, fixed 'ManagedObjectProfile' object has no attribute 'managedobject_set'
-    from .managedobject import ManagedObject  # noqa
-
-    try:
-        profile = ManagedObjectProfile.objects.get(id=profile_id)
-    except ManagedObjectProfile.DoesNotExist:
-        return
-
-    reset_diagnostics = set()
-    dispose_msg = defaultdict(list)
-    now = datetime.datetime.now().replace(microsecond=0)
-    # slots = svc.get_slot_limits(f"dispose-{pool}")
-    # Main Loop
-    for mo_id, is_managed, fm_pool, diagnostics, box_alarm, periodic_alarm in iter_objects():
-        if box_changed and not profile.enable_box_discovery:
-            reset_diagnostics.add(mo_id)
-        if (box_changed and not profile.enable_box_discovery) or (
-            alarm_policy_changed and not box_alarm
-        ):
-            # Cleanup access alarms
-            if (SNMP_DIAG in diagnostics and diagnostics[SNMP_DIAG]["state"] == "failed") or (
-                CLI_DIAG in diagnostics and diagnostics[CLI_DIAG]["state"] == "failed"
-            ):
-                dispose_msg[fm_pool].append(
-                    {
-                        "$op": "ensure_group",
-                        "reference": f"dc:Access:{mo_id}",
-                        "alarm_class": "NOC | Managed Object | Access Degraded",
-                        "alarms": [],
-                    }
-                )
-            if (
-                PROFILE_DIAG in diagnostics
-                and diagnostics[PROFILE_DIAG]["state"] == DiagnosticState.failed
-            ):
-                dispose_msg[fm_pool].append(
-                    {
-                        "timestamp": now,
-                        "reference": f"dc:{mo_id}:{PROFILE_DIAG}",
-                        "$op": "clear",
-                    }
-                )
-        elif alarm_policy_changed and box_alarm:
-            # Raise access alarms
-            if (SNMP_DIAG in diagnostics and diagnostics[SNMP_DIAG]["state"] == "failed") or (
-                CLI_DIAG in diagnostics and diagnostics[CLI_DIAG]["state"] == "failed"
-            ):
-                dispose_msg[fm_pool].append(
-                    {
-                        "$op": "ensure_group",
-                        "reference": f"dc:Access:{mo_id}",
-                        "alarm_class": "NOC | Managed Object | Access Degraded",
-                        "alarms": [],
-                    }
-                )
-                if SNMP_DIAG in diagnostics and diagnostics[SNMP_DIAG]["state"] == "failed":
-                    dispose_msg[fm_pool][-1]["alarms"].append(
-                        {
-                            "reference": f"dc:{mo_id}:{SNMP_DIAG}",
-                            "managed_object": mo_id,
-                            "alarm_class": "NOC | Managed Object | Access Lost",
-                            "labels": ["noc::access::method::SNMP"],
-                        }
-                    )
-                if CLI_DIAG in diagnostics and diagnostics[CLI_DIAG]["state"] == "failed":
-                    dispose_msg[fm_pool][-1]["alarms"].append(
-                        {
-                            "reference": f"dc:{mo_id}:{CLI_DIAG}",
-                            "managed_object": mo_id,
-                            "alarm_class": "NOC | Managed Object | Access Lost",
-                            "labels": ["noc::access::method::CLI"],
-                        }
-                    )
-            if (
-                PROFILE_DIAG in diagnostics
-                and diagnostics[PROFILE_DIAG]["state"] == DiagnosticState.failed
-            ):
-                dispose_msg[fm_pool].append(
-                    {
-                        "timestamp": now,
-                        "reference": f"dc:{mo_id}:{PROFILE_DIAG}",
-                        "managed_object": mo_id,
-                        "alarm_class": "Discovery | Guess | Profile",
-                        "$op": "raise",
-                    }
-                )
-    # Reset diagnostics alarm
-    svc = get_service()
-    for pool in dispose_msg:
-        for msg in dispose_msg[pool]:
-            svc.publish(
-                orjson.dumps(msg),
-                stream=f"dispose.{pool}",
-                partition=0,
-            )
-    removed = ["SNMP", "CLI", "Access", "Profile"]
-    if reset_diagnostics:
-        # Reset Diagnostic
-        with pg_connection.cursor() as cursor:
-            cursor.execute(
-                f"""
-                 UPDATE sa_managedobject
-                 SET diagnostics = diagnostics {" #- %s " * len(removed)}
-                 WHERE id = ANY(%s::int[])""",
-                ["{%s}" % r for r in removed] + [list(reset_diagnostics)],
-            )
+        with DiagnosticHub(o, dry_run=False) as d:
+            d.sync_alarms(alarm_disable=box_alarm == "D")
 
 
 def apply_discovery_jobs(profile_id, box_changed, periodic_changed):
