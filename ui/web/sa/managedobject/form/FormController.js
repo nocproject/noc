@@ -300,7 +300,7 @@ Ext.define('NOC.sa.managedobject.form.FormController', {
         parentController.reloadSelectionGrids();
     },
     gotoItem: function(itemName) {
-        var mainView = this.getView().up('[appId=sa.managedobject]');
+        var mainView = this.getView().up('[itemId=sa-managedobject]');
         mainView.setActiveItem(itemName);
         mainView.setHistoryHash();
     },
@@ -309,7 +309,7 @@ Ext.define('NOC.sa.managedobject.form.FormController', {
             backItem = mainView.down('[itemId=managedobject-form-panel]'),
             activeItem = mainView.setActiveItem(itemName);
         if(activeItem !== false) {
-            activeItem.app = mainView.up('[appId=sa.managedobject]');
+            activeItem.app = mainView.up('[itemId=sa-managedobject]');
             activeItem.preview(backItem.currentRecord, backItem);
         }
     },
