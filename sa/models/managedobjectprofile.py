@@ -11,7 +11,7 @@ import operator
 from threading import Lock
 from functools import partial
 from dataclasses import dataclass
-from typing import Optional, List, Dict, Tuple
+from typing import Optional, List, Dict, Tuple, Iterable
 from collections import defaultdict
 
 # Third-party modules
@@ -26,41 +26,54 @@ from pydantic import BaseModel, validator
 # NOC modules
 from noc.core.translation import ugettext as _
 from noc.core.model.base import NOCModel
-from noc.config import config
-from noc.main.models.style import Style
 from noc.core.stencil import stencil_registry
 from noc.core.model.fields import DocumentReferenceField, PydanticField
 from noc.core.model.decorator import on_save, on_init, on_delete_check
 from noc.core.cache.base import cache
+from noc.main.models.style import Style
 from noc.main.models.pool import Pool
 from noc.main.models.remotesystem import RemoteSystem
 from noc.main.models.handler import Handler
 from noc.main.models.label import Label
 from noc.core.scheduler.job import Job
+from noc.core.bi.decorator import bi_sync
 from noc.core.defer import call_later, defer
+from noc.core.topology.types import ShapeOverlayPosition, ShapeOverlayForm
+from noc.core.service.loader import get_service
+from noc.core.wf.interaction import Interaction
+from noc.core.wf.diagnostic import (
+    PROFILE_DIAG,
+    SNMP_DIAG,
+    CLI_DIAG,
+    HTTP_DIAG,
+    SNMPTRAP_DIAG,
+    SYSLOG_DIAG,
+    DiagnosticState,
+    DiagnosticConfig,
+    DiagnosticHub,
+    Check,
+)
 from noc.sa.interfaces.base import (
     DictListParameter,
     ObjectIdParameter,
     BooleanParameter,
     IntParameter,
 )
-from noc.core.bi.decorator import bi_sync
+
 from noc.ip.models.prefixprofile import PrefixProfile
 from noc.ip.models.addressprofile import AddressProfile
-from noc.vc.models.vpnprofile import VPNProfile
 from noc.main.models.extstorage import ExtStorage
 from noc.main.models.template import Template
 from noc.core.change.decorator import change
 from noc.cm.models.objectvalidationpolicy import ObjectValidationPolicy
 from noc.inv.models.ifdescpatterns import IfDescPatterns
 from noc.main.models.glyph import Glyph
-from noc.core.topology.types import ShapeOverlayPosition, ShapeOverlayForm
 from noc.pm.models.metrictype import MetricType
-from .capsprofile import CapsProfile
 from noc.vc.models.vlanfilter import VLANFilter
+from noc.vc.models.vpnprofile import VPNProfile
 from noc.wf.models.workflow import Workflow
-from noc.core.service.loader import get_service
-from noc.core.wf.diagnostic import PROFILE_DIAG, SNMP_DIAG, CLI_DIAG, DiagnosticState
+from .capsprofile import CapsProfile
+from noc.config import config
 
 metrics_lock = Lock()
 
@@ -724,18 +737,12 @@ class ManagedObjectProfile(NOCModel):
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_id_cache"), lock=lambda _: id_lock)
     def get_by_id(cls, id: int) -> "Optional[ManagedObjectProfile]":
-        mop = ManagedObjectProfile.objects.filter(id=id)[:1]
-        if mop:
-            return mop[0]
-        return None
+        return ManagedObjectProfile.objects.filter(id=id).first()
 
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_bi_id_cache"), lock=lambda _: id_lock)
     def get_by_bi_id(cls, id: int) -> "Optional[ManagedObjectProfile]":
-        mop = ManagedObjectProfile.objects.filter(bi_id=id)[:1]
-        if mop:
-            return mop[0]
-        return None
+        return ManagedObjectProfile.objects.filter(bi_id=id).first()
 
     def iter_changed_datastream(self, changed_fields=None):
         from noc.sa.models.managedobject import ManagedObject
@@ -800,53 +807,6 @@ class ManagedObjectProfile(NOCModel):
         for mo in self.managedobject_set.order_by("pool").distinct("pool"):
             yield mo.pool
 
-    def on_save(self):
-        from .managedobject import CREDENTIAL_CACHE_VERSION
-
-        box_changed = self.initial_data["enable_box_discovery"] != self.enable_box_discovery
-        periodic_changed = (
-            self.initial_data["enable_periodic_discovery"] != self.enable_periodic_discovery
-        )
-        alarm_policy_changed = (
-            self.initial_data["box_discovery_alarm_policy"] != self.box_discovery_alarm_policy
-        )
-        access_changed = (
-            (self.initial_data["access_preference"] != self.access_preference)
-            or (self.initial_data["cli_privilege_policy"] != self.cli_privilege_policy)
-            or (self.initial_data["beef_storage"] != self.beef_storage)
-            or (self.initial_data["beef_path_template"] != self.beef_path_template)
-            or (self.initial_data["snmp_rate_limit"] != self.snmp_rate_limit)
-        )
-
-        if box_changed or periodic_changed:
-            defer(
-                "noc.sa.models.managedobjectprofile.apply_discovery_jobs",
-                key=self.id,
-                profile_id=self.id,
-                box_changed=box_changed,
-                periodic_changed=periodic_changed,
-            )
-        if box_changed or periodic_changed or alarm_policy_changed:
-            defer(
-                "noc.sa.models.managedobjectprofile.update_diagnostics_alarms",
-                key=self.id,
-                profile_id=self.id,
-                box_changed=box_changed,
-                periodic_changed=periodic_changed,
-                alarm_policy_changed=alarm_policy_changed,
-            )
-        if access_changed:
-            cache.delete_many(
-                [f"cred-{x}" for x in self.managedobject_set.values_list("id", flat=True)],
-                version=CREDENTIAL_CACHE_VERSION,
-            )
-        if (
-            self.initial_data["enable_rca_downlink_merge"] != self.enable_rca_downlink_merge
-            or self.initial_data["rca_downlink_merge_window"] != self.rca_downlink_merge_window
-        ):
-            if config.topo.enable_scheduler_task:
-                call_later("noc.core.topology.uplink.update_uplinks", 30)
-
     def can_escalate(self, depended=False):
         """
         Check alarms on objects within profile can be escalated
@@ -854,8 +814,7 @@ class ManagedObjectProfile(NOCModel):
         """
         if self.escalation_policy == "R":
             return bool(depended)
-        else:
-            return self.escalation_policy == "E"
+        return self.escalation_policy == "E"
 
     def can_create_box_alarms(self):
         return self.box_discovery_alarm_policy == "E"
@@ -866,17 +825,162 @@ class ManagedObjectProfile(NOCModel):
     def can_cli_session(self):
         return self.cli_session_policy == "E"
 
-    def save(self, *args, **kwargs):
-        # Validate MeticType for object profile
-        if self.metrics:
-            try:
-                self.metrics = m_valid.clean(self.metrics)
-            except ValueError as e:
-                raise ValueError(e)
-        # if self.match_rules:
-        #     # Not calling validate(). Probably on NOCModel
-        #     MatchRules.parse_obj(self.match_rules)
-        super().save(*args, **kwargs)
+    def is_field_changed(self, fields: List[str]) -> bool:
+        for f in fields:
+            if f in self.initial_data and self.initial_data[f] != getattr(self, f):
+                return True
+        return False
+
+    def on_save(self):
+        from .managedobject import CREDENTIAL_CACHE_VERSION, MANAGEDOBJECT_CACHE_VERSION
+
+        box_changed = self.is_field_changed(["enable_box_discovery"])
+        periodic_changed = self.is_field_changed(["enable_periodic_discovery"])
+        alarm_box_changed = self.is_field_changed(["box_discovery_alarm_policy"])
+        access_changed = self.is_field_changed(
+            [
+                "access_preference",
+                "cli_privilege_policy",
+                "beef_storage",
+                "beef_path_template",
+                "snmp_rate_limit",
+            ]
+        )
+        if box_changed or periodic_changed:
+            defer(
+                "noc.sa.models.managedobjectprofile.apply_discovery_jobs",
+                key=self.id,
+                profile_id=self.id,
+                box_changed=box_changed,
+                periodic_changed=periodic_changed,
+            )
+        if box_changed or periodic_changed or alarm_box_changed:
+            defer(
+                "noc.sa.models.managedobjectprofile.update_diagnostics_alarms",
+                key=self.id,
+                profile_id=self.id,
+                box_changed=box_changed,
+                periodic_changed=periodic_changed,
+                alarm_policy_changed=alarm_box_changed,
+            )
+        if access_changed:
+            cache.delete_many(
+                [f"cred-{x}" for x in self.managedobject_set.values_list("id", flat=True)],
+                version=CREDENTIAL_CACHE_VERSION,
+            )
+        if self.is_field_changed(["enable_rca_downlink_merge", "rca_downlink_merge_window"]):
+            if config.topo.enable_scheduler_task:
+                call_later("noc.core.topology.uplink.update_uplinks", 30)
+        if self.is_field_changed(["level", "labels", "escalation_policy"]):
+            cache.delete_many(
+                [
+                    f"managedobject-id-{x}"
+                    for x in self.managedobject_set.values_list("id", flat=True)
+                ],
+                version=MANAGEDOBJECT_CACHE_VERSION,
+            )
+
+    def iter_diagnostic_configs(self, o=None) -> Iterable[DiagnosticConfig]:
+        """
+        Iterate over object diagnostics
+        :param o: ManagedObject
+        :return:
+        """
+        if o:
+            ac = o.get_access_preference()
+        else:
+            ac = self.access_preference
+        if not o or Interaction.ServiceActivation in o.interactions:
+            # SNMP Diagnostic
+            yield DiagnosticConfig(
+                SNMP_DIAG,
+                display_description="Check Device response by SNMP request",
+                checks=[Check(name="SNMPv1"), Check(name="SNMPv2c")],
+                blocked=ac == "C",
+                run_policy="F",
+                run_order="S",
+                discovery_box=True,
+                alarm_class="NOC | Managed Object | Access Lost",
+                alarm_labels=["noc::access::method::SNMP"],
+                reason="Blocked by AccessPreference" if ac == "C" else None,
+            )
+            yield DiagnosticConfig(
+                PROFILE_DIAG,
+                display_description="Check device profile",
+                show_in_display=False,
+                checks=[Check(name="PROFILE")],
+                alarm_class="Discovery | Guess | Profile",
+                blocked=not self.enable_box_discovery_profile,
+                run_policy="A",
+                run_order="S",
+                discovery_box=True,
+                reason="Profile Discovery " if not self.enable_box_discovery_profile else None,
+            )
+            blocked = ac == "S"
+            if o:
+                blocked |= o.scheme not in {1, 2}
+            # CLI Diagnostic
+            yield DiagnosticConfig(
+                CLI_DIAG,
+                display_description="Check Device response by CLI (TELNET/SSH) request",
+                checks=[Check(name="TELNET"), Check(name="SSH")],
+                discovery_box=True,
+                alarm_class="NOC | Managed Object | Access Lost",
+                alarm_labels=["noc::access::method::CLI"],
+                blocked=blocked,
+                run_policy="F",
+                run_order="S",
+                reason="Blocked by AccessPreference" if blocked else None,
+            )
+            # HTTP Diagnostic
+            yield DiagnosticConfig(
+                HTTP_DIAG,
+                display_description="Check Device response by HTTP/HTTPS request",
+                show_in_display=False,
+                alarm_class="NOC | Managed Object | Access Lost",
+                alarm_labels=["noc::access::method::HTTP"],
+                checks=[Check("HTTP"), Check("HTTPS")],
+                blocked=False,
+                run_policy="D",  # Not supported
+                run_order="S",
+                reason=None,
+            )
+        # Access Diagnostic (Blocked - block SNMP & CLI Check ?
+        yield DiagnosticConfig(
+            "Access",
+            dependent=["SNMP", "CLI", "HTTP"],
+            show_in_display=False,
+            alarm_class="NOC | Managed Object | Access Degraded",
+        )
+        if not o or Interaction.Event in o.interactions:
+            fm_policy = o.get_event_processing_policy() if o else self.event_processing_policy
+            blocked, reason = False, ""
+            if fm_policy == "d":
+                blocked, reason = True, "Disable by Event Processing policy"
+            elif o and o.trap_source_type == "d":
+                blocked, reason = True, "Disable by source settings"
+            # FM
+            yield DiagnosticConfig(
+                # Reset if change IP/Policy change
+                SNMPTRAP_DIAG,
+                display_description="Received SNMP Trap from device",
+                blocked=blocked,
+                run_policy="D",
+                reason=reason,
+            )
+            blocked, reason = False, ""
+            if fm_policy == "d":
+                blocked, reason = True, "Disable by Event Processing policy"
+            elif o and o.syslog_source_type == "d":
+                blocked, reason = True, "Disable by source settings"
+            yield DiagnosticConfig(
+                # Reset if change IP/Policy change
+                SYSLOG_DIAG,
+                display_description="Received SYSLOG from device",
+                blocked=blocked,
+                run_policy="D",
+                reason=reason,
+            )
 
     @classmethod
     def get_max_metrics_interval(cls, managed_object_profiles=None):
@@ -928,6 +1032,72 @@ class ManagedObjectProfile(NOCModel):
     def get_metric_discovery_interval(self) -> int:
         r = [m.get("interval") or 0 for m in self.metrics if m.get("interval")]
         return min(r) if r else 0
+
+
+@dataclass
+class GenericObject(object):
+    id: int
+    object_profile: int
+    diagnostics = {}
+    pool: int = "default"
+    access_preference = "S"
+
+    @property
+    def diagnostic(self) -> "DiagnosticHub":
+        diagnostics = getattr(self, "_diagnostics", None)
+        if diagnostics:
+            return diagnostics
+        self._diagnostics = DiagnosticHub(self, dry_run=True)
+        return self._diagnostics
+
+    @property
+    def alarms_stream_and_partition(self):
+        return f"dispose.{self.pool}", 0
+
+    def iter_diagnostic_configs(self):
+        mop = ManagedObjectProfile.get_by_id(self.id)
+        yield from mop.iter_diagnostic_configs()
+
+
+def update_diagnostics_alarms2(profile_id, box_changed, periodic_changed, alarm_policy_changed):
+    """
+    Update diagnostic statuses
+    * if disable box - cleanup access alarms and reset diagnostic
+    * if alarm_policy disabled - cleanup access alarms
+    * if alarm_policy enabled - raise access alarms
+    :param profile_id:
+    :param box_changed:
+    :param periodic_changed:
+    :param alarm_policy_changed:
+    :return:
+    """
+
+    def iter_objects() -> Iterable[GenericObject]:
+        for o_id, pool_id, fm_pool_id, diagnostics, box_alarm, periodic_alarm in (
+            ManagedObject.objects.filter(is_managed=True, object_profile=profile_id)
+            .filter(
+                d_Q(diagnostics__CLI__state=DiagnosticState.failed.value)
+                | d_Q(diagnostics__SNMP__state=DiagnosticState.failed.value)
+                | d_Q(diagnostics__PROFILE__state=DiagnosticState.failed.value)
+            )
+            .values_list(
+                "id",
+                "pool",
+                "fm_pool",
+                "diagnostics",
+                "object_profile__box_discovery_alarm_policy",
+                "object_profile__periodic_discovery_alarm_policy",
+            )
+        ):
+            yield GenericObject(
+                id=o_id, object_profile=int(profile_id), diagnostics=diagnostics, pool="default"
+            )
+
+    from noc.sa.models.managedobject import ManagedObject
+
+    for o in iter_objects():
+        with DiagnosticHub(o, dry_run=True) as d:
+            d.sync_alarm()
 
 
 def update_diagnostics_alarms(profile_id, box_changed, periodic_changed, alarm_policy_changed):
