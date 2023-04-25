@@ -17,9 +17,25 @@ from noc.sa.interfaces.base import ListOfParameter, ModelParameter, DictParamete
 
 class RunCommandsApplication(ExtApplication):
     title = _("Run Commands")
-    menu = [_("Run Commands")]
+    menu = [_("Run Commands (On Group Edit option)")]
 
     implied_permissions = {"launch": ["sa:objectlist:read"]}
+
+    def get_launch_info(self, request):
+        """
+        Return Alias to ManagedObject
+        """
+
+        return {
+            "class": "NOC.sa.managedobject.Application",
+            "title": self.title,
+            "params": {
+                "url": self.menu_url,
+                "permissions": ["read", "commands"],
+                "app_id": self.app_id,
+                "link": None,
+            },
+        }
 
     @view(url=r"^form/snippet/(?P<snippet_id>\d+)/$", method=["GET"], access="launch", api=True)
     def api_form_snippet(self, request, snippet_id):

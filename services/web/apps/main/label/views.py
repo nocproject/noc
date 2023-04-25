@@ -21,7 +21,7 @@ class LabelApplication(ExtDocApplication):
     """
 
     title = "Label"
-    menu = [_("Setup"), _("Labels")]
+    menu = [_("Labels")]
     glyph = "tag"
     model = Label
     query_condition = "icontains"
