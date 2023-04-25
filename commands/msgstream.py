@@ -53,8 +53,8 @@ class Command(BaseCommand):
         subscribe_parser.add_argument("--name")
         subscribe_parser.add_argument("--partition", type=int, default=0)
         subscribe_parser.add_argument("--cursor", type=str, default="")
-        subscribe_parser.add_argument("--start-offset", type=int, default=0)
-        subscribe_parser.add_argument("--start-ts", type=self.valid_date, default=0)
+        subscribe_parser.add_argument("--start-offset", type=int, default=None)
+        subscribe_parser.add_argument("--start-ts", type=self.valid_date, default=None)
         # set-cursor
         set_cursor_parser = subparsers.add_parser("set-cursor")
         set_cursor_parser.add_argument("--name")

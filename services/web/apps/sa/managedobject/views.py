@@ -83,6 +83,7 @@ class ManagedObjectApplication(ExtModelApplication):
     extra_permissions = ["alarm", "change_interface", "commands"]
     implied_permissions = {"read": ["inv:networksegment:lookup", "main:handler:lookup"]}
     diverged_permissions = {"config": "read", "console": "script"}
+    default_ordering = ["id"]
     order_map = {
         "link_count": " cardinality(links) ",
         "-link_count": " cardinality(links) ",
