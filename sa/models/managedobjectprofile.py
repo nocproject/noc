@@ -1,7 +1,7 @@
 # ----------------------------------------------------------------------
 # ManagedObjectProfile
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2021 The NOC Project
+# Copyright (C) 2007-2023 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -832,6 +832,7 @@ class ManagedObjectProfile(NOCModel):
 
         box_changed = self.is_field_changed(["enable_box_discovery"])
         periodic_changed = self.is_field_changed(["enable_periodic_discovery"])
+        interval_changed = self.is_field_changed(["enable_metrics"])
         alarm_box_changed = self.is_field_changed(["box_discovery_alarm_policy"])
         access_changed = self.is_field_changed(
             [
@@ -842,13 +843,14 @@ class ManagedObjectProfile(NOCModel):
                 "snmp_rate_limit",
             ]
         )
-        if box_changed or periodic_changed:
+        if box_changed or periodic_changed or interval_changed:
             defer(
                 "noc.sa.models.managedobjectprofile.apply_discovery_jobs",
                 key=self.id,
                 profile_id=self.id,
                 box_changed=box_changed,
                 periodic_changed=periodic_changed,
+                interval_changed=interval_changed,
             )
         if box_changed or periodic_changed or alarm_box_changed:
             defer(
@@ -1043,7 +1045,7 @@ class GenericObject(object):
         return f"dispose.{self.pool}", 0
 
     def iter_diagnostic_configs(self):
-        mop = ManagedObjectProfile.get_by_id(int(self.object_profile))
+        mop = ManagedObjectProfile.objects.get(id=int(self.object_profile))
         yield from mop.iter_diagnostic_configs()
 
 
@@ -1061,7 +1063,7 @@ def update_diagnostics_alarms(profile_id, box_changed, periodic_changed, alarm_p
     """
     from noc.sa.models.managedobject import ManagedObject
 
-    for o_id, pool_id, fm_pool_id, diagnostics, box_alarm, periodic_alarm in (
+    for o_id, pool_id, fm_pool_id, diagnostics, enable_box_discovery, box_alarm, periodic_alarm in (
         ManagedObject.objects.filter(is_managed=True, object_profile=profile_id)
         .filter(
             d_Q(diagnostics__CLI__state=DiagnosticState.failed.value)
@@ -1073,6 +1075,7 @@ def update_diagnostics_alarms(profile_id, box_changed, periodic_changed, alarm_p
             "pool",
             "fm_pool",
             "diagnostics",
+            "enable_box_discovery",
             "object_profile__box_discovery_alarm_policy",
             "object_profile__periodic_discovery_alarm_policy",
         )
@@ -1084,10 +1087,10 @@ def update_diagnostics_alarms(profile_id, box_changed, periodic_changed, alarm_p
         )
 
         with DiagnosticHub(o, dry_run=False) as d:
-            d.sync_alarms(alarm_disable=box_alarm == "D")
+            d.sync_alarms(alarm_disable=box_alarm == "D" or not enable_box_discovery)
 
 
-def apply_discovery_jobs(profile_id, box_changed, periodic_changed):
+def apply_discovery_jobs(profile_id, box_changed, periodic_changed, interval_changed=False):
     def iter_objects():
         pool_cache = cachetools.LRUCache(maxsize=200)
         pool_cache.__missing__ = lambda x: Pool.objects.get(id=x)
@@ -1131,6 +1134,21 @@ def apply_discovery_jobs(profile_id, box_changed, periodic_changed):
                 Job.remove(
                     "discovery",
                     "noc.services.discovery.jobs.periodic.job.PeriodicDiscoveryJob",
+                    key=mo_id,
+                    pool=pool,
+                )
+        if interval_changed:
+            if profile.enable_metrics and is_managed:
+                Job.submit(
+                    "discovery",
+                    "noc.services.discovery.jobs.interval.job.IntervalDiscoveryJob",
+                    key=mo_id,
+                    pool=pool,
+                )
+            else:
+                Job.remove(
+                    "discovery",
+                    "noc.services.discovery.jobs.interval.job.IntervalDiscoveryJob",
                     key=mo_id,
                     pool=pool,
                 )
