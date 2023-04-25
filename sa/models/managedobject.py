@@ -53,14 +53,10 @@ from noc.core.wf.diagnostic import (
     PROFILE_DIAG,
     SNMP_DIAG,
     CLI_DIAG,
-    SNMPTRAP_DIAG,
-    SYSLOG_DIAG,
-    HTTP_DIAG,
     SA_DIAG,
     ALARM_DIAG,
 )
 from noc.core.wf.interaction import Interaction
-from noc.core.checkers.base import Check
 from noc.core.mx import send_message, MX_LABELS, MX_H_VALUE_SPLITTER, MX_ADMINISTRATIVE_DOMAIN_ID
 from noc.core.deprecations import RemovedInNOC2301Warning
 from noc.aaa.models.user import User

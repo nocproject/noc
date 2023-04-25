@@ -6,17 +6,14 @@
 # ----------------------------------------------------------------------
 
 # Python modules
-import datetime
 import operator
 from threading import Lock
 from functools import partial
 from dataclasses import dataclass
-from typing import Optional, List, Dict, Tuple, Iterable, Any
-from collections import defaultdict
+from typing import Optional, List, Dict, Iterable, Any
 
 # Third-party modules
 import cachetools
-import orjson
 from django.contrib.postgres.fields import ArrayField
 from django.core.validators import MinValueValidator
 from django.db import models
@@ -39,7 +36,6 @@ from noc.core.scheduler.job import Job
 from noc.core.bi.decorator import bi_sync
 from noc.core.defer import call_later, defer
 from noc.core.topology.types import ShapeOverlayPosition, ShapeOverlayForm
-from noc.core.service.loader import get_service
 from noc.core.wf.interaction import Interaction
 from noc.core.wf.diagnostic import (
     PROFILE_DIAG,
