@@ -869,7 +869,7 @@ class ManagedObjectProfile(NOCModel):
         if self.is_field_changed(["enable_rca_downlink_merge", "rca_downlink_merge_window"]):
             if config.topo.enable_scheduler_task:
                 call_later("noc.core.topology.uplink.update_uplinks", 30)
-        if self.is_field_changed(["level", "labels", "escalation_policy"]):
+        if self.is_field_changed(["level", "weight", "labels", "escalation_policy"]):
             cache.delete_many(
                 [
                     f"managedobject-id-{x}"
