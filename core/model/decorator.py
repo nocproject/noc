@@ -5,6 +5,9 @@
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
+# Python modules
+from collections import namedtuple
+
 # Third-party modules
 from django.db.models import JSONField
 from django.contrib.postgres.fields import ArrayField
@@ -12,8 +15,9 @@ from django.db import connection
 from mongoengine.fields import ListField, EmbeddedDocumentListField
 
 # NOC modules
-from noc.models import get_model, get_model_id
+from noc.config import config
 from noc.core.model.fields import ObjectIDArrayField
+from noc.models import get_model, get_model_id
 
 
 def is_document(klass):
@@ -338,3 +342,51 @@ def tree(field="parent"):
         return cls
 
     return decorator
+
+
+def has_i18n(cls):
+    """
+    Class decorator which provides to get localization information for documents in collection.
+    Only for Mongo models!
+
+    Model must have field `i18n_data` with localization information in the following form:
+        {
+            "description": {
+                "en": "My description",
+                "ru": "Мое описание"
+            },
+            "name": {
+                "en": "Gi 0/1"
+            },
+           "other_field": {
+                "en": "...",
+                "ru": "..."
+            }
+        }
+
+    Definition of filed `i18n_data` in model:
+        i18n_data = MapField(DictField())
+
+    Getting localization information performs by getting fields through property `i18n` like this:
+        name = <Model>.objects.get(id=id).i18n.name
+        description = <Model>.objects.get(id=id).i18n.description
+
+    If localization for field is not found raises exception AttributeError.
+        wrong_field = <Model>.objects.get(id=id).i18n.wrong_field
+        <class 'AttributeError'> 'ProxyFields' object has no attribute 'wrong_field'
+
+    """
+
+    def i18n(self):
+        fields = []
+        localizations = []
+        for f, locs in self.i18n_data.items():
+            localization = locs.get(config.web.language)
+            if localization:
+                fields += [f]
+                localizations += [localization]
+        ProxyFields = namedtuple("ProxyFields", fields)
+        return ProxyFields(*localizations)
+
+    cls.i18n = property(i18n)
+    return cls
