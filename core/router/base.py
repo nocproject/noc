@@ -1,7 +1,7 @@
 # ----------------------------------------------------------------------
 # Router
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2022 The NOC Project
+# Copyright (C) 2007-2023 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -275,6 +275,9 @@ class Router(object):
                         body = route.transmute(headers, body)
                     except Exception as e:
                         logger.error("[%s] Error when transmute message %s: %s", msg, body, str(e))
+                        continue
+                    if body is None:
+                        logger.debug("[%s] Skip empty message", msg.timestamp)
                         continue
                     # for body in route.iter_transmute(headers, msg.value):
                     if not isinstance(body, bytes):

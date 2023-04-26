@@ -1,7 +1,7 @@
 # ----------------------------------------------------------------------
 # MetricsStream model
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2020 The NOC Project
+# Copyright (C) 2007-2023 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -33,6 +33,7 @@ class StreamField(EmbeddedDocument):
     metric_type = ReferenceField(MetricType, required=True)
     external_alias = StringField(default=False)
     expose_mx = BooleanField(default=True)
+    expose_condition = BooleanField(default=False)
 
 
 class MetricStream(Document):
@@ -74,6 +75,11 @@ class MetricStream(Document):
                 '        v["time_delta"] = input["time_delta"]',
             ]
         for f in self.fields:
+            if f.expose_condition:
+                r += [
+                    f'    if not input.get("{f.metric_type.field_name}")'
+                    f"        return None"
+                ]
             if not f.expose_mx:
                 continue
             r += [
