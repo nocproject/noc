@@ -110,6 +110,13 @@ Ext.define("NOC.main.messageroute.Application", {
                             fieldLabel: __("Type"),
                             labelAlign: "left",
                             allowBlank: false
+                        },
+                        {
+                            name: "telemetry_sample",
+                            xtype: "numberfield",
+                            fieldLabel: __("Telemetry Sample"),
+                            uiStyle: "small",
+                            allowBlank: false
                         }]
                 },
                 {

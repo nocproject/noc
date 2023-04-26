@@ -16,9 +16,7 @@ import logging
 import uuid
 from collections import namedtuple
 from contextvars import ContextVar
-
-# Third-party modules
-from typing import Optional
+from typing import Optional, Dict
 
 # NOC modules
 from noc.core.error import NO_ERROR, ERR_UNKNOWN
@@ -42,6 +40,7 @@ SpanItemFields = [
     "sample",
     "in_label",
     "out_label",
+    "headers",
 ]
 SpanItem = namedtuple("SpanItem", SpanItemFields)
 # Collected spans, protected by lock
@@ -73,6 +72,7 @@ class Span(object):
         context=DEFAULT_ID,
         hist=None,
         quantile=None,
+        headers: Optional[Dict[str, bytes]] = None,
         suppress_trace=False,
     ):
         self.client = client
@@ -92,6 +92,7 @@ class Span(object):
         self.error_code = NO_ERROR
         self.error_text = DEFAULT_ERROR_TEXT
         self.in_label = in_label
+        self.headers = headers or {}
         self.out_label = DEFAULT_LABEL
         self.parent = parent
         self.context = context
@@ -163,6 +164,7 @@ class Span(object):
             sample=self.sample,
             in_label=str(self.in_label or ""),
             out_label=str(self.out_label or ""),
+            headers={k: str(v) for k, v in self.headers.items()},
         )
         with span_lock:
             spans += [span]

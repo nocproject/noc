@@ -17,6 +17,7 @@ import orjson
 # NOC modules
 from noc.core.msgstream.message import Message
 from noc.core.comp import DEFAULT_ENCODING
+from noc.core.span import Span
 from noc.core.mx import (
     MX_LABELS,
     MX_H_VALUE_SPLITTER,
@@ -25,6 +26,8 @@ from noc.core.mx import (
     MX_NOTIFICATION,
     MX_MESSAGE_TYPE,
     NOTIFICATION_METHODS,
+    MX_SPAN_CTX,
+    MX_SPAN_ID,
 )
 from .action import Action
 
@@ -106,10 +109,11 @@ class Route(object):
     If condition is matched - do action
     """
 
-    def __init__(self, name: str, r_type: str, order: int):
+    def __init__(self, name: str, r_type: str, order: int, telemetry_sample: Optional[int] = None):
         self.name = name
         self.type = r_type
         self.order = order
+        self.telemetry_sample = telemetry_sample or 0
         self.match_co: str = ""  # Code object for matcher
         self.actions: List[Action] = []
         self.transmute_handler: Optional[Callable[[Dict[str, bytes], T_BODY], T_BODY]] = None
@@ -151,8 +155,20 @@ class Route(object):
 
         :return: Stream name or empty string, dict of headers
         """
-        for a in self.actions:
-            yield from a.iter_action(msg)
+        if not self.telemetry_sample:
+            for a in self.actions:
+                yield from a.iter_action(msg)
+            return
+        with Span(
+            sample=int(self.telemetry_sample),
+            server=self.name,
+            service="Router",
+            in_label=msg.offset,
+        ) as span:
+            for stream, headers, body in self.iter_action(msg):
+                headers[MX_SPAN_ID] = span.span_id
+                headers[MX_SPAN_CTX] = span.span_context
+                yield stream, headers, body
 
     def set_type(self, r_type: str):
         self.type = r_type.encode(encoding=DEFAULT_ENCODING)
@@ -242,7 +258,7 @@ class Route(object):
         :param data:
         :return:
         """
-        r = Route(data["name"], data["type"], data["order"])
+        r = Route(data["name"], data["type"], data["order"], data.get("telemetry_sample"))
         r.update(data)
         return r
 
@@ -274,4 +290,16 @@ class DefaultNotificationRoute(Route):
         if method not in NOTIFICATION_METHODS:
             # Check available channel for sender
             return
-        yield NOTIFICATION_METHODS[method], {}, msg.value
+        if not self.telemetry_sample:
+            yield NOTIFICATION_METHODS[method], {}, msg.value
+            return
+        with Span(
+            sample=int(self.telemetry_sample),
+            server=self.name,
+            service="Router",
+            in_label=msg.offset,
+        ) as span:
+            yield NOTIFICATION_METHODS[method], {
+                MX_SPAN_ID: span.span_id,
+                MX_SPAN_CTX: span.span_context,
+            }, msg.value
