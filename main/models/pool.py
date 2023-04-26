@@ -9,6 +9,7 @@
 import threading
 import time
 import operator
+from typing import Optional
 
 # Third-party modules
 from mongoengine.document import Document
@@ -57,20 +58,20 @@ class Pool(Document):
 
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_id_cache"), lock=lambda _: id_lock)
-    def get_by_id(cls, id):
+    def get_by_id(cls, id) -> Optional["Pool"]:
         return Pool.objects.filter(id=id).first()
 
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_bi_id_cache"), lock=lambda _: id_lock)
-    def get_by_bi_id(cls, id):
+    def get_by_bi_id(cls, id) -> Optional["Pool"]:
         return Pool.objects.filter(bi_id=id).first()
 
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_name_cache"), lock=lambda _: id_lock)
-    def get_by_name(cls, name):
+    def get_by_name(cls, name) -> Optional["Pool"]:
         return Pool.objects.filter(name=name).first()
 
-    def get_delta(self):
+    def get_delta(self) -> float:
         """
         Get delta for next discovery,
         Limit runs to discovery_reschedule_limit tasks
