@@ -41,7 +41,7 @@ resource "yandex_compute_instance" "vm-1" {
   }
 
   metadata = {
-    ssh-keys = "{{ item.ssh_user }}:${file("{{ molecule_yml.driver.ssh_identity_file_pub }}")}",
+    user-data = "#cloud-config\nusers:\n  - name: {{ item.ssh_user }}\n    groups: sudo\n    shell: /bin/bash\n    sudo: ['ALL=(ALL) NOPASSWD:ALL']\n    ssh-authorized-keys:\n      - ${file("{{ molecule_yml.driver.ssh_identity_file_pub }}")}",
     serial-port-enable = 1  }
 
   timeouts {
