@@ -28,6 +28,7 @@ TGSENDER_STREAM = "tgsender"
 
 class TgSenderService(FastAPIService):
     name = "tgsender"
+    use_telemetry = True
 
     async def on_activate(self):
         if not config.tgsender.token:
