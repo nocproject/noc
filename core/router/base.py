@@ -18,12 +18,13 @@ import orjson
 from threading import Lock
 
 # NOC modules
-from noc.core.mx import MX_MESSAGE_TYPE, MX_SHARDING_KEY, Message
+from noc.core.mx import MX_MESSAGE_TYPE, MX_SHARDING_KEY, Message, MX_SPAN_ID, MX_SPAN_CTX
 from noc.core.service.loader import get_service
 from noc.core.comp import DEFAULT_ENCODING
 from noc.core.perf import metrics
 from noc.core.ioloop.util import run_sync
 from noc.core.msgstream.config import get_stream
+from noc.core.span import Span
 from .route import Route, DefaultNotificationRoute
 from .action import DROP, DUMP
 
@@ -228,62 +229,73 @@ class Router(object):
             logger.debug("[%d] Applying route %s", msg_id, route.name)
             # Apply actions
             routed: bool = False
-            for stream, action_headers, body in route.iter_action(msg):
-                metrics["action_hits", ("stream", stream)] += 1
-                # Fameless drop
-                if stream == DROP:
-                    metrics["action_drops", ("stream", stream)] += 1
-                    logger.debug("[%s] Dropped. Stopping processing", msg_id)
-                    return
-                elif stream == DUMP:
-                    logger.info(
-                        "[%s] Dump. Message headers: %s;\n-----\n Body: %s \n----\n ",
-                        msg_id,
-                        msg.headers,
-                        msg.value,
-                    )
-                    continue
-                # Build resulting headers
-                headers = {}
-                headers.update(msg.headers)
-                if action_headers:
-                    headers.update(action_headers)
-                # Determine sharding channel
-                sharding_key = int(headers.get(MX_SHARDING_KEY, b"0"))
-                partitions = self.stream_partitions.get(stream)
-                if partitions is None:
-                    # Request amount of partitions
+            with Span(
+                sample=int(route.telemetry_sample),
+                server=route.name,
+                service="Router",
+                in_label=msg.key,
+            ) as span:
+                for stream, action_headers, body in route.iter_action(msg):
+                    metrics["action_hits", ("stream", stream)] += 1
+                    # Fameless drop
+                    if stream == DROP:
+                        metrics["action_drops", ("stream", stream)] += 1
+                        logger.debug("[%s] Dropped. Stopping processing", msg_id)
+                        return
+                    elif stream == DUMP:
+                        logger.info(
+                            "[%s] Dump. Message headers: %s;\n-----\n Body: %s \n----\n ",
+                            msg_id,
+                            msg.headers,
+                            msg.value,
+                        )
+                        continue
+                    # Build resulting headers
+                    headers = {}
+                    headers.update(msg.headers)
+                    if action_headers:
+                        headers.update(action_headers)
+                    # Determine sharding channel
+                    sharding_key = int(headers.get(MX_SHARDING_KEY, b"0"))
+                    partitions = self.stream_partitions.get(stream)
+                    if partitions is None:
+                        # Request amount of partitions
+                        try:
+                            sc = get_stream(stream)
+                            partitions = sc.get_partitions()
+                        except ValueError:
+                            partitions = 1
+                        self.stream_partitions[stream] = partitions
+                    if not partitions:
+                        logger.info("[%s] No partition for stream: %s. Skipping...", msg, stream)
+                        continue
+                    partition = sharding_key % partitions
+                    # Single message may be transmuted in zero or more messages
                     try:
-                        sc = get_stream(stream)
-                        partitions = sc.get_partitions()
-                    except ValueError:
-                        partitions = 1
-                    self.stream_partitions[stream] = partitions
-                if not partitions:
-                    logger.info("[%s] No partition for stream: %s. Skipping...", msg, stream)
-                    continue
-                partition = sharding_key % partitions
-                # Single message may be transmuted in zero or more messages
-                try:
-                    body = route.transmute(headers, body)
-                except Exception as e:
-                    logger.error("[%s] Error when transmute message %s: %s", msg, body, str(e))
-                    continue
-                # for body in route.iter_transmute(headers, msg.value):
-                if not isinstance(body, bytes):
-                    # Transmute converts message to an arbitrary structure,
-                    # so convert back to the json
-                    body = orjson.dumps(body)
-                metrics[("forwards", ("stream", stream))] += 1
-                logger.debug("[%s] Routing to %s:%s", msg_id, stream, partition)
-                await self.publish(value=body, stream=stream, partition=partition, headers=headers)
-                routed = True
-            if not routed:
-                logger.debug("[%d] Not routed", msg_id)
-                metrics[
-                    "route_misses",
-                    ("message_type", msg.headers.get(MX_MESSAGE_TYPE).decode(DEFAULT_ENCODING)),
-                ] += 1
+                        body = route.transmute(headers, body)
+                    except Exception as e:
+                        logger.error("[%s] Error when transmute message %s: %s", msg, body, str(e))
+                        continue
+                    # for body in route.iter_transmute(headers, msg.value):
+                    if not isinstance(body, bytes):
+                        # Transmute converts message to an arbitrary structure,
+                        # so convert back to the json
+                        body = orjson.dumps(body)
+                    metrics[("forwards", ("stream", stream))] += 1
+                    logger.debug("[%s] Routing to %s:%s", msg_id, stream, partition)
+                    if route.telemetry_sample:
+                        headers[MX_SPAN_ID] = str(span.span_id).encode(DEFAULT_ENCODING)
+                        headers[MX_SPAN_CTX] = str(span.span_context).encode(DEFAULT_ENCODING)
+                    await self.publish(
+                        value=body, stream=stream, partition=partition, headers=headers
+                    )
+                    routed = True
+                if not routed:
+                    logger.debug("[%d] Not routed", msg_id)
+                    metrics[
+                        "route_misses",
+                        ("message_type", msg.headers.get(MX_MESSAGE_TYPE).decode(DEFAULT_ENCODING)),
+                    ] += 1
         # logger.debug("[%s] Finish processing", msg_id)
 
     async def flush_input_queue(self):

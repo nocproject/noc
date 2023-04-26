@@ -17,7 +17,6 @@ import orjson
 # NOC modules
 from noc.core.msgstream.message import Message
 from noc.core.comp import DEFAULT_ENCODING
-from noc.core.span import Span
 from noc.core.mx import (
     MX_LABELS,
     MX_H_VALUE_SPLITTER,
@@ -26,8 +25,6 @@ from noc.core.mx import (
     MX_NOTIFICATION,
     MX_MESSAGE_TYPE,
     NOTIFICATION_METHODS,
-    MX_SPAN_CTX,
-    MX_SPAN_ID,
 )
 from .action import Action
 
@@ -155,20 +152,8 @@ class Route(object):
 
         :return: Stream name or empty string, dict of headers
         """
-        if not self.telemetry_sample:
-            for a in self.actions:
-                yield from a.iter_action(msg)
-            return
-        with Span(
-            sample=int(self.telemetry_sample),
-            server=self.name,
-            service="Router",
-            in_label=msg.offset,
-        ) as span:
-            for stream, headers, body in self.iter_action(msg):
-                headers[MX_SPAN_ID] = span.span_id
-                headers[MX_SPAN_CTX] = span.span_context
-                yield stream, headers, body
+        for a in self.actions:
+            yield from a.iter_action(msg)
 
     def set_type(self, r_type: str):
         self.type = r_type.encode(encoding=DEFAULT_ENCODING)
@@ -290,16 +275,4 @@ class DefaultNotificationRoute(Route):
         if method not in NOTIFICATION_METHODS:
             # Check available channel for sender
             return
-        if not self.telemetry_sample:
-            yield NOTIFICATION_METHODS[method], {}, msg.value
-            return
-        with Span(
-            sample=int(self.telemetry_sample),
-            server=self.name,
-            service="Router",
-            in_label=msg.offset,
-        ) as span:
-            yield NOTIFICATION_METHODS[method], {
-                MX_SPAN_ID: span.span_id,
-                MX_SPAN_CTX: span.span_context,
-            }, msg.value
+        yield NOTIFICATION_METHODS[method], {}, msg.value

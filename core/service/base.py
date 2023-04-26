@@ -408,7 +408,7 @@ class BaseService(object):
         if not config.message.embedded_router and config.message.enable_metrics:
             self.mx_partitions = await self.get_stream_partitions("message")
         #
-        if self.use_telemetry:
+        if self.use_telemetry or self.use_router:
             self.start_telemetry_callback()
         self.loop.create_task(self.on_register())
 
