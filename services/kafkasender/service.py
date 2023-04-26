@@ -30,6 +30,7 @@ KAFKASENDER_STREAM = "kafkasender"
 
 class KafkaSenderService(FastAPIService):
     name = "kafkasender"
+    use_telemetry = True
 
     def __init__(self):
         super().__init__()

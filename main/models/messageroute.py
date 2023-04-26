@@ -84,6 +84,8 @@ class MessageRoute(Document):
     type = StringField(choices=list(sorted(MESSAGE_TYPES)))
     # Match message headers
     match: List[MRMatch] = ListField(EmbeddedDocumentField(MRMatch))
+    #
+    telemetry_sample = IntField()
     # Message transmuting handler
     transmute_handler = PlainReferenceField(Handler)
     transmute_template = ForeignKeyField(Template)
@@ -129,6 +131,7 @@ class MessageRoute(Document):
             "type": self.type,
             "order": self.order,
             "action": self.action,
+            "telemetry_sample": self.telemetry_sample,
             "match": [],
         }
         if self.stream:

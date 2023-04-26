@@ -106,10 +106,11 @@ class Route(object):
     If condition is matched - do action
     """
 
-    def __init__(self, name: str, r_type: str, order: int):
+    def __init__(self, name: str, r_type: str, order: int, telemetry_sample: Optional[int] = None):
         self.name = name
         self.type = r_type
         self.order = order
+        self.telemetry_sample = telemetry_sample or 0
         self.match_co: str = ""  # Code object for matcher
         self.actions: List[Action] = []
         self.transmute_handler: Optional[Callable[[Dict[str, bytes], T_BODY], T_BODY]] = None
@@ -242,7 +243,7 @@ class Route(object):
         :param data:
         :return:
         """
-        r = Route(data["name"], data["type"], data["order"])
+        r = Route(data["name"], data["type"], data["order"], data.get("telemetry_sample"))
         r.update(data)
         return r
 
