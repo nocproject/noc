@@ -46,7 +46,7 @@ class MaintenanceCard(BaseCard):
         # Maintenance
         SQL = """SELECT id, name, platform, address
             FROM sa_managedobject
-            WHERE is_managed = 'true' AND affected_maintenances @> '{"%s": {}}' ORDER BY address;""" % str(
+            WHERE affected_maintenances @> '{"%s": {}}' ORDER BY address;""" % str(
             self.object.id
         )
         for mo in ManagedObject.objects.raw(SQL):

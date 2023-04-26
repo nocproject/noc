@@ -61,7 +61,7 @@ def start_maintenance(maintenance_id):
             gtt = tts.create_group_tt(tt_id, m.start)
             SQL = """SELECT id, name, tt_system_id
                 FROM sa_managedobject
-                WHERE is_managed = 'true' AND affected_maintenances @> '{"%s": {}}';""" % str(
+                WHERE affected_maintenances @> '{"%s": {}}';""" % str(
                 maintenance_id
             )
             for mo in ManagedObject.objects.raw(SQL):
