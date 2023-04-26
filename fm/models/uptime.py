@@ -127,6 +127,7 @@ class Uptime(Document):
             "reboots",
             [
                 {
+                    "date": ts.date().isoformat(),
                     "ts": ts.replace(microsecond=0).isoformat(),
                     "last": last.replace(microsecond=0).isoformat() if last else None,
                     "managed_object": mo.bi_id,
