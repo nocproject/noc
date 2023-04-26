@@ -467,12 +467,13 @@ class DiagnosticHub(object):
                 )
         self.__object._reset_caches(oid)
 
-    def sync_alarms(self, diagnostics: Optional[List[str]] = None):
+    def sync_alarms(self, diagnostics: Optional[List[str]] = None, alarm_disable: bool = False):
         """
         Raise & clear Alarm for diagnostic. Only diagnostics with alarm_class set will be synced.
         If diagnostics param is set and alarm_class is not set - clear alarm
          For dependent - Group alarm base on diagnostic with alarm for depended
         :param diagnostics: If set - sync only params diagnostic and depends
+        :param alarm_disable: Disable alarm by settings. Clear active alarm
         :return:
         """
         from noc.core.service.loader import get_service
@@ -509,10 +510,15 @@ class DiagnosticHub(object):
                     if d_name not in self:
                         continue
                     dd = self[d_name]
-                    if dd and dd.state == DiagnosticState.failed and self.sync_alarm:
+                    if (
+                        dd
+                        and dd.state == DiagnosticState.failed
+                        and self.sync_alarm
+                        and not alarm_disable
+                    ):
                         groups[dc.diagnostic] += [{"diagnostic": d_name, "reason": dd.reason or ""}]
                     processed.add(d_name)
-            elif d and d.state == d.state.failed and self.sync_alarm:
+            elif d and d.state == d.state.failed and self.sync_alarm and not alarm_disable:
                 alarms[dc.diagnostic] = {
                     "timestamp": now,
                     "reference": f"dc:{self.__object.id}:{d.diagnostic}",

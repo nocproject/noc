@@ -53,14 +53,10 @@ from noc.core.wf.diagnostic import (
     PROFILE_DIAG,
     SNMP_DIAG,
     CLI_DIAG,
-    SNMPTRAP_DIAG,
-    SYSLOG_DIAG,
-    HTTP_DIAG,
     SA_DIAG,
     ALARM_DIAG,
 )
 from noc.core.wf.interaction import Interaction
-from noc.core.checkers.base import Check
 from noc.core.mx import send_message, MX_LABELS, MX_H_VALUE_SPLITTER, MX_ADMINISTRATIVE_DOMAIN_ID
 from noc.core.deprecations import RemovedInNOC2301Warning
 from noc.aaa.models.user import User
@@ -2418,100 +2414,7 @@ class ManagedObject(NOCModel):
             if Interaction.Alarm not in self.interactions
             else "",
         )
-        if Interaction.ServiceActivation in self.interactions:
-            ac = self.get_access_preference()
-            # SNMP Diagnostic
-            yield DiagnosticConfig(
-                SNMP_DIAG,
-                display_description="Check Device response by SNMP request",
-                checks=[Check(name="SNMPv1"), Check(name="SNMPv2c")],
-                blocked=ac == "C",
-                run_policy="F",
-                run_order="S",
-                discovery_box=True,
-                alarm_class="NOC | Managed Object | Access Lost",
-                alarm_labels=["noc::access::method::SNMP"],
-                reason="Blocked by AccessPreference" if ac == "C" else None,
-            )
-            yield DiagnosticConfig(
-                PROFILE_DIAG,
-                display_description="Check device profile",
-                show_in_display=False,
-                checks=[Check(name="PROFILE")],
-                alarm_class="Discovery | Guess | Profile",
-                blocked=not self.object_profile.enable_box_discovery_profile,
-                run_policy="A",
-                run_order="S",
-                discovery_box=True,
-                reason="Blocked by ObjectProfile AccessPreference"
-                if not self.object_profile.enable_box_discovery_profile
-                else None,
-            )
-            # CLI Diagnostic
-            yield DiagnosticConfig(
-                CLI_DIAG,
-                display_description="Check Device response by CLI (TELNET/SSH) request",
-                checks=[Check(name="TELNET"), Check(name="SSH")],
-                discovery_box=True,
-                alarm_class="NOC | Managed Object | Access Lost",
-                alarm_labels=["noc::access::method::CLI"],
-                blocked=ac == "S" or self.scheme not in {1, 2},
-                run_policy="F",
-                run_order="S",
-                reason="Blocked by AccessPreference"
-                if ac == "S" or self.scheme not in {1, 2}
-                else None,
-            )
-            # HTTP Diagnostic
-            yield DiagnosticConfig(
-                HTTP_DIAG,
-                display_description="Check Device response by HTTP/HTTPS request",
-                show_in_display=False,
-                alarm_class="NOC | Managed Object | Access Lost",
-                alarm_labels=["noc::access::method::HTTP"],
-                checks=[Check("HTTP"), Check("HTTPS")],
-                blocked=False,
-                run_policy="D",  # Not supported
-                run_order="S",
-                reason=None,
-            )
-        # Access Diagnostic (Blocked - block SNMP & CLI Check ?
-        yield DiagnosticConfig(
-            "Access",
-            dependent=["SNMP", "CLI", "HTTP"],
-            show_in_display=False,
-            alarm_class="NOC | Managed Object | Access Degraded",
-        )
-        if Interaction.Event in self.interactions:
-            fm_policy = self.get_event_processing_policy()
-            reason = ""
-            if fm_policy == "d":
-                reason = "Disable by Event Processing policy"
-            elif self.trap_source_type == "d":
-                reason = "Disable by source settings"
-            # FM
-            yield DiagnosticConfig(
-                # Reset if change IP/Policy change
-                SNMPTRAP_DIAG,
-                display_description="Received SNMP Trap from device",
-                blocked=self.trap_source_type == "d" or fm_policy == "d",
-                run_policy="D",
-                reason=reason,
-            )
-            reason = ""
-            if fm_policy == "d":
-                reason = "Disable by Event Processing policy"
-            elif self.syslog_source_type == "d":
-                reason = "Disable by source settings"
-            yield DiagnosticConfig(
-                # Reset if change IP/Policy change
-                SYSLOG_DIAG,
-                display_description="Received SYSLOG from device",
-                blocked=self.syslog_source_type == "d" or fm_policy == "d",
-                run_policy="D",
-                reason=reason,
-            )
-        #
+        yield from self.object_profile.iter_diagnostic_configs(self)
         for dc in ObjectDiagnosticConfig.iter_object_diagnostics(self):
             yield dc
 
