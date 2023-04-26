@@ -53,7 +53,8 @@ from noc.core.router.base import Router
 from noc.core.ioloop.util import setup_asyncio
 from noc.core.ioloop.timers import PeriodicCallback
 from noc.core.error import NOCError
-from noc.core.mx import MX_STREAM
+from noc.core.mx import MX_STREAM, MX_SPAN_CTX, MX_SPAN_ID
+from noc.core.span import Span
 from .rpc import RPCProxy
 from .loader import set_service
 from ..router.datastream import RouteDataStreamClient
@@ -407,7 +408,7 @@ class BaseService(object):
         if not config.message.embedded_router and config.message.enable_metrics:
             self.mx_partitions = await self.get_stream_partitions("message")
         #
-        if self.use_telemetry:
+        if self.use_telemetry or self.use_router:
             self.start_telemetry_callback()
         self.loop.create_task(self.on_register())
 
@@ -633,11 +634,26 @@ class BaseService(object):
                     cursor_id=self.name,
                     start_timestamp=start_timestamp,
                 ):
-                    try:
-                        await handler(msg)
-                    except Exception as e:
-                        self.logger.error("Failed to process message offset %s: %s", msg.offset, e)
-                        error_report(logger=self.logger)
+                    span_id = msg.headers.get(MX_SPAN_ID)
+                    span_ctx = msg.headers.get(MX_SPAN_CTX)
+                    sample = 1 if span_ctx and span_id else 0
+                    with Span(
+                        server=self.name,
+                        service="on_message",
+                        sample=sample,
+                        parent=span_id,
+                        context=span_ctx,
+                        in_label=msg.offset,
+                        headers=msg.headers,
+                    ) as span:
+                        try:
+                            await handler(msg)
+                        except Exception as e:
+                            self.logger.error(
+                                "Failed to process message offset %s: %s", msg.offset, e
+                            )
+                            error_report(logger=self.logger)
+                            span.error_text = str(e)
                     if set_cursor:
                         await set_cursor(msg.offset)
                     if self.subscriber_shutdown_waiter:

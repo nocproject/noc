@@ -31,6 +31,7 @@ MAILSENDER_STREAM = "mailsender"
 
 class MailSenderService(FastAPIService):
     name = "mailsender"
+    use_telemetry = True
 
     async def on_activate(self):
         self.slot_number, self.total_slots = await self.acquire_slot()

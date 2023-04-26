@@ -14,6 +14,7 @@ from noc.core.clickhouse.fields import (
     Int32Field,
     UInt32Field,
     StringField,
+    MapField,
 )
 from noc.core.clickhouse.engines import MergeTree
 from noc.core.translation import ugettext as _
@@ -40,6 +41,7 @@ class Span(Model):
     sample = Int32Field(description=_("Sampling rate"))
     error_code = UInt32Field(description=_("Error code"))
     error_text = StringField(description=_("Error text"))
+    in_headers = MapField(StringField(), description="Call headers")
     in_label = StringField(description=_("Input arguments"))
     out_label = StringField(description=_("Output results"))
 
