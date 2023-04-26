@@ -25,9 +25,6 @@
       - patch
       - python-virtualenv
       - gcc
-#      - postgresql{{ postgres_version|replace(".","") }}
-#      - postgresql-devel
-#      - postgresql{{ postgres_version|replace(".","") }}-devel
       - libffi
       - libffi-devel
       - libmemcached

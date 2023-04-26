@@ -41,9 +41,8 @@ resource "yandex_compute_instance" "vm-1" {
   }
 
   metadata = {
-    serial-port-enable = 1,
-    user-data = "#cloud-config\nusers:\n  - name: redos\n    groups: sudo\n    shell: /bin/bash\n    sudo: ['ALL=(ALL) NOPASSWD:ALL']\n    ssh-authorized-keys:\n      - ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQCaNNNqSmM3d36JU1k5Iu+KE3+g7Obfpcl6xvpui0VDpYMlNHXb2Z6v8G/lIJvUrnD3mJhKGORw2D0s5yJBFbw5tHeNoeCFHeEtJhsP1U9h2JBLdsjx75aFDbvPR3h3R+xI8u1ZbEuFUMmJgGd7Zw7XUp6obJ0TdkTJigKUgsMWcob3jvsHy40KZCq4rKUBcwCddKQrQQjv94a2k5TbZHvkteYwQx+uJnxETv3kjtOQHtgeJbDsvpTqk0K8r3B7Bk5Pkd1RXEqROj0iKbKw4w4Zbpbz3FYbjO82DEUvO69ju+4BOR2Ci1WGWDmVppMDpHPVy+upwxHWa8n+GzN8yshAMmn1gQd/VPeP9KtW+ElHDVn8gFWHENAnyPOU90bJpcnz+uXBcmLYabV5/1iiq8z1im79T5Jb8WzAPF7w9NCE8YqaET07/+kswcflEZ9hkkHD9A4EoC8ZScLs7ey4VMXFicB9DhLE/mozq9Lq3Iwk2fc2oYePiLtG1kuXMfrRYMc= yuriy@jh"
-  }
+    user-data = "#cloud-config\nusers:\n  - name: {{ item.ssh_user }}\n    groups: sudo\n    shell: /bin/bash\n    sudo: ['ALL=(ALL) NOPASSWD:ALL']\n    ssh-authorized-keys:\n      - ${file("{{ molecule_yml.driver.ssh_identity_file_pub }}")}",
+    serial-port-enable = 1  }
 
   timeouts {
     create = "10m"

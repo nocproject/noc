@@ -1,6 +1,5 @@
 ---
 - name: Set up SSL directory
-  become: "True"
   file:
     path: "{{ nginx_ssl_key_path | dirname }}"
     mode: 0700

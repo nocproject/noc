@@ -17,7 +17,7 @@ driver:
 platforms:
   - name: noc-node-ubuntu22
     distr: ubuntu22
-    ssh_user: ubuntu
+    ssh_user: redos
 provisioner:
   name: ansible
   config_options:
