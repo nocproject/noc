@@ -12,7 +12,7 @@ from collections import namedtuple
 from django.db.models import JSONField
 from django.contrib.postgres.fields import ArrayField
 from django.db import connection
-from mongoengine.fields import ListField, EmbeddedDocumentListField
+from mongoengine.fields import ListField, EmbeddedDocumentListField, StringField
 
 # NOC modules
 from noc.config import config
@@ -371,22 +371,21 @@ def has_i18n(cls):
         name = <Model>.objects.get(id=id).i18n.name
         description = <Model>.objects.get(id=id).i18n.description
 
-    If localization for field is not found raises exception AttributeError.
-        wrong_field = <Model>.objects.get(id=id).i18n.wrong_field
-        <class 'AttributeError'> 'ProxyFields' object has no attribute 'wrong_field'
-
+    If localization data for field is not found returns value of field itself as default.
+    Localization available only for StringField fields.
     """
 
     def i18n(self):
-        fields = []
         localizations = []
-        for f, locs in self.i18n_data.items():
-            localization = locs.get(config.web.language)
-            if localization:
-                fields += [f]
-                localizations += [localization]
-        ProxyFields = namedtuple("ProxyFields", fields)
+        for field in target_fields:
+            localization = field
+            locs = self.i18n_data.get(field)
+            if locs:
+                localization = locs.get(config.web.language, localization)
+            localizations += [localization]
         return ProxyFields(*localizations)
 
+    target_fields = [k for k, v in cls._fields.items() if isinstance(v, StringField)]
+    ProxyFields = namedtuple("ProxyFields", target_fields)
     cls.i18n = property(i18n)
     return cls
