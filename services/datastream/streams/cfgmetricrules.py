@@ -27,14 +27,34 @@ class CfgMetricRuleDataStream(DataStream):
             "actions": [],
             "match": [],
         }
-        for action in m_rule.actions:
+        for num, action in enumerate(m_rule.actions):
             if not action.is_active:
+                continue
+            if action.metric_type and action.thresholds:
+                r["actions"] += [
+                    {
+                        "id": str(1),
+                        "name": str(f"Threshold_{num}"),
+                        "graph_config": action.get_config(rule_id=m_rule.id, action_num=num).dict(),
+                        "inputs": [
+                            {
+                                "input_name": "in",
+                                "probe_id": action.metric_type.field_name,
+                                "sender_id": action.metric_type.scope.table_name,
+                            }
+                        ],
+                    }
+                ]
+                continue
+            elif not action.metric_action:
                 continue
             r_action = {
                 "id": str(action.metric_action.id),
                 "name": str(action.metric_action),
                 "graph_config": action.metric_action.get_config(
-                    **action.metric_action_params, rule_id=m_rule.id
+                    **action.metric_action_params,
+                    rule_id=m_rule.id,
+                    thresholds=action.thresholds,
                 ).dict(),
                 "inputs": [],
             }

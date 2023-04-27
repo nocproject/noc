@@ -28,6 +28,8 @@ from django.db.models.query_utils import Q as d_q
 # NOC modules
 from noc.core.mongo.fields import PlainReferenceField
 from noc.core.change.decorator import change
+from noc.core.cdag.factory.config import NodeItem, InputItem, GraphConfig
+from noc.core.cdag.node.alarm import VarItem
 from noc.main.models.label import Label
 from noc.pm.models.metrictype import MetricType
 from noc.pm.models.metricaction import MetricAction
@@ -60,6 +62,16 @@ class ThresholdConfig(EmbeddedDocument):
     #
     alarm_labels = ListField(StringField())
 
+    def get_config(self):
+        r = {"op": self.op, "value": self.value}
+        if self.clear_value:
+            r["clear_value"] = self.clear_value
+        if self.alarm_class:
+            r["alarm_class"] = self.alarm_class.name
+        if self.alarm_labels:
+            r["alarm_labels"] = self.alarm_labels
+        return r
+
 
 class MetricActionItem(EmbeddedDocument):
     is_active = BooleanField(default=True)
@@ -81,6 +93,24 @@ class MetricActionItem(EmbeddedDocument):
                 continue
             ma_params[param.name] = param.clean_value(self.metric_action_params[param.name])
         self.metric_action_params = ma_params
+
+    def get_config(self, rule_id: str, action_num: int = 0) -> GraphConfig:
+        nodes = {}
+        nodes["alarm"] = NodeItem(
+            name=f"alarm_{action_num}",
+            type="threshold",
+            inputs=[InputItem(name=self.metric_type.field_name, node=self.metric_type.field_name)],
+            config={
+                "reference": "th:{{vars.rule}}:{{vars.threshold}}:{{object}}:{{alarm_class}}:{{';'.join(labels)}}",
+                "error_text_template": None,
+                "thresholds": [t.get_config() for t in self.thresholds],
+                "vars": [
+                    VarItem(name="rule", value=str(rule_id)),
+                    VarItem(name="action_num", value=str(action_num)),
+                ],
+            },
+        )
+        return GraphConfig(nodes=list(nodes.values()))
 
 
 @change
@@ -122,10 +152,10 @@ class MetricRule(Document):
         ids = []
         scopes = set()
         for a in self.actions:
+            if not a.metric_type and not a.metric_action:
+                continue
             if a.metric_type:
                 scopes.add(a.metric_type.scope.table_name)
-                continue
-            elif not a.metric_action:
                 continue
             for ci in a.metric_action.compose_inputs:
                 scopes.add(ci.metric_type.scope.table_name)

@@ -242,13 +242,19 @@ class MetricAction(Document):
         return os.path.join(*p) + ".json"
 
     def get_config(
-        self, prefix: str = None, enable_dump: bool = False, rule_id: Optional[str] = None, **kwargs
+        self,
+        prefix: str = None,
+        enable_dump: bool = False,
+        rule_id: Optional[str] = None,
+        thresholds: Optional[Any] = None,
+        **kwargs,
     ) -> Optional[GraphConfig]:
         """
         Getting Graph config from MetricAction
         :param prefix: NodeID prefix
         :param enable_dump: Include DumpNode to config
         :param rule_id: Set if apply action to rule
+        :param thresholds: Thresholds params
         :return:
         """
         # Configs
@@ -369,7 +375,9 @@ class MetricAction(Document):
                 inputs=[key_input or g_input],
             )
         # Alarm
-        if self.alarm_config:
+        if thresholds:
+            ...
+        if self.alarm_config and self.alarm_config.alarm_class:
             nodes["alarm"] = NodeItem(
                 name=f"{prefix}alarm",
                 type="alarm",
