@@ -5,9 +5,6 @@
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
-# Python modules
-from collections import namedtuple
-
 # Third-party modules
 from django.db.models import JSONField
 from django.contrib.postgres.fields import ArrayField
@@ -375,17 +372,23 @@ def has_i18n(cls):
     Localization available only for StringField fields.
     """
 
-    def i18n(self):
-        localizations = []
-        for field in target_fields:
-            localization = field
-            locs = self.i18n_data.get(field)
+    class ProxyFields:
+        def __init__(self, document):
+            self.document = document
+
+        def __getattr__(self, item):
+            if item not in target_fields:
+                class_name = self.document.__class__.__name__
+                raise AttributeError(f"'{class_name}' collection has no localizable field '{item}'")
+            localization = item
+            locs = self.document.i18n_data.get(item)
             if locs:
                 localization = locs.get(config.web.language, localization)
-            localizations += [localization]
-        return ProxyFields(*localizations)
+            return localization
+
+    def i18n(self):
+        return ProxyFields(self)
 
     target_fields = [k for k, v in cls._fields.items() if isinstance(v, StringField)]
-    ProxyFields = namedtuple("ProxyFields", target_fields)
     cls.i18n = property(i18n)
     return cls
