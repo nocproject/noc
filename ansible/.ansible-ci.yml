@@ -117,6 +117,7 @@ build_redos:
    extends: .base_builder
    variables:
      SCENARIO_NAME: redos
+     PY3_VERSION: 3.9
    tags:
      - cloud
      - docker
