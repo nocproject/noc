@@ -170,7 +170,7 @@ SETUPENV() {
             echo "COMPOSE_LOG_DRIVER=json-file"
             echo "COMPOSE_LOG_MAX_SIZE=10m"
             echo "COMPOSE_LOG_MAX_FILE=1"
-            echo "GRAFANA_VERSION_TAG=6.3.6"
+            echo "GRAFANA_VERSION_TAG=9.5.1"
             echo "LIFTBRIDGE_VERSION_TAG=v1.7.1"
             echo "NATS_VERSION_TAG=2"
             echo "### NOC env ###"
