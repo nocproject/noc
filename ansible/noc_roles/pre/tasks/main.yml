@@ -46,7 +46,7 @@
 
 - name: Setup hostname
   become: "True"
-  hostname: 
+  hostname:
     name: "{{ inventory_hostname }}"
     use: systemd
   tags:
