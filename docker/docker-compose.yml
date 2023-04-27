@@ -995,7 +995,7 @@ services:
 
   ########## External Components #########
   clickhouse:
-    image: yandex/clickhouse-server:${CLICKHOUSE_VERSION_TAG}
+    image: clickhouse/clickhouse-server:${CLICKHOUSE_VERSION_TAG}
     hostname: clickhouse
     ulimits:
       nofile:
