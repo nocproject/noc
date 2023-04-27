@@ -17,7 +17,7 @@ driver:
 platforms:
   - name: noc-node-centos7
     distr: centos7
-    ssh_user: redos
+    ssh_user: centos
 provisioner:
   name: ansible
   config_options:
