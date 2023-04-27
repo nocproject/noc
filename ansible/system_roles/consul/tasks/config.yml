@@ -95,8 +95,6 @@
     - "ansible_kernel is version('4.1.0', '<')"
 
 - name: Create consul.hcl
-  become: true
-  become_user: root
   template:
     src: consul.hcl.j2
     dest: "{{ consul_configd_path }}/consul.hcl"

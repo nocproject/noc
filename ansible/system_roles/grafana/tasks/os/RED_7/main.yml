@@ -1,4 +1,21 @@
 ---
+- name: install postgresql14-devel-14
+  dnf:
+    name:
+      - postgresql14-devel
+      - python3-devel
+    state: present
+    update_cache: "False"
+  environment:
+    https_proxy: "{{ http_proxy }}"
+    http_proxy: "{{ http_proxy }}"
+
+- name: install library psycopg2
+  pip:
+    name: psycopg2-binary
+  environment:
+    PATH: "{{ ansible_env.PATH }}:/usr/pgsql-{{ postgres_version }}/bin/"
+
 - name: Add Grafana repository
   yum_repository:
     name: grafana
