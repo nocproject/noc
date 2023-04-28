@@ -9,11 +9,12 @@
 from django.db.models import JSONField
 from django.contrib.postgres.fields import ArrayField
 from django.db import connection
-from mongoengine.fields import ListField, EmbeddedDocumentListField
+from mongoengine.fields import ListField, EmbeddedDocumentListField, StringField
 
 # NOC modules
-from noc.models import get_model, get_model_id
+from noc.config import config
 from noc.core.model.fields import ObjectIDArrayField
+from noc.models import get_model, get_model_id
 
 
 def is_document(klass):
@@ -338,3 +339,56 @@ def tree(field="parent"):
         return cls
 
     return decorator
+
+
+def has_i18n(cls):
+    """
+    Class decorator which provides to get localization information for documents in collection.
+    Only for Mongo models!
+
+    Model must have field `i18n_data` with localization information in the following form:
+        {
+            "description": {
+                "en": "My description",
+                "ru": "Мое описание"
+            },
+            "name": {
+                "en": "Gi 0/1"
+            },
+           "other_field": {
+                "en": "...",
+                "ru": "..."
+            }
+        }
+
+    Definition of filed `i18n_data` in model:
+        i18n_data = MapField(DictField())
+
+    Getting localization information performs by getting fields through property `i18n` like this:
+        name = <Model>.objects.get(id=id).i18n.name
+        description = <Model>.objects.get(id=id).i18n.description
+
+    If localization data for field is not found returns value of field itself as default.
+    Localization available only for StringField fields.
+    """
+
+    class ProxyFields(object):
+        def __init__(self, document):
+            self.document = document
+
+        def __getattr__(self, item):
+            if item not in target_fields:
+                raise AttributeError(
+                    f"'{cls.__name__}' collection has no localizable field '{item}'"
+                )
+            locs = self.document.i18n_data.get(item)
+            if locs and config.web.language in locs:
+                return locs[config.web.language]
+            return getattr(self.document, item)
+
+    def i18n(self):
+        return ProxyFields(self)
+
+    target_fields = [k for k, v in cls._fields.items() if isinstance(v, StringField)]
+    cls.i18n = property(i18n)
+    return cls

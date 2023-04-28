@@ -42,9 +42,9 @@ class AlarmClassApplication(ExtDocApplication):
     def api_update_i18n(self, request, aid, language: str, localization: Dict[str, str]):
         ac: AlarmClass = self.get_object_or_404(AlarmClass, id=aid)
         for field in localization:
-            if field not in ac.i18n:
-                ac.i18n[field] = {language: localization[field]}
+            if field not in ac.i18n_data:
+                ac.i18n_data[field] = {language: localization[field]}
             else:
-                ac.i18n[field][language] = localization[field]
-        ac.update(i18n=ac.i18n)
+                ac.i18n_data[field][language] = localization[field]
+        ac.update(i18n_data=ac.i18n_data)
         return self.render_json({"status": True})
