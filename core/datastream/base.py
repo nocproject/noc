@@ -26,7 +26,7 @@ from noc.core.mongo.connection import get_db
 from noc.core.comp import smart_text, DEFAULT_ENCODING
 from noc.models import get_model
 from noc.core.hash import hash_int
-from noc.core.mx import send_message, MX_CHANGE_ID
+from noc.core.mx import send_message, MX_CHANGE_ID, MX_DATA_ID
 from noc.core.wf.diagnostic import DiagnosticState
 
 logger = logging.getLogger(__name__)
@@ -722,6 +722,7 @@ class DataStream(object):
         # Build headers
         headers = {
             MX_CHANGE_ID: str(change_id).encode(DEFAULT_ENCODING),
+            MX_DATA_ID: str(data["id"]).encode(DEFAULT_ENCODING),
         }
         if additional_headers:
             headers.update(additional_headers)

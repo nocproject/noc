@@ -1,7 +1,7 @@
 # ----------------------------------------------------------------------
 # Router
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2022 The NOC Project
+# Copyright (C) 2007-2023 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -231,8 +231,8 @@ class Router(object):
             routed: bool = False
             with Span(
                 sample=int(route.telemetry_sample),
-                server=route.name,
-                service="Router",
+                server=self.svc.name,
+                service=route.name,
                 in_label=msg.key,
             ) as span:
                 for stream, action_headers, body in route.iter_action(msg):
@@ -276,6 +276,9 @@ class Router(object):
                     except Exception as e:
                         logger.error("[%s] Error when transmute message %s: %s", msg, body, str(e))
                         continue
+                    if body is None:
+                        logger.debug("[%s] Skip empty message", msg.timestamp)
+                        continue
                     # for body in route.iter_transmute(headers, msg.value):
                     if not isinstance(body, bytes):
                         # Transmute converts message to an arbitrary structure,
@@ -286,6 +289,7 @@ class Router(object):
                     if route.telemetry_sample:
                         headers[MX_SPAN_ID] = str(span.span_id).encode(DEFAULT_ENCODING)
                         headers[MX_SPAN_CTX] = str(span.span_context).encode(DEFAULT_ENCODING)
+                        span.headers = headers
                     await self.publish(
                         value=body, stream=stream, partition=partition, headers=headers
                     )
