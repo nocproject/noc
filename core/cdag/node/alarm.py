@@ -98,10 +98,10 @@ class AlarmNode(BaseCDAGNode):
             (not self.config.invert_condition and x >= self.config.activation_level)
             or (self.config.invert_condition and x <= self.config.activation_level)
         ):
-            self.raise_alarm(x, labels=self.config.labels)
+            self.raise_alarm(x)
         return None
 
-    def raise_alarm(self, x: ValueType, labels: Optional[List[str]] = None) -> None:
+    def raise_alarm(self, x: ValueType) -> None:
         """
         Raise alarm
         """
@@ -117,7 +117,7 @@ class AlarmNode(BaseCDAGNode):
             "timestamp": now.isoformat(),
             "managed_object": self.config.managed_object,
             "alarm_class": self.config.alarm_class,
-            "labels": labels or [],
+            "labels": self.config.labels or [],
             # x is numpy.float64 type, ?
             "vars": {"ovalue": round(float(x), 3), "tvalue": self.config.activation_level},
         }

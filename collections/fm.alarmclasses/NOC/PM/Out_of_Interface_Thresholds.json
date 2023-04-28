@@ -20,7 +20,8 @@
     "vars": [
         {
             "name": "interface",
-            "description": null
+            "description": null,
+            "default_labels": ["noc::interface::*"]
         },
         {
             "name": "description",
