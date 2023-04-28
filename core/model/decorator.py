@@ -372,7 +372,7 @@ def has_i18n(cls):
     Localization available only for StringField fields.
     """
 
-    class ProxyFields:
+    class ProxyFields(object):
         def __init__(self, document):
             self.document = document
 
@@ -380,7 +380,7 @@ def has_i18n(cls):
             if item not in target_fields:
                 class_name = self.document.__class__.__name__
                 raise AttributeError(f"'{class_name}' collection has no localizable field '{item}'")
-            localization = item
+            localization = getattr(self.document, item)
             locs = self.document.i18n_data.get(item)
             if locs:
                 localization = locs.get(config.web.language, localization)
