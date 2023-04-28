@@ -41,7 +41,7 @@ SpanItemFields = [
     "sample",
     "in_label",
     "out_label",
-    "headers",
+    "in_headers",
 ]
 SpanItem = namedtuple("SpanItem", SpanItemFields)
 # Collected spans, protected by lock
@@ -165,7 +165,7 @@ class Span(object):
             sample=self.sample,
             in_label=str(self.in_label or ""),
             out_label=str(self.out_label or ""),
-            headers={k: v.decode(DEFAULT_ENCODING) for k, v in self.headers.items()},
+            in_headers={k: v.decode(DEFAULT_ENCODING) for k, v in self.headers.items()},
         )
         with span_lock:
             spans += [span]

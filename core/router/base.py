@@ -289,6 +289,7 @@ class Router(object):
                     if route.telemetry_sample:
                         headers[MX_SPAN_ID] = str(span.span_id).encode(DEFAULT_ENCODING)
                         headers[MX_SPAN_CTX] = str(span.span_context).encode(DEFAULT_ENCODING)
+                        span.headers = headers
                     await self.publish(
                         value=body, stream=stream, partition=partition, headers=headers
                     )
