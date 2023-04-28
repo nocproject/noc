@@ -1,7 +1,7 @@
 //---------------------------------------------------------------------
 // main.metricstream application
 //---------------------------------------------------------------------
-// Copyright (C) 2007-2021 The NOC Project
+// Copyright (C) 2007-2023 The NOC Project
 // See LICENSE for details
 //---------------------------------------------------------------------
 console.debug("Defining NOC.main.metricstream.Application");
@@ -68,6 +68,13 @@ Ext.define("NOC.main.metricstream.Application", {
                             {
                                 text: __("Expose MX"),
                                 dataIndex: "expose_mx",
+                                width: 50,
+                                renderer: NOC.render.Bool,
+                                editor: "checkbox"
+                            },
+                            {
+                                text: __("Expose Condition"),
+                                dataIndex: "expose_condition",
                                 width: 50,
                                 renderer: NOC.render.Bool,
                                 editor: "checkbox"
