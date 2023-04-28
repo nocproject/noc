@@ -378,13 +378,13 @@ def has_i18n(cls):
 
         def __getattr__(self, item):
             if item not in target_fields:
-                class_name = self.document.__class__.__name__
-                raise AttributeError(f"'{class_name}' collection has no localizable field '{item}'")
-            localization = getattr(self.document, item)
+                raise AttributeError(
+                    f"'{cls.__name__}' collection has no localizable field '{item}'"
+                )
             locs = self.document.i18n_data.get(item)
-            if locs:
-                localization = locs.get(config.web.language, localization)
-            return localization
+            if locs and config.web.language in locs:
+                return locs[config.web.language]
+            return getattr(self.document, item)
 
     def i18n(self):
         return ProxyFields(self)
