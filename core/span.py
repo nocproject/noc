@@ -21,6 +21,7 @@ from typing import Optional, Dict
 # NOC modules
 from noc.core.error import NO_ERROR, ERR_UNKNOWN
 from noc.core.perf import metrics
+from noc.core.comp import DEFAULT_ENCODING
 from noc.config import config
 
 forensic_logger = logging.getLogger("noc.core.forensic")
@@ -40,7 +41,7 @@ SpanItemFields = [
     "sample",
     "in_label",
     "out_label",
-    "headers",
+    "in_headers",
 ]
 SpanItem = namedtuple("SpanItem", SpanItemFields)
 # Collected spans, protected by lock
@@ -164,7 +165,7 @@ class Span(object):
             sample=self.sample,
             in_label=str(self.in_label or ""),
             out_label=str(self.out_label or ""),
-            headers={k: str(v) for k, v in self.headers.items()},
+            in_headers={k: v.decode(DEFAULT_ENCODING) for k, v in self.headers.items()},
         )
         with span_lock:
             spans += [span]
