@@ -45,7 +45,7 @@ class MessageStreamClient(object):
 
     @classmethod
     def get_client(cls) -> "MessageStreamClient":
-        logger.info("Using cache backend: %s", config.msgstream.client_class)
+        logger.debug("Using MsgStream client backend: %s", config.msgstream.client_class)
         c = get_handler(config.msgstream.client_class)
         if c:
             return c()
