@@ -160,6 +160,8 @@ class ThresholdNode(BaseCDAGNode):
     def is_active(self, threshold: Optional[str] = None) -> bool:
         if threshold and threshold in self.state.thresholds:
             return self.state.thresholds[threshold].active
+        elif threshold:
+            return False
         return any(t.active for t in self.state.thresholds.values())
 
     def set_state(self, threshold: str, reference: Optional[str] = None):

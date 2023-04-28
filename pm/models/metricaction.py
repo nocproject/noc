@@ -388,9 +388,7 @@ class MetricAction(Document):
                     "vars": [
                         VarItem(name="rule", value=str(rule_id)),
                         VarItem(name="action", value=str(self.id)),
-                        VarItem(
-                            name="metric", value=str(self.self.compose_inputs[0].metric_type.name)
-                        ),
+                        VarItem(name="metric", value=str(self.compose_inputs[0].metric_type.name)),
                     ],
                 },
             )

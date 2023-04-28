@@ -35,7 +35,7 @@ class CfgMetricRuleDataStream(DataStream):
                     {
                         "id": str(action.metric_type.id),
                         "name": str(f"Threshold_{action.metric_type.name}"),
-                        "graph_config": action.get_config(rule_id=m_rule.id).model_dump(),
+                        "graph_config": action.get_config(rule_id=m_rule.id).dict(),
                         "inputs": [
                             {
                                 "input_name": "in",
@@ -55,7 +55,7 @@ class CfgMetricRuleDataStream(DataStream):
                     **action.metric_action_params,
                     rule_id=m_rule.id,
                     thresholds=action.thresholds,
-                ).model_dump(),
+                ).dict(),
                 "inputs": [],
             }
             for mt in action.metric_action.compose_inputs:
