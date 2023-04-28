@@ -1,14 +1,14 @@
 # ----------------------------------------------------------------------
 # Threshold node
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2022 The NOC Project
+# Copyright (C) 2007-2023 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
 # Python modules
 import datetime
 import logging
-from typing import Optional, List, Dict, Literal, Iterable
+from typing import Optional, List, Dict, Literal, Iterable, Any
 
 # Third-party modules
 import orjson
@@ -202,3 +202,10 @@ class ThresholdNode(BaseCDAGNode):
 
     def __del__(self):
         self.reset_state()
+
+    def clean_state(self, state: Optional[Dict[str, Any]]) -> Optional[BaseModel]:
+        if not hasattr(self, "state_cls"):
+            return None
+        state = state or {}
+        c_state = self.state_cls(**state)
+        return c_state

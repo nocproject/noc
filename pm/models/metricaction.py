@@ -375,12 +375,10 @@ class MetricAction(Document):
                 inputs=[key_input or g_input],
             )
         # Alarm
-        if thresholds:
-            ...
         if self.alarm_config and self.alarm_config.alarm_class:
             nodes["alarm"] = NodeItem(
                 name=f"{prefix}alarm",
-                type="alarm",
+                type="threshold" if thresholds else "alarm",
                 inputs=[key_input or g_input],
                 config={
                     "alarm_class": self.alarm_config.alarm_class.name,
@@ -390,9 +388,14 @@ class MetricAction(Document):
                     "vars": [
                         VarItem(name="rule", value=str(rule_id)),
                         VarItem(name="action", value=str(self.id)),
+                        VarItem(
+                            name="metric", value=str(self.self.compose_inputs[0].metric_type.name)
+                        ),
                     ],
                 },
             )
+            if thresholds:
+                nodes["alarm"].config["thresholds"] = thresholds
             if dkey_input:
                 nodes["alarm"].inputs += [
                     InputItem(name=dkey_input.name, node=dkey_input.node, dynamic=True)

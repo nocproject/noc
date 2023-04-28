@@ -1,7 +1,7 @@
 # ----------------------------------------------------------------------
 # cfgmetricrules
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2022 The NOC Project
+# Copyright (C) 2007-2023 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -33,9 +33,9 @@ class CfgMetricRuleDataStream(DataStream):
             if action.metric_type and action.thresholds:
                 r["actions"] += [
                     {
-                        "id": str(num),
-                        "name": str(f"Threshold_{num}"),
-                        "graph_config": action.get_config(rule_id=m_rule.id, action_num=num).dict(),
+                        "id": str(action.metric_type.id),
+                        "name": str(f"Threshold_{action.metric_type.name}"),
+                        "graph_config": action.get_config(rule_id=m_rule.id).model_dump(),
                         "inputs": [
                             {
                                 "input_name": "in",
@@ -55,7 +55,7 @@ class CfgMetricRuleDataStream(DataStream):
                     **action.metric_action_params,
                     rule_id=m_rule.id,
                     thresholds=action.thresholds,
-                ).dict(),
+                ).model_dump(),
                 "inputs": [],
             }
             for mt in action.metric_action.compose_inputs:
