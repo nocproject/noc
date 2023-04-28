@@ -69,6 +69,10 @@ Ext.define("NOC.main.messageroute.Model", {
             type: "string"
         },
         {
+            name: "telemetry_sample",
+            type: "int"
+        },
+        {
             name: "notification_group",
             type: "int"
         },
