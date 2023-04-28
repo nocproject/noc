@@ -7,41 +7,28 @@
 
 # Python modules
 import datetime
+import logging
 from typing import Optional, List, Dict, Literal
 
 # Third-party modules
+import orjson
+from jinja2 import Template
 from pydantic import BaseModel
 
 # NOC modules
-from .base import ValueType
-from .alarm import AlarmNode, AlarmNodeConfig
+from .base import BaseCDAGNode, ValueType, Category
+from .alarm import AlarmNodeConfig
+from noc.core.service.loader import get_service
 
 
 class ThresholdState(BaseModel):
     active: bool = False
+    reference: str = None
     last_raise: datetime.datetime = None
 
 
 class ThresholdNodeState(BaseModel):
     thresholds: Dict[str, ThresholdState] = {}
-
-    def is_active(self, threshold: str) -> bool:
-        if threshold in self.thresholds:
-            return self.thresholds[threshold].active
-        return False
-
-    def set_state(self, threshold: str):
-        if threshold in self.thresholds:
-            self.thresholds[threshold].active = True
-            self.thresholds[threshold].last_raise = datetime.datetime.now()
-        else:
-            self.thresholds[threshold] = ThresholdState(
-                active=True, last_raise=datetime.datetime.now()
-            )
-
-    def reset_state(self, threshold):
-        if threshold in self.thresholds:
-            self.thresholds[threshold].active = False
 
 
 class VarItem(BaseModel):
@@ -53,7 +40,7 @@ class ThresholdItem(BaseModel):
     value: float = 1
     op: Literal[">", ">=", "<", "<="] = ">="
     clear_value: Optional[float] = None
-    alarm_class: Optional[str] = None
+    alarm_class: Optional[str] = "NOC | PM | Out of Thresholds"
     alarm_labels: Optional[List[str]] = None
 
     def is_open_match(self, value: ValueType) -> bool:
@@ -81,11 +68,14 @@ class ThresholdItem(BaseModel):
 
 
 class ThresholdNodeConfig(AlarmNodeConfig):
-    alarm_class: Optional[str] = "NOC | PM | Out of Thresholds"
+    alarm_class: Optional[str] = None
     thresholds: List[ThresholdItem]
 
 
-class ThresholdNode(AlarmNode):
+logger = logging.getLogger(__name__)
+
+
+class ThresholdNode(BaseCDAGNode):
     """
     Maintain Thresholds
     """
@@ -93,10 +83,119 @@ class ThresholdNode(AlarmNode):
     name = "threshold"
     config_cls = ThresholdNodeConfig
     state_cls = ThresholdNodeState
+    categories = [Category.UTIL]
 
     def get_value(self, x: ValueType, **kwargs):
+        logger.info("[%s] Getting Threshold value: %s", self.node_id, x)
         for num, th in enumerate(self.config.thresholds):
-            if self.state.is_active(th.value) and th.is_clear_match(x):
-                self.clear_alarm()
-            elif th.is_open_match(x) and not self.state.is_active(th.value):
-                self.raise_alarm(x, th.labels)
+            if self.is_active(str(num)) and th.is_clear_match(x):
+                self.clear_alarm(str(num))
+            elif th.is_open_match(x) and not self.is_active(str(num)):
+                self.raise_alarm(x, th, str(num))
+
+    def raise_alarm(self, x: ValueType, th: ThresholdItem = None, tid: str = None) -> None:
+        """
+        Raise alarm
+        """
+
+        def q(v):
+            template = Template(v)
+            return template.render(x=x, config=self.config)
+
+        now = datetime.datetime.now()
+        msg = {
+            "$op": "raise",
+            "reference": self.config_cls.get_reference(self.config),
+            "timestamp": now.isoformat(),
+            "managed_object": self.config.managed_object,
+            "alarm_class": th.alarm_class,
+            "labels": self.config.labels or [] + th.alarm_labels or [],
+            # x is numpy.float64 type, ?
+            "vars": {"ovalue": round(float(x), 3), "tvalue": th.value},
+        }
+        # Render vars
+        if self.config.vars:
+            msg["vars"].update({v.name: q(v.value) for v in self.config.vars})
+        if self.config.error_text_template:
+            msg["vars"]["message"] = self.config.error_text_template
+        if self.config.sla_probe:
+            msg["vars"]["sla_probe"] = self.config.sla_probe
+        if self.config.sensor:
+            msg["vars"]["sensor"] = self.config.sensor
+        if self.config.service:
+            msg["vars"]["service"] = self.config.service
+        self.publish_message(msg)
+        self.set_state(tid, reference=self.config_cls.get_reference(self.config))
+        logger.info(
+            "[%s|%s|%s|%s] Raise alarm: %s",
+            self.node_id,
+            self.config.managed_object,
+            ";".join(self.config.labels or []),
+            self.config.pool,
+            x,
+        )
+
+    def clear_alarm(self, threshold: Optional[str] = None, message: Optional[str] = None) -> None:
+        """
+        Clear alarm
+        """
+        msg = {
+            "$op": "clear",
+            "reference": self.state.thresholds[threshold].reference,
+            "timestamp": datetime.datetime.now().isoformat(),
+            "message": message,
+        }
+        self.publish_message(msg)
+        self.state.thresholds[threshold].active = False
+        logger.info(
+            "[%s|%s|%s] Clear alarm",
+            self.node_id,
+            self.config.managed_object,
+            ";".join(self.config.labels or []),
+        )
+
+    def is_active(self, threshold: Optional[str] = None) -> bool:
+        if threshold and threshold in self.state.thresholds:
+            return self.state.thresholds[threshold].active
+        return any(t.active for t in self.state.thresholds.values())
+
+    def set_state(self, threshold: str, reference: Optional[str] = None):
+        if threshold in self.state.thresholds:
+            self.state.thresholds[threshold].active = True
+            self.state.thresholds[threshold].last_raise = datetime.datetime.now().replace(
+                microsecond=0
+            )
+            self.state.thresholds[threshold].reference = reference
+        else:
+            self.state.thresholds[threshold] = ThresholdState(
+                active=True,
+                last_raise=datetime.datetime.now(),
+                reference=reference,
+            )
+
+    def reset_state(self, threshold: Optional[str] = None):
+        """
+        Reset Alarm Node state
+        :return:
+        """
+        if not self.is_active(threshold):
+            return
+        if threshold:
+            self.clear_alarm(threshold)
+            self.state[threshold].active = False
+        for th, state in self.state.thresholds.items():
+            if not state.active:
+                continue
+            self.clear_alarm(th, "Reset by change node config")
+            state.active = False
+
+    def publish_message(self, msg):
+        if self.config.dry_run or not self.config.pool:
+            return
+        svc = get_service()
+        svc.publish(
+            orjson.dumps(msg), stream=f"dispose.{self.config.pool}", partition=self.config.partition
+        )
+
+    def __del__(self):
+        self.reset_state()
