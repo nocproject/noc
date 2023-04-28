@@ -231,8 +231,8 @@ class Router(object):
             routed: bool = False
             with Span(
                 sample=int(route.telemetry_sample),
-                server=route.name,
-                service="Router",
+                server=self.svc.name,
+                service=route.name,
                 in_label=msg.key,
             ) as span:
                 for stream, action_headers, body in route.iter_action(msg):
