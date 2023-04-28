@@ -33,7 +33,7 @@ class CfgMetricRuleDataStream(DataStream):
             if action.metric_type and action.thresholds:
                 r["actions"] += [
                     {
-                        "id": str(1),
+                        "id": str(num),
                         "name": str(f"Threshold_{num}"),
                         "graph_config": action.get_config(rule_id=m_rule.id, action_num=num).dict(),
                         "inputs": [

@@ -97,9 +97,9 @@ class MetricActionItem(EmbeddedDocument):
     def get_config(self, rule_id: str, action_num: int = 0) -> GraphConfig:
         nodes = {}
         nodes["alarm"] = NodeItem(
-            name=f"alarm_{action_num}",
+            name="alarm",
             type="threshold",
-            inputs=[InputItem(name=self.metric_type.field_name, node=self.metric_type.field_name)],
+            inputs=[InputItem(name="x", node=self.metric_type.field_name)],
             config={
                 "reference": "th:{{vars.rule}}:{{vars.threshold}}:{{object}}:{{alarm_class}}:{{';'.join(labels)}}",
                 "error_text_template": None,
@@ -187,10 +187,10 @@ class MetricRule(Document):
             "id", "match", "actions"
         ):
             for m in match:
-                for a in actions:
+                for num, a in enumerate(actions):
                     if not a.is_active:
                         continue
-                    r[frozenset(m.labels)].append([rid, a])
+                    r[frozenset(m.labels)].append([rid, a, num])
         return r
 
     @classmethod
@@ -205,5 +205,8 @@ class MetricRule(Document):
         for rlabels, actions in rules.items():
             if rlabels - labels:
                 continue
-            for rid, a in actions:
-                yield str(rid), str(a.metric_action.id)
+            for rid, a, num in actions:
+                if a.metric_action:
+                    yield str(rid), str(a.metric_action.id)
+                elif a.metric_type:
+                    yield str(rid), str(num)

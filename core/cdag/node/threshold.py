@@ -8,12 +8,12 @@
 # Python modules
 import datetime
 import logging
-from typing import Optional, List, Dict, Literal
+from typing import Optional, List, Dict, Literal, Iterable
 
 # Third-party modules
 import orjson
 from jinja2 import Template
-from pydantic import BaseModel
+from pydantic import BaseModel, parse_obj_as
 
 # NOC modules
 from .base import BaseCDAGNode, ValueType, Category
@@ -85,9 +85,12 @@ class ThresholdNode(BaseCDAGNode):
     state_cls = ThresholdNodeState
     categories = [Category.UTIL]
 
+    def iter_thresholds(self) -> Iterable[ThresholdItem]:
+        for num, th in enumerate(parse_obj_as(List[ThresholdItem], self.config.thresholds)):
+            yield num, th
+
     def get_value(self, x: ValueType, **kwargs):
-        logger.info("[%s] Getting Threshold value: %s", self.node_id, x)
-        for num, th in enumerate(self.config.thresholds):
+        for num, th in self.iter_thresholds():
             if self.is_active(str(num)) and th.is_clear_match(x):
                 self.clear_alarm(str(num))
             elif th.is_open_match(x) and not self.is_active(str(num)):
@@ -109,7 +112,7 @@ class ThresholdNode(BaseCDAGNode):
             "timestamp": now.isoformat(),
             "managed_object": self.config.managed_object,
             "alarm_class": th.alarm_class,
-            "labels": self.config.labels or [] + th.alarm_labels or [],
+            "labels": (self.config.labels or []) + (th.alarm_labels or []),
             # x is numpy.float64 type, ?
             "vars": {"ovalue": round(float(x), 3), "tvalue": th.value},
         }
