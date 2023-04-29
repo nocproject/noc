@@ -27,7 +27,6 @@ from noc.core.comp import smart_text, DEFAULT_ENCODING
 from noc.models import get_model
 from noc.core.hash import hash_int
 from noc.core.mx import send_message, MX_CHANGE_ID, MX_DATA_ID
-from noc.core.wf.diagnostic import DiagnosticState
 
 logger = logging.getLogger(__name__)
 

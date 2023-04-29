@@ -743,13 +743,13 @@ class Label(Document):
                 labels_iter = getattr(
                     sender, "iter_effective_labels", default_iter_effective_labels
                 )
-                instance.effective_labels = list(
-                    sorted(
-                        ll
-                        for ll in Label.merge_labels(labels_iter(instance))
-                        if ll[-1] in MATCH_OPS or can_set_label(ll)
-                    )
-                )
+                el = {
+                    ll
+                    for ll in Label.merge_labels(labels_iter(instance))
+                    if ll[-1] in MATCH_OPS or can_set_label(ll)
+                }
+                if not instance.effective_labels or el != set(instance.effective_labels):
+                    instance.effective_labels = list(sorted(el))
             if instance._has_lazy_labels and instance.name != instance._last_name:
                 for label in Label.objects.filter(
                     name=re.compile(f"noc::.+::{instance._last_name}::[{''.join(MATCH_OPS)}]")

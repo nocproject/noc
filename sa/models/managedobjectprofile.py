@@ -909,7 +909,14 @@ class ManagedObjectProfile(NOCModel):
         # box_changed
         # self.diagnostic.reset_diagnostics([PROFILE_DIAG, SNMP_DIAG, CLI_DIAG])
         # print("Diagnostic Changed", self.get_changed_diagnostics())
-        if not cd:
+        if not cd and self.is_field_changed(["level", "weight", "labels", "escalation_policy"]):
+            cache.delete_many(
+                [
+                    f"managedobject-id-{x}"
+                    for x in self.managedobject_set.values_list("id", flat=True)
+                ],
+                version=MANAGEDOBJECT_CACHE_VERSION,
+            )
             return
         now = datetime.datetime.now().replace(microsecond=0)
         alarm_sync = False
@@ -959,6 +966,10 @@ class ManagedObjectProfile(NOCModel):
                 remove_labels=r_labels,
                 instance_filters=[("object_profile_id", self.id), (policy_field, "P")],
             )
+        cache.delete_many(
+            [f"managedobject-id-{x}" for x in self.managedobject_set.values_list("id", flat=True)],
+            version=MANAGEDOBJECT_CACHE_VERSION,
+        )
         if self.box_discovery_alarm_policy != "D" and alarm_sync:
             # Sync alarm
             defer(

@@ -16,11 +16,10 @@ from threading import Lock
 import datetime
 import warnings
 from dataclasses import dataclass
-from itertools import chain, product
+from itertools import chain
 from typing import Tuple, Iterable, List, Any, Dict, Set, Optional, Union
 
 # Third-party modules
-import orjson
 import cachetools
 from django.contrib.postgres.fields import ArrayField
 from django.db.models import (
@@ -50,9 +49,6 @@ from noc.core.wf.diagnostic import (
     DiagnosticConfig,
     diagnostic,
     DIAGNOCSTIC_LABEL_SCOPE,
-    PROFILE_DIAG,
-    SNMP_DIAG,
-    CLI_DIAG,
     SA_DIAG,
     ALARM_DIAG,
 )
