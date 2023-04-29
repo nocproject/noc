@@ -43,6 +43,7 @@ CATEGORIES = {
         "composeprobe",
         "subgraph",
         "value",
+        "threshold",
     },
     Category.STATISTICS: {"mean", "std"},
     Category.ML: {"gauss"},
