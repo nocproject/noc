@@ -27,7 +27,6 @@ from noc.core.comp import smart_text, DEFAULT_ENCODING
 from noc.models import get_model
 from noc.core.hash import hash_int
 from noc.core.mx import send_message, MX_CHANGE_ID, MX_DATA_ID
-from noc.core.wf.diagnostic import DiagnosticState
 
 logger = logging.getLogger(__name__)
 
@@ -330,12 +329,10 @@ class DataStream(object):
             meta = cls.get_meta(data)
             meta_headers = cls.get_meta_headers(data)
             data = cls.clean_meta_fields(data)
-            if cls.DIAGNOSTIC:
-                cls.update_diagnostic_state(obj_id, state=DiagnosticState.unknown)
+            cls.update_diagnostic_state(obj_id)
             return data, meta, meta_headers
         except KeyError as e:
-            if cls.DIAGNOSTIC:
-                cls.update_diagnostic_state(obj_id, state=DiagnosticState.blocked, reason=str(e))
+            cls.update_diagnostic_state(obj_id, is_blocked=True, reason=str(e))
             return cls.get_deleted_object(obj_id), None, None
 
     @classmethod
@@ -745,19 +742,17 @@ class DataStream(object):
         return data
 
     @classmethod
-    def update_diagnostic_state(cls, obj_id, state: DiagnosticState, reason: Optional[str] = None):
-        from noc.sa.models.managedobject import ManagedObject, DiagnosticItem
-
-        if state == DiagnosticState.blocked and not reason:
+    def update_diagnostic_state(
+        cls, obj_id, is_blocked: bool = False, reason: Optional[str] = None
+    ):
+        if not cls.DIAGNOSTIC:
             return
-        mo = ManagedObject.objects.filter(id=obj_id).values("diagnostics").first()
-        if cls.DIAGNOSTIC in mo["diagnostics"]:
-            diagnostic = DiagnosticItem.parse_obj(mo["diagnostics"][cls.DIAGNOSTIC])
-        else:
-            diagnostic = DiagnosticItem(diagnostic=cls.DIAGNOSTIC)
-        if diagnostic.state != state and state == DiagnosticState.unknown:
-            ManagedObject.save_diagnostics(obj_id, removed=[cls.DIAGNOSTIC])
-        elif diagnostic.state != state:
-            diagnostic.state = state
-            diagnostic.reason = reason
-            ManagedObject.save_diagnostics(obj_id, [diagnostic])
+        from noc.sa.models.managedobject import ManagedObject
+
+        mo = ManagedObject.objects.filter(id=int(obj_id)).first()
+        if not mo:
+            return
+        logger.info(
+            "[%s] Update object diagnostic: %s,%s (%s)", mo, cls.DIAGNOSTIC, is_blocked, reason
+        )
+        mo.diagnostic.reset_diagnostics([cls.DIAGNOSTIC], reason=reason)

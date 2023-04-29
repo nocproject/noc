@@ -7,13 +7,16 @@
 
 # Python modules
 import operator
+import datetime
 from threading import Lock
 from functools import partial
 from dataclasses import dataclass
-from typing import Optional, List, Dict, Iterable, Any
+from typing import Optional, List, Dict, Iterable, Any, Set
 
 # Third-party modules
 import cachetools
+import orjson
+from django.db import connection as pg_connection
 from django.contrib.postgres.fields import ArrayField
 from django.core.validators import MinValueValidator
 from django.db import models
@@ -44,6 +47,7 @@ from noc.core.wf.diagnostic import (
     HTTP_DIAG,
     SNMPTRAP_DIAG,
     SYSLOG_DIAG,
+    DIAGNOCSTIC_LABEL_SCOPE,
     DiagnosticState,
     DiagnosticConfig,
     DiagnosticHub,
@@ -827,7 +831,34 @@ class ManagedObjectProfile(NOCModel):
                 return True
         return False
 
+    def get_changed_diagnostics(self) -> Set[str]:
+        """
+        Return changed diagnotic state by policy field
+        """
+        r = set()
+        if self.is_field_changed(["event_processing_policy"]):
+            r |= {SNMPTRAP_DIAG, SYSLOG_DIAG}
+        if not self.is_field_changed(["access_preference"]):
+            return r
+        if not self.initial_data.get("access_preference", []):
+            r |= {CLI_DIAG, SNMP_DIAG}
+        elif set(self.access_preference) != set(self.initial_data["access_preference"]):
+            # Same preference
+            same_preference = set(self.initial_data["access_preference"]).intersection(
+                set(self.access_preference)
+            )
+            # Change preference - all sub same
+            for p in {"S", "C"} - same_preference:
+                r.add({"S": SNMP_DIAG, "C": CLI_DIAG}[p])
+        return r
+
     def on_save(self):
+        """
+        Run jobs after change fields
+        * access policy - reset credential cache and save diagnostics
+        * job enable - ensure objects jobs
+        * event policy - change diagnostic
+        """
         from .managedobject import CREDENTIAL_CACHE_VERSION, MANAGEDOBJECT_CACHE_VERSION
 
         box_changed = self.is_field_changed(["enable_box_discovery"])
@@ -857,9 +888,6 @@ class ManagedObjectProfile(NOCModel):
                 "noc.sa.models.managedobjectprofile.update_diagnostics_alarms",
                 key=self.id,
                 profile_id=self.id,
-                box_changed=box_changed,
-                periodic_changed=periodic_changed,
-                alarm_policy_changed=alarm_box_changed,
             )
         if access_changed:
             cache.delete_many(
@@ -876,6 +904,78 @@ class ManagedObjectProfile(NOCModel):
                     for x in self.managedobject_set.values_list("id", flat=True)
                 ],
                 version=MANAGEDOBJECT_CACHE_VERSION,
+            )
+        cd = self.get_changed_diagnostics()
+        # box_changed
+        # self.diagnostic.reset_diagnostics([PROFILE_DIAG, SNMP_DIAG, CLI_DIAG])
+        # print("Diagnostic Changed", self.get_changed_diagnostics())
+        if not cd and self.is_field_changed(["level", "weight", "labels", "escalation_policy"]):
+            cache.delete_many(
+                [
+                    f"managedobject-id-{x}"
+                    for x in self.managedobject_set.values_list("id", flat=True)
+                ],
+                version=MANAGEDOBJECT_CACHE_VERSION,
+            )
+            return
+        now = datetime.datetime.now().replace(microsecond=0)
+        alarm_sync = False
+        for dc in self.iter_diagnostic_configs():
+            if dc.diagnostic not in cd:
+                continue
+            d_state = DiagnosticState.blocked if dc.blocked else DiagnosticState.unknown
+            diags = {
+                dc.diagnostic: {
+                    "diagnostic": dc.diagnostic,
+                    "state": d_state,
+                    "reason": "Blocked by Profile settings",
+                    "checks": [],
+                    "changed": now,
+                }
+            }
+            policy_field = "access_preference"
+            if dc.diagnostic in {SNMPTRAP_DIAG, SYSLOG_DIAG}:
+                policy_field = "event_processing_policy"
+            if dc.diagnostic in {CLI_DIAG, SNMP_DIAG} and dc.blocked:
+                alarm_sync = True
+            # Update diagnostics
+            with pg_connection.cursor() as cursor:
+                cursor.execute(
+                    f"""
+                     UPDATE sa_managedobject
+                     SET diagnostics = diagnostics || %s::jsonb
+                     WHERE {policy_field} = %s and object_profile_id = %s""",
+                    [orjson.dumps(diags).decode("utf-8"), "P", self.id],
+                )
+            # change labels :f"{DIAGNOCSTIC_LABEL_SCOPE}::{d.diagnostic}::{d.state}"
+            r_labels = []
+            if d_state != DiagnosticState.blocked:
+                r_labels = [
+                    f"{DIAGNOCSTIC_LABEL_SCOPE}::{dc.diagnostic}::{DiagnosticState.blocked.value}"
+                ]
+            else:
+                # All state
+                r_labels = [
+                    f"{DIAGNOCSTIC_LABEL_SCOPE}::{dc.diagnostic}::{s.value}"
+                    for s in DiagnosticState
+                    if not s.is_blocked
+                ]
+            Label._change_model_labels(
+                "sa.ManagedObject",
+                add_labels=[f"{DIAGNOCSTIC_LABEL_SCOPE}::{dc.diagnostic}::{d_state}"],
+                remove_labels=r_labels,
+                instance_filters=[("object_profile_id", self.id), (policy_field, "P")],
+            )
+        cache.delete_many(
+            [f"managedobject-id-{x}" for x in self.managedobject_set.values_list("id", flat=True)],
+            version=MANAGEDOBJECT_CACHE_VERSION,
+        )
+        if self.box_discovery_alarm_policy != "D" and alarm_sync:
+            # Sync alarm
+            defer(
+                "noc.sa.models.managedobjectprofile.update_diagnostics_alarms",
+                key=self.id,
+                profile_id=self.id,
             )
 
     def iter_diagnostic_configs(self, o=None) -> Iterable[DiagnosticConfig]:
@@ -1049,7 +1149,7 @@ class GenericObject(object):
         yield from mop.iter_diagnostic_configs()
 
 
-def update_diagnostics_alarms(profile_id, box_changed, periodic_changed, alarm_policy_changed):
+def update_diagnostics_alarms(profile_id, **kwargs):
     """
     Update diagnostic statuses
     * if disable box - cleanup access alarms and reset diagnostic
