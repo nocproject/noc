@@ -221,7 +221,7 @@ class MetricType(Document):
         if scope:
             scope = MetricScope.get_by_table_name(scope)
             return MetricType.objects.filter(field_name=fname, scope=scope).first()
-        return MetricType.objects.filter(field_name=fname, scope=scope).first()
+        return MetricType.objects.filter(field_name=fname).first()
 
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_bi_id_cache"), lock=lambda _: id_lock)

@@ -565,6 +565,7 @@ class AlarmApplication(ExtApplication):
         :return:
         """
         children = []
+        processed = set()
         for ac in (ActiveAlarm, ArchivedAlarm):
             for a_type, query in [
                 ("nested", Q(root=alarm.id)),
@@ -575,6 +576,9 @@ class AlarmApplication(ExtApplication):
                 ):
                     continue
                 for a in ac.objects.filter(query):
+                    if str(a.id) in processed:
+                        # Already processed
+                        continue
                     s = AlarmSeverity.get_severity(a.severity)
                     c = {
                         "id": str(a.id),
@@ -587,7 +591,9 @@ class AlarmApplication(ExtApplication):
                         "groups": ", ".join(
                             ag.alarm_class.name
                             for ag in ActiveAlarm.objects.filter(reference__in=a.groups)
-                        ),
+                        )
+                        if a.groups
+                        else "",
                         "iconCls": "icon_error",
                         "row_class": s.style.css_class_name,
                     }
@@ -597,7 +603,8 @@ class AlarmApplication(ExtApplication):
                         c["expanded"] = True
                     else:
                         c["leaf"] = True
-                    children += [c]
+                    children.append(c)
+                    processed.add(c["id"])
         return children
 
     @view(

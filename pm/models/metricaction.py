@@ -242,13 +242,19 @@ class MetricAction(Document):
         return os.path.join(*p) + ".json"
 
     def get_config(
-        self, prefix: str = None, enable_dump: bool = False, rule_id: Optional[str] = None, **kwargs
+        self,
+        prefix: str = None,
+        enable_dump: bool = False,
+        rule_id: Optional[str] = None,
+        thresholds: Optional[Any] = None,
+        **kwargs,
     ) -> Optional[GraphConfig]:
         """
         Getting Graph config from MetricAction
         :param prefix: NodeID prefix
         :param enable_dump: Include DumpNode to config
         :param rule_id: Set if apply action to rule
+        :param thresholds: Thresholds params
         :return:
         """
         # Configs
@@ -369,10 +375,10 @@ class MetricAction(Document):
                 inputs=[key_input or g_input],
             )
         # Alarm
-        if self.alarm_config:
+        if self.alarm_config and self.alarm_config.alarm_class:
             nodes["alarm"] = NodeItem(
                 name=f"{prefix}alarm",
-                type="alarm",
+                type="threshold" if thresholds else "alarm",
                 inputs=[key_input or g_input],
                 config={
                     "alarm_class": self.alarm_config.alarm_class.name,
@@ -382,9 +388,12 @@ class MetricAction(Document):
                     "vars": [
                         VarItem(name="rule", value=str(rule_id)),
                         VarItem(name="action", value=str(self.id)),
+                        VarItem(name="metric", value=str(self.compose_inputs[0].metric_type.name)),
                     ],
                 },
             )
+            if thresholds:
+                nodes["alarm"].config["thresholds"] = thresholds
             if dkey_input:
                 nodes["alarm"].inputs += [
                     InputItem(name=dkey_input.name, node=dkey_input.node, dynamic=True)

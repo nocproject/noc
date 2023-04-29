@@ -11,6 +11,8 @@ Ext.define("NOC.pm.metricrule.Application", {
     requires: [
         "NOC.pm.metricrule.Model",
         "NOC.pm.metricaction.LookupField",
+        "NOC.pm.metrictype.LookupField",
+        "NOC.fm.alarmclass.LookupField",
         "NOC.core.label.LabelField",
         "NOC.core.ListFormField",
         "Ext.ux.form.GridField"
@@ -60,22 +62,115 @@ Ext.define("NOC.pm.metricrule.Application", {
                     name: "actions",
                     xtype: "listform",
                     fieldLabel: __("Actions"),
+                    rows: 8,
+                    // minHeight: 600,
                     labelAlign: "top",
                     items: [
                         {
-                            name: "metric_action",
-                            xtype: "pm.metricaction.LookupField",
-                            fieldLabel: __("Metric Action"),
-                            listeners: {
-                                scope: me,
-                                select: me.onSelectQuery
+                            xtype: "container",
+                            layout: "hbox",
+                            defaults: {
+                                labelAlign: "top",
+                                padding: "0 8 0 0",
                             },
-                            allowBlank: false
+                            items: [
+                                {
+                                    name: "is_active",
+                                    xtype: "checkbox",
+                                    boxLabel: __("Active"),
+                                    width: 100,
+                                },
+                                {
+                                    name: "metric_action",
+                                    xtype: "pm.metricaction.LookupField",
+                                    fieldLabel: __("Metric Action"),
+                                    listeners: {
+                                        scope: me,
+                                        select: me.onSelectQuery
+                                    },
+                                    width: 400,
+                                    allowBlank: true
+                                },
+                                {
+                                    xtype: "pm.metrictype.LookupField",
+                                    fieldLabel: __("Metric Type"),
+                                    tooltip: __("Metric Type inputs"),
+                                    name: "metric_type",
+                                    labelWidth: 150,
+                                    width: 500,
+                                    listeners: {
+                                        render: me.addTooltip
+                                    }
+                                }
+                            ]
                         },
                         {
-                            name: "is_active",
-                            xtype: "checkbox",
-                            boxLabel: __("Active")
+                            name: "thresholds",
+                            xtype: "gridfield",
+                            fieldLabel: __("Thresholds"),
+                            columns: [
+                                {
+                                    text: __("Op"),
+                                    dataIndex: "op",
+                                    width: 100,
+                                    editor: {
+                                        xtype: "combobox",
+                                        store: [
+                                            ["<", __("<")],
+                                            ["<=", __("<=")],
+                                            [">", __(">")],
+                                            [">=", __(">=")]
+                                        ]
+                                    },
+                                    renderer: NOC.render.Choices({
+                                        "<": __("<"),
+                                        "<=": __("<="),
+                                        ">": __(">"),
+                                        ">=": __(">=")
+                                    })
+                                },
+                                {
+                                    text: __("Value"),
+                                    dataIndex: "value",
+                                    editor: {
+                                        xtype: "numberfield",
+                                        vtype: "float",
+                                        allowBlank: false,
+                                        emptyText: 2.0,
+                                        decimalPrecision: 2,
+                                    }
+                                },
+                                {
+                                    text: __("Clear Value"),
+                                    dataIndex: "clear_value",
+                                    editor: {
+                                        xtype: "numberfield",
+                                        vtype: "float",
+                                        allowBlank: true
+                                    }
+                                },
+                                {
+                                    text: __("Alarm Class"),
+                                    dataIndex: "alarm_class",
+                                    width: 200,
+                                    editor: {
+                                        xtype: "fm.alarmclass.LookupField"
+                                    },
+                                    renderer: NOC.render.Lookup("alarm_class")
+                                },
+                                {
+                                    text: __("Alarm Labels"),
+                                    dataIndex: "alarm_labels",
+                                    renderer: NOC.render.LabelField,
+                                    editor: {
+                                        xtype: "labelfield",
+                                        query: {
+                                            "enable_alarm": true
+                                        }
+                                    },
+                                    width: 200
+                                }
+                            ]
                         },
                         {
                             name: "metric_action_params",
@@ -164,7 +259,7 @@ Ext.define("NOC.pm.metricrule.Application", {
     //
     onSelectQuery: function(field, record) {
         var me = this,
-          queryParamsField = field.up().getForm().findField("metric_action_params");
+            queryParamsField = field.up("[xtype=form]").getForm().findField("metric_action_params");
         if(record && record.isModel) {
             Ext.Ajax.request({
                 url: "/pm/metricaction/" + record.get("id") + "/",
@@ -175,7 +270,7 @@ Ext.define("NOC.pm.metricrule.Application", {
                 }
             })
         } else {
-            field.up().up().up().deleteRecord();
+            field.up('[xtype=form]').getForm().findField('metric_action_params').store.removeAll();
         }
     }
 });

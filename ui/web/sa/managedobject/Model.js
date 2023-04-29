@@ -510,6 +510,11 @@ Ext.define("NOC.sa.managedobject.Model", {
             persist: false
         },
         {
+            name: "effective_labels",
+            type: "auto",
+            persist: false
+        },
+        {
             name: "state",
             type: "string"
         },
