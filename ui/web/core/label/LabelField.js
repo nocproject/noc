@@ -415,4 +415,35 @@ Ext.define("NOC.core.label.LabelField", {
         }
         return me.valueCollection.items.map(function(element) {return element.get(me.valueField)});
     },
+
+    onDestroy: function() {
+        var me = this,
+            container = me.focusableContainer;
+
+        if(me.rendered) {
+            Ext.destroy(
+                me.dd,
+                me.resizer,
+                me.proxy,
+                me.proxyWrap,
+                me.resizerComponent,
+                me.scrollable,
+                me.contentEl
+            );
+        }
+
+        if(container) {
+            container.onFocusableChildDestroy(me);
+        }
+
+        if(me.focusable) {
+            me.destroyFocusable();
+        }
+
+        Ext.destroy(
+            me.componentLayout,
+            me.loadMask,
+            me.floatingDescendants
+        );
+    }
 });
