@@ -408,8 +408,11 @@ Ext.define("NOC.core.label.LabelField", {
         this.validate();
     },
 
-    getArrayValues: function() {
+    getArrayValues: function(data) {
         var me = this;
-        return this.valueCollection.items.map(function(element) {return element.get(me.valueField)});
+        if(data) {
+            return data.map(function(element) {return element.hasOwnProperty(me.valueField) ? element[me.valueField] : element});
+        }
+        return me.valueCollection.items.map(function(element) {return element.get(me.valueField)});
     },
 });

@@ -166,7 +166,8 @@ Ext.define("NOC.pm.metricrule.Application", {
                                         xtype: "labelfield",
                                         query: {
                                             "enable_alarm": true
-                                        }},
+                                        }
+                                    },
                                     width: 200
                                 }
                             ]
@@ -258,7 +259,7 @@ Ext.define("NOC.pm.metricrule.Application", {
     //
     onSelectQuery: function(field, record) {
         var me = this,
-          queryParamsField = field.up().getForm().findField("metric_action_params");
+            queryParamsField = field.up("[xtype=form]").getForm().findField("metric_action_params");
         if(record && record.isModel) {
             Ext.Ajax.request({
                 url: "/pm/metricaction/" + record.get("id") + "/",
@@ -269,7 +270,7 @@ Ext.define("NOC.pm.metricrule.Application", {
                 }
             })
         } else {
-            field.up().up().up().deleteRecord();
+            field.up('[xtype=form]').getForm().findField('metric_action_params').store.removeAll();
         }
     }
 });
