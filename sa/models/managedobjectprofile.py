@@ -906,6 +906,8 @@ class ManagedObjectProfile(NOCModel):
                 version=MANAGEDOBJECT_CACHE_VERSION,
             )
         cd = self.get_changed_diagnostics()
+        # box_changed
+        # self.diagnostic.reset_diagnostics([PROFILE_DIAG, SNMP_DIAG, CLI_DIAG])
         # print("Diagnostic Changed", self.get_changed_diagnostics())
         if not cd:
             return

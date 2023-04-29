@@ -1065,13 +1065,14 @@ class ManagedObject(NOCModel):
             from noc.inv.models.discoveryid import DiscoveryID
 
             DiscoveryID.clean_for_object(self)
-        if "effective_labels" in self.changed_fields:
-            # Update configured diagnostic
-            self.diagnostic.refresh_diagnostics()
         # Update configured state on diagnostics
         if diagnostics:
             # Reset changed diagnostic
             self.diagnostic.reset_diagnostics(diagnostics)
+        elif "effective_labels" in self.changed_fields:
+            # Update configured diagnostic
+            self.diagnostic.refresh_diagnostics()
+        # self.update_init()
 
     def on_delete(self):
         self._reset_caches(self.id, credential=True)
@@ -1710,7 +1711,6 @@ class ManagedObject(NOCModel):
             )
         else:
             Job.remove("discovery", self.BOX_DISCOVERY_JOB, key=self.id, pool=self.pool.name)
-            self.diagnostic.reset_diagnostics([PROFILE_DIAG, SNMP_DIAG, CLI_DIAG])
         if (
             Interaction.PeriodicDiscovery in self.interactions
             and self.object_profile.enable_periodic_discovery
@@ -2417,69 +2417,6 @@ class ManagedObject(NOCModel):
         yield from self.object_profile.iter_diagnostic_configs(self)
         for dc in ObjectDiagnosticConfig.iter_object_diagnostics(self):
             yield dc
-
-    @classmethod
-    def save_diagnostics(
-        cls,
-        mo_id: int,
-        diagnostics: Optional[List[DiagnosticItem]] = None,
-        removed: Optional[List[str]] = None,
-        sync_labels: bool = True,
-    ):
-        """
-        Update diagnostic on database
-        :param mo_id: ManagedObject id
-        :param diagnostics: List diagnostics Item for save
-        :param removed: List diagnostic name for remove
-        :param sync_labels: Sync diagnostic labels
-        :return:
-        """
-        from django.db import connection as pg_connection
-
-        # @todo effective labels
-        if not diagnostics and not removed:
-            return
-        states = [s.value for s in DiagnosticState]
-        with pg_connection.cursor() as cursor:
-            removed_labels, add_labels = [], []
-            if diagnostics:
-                logger.debug("[%s] Saving changes", list(diagnostics))
-                diags = {}
-                for d in diagnostics:
-                    diags[d.diagnostic] = d
-                    add_labels.append(f"{DIAGNOCSTIC_LABEL_SCOPE}::{d.diagnostic}::{d.state}")
-                    removed_labels += [
-                        f"{DIAGNOCSTIC_LABEL_SCOPE}::{dn}::{s}"
-                        for dn, s in product([d.diagnostic], states)
-                        if s != d.state
-                    ]
-                cursor.execute(
-                    """
-                     UPDATE sa_managedobject
-                     SET diagnostics = diagnostics || %s::jsonb
-                     WHERE id = %s""",
-                    [orjson.dumps(diags, default=default).decode("utf-8"), mo_id],
-                )
-            if removed:
-                logger.debug("[%s] Removed diagnostics", list(removed))
-                removed_labels += [
-                    f"{DIAGNOCSTIC_LABEL_SCOPE}::{d}::{s}" for d, s in product(removed, states)
-                ]
-                cursor.execute(
-                    f"""
-                     UPDATE sa_managedobject
-                     SET diagnostics = diagnostics {" #- %s " * len(removed)}
-                     WHERE id = %s""",
-                    ["{%s}" % r for r in removed] + [mo_id],
-                )
-            if sync_labels and (add_labels or removed_labels):
-                Label._change_model_labels(
-                    "sa.ManagedObject",
-                    add_labels=add_labels or None,
-                    remove_labels=removed_labels or None,
-                    instance_filters=[("id", mo_id)],
-                )
-        cls._reset_caches(mo_id)
 
     def update_init(self):
         """

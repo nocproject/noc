@@ -144,10 +144,10 @@ class DiagnosticItem(BaseModel):
     def config(self):
         return self._config
 
-    def reset(self):
+    def reset(self, reason="Reset by"):
         self.state = self.config.default_state
         self.checks = []
-        self.reason = "Reset by"
+        self.reason = reason
         self.changed = datetime.datetime.now()
 
 
@@ -299,6 +299,7 @@ class DiagnosticHub(object):
         d.reason = reason
         # Update dependent
         if d.diagnostic not in self.__depended:
+            self.sync_diagnostics()
             return
         self.logger.debug("[%s] Update depended diagnostic", d.diagnostic)
         d = self[self.__depended[d.diagnostic]]
@@ -354,16 +355,20 @@ class DiagnosticHub(object):
         self.__diagnostics = None
         self.sync_diagnostics()
 
-    def reset_diagnostics(self, diagnostics: List[str]):
+    def reset_diagnostics(
+        self, diagnostics: List[str], reason: Optional[str] = "By Reset Diagnostic"
+    ):
         """
         Reset diagnostic data.
         * update config for resetting diagnostic
         * synchronize diagnostics config
         """
+        if isinstance(diagnostics, str):
+            raise AttributeError("Diagnostics must be List")
         self.logger.info("[%s] Reset diagnostics: %s", str(self.__object), diagnostics)
         for d in diagnostics:
             if d in self:
-                self[d].reset()
+                self[d].reset(reason=reason)
         self.sync_diagnostics()
 
     def sync_diagnostics(self):
