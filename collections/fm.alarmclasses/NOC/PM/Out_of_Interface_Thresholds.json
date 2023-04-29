@@ -1,0 +1,43 @@
+{
+    "name": "NOC | PM | Out of Interface Thresholds",
+    "$collection": "fm.alarmclasses",
+    "uuid": "3cc242b7-cf37-4363-ae0a-49b509879ea9",
+    "description": "Ubrella alarm for PM out of threshold class",
+    "is_unique": true,
+    "reference": [],
+    "is_ephemeral": false,
+    "user_clearable": true,
+    "components": [
+        {
+            "name": "interface",
+            "model": "inv.Interface",
+            "args": [{
+                "param": "interface",
+                "var": "interface"
+            }]
+        }
+    ],
+    "vars": [
+        {
+            "name": "interface",
+            "description": null,
+            "default_labels": ["noc::interface::*"]
+        },
+        {
+            "name": "description",
+            "description": null,
+            "default": "=components.interface.description"
+        },
+        {
+            "name": "metric",
+            "description": "Threshold metric"
+        }
+    ],
+    "subject_template": "Measured values are out of normal range {{interface}}",
+    "body_template": "Measured values are out of normal range",
+    "symptoms": "",
+    "probable_causes": "",
+    "recommended_actions": "",
+    "recover_time": 300,
+    "labels": []
+}

@@ -1175,7 +1175,7 @@ def update_diagnostics_alarms(profile_id, **kwargs):
             "pool",
             "fm_pool",
             "diagnostics",
-            "enable_box_discovery",
+            "object_profile__enable_box_discovery",
             "object_profile__box_discovery_alarm_policy",
             "object_profile__periodic_discovery_alarm_policy",
         )
