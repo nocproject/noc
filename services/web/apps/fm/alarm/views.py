@@ -591,7 +591,9 @@ class AlarmApplication(ExtApplication):
                         "groups": ", ".join(
                             ag.alarm_class.name
                             for ag in ActiveAlarm.objects.filter(reference__in=a.groups)
-                        ) if a.groups else "",
+                        )
+                        if a.groups
+                        else "",
                         "iconCls": "icon_error",
                         "row_class": s.style.css_class_name,
                     }
