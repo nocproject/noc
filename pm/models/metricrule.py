@@ -69,7 +69,7 @@ class ThresholdConfig(EmbeddedDocument):
         if self.alarm_class:
             r["alarm_class"] = self.alarm_class.name
         if self.alarm_labels:
-            r["alarm_labels"] = self.alarm_labels
+            r["alarm_labels"] = list(self.alarm_labels)
         return r
 
 
@@ -81,7 +81,11 @@ class MetricActionItem(EmbeddedDocument):
     thresholds: List["ThresholdConfig"] = EmbeddedDocumentListField(ThresholdConfig)
 
     def __str__(self) -> str:
-        return str(self.metric_action)
+        if self.metric_action:
+            return str(self.metric_action)
+        elif self.metric_type:
+            return str(self.metric_type)
+        return ""
 
     def clean(self):
         ma_params = {}
@@ -94,23 +98,25 @@ class MetricActionItem(EmbeddedDocument):
             ma_params[param.name] = param.clean_value(self.metric_action_params[param.name])
         self.metric_action_params = ma_params
 
-    def get_config(self, rule_id: str) -> GraphConfig:
-        nodes = {}
-        nodes["alarm"] = NodeItem(
-            name="alarm",
-            type="threshold",
-            inputs=[InputItem(name="x", node=self.metric_type.field_name)],
-            config={
-                "reference": "th:{{vars.rule}}:{{vars.threshold}}:{{object}}:{{alarm_class}}:{{';'.join(labels)}}",
-                "error_text_template": None,
-                "thresholds": [t.get_config() for t in self.thresholds],
-                "vars": [
-                    VarItem(name="rule", value=str(rule_id)),
-                    VarItem(name="metric", value=str(self.metric_type.name)),
-                ],
-            },
+    def get_config(self, rule_id: str) -> "GraphConfig":
+        return GraphConfig(
+            nodes=[
+                NodeItem(
+                    name="alarm",
+                    type="threshold",
+                    inputs=[{"name": "x", "node": self.metric_type.field_name}],
+                    config={
+                        "reference": "th:{{vars.rule}}:{{vars.threshold}}:{{object}}:{{alarm_class}}:{{';'.join(labels)}}",
+                        "error_text_template": None,
+                        "thresholds": [t.get_config() for t in self.thresholds],
+                        "vars": [
+                            VarItem(name="rule", value=str(rule_id)),
+                            VarItem(name="metric", value=str(self.metric_type.name)),
+                        ],
+                    },
+                )
+            ]
         )
-        return GraphConfig(nodes=list(nodes.values()))
 
 
 @change
