@@ -28,7 +28,7 @@ from django.db.models.query_utils import Q as d_q
 # NOC modules
 from noc.core.mongo.fields import PlainReferenceField
 from noc.core.change.decorator import change
-from noc.core.cdag.factory.config import NodeItem, InputItem, GraphConfig
+from noc.core.cdag.factory.config import NodeItem, GraphConfig
 from noc.core.cdag.node.alarm import VarItem
 from noc.main.models.label import Label
 from noc.pm.models.metrictype import MetricType
