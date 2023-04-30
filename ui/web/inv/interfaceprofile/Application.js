@@ -17,7 +17,6 @@ Ext.define("NOC.inv.interfaceprofile.Application", {
         "NOC.pm.metrictype.LookupField",
         "NOC.main.remotesystem.LookupField",
         "NOC.main.ref.windowfunction.LookupField",
-        "NOC.pm.thresholdprofile.LookupField",
         "NOC.cm.interfacevalidationpolicy.LookupField",
         "NOC.inv.ifdescpatterns.LookupField",
         "NOC.main.handler.LookupField",

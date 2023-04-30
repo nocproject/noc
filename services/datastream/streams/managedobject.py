@@ -469,6 +469,8 @@ class ManagedObjectDataStream(DataStream):
         """
         DataStream only with topology info
         """
+        if "$deleted" in data:
+            yield cls.get_deleted_object(data["id"])
         yield {
             "id": data["id"],
             "object_profile": {

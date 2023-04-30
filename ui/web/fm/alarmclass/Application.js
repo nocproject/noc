@@ -194,6 +194,7 @@ Ext.define('NOC.fm.alarmclass.Application', {
                                             renderer: NOC.render.LabelField,
                                             editor: {
                                                 xtype: "labelfield",
+                                                filterProtected: false,
                                                 query: {
                                                     "allow_wildcard": true,
                                                     "allow_user": false
