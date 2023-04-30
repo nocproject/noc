@@ -408,8 +408,42 @@ Ext.define("NOC.core.label.LabelField", {
         this.validate();
     },
 
-    getArrayValues: function() {
+    getArrayValues: function(data) {
         var me = this;
-        return this.valueCollection.items.map(function(element) {return element.get(me.valueField)});
+        if(data) {
+            return data.map(function(element) {return element.hasOwnProperty(me.valueField) ? element[me.valueField] : element});
+        }
+        return me.valueCollection.items.map(function(element) {return element.get(me.valueField)});
     },
+
+    onDestroy: function() {
+        var me = this,
+            container = me.focusableContainer;
+
+        if(me.rendered) {
+            Ext.destroy(
+                me.dd,
+                me.resizer,
+                me.proxy,
+                me.proxyWrap,
+                me.resizerComponent,
+                me.scrollable,
+                me.contentEl
+            );
+        }
+
+        if(container) {
+            container.onFocusableChildDestroy(me);
+        }
+
+        if(me.focusable) {
+            me.destroyFocusable();
+        }
+
+        Ext.destroy(
+            me.componentLayout,
+            me.loadMask,
+            me.floatingDescendants
+        );
+    }
 });

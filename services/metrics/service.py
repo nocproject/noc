@@ -597,7 +597,7 @@ class MetricsService(FastAPIService):
                     continue
                 config = rule.configs.get(node.node_id)
                 static_config = None
-                if node.name == "alarm":
+                if node.name in {"alarm", "threshold"}:
                     slots = self.get_slot_limits(f"correlator-{source.fm_pool}")
                     static_config = {
                         "managed_object": f"bi_id:{source.bi_id}",
@@ -613,7 +613,11 @@ class MetricsService(FastAPIService):
                 nodes[node.node_id] = self.clone_and_add_node(
                     node, prefix=self.get_key_hash(k), config=config, static_config=static_config
                 )
-            if f"{rule_id}::alarm" not in nodes and f"{rule_id}::probe" not in nodes:
+            if (
+                f"{rule_id}::alarm" not in nodes
+                and f"{rule_id}::threshold" not in nodes
+                and f"{rule_id}::probe" not in nodes
+            ):
                 self.logger.warning(
                     "[%s] Rules without ending output. Skipping", rule.graph.graph_id
                 )
@@ -639,7 +643,7 @@ class MetricsService(FastAPIService):
                     # Filter Probe nodes
                     node.freeze()
                 # Add alarms nodes for clear alarm on delete
-                if node.name == "alarm":
+                if node.name in {"alarm", "threshold"}:
                     card.alarms += [node]
             #
             card.affected_rules.add(sys.intern(rule_id))
@@ -869,7 +873,7 @@ class MetricsService(FastAPIService):
             for node in g_config.nodes:
                 if node.name == "probe" or not node.config:
                     continue
-                if node.name == "alarm" and "vars" in node.config:
+                if node.name in {"alarm", "threshold"} and "vars" in node.config:
                     node.config["vars"] = [VarItem(**v) for v in node.config["vars"]]
                 configs[f"{rule_id}::{node.name}"] = node.config
             r = Rule(

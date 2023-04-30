@@ -109,9 +109,9 @@ Ext.define("Ext.ux.form.GridField", {
                     ptype: "gridviewdragdrop",
                     dragtext: __("Drag and drop to reorganize")
                 },
-                getRowClass: function (record) {
+                getRowClass: function(record) {
                     var pfix = Ext.baseCSSPrefix,
-                        disabledClass =  pfix + "item-disabled " + pfix + "btn-disabled " + pfix + "btn-plain-toolbar-small";
+                        disabledClass = pfix + "item-disabled " + pfix + "btn-disabled " + pfix + "btn-plain-toolbar-small";
                     return record.get("is_persist") ? disabledClass : "";
                 }
             }
@@ -129,16 +129,16 @@ Ext.define("Ext.ux.form.GridField", {
     getSubmitData: function() {
         var me = this,
             data = null;
-        if (!me.disabled && me.submitValue) {
+        if(!me.disabled && me.submitValue) {
             data = {};
             data[me.getName()] = me.getValue();
         }
         return data;
     },
     //
-    getModelData: function(includeEmptyText,  isSubmitting) {
+    getModelData: function(includeEmptyText, isSubmitting) {
         var me = this,
-          records = [];
+            records = [];
 
         me.store.each(function(r) {
             var data = {};
@@ -146,18 +146,18 @@ Ext.define("Ext.ux.form.GridField", {
             if(r.get("is_persist")) {
                 return true;
             }
-            if (!me.disabled && (me.submitValue || !isSubmitting)) {
+            if(!me.disabled && (me.submitValue || !isSubmitting)) {
                 data = {};
                 for(var index = 0; index < me.columns.length; index++) {
                     var field = me.grid.columns[index],
-                      dataIndex = me.columns[index].dataIndex;
+                        dataIndex = me.columns[index].dataIndex;
 
                     if(Ext.isObject(field) && field.hasOwnProperty("persist") && field.persist === false) {
                         return true;
                     }
 
                     if(Ext.isFunction(field.getEditor) && field.getEditor() && Ext.isFunction(field.getEditor().getArrayValues)) {
-                        data[dataIndex] = field.getEditor().getArrayValues();
+                        data[dataIndex] = field.getEditor().getArrayValues(r.get(dataIndex));
                     } else {
                         data[dataIndex] = r.get(dataIndex);
                     }

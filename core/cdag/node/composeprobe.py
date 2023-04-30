@@ -7,6 +7,7 @@
 
 # Python modules
 import inspect
+import logging
 from typing import Optional, Callable
 from time import time_ns
 
@@ -23,6 +24,9 @@ class ComposeProbeNodeConfig(BaseModel):
     expression: str
     is_delta: bool = False
     scale: str = "1"
+
+
+logger = logging.getLogger(__name__)
 
 
 class ComposeProbeNode(ProbeNode):
@@ -42,5 +46,9 @@ class ComposeProbeNode(ProbeNode):
         self.req_inputs_count = len(self.static_inputs)
 
     def get_value(self, **kwargs) -> Optional[ValueType]:
-        x = self.expression(**kwargs)
+        try:
+            x = self.expression(**kwargs)
+        except Exception as e:
+            logger.warning("[%s] Error when calculate value: %s", self.node_id, str(e))
+            x = 0
         return super().get_value(x, ts=time_ns(), unit="1")

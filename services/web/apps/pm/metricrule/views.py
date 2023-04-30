@@ -8,6 +8,7 @@
 # NOC modules
 from noc.services.web.base.extdocapplication import ExtDocApplication
 from noc.pm.models.metricrule import MetricRule
+from noc.main.models.label import Label
 from noc.core.translation import ugettext as _
 
 
@@ -29,12 +30,23 @@ class MetricRuleApplication(ExtDocApplication):
                 edoc["metric_action_params"] = self.params_to_list(
                     action, edoc.get("metric_action_params")
                 )
+                ths = []
+                for th in edoc.get("thresholds"):
+                    if th.get("alarm_labels"):
+                        th["alarm_labels"] = [
+                            self.format_label(ll)
+                            for ll in Label.objects.filter(name__in=th["alarm_labels"])
+                        ]
+                    ths += [th]
+                edoc["thresholds"] = ths
         return r
 
     @staticmethod
     def params_to_list(action, params):
         params = params or {}
         r = []
+        if not action.metric_action:
+            return r
         for p in action.metric_action.params:
             r += [
                 {
