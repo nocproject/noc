@@ -15,6 +15,7 @@ from threading import Lock
 import cachetools
 from mongoengine.document import Document, EmbeddedDocument
 from mongoengine.fields import (
+    FloatField,
     ListField,
     DictField,
     StringField,
@@ -27,8 +28,12 @@ from django.db.models.query_utils import Q as d_q
 # NOC modules
 from noc.core.mongo.fields import PlainReferenceField
 from noc.core.change.decorator import change
+from noc.core.cdag.factory.config import NodeItem, InputItem, GraphConfig
+from noc.core.cdag.node.alarm import VarItem
 from noc.main.models.label import Label
+from noc.pm.models.metrictype import MetricType
 from noc.pm.models.metricaction import MetricAction
+from noc.fm.models.alarmclass import AlarmClass
 from noc.config import config
 
 id_lock = Lock()
@@ -46,21 +51,66 @@ class Match(EmbeddedDocument):
         return list(Label.objects.filter(name__in=self.labels))
 
 
+class ThresholdConfig(EmbeddedDocument):
+    # Open condition
+    op = StringField(choices=["<", "<=", ">=", ">"])
+    value = FloatField(default=1.0, null=True)
+    # Closing condition
+    clear_value = FloatField(default=None, null=True)
+    # Alarm class
+    alarm_class = PlainReferenceField(AlarmClass)
+    #
+    alarm_labels = ListField(StringField())
+
+    def get_config(self):
+        r = {"op": self.op, "value": self.value}
+        if self.clear_value:
+            r["clear_value"] = self.clear_value
+        if self.alarm_class:
+            r["alarm_class"] = self.alarm_class.name
+        if self.alarm_labels:
+            r["alarm_labels"] = self.alarm_labels
+        return r
+
+
 class MetricActionItem(EmbeddedDocument):
-    metric_action: "MetricAction" = PlainReferenceField(MetricAction)
     is_active = BooleanField(default=True)
+    metric_type: "MetricType" = PlainReferenceField(MetricType)
+    metric_action: "MetricAction" = PlainReferenceField(MetricAction)
     metric_action_params: Dict[str, Any] = DictField()
+    thresholds: List["ThresholdConfig"] = EmbeddedDocumentListField(ThresholdConfig)
 
     def __str__(self) -> str:
         return str(self.metric_action)
 
     def clean(self):
         ma_params = {}
+        if not self.metric_action:
+            self.metric_action_params = {}
+            return
         for param in self.metric_action.params:
             if param.name not in self.metric_action_params:
                 continue
             ma_params[param.name] = param.clean_value(self.metric_action_params[param.name])
         self.metric_action_params = ma_params
+
+    def get_config(self, rule_id: str) -> GraphConfig:
+        nodes = {}
+        nodes["alarm"] = NodeItem(
+            name="alarm",
+            type="threshold",
+            inputs=[InputItem(name="x", node=self.metric_type.field_name)],
+            config={
+                "reference": "th:{{vars.rule}}:{{vars.threshold}}:{{object}}:{{alarm_class}}:{{';'.join(labels)}}",
+                "error_text_template": None,
+                "thresholds": [t.get_config() for t in self.thresholds],
+                "vars": [
+                    VarItem(name="rule", value=str(rule_id)),
+                    VarItem(name="metric", value=str(self.metric_type.name)),
+                ],
+            },
+        )
+        return GraphConfig(nodes=list(nodes.values()))
 
 
 @change
@@ -102,6 +152,11 @@ class MetricRule(Document):
         ids = []
         scopes = set()
         for a in self.actions:
+            if not a.metric_type and not a.metric_action:
+                continue
+            if a.metric_type:
+                scopes.add(a.metric_type.scope.table_name)
+                continue
             for ci in a.metric_action.compose_inputs:
                 scopes.add(ci.metric_type.scope.table_name)
         mq = m_q()
@@ -151,4 +206,7 @@ class MetricRule(Document):
             if rlabels - labels:
                 continue
             for rid, a in actions:
-                yield str(rid), str(a.metric_action.id)
+                if a.metric_action:
+                    yield str(rid), str(a.metric_action.id)
+                elif a.metric_type:
+                    yield str(rid), str(a.metric_type.id)
