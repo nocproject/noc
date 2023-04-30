@@ -20,6 +20,7 @@ class Migration(BaseMigration):
         self.db.add_column(
             "sa_managedobjectprofile",
             "workflow",
+            # If set null and blank to False, after remove Default Workflow default value be broken
             DocumentReferenceField("wf.Workflow", null=True, blank=True),
         )
         self.db.execute("UPDATE sa_managedobjectprofile SET workflow=%s", [self.WF_DEFAULT])

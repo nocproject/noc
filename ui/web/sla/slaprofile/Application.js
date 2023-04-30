@@ -14,7 +14,6 @@ Ext.define("NOC.sla.slaprofile.Application", {
         "NOC.main.style.LookupField",
         "NOC.pm.metrictype.LookupField",
         "NOC.main.ref.windowfunction.LookupField",
-        "NOC.pm.thresholdprofile.LookupField",
         "NOC.wf.workflow.LookupField",
         "Ext.ux.form.GridField"
     ],
