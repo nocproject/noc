@@ -20,6 +20,6 @@ class Migration(BaseMigration):
         self.db.add_column(
             "sa_managedobjectprofile",
             "workflow",
-            DocumentReferenceField("wf.Workflow", null=True, blank=True),
+            DocumentReferenceField("wf.Workflow", null=False, blank=False),
         )
         self.db.execute("UPDATE sa_managedobjectprofile SET workflow=%s", [self.WF_DEFAULT])

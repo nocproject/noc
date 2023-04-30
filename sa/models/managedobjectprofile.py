@@ -794,11 +794,13 @@ class ManagedObjectProfile(NOCModel):
                 "id", flat=True
             ):
                 yield "cfgtrap", mo_id
-        if config.datastream.enable_cfgmetricsources and "metrics" in changed_fields:
+        if config.datastream.enable_cfgmetricsources and (
+            "metrics" in changed_fields or "enable_metrics" in changed_fields
+        ):
             for mo_id in ManagedObject.objects.filter(object_profile=self).values_list(
                 "bi_id", flat=True
             ):
-                yield "enable_cfgmetricsources", f"sa.ManagedObject::{mo_id}"
+                yield "cfgmetricsources", f"sa.ManagedObject::{mo_id}"
 
     def iter_pools(self):
         """
@@ -833,11 +835,18 @@ class ManagedObjectProfile(NOCModel):
 
     def get_changed_diagnostics(self) -> Set[str]:
         """
-        Return changed diagnotic state by policy field
+        Return changed diagnostic state by policy field
         """
         r = set()
         if self.is_field_changed(["event_processing_policy"]):
             r |= {SNMPTRAP_DIAG, SYSLOG_DIAG}
+        if (
+            self.is_field_changed(["enable_box_discovery_profile"])
+            and not self.enable_box_discovery_profile
+        ):
+            r |= {PROFILE_DIAG}
+        if self.is_field_changed(["enable_box_discovery"]) and not self.enable_box_discovery:
+            r |= {CLI_DIAG, SNMP_DIAG, PROFILE_DIAG}
         if not self.is_field_changed(["access_preference"]):
             return r
         if not self.initial_data.get("access_preference", []):
@@ -936,7 +945,7 @@ class ManagedObjectProfile(NOCModel):
             policy_field = "access_preference"
             if dc.diagnostic in {SNMPTRAP_DIAG, SYSLOG_DIAG}:
                 policy_field = "event_processing_policy"
-            if dc.diagnostic in {CLI_DIAG, SNMP_DIAG} and dc.blocked:
+            if dc.diagnostic in {CLI_DIAG, SNMP_DIAG, PROFILE_DIAG} and dc.blocked:
                 alarm_sync = True
             # Update diagnostics
             with pg_connection.cursor() as cursor:
@@ -970,7 +979,7 @@ class ManagedObjectProfile(NOCModel):
             [f"managedobject-id-{x}" for x in self.managedobject_set.values_list("id", flat=True)],
             version=MANAGEDOBJECT_CACHE_VERSION,
         )
-        if self.box_discovery_alarm_policy != "D" and alarm_sync:
+        if self.box_discovery_alarm_policy != "D" and (alarm_sync or not self.enable_box_discovery):
             # Sync alarm
             defer(
                 "noc.sa.models.managedobjectprofile.update_diagnostics_alarms",

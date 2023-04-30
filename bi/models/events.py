@@ -42,7 +42,7 @@ class Events(Model):
         )
 
     date = DateField(description=_("Date"))
-    ts = DateTimeField(description=_("Created"))
+    ts = DateTimeField(description=_("Register"))
     start_ts = DateTimeField(description=_("Created"))
     event_id = StringField(description=_("Id"))
     event_class = ReferenceField(EventClass, description=_("Event Class"))
