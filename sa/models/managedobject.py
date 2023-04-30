@@ -1002,6 +1002,7 @@ class ManagedObject(NOCModel):
         # Rebuild paths
         if (
             self.initial_data["id"] is None
+            or not self.adm_path
             or "administrative_domain" in self.changed_fields
             or "segment" in self.changed_fields
             or "container" in self.changed_fields
@@ -2528,6 +2529,8 @@ class ManagedObject(NOCModel):
         :return:
         """
         if Interaction.ServiceActivation not in self.interactions:
+            return False
+        if not self.object_profile.enable_metrics:
             return False
         return bool(self.get_metric_discovery_interval())
 

@@ -25,6 +25,11 @@ SQL = """
      WHERE managed_object=%s and date >= '%s' and ts >= '%s' %s FORMAT JSONEachRow
 """
 
+SQL_SLA = """
+     SELECT ts, labels, %s FROM %s
+     WHERE sla_probe=%s and date >= '%s' and ts >= '%s' %s FORMAT JSONEachRow
+"""
+
 NS = 1_000_000_000
 
 
@@ -42,7 +47,7 @@ class Command(BaseCommand):
             "--input",
             dest="f_input",
             help="Input source url. File path in JSONLine format or Clickhouse: "
-            "iface://<MONAME>::<IFACE_NAME>, cpu://<MONAME>",
+            "iface://<MONAME>::<IFACE_NAME>, cpu://<MONAME>, sla://<SLA_PROBE>",
         )
         metrics.add_argument("--output", dest="f_output", help="Output path in JSONLine format")
 
@@ -89,9 +94,12 @@ class Command(BaseCommand):
 
     def input_from_device(self, source: str, metrics: List[str]):
         from noc.core.clickhouse.connect import connection
+        from noc.sla.models.slaprobe import SLAProbe
 
-        now = datetime.datetime.now()
-        now = now - datetime.timedelta(hours=4)
+        # now = datetime.datetime.now()
+        # now = now - datetime.timedelta(hours=4)
+        end = datetime.datetime(2022, 3, 1)
+        start = end - datetime.timedelta(hours=4)
         q_args = []
         if source.startswith("iface://"):
             source, iface = source[8:].split("::")
@@ -100,8 +108,8 @@ class Command(BaseCommand):
                 ",".join(metrics),
                 "interface",
                 source.managed_object.bi_id,
-                now.date().isoformat(),
-                now.replace(microsecond=0).isoformat(sep=" "),
+                start.date().isoformat(),
+                start.replace(microsecond=0).isoformat(sep=" "),
                 "AND interface=%s",
             )
             q_args += [source.name]
@@ -112,8 +120,20 @@ class Command(BaseCommand):
                 "usage",
                 "cpu",
                 source.bi_id,
-                now.date().isoformat(),
-                now.replace(microsecond=0).isoformat(sep=" "),
+                start.date().isoformat(),
+                start.replace(microsecond=0).isoformat(sep=" "),
+                "",
+            )
+        elif source.startswith("sla://"):
+            source = source[6:]
+            sla = SLAProbe.get_by_id(source)
+            # source = self.get_source(source)
+            query = SQL_SLA % (
+                ",".join(metrics),
+                "sla",
+                sla.bi_id,
+                start.date().isoformat(),
+                start.replace(microsecond=0).isoformat(sep=" "),
                 "",
             )
         else:
@@ -136,7 +156,11 @@ class Command(BaseCommand):
     def iter_metrics(
         self, f_input: Optional[str], metrics: Optional[List[str]] = None
     ) -> Iterable[Dict[str, Union[float, str]]]:
-        if f_input.startswith("cpu://") or f_input.startswith("iface://"):
+        if (
+            f_input.startswith("cpu://")
+            or f_input.startswith("iface://")
+            or f_input.startswith("sla://")
+        ):
             yield from self.input_from_device(f_input, metrics)
         else:
             yield from self.input_from_file(f_input)
@@ -152,6 +176,8 @@ class Command(BaseCommand):
         svc = get_service()
         cdag = self.from_config_paths(config)
         probes = {n.node_id: n for n in cdag.nodes.values() if n.name == "probe"}
+        print("SSSSSSSSS", list(probes.values())[0].static_inputs)
+        # self.die("1")
         senders = {n for n in cdag.nodes.values() if n.name == "metrics"}
         dump = [n for n in cdag.nodes.values() if n.name == "dump"]
         if dump:

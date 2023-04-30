@@ -17,7 +17,6 @@ Ext.define("NOC.sa.managedobjectprofile.Application", {
         "NOC.main.ref.stencil.LookupField",
         "NOC.main.ref.windowfunction.LookupField",
         "NOC.pm.metrictype.LookupField",
-        "NOC.pm.thresholdprofile.LookupField",
         "NOC.main.remotesystem.LookupField",
         "NOC.ip.prefixprofile.LookupField",
         "NOC.ip.addressprofile.LookupField",
