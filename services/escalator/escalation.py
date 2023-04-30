@@ -472,11 +472,11 @@ class EscalationSequence(BaseSequence):
             self.escalation_doc.leader.escalation_status = "ok"
             # Project result to escalation items
             for item in e_ctx.items:
-                ei = items_map[item.id]
+                ei = items_map[str(item.id)]
                 try:
                     e_status = item.get_status()
                 except AttributeError:
-                    self.log_alarm("Adapter malfunction. Status for {item.id} is not set.")
+                    self.log_alarm(f"Adapter malfunction. Status for {item.id} is not set.")
                     continue
                 if e_status.is_ok:
                     self.log_alarm(f"{item.id} is appended successfully")
