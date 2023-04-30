@@ -76,6 +76,7 @@ class ActiveAlarm(Document):
             "labels",
             "effective_labels",
             "groups",
+            ("root", "groups"),
             "deferred_groups",
         ],
     }
@@ -871,14 +872,14 @@ class ActiveAlarm(Document):
         """
         Generator yielding all groups
         """
-        for a in ActiveAlarm.objects.filter(groups__in=[self.reference]):
+        for a in ActiveAlarm.objects.filter(reference__in=self.groups):
             yield a
 
     def iter_grouped(self) -> Iterable["ActiveAlarm"]:
         """
         Generator yielding all alarm in group
         """
-        for a in ActiveAlarm.objects.filter(groups__in=self.groups):
+        for a in ActiveAlarm.objects.filter(groups__in=[self.reference]):
             yield a
 
     def iter_affected(self):
