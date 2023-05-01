@@ -223,6 +223,7 @@ Ext.define('NOC.sa.managedobject.form.FormController', {
             record = Ext.create("NOC.sa.managedobject.Model");
 
         record.self.setProxy({type: "managedobject"});
+        record.getProxy().getWriter().setWriteAllFields(true);
         if(!record.validate().isValid()) {
             // @todo: Error report
             NOC.error(__("Invalid data!"));
