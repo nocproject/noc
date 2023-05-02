@@ -12,12 +12,12 @@
   fail:
     msg: "{{ ansible_distribution }} is not supported by NOC"
   when:
-    - ansible_distribution not in ['RedHat', 'CentOS', 'Debian', 'Ubuntu', 'FreeBSD', 'OracleLinux']
+    - ansible_distribution not in ['RedHat', 'CentOS', 'RED', 'Debian', 'Ubuntu', 'FreeBSD', 'OracleLinux']
   tags:
     - checks
 
 
-- name: Fail if not a new release of Red Hat / CentOS
+- name: Fail if not a new release of Red Hat / CentOS / RedOS
   fail:
     msg: "{{ ansible_distribution_version }} is not an acceptable version of {{ ansible_distribution }} for this role"
   when:

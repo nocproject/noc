@@ -73,6 +73,11 @@
     ct_service_command_timeout: "60s"
     ct_service_source_template: "False"
 
+- name: restart consul-template system service
+  systemd:
+    name: consul-template
+    state: restarted
+
 - name: place consul check
   import_role:
     name: consul
