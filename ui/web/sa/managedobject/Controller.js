@@ -613,8 +613,8 @@ Ext.define('NOC.sa.managedobject.Controller', {
                         field.initValue();
                     }
                 }, this);
-                if(view.noc.hasOwnProperty("protected_field")) {
-                    this.setProtectedField(view.noc.protected_field);
+                if(this.getView().noc.hasOwnProperty("protected_field")) {
+                    this.setProtectedField(this.getView().noc.protected_field);
                 }
             },
             failure: function() {
@@ -714,9 +714,10 @@ Ext.define('NOC.sa.managedobject.Controller', {
             success: function(response) {
                 if(response.status === 200) {
                     var field,
-                        formPanel,
-                        form,
-                        r = {},
+                        formPanel = gridView.down('[itemId=managedobject-form-panel]'),
+                        form = formPanel.getForm(),
+                        enabledFields = Ext.Array.filter(form.getFields().items, function(field) {field.disabled !== true});
+                    r = {},
                         data = Ext.decode(response.responseText),
                         record = Ext.create("NOC.sa.managedobject.Model", data);
 
@@ -724,12 +725,10 @@ Ext.define('NOC.sa.managedobject.Controller', {
                         gridView = this.getView();
                     }
                     record.set('id', id);
-                    formPanel = gridView.down('[itemId=managedobject-form-panel]');
                     formView = formPanel.up();
                     formPanel.recordId = id;
                     formPanel.currentRecord = record;
-                    form = formPanel.getForm();
-                    Ext.Array.each(form.getFields().items, function(field) {field.setDisabled(false)});
+                    Ext.Array.each(enabledFields, function(field) {field.setDisabled(false)});
                     Ext.iterate(data, function(v) {
                         if(v.indexOf("__") !== -1) {
                             return

@@ -108,7 +108,7 @@ Ext.define('NOC.sa.managedobject.form.View', {
                                     name: "is_managed",
                                     xtype: "checkboxfield",
                                     fieldLabel: __("Is Managed?"),
-                                    readOnly: true,
+                                    disabled: true,
                                     tabIndex: 30,
                                 },
                                 {
@@ -334,7 +334,7 @@ Ext.define('NOC.sa.managedobject.form.View', {
                                     allowBlank: false,
                                     tabIndex: 80,
                                     groupEdit: true,
-                                    vtype: "IPv4"
+                                    vtype: "IPv4Group"
                                 },
                                 {
                                     name: "access_preference",
