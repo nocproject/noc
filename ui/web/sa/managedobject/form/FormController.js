@@ -40,7 +40,6 @@ Ext.define('NOC.sa.managedobject.form.FormController', {
         cloneBtn.setDisabled(!view.hasPermission("create"));
         alarmsBtn.setDisabled(!view.hasPermission("alarm"));
         createBtn.setDisabled(!view.hasPermission("create"));
-
     },
     toMain: function() {
         this.gotoItem('managedobject-select');
