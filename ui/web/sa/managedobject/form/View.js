@@ -334,7 +334,7 @@ Ext.define('NOC.sa.managedobject.form.View', {
                                     allowBlank: false,
                                     tabIndex: 80,
                                     groupEdit: true,
-                                    vtype: "IPv4"
+                                    vtype: "IPv4Group"
                                 },
                                 {
                                     name: "access_preference",

@@ -70,9 +70,9 @@ Ext.define('NOC.sa.managedobject.form.FormController', {
         Ext.Array.each(groupEditFields, function(field) {
             if(Ext.isFunction(field.isDirty) && field.isDirty()) {
                 if(Ext.isFunction(field.getDisplayValue) && field.getDisplayValue() !== "Leave unchanged") {
-                    valuesTxt = (field.fieldLabel || field.name) + ": '" + field.getDisplayValue() + "'</br>";
+                    valuesTxt += (field.fieldLabel || field.name) + ": '" + field.getDisplayValue() + "'</br>";
                 } else if(field.getValue() !== "Leave unchanged") {
-                    valuesTxt = (field.fieldLabel || field.name) + ": '" + field.getValue() + "'</br>";
+                    valuesTxt += (field.fieldLabel || field.name) + ": '" + field.getValue() + "'</br>";
                 }
                 if(field.getValue() !== "Leave unchanged" || field.getDisplayValue() !== "Leave unchanged") {
                     values[field.name] = field.getValue();
