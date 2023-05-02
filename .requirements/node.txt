@@ -33,7 +33,7 @@ numpy==1.24.0
 orjson==3.8.7
 progressbar2==4.0.0
 psycopg2==2.8.6
-polars==0.16.16
+polars==0.17.11
 pydantic==1.10.7
 pymongo==4.3.3
 pyproj==3.4.1
