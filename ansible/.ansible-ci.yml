@@ -112,3 +112,11 @@ build_ubuntu22:
    tags:
      - cloud
      - docker
+
+build_redos:
+   extends: .base_builder
+   variables:
+     SCENARIO_NAME: redos
+   tags:
+     - cloud
+     - docker

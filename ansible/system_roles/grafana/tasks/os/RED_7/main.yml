@@ -1,0 +1,47 @@
+---
+- name: install postgresql14-devel-14
+  dnf:
+    name:
+      - postgresql14-devel
+      - python3-devel
+    state: present
+    update_cache: "False"
+  environment:
+    https_proxy: "{{ http_proxy }}"
+    http_proxy: "{{ http_proxy }}"
+
+- name: install library psycopg2
+  pip:
+    name: psycopg2-binary
+  environment:
+    PATH: "{{ ansible_env.PATH }}:/usr/pgsql-{{ postgres_version }}/bin/"
+
+- name: Add Grafana repository
+  yum_repository:
+    name: grafana
+    description: Grafana repository
+    baseurl: https://packages.grafana.com/oss/rpm
+    gpgcheck: "True"
+    gpgkey: https://packages.grafana.com/gpg.key
+    enabled: "True"
+  environment:
+    http_proxy: "{{ http_proxy }}"
+    https_proxy: "{{ http_proxy }}"
+  tags:
+    - repo
+
+- name: Install Grafana
+  yum:
+    name: "{{ packages }}"
+    state: present
+    update_cache: "True"
+    allow_downgrade: "True"
+  vars:
+    packages:
+      - "grafana-{{ grafana_version }}"
+      - open-sans-fonts
+  tags:
+    - requirements
+  environment:
+    http_proxy: "{{ http_proxy }}"
+    https_proxy: "{{ http_proxy }}"

@@ -1,0 +1,29 @@
+---
+- name: Add CH repository
+  yum_repository:
+    name: clickhouse
+    description: Clickhouse Official repo
+    baseurl: https://packages.clickhouse.com/rpm/stable/
+    gpgcheck: "False"
+    enabled: "True"
+  environment:
+    http_proxy: "{{ http_proxy }}"
+    https_proxy: "{{ http_proxy }}"
+  tags:
+    - repo
+
+- name: Install CH
+  yum:
+    name: "{{ packages }}"
+    state: present
+    update_cache: "True"
+  vars:
+    packages:
+      - "clickhouse-client-{{ clickhouse_version }}"
+      - "clickhouse-server-{{ clickhouse_version }}"
+      - "clickhouse-common-static-{{ clickhouse_version }}"
+  environment:
+    https_proxy: "{{ http_proxy }}"
+    http_proxy: "{{ http_proxy }}"
+  tags:
+    - requirements
