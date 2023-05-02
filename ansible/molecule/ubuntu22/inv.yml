@@ -63,6 +63,7 @@ all:
           grafanads_power: 2
           has_svc_activator: true
           has_svc_bi: true
+          has_svc_bh: true
           has_svc_card: true
           has_svc_ch_datasource: true
           has_svc_chwriter: true
@@ -919,6 +920,9 @@ all:
             noc-node-ubuntu22: {}
         svc-bi-read: {}
     svc-bi-exec:
+      hosts:
+        noc-node-ubuntu22: {}
+    svc-bh-exec:
       hosts:
         noc-node-ubuntu22: {}
     svc-card:

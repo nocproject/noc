@@ -332,6 +332,20 @@
   tags:
     - requirements
 
+- name: Install -bh- python packages
+  pip:
+    chdir: "{{ noc_root }}"
+    requirements: ./.requirements/bh.txt
+    virtualenv: "{{ noc_root }}"
+    extra_args: "--upgrade"
+  environment:
+    http_proxy: "{{ http_proxy }}"
+    https_proxy: "{{ http_proxy }}"
+  when:
+    - "'svc-bh-exec' in groups and inventory_hostname in groups['svc-bh-exec']"
+  tags:
+    - requirements
+
 - name: Ensure that noc.pth is absent
   file:
     path: "{{ noc_root }}/lib/python{{ noc_py3_ver }}/site-packages/noc.pth"
