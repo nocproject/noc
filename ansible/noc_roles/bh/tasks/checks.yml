@@ -1,0 +1,12 @@
+---
+- block:
+
+    - name: fail if noc is not selected
+      fail:
+        msg: "BH role have to be set with noc role to get own sources."
+      when:
+        - has_svc_noc is not defined
+  when:
+    - has_svc_bh is defined
+  tags:
+    - checks

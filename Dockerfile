@@ -29,6 +29,7 @@ RUN \
     && pip3 install --upgrade pip \
     && pip3 install\
     -r ./.requirements/node.txt\
+    -r ./.requirements/bh.txt\
     -r ./.requirements/activator.txt\
     -r ./.requirements/classifier.txt\
     -r ./.requirements/cache-memcached.txt\
