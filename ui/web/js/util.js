@@ -349,7 +349,7 @@ Ext.apply(NOC.msg, {
                 background: '#1E90FF',
                 color: 'white',
                 "font-weight": 'bold',
-//                "font-size": 'large'
+                //                "font-size": 'large'
             },
             style: {
                 background: '#1E90FF'
@@ -373,7 +373,7 @@ Ext.apply(NOC.msg, {
                 background: 'green',
                 color: 'white',
                 "font-weight": 'bold'
-//                "font-size": 'large'
+                //                "font-size": 'large'
             },
             style: {
                 background: 'green'
@@ -397,7 +397,7 @@ Ext.apply(NOC.msg, {
                 background: 'red',
                 color: 'white',
                 "font-weight": 'bold',
-//                "font-size": 'large'
+                //                "font-size": 'large'
             },
             style: {
                 background: 'red'
@@ -421,7 +421,7 @@ Ext.apply(NOC.msg, {
                 background: '#1E90FF',
                 color: 'white',
                 "font-weight": 'bold',
-//                "font-size": 'large'
+                //                "font-size": 'large'
             },
             style: {
                 background: '#1E90FF'
@@ -497,8 +497,8 @@ NOC.hasPermission = function(perm) {
 //
 NOC.listToRanges = function(lst) {
     var l = lst.sort(function(x, y) {
-            return x - y;
-        }),
+        return x - y;
+    }),
         lastStart = null,
         lastEnd = null,
         r = [],
@@ -615,6 +615,17 @@ Ext.define("NOC.form.field.VTypes", {
     },
     IPv4Text: "Must be a numeric value 0.0.0.0 - 255.255.255.255",
     IPv4Mask: /[\d\.]/i,
+    // IPv4 check
+    IPv4Group: function(val, field) {
+        if(val === "Leave unchanged") return true;
+        try {
+            return NOC.is_ipv4(val);
+        } catch(e) {
+            return false;
+        }
+    },
+    IPv4GroupText: "Must be a numeric value 0.0.0.0 - 255.255.255.255",
+    IPv4GroupMask: /[\d\.]/i,
 
     // IPv4 prefix check
     IPv4Prefix: function(val, field) {
