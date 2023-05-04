@@ -29,10 +29,14 @@ class Message(object):
 MX_STREAM = "message"
 MX_METRICS_TYPE = "metrics"
 MX_METRICS_SCOPE = "Metric-Scope"
+#
+MX_SPAN_CTX = "NOC-Span-Ctx"
+MX_SPAN_ID = "Span-Id"
 # Headers
 MX_MESSAGE_TYPE = "Message-Type"
 MX_SHARDING_KEY = "Sharding-Key"
 MX_CHANGE_ID = "Change-Id"
+MX_DATA_ID = "Data-Id"
 MX_ADMINISTRATIVE_DOMAIN_ID = "Administrative-Domain-Id"
 MX_PROFILE_ID = "Profile-Id"
 MX_LABELS = "Labels"

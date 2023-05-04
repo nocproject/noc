@@ -30,6 +30,7 @@ KAFKASENDER_STREAM = "kafkasender"
 
 class KafkaSenderService(FastAPIService):
     name = "kafkasender"
+    use_telemetry = True
 
     def __init__(self):
         super().__init__()
@@ -45,6 +46,7 @@ class KafkaSenderService(FastAPIService):
         """
         Process incoming message. Usually forwarded by `mx` service.
         Message MUST have `To` header, containing target Kafka topic.
+        Optional parameter 'Kafka_partition' can be specified.
 
         :param msg:
         :return:
@@ -108,7 +110,6 @@ class KafkaSenderService(FastAPIService):
             sasl_plain_username=config.kafkasender.username,
             sasl_plain_password=config.kafkasender.password,
             retry_backoff_ms=10000,
-            # partitioner=partition
         )
         while True:
             try:
