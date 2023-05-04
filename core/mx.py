@@ -29,14 +29,10 @@ class Message(object):
 MX_STREAM = "message"
 MX_METRICS_TYPE = "metrics"
 MX_METRICS_SCOPE = "Metric-Scope"
-#
-MX_SPAN_CTX = "NOC-Span-Ctx"
-MX_SPAN_ID = "Span-Id"
 # Headers
 MX_MESSAGE_TYPE = "Message-Type"
 MX_SHARDING_KEY = "Sharding-Key"
 MX_CHANGE_ID = "Change-Id"
-MX_DATA_ID = "Data-Id"
 MX_ADMINISTRATIVE_DOMAIN_ID = "Administrative-Domain-Id"
 MX_PROFILE_ID = "Profile-Id"
 MX_LABELS = "Labels"
@@ -44,6 +40,7 @@ MX_TO = "To"
 MX_NOTIFICATION = "notification"
 MX_NOTIFICATION_CHANNEL = "Notification-Channel"
 MX_LANG = "Language"
+KAFKA_PARTITION = "Kafka_partition"
 #
 MX_H_VALUE_SPLITTER = ";"
 # Available message types
@@ -69,6 +66,7 @@ MESSAGE_HEADERS = {
     MX_PROFILE_ID,
     MX_TO,
     MX_LANG,
+    KAFKA_PARTITION,
 }
 # Method -> Sender stream map, ?autoregister
 NOTIFICATION_METHODS = {"mail": "mailsender", "tg": "tgsender", "icq": "icqsender"}

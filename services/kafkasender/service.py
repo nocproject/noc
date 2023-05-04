@@ -21,7 +21,7 @@ from noc.config import config
 from noc.core.service.fastapi import FastAPIService
 from noc.core.perf import metrics
 from noc.core.msgstream.message import Message
-from noc.core.mx import MX_TO, MX_SHARDING_KEY
+from noc.core.mx import MX_TO, MX_SHARDING_KEY, KAFKA_PARTITION
 from noc.core.comp import smart_text
 
 
@@ -30,7 +30,6 @@ KAFKASENDER_STREAM = "kafkasender"
 
 class KafkaSenderService(FastAPIService):
     name = "kafkasender"
-    use_telemetry = True
 
     def __init__(self):
         super().__init__()
@@ -53,14 +52,21 @@ class KafkaSenderService(FastAPIService):
         metrics["messages"] += 1
         self.logger.debug("[%d] Receiving message %s", msg.offset, msg.headers)
         dst = msg.headers.get(MX_TO)
+        partition = msg.headers.get(KAFKA_PARTITION)
+        partition = int(partition) if partition else None
+
         if not dst:
             self.logger.debug("[%d] Missed '%s' header. Dropping", msg.offset, MX_TO)
             metrics["messages_drops"] += 1
             return
-        await self.send_to_kafka(smart_text(dst), msg.value, msg.headers.get(MX_SHARDING_KEY))
+        await self.send_to_kafka(
+            smart_text(dst), msg.value, msg.headers.get(MX_SHARDING_KEY), partition
+        )
         metrics["messages_processed"] += 1
 
-    async def send_to_kafka(self, topic: str, data: bytes, key: Optional[bytes] = None) -> None:
+    async def send_to_kafka(
+        self, topic: str, data: bytes, key: Optional[bytes] = None, partition: Optional[int] = None
+    ) -> None:
         """
         Send data to kafka topic
 
@@ -71,7 +77,7 @@ class KafkaSenderService(FastAPIService):
         self.logger.debug("Sending to topic %s", topic)
         producer = await self.get_producer()
         try:
-            await producer.send(topic, data, key=key)
+            await producer.send(topic, data, key=key, partition=partition)
             metrics["messages_sent_ok", ("topic", topic)] += 1
             metrics["bytes_sent", ("topic", topic)] += len(data)
         except KafkaError as e:
@@ -102,6 +108,7 @@ class KafkaSenderService(FastAPIService):
             sasl_plain_username=config.kafkasender.username,
             sasl_plain_password=config.kafkasender.password,
             retry_backoff_ms=10000,
+            # partitioner=partition
         )
         while True:
             try:

@@ -2,7 +2,8 @@
 
 `kafkasender` service receives messages from [mx](mx.md) service
 and performs safe delivery to outside Kafka cluster. Messages are
-delivered as-is according to `To` header.
+delivered as-is according to `To` header and `Kafka_partition`
+if the parameter is specified.
 `kafkasender` is the part
 of Generic Message Exchange (GMX) system.
 
@@ -27,7 +28,7 @@ graph LR
 ### Input Streams
 
 | Stream                                                 | Description                       |
-|--------------------------------------------------------| --------------------------------- |
+| ------------------------------------------------------ | --------------------------------- |
 | [kafkasender](../../../dev/api/streams/kafkasender.md) | Messages received from mx service |
 
 ## Configuration
