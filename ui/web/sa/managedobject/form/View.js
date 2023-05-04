@@ -49,6 +49,8 @@ Ext.define('NOC.sa.managedobject.form.View', {
     defaults: {
         layout: 'fit'
     },
+    stateMargin: "0 0 5 30",
+    stateLabelWidth: 83,
     items: [
         {
             activeItem: 0,
@@ -148,9 +150,7 @@ Ext.define('NOC.sa.managedobject.form.View', {
                     name: "state",
                     xtype: "statefield",
                     fieldLabel: __("State"),
-                    labelWidth: 83,
                     restUrl: "sa/managedobject/",
-                    padding: "0 0 0 30",
                     allowBlank: false
                 },
                 {
