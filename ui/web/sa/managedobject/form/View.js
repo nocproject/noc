@@ -49,6 +49,8 @@ Ext.define('NOC.sa.managedobject.form.View', {
     defaults: {
         layout: 'fit'
     },
+    stateMargin: "0 0 5 30",
+    stateLabelWidth: 83,
     items: [
         {
             activeItem: 0,
@@ -84,6 +86,8 @@ Ext.define('NOC.sa.managedobject.form.View', {
                     layout: "column",
                     defaults: this.fieldSetDefaults,
                     border: false,
+                    margin: 0,
+                    padding: "5 15 0 15",
                     items: [
                         {
                             border: false,
@@ -110,19 +114,6 @@ Ext.define('NOC.sa.managedobject.form.View', {
                                     fieldLabel: __("Is Managed?"),
                                     disabled: true,
                                     tabIndex: 30,
-                                },
-                                {
-                                    name: "state",
-                                    xtype: "statefield",
-                                    fieldLabel: __("State"),
-                                    restUrl: "sa/managedobject/",
-                                    allowBlank: false
-                                },
-                                {
-                                    name: "bi_id",
-                                    xtype: "displayfield",
-                                    fieldLabel: __("BI ID"),
-                                    allowBlank: true
                                 }
                             ]
                         }, {
@@ -144,10 +135,23 @@ Ext.define('NOC.sa.managedobject.form.View', {
                                     query: {
                                         "enable_managedobject": true
                                     }
+                                },
+                                {
+                                    name: "bi_id",
+                                    xtype: "displayfield",
+                                    fieldLabel: __("BI ID"),
+                                    allowBlank: true
                                 }
                             ]
                         }
                     ]
+                },
+                {
+                    name: "state",
+                    xtype: "statefield",
+                    fieldLabel: __("State"),
+                    restUrl: "sa/managedobject/",
+                    allowBlank: false
                 },
                 {
                     xtype: "fieldset",
