@@ -50,7 +50,7 @@ MOS_METRICS_PIPELINE = [
 
 MOS_IFACE_PIPELINE = [
     {"$match": {"type": "physical"}},
-    {"$group": {"_id": ["$managed_object", "$profile"], "metrics": {"$sum": 1}}},
+    {"$group": {"_id": {"mo": "$managed_object", "p": "$profile"}, "metrics": {"$sum": 1}}},
 ]
 
 
@@ -84,7 +84,7 @@ class DiscoverySummaryDS(BaseDataSource):
         icoll = Interface._get_collection()
         metrics = defaultdict(int)
         for row in icoll.aggregate(MOS_IFACE_PIPELINE, allowDiskUse=True):
-            mo_id, i_profile = row["_id"]
+            mo_id, i_profile = row["_id"]["mo"], row["_id"]["p"]
             metrics[mo_id] += row["metrics"] * p_metrics[i_profile]
         # Main loop
         for row_num, row in enumerate(
