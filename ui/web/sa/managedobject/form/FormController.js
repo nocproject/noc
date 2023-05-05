@@ -26,7 +26,8 @@ Ext.define('NOC.sa.managedobject.form.FormController', {
             resetBtn = app.down('[itemId=resetBtn]'),
             cloneBtn = app.down('[itemId=cloneBtn]'),
             alarmsBtn = app.down('[itemId=alarmsBtn]'),
-            createBtn = app.down('[itemId=createBtn]');
+            createBtn = app.down('[itemId=createBtn]'),
+            stateField = app.down('[xtype=statefield]');
 
         // saveBtn.formBind = view.hasPermission("update");
         consoleBtn.setDisabled(!view.hasPermission("console"));
@@ -40,6 +41,9 @@ Ext.define('NOC.sa.managedobject.form.FormController', {
         cloneBtn.setDisabled(!view.hasPermission("create"));
         alarmsBtn.setDisabled(!view.hasPermission("alarm"));
         createBtn.setDisabled(!view.hasPermission("create"));
+        // customize style
+        stateField.margin = this.getView().stateMargin;
+        stateField.labelWidth = this.getView().stateLabelWidth;
     },
     toMain: function() {
         this.gotoItem('managedobject-select');
