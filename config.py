@@ -73,6 +73,14 @@ class Config(BaseConfig):
         keep_months = IntParameter(default="12")
         keep_day_of_month = IntParameter(default="1")
 
+    class bh(ConfigSection):
+        bulk_ping_timeout = SecondsParameter(default="5s")
+        bulk_ping_interval = FloatParameter(default=0.1)
+        bulk_ping_max_jobs = IntParameter(default=6)
+        bulk_snmp_timeout = SecondsParameter(default="10s")
+        bulk_snmp_max_jobs = IntParameter(default=6)
+        traceroute_tries = IntParameter(default=3)
+
     class bi(ConfigSection):
         language = StringParameter(default="en", help="Language BI interface")
         query_threads = IntParameter(default=10)
