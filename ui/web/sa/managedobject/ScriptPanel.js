@@ -16,7 +16,15 @@ Ext.define("NOC.sa.managedobject.ScriptPanel", {
     ],
     app: null,
     autoScroll: true,
-
+    //
+    listeners: {
+        activate: function(self) {
+            if(self.scriptContainer) {
+                self.scriptContainer.getLayout().setActiveItem(0);
+            }
+        }
+    },
+    //
     initComponent: function() {
         var me = this;
 
