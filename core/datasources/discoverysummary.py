@@ -20,7 +20,6 @@ from noc.inv.models.interface import Interface
 from noc.inv.models.interfaceprofile import InterfaceProfile
 from noc.sa.models.managedobject import ManagedObject
 from noc.sa.models.managedobjectprofile import ManagedObjectProfile
-from noc.main.models.pool import Pool
 
 
 MOS_METRICS_PIPELINE = [
