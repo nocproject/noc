@@ -52,6 +52,7 @@ class ReportParam(EmbeddedDocument):
     choices = ListField(StringField())
     required = BooleanField(default=False)
     default = StringField(required=False)
+    hide = BooleanField(default=False)
     localization = DictField()
 
     def __str__(self):
@@ -64,6 +65,7 @@ class ReportParam(EmbeddedDocument):
             "description": self.description,
             "label": self.label,
             "type": self.type,
+            "hide": self.hide,
         }
         if self.model_id:
             r["model_id"] = self.model_id
@@ -205,6 +207,7 @@ class Report(Document):
 
     _id_cache = cachetools.TTLCache(maxsize=100, ttl=60)
     _name_cache = cachetools.TTLCache(maxsize=100, ttl=60)
+    _code_cache = cachetools.TTLCache(maxsize=100, ttl=60)
     _effective_perm_cache = cachetools.TTLCache(maxsize=100, ttl=60)
 
     def __str__(self):
@@ -219,6 +222,11 @@ class Report(Document):
     @cachetools.cachedmethod(operator.attrgetter("_name_cache"), lock=lambda _: id_lock)
     def get_by_name(cls, name: str) -> Optional["Report"]:
         return Report.objects.filter(name=name).first()
+
+    @classmethod
+    @cachetools.cachedmethod(operator.attrgetter("_code_cache"), lock=lambda _: id_lock)
+    def get_by_code(cls, code: str) -> Optional["Report"]:
+        return Report.objects.filter(code=code).first()
 
     def get_localization(self, field: str, lang: Optional[str] = None):
         from noc.config import config

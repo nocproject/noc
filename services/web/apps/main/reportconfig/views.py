@@ -56,6 +56,9 @@ class ReportConfigApplication(ExtDocApplication):
                     r["localization"] += [
                         {"field": field, "language": lang, "language__label": lang, "value": value}
                     ]
+        for x in r.get("parameters", []):
+            if x.get("model_id"):
+                x["model_id__label"] = x["model_id"]
         return r
 
     def clean(self, data):
@@ -143,6 +146,8 @@ class ReportConfigApplication(ExtDocApplication):
                 {"text": out.upper(), "param": {"output_type": out}} for out in outputs
             ]
         for param in report.parameters:
+            if param.hide:
+                continue
             cfg = {
                 "name": param.name,
                 "fieldLabel": report.get_localization(
