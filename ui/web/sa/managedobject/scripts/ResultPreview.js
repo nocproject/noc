@@ -52,7 +52,7 @@ Ext.define("NOC.sa.managedobject.scripts.ResultPreview", {
 
     onClose: function() {
         var me = this;
-        me.app.getLayout().setActiveItem(0);
+        me.app.scriptContainer.getLayout().setActiveItem(0);
         me.app.remove(me);
         me.close();
         me.app.setTitle(me.appTitle);
