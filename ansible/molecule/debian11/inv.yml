@@ -63,6 +63,7 @@ all:
           grafanads_power: 2
           has_svc_activator: true
           has_svc_bi: true
+          has_svc_bh: true
           has_svc_card: true
           has_svc_ch_datasource: true
           has_svc_chwriter: true
