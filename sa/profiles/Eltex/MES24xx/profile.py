@@ -36,7 +36,11 @@ class Profile(BaseProfile):
     config_normalizer = "MES24xxNormalizer"
 
     config_tokenizer = "indent"
-    config_tokenizer_settings = {"end_of_context": "!", "string_quote": '"'}
+    config_tokenizer_settings = {
+        "end_of_context": "!",
+        "string_quote": '"',
+        "rewrite": [(re.compile(r"^\s*(interface\s\w+)\s(\d+(\/\d+)*)$"), r"\1\2")],
+    }
     confdb_defaults = [
         ("hints", "interfaces", "defaults", "admin-status", False),
     ]
@@ -55,6 +59,18 @@ class Profile(BaseProfile):
         "po": "aggregated",  # Port-channel/Portgroup
         "vl": "SVI",  # vlan
     }
+
+    # Regex for join description when placed to 2 line when over 128 symbol
+    # interface XXXX
+    #   description "xxxxxxxxxxxxxxxxxxx
+    # xx"
+    rx_iface_over_description = re.compile(r"^(\s+description \".+)\n(\S.+)", re.MULTILINE)
+
+    def cleaned_config(self, cfg):
+        r = super().cleaned_config(cfg)
+        if self.rx_iface_over_description.search(cfg):
+            r = self.rx_iface_over_description.sub(r"\1\2", r)
+        return r.strip()
 
     @classmethod
     def get_interface_type(cls, name):
