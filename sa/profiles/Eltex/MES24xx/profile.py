@@ -39,7 +39,7 @@ class Profile(BaseProfile):
     config_tokenizer_settings = {
         "end_of_context": "!",
         "string_quote": '"',
-        "rewrite": [(re.compile(r"^\s*(interface\s\w+)\s(\d+(\/\d+)*)$"), r"\1\2")],
+        # "rewrite": [(re.compile(r"^\s*(interface\s\w+)\s(\d+(\/\d+)*)$"), r"\1\2")],
     }
     confdb_defaults = [
         ("hints", "interfaces", "defaults", "admin-status", False),
