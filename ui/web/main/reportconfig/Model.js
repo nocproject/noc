@@ -42,6 +42,15 @@ Ext.define("NOC.main.reportconfig.Model", {
             type: "string"
         },
         {
+            name: "report_source",
+            type: "string"
+        },
+        {
+            name: "report_source__label",
+            type: "string",
+            persist: false
+        },
+        {
             name: "title",
             type: "string"
         },

@@ -301,11 +301,14 @@ class ReportEngine(object):
                     joined_field = key_field
             if query.query:
                 logger.debug("Execute query: %s; Context: %s", query.query, q_ctx)
-                data = eval(
-                    query.query,
-                    {"__builtins__": {}},
-                    {"ds": data, "ctx": q_ctx, "root_band": root_band, "pl": pl},
+                sql = pl.SQLContext()
+                sql.register(
+                    query.datasource or root_band.name,
+                    data.lazy() if data is not None else root_band.rows.lazy(),
                 )
+                data = sql.query(Jinja2Template(query.query).render(q_ctx))
+                if query.transpose:
+                    data = data.transpose(include_header=True)
             if data is None or data.is_empty():
                 if not num:
                     # If first query is empty, nothing to join

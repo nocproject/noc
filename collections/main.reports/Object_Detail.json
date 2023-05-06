@@ -132,7 +132,7 @@
                     "format_type": "string"
                 },
                 {
-                    "name": "phys_interface_count",
+                    "name": "physical_iface_count",
                     "title": "Physical Iface Count",
                     "format_type": "string"
                 },
@@ -186,7 +186,7 @@
         }
     ],
     "category": "sa",
-    "code": null,
+    "code": "OBJECT_DETAIL",
     "hide": false,
     "localization": {
         "title": {
@@ -230,6 +230,9 @@
         },
         "columns.interfacesstatusstatds.all": {
             "ru": "Кол-во интерфейсов по скорости"
+        },
+        "columns.physical_iface_count": {
+            "ru": "Кол-во интерфейсов"
         },
         "columns.link_count": {
             "ru": "Кол-во линков"
@@ -283,7 +286,7 @@
             "ru": "Колонки"
         },
         "parameters.resource_group": {
-            "ru": "По Группу устройств (Селектор)"
+            "ru": "По Группе устройств (Селектор)"
         },
         "parameters.segment": {
             "ru": "Сегмент"
@@ -293,6 +296,7 @@
         {
             "name": "segment",
             "description": null,
+            "hide": false,
             "label": "Segment",
             "model_id": "inv.NetworkSegment",
             "type": "model"
@@ -300,6 +304,7 @@
         {
             "name": "administrative_domain",
             "description": null,
+            "hide": false,
             "label": "By Adm. domain",
             "model_id": "sa.AdministrativeDomain",
             "type": "model"
@@ -307,6 +312,7 @@
         {
             "name": "resource_group",
             "description": null,
+            "hide": false,
             "label": "By Resource Group (Selector)",
             "model_id": "inv.ResourceGroup",
             "type": "model"
@@ -315,8 +321,24 @@
             "name": "fields",
             "description": null,
             "default": "name,address,hostname,status,profile,administrativedomain,segment",
+            "hide": false,
             "label": "Fields",
             "type": "fields_selector"
+        },
+        {
+            "name": "detail_query",
+            "description": null,
+            "hide": true,
+            "label": "A1",
+            "type": "string"
+        },
+        {
+            "name": "pool",
+            "description": null,
+            "hide": true,
+            "label": "Pool",
+            "model_id": "main.Pool",
+            "type": "model"
         }
     ],
     "templates": [

@@ -15,13 +15,13 @@ root_band:
       orientation: H
       queries:
         - name: q1
-          query: root_band.rows.groupby(by="mac").agg(pl.first('reason')).sort("mac")
+          query: select mac, first(reason) from Root group by mac order by mac
       children:
         - name: duplicate_detail
           orientation: H
           queries:
            - name: detail
-             query: root_band.rows.filter(pl.col('mac') == ctx['mac']).select(['name', 'address', 'pool'])
+             query: select name, address, pool from Root where mac = '{{ mac }}'
   queries:
     - name: duplicate
       json_data: '[{"address": "10.0.0.11",
