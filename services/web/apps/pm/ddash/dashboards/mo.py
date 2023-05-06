@@ -53,10 +53,12 @@ class MODashboard(JinjaDashboard):
             """
             Check interface profile has metrics
             """
-            if self.object.object_profile.metrics_default_interval:
-                return
             for m in profile.metrics:
-                if m.interval or profile.metrics_default_interval:
+                if (
+                    m.interval
+                    or profile.metrics_default_interval
+                    or self.object.object_profile.metrics_default_interval
+                ):
                     return True
             return False
 

@@ -26,7 +26,11 @@ class MOCardDashboard(MODashboard):
             Check interface profile has metrics
             """
             for m in profile.metrics:
-                if m.enable_box or m.enable_periodic:
+                if (
+                    m.interval
+                    or profile.metrics_default_interval
+                    or self.object.object_profile.metrics_default_interval
+                ):
                     return True
             return False
 
@@ -102,7 +106,6 @@ class MOCardDashboard(MODashboard):
             }
 
     def get_context(self):
-
         return {
             "port_types": self.object_data["port_types"],
             "object_metrics": self.object_data["object_metrics"],
