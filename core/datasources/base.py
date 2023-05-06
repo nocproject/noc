@@ -40,6 +40,7 @@ class FieldInfo(object):
     is_caps: bool = False  # Capability field
     is_virtual: bool = False  # Virtual Field not sending to output
     is_vector: bool = False  # Multiple column by requested one field
+    is_diagnostic_state: bool = False  # Request Diagnostic State field
 
 
 class BaseDataSource(object):
@@ -123,7 +124,7 @@ class BaseDataSource(object):
         if not r:
             return pl.DataFrame(
                 [],
-                columns=[(c.name, c.type.value) for c in cls.fields if cls.is_out_field(c, fields)],
+                schema=[(c.name, c.type.value) for c in cls.fields if cls.is_out_field(c, fields)],
             )
         return pl.DataFrame(
             [

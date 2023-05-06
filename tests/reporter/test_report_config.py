@@ -31,7 +31,7 @@ def test_report_config(report):
     if "request" in args:
         args["request"] = RequestStub(None)
     r_cfg = ReportConfig(**cfg)
-    report_engine = ReportEngine()
+    report_engine = ReportEngine(report_print_error=True)
     rp = RunParams(report=r_cfg, params=args)
     connect()
     out_doc = report_engine.run_report(r_params=rp)

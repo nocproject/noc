@@ -393,6 +393,13 @@ Ext.define('NOC.main.reportconfig.Application', {
                                             editor: "checkbox"
                                         },
                                         {
+                                            text: __("Is Hide"),
+                                            dataIndex: "hide",
+                                            width: 50,
+                                            renderer: NOC.render.Bool,
+                                            editor: "checkbox"
+                                        },
+                                        {
                                             text: __('ModelID'),
                                             dataIndex: 'model_id',
                                             renderer: NOC.render.Lookup('model_id'),
