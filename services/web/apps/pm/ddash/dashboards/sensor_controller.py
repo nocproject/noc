@@ -42,7 +42,9 @@ class SensorControllerDashboard(MODashboard):
                 else:
                     for metric in iface.profile.metrics:
                         if (
-                            metric.enable_box or metric.enable_periodic
+                            metric.interval
+                            or iface.profile.metrics_default_interval
+                            or self.object.object_profile.metrics_default_interval
                         ) and metric.metric_type.scope.table_name == "environment":
                             if metric.metric_type.field_name == "sensor_status":
                                 sensors_status.append(iface.name)
