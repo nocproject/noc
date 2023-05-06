@@ -42,7 +42,11 @@ class DVBCDashboard(MODashboard):
                     }
                     continue
                 for metric in iface.profile.metrics:
-                    if metric.enable_box or metric.enable_periodic:
+                    if (
+                        metric.interval
+                        or iface.profile.metrics_default_interval
+                        or self.object.object_profile.metrics_default_interval
+                    ):
                         if is_ipv4(iface.name.split("/")[1]):
                             groups.append(iface.name)
                         else:
@@ -87,7 +91,6 @@ class DVBCDashboard(MODashboard):
         }
 
     def get_context(self):
-
         return {
             "port_types": self.object_data["port_types"],
             "groups": self.object_data["groups"],
