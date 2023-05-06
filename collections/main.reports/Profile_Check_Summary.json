@@ -1,8 +1,8 @@
 {
-    "name": "Profile Check Summary (New)",
+    "name": "Profile Check Summary",
     "$collection": "main.reports",
     "uuid": "53af9324-c0de-4831-ac7f-8339a289a2ae",
-    "title": "Profile Check Summary (New)",
+    "title": "Profile Check Summary",
     "description": "Сводка по статусу объектов. Отображает статистику по опросу устройств на предмет доступа к ним.",
     "bands": [{
         "name": "Root",

@@ -2,7 +2,7 @@
     "name": "Profile Check Detail",
     "$collection": "main.reports",
     "uuid": "3377a46c-06dd-4425-8886-0033c849ceb6",
-    "title": "Profile Check Detail (New)",
+    "title": "Profile Check Detail",
     "description": "Show devices with access errors on discovery proccess",
     "bands": [
         {
@@ -69,6 +69,10 @@
                     "title": "Object Hostname"
                 },
                 {
+                    "name": "auth_profile",
+                    "title": "Auth Profile"
+                },
+                {
                     "name": "avail",
                     "title": "Avail"
                 },
@@ -103,6 +107,10 @@
                     "title": "Object Hostname"
                 },
                 {
+                    "name": "auth_profile",
+                    "title": "Auth Profile"
+                },
+                {
                     "name": "avail",
                     "title": "Avail"
                 },
@@ -135,6 +143,10 @@
                 {
                     "name": "hostname",
                     "title": "Object Hostname"
+                },
+                {
+                    "name": "auth_profile",
+                    "title": "Auth Profile"
                 },
                 {
                     "name": "avail",
