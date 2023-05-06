@@ -18,7 +18,7 @@
             "orientation": "H",
             "parent": "Root",
             "queries": [{
-                "ds_query": "root_band.rows.sort('timestamp')"
+                "ds_query": "select * from Root order by timestamp"
             }]
         }
     ],
@@ -115,12 +115,14 @@
         {
             "name": "start",
             "description": null,
+            "hide": false,
             "label": "From",
             "type": "date"
         },
         {
             "name": "end",
             "description": null,
+            "hide": false,
             "label": "To",
             "type": "date"
         }

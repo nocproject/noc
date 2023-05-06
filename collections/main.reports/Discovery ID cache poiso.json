@@ -19,7 +19,7 @@
             "parent": "Root",
             "queries": [
                 {
-                    "ds_query": "root_band.rows.groupby(by=\"mac\").agg(pl.first('reason')).sort(\"mac\")"
+                    "ds_query": "select mac, first(reason) from Root group by mac order by mac"
                 }
             ]
         },
@@ -29,7 +29,7 @@
             "parent": "master_data",
             "queries": [
                 {
-                    "ds_query": "root_band.rows.filter(pl.col('mac') == ctx['mac']).sort(\"name\")"
+                    "ds_query": "select name, address, pool from Root where mac = '{{ mac }}'"
                 }
             ]
         }

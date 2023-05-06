@@ -491,19 +491,19 @@ class SectionRow(object):
 class TableSection(ReportSection):
     tag = "table"
 
-    def __init__(self, name=None, columns=[], enumerate=False, data=[]):
+    def __init__(self, name=None, columns=None, enumerate=False, data=None):
         super().__init__(name=name)
         self.columns = []
-        for c in columns:
+        for c in columns or []:
             if isinstance(c, str) or hasattr(c, "__unicode__"):
                 self.columns += [TableColumn(smart_text(c))]
             else:
                 self.columns += [c]
-        self.data = data
+        self.data = data or []
         self.enumerate = enumerate
         self.has_total = reduce(
             lambda x, y: x or y, [c.has_total for c in self.columns], False
-        )  # Check wrether table has totals
+        )  # Check werether table has totals
 
     def to_xml(self):
         """
