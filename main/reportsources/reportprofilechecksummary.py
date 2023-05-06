@@ -107,18 +107,22 @@ class ReportProfileCheckSummary(ReportSource):
             title_map[key] = title
             condition_map[key] = condition
         condition = ",".join(f"sum({c}) as '{a}'" for a, c in condition_map.items())
-        for pool in Pool.objects.filter().order_by("name"):
+        pools = [p for p in Pool.objects.filter().order_by("name")] + ["Summary"]
+        # Main Loop
+        for pool in pools:
             b = BandData(name="row")
-            b.set_data({"name": pool.name})
             b.format = BandFormat(title_template="{{ name }}")
+            if pool != "Summary":
+                b.set_data({"name": pool.name})
+                query = f"SELECT {condition} FROM mo WHERE pool = '{pool.name}' GROUP BY pool"
+            else:
+                b.set_data({"name": "Summary"})
+                query = f"SELECT {condition} FROM mo"
             data.append(b)
-            for row in (
-                sql.query(
-                    f"SELECT {condition} FROM mo WHERE pool = '{pool.name}' GROUP BY pool",
-                )
-                .transpose(include_header=True)
-                .to_dicts()
-            ):
+            for row in sql.query(query).transpose(include_header=True).to_dicts():
+                if row["column"] == "1.2" and row["column_0"] == 0:
+                    data.pop()
+                    break
                 b = BandData(name="row")
                 b.set_data(
                     {
@@ -129,9 +133,11 @@ class ReportProfileCheckSummary(ReportSource):
                         "detail": url
                         % (
                             f"select * from mo where {condition_map[row['column']]}",
-                            str(pool.id),
+                            str(pool.id) if pool != "Summary" else "",
                         ),
                     }
                 )
+                if row["column"] == "1.2.1":
+                    b.data["percent"] = f'{round(row["column_0"] / data[-1].data["quantity"] * 100.0, 2)} %'
                 data.append(b)
         return data

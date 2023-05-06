@@ -209,11 +209,16 @@ class ReportConfigApplication(ExtDocApplication):
         :return:
         """
         q = {str(k): v[0] if len(v) == 1 else v for k, v in request.GET.lists()}
+        pref_lang = request.user.preferred_language
         report: "Report" = self.get_object_or_404(Report, id=report_id)
         report_engine = ReportEngine(
             report_execution_history=config.web.enable_report_history,
         )
-        rp = RunParams(report=report.config, output_type=OutputType(q.get("output_type")), params=q)
+        rp = RunParams(
+            report=report.get_config(pref_lang),
+            output_type=OutputType(q.get("output_type")),
+            params=q,
+        )
         try:
             out_doc = report_engine.run_report(r_params=rp)
         except ValueError as e:

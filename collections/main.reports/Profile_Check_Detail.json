@@ -1,0 +1,212 @@
+{
+    "name": "Profile Check Detail",
+    "$collection": "main.reports",
+    "uuid": "3377a46c-06dd-4425-8886-0033c849ceb6",
+    "title": "Profile Check Detail (New)",
+    "description": "Show devices with access errors on discovery proccess",
+    "bands": [
+        {
+            "name": "Root",
+            "orientation": "H",
+            "queries": [{
+                "datasource": "managedobjectds",
+                "json": null
+            }]
+        },
+        {
+            "name": "detail_avail",
+            "orientation": "H",
+            "parent": "Root",
+            "queries": [
+                {
+                    "ds_query": "select * from Root where status = True and enable_ping = True and enable_box = True and avail='no' and (trouble_snmp = True or trouble_profile = True)"
+                }
+            ]
+        },
+        {
+            "name": "detail_cli",
+            "orientation": "H",
+            "parent": "Root",
+            "queries": [
+                {
+                    "ds_query": "select * from Root where status = True and enable_ping = True and enable_box = True and trouble_profile = False and trouble_snmp = False and trouble_cli = True"
+                }
+            ]
+        },
+        {
+            "name": "detail_snmp",
+            "orientation": "H",
+            "parent": "Root",
+            "queries": [
+                {
+                    "ds_query": "select * from Root where status = True and enable_ping = True and enable_box = True and avail='yes' and trouble_profile = True and trouble_snmp = True"
+                }
+            ]
+        }
+    ],
+    "bands_format": [
+        {
+            "name": "detail_avail",
+            "column_format": [
+                {
+                    "name": "name",
+                    "title": "Managed Object"
+                },
+                {
+                    "name": "address",
+                    "title": "Address"
+                },
+                {
+                    "name": "administrativedomain",
+                    "title": "Administrative Domain"
+                },
+                {
+                    "name": "profile",
+                    "title": "Profile"
+                },
+                {
+                    "name": "hostname",
+                    "title": "Object Hostname"
+                },
+                {
+                    "name": "avail",
+                    "title": "Avail"
+                },
+                {
+                    "name": "trouble_detail",
+                    "title": "Error Detail"
+                }
+            ],
+            "title_template": "Not Availability"
+        },
+        {
+            "name": "detail_cli",
+            "column_format": [
+                {
+                    "name": "name",
+                    "title": "Managed Object"
+                },
+                {
+                    "name": "address",
+                    "title": "Address"
+                },
+                {
+                    "name": "administrativedomain",
+                    "title": "Administrative Domain"
+                },
+                {
+                    "name": "profile",
+                    "title": "Profile"
+                },
+                {
+                    "name": "hostname",
+                    "title": "Object Hostname"
+                },
+                {
+                    "name": "avail",
+                    "title": "Avail"
+                },
+                {
+                    "name": "trouble_detail",
+                    "title": "Error Detail"
+                }
+            ],
+            "title_template": "CLI Errors"
+        },
+        {
+            "name": "detail_snmp",
+            "column_format": [
+                {
+                    "name": "name",
+                    "title": "Managed Object"
+                },
+                {
+                    "name": "address",
+                    "title": "Address"
+                },
+                {
+                    "name": "administrativedomain",
+                    "title": "Administrative Domain"
+                },
+                {
+                    "name": "profile",
+                    "title": "Profile"
+                },
+                {
+                    "name": "hostname",
+                    "title": "Object Hostname"
+                },
+                {
+                    "name": "avail",
+                    "title": "Avail"
+                },
+                {
+                    "name": "trouble_detail",
+                    "title": "Error Detail"
+                }
+            ],
+            "title_template": "SNMP Errors"
+        }
+    ],
+    "category": "sa",
+    "code": null,
+    "hide": false,
+    "localization": {
+        "title": {
+            "ru": "Сбои при опросе"
+        },
+        "columns.address": {
+            "ru": "АДРЕС"
+        },
+        "columns.administrativedomain": {
+            "ru": "ЗОНА ОТВЕТСТВЕННОСТИ"
+        },
+        "columns.avail": {
+            "ru": "ДОСТУПНОСТЬ"
+        },
+        "columns.hostname": {
+            "ru": "ИМЯ ХОСТА"
+        },
+        "columns.name": {
+            "ru": "ОБЪЕКТЫ УПРАВЛЕНИЯ"
+        },
+        "columns.profile": {
+            "ru": "ПРОФИЛЬ"
+        },
+        "columns.trouble_detail": {
+            "ru": "ОШИБКА"
+        },
+        "parameters.pool": {
+            "ru": "По Пулу"
+        },
+        "parameters.resource_group": {
+            "ru": "По Группе устройств (Селектор)"
+        }
+    },
+    "parameters": [
+        {
+            "name": "pool",
+            "description": null,
+            "hide": false,
+            "label": "By Pool",
+            "model_id": "main.Pool",
+            "type": "model"
+        },
+        {
+            "name": "resource_group",
+            "description": null,
+            "hide": false,
+            "label": "By Resource Group (Selector)",
+            "model_id": "inv.ResourceGroup",
+            "type": "model"
+        }
+    ],
+    "templates": [
+        {
+            "code": "DEFAULT",
+            "has_preview": true,
+            "is_alterable_output": true,
+            "output_type": "html"
+        }
+    ]
+}

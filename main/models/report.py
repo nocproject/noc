@@ -276,6 +276,9 @@ class Report(Document):
 
     @property
     def config(self) -> ReportConfig:
+        return self.get_config()
+
+    def get_config(self, pref_lang: Optional[str] = None) -> ReportConfig:
         params = []
         for p in self.parameters:
             params.append(
@@ -290,8 +293,14 @@ class Report(Document):
             )
         b_format_cfg = {}
         for bf in self.bands_format:
+            columns = []
+            for cf in bf.column_format:
+                cf["title"] = (
+                    self.get_localization(f"columns.{cf['name']}", lang=pref_lang) or cf["title"]
+                )
+                columns += [cf]
             b_format_cfg[bf.name] = BandFormatCfg(
-                **{"title_template": bf.title_template, "columns": bf.column_format}
+                **{"title_template": bf.title_template, "columns": columns}
             )
         templates = {}
         for t in self.templates:
