@@ -60,6 +60,7 @@ class ReportQuery(BaseModel):
     query: Optional[str] = None  # DataFrame query
     params: Dict[str, Any] = None
     json_data: Optional[str] = None
+    transpose: bool = False
 
 
 ReportBand = ForwardRef("ReportBand")

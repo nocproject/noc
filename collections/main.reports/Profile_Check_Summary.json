@@ -1,0 +1,20 @@
+{
+    "name": "Profile Check Summary",
+    "$collection": "main.reports",
+    "uuid": "53af9324-c0de-4831-ac7f-8339a289a2ae",
+    "title": "Profile Check Summary",
+    "description": "Сводка по статусу объектов. Отображает статистику по опросу устройств на предмет доступа к ним.",
+    "bands": [{
+        "name": "Root",
+        "orientation": "H"
+    }],
+    "category": "sa",
+    "code": null,
+    "hide": false,
+    "localization": {
+        "title": {
+            "ru": "Сводка по статусу объектов"
+        }
+    },
+    "report_source": "reportprofilechecksummary"
+}
