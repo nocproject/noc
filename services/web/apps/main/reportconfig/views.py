@@ -56,6 +56,9 @@ class ReportConfigApplication(ExtDocApplication):
                     r["localization"] += [
                         {"field": field, "language": lang, "language__label": lang, "value": value}
                     ]
+        for x in r.get("parameters", []):
+            if x.get("model_id"):
+                x["model_id__label"] = x["model_id"]
         return r
 
     def clean(self, data):
@@ -143,6 +146,8 @@ class ReportConfigApplication(ExtDocApplication):
                 {"text": out.upper(), "param": {"output_type": out}} for out in outputs
             ]
         for param in report.parameters:
+            if param.hide:
+                continue
             cfg = {
                 "name": param.name,
                 "fieldLabel": report.get_localization(
@@ -204,11 +209,16 @@ class ReportConfigApplication(ExtDocApplication):
         :return:
         """
         q = {str(k): v[0] if len(v) == 1 else v for k, v in request.GET.lists()}
+        pref_lang = request.user.preferred_language
         report: "Report" = self.get_object_or_404(Report, id=report_id)
         report_engine = ReportEngine(
             report_execution_history=config.web.enable_report_history,
         )
-        rp = RunParams(report=report.config, output_type=OutputType(q.get("output_type")), params=q)
+        rp = RunParams(
+            report=report.get_config(pref_lang),
+            output_type=OutputType(q.get("output_type")),
+            params=q,
+        )
         try:
             out_doc = report_engine.run_report(r_params=rp)
         except ValueError as e:

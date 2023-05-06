@@ -33,25 +33,27 @@ root_band:
     - name: managed_object
       queries:
         - name: q1
-          query: root_band.rows.groupby(by='profile').agg([pl.sum('discovered_managed_object_all').alias('count')]).sort(['count', 'profile'], reverse=[True, False])
+          query: select profile, sum(discovered_managed_object_all) as count from Root group by profile order by count desc, profile
     - name: interfaces
       queries:
         - name: q2
           datasource: interfaceprofilestatsds
-          query: ds.select(['profile', 'count']).sort('count', reverse=True)
+          query: select profile, count from interfaceprofilestatsds order by count desc
     - name: links
       queries:
         - name: q3
           datasource: linkedmethodstatds
-          query: ds.select(['method', 'count']).sort('count', reverse=True)
+          query: select method, count from linkedmethodstatds order by count desc
     - name: jobs_summary
       queries:
         - name: q4
-          query: root_band.rows.select([pl.col('discovered_managed_object_box').alias('Box'), pl.col('discovered_managed_object_periodic').alias('Periodic')]).sum().transpose(include_header=True)
+          query: select sum(discovered_managed_object_box) as Box, sum(discovered_managed_object_periodic) as Periodic from Root
+          transpose: true
     - name: jobs_per_seconds
       queries:
         - name: q5
-          query: root_band.rows.select([pl.col('discovered_managed_object_box_per_second').alias('Box').sum().round(4), pl.col('discovered_managed_object_periodic_per_second').alias('Periodic').sum().round(4)]).transpose(include_header=True)
+          query: select sum(discovered_managed_object_box_per_second) as Box, sum(discovered_managed_object_periodic_per_second) as Periodic from Root
+          transpose: true
       orientation: H
   queries:
     - name: discovery

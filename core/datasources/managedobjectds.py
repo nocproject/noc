@@ -1,7 +1,7 @@
 # ----------------------------------------------------------------------
-# ManagedObject Datasource
+# ManagedObject DataSource
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2022 The NOC Project
+# Copyright (C) 2007-2023 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -10,6 +10,9 @@ from collections import defaultdict
 from typing import Optional, Iterable, Dict, Any, List, Tuple, AsyncIterable
 
 # Third-party modules
+import polars as pl
+from django.db.models.expressions import Case, When, Value
+from django.db.models.fields import BooleanField
 from pymongo.read_preferences import ReadPreference
 
 # NOC modules
@@ -19,6 +22,7 @@ from noc.sa.models.managedobject import ManagedObject
 from noc.sa.models.authprofile import AuthProfile
 from noc.sa.models.profile import Profile
 from noc.sa.models.objectstatus import ObjectStatus
+from noc.main.models.pool import Pool
 from noc.inv.models.capability import Capability
 from noc.inv.models.platform import Platform
 from noc.inv.models.firmware import Firmware
@@ -27,6 +31,7 @@ from noc.inv.models.networksegment import NetworkSegment
 from noc.inv.models.discoveryid import DiscoveryID
 from noc.project.models.project import Project
 from noc.core.validators import is_objectid
+from noc.core.wf.diagnostic import DiagnosticState, SNMP_DIAG, CLI_DIAG, PROFILE_DIAG
 
 caps_dtype_map = {
     "bool": FieldType.BOOL,
@@ -62,6 +67,7 @@ class ManagedObjectDS(BaseDataSource):
             ),
             FieldInfo(name="name", description="Object Name"),
             FieldInfo(name="profile", description="Profile Name"),
+            FieldInfo(name="pool", description="Pool Name"),
             FieldInfo(
                 name="object_profile",
                 description="Object Profile Name",
@@ -162,7 +168,66 @@ class ManagedObjectDS(BaseDataSource):
                 description="Object Availability Status",
                 internal_name="id",
             ),
+            # Discovery enabled fields
+            FieldInfo(
+                name="enable_box",
+                type=FieldType.BOOL,
+                description="Enable Box Discovery",
+                internal_name="object_profile__enable_box_discovery",
+            ),
+            FieldInfo(
+                name="enable_periodic",
+                type=FieldType.BOOL,
+                description="Enable Periodic Discovery",
+                internal_name="object_profile__enable_periodic_discovery",
+            ),
+            FieldInfo(
+                name="enable_metrics",
+                type=FieldType.BOOL,
+                description="Enable Metric Discovery",
+                internal_name="object_profile__enable_metrics",
+            ),
+            FieldInfo(
+                name="enable_ping",
+                type=FieldType.BOOL,
+                description="Enable Availability check by Ping",
+                internal_name="object_profile__enable_ping",
+            ),
+            FieldInfo(
+                name="enable_topology",
+                type=FieldType.BOOL,
+                description="Enable Device Topology check",
+                internal_name="object_profile__enable_box_discovery_lldp",
+            ),
+            # Troubles
+            FieldInfo(
+                name="trouble_snmp",
+                type=FieldType.BOOL,
+                description="SNMP is OK (SNMP Diagnostic not in failed state",
+                is_diagnostic_state=True,
+                internal_name=SNMP_DIAG,
+            ),
+            FieldInfo(
+                name="trouble_profile",
+                type=FieldType.BOOL,
+                description="Profile is OK (SNMP Diagnostic not in failed state",
+                is_diagnostic_state=True,
+                internal_name=PROFILE_DIAG,
+            ),
+            FieldInfo(
+                name="trouble_cli",
+                type=FieldType.BOOL,
+                description="CLI is OK (SNMP Diagnostic not in failed state",
+                is_diagnostic_state=True,
+                internal_name=CLI_DIAG,
+            ),
+            FieldInfo(
+                name="trouble_detail",
+                description="Trouble detail message",
+                internal_name="diagnostics",
+            ),
         ]
+        # Capabilities
         + [
             FieldInfo(
                 name=c_name, type=c_type, internal_name=str(c_id), is_caps=True, is_vector=True
@@ -178,6 +243,23 @@ class ManagedObjectDS(BaseDataSource):
             for level in range(1, get_adm_path_level() + 1)
         ]
     )
+
+    @classmethod
+    async def query(cls, fields: Optional[Iterable[str]] = None, *args, **kwargs) -> pl.DataFrame:
+        """
+        Method for query report data. Return pandas dataframe.
+        :param fields: list fields for filtered on query
+        :param args: arguments for report query
+        :param kwargs:
+        :return:
+        """
+        if "detail_query" in kwargs:
+            print("Detail Query execute", kwargs["detail_query"])
+            r = await super().query(fields=None, *args, **kwargs)
+            sql = pl.SQLContext()
+            sql.register("mo", r.lazy())
+            return sql.query(kwargs["detail_query"]).select(fields or [])
+        return await super().query(fields=fields, *args, **kwargs)
 
     @classmethod
     async def iter_caps(
@@ -254,6 +336,28 @@ class ManagedObjectDS(BaseDataSource):
             )
         return r
 
+    @staticmethod
+    def get_diagnostic_trouble(
+        diagnostics: Dict[str, Any],
+        snmp: bool = False,
+        profile: bool = False,
+        cli: bool = False,
+    ) -> str:
+        if snmp:
+            x = [SNMP_DIAG]
+        elif cli:
+            x = [CLI_DIAG]
+        elif profile:
+            x = [PROFILE_DIAG]
+        else:
+            x = [SNMP_DIAG, PROFILE_DIAG, CLI_DIAG]
+        for d in x:
+            if d in diagnostics and diagnostics[d]["state"] == DiagnosticState.failed.value:
+                for c in diagnostics[d]["checks"]:
+                    if c["error"]:
+                        return c["error"]
+        return ""
+
     @classmethod
     async def iter_query(
         cls, fields: Optional[Iterable[str]] = None, *args, user=None, **kwargs
@@ -261,6 +365,7 @@ class ManagedObjectDS(BaseDataSource):
         fields = set(fields or [])
         q_fields, q_caps = [], defaultdict(list)
         adm_paths = {}
+        annotations = {}
         # Getting requested fields
         for f in cls.fields:
             f_query_name = f.internal_name or f.name
@@ -274,6 +379,18 @@ class ManagedObjectDS(BaseDataSource):
                 if not c:
                     continue
                 q_caps[str(c.id)] += [(f.name, cls.get_caps_default(c))]
+            elif f.is_diagnostic_state:
+                annotations[f.name] = Case(
+                    When(
+                        **{
+                            f"diagnostics__{f.internal_name}__state": DiagnosticState.failed.value,
+                            "then": Value(True),
+                        }
+                    ),
+                    default=Value(False),
+                    output_field=BooleanField(),
+                )
+                q_fields.append(f.name)
             elif not fields or f.name in fields or f.name == "id":
                 q_fields.append(f_query_name)
         if q_caps and "caps" not in q_fields:
@@ -282,6 +399,9 @@ class ManagedObjectDS(BaseDataSource):
         mos = ManagedObject.objects.filter(**q_filter)
         if user and not user.is_superuser:
             mos = mos.filter(administrative_domain__in=UserAccess.get_domains(user))
+        # Annotation
+        if annotations:
+            mos = mos.annotate(**annotations)
         # Dictionaries
         hostname_map, segment_map, avail_map = {}, {}, {}
         # Lookup fields dictionaries
@@ -323,6 +443,8 @@ class ManagedObjectDS(BaseDataSource):
                 yield num, "profile", Profile.get_by_id(mo["profile"]).name if mo[
                     "profile"
                 ] else None
+            if "pool" in mo:
+                yield num, "pool", Pool.get_by_id(mo["pool"]).name if mo["pool"] else None
             if "platform" in mo:
                 platform = mo["platform"]
                 yield num, "model", Platform.get_by_id(platform).name if platform else None
@@ -355,6 +477,29 @@ class ManagedObjectDS(BaseDataSource):
                 yield num, "object_labels", ",".join(mo["labels"])
             if "container" in mo:
                 yield num, "container", ""
+            # Discovery
+            if "object_profile__enable_box_discovery" in mo:
+                yield num, "enable_box", mo["object_profile__enable_box_discovery"]
+            if "object_profile__enable_periodic_discovery" in mo:
+                yield num, "enable_periodic", mo["object_profile__enable_periodic_discovery"]
+            if "object_profile__enable_metrics" in mo:
+                yield num, "enable_metrics", mo["object_profile__enable_metrics"]
+            if "object_profile__enable_ping" in mo:
+                yield num, "enable_ping", mo["object_profile__enable_ping"]
+            #
+            if "trouble_snmp" in mo:
+                yield num, "trouble_snmp", mo["trouble_snmp"]
+            if "trouble_profile" in mo:
+                yield num, "trouble_profile", mo["trouble_profile"]
+            if "trouble_cli" in mo:
+                yield num, "trouble_cli", mo["trouble_cli"]
+            if "diagnostics" in mo:
+                yield num, "trouble_detail", cls.get_diagnostic_trouble(
+                    mo["diagnostics"],
+                    mo["trouble_snmp"],
+                    mo["trouble_profile"],
+                    mo["trouble_cli"],
+                )
             async for c in cls.iter_caps(mo.pop("caps", []), requested_caps=q_caps):
                 yield num, c[0], c[1]
             if adm_paths and "administrative_domain__name" in mo:
