@@ -142,15 +142,15 @@ def apply_sync_sensors(changes: List[ChangeItem]) -> None:
     from noc.inv.models.object import Object
     from noc.inv.models.sensor import sync_object
 
-    sensors_changes = {}
+    sensors_changes = defaultdict(set)
     for item in changes:
-        fields = {cf["field"] for cf in item.get("changed_fields", [])}
-        model_id = item["model_id"]
-        if model_id == "inv.ObjectModel" and ("sensors" in fields or not fields):
-            sensors_changes[model_id].add(item["item_id"])
-        elif model_id == "inv.Object" and ("data" in fields or not fields):
+        item = ChangeItem(**item)
+        fields = {cf["field"] for cf in item.changed_fields or []}
+        if item.model_id == "inv.ObjectModel" and ("sensors" in fields or not fields):
+            sensors_changes[item.model_id].add(item.item_id)
+        elif item.model_id == "inv.Object" and ("data" in fields or not fields):
             # @todo ManagedObject address change
-            sensors_changes[model_id].add(item["item_id"])
+            sensors_changes[item.model_id].add(item.item_id)
 
     query = Q()
     if "inv.ObjectModel" in sensors_changes:
