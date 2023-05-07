@@ -7,13 +7,15 @@
 
 # Python modules
 import logging
-from typing import Optional, Dict, AsyncIterable, Any
+from functools import partial
+from typing import Optional, Dict, AsyncIterable, Any, Union, List
 
 # Third-party modules
 import orjson
 
 # NOC modules
 from noc.core.handler import get_handler
+from noc.core.ioloop.util import run_sync
 from .message import Message, PublishRequest
 from .config import get_stream
 from .metadata import Metadata, PartitionMetadata
@@ -42,6 +44,10 @@ class MessageStreamClient(object):
 
     def __init__(self):
         self.client = self.get_client()
+
+    @property
+    def has_bulk_mode(self) -> bool:
+        return self.client.SUBSCRIBE_BULK
 
     @classmethod
     def get_client(cls) -> "MessageStreamClient":
@@ -107,6 +113,25 @@ class MessageStreamClient(object):
             partition=req.partition,
             headers=req.headers,
             wait_for_stream=wait_for_stream,
+        )
+
+    def publish_sync(self, req: PublishRequest, wait_for_stream: bool = False) -> None:
+        """
+        Send publish request and wait for acknowledge
+        :param req:
+        :param wait_for_stream: Wait for stream being created.
+        :return:
+        """
+        run_sync(
+            partial(
+                self.publish,
+                req.data,
+                req.stream,
+                req.key,
+                req.partition,
+                req.headers,
+                wait_for_stream,
+            )
         )
 
     async def fetch_metadata(

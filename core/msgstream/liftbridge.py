@@ -25,6 +25,8 @@ logger = logging.getLogger(__name__)
 
 
 class LiftBridgeClient(GugoLiftbridgeClient):
+    SUBSCRIBE_BULK = False
+
     def __init__(self):
         broker = run_sync(self.resolve_broker)
         super().__init__(
