@@ -56,6 +56,8 @@ class ReportConfigApplication(ExtDocApplication):
                     r["localization"] += [
                         {"field": field, "language": lang, "language__label": lang, "value": value}
                     ]
+            if r.get("report_source"):
+                r["report_source__label"] = r["report_source"]
         for x in r.get("parameters", []):
             if x.get("model_id"):
                 x["model_id__label"] = x["model_id"]

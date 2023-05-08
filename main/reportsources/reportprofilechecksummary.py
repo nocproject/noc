@@ -86,7 +86,18 @@ class ReportProfileCheckSummary(ReportSource):
         data = []
         ds = loader["managedobjectds"]
         sql = pl.SQLContext()
-        r = ds.query_sync()
+        r = ds.query_sync(
+            fields=[
+                "pool",
+                "status",
+                "enable_ping",
+                "enable_box",
+                "avail",
+                "trouble_profile",
+                "trouble_snmp",
+                "trouble_cli",
+            ],
+        )
         sql.register("mo", r.lazy())
         #
         od_report = Report.get_by_code("OBJECT_DETAIL")
@@ -94,7 +105,7 @@ class ReportProfileCheckSummary(ReportSource):
             url = f"/main/reportconfig/{od_report.id}/run?" + "&".join(
                 [
                     "output_type=xlsx",
-                    "fields=name,address,object_profile,avail,profile,administrativedomain,segment",
+                    "fields=name,address,object_profile,avail,profile,administrativedomain,segment,trouble_detail",
                     "detail_query=%s&pool=%s",
                 ]
             )
