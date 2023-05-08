@@ -9,7 +9,7 @@
 import logging
 import asyncio
 import random
-from typing import Optional, Dict, AsyncIterable
+from typing import Optional, Dict, AsyncIterable, List
 from collections import defaultdict
 
 # Third-party modules
@@ -31,7 +31,8 @@ from noc.config import config
 from noc.core.ioloop.util import run_sync
 from .config import get_stream
 from .metadata import Metadata, PartitionMetadata, Broker
-from .message import Message, PublishRequest
+from .message import Message
+from .error import MsgStreamError
 
 logger = logging.getLogger(__name__)
 
@@ -39,7 +40,8 @@ CLIENT_ID = "NOC"
 
 
 class RedPandaClient(object):
-    TIMESTAMP_MULTIPLIER = TS_NS = 1_000
+    TIMESTAMP_MULTIPLIER = 1_000
+    SUBSCRIBE_BULK = True
 
     def __init__(self):
         self.bootstrap = run_sync(self.resolve_broker)
@@ -114,7 +116,7 @@ class RedPandaClient(object):
         """
         client = self.get_kafka_client()
         await client.bootstrap()
-        s_meta = defaultdict(dict)
+        s_meta: Dict[str, Dict[int, PartitionMetadata]] = defaultdict(dict)
         req_parts = []
         r = await client.fetch_all_metadata()
         for stream_n, stream_m in r._partitions.items():
@@ -129,13 +131,6 @@ class RedPandaClient(object):
                     replicas=list(p_meta.replicas),
                     isr=list(p_meta.isr),
                 )
-        # Fetch newest offset
-        # con = await self.get_consumer()
-        # await con.start()
-        # offsets = await con.end_offsets(req_parts)
-        # for tp, offset in offsets.items():
-        #     s_meta[tp.topic][tp.partition].newest_offset = offset
-        #     s_meta[tp.topic][tp.partition].high_watermark = offset
         return Metadata(
             brokers=[Broker(id=b.nodeId, host=b.host, port=b.port) for b in r.brokers()],
             metadata=s_meta,
@@ -144,25 +139,19 @@ class RedPandaClient(object):
     async def fetch_partition_metadata(
         self, stream: str, partition: int, wait_for_stream: bool = False
     ) -> PartitionMetadata:
-        r = await self.fetch_metadata(stream)
-        r = r.metadata[stream][partition]
-        newest_offset, high_watermark = None, None
-        # Fetch newest offset
         con = await self.get_consumer()
-        # await con.start()
-        offsets = await con.end_offsets([TopicPartition(topic=stream, partition=partition)])
-        for tp, offset in offsets.items():
-            newest_offset = offset
-            high_watermark = offset
-        # await con.stop()
+        tp = TopicPartition(topic=stream, partition=partition)
+        con.assign([tp])
+        # Fetch newest offset
+        offsets = await con.end_offsets([tp])
         return PartitionMetadata(
             topic=stream,
             partition=partition,
-            leader=r.leader,
-            replicas=list(r.replicas),
-            isr=list(r.isr),
-            high_watermark=newest_offset,
-            newest_offset=high_watermark,
+            leader=con._client.cluster.leader_for_partition(tp),
+            replicas=list(con._client.cluster._partitions[stream][partition].replicas),
+            isr=list(con._client.cluster._partitions[stream][partition].isr),
+            high_watermark=offsets[tp],
+            newest_offset=offsets[tp],
         )
 
     async def get_producer(self) -> AIOKafkaProducer:
@@ -295,16 +284,16 @@ class RedPandaClient(object):
         except UnknownTopicOrPartitionError:
             pass
 
-    async def subscribe(
+    async def _subscribe(
         self,
-        stream: str,
+        streams: List[str],
+        group_id: str,
         partition: Optional[int] = None,
         start_offset: Optional[int] = None,
         start_timestamp: Optional[float] = None,
         resume: bool = False,
         cursor_id: Optional[str] = None,
         timeout: Optional[int] = None,
-        allow_isr: bool = False,
     ) -> AsyncIterable[Message]:
         """
 
@@ -325,7 +314,7 @@ class RedPandaClient(object):
         # finally:
         #     await consumer.stop()
 
-        :param stream: Topic name
+        :param streams: Topic list
         :param partition: Partition num (for manual assign)
         :param start_offset: Offset for staring read
         :param start_timestamp: Timestamp for staring read
@@ -335,28 +324,28 @@ class RedPandaClient(object):
         :param allow_isr:
         :return:
         """
-        consumer = await self.get_consumer(group_id=stream)
+        consumer = await self.get_consumer(group_id=group_id)
         if partition is not None:
-            consumer.assign([TopicPartition(topic=stream, partition=partition)])
-        else:
-            consumer.subscribe(topics=[stream])
-        tp: TopicPartition = next(iter(consumer.assignment()), None)
-        if not tp:
-            return
-        if start_offset is not None:
-            consumer.seek(tp, start_offset)
-        elif start_timestamp is not None:
-            offset: Dict[TopicPartition, OffsetAndTimestamp] = await consumer.offsets_for_times(
-                {tp: start_timestamp}
+            consumer.assign(
+                [TopicPartition(topic=stream, partition=partition) for stream in streams]
             )
-            consumer.seek(tp, offset[tp].offset)
         else:
-            logger.info("Getting stored offset for stream '%s'", stream)
-            r = await consumer.seek_to_committed(tp)
-            if r[tp] is not None:
-                logger.info("Resuming from offset %d", r[tp])
+            consumer.subscribe(topics=streams)
+        for tp in consumer.assignment():
+            if start_offset is not None:
+                consumer.seek(tp, start_offset)
+            elif start_timestamp is not None:
+                offset: Dict[TopicPartition, OffsetAndTimestamp] = await consumer.offsets_for_times(
+                    {tp: start_timestamp}
+                )
+                consumer.seek(tp, offset[tp].offset)
             else:
-                await consumer.seek_to_end(tp)
+                logger.info("Getting stored offset for stream '%s'", tp)
+                r = await consumer.seek_to_committed(tp)
+                if r[tp] is not None:
+                    logger.info("Resuming from offset %d", r[tp])
+                else:
+                    await consumer.seek_to_end(tp)
         # async with consumer as c:
         async for msg in consumer:
             yield Message(
@@ -366,12 +355,35 @@ class RedPandaClient(object):
                 timestamp=msg.timestamp,
                 key=msg.key,
                 partition=msg.partition,
-                headers=msg.headers,
+                headers=dict(msg.headers),
             )
-            if cursor_id:
-                await consumer.commit(
-                    {TopicPartition(msg.topic, partition=msg.partition): msg.offset + 1}
-                )
+            # if cursor_id:
+            #     await consumer.commit(
+            #         {TopicPartition(msg.topic, partition=msg.partition): msg.offset + 1}
+            #     )
+
+    async def subscribe(
+        self,
+        stream: str,
+        partition: Optional[int] = None,
+        start_offset: Optional[int] = None,
+        start_timestamp: Optional[float] = None,
+        resume: bool = False,
+        cursor_id: Optional[str] = None,
+        timeout: Optional[int] = None,
+        allow_isr: bool = False,
+    ) -> AsyncIterable[Message]:
+        async for msg in self._subscribe(
+            streams=[stream],
+            group_id=stream,
+            partition=partition,
+            start_offset=start_offset,
+            start_timestamp=start_timestamp,
+            resume=resume,
+            cursor_id=cursor_id,
+            timeout=timeout,
+        ):
+            yield msg
 
     async def publish(
         self,
@@ -409,18 +421,14 @@ class RedPandaClient(object):
         except KafkaError as e:
             metrics["messages_sent_error", ("topic", stream)] += 1
             logger.error("Failed to send to topic %s: %s", stream, e)
-        finally:
-            await producer.stop()
-            self.producer = None
-
-    async def publish_sync(self, req: PublishRequest, wait_for_stream: bool = False) -> None:
-        """
-        Send publish request and wait for acknowledge
-        :param req:
-        :param wait_for_stream: Wait for stream being created.
-        :return:
-        """
-        await self.publish(req.data, req.stream, req.key, req.partition, req.headers)
+            if e.invalid_metadata:
+                # Retry getting metadata
+                await producer.stop()
+                self.producer = None
+            elif e.retriable:
+                # Retry message
+                raise MsgStreamError(str(e))
+            raise e  # Unknown error
 
     async def fetch_cursor(self, stream: str, partition: int, cursor_id: str) -> int:
         """
@@ -442,6 +450,8 @@ class RedPandaClient(object):
         :param offset:
         :return:
         """
+        logger.debug("[%s|%s] Set cursor to1: %s", stream, partition, offset)
         consumer = await self.get_consumer(group_id=stream)
-        consumer.assign([TopicPartition(topic=stream, partition=partition)])
+        if TopicPartition(topic=stream, partition=partition) not in consumer.assignment():
+            consumer.assign([TopicPartition(topic=stream, partition=partition)])
         await consumer.commit({TopicPartition(topic=stream, partition=partition): offset})
