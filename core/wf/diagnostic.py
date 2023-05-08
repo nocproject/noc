@@ -261,7 +261,6 @@ class DiagnosticHub(object):
                 item["state"] = "blocked"
             item["config"] = dc
             r[dc.diagnostic] = DiagnosticItem(**item)
-            item.pop("config")
             for c in dc.checks or []:
                 self.__checks[c] += [dc.diagnostic]
             for dd in dc.dependent or []:
@@ -384,7 +383,7 @@ class DiagnosticHub(object):
             self.logger.debug("Bulk mode. Sync blocked")
             return
         changed_state = set()
-        changed = []
+        updated = []
         for d_new in self:
             d_name = d_new.diagnostic
             d_current = self.get_object_diagnostic(d_name)
@@ -403,11 +402,25 @@ class DiagnosticHub(object):
                     ts=d_new.changed,
                 )
             self.__object.diagnostics[d_name] = d_new.dict()
-            changed += [d_new]
+            updated += [d_new]
+        removed = set(self.__object.diagnostics) - set(self.__diagnostics)
         if changed_state:
             self.sync_alarms(list(changed_state))
-        if changed:
-            self.sync_with_object(changed)
+        if updated or removed:
+            self.__object.effective_labels = list(
+                sorted(
+                    [
+                        ll
+                        for ll in self.__object.effective_labels
+                        if not ll.startswith(DIAGNOCSTIC_LABEL_SCOPE)
+                    ]
+                    + [
+                        f"{DIAGNOCSTIC_LABEL_SCOPE}::{d.diagnostic}::{d.state}"
+                        for d in self.__diagnostics.values()
+                    ]
+                )
+            )
+            self.sync_with_object(updated, list(removed))
 
     def sync_with_object(
         self,
@@ -420,57 +433,35 @@ class DiagnosticHub(object):
         """
         from django.db import connection as pg_connection
 
-        if self.dry_run:
+        if self.dry_run or is_document(self.__object):
             return
-        if is_document(self.__object):
+        params = []
+        query_set = ""
+        if remove:
+            self.logger.debug("[%s] Removed diagnostics", list(remove))
+            params += remove
+            query_set += " - %s" * len(remove)
+        if update:
+            self.logger.debug("[%s] Update diagnostics", list(update))
+            diags = {d.diagnostic: d for d in update}
+            params += [orjson.dumps(diags, default=json_default).decode("utf-8")]
+            query_set += " || %s::jsonb"
+        if not params:
             return
-        states = [s.value for s in DiagnosticState]
-        if not update and not remove:
-            return
-        oid = self.__object.id
+        if sync_labels:
+            params += [list(self.__object.effective_labels)]
+            query_set += ",effective_labels=%s::varchar[]"
+        params += [self.__object.id]
         with pg_connection.cursor() as cursor:
-            removed_labels, add_labels = [], []
-            if update:
-                self.logger.debug("[%s] Saving changes", list(update))
-                diags = {}
-                for d in update:
-                    diags[d.diagnostic] = d
-                    add_labels.append(f"{DIAGNOCSTIC_LABEL_SCOPE}::{d.diagnostic}::{d.state}")
-                    removed_labels += [
-                        f"{DIAGNOCSTIC_LABEL_SCOPE}::{dn}::{s}"
-                        for dn, s in product([d.diagnostic], states)
-                        if s != d.state
-                    ]
-                cursor.execute(
-                    """
-                     UPDATE sa_managedobject
-                     SET diagnostics = diagnostics || %s::jsonb
-                     WHERE id = %s""",
-                    [orjson.dumps(diags, default=json_default).decode("utf-8"), oid],
-                )
-            if remove:
-                self.logger.debug("[%s] Removed diagnostics", list(remove))
-                removed_labels += [
-                    f"{DIAGNOCSTIC_LABEL_SCOPE}::{d}::{s}" for d, s in product(remove, states)
-                ]
-                cursor.execute(
-                    f"""
-                     UPDATE sa_managedobject
-                     SET diagnostics = diagnostics {" #- %s " * len(remove)}
-                     WHERE id = %s""",
-                    ["{%s}" % r for r in remove] + [oid],
-                )
-            sync_labels = sync_labels or self.sync_labels
-            if sync_labels and (add_labels or removed_labels):
-                from noc.main.models.label import Label
-
-                Label._change_model_labels(
-                    "sa.ManagedObject",
-                    add_labels=add_labels or None,
-                    remove_labels=removed_labels or None,
-                    instance_filters=[("id", oid)],
-                )
-        self.__object._reset_caches(oid)
+            self.logger.debug("[%s] Saving changes", list(update))
+            cursor.execute(
+                f"""
+                 UPDATE sa_managedobject
+                 SET diagnostics = diagnostics {query_set}
+                 WHERE id = %s""",
+                params,
+            )
+        self.__object._reset_caches(self.__object.id)
 
     def sync_alarms(self, diagnostics: Optional[List[str]] = None, alarm_disable: bool = False):
         """
