@@ -12,7 +12,6 @@ import logging
 from dataclasses import dataclass
 from collections import defaultdict
 from functools import partial
-from itertools import product
 from typing import Optional, List, Dict, Any, Iterable
 
 # Third-party modules
