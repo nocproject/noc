@@ -164,7 +164,8 @@ class Command(BaseCommand):
                         f"# Subject: {msg.subject} "
                         f"Partition: {msg.partition} "
                         f"Offset: {msg.offset} "
-                        f"Timestamp: {msg.timestamp} ({datetime.datetime.fromtimestamp(msg.timestamp / TS_NS)})"
+                        f"Timestamp: {msg.timestamp} "
+                        f"({datetime.datetime.fromtimestamp(msg.timestamp / client.client.TIMESTAMP_MULTIPLIER)})"
                         f"Key: {msg.key} Headers: {msg.headers}"
                     )
                     print(msg.value)

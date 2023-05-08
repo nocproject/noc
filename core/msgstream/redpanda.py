@@ -40,7 +40,7 @@ CLIENT_ID = "NOC"
 
 
 class RedPandaClient(object):
-    TIMESTAMP_MULTIPLIER = TS_NS = 1_000
+    TIMESTAMP_MULTIPLIER = 1_000
     SUBSCRIBE_BULK = True
 
     def __init__(self):
@@ -155,7 +155,7 @@ class RedPandaClient(object):
         offsets = await con.end_offsets([TopicPartition(topic=stream, partition=partition)])
         for tp, offset in offsets.items():
             newest_offset = offset
-            high_watermark = offset
+            high_watermark = con.highwater(tp)
         # await con.stop()
         return PartitionMetadata(
             topic=stream,
@@ -163,8 +163,8 @@ class RedPandaClient(object):
             leader=r.leader,
             replicas=list(r.replicas),
             isr=list(r.isr),
-            high_watermark=newest_offset,
-            newest_offset=high_watermark,
+            high_watermark=high_watermark,
+            newest_offset=newest_offset,
         )
 
     async def get_producer(self) -> AIOKafkaProducer:
@@ -370,10 +370,10 @@ class RedPandaClient(object):
                 partition=msg.partition,
                 headers=dict(msg.headers),
             )
-            if cursor_id:
-                await consumer.commit(
-                    {TopicPartition(msg.topic, partition=msg.partition): msg.offset + 1}
-                )
+            # if cursor_id:
+            #     await consumer.commit(
+            #         {TopicPartition(msg.topic, partition=msg.partition): msg.offset + 1}
+            #     )
 
     async def subscribe(
         self,
@@ -464,5 +464,6 @@ class RedPandaClient(object):
         :return:
         """
         consumer = await self.get_consumer(group_id=stream)
-        consumer.assign([TopicPartition(topic=stream, partition=partition)])
+        if TopicPartition(topic=stream, partition=partition) not in consumer.assignment():
+            consumer.assign([TopicPartition(topic=stream, partition=partition)])
         await consumer.commit({TopicPartition(topic=stream, partition=partition): offset})
