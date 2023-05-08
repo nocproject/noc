@@ -1,0 +1,20 @@
+{
+    "name": "Discovery Links Summary",
+    "$collection": "main.reports",
+    "uuid": "35bdce50-3589-4eef-b6f0-153a2935251d",
+    "title": "Discovery Links Summary (New)",
+    "description": "Сводка по найденным в процессе опроса линкам",
+    "bands": [{
+        "name": "Root",
+        "orientation": "H"
+    }],
+    "category": "inv",
+    "code": null,
+    "hide": false,
+    "localization": {
+        "title": {
+            "ru": "Сводка по построенным линкам"
+        }
+    },
+    "report_source": "reportdiscoverylinks"
+}
