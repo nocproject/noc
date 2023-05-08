@@ -8,6 +8,7 @@
 # Python modules
 import datetime
 import argparse
+import functools
 from dateutil.parser import parse
 from typing import Optional
 
@@ -15,7 +16,8 @@ from typing import Optional
 from noc.core.management.base import BaseCommand
 from noc.core.ioloop.util import run_sync
 from noc.core.msgstream.client import MessageStreamClient
-from noc.core.msgstream.metadata import Metadata
+from noc.core.msgstream.metadata import Metadata, PartitionMetadata
+from noc.core.debug import error_report
 
 TS_NS = 1000_0000_00
 
@@ -86,35 +88,43 @@ class Command(BaseCommand):
             async with MessageStreamClient() as client:
                 return await client.fetch_metadata()
 
-        # async def get_partition_meta(stream, partition) -> PartitionMetadata:
-        #     async with MessageStreamClient() as client:
-        #         return await client.get_partition_metadata(stream, partition)
+        async def get_partition_meta(stream, partition) -> PartitionMetadata:
+            async with MessageStreamClient() as client:
+                return await client.fetch_partition_metadata(stream, partition)
 
         meta: Metadata = run_sync(get_meta)
         self.print(f"# Brokers ({len(meta.brokers)})")
         self.print("%-20s | %s" % ("ID", "HOST:PORT"))
+        b_map = {}
         for broker in meta.brokers:
             self.print("%-20s | %s:%s" % (broker.id, broker.host, broker.port))
+            b_map[broker.id] = broker.host
         self.print("# Streams")
         for stream in meta.metadata:
+            if stream.startswith("__"):
+                continue
             print(f"  ## Name: {stream}")
             for p in sorted(meta.metadata[stream]):
                 print(f"    ### Partition: {p}")
-                p_meta = meta.metadata[stream][p]
-                # try:
-                #     p_meta: PartitionMetadata = run_sync(
-                #         functools.partial(get_partition_meta, stream.name, p)
-                #     )
-                # except Exception as e:
-                #     print("[%s|%s] Failed getting data for partition: %s" % (stream.name, p, e))
-                #     continue
-                print("    Leader        : %s" % p_meta.leader)
+                try:
+                    p_meta: PartitionMetadata = run_sync(
+                        functools.partial(get_partition_meta, stream, p)
+                    )
+                except Exception as e:
+                    print("[%s|%s] Failed getting data for partition: %s" % (stream, p, e))
+                    error_report()
+                    continue
+                print("    Leader        : %s" % b_map[p_meta.leader])
                 print(
-                    "    Replicas      : %s" % ", ".join([str(x) for x in sorted(p_meta.replicas)])
+                    "    Replicas      : %s"
+                    % ", ".join([str(b_map[x]) for x in sorted(p_meta.replicas)])
                 )
-                print("    ISR           : %s" % ", ".join([str(x) for x in sorted(p_meta.isr)]))
-                # print("    HighWatermark : %s" % p_meta.high_watermark)
-                # print("    NewestOffset  : %s" % p_meta.newest_offset)
+                print(
+                    "    ISR           : %s"
+                    % ", ".join([str(b_map[x]) for x in sorted(p_meta.isr)])
+                )
+                print("    HighWatermark : %s" % p_meta.high_watermark)
+                print("    NewestOffset  : %s" % p_meta.newest_offset)
 
     def handle_create_stream(
         self,
@@ -164,7 +174,8 @@ class Command(BaseCommand):
                         f"# Subject: {msg.subject} "
                         f"Partition: {msg.partition} "
                         f"Offset: {msg.offset} "
-                        f"Timestamp: {msg.timestamp} ({datetime.datetime.fromtimestamp(msg.timestamp / TS_NS)})"
+                        f"Timestamp: {msg.timestamp} "
+                        f"({datetime.datetime.fromtimestamp(msg.timestamp / client.client.TIMESTAMP_MULTIPLIER)})"
                         f"Key: {msg.key} Headers: {msg.headers}"
                     )
                     print(msg.value)
