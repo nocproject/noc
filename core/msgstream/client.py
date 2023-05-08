@@ -8,7 +8,7 @@
 # Python modules
 import logging
 from functools import partial
-from typing import Optional, Dict, AsyncIterable, Any, Union, List
+from typing import Optional, Dict, AsyncIterable, Any
 
 # Third-party modules
 import orjson
@@ -142,8 +142,7 @@ class MessageStreamClient(object):
     async def fetch_partition_metadata(
         self, stream: str, partition: int, wait_for_stream: bool = False
     ) -> PartitionMetadata:
-        r = await self.fetch_metadata(stream)
-        return r.metadata[stream][partition]
+        return await self.client.fetch_partition_metadata(stream, partition, wait_for_stream)
 
     async def create_stream(
         self,

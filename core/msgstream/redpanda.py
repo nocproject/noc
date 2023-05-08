@@ -116,7 +116,7 @@ class RedPandaClient(object):
         """
         client = self.get_kafka_client()
         await client.bootstrap()
-        s_meta = defaultdict(dict)
+        s_meta: Dict[str, Dict[int, PartitionMetadata]] = defaultdict(dict)
         req_parts = []
         r = await client.fetch_all_metadata()
         for stream_n, stream_m in r._partitions.items():
@@ -131,13 +131,6 @@ class RedPandaClient(object):
                     replicas=list(p_meta.replicas),
                     isr=list(p_meta.isr),
                 )
-        # Fetch newest offset
-        # con = await self.get_consumer()
-        # await con.start()
-        # offsets = await con.end_offsets(req_parts)
-        # for tp, offset in offsets.items():
-        #     s_meta[tp.topic][tp.partition].newest_offset = offset
-        #     s_meta[tp.topic][tp.partition].high_watermark = offset
         return Metadata(
             brokers=[Broker(id=b.nodeId, host=b.host, port=b.port) for b in r.brokers()],
             metadata=s_meta,
@@ -146,25 +139,19 @@ class RedPandaClient(object):
     async def fetch_partition_metadata(
         self, stream: str, partition: int, wait_for_stream: bool = False
     ) -> PartitionMetadata:
-        r = await self.fetch_metadata(stream)
-        r = r.metadata[stream][partition]
-        newest_offset, high_watermark = None, None
-        # Fetch newest offset
         con = await self.get_consumer()
-        # await con.start()
-        offsets = await con.end_offsets([TopicPartition(topic=stream, partition=partition)])
-        for tp, offset in offsets.items():
-            newest_offset = offset
-            high_watermark = con.highwater(tp)
-        # await con.stop()
+        tp = TopicPartition(topic=stream, partition=partition)
+        con.assign([tp])
+        # Fetch newest offset
+        offsets = await con.end_offsets([tp])
         return PartitionMetadata(
             topic=stream,
             partition=partition,
-            leader=r.leader,
-            replicas=list(r.replicas),
-            isr=list(r.isr),
-            high_watermark=high_watermark,
-            newest_offset=newest_offset,
+            leader=con._client.cluster.leader_for_partition(tp),
+            replicas=list(con._client.cluster._partitions[stream][partition].replicas),
+            isr=list(con._client.cluster._partitions[stream][partition].isr),
+            high_watermark=offsets[tp],
+            newest_offset=offsets[tp],
         )
 
     async def get_producer(self) -> AIOKafkaProducer:
@@ -463,6 +450,7 @@ class RedPandaClient(object):
         :param offset:
         :return:
         """
+        logger.debug("[%s|%s] Set cursor to1: %s", stream, partition, offset)
         consumer = await self.get_consumer(group_id=stream)
         if TopicPartition(topic=stream, partition=partition) not in consumer.assignment():
             consumer.assign([TopicPartition(topic=stream, partition=partition)])
