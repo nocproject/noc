@@ -9,7 +9,7 @@
 # Python modules
 from time import perf_counter
 import asyncio
-from typing import AsyncIterable
+from typing import AsyncIterable, List
 
 # Third-party modules
 from typing import Dict
@@ -80,6 +80,10 @@ class CHWriterService(FastAPIService):
         Subscribe to all CH streams
         :return:
         """
+        if MessageStreamClient.has_bulk_mode:
+            streams = [stream async for stream in self.iter_ch_streams()]
+            asyncio.create_task(self.process_stream_bulk(streams))
+            return
         async for stream in self.iter_ch_streams():
             asyncio.create_task(self.process_stream(stream))
             await asyncio.sleep(0.25)  # Shift subscriptions in time
@@ -101,6 +105,22 @@ class CHWriterService(FastAPIService):
                 cursor_id=cursor_id,
             ):
                 await channel.feed(msg)
+
+    async def process_stream_bulk(self, streams: List[str]) -> None:
+        self.logger.info("[%s] Subscribing", streams)
+        cursor_id = self.get_cursor_id()
+        for stream in streams:
+            table = stream[3:]
+            channel = Channel(self, table)
+            self.channels[table] = channel
+        async with MessageStreamClient() as client:
+            async for msg in client.client._subscribe(
+                streams,
+                group_id="ch",
+                partition=config.chwriter.shard_id,
+                cursor_id=cursor_id,
+            ):
+                await self.channels[msg.subject[3:]].feed(msg)
 
     async def flush_data(self):
         """
