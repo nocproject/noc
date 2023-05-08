@@ -109,7 +109,6 @@ class CHWriterService(FastAPIService):
     async def process_stream_bulk(self, streams: List[str]) -> None:
         self.logger.info("[%s] Subscribing", streams)
         cursor_id = self.get_cursor_id()
-        s_streams = []
         for stream in streams:
             table = stream[3:]
             channel = Channel(self, table)
