@@ -23,6 +23,7 @@ from noc.core.wf.diagnostic import (
 class Object(object):
     id = 10
     diagnostics = {}
+    effective_labels = []
     access_preference = "S"
 
     @property
