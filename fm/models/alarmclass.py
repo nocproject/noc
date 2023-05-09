@@ -319,6 +319,8 @@ class AlarmClass(Document):
                     r["control_timeN"] = self.control_timeN
         if self.recover_time:
             r["recover_time"] = self.recover_time
+        if self.i18n_data:
+            r["i18n_data"] = self.i18n_data
         return r
 
     def to_json(self) -> str:
@@ -357,6 +359,7 @@ class AlarmClass(Document):
                 "condition",
                 "match_condition",
                 "model",
+                "i18n_data",
             ],
         )
 

@@ -89,6 +89,52 @@ Ext.define('NOC.fm.alarmclass.Application', {
                     },
                     items: [ // tabs
                         {
+                            title: __('Text'),
+                            items: [
+                                {
+                                    name: 'description',
+                                    xtype: 'textarea',
+                                    fieldLabel: __('Description'),
+                                    uiStyle: 'extra'
+                                },
+                                {
+                                    name: 'subject_template',
+                                    xtype: 'textfield',
+                                    fieldLabel: __('Subject Template'),
+                                    uiStyle: 'extra',
+                                    allowBlank: false
+                                },
+                                {
+                                    name: 'body_template',
+                                    xtype: 'textarea',
+                                    fieldLabel: __('Body Template'),
+                                    uiStyle: 'extra',
+                                    allowBlank: false
+                                },
+                                {
+                                    name: 'symptoms',
+                                    xtype: 'textarea',
+                                    fieldLabel: __('Symptoms'),
+                                    uiStyle: 'extra',
+                                    allowBlank: true
+                                },
+                                {
+                                    name: 'probable_causes',
+                                    xtype: 'textarea',
+                                    fieldLabel: __('Probable Causes'),
+                                    uiStyle: 'extra',
+                                    allowBlank: true
+                                },
+                                {
+                                    name: 'recommended_actions',
+                                    xtype: 'textarea',
+                                    fieldLabel: __('Recommended Actions'),
+                                    uiStyle: 'extra',
+                                    allowBlank: true
+                                }
+                            ]
+                        }, // Text
+                        {
                             title: __('i18n'),
                             itemId: "i18n",
                             items: [
@@ -167,52 +213,6 @@ Ext.define('NOC.fm.alarmclass.Application', {
                                 activate: me.onActivateI18n
                             },
                         }, // i18n
-                        {
-                            title: __('Text'),
-                            items: [
-                                {
-                                    name: 'description',
-                                    xtype: 'textarea',
-                                    fieldLabel: __('Description'),
-                                    uiStyle: 'extra'
-                                },
-                                {
-                                    name: 'subject_template',
-                                    xtype: 'textfield',
-                                    fieldLabel: __('Subject Template'),
-                                    uiStyle: 'extra',
-                                    allowBlank: false
-                                },
-                                {
-                                    name: 'body_template',
-                                    xtype: 'textarea',
-                                    fieldLabel: __('Body Template'),
-                                    uiStyle: 'extra',
-                                    allowBlank: false
-                                },
-                                {
-                                    name: 'symptoms',
-                                    xtype: 'textarea',
-                                    fieldLabel: __('Symptoms'),
-                                    uiStyle: 'extra',
-                                    allowBlank: true
-                                },
-                                {
-                                    name: 'probable_causes',
-                                    xtype: 'textarea',
-                                    fieldLabel: __('Probable Causes'),
-                                    uiStyle: 'extra',
-                                    allowBlank: true
-                                },
-                                {
-                                    name: 'recommended_actions',
-                                    xtype: 'textarea',
-                                    fieldLabel: __('Recommended Actions'),
-                                    uiStyle: 'extra',
-                                    allowBlank: true
-                                }
-                            ]
-                        }, // Text
                         {
                             title: __('Severity'),
                             items: [

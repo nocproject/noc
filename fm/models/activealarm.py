@@ -433,14 +433,16 @@ class ActiveAlarm(Document):
         if self.custom_subject:
             s = self.custom_subject
         else:
-            s = Jinja2Template(self.alarm_class.subject_template).render(self.get_template_vars())
+            s = Jinja2Template(self.alarm_class.i18n.subject_template).render(
+                self.get_template_vars()
+            )
         if len(s) >= 255:
             s = s[:125] + " ... " + s[-125:]
         return s
 
     @property
     def body(self) -> str:
-        s = Jinja2Template(self.alarm_class.body_template).render(self.get_template_vars())
+        s = Jinja2Template(self.alarm_class.i18n.body_template).render(self.get_template_vars())
         return s
 
     @property

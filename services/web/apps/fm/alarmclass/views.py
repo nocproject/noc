@@ -29,6 +29,12 @@ class AlarmClassApplication(ExtDocApplication):
     query_fields = ["name", "description"]
     query_condition = "icontains"
 
+    def instance_to_dict(self, o, fields=None, nocustom=False):
+        r = super().instance_to_dict(o, fields, nocustom=nocustom)
+        if "i18n_data" in r:
+            r["i18n"] = r.pop("i18n_data")
+        return r
+
     @view(
         method=["PUT"],
         url=r"^(?P<aid>[0-9a-f]{24})/localization/?$",

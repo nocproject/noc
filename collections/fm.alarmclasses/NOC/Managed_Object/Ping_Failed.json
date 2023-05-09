@@ -3,14 +3,12 @@
     "$collection": "fm.alarmclasses",
     "uuid": "ec26e28d-0b64-4738-8c07-5ee3daca16f4",
     "is_unique": true,
+    "reference": [],
+    "is_ephemeral": false,
     "user_clearable": true,
     "vars": [],
-    "handlers": [
-        "noc.fm.handlers.alarm.segment.set_segment_redundancy"
-    ],
-    "clear_handlers": [
-        "noc.fm.handlers.alarm.segment.check_segment_redundancy"
-    ],
+    "handlers": ["noc.fm.handlers.alarm.segment.set_segment_redundancy"],
+    "clear_handlers": ["noc.fm.handlers.alarm.segment.check_segment_redundancy"],
     "subject_template": "Ping Failed",
     "body_template": "Failed to ping managed object {{alarm.managed_object.name}} (IP: {{alarm.managed_object.address}}). All SA tasks to this object are temporary suspended",
     "symptoms": "Cannot execute SA tasks on the object",
@@ -47,5 +45,19 @@
     ],
     "topology_rca": true,
     "affected_service": true,
-    "labels": ["noc::severity::warning"]
+    "i18n_data": {
+        "subject_template": {
+            "ru": "Устройство не пингуется"
+        },
+        "body_template": {
+            "ru": "Ошибка при проверке доступности {{alarm.managed_object.name}} (IP: {{alarm.managed_object.address}}). Опрос будет временно приостановлен"
+        },
+        "symptoms": {
+            "ru": "Невозможно выполнять задачи на устройстве"
+        },
+        "probable_causes": {
+            "ru": "IP адрес устройства не отвечает на ICMP"
+        }
+    },
+    "labels": []
 }
