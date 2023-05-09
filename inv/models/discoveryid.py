@@ -33,7 +33,7 @@ from noc.core.model.decorator import on_delete
 
 id_lock = Lock()
 mac_lock = Lock()
-IGNORED_CHASSIS_MACS = {MAC(m) for m in config.inv.ignored_chassis_macs}
+IGNORED_CHASSIS_MACS = {MAC(m) for m in config.discovery.ignored_chassis_macs}
 
 
 class MACRange(EmbeddedDocument):
