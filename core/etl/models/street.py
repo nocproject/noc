@@ -20,7 +20,7 @@ class Street(BaseModel):
     parent: Reference["AdmDiv"]
     name: str
     short_name: str
-    start_date: Optional[date]
-    end_date: Optional[date]
+    start_date: Optional[date] = None
+    end_date: Optional[date] = None
 
     _csv_fields = ["id", "parent", "name", "short_name", "start_date", "end_date"]

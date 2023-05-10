@@ -15,4 +15,4 @@ from .base import BaseModel
 class Division(BaseModel):
     id: str
     name: str
-    start_date: Optional[str]
+    start_date: Optional[str] = None

@@ -16,7 +16,7 @@ from .typing import Reference
 class AdministrativeDomain(BaseModel):
     id: str
     name: str
-    parent: Optional[Reference["AdministrativeDomain"]]
-    default_pool: Optional[str]
+    parent: Optional[Reference["AdministrativeDomain"]] = None
+    default_pool: Optional[str] = None
 
     _csv_fields = ["id", "name", "parent", "default_pool"]

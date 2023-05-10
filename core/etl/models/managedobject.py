@@ -43,41 +43,41 @@ class ManagedObject(BaseModel):
     id: str
     name: str
     # Workflow state
-    state: Optional[str]
+    state: Optional[str] = None
     # Last state change
-    state_changed: Optional[datetime.datetime]
+    state_changed: Optional[datetime.datetime] = None
     # Workflow event
-    event: Optional[str]
-    container: Optional[Reference["Object"]]
+    event: Optional[str] = None
+    container: Optional[Reference["Object"]] = None
     administrative_domain: Reference["AdministrativeDomain"]
     pool: str
-    fm_pool: Optional[str]
+    fm_pool: Optional[str] = None
     segment: Reference["NetworkSegment"]
-    profile: str
+    profile: Optional[str] = None
     object_profile: Reference["ManagedObjectProfile"]
     static_client_groups: List[Reference["ResourceGroup"]]
     static_service_groups: List[Reference["ResourceGroup"]]
     scheme: str
     address: str
-    port: Optional[str]
-    user: Optional[str]
-    password: Optional[str]
-    super_password: Optional[str]
-    snmp_ro: Optional[str]
+    port: Optional[str] = None
+    user: Optional[str] = None
+    password: Optional[str] = None
+    super_password: Optional[str] = None
+    snmp_ro: Optional[str] = None
     trap_source_type: Optional[SourceType] = SourceType.d
-    trap_source_ip: Optional[str]
+    trap_source_ip: Optional[str] = None
     syslog_source_type: Optional[SourceType] = SourceType.d
-    syslog_source_ip: Optional[str]
-    description: Optional[str]
-    auth_profile: Optional[Reference["AuthProfile"]]
-    l2_domain: Optional[Reference["L2Domain"]]
-    labels: Optional[List[str]]
-    tt_system: Optional[Reference["TTSystem"]]
-    tt_queue: Optional[str]
-    tt_system_id: Optional[str]
-    project: Optional[Reference["Project"]]
-    capabilities: Optional[List[CapsItem]]
-    checkpoint: Optional[str]
+    syslog_source_ip: Optional[str] = None
+    description: Optional[str] = None
+    auth_profile: Optional[Reference["AuthProfile"]] = None
+    l2_domain: Optional[Reference["L2Domain"]] = None
+    labels: Optional[List[str]] = None
+    tt_system: Optional[Reference["TTSystem"]] = None
+    tt_queue: Optional[str] = None
+    tt_system_id: Optional[str] = None
+    project: Optional[Reference["Project"]] = None
+    capabilities: Optional[List[CapsItem]] = None
+    checkpoint: Optional[str] = None
 
     @validator("address")
     def address_must_ipaddress(cls, v):  # pylint: disable=no-self-argument
