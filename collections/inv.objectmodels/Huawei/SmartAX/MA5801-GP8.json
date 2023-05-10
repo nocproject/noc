@@ -1,0 +1,174 @@
+{
+    "name": "Huawei | SmartAX | MA5801-GP8",
+    "$collection": "inv.objectmodels",
+    "uuid": "8e14fd4c-2702-4c53-9fa9-c973ac68408e",
+    "vendor__code": "HUAWEI",
+    "description": "The SmartAX EA5801E-GP08 (MA5801-GP08) Optical Line Terminal (OLT) provides Gigabyte Passive Optical Networks (GPON) access, and supports Fiber To The Home (FTTH)",
+    "connection_rule__name": "Huawei | SmartAX",
+    "cr_context": "CHASSIS",
+    "labels": ["noc::inv::chassis", "noc::inv::port"],
+    "connections": [
+        {
+            "name": "0/1/0",
+            "description": "gpon 1",
+            "direction": "i",
+            "gender": "f",
+            "protocols": ["GPON"],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "name": "0/1/1",
+            "description": "gpon 2",
+            "direction": "i",
+            "gender": "f",
+            "protocols": ["GPON"],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "name": "0/1/2",
+            "description": "gpon 3",
+            "direction": "i",
+            "gender": "f",
+            "protocols": ["GPON"],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "name": "0/1/3",
+            "description": "gpon 4",
+            "direction": "i",
+            "gender": "f",
+            "protocols": ["GPON"],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "name": "0/1/4",
+            "description": "gpon 5",
+            "direction": "i",
+            "gender": "f",
+            "protocols": ["GPON"],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "name": "0/1/5",
+            "description": "gpon 6",
+            "direction": "i",
+            "gender": "f",
+            "protocols": ["GPON"],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "name": "0/1/6",
+            "description": "gpon 7",
+            "direction": "i",
+            "gender": "f",
+            "protocols": ["GPON"],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "name": "0/1/7",
+            "description": "gpon 8",
+            "direction": "i",
+            "gender": "f",
+            "protocols": ["GPON"],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "name": "0/2/0",
+            "description": "Upstream",
+            "direction": "i",
+            "gender": "f",
+            "protocols": ["TransEth1G", "TransEth10G"],
+            "type__name": "Transceiver | SFP+"
+        },
+        {
+            "name": "0/2/1",
+            "description": "Upstream",
+            "direction": "i",
+            "gender": "f",
+            "protocols": ["TransEth1G", "TransEth10G"],
+            "type__name": "Transceiver | SFP+"
+        },
+        {
+            "name": "0/2/2",
+            "description": "Upstream",
+            "direction": "i",
+            "gender": "f",
+            "protocols": ["TransEth1G", "TransEth10G"],
+            "type__name": "Transceiver | SFP+"
+        },
+        {
+            "name": "0/2/3",
+            "description": "Upstream",
+            "direction": "i",
+            "gender": "f",
+            "protocols": ["TransEth1G", "TransEth10G"],
+            "type__name": "Transceiver | SFP+"
+        },
+        {
+            "name": "eth",
+            "description": "Maintenance port",
+            "direction": "s",
+            "gender": "f",
+            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "name": "con",
+            "description": "CON/ESC console port",
+            "direction": "s",
+            "gender": "f",
+            "protocols": [">RS232", ">RS485"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "name": "tod",
+            "description": "Reserved",
+            "direction": "s",
+            "gender": "f",
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "name": "alm",
+            "description": "Environment monitoring port. Connected to sensor",
+            "direction": "s",
+            "gender": "f",
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "name": "4",
+            "description": "Chassis connection",
+            "direction": "o",
+            "gender": "m",
+            "type__name": "Huawei | SmartAX | MA5801 | PWR"
+        },
+        {
+            "name": "5",
+            "description": "Chassis connection",
+            "direction": "o",
+            "gender": "m",
+            "type__name": "Huawei | SmartAX | MA5801 | PWR"
+        }
+    ],
+    "data": {
+        "asset": {
+            "part_no": ["H90Z1BPCA"]
+        },
+        "dimensions": {
+            "depth": 220,
+            "height": 44,
+            "width": 442
+        },
+        "management": {
+            "managed": true
+        },
+        "power": {
+            "power": 90.0
+        },
+        "rackmount": {
+            "units": 1.0
+        },
+        "weight": {
+            "weight": 5.0
+        }
+    }
+}
