@@ -1,0 +1,48 @@
+{
+    "name": "Huawei | SmartAX | Upstream Interface Board | H803X2CK",
+    "$collection": "inv.objectmodels",
+    "uuid": "f2726028-4b7e-4f29-939c-30252a634aed",
+    "vendor__code": "HUAWEI",
+    "description": "H803X2CK board is a 2-port 10GE/GE uplink interface card that provides two 10GE/GE upstream or cascading optical ports. Without 10GE SFP+ module equipped as default, if need equip SFP+ module, please contact with our sales representative.",
+    "connection_rule__name": "Huawei | SmartAX",
+    "cr_context": "BOARD",
+    "labels": ["noc::inv::lc", "noc::inv::port"],
+    "connections": [
+        {
+            "name": "in",
+            "description": "Board connector",
+            "direction": "o",
+            "gender": "m",
+            "type__name": "Huawei | SmartAX | MA560xT | GIU"
+        },
+        {
+            "name": "0",
+            "description": null,
+            "direction": "i",
+            "gender": "f",
+            "protocols": ["TransEth1G", "TransEth10G"],
+            "type__name": "Transceiver | SFP+"
+        },
+        {
+            "name": "1",
+            "description": null,
+            "direction": "i",
+            "gender": "f",
+            "protocols": ["TransEth1G", "TransEth10G"],
+            "type__name": "Transceiver | SFP+"
+        }
+    ],
+    "data": {
+        "asset": {
+            "part_no": ["H803X2CK"]
+        },
+        "dimensions": {
+            "depth": 237,
+            "height": 187,
+            "width": 25
+        },
+        "weight": {
+            "weight": 2.0
+        }
+    }
+}
