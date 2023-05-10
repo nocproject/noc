@@ -125,6 +125,7 @@
             "description": "Reserved",
             "direction": "s",
             "gender": "f",
+            "protocols": ["ToD"],
             "type__name": "Electrical | RJ45"
         },
         {
@@ -132,6 +133,7 @@
             "description": "Environment monitoring port. Connected to sensor",
             "direction": "s",
             "gender": "f",
+            "protocols": [">DryContact"],
             "type__name": "Electrical | RJ45"
         },
         {
