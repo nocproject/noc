@@ -78,6 +78,7 @@ class Script(BaseScript):
                 "1.0.8802.1.1.2.1.4.1.1.10",  # LLDP-MIB::lldpRemSysDesc
                 "1.0.8802.1.1.2.1.4.1.1.12",  # LLDP-MIB::lldpRemSysCapEnabled
             ],
+            max_repetitions=15,
             display_hints={
                 "1.0.8802.1.1.2.1.4.1.1.7": render_bin,
                 "1.0.8802.1.1.2.1.4.1.1.5": render_bin,
