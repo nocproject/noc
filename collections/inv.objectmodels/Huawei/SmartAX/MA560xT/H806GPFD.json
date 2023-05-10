@@ -3,7 +3,7 @@
     "$collection": "inv.objectmodels",
     "uuid": "dcac926f-787f-4a39-b6ba-d49907738b35",
     "vendor__code": "HUAWEI",
-    "description": "16-port GPON OLT interface board",
+    "description": "GPFD is a 16 port GPON interface card of Huawei OLT, provide GPON service access from ONT. GPFD can maximum access 16*128 GPON subscribers",
     "connection_rule__name": "Huawei | SmartAX",
     "cr_context": "BOARD",
     "labels": ["noc::inv::lc", "noc::inv::port"],
@@ -152,6 +152,12 @@
             "depth": 237,
             "height": 396,
             "width": 23
+        },
+        "power": {
+            "power": 73.0
+        },
+        "weight": {
+            "weight": 3.0
         }
     }
 }
