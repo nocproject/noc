@@ -13,6 +13,8 @@ import re
 from noc.core.profile.base import BaseProfile
 from noc.core.script.error import CLIOperationError
 from noc.core.lldp import LLDP_PORT_SUBTYPE_ALIAS, LLDP_PORT_SUBTYPE_MAC, LLDP_PORT_SUBTYPE_NAME
+from noc.core.snmp.render import render_mac
+from noc.core.mib import mib
 
 
 class Profile(BaseProfile):
@@ -47,6 +49,8 @@ class Profile(BaseProfile):
     config_tokenizer = "line"
     config_tokenizer_settings = {"line_comment": "#"}
 
+    snmp_display_hints = {mib["LLDP-MIB::lldpLocPortId"]: render_mac}
+
     matchers = {
         # LLDP neighbor information should replace port_id to remote_port_description
         "is_lldp_convert_mac_to_name": {
@@ -68,6 +72,7 @@ class Profile(BaseProfile):
         # IF-MIB::ifPhysAddress return equal values, but
         # LLDP-MIB::lldpLocPortId return different values
         "is_bad_ifmib_snmp": {"platform": {"$regex": r"^DES-3200-\d\dF*/C1"}},
+        "is_dgs": {"platform": {"$regex": r"^DGS-.+"}},
         "is_des_3200": {"platform": {"$regex": r"^DES-3200.+"}},
         "is_dgs_32_33": {"platform": {"$regex": r"^DGS-3[23]12SR.+"}},
     }
@@ -119,6 +124,10 @@ class Profile(BaseProfile):
     def get_interface_type(cls, name):
         if name.isdigit() or name.startswith("1/") or name.startswith("1:"):
             return "physical"
+        elif name.startswith("po"):
+            return "aggregated"
+        elif name == "System":
+            return "SVI"
         return "other"
 
     def root_interface(self, name):

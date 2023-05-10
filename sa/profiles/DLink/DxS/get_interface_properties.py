@@ -14,6 +14,11 @@ from noc.core.mib import mib
 class Script(BaseScript):
     name = "DLink.DxS.get_interface_properties"
 
+    def get_max_repetitions(self):
+        if self.is_dgs:
+            return 20
+        return self.MAX_REPETITIONS
+
     def iter_interface_ifindex(self, name: str):
         ifnames = {}
         unknown_interfaces = []
