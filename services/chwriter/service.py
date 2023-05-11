@@ -80,7 +80,7 @@ class CHWriterService(FastAPIService):
         Subscribe to all CH streams
         :return:
         """
-        if MessageStreamClient.has_bulk_mode:
+        if MessageStreamClient.has_bulk_mode():
             streams = [stream async for stream in self.iter_ch_streams()]
             asyncio.create_task(self.process_stream_bulk(streams))
             return
