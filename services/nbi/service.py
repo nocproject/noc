@@ -2,17 +2,13 @@
 # ----------------------------------------------------------------------
 # nbi service
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2020 The NOC Project
+# Copyright (C) 2007-2023 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
-
-# Third-party modules
-from fastapi import Request
 
 # NOC modules
 from noc.core.service.fastapi import FastAPIService
 from noc.config import config
-from noc.core.perf import metrics
 
 PREFIX_NBI = "/api/nbi/"
 
