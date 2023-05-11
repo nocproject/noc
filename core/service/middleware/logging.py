@@ -18,10 +18,13 @@ from noc.core.comp import smart_text
 
 
 class LoggingMiddleware(object):
-    def __init__(self, app, logger=None, is_wsgi_app: bool = False):
+    def __init__(
+        self, app, logger=None, is_wsgi_app: bool = False, collect_req_api_metric: bool = False
+    ):
         self.app = app
         self.logger = logger
         self.is_wsgi_app = is_wsgi_app
+        self.collect_req_api_metric = collect_req_api_metric
 
     async def __call__(self, scope: Scope, receive: Receive, send: Send) -> None:
         def to_suppress_logging():
@@ -73,3 +76,8 @@ class LoggingMiddleware(object):
                     )
                 metrics["http_requests", ("method", method.lower())] += 1
                 metrics["http_response", ("status", status)] += 1
+            if self.collect_req_api_metric and not to_suppress_logging():
+                # Example "/api/<svc>/<api_name>/...path
+                paths = path.split("/")
+                if len(paths) > 3:
+                    metrics["api_requests", ("api", path.split("/")[3])] += 1
