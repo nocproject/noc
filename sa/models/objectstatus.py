@@ -31,7 +31,7 @@ class ObjectStatus(Document):
         "collection": "noc.cache.object_status",
         "strict": False,
         "auto_create_index": False,
-        "indexes": ["object"],
+        "indexes": ["object", "status"],
     }
     # Object id
     object = IntField(required=True, unique=True)
