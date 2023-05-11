@@ -68,6 +68,14 @@
             "target_connection": "{N}",
             "target_number": null,
             "target_type": "CHASSIS"
+        },
+        {
+            "match_connection": "in",
+            "match_type": "XCVR",
+            "scope": "chassis",
+            "target_connection": "{N}",
+            "target_number": null,
+            "target_type": "CHASSIS"
         }
     ]
 }

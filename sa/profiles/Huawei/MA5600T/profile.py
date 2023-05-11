@@ -76,6 +76,7 @@ class Profile(BaseProfile):
         "is_gpon_uplink": {"platform": {"$in": ["MA5626G"]}},
         "is_dslam": {"platform": {"$in": ["MA5600", "MA5603"]}},
         "is_ua5k": {"platform": {"$in": ["UA5000", "UA5000IPMB", "UA5000PVM"]}},
+        "is_builtin_service_chassis": {"platform": {"$in": ["MA5801-GP08", "MA5801-GP16"]}},
         "is_lldp_support": {"version": {"$gte": "V800R018C10"}},
         "is_gpon_ports": {"caps": {"$in": ["Network | PON | OLT"]}},
         "is_slots_temp": {"caps": {"$in": ["Slot | Member Ids | Temperature"]}},
