@@ -1,0 +1,8 @@
+{
+    "name": "Huawei | SmartAX | MA5801 | PWR",
+    "$collection": "inv.connectiontypes",
+    "uuid": "58504950-ff91-4daa-94f7-2dd0bb55c342",
+    "description": "MA5801 Power interface board",
+    "c_group": [],
+    "genders": "mf"
+}
