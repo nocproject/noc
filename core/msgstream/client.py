@@ -45,9 +45,10 @@ class MessageStreamClient(object):
     def __init__(self):
         self.client = self.get_client()
 
-    @property
-    def has_bulk_mode(self) -> bool:
-        return self.client.SUBSCRIBE_BULK
+    @classmethod
+    def has_bulk_mode(cls) -> bool:
+        c = get_handler(config.msgstream.client_class)
+        return c.SUBSCRIBE_BULK
 
     @classmethod
     def get_client(cls) -> "MessageStreamClient":
