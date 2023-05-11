@@ -453,11 +453,18 @@ class Script(BaseScript):
         if not v:
             parse_result = self.execute_inventory_board()
         #     raise NotImplementedError("Not supported 'display elabel' command")
-        chassis_sn = set()  # Chassis SN set
         for item in parse_result:
             self.logger.debug("Inventory item: %s", item)
             num = item.num
             item_name = item.name.lower()
+            if self.is_builtin_service_chassis and (
+                item_name.startswith("backplane") or item_name.startswith("main_board")
+            ):
+                # Dislike MA5801-GP16 has CHASSIS to Rack, SubRack and motherboard are same
+                continue
+            if self.is_builtin_service_chassis and item.name.startswith("port"):
+                # MA5801-GP08/MA5801-GP16
+                num = f"0/{item.parent[5:]}/{item.name[5:]}"
             if num == 0 and item.parent:
                 num = int(item.parent.split("_")[-1])
             if item_name.startswith("port"):
@@ -466,7 +473,7 @@ class Script(BaseScript):
                 i_type = "FAN"
             elif item_name.startswith("slot") and "PWC" in item.type:
                 i_type = "PWR"
-            elif item.type.startswith("PDC"):
+            elif item.type.startswith("PDC") or "POWER BOARD" in item.description:
                 i_type = "PWR"
             elif (
                 "board" in item.description.lower() or item_name.startswith("main_board")
@@ -484,13 +491,6 @@ class Script(BaseScript):
                 "serial": item.barcode,
                 "description": item.description,
             }
-            # Dislike MA5801-GP16 has CHASSIS to Rack, SubRack and motherboard are same
-            if i_type == "CHASSIS" and item.barcode and item.barcode in chassis_sn:
-                continue
-            elif i_type == "CHASSIS" and item.barcode:
-                chassis_sn.add(item.barcode)
-            elif item.barcode and item.barcode in chassis_sn:
-                data["builtin"] = True
             if item.mnf_date:
                 try:
                     mfg_date = parse(item.mnf_date)
