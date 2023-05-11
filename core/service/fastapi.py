@@ -42,6 +42,8 @@ class FastAPIService(BaseService):
         # WSGI application of any third-party framework that will be attached to the main
         # FastAPI application. For attaching Django applications of web-service in particular
         self.wsgi_app = None
+        # Collect 'api_requests' metric for API calls
+        self.collect_req_api_metric = False
 
     async def error_handler(self, request: "Request", exc) -> Response:
         """
@@ -115,6 +117,7 @@ class FastAPIService(BaseService):
             LoggingMiddleware,
             logger=PrefixLoggerAdapter(self.logger, "api"),
             is_wsgi_app=bool(self.wsgi_app),
+            collect_req_api_metric=self.collect_req_api_metric,
         )
         self.app.add_middleware(SpanMiddleware, service_name=self.name)
         self.server: Optional[uvicorn.Server] = None
