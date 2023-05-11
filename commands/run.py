@@ -1,15 +1,16 @@
 # ----------------------------------------------------------------------
 # ./noc run command
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2020 The NOC Project
+# Copyright (C) 2007-2023 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
 # Python modules
 import argparse
+from threading import Condition
 
 # Third-party modules
-from concurrent.futures import ThreadPoolExecutor, as_completed
+from noc.core.threadpool import ThreadPoolExecutor
 
 # NOC modules
 from noc.core.management.base import BaseCommand
@@ -18,7 +19,7 @@ from noc.inv.models.resourcegroup import ResourceGroup
 
 
 class Command(BaseCommand):
-    DEFAULT_LIMIT = 100
+    DEFAULT_LIMIT = 20
 
     def add_arguments(self, parser):
         subparsers = parser.add_subparsers(dest="cmd", required=True)
@@ -44,23 +45,34 @@ class Command(BaseCommand):
                 r.add(o)
         yield from r
 
-    def run_script(self, object, script, *args, **kwargs):
-        s = getattr(object.scripts, script)
-        return object, s(*args, **kwargs)
-
     def handle_cli(self, limit, command, objects, *args, **options):
+        def run_script(o, script, *args, **kwargs):
+            s = getattr(o.scripts, script)
+            try:
+                result = s(*args, **kwargs)["output"]
+            except Exception as e:
+                result = f"ERROR: {str(e)}"
+            with cond:
+                buffer.append((o, result))
+                cond.notify()
+
         if not command:
             return
-        with ThreadPoolExecutor(max_workers=limit) as executor:
-            futures = []
+        cond = Condition()
+        buffer = []
+        with ThreadPoolExecutor(max_workers=limit) as pool:
+            left = 0
             for o in self.iter_objects(objects):
-                futures += [executor.submit(self.run_script, o, "commands", commands=command)]
-            for future in as_completed(futures):
-                try:
-                    o, result = future.result()
-                    self.stdout.write("@@@ %s %s\n%s\n" % (o.address, o.name, "".join(result)))
-                except Exception as e:
-                    self.stdout.write("[%s] [%s] ERROR: %s\n" % (o.address, o.name, e))
+                left += 1
+                pool.submit(run_script, o, "commands", commands=command)
+            while left > 0:
+                with cond:
+                    if not buffer:
+                        cond.wait()
+                    data, buffer = buffer, []
+                for o, r in data:
+                    self.stdout.write("@@@ %s %s\n%s\n" % (o.address, o.name, "".join(r)))
+                    left -= 1
 
 
 if __name__ == "__main__":
