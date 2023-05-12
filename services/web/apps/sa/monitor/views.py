@@ -36,6 +36,7 @@ class MonitorApplication(ObjectListApplication):
     job_map = {
         "noc.services.discovery.jobs.periodic.job.PeriodicDiscoveryJob": "p",
         "noc.services.discovery.jobs.box.job.BoxDiscoveryJob": "b",
+        "noc.services.discovery.jobs.interval.job.IntervalDiscoveryJob": "i",
     }
 
     def extra_query(self, q, order):
