@@ -140,7 +140,7 @@ class JobF(object):
         find = {Job.ATTR_KEY: {"$in": list(self.mos_filter.values_list("id", flat=True))}}
         if self.pipeline and "$match" in self.pipeline[0]:
             find.update(self.pipeline[0]["$match"])
-        return scheduler.count(find)
+        return scheduler.count_documents(find)
 
     def filter(self, *args, **kwargs):
         self.mos_filter = self.mos_filter.filter(**kwargs)
