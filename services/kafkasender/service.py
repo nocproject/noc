@@ -59,7 +59,10 @@ class KafkaSenderService(FastAPIService):
             metrics["messages_drops"] += 1
             return
         await self.send_to_kafka(
-            smart_text(dst), msg.value, msg.headers.get(MX_SHARDING_KEY), msg.headers.get(KAFKA_PARTITION)
+            smart_text(dst),
+            msg.value,
+            msg.headers.get(MX_SHARDING_KEY),
+            msg.headers.get(KAFKA_PARTITION),
         )
         metrics["messages_processed"] += 1
 
