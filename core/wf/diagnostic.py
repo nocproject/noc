@@ -135,9 +135,9 @@ class DiagnosticItem(BaseModel):
     changed: Optional[datetime.datetime] = None
     _config: Optional[DiagnosticConfig] = PrivateAttr()
 
-    def __init__(self, **data):
-        self._config = data.pop("config", None)
+    def __init__(self, config: Optional[DiagnosticConfig] = None, **data):
         super().__init__(**data)
+        self._config = config
 
     @property
     def config(self):
@@ -258,8 +258,8 @@ class DiagnosticHub(object):
                 item["state"] = dc.default_state.value
             if dc.blocked:
                 item["state"] = "blocked"
-            item["config"] = dc
-            r[dc.diagnostic] = DiagnosticItem(**item)
+            # item["config"] = dc
+            r[dc.diagnostic] = DiagnosticItem(config=dc, **item)
             for c in dc.checks or []:
                 self.__checks[c] += [dc.diagnostic]
             for dd in dc.dependent or []:
