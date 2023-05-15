@@ -2,7 +2,7 @@
 # Vendor: Eltex
 # OS:     MES24xx
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2022 The NOC Project
+# Copyright (C) 2007-2023 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -31,6 +31,7 @@ class Profile(BaseProfile):
         re.compile(rb"\x1b\r\s+\r\x1b\[K"),
         re.compile(rb"\x1b\[K"),
         re.compile(rb"\r"),
+        re.compile(rb"\x00."),
     ]
 
     config_normalizer = "MES24xxNormalizer"
