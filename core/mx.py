@@ -44,7 +44,7 @@ MX_TO = "To"
 MX_NOTIFICATION = "notification"
 MX_NOTIFICATION_CHANNEL = "Notification-Channel"
 MX_LANG = "Language"
-KAFKA_PARTITION = "Kafka_partition"
+KAFKA_PARTITION = "Kafka-Partition"
 #
 MX_H_VALUE_SPLITTER = ";"
 # Available message types

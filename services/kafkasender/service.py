@@ -54,15 +54,12 @@ class KafkaSenderService(FastAPIService):
         metrics["messages"] += 1
         self.logger.debug("[%d] Receiving message %s", msg.offset, msg.headers)
         dst = msg.headers.get(MX_TO)
-        partition = msg.headers.get(KAFKA_PARTITION)
-        partition = int(partition) if partition else None
-
         if not dst:
             self.logger.debug("[%d] Missed '%s' header. Dropping", msg.offset, MX_TO)
             metrics["messages_drops"] += 1
             return
         await self.send_to_kafka(
-            smart_text(dst), msg.value, msg.headers.get(MX_SHARDING_KEY), partition
+            smart_text(dst), msg.value, msg.headers.get(MX_SHARDING_KEY), msg.headers.get(KAFKA_PARTITION)
         )
         metrics["messages_processed"] += 1
 
@@ -74,10 +71,14 @@ class KafkaSenderService(FastAPIService):
 
         :param topic:
         :param data:
+        :param key:
+        :param partition:
         :return:
         """
-        self.logger.debug("Sending to topic %s", topic)
+        self.logger.debug("Sending to topic %s, partition: %s", topic, partition)
         producer = await self.get_producer()
+        if partition is not None:
+            partition = int(partition)
         try:
             await producer.send(topic, data, key=key, partition=partition)
             metrics["messages_sent_ok", ("topic", topic)] += 1
