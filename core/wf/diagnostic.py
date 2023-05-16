@@ -442,7 +442,7 @@ class DiagnosticHub(object):
             query_set += " - %s" * len(remove)
         if update:
             self.logger.debug("[%s] Update diagnostics", list(update))
-            diags = {d.diagnostic: d for d in update}
+            diags = {d.diagnostic: d.dict(exclude={"config"}) for d in update}
             params += [orjson.dumps(diags, default=json_default).decode("utf-8")]
             query_set += " || %s::jsonb"
         if not params:
