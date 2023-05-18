@@ -88,7 +88,7 @@ class MetricConfig(object):
 class ModelMetricConfigItem(BaseModel):
     metric_type: str
     is_stored: bool = True
-    interval: int = 0
+    interval: Optional[int] = 0
 
     def __str__(self):
         return self.metric_type
