@@ -1133,7 +1133,7 @@ class Label(Document):
             instance=None,
             document=None,
             instance_model_id=None,
-            profile_field=None,
+            profile_field=profile_field,
             *args,
             **kwargs,
         ):
