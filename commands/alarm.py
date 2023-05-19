@@ -102,7 +102,7 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
         connect()
-        cmd = options["cmd"]
+        cmd = options.pop("cmd")
         return getattr(self, f'handle_{cmd.replace("-", "_")}')(*args, **options)
 
     def resolve_object(self, managed_object: str) -> Optional[ManagedObject]:
