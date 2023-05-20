@@ -12,7 +12,7 @@ from mongoengine.fields import (
     BinaryField,
     DateTimeField,
     ListField,
-    EmbeddedDocumentField,
+    EmbeddedDocumentListField,
     ObjectIdField,
 )
 from typing import List, Set
@@ -70,7 +70,7 @@ class Escalation(Document):
         "collection": "escalations",
         "strict": False,
         "auto_create_index": False,
-        "indexes": ["items.alarm"],
+        "indexes": ["items.alarm", "close_timestamp", "items.0.alarm"],
     }
     profile = PlainReferenceField(EscalationProfile)
     timestamp = DateTimeField()
@@ -78,16 +78,16 @@ class Escalation(Document):
     # tt_system = PlainReferenceField(TTSystem)
     tt_id = StringField()
     prev_escalation = ObjectIdField()
-    items = ListField(EmbeddedDocumentField(EscalationItem))
+    items = EmbeddedDocumentListField(EscalationItem)
     # List of group references, if any
     groups = ListField(BinaryField())
     # Escalation summary
-    total_objects = ListField(EmbeddedDocumentField(ObjectSummaryItem))
-    total_services = ListField(EmbeddedDocumentField(SummaryItem))
-    total_subscribers = ListField(EmbeddedDocumentField(SummaryItem))
+    total_objects = EmbeddedDocumentListField(ObjectSummaryItem)
+    total_services = EmbeddedDocumentListField(SummaryItem)
+    total_subscribers = EmbeddedDocumentListField(SummaryItem)
 
     def __str__(self) -> str:
-        return str(id)
+        return str(self.id)
 
     def get_lock_items(self) -> List[str]:
         s: Set[str] = set()
