@@ -156,9 +156,11 @@ class MODiscoveryJob(PeriodicJob):
         match = {"status": False}
         match["object"] = {"$mod": [self.service.total_slots, self.service.slot_number]}
         r = next(
-            ObjectStatus._get_collection().with_options(
+            ObjectStatus._get_collection()
+            .with_options(
                 read_preference=ReadPreference.SECONDARY_PREFERRED,
-            ).aggregate(
+            )
+            .aggregate(
                 [
                     {"$match": match},
                     {"$group": {"_id": 1, "objects": {"$push": "$object"}}},
