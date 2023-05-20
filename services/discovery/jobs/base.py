@@ -22,7 +22,7 @@ from time import perf_counter
 import bson
 import cachetools
 import orjson
-from pymongo import UpdateOne
+from pymongo import UpdateOne, ReadPreference
 from typing import List, Dict, Any, Optional, Tuple, Set
 from builtins import str, object
 
@@ -156,7 +156,11 @@ class MODiscoveryJob(PeriodicJob):
         match = {"status": False}
         match["object"] = {"$mod": [self.service.total_slots, self.service.slot_number]}
         r = next(
-            ObjectStatus._get_collection().aggregate(
+            ObjectStatus._get_collection()
+            .with_options(
+                read_preference=ReadPreference.SECONDARY_PREFERRED,
+            )
+            .aggregate(
                 [
                     {"$match": match},
                     {"$group": {"_id": 1, "objects": {"$push": "$object"}}},
@@ -401,6 +405,8 @@ class MODiscoveryJob(PeriodicJob):
         discovery_diagnostics = self.load_diagnostic(
             is_box=self.is_box, is_periodic=self.is_periodic
         )
+        if not discovery_diagnostics:
+            return None
         self.logger.info("Updating diagnostics statuses")
         now = datetime.datetime.now()
         processed = set()
