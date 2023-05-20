@@ -171,6 +171,7 @@ class Scheduler(object):
         """
         self.logger.debug("Check indexes")
         self.get_collection().create_index([("ts", 1)], partialFilterExpression={"s": "W"})
+        self.get_collection().create_index([("ts", 1), ("shard", 1)], partialFilterExpression={"s": "W"})
         self.get_collection().create_index([("jcls", 1), ("key", 1)])
         self.logger.debug("Indexes are ready")
 

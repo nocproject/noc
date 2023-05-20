@@ -2,9 +2,12 @@
 # ----------------------------------------------------------------------
 # Discovery
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2020 The NOC Project
+# Copyright (C) 2007-2023 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
+
+# Third-party modules
+from pymongo import UpdateMany
 
 # NOC modules
 from noc.config import config
@@ -31,7 +34,8 @@ class DiscoveryService(FastAPIService):
             self.logger.info(
                 "Enabling distributed mode: Slot %d/%d", self.slot_number, self.total_slots
             )
-            ifilter = {"key": {"$mod": [self.total_slots, self.slot_number]}}
+            # ifilter = {"key": {"$mod": [self.total_slots, self.slot_number]}}
+            ifilter = {"shard": self.slot_number}
         else:
             self.logger.info("Enabling standalone mode")
             ifilter = None
@@ -45,6 +49,18 @@ class DiscoveryService(FastAPIService):
             service=self,
             sample=config.discovery.sample,
         )
+        # Ensure shard
+        if ifilter:
+            self.logger.info("Ensure shard field on collection")
+            coll = self.scheduler.get_collection()
+            coll.update_many(
+                {
+                    "key": {"$mod": [self.total_slots, self.slot_number]},
+                    "shard": {"$ne": self.slot_number},
+                },
+                {"$set": {"shard": self.slot_number}},
+            )
+        # Run scheduler
         self.scheduler.run()
 
     def get_mon_data(self):
