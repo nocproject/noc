@@ -1,7 +1,7 @@
 # ----------------------------------------------------------------------
 # MetricsNode
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2021 The NOC Project
+# Copyright (C) 2007-2023 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -17,6 +17,7 @@ from noc.core.service.loader import get_service
 from noc.core.perf import metrics
 from noc.core.mx import MX_METRICS_TYPE, MX_METRICS_SCOPE, MX_LABELS
 from .base import BaseCDAGNode, ValueType, Category
+from noc.config import config
 
 
 class MetricsNodeConfig(BaseModel):
@@ -31,6 +32,8 @@ NS = 1_000_000_000
 
 # scope -> name -> cleaner
 scope_cleaners: Dict[str, Dict[str, Callable]] = {}
+#
+mx_converters: Optional[Dict[str, Callable]] = None
 
 
 class MetricsNode(BaseCDAGNode):
@@ -42,6 +45,7 @@ class MetricsNode(BaseCDAGNode):
     categories = [Category.UTIL]
     config_cls = MetricsNodeConfig
     dot_shape = "folder"
+    mx_scopes = set(config.message.enable_metric_scopes)
 
     def get_value(self, ts: int, labels: List[str], **kwargs) -> Optional[Dict[str, ValueType]]:
         r = {}
@@ -72,18 +76,8 @@ class MetricsNode(BaseCDAGNode):
         svc = get_service()
         if self.config.spool:
             svc.register_metrics(self.config.scope, [r])
-        if self.config.spool_message:
-            if self.config.message_meta:
-                r["meta"] = self.config.message_meta
-            svc.register_message(
-                r,
-                MX_METRICS_TYPE,
-                {
-                    MX_METRICS_SCOPE: self.config.scope.encode(encoding="utf-8"),
-                    MX_LABELS: self.config.message_labels,
-                },
-                r["managed_object"],
-            )
+        if self.config.spool_message and self.config.scope in self.mx_scopes:
+            self.send_mx(r)
         return r
 
     @staticmethod
@@ -95,3 +89,42 @@ class MetricsNode(BaseCDAGNode):
         """
         if scope not in scope_cleaners:
             scope_cleaners[scope] = cleaners
+
+    def send_mx(self, data):
+        """
+        Send collected metrics to MX Router
+        :param data:
+        :return:
+        """
+        global mx_converters
+
+        if mx_converters is None:
+            mx_converters = self.load_mx_converters()
+        r = mx_converters[self.config.scope](data)
+        if self.config.message_meta:
+            r["meta"] = self.config.message_meta
+        svc = get_service()
+        svc.register_message(
+            r,
+            MX_METRICS_TYPE,
+            {
+                MX_METRICS_SCOPE: self.config.scope.encode(encoding="utf-8"),
+                MX_LABELS: self.config.message_labels,
+            },
+            r["bi_id"],
+            group_key=f'{self.config.scope}-{r["bi_id"]}',
+        )
+
+    @classmethod
+    def load_mx_converters(cls):
+        """
+        Loading MX Metrics map rules
+        :return:
+        """
+        from noc.main.models.metricstream import MetricStream
+
+        r = {}
+        for mss in MetricStream.objects.filter():
+            if mss.is_active and mss.scope.table_name in set(config.message.enable_metric_scopes):
+                r[mss.scope.table_name] = mss.to_mx
+        return r
