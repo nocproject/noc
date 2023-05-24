@@ -8,7 +8,7 @@
 # Python modules
 import datetime
 import logging
-from typing import Optional, List, Dict, Literal, Iterable, Any
+from typing import Optional, List, Dict, Iterable, Any
 
 # Third-party modules
 import orjson
@@ -38,7 +38,7 @@ class VarItem(BaseModel):
 
 class ThresholdItem(BaseModel):
     value: float = 1
-    op: Literal[">", ">=", "<", "<="] = ">="
+    op: str = ">="  # ">", ">=", "<", "<="
     clear_value: Optional[float] = None
     alarm_class: Optional[str] = "NOC | PM | Out of Thresholds"
     alarm_labels: Optional[List[str]] = None
