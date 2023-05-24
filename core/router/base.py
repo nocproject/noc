@@ -225,7 +225,7 @@ class Router(object):
         # Apply routes
         for route in self.iter_route(msg):
             metrics["route_hits", ("type", route.type)] += 1
-            logger.debug("[%d] Applying route %s", msg_id, route.name)
+            logger.debug("[%s] Applying route %s", msg_id, route.name)
             # Apply actions
             routed: bool = False
             with Span(
@@ -294,7 +294,7 @@ class Router(object):
                     )
                     routed = True
                 if not routed:
-                    logger.debug("[%d] Not routed", msg_id)
+                    logger.debug("[%s] Not routed", msg_id)
                     metrics[
                         "route_misses",
                         ("message_type", msg.headers.get(MX_MESSAGE_TYPE).decode(DEFAULT_ENCODING)),
