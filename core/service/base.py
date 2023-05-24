@@ -27,7 +27,7 @@ from typing import (
     TypeVar,
     NoReturn,
     Awaitable,
-    Set,
+    Iterable,
 )
 
 # Third-party modules
@@ -50,6 +50,7 @@ from noc.core.msgstream.queuebuffer import QBuffer
 from noc.core.msgstream.message import Message
 from noc.core.msgstream.error import MsgStreamError
 from noc.core.router.base import Router
+from noc.core.router.messagebuffer import MBuffer
 from noc.core.ioloop.util import setup_asyncio
 from noc.core.ioloop.timers import PeriodicCallback
 from noc.core.error import NOCError
@@ -146,8 +147,8 @@ class BaseService(object):
         # Metrics publisher buffer
         self.metrics_queue: Optional[QBuffer] = None
         # MX metrics publisher buffer
-        self.mx_metrics_scopes: Set[str] = set(config.message.enable_metric_scopes)
         self.mx_partitions: int = 0
+        self.mx_queue: Optional[MBuffer] = None
         #
         self.active_subscribers = 0
         self.subscriber_shutdown_waiter: Optional[asyncio.Event] = None
@@ -547,7 +548,7 @@ class BaseService(object):
         apply_quantiles(r)
         return r
 
-    def iter_rpc_retry_timeout(self):
+    def iter_rpc_retry_timeout(self) -> Iterable[float]:
         """
         Yield timeout to wait after unsuccessful RPC connection
         """
@@ -673,8 +674,10 @@ class BaseService(object):
                 return  # Created in concurrent thread
             self.publish_queue = MessageStreamQueue(self.loop)
             self.metrics_queue = QBuffer(max_size=config.msgstream.max_message_size)
+            self.mx_queue = MBuffer()
             self.loop.create_task(self.publisher())
             self.loop.create_task(self.publish_metrics(self.metrics_queue))
+            self.loop.create_task(self.message_route())
 
     def publish(
         self,
@@ -765,15 +768,35 @@ class BaseService(object):
         executor = self.get_executor(name)
         return executor.submit(fn, *args, **kwargs)
 
+    async def message_route(self):
+        """
+        Route messages from mx_queue
+        :return:
+        """
+        self.logger.info("Starting Message Routing")
+        while not (self.publish_queue.to_shutdown and self.mx_queue.is_empty()):
+            t0 = perf_counter()
+            for msg in self.mx_queue.iter_slice():
+                # self.publish(chunk, stream=stream, partition=partition, headers=headers)
+                await self.router.route_message(msg)
+            if not self.publish_queue.to_shutdown:
+                to_sleep = config.msgstream.metrics_send_delay - (perf_counter() - t0)
+                if to_sleep > 0:
+                    await asyncio.sleep(to_sleep)
+
     async def publish_metrics(
         self, queue: QBuffer, headers: Optional[Dict[str, bytes]] = None
     ) -> None:
+        """
+        Schedule metrics to send stream
+
+        :param queue: Metrics Queue
+        :param headers: Message Headers
+        """
         while not (self.publish_queue.to_shutdown and queue.is_empty()):
             t0 = perf_counter()
             for stream, partition, chunk in queue.iter_slice():
                 self.publish(chunk, stream=stream, partition=partition, headers=headers)
-            if self.router and not self.router.is_empty():
-                await self.router.flush_input_queue()
             if not self.publish_queue.to_shutdown:
                 to_sleep = config.msgstream.metrics_send_delay - (perf_counter() - t0)
                 if to_sleep > 0:
@@ -853,22 +876,23 @@ class BaseService(object):
         :param message_type: Message type
         :param headers: additional message headers
         :param sharding_key: Key for sharding over MX services
-        :param store: Append message to buffer for diliver
+        :param store: Append message to buffer for deliver
         :return:
         """
         msg = Router.get_message(data, message_type, headers, sharding_key)
         self.logger.debug("Send message: %s", msg)
-        if self.router and config.message.embedded_router and store:
-            self.router.register_message(msg)
-        elif self.router and config.message.embedded_router:
-            await self.router.route_message(msg)
-        else:
+        if not config.message.embedded_router:
             self.publish(
                 value=msg.value,
                 stream=MX_STREAM,
                 partition=sharding_key % self.mx_partitions,
                 headers=msg.headers,
             )
+            return
+        if store:
+            self.mx_queue.put(msg)
+        else:
+            await self.router.route_message(msg)
 
     def register_message(
         self,
@@ -876,25 +900,25 @@ class BaseService(object):
         message_type: str,
         headers: Optional[Dict[str, bytes]] = None,
         sharding_key: int = 0,
+        group_key: Optional[str] = None,
     ):
         """
-        Register message for diliver
+        Register message for deliver
         :param data: Data for transmit
         :param message_type: Message type
         :param headers: additional message headers
         :param sharding_key: Key for sharding over MX services
+        :param group_key:
         :return:
         """
-        msg = Router.get_message(data, message_type, headers, sharding_key)
-        if self.router and config.message.embedded_router:
-            self.router.register_message(msg)
-        else:
-            self.publish(
-                value=msg.value,
-                stream=MX_STREAM,
-                partition=sharding_key % self.mx_partitions,
-                headers=msg.headers,
-            )
+        msg = Router.get_message(
+            data,
+            message_type,
+            headers,
+            sharding_key,
+            raw_value=bool(group_key),
+        )
+        self.mx_queue.put(msg, group_key)
 
     def get_leader_lock_name(self):
         if self.leader_lock_name:
