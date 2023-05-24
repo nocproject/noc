@@ -15,7 +15,7 @@ import orjson
 # NOC modules
 from noc.core.msgstream.message import Message
 from noc.core.comp import DEFAULT_ENCODING
-from noc.core.mx import MX_MESSAGE_TYPE, NOTIFICATION_METHODS, MX_METRICS_SCOPE
+from noc.core.mx import MX_MESSAGE_TYPE, NOTIFICATION_METHODS
 from noc.config import config
 
 
@@ -138,10 +138,7 @@ class MetricAction(Action):
                 self.mx_metrics_scopes[mss.scope.table_name.encode(DEFAULT_ENCODING)] = mss.to_mx
 
     def iter_action(self, msg: Message) -> Iterator[Tuple[str, Dict[str, bytes], bytes]]:
-        table = msg.headers.get(MX_METRICS_SCOPE)
-        if table not in self.mx_metrics_scopes:
-            return
-        yield self.stream, self.headers, self.mx_metrics_scopes[table](orjson.loads(msg.value))
+        yield self.stream, self.headers, msg.value
         # r = defaultdict(list)
         # for v in msg.value.split(b"\n"):
         #     v = self.mx_metrics_scopes[table](orjson.loads(v))

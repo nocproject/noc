@@ -9,13 +9,12 @@
 import logging
 import operator
 from time import time_ns
-from collections import defaultdict, deque
+from collections import defaultdict
 from typing import List, DefaultDict, Iterator, Dict, Iterable, Optional, Any
 from functools import partial
 
 # Third-party modules
 import orjson
-from threading import Lock
 
 # NOC modules
 from noc.core.mx import MX_MESSAGE_TYPE, MX_SHARDING_KEY, Message, MX_SPAN_ID, MX_SPAN_CTX
@@ -39,8 +38,6 @@ class Router(object):
         self.stream_partitions: Dict[str, int] = {}
         self.svc = get_service()
         # self.out_queue: Optional[QBuffer] = None
-        self.input_queue: deque = deque()
-        self.lock = Lock()
 
     def load(self):
         """
@@ -191,6 +188,7 @@ class Router(object):
         message_type: str,
         headers: Optional[Dict[str, bytes]] = None,
         sharding_key: int = 0,
+        raw_value: bool = False,
     ) -> Message:
         """
         Build message
@@ -199,6 +197,7 @@ class Router(object):
         :param message_type: Message type
         :param headers: additional message headers
         :param sharding_key: Key for sharding
+        :param raw_value:
         :return:
         """
         msg_headers = {
@@ -207,7 +206,7 @@ class Router(object):
         }
         if headers:
             msg_headers.update(headers)
-        if not isinstance(data, bytes):
+        if not raw_value and not isinstance(data, bytes):
             data = orjson.dumps(data)
         return Message(
             value=data,
@@ -226,7 +225,7 @@ class Router(object):
         # Apply routes
         for route in self.iter_route(msg):
             metrics["route_hits", ("type", route.type)] += 1
-            logger.debug("[%d] Applying route %s", msg_id, route.name)
+            logger.debug("[%s] Applying route %s", msg_id, route.name)
             # Apply actions
             routed: bool = False
             with Span(
@@ -295,37 +294,9 @@ class Router(object):
                     )
                     routed = True
                 if not routed:
-                    logger.debug("[%d] Not routed", msg_id)
+                    logger.debug("[%s] Not routed", msg_id)
                     metrics[
                         "route_misses",
                         ("message_type", msg.headers.get(MX_MESSAGE_TYPE).decode(DEFAULT_ENCODING)),
                     ] += 1
         # logger.debug("[%s] Finish processing", msg_id)
-
-    async def flush_input_queue(self):
-        """
-        Send all input queue messages on queue
-        :return:
-        """
-        with self.lock:
-            for msg in self.input_queue:
-                await self.route_message(msg)
-            self.input_queue.clear()
-
-    def register_message(self, msg: Message, msg_id: Optional[str] = None):
-        """
-        Store message for delay route
-        :param msg:
-        :param msg_id:
-        :return:
-        """
-        with self.lock:
-            self.input_queue.append(msg)
-
-    def is_empty(self) -> bool:
-        """
-        Check if buffer is empty
-        :return:
-        """
-        with self.lock:
-            return not bool(len(self.input_queue))
