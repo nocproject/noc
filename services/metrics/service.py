@@ -125,6 +125,8 @@ class MetricsService(FastAPIService):
     async def on_deactivate(self):
         if self.change_log:
             await self.change_log.flush()
+            async with self.sync_cursor_condition:
+                self.sync_cursor_condition.notify_all()
             if global_config.metrics.compact_on_stop:
                 await self.change_log.compact()
             self.change_log = None
@@ -569,11 +571,14 @@ class MetricsService(FastAPIService):
         # Appy matched rules
         # for rule_id, rule in self.rules.items():
         if source.rules:
-            self.logger.info("Apply Rules: %s", source.rules)
+            self.logger.debug("Apply Rules: %s", source.rules)
         for rule_id, action_id in source.rules:
             # if k[0] not in rule.match_scopes or not rule.is_matched(s_labels):
             #    continue
             rule_id = f"{rule_id}-{action_id}"
+            if rule_id not in self.rules:
+                self.logger.debug("[%s] Broken rules", rule_id)
+                continue
             rule = self.rules[rule_id]
             if not rule or k[0] not in rule.match_scopes:
                 continue
@@ -697,21 +702,9 @@ class MetricsService(FastAPIService):
     def get_source_config(data):
         if "$deleted" in data:
             return
-        sc = SourceConfig(
-            type=data["type"],
-            bi_id=data["bi_id"],
-            fm_pool=data["fm_pool"] if data["fm_pool"] else None,
-            labels=tuple(sys.intern(ll["label"]) for ll in data["labels"]),
-            metrics=tuple(
-                sys.intern(m["name"]) for m in data["metrics"] if not m.get("is_composed")
-            ),
-            items=[],
-            rules=data.get("rules"),
-            meta=data.get("meta") if global_config.message.enable_metrics else None,
-            # Append meta if enable messages
-        )
+        items = []
         for item in data.get("items", []):
-            sc.items.append(
+            items.append(
                 ItemConfig(
                     key_labels=tuple(sys.intern(ll) for ll in item["key_labels"]),
                     metric_labels=tuple(),
@@ -724,6 +717,19 @@ class MetricsService(FastAPIService):
                     rules=item.get("rules"),
                 )
             )
+        sc = SourceConfig(
+            type=data["type"],
+            bi_id=data["bi_id"],
+            fm_pool=data["fm_pool"] if data["fm_pool"] else None,
+            labels=tuple(sys.intern(ll["label"]) for ll in data["labels"]),
+            metrics=tuple(
+                sys.intern(m["name"]) for m in data["metrics"] if not m.get("is_composed")
+            ),
+            items=tuple(items),
+            rules=data.get("rules"),
+            meta=data.get("meta") if global_config.message.enable_metrics else None,
+            # Append meta if enable messages
+        )
         return sc
 
     async def update_source_config(self, data: Dict[str, Any]) -> None:
