@@ -615,7 +615,7 @@ class Interface(Document):
     @classmethod
     def get_metric_discovery_interval(cls, mo: ManagedObject) -> int:
         coll = cls._get_collection()
-        r = coll.aggregate(
+        r = coll.with_options(read_preference=ReadPreference.SECONDARY_PREFERRED).aggregate(
             [
                 {"$match": {"managed_object": mo.id}},
                 {
