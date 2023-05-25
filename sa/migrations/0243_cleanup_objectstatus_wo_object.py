@@ -30,7 +30,7 @@ class Migration(BaseMigration):
                     InsertOne(
                         {
                             "object": r["object"],
-                            "statue": r.get("status", True),
+                            "status": r.get("status", True),
                             "last": r.get("last"),
                         }
                     ),
