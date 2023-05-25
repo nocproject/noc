@@ -5,9 +5,6 @@
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
-# Third-party modules
-from pymongo import DeleteMany, InsertOne
-
 # NOC modules
 from noc.core.migration.base import BaseMigration
 
