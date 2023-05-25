@@ -1694,6 +1694,9 @@ class ManagedObject(NOCModel):
         """
         Check and schedule discovery jobs
         """
+        shard, d_slots = None, config.get_slot_limits(f"discovery-{self.pool.name}")
+        if d_slots:
+            shard = self.id % d_slots
         if (
             Interaction.BoxDiscovery in self.interactions
             and self.object_profile.enable_box_discovery
@@ -1705,6 +1708,7 @@ class ManagedObject(NOCModel):
                 pool=self.pool.name,
                 delta=self.pool.get_delta(),
                 keep_ts=True,
+                shard=shard,
             )
         else:
             Job.remove("discovery", self.BOX_DISCOVERY_JOB, key=self.id, pool=self.pool.name)
@@ -1719,6 +1723,7 @@ class ManagedObject(NOCModel):
                 pool=self.pool.name,
                 delta=self.pool.get_delta(),
                 keep_ts=True,
+                shard=shard,
             )
         else:
             Job.remove("discovery", self.PERIODIC_DISCOVERY_JOB, key=self.id, pool=self.pool.name)
@@ -1733,6 +1738,7 @@ class ManagedObject(NOCModel):
                 pool=self.pool.name,
                 delta=self.pool.get_delta(),
                 keep_ts=True,
+                shard=shard,
             )
         else:
             Job.remove("discovery", self.INTERVAL_DISCOVERY_JOB, key=self.id, pool=self.pool.name)
