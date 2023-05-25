@@ -42,3 +42,6 @@ class IntervalDiscoveryJob(MODiscoveryJob):
 
     def can_update_alarms(self):
         return False
+
+    def update_diagnostics(self, problems):
+        return

@@ -6,9 +6,6 @@
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
-# Third-party modules
-from pymongo import UpdateMany
-
 # NOC modules
 from noc.config import config
 from noc.core.scheduler.scheduler import Scheduler
