@@ -39,7 +39,7 @@ class RCALock(object):
         Get pymongo collection instance
         :return:
         """
-        if not cls._coll:
+        if cls._coll is None:
             cls._coll = get_db()[cls.COLL_NAME]
         return cls._coll
 
