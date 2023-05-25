@@ -10,7 +10,11 @@ import logging
 import os
 import socket
 import sys
+from functools import partial
 from urllib.parse import quote as urllib_quote
+
+# Third-party modules
+import cachetools
 
 # NOC modules
 from noc.core.config.base import BaseConfig, ConfigSection
@@ -1097,6 +1101,20 @@ class Config(BaseConfig):
             dt = datetime.datetime.now(tz=pytz.utc)
             self._utcoffset = dt.astimezone(self.timezone).utcoffset()
         return int(self._utcoffset.total_seconds())
+
+    @staticmethod
+    @cachetools.cached(cachetools.TTLCache(maxsize=128, ttl=60))
+    def get_slot_limits(slot_name):
+        """
+        Get slot count
+        :param slot_name:
+        :return:
+        """
+        from noc.core.dcs.loader import get_dcs
+        from noc.core.ioloop.util import run_sync
+
+        dcs = get_dcs()
+        return run_sync(partial(dcs.get_slot_limit, slot_name))
 
 
 config = Config()

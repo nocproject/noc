@@ -171,7 +171,9 @@ class Scheduler(object):
         """
         self.logger.debug("Check indexes")
         self.get_collection().create_index([("ts", 1)], partialFilterExpression={"s": "W"})
-        self.get_collection().create_index([("ts", 1), ("shard", 1)], partialFilterExpression={"s": "W"})
+        self.get_collection().create_index(
+            [("ts", 1), ("shard", 1)], partialFilterExpression={"s": "W"}
+        )
         self.get_collection().create_index([("jcls", 1), ("key", 1)])
         self.logger.debug("Indexes are ready")
 
@@ -381,7 +383,17 @@ class Scheduler(object):
         with self.bulk_lock:
             self.bulk += [DeleteOne({Job.ATTR_ID: jid})]
 
-    def submit(self, jcls, key=None, data=None, ts=None, delta=None, keep_ts=False, max_runs=None):
+    def submit(
+        self,
+        jcls,
+        key=None,
+        data=None,
+        ts=None,
+        delta=None,
+        keep_ts=False,
+        max_runs=None,
+        shard=None,
+    ):
         """
         Submit new job or adjust existing one
         :param jcls: Job class name
@@ -392,6 +404,7 @@ class Scheduler(object):
         :param keep_ts: Do not touch timestamp of existing jobs,
             set timestamp only for created jobs
         :param max_runs: Limit maximum runs attempts
+        :param shard: Shard number for job
         """
         now = datetime.datetime.now()
         data = data or {}
@@ -414,6 +427,8 @@ class Scheduler(object):
             iset_op[Job.ATTR_TS] = set_op.pop(Job.ATTR_TS)
         if data:
             set_op[Job.ATTR_DATA] = data
+        if shard is not None:
+            set_op[Job.ATTR_SHARD] = shard
         q = {Job.ATTR_CLASS: jcls, Job.ATTR_KEY: key}
         op = {"$setOnInsert": iset_op}
         if set_op:
