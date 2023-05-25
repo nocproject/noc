@@ -289,6 +289,7 @@ class Job(object):
         ts=None,
         delta=None,
         keep_ts=False,
+        shard=None,
     ):
         """
         Submit new job or change schedule for existing one
@@ -301,11 +302,12 @@ class Job(object):
         :param delta: Run after *delta* seconds
         :param keep_ts: Do not touch timestamp of existing jobs,
             set timestamp only for created jobs
+        :param shard:
         """
         from .scheduler import Scheduler
 
         scheduler = Scheduler(name=scheduler, pool=pool)
-        scheduler.submit(name, key=key, data=data, ts=ts, delta=delta, keep_ts=keep_ts)
+        scheduler.submit(name, key=key, data=data, ts=ts, delta=delta, keep_ts=keep_ts, shard=shard)
 
     @classmethod
     def remove(cls, scheduler, name=None, key=None, pool=None):
