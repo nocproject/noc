@@ -15,7 +15,7 @@ import asyncio
 # Third-party modules
 import lz4.frame
 from pymongo import InsertOne, DeleteMany, ASCENDING, DESCENDING
-from pymongo.collection import Collection
+from motor.core import AgnosticCollection
 from bson import ObjectId
 
 # NOC modules
@@ -53,7 +53,7 @@ class ChangeLog(object):
         return state
 
     @classmethod
-    def get_collection(cls) -> Collection:
+    def get_collection(cls) -> AgnosticCollection:
         """
         Get mongo collection instance
         """
