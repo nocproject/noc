@@ -216,11 +216,7 @@ class ManagedObjectManager(Manager):
             .get_queryset()
             .annotate(
                 is_managed=Case(
-                    When(
-                        Q(effective_labels__contains=["noc::is_managed::="])
-                        | Q(diagnostics__SA__state="enabled"),
-                        then=Value(True),
-                    ),
+                    When(Q(diagnostics__SA__state="enabled"), then=Value(True)),
                     default=Value(False),
                     output_field=BooleanField(),
                 ),
@@ -2175,9 +2171,9 @@ class ManagedObject(NOCModel):
         Return publish stream and partition for events
         :return: stream name, partition
         """
-        # @todo: Calculate partition properly
-        pool = self.get_effective_fm_pool().name
-        return "events.%s" % pool, 0
+        fm_pool = self.get_effective_fm_pool().name
+        slots = config.get_slot_limits(f"classifier-{fm_pool}") or 1
+        return f"events.{fm_pool}", self.id % slots
 
     @property
     def alarms_stream_and_partition(self) -> Tuple[str, int]:
@@ -2185,10 +2181,9 @@ class ManagedObject(NOCModel):
         Return publish stream and partition for alarms
         :return: stream name, partition
         """
-        # @todo: Calculate partition properly
         fm_pool = self.get_effective_fm_pool().name
-        stream = f"dispose.{fm_pool}"
-        return stream, 0
+        slots = config.get_slot_limits(f"correlator-{fm_pool}") or 1
+        return f"dispose.{fm_pool}", self.id % slots
 
     @cachetools.cached(_e_labels_cache, key=lambda x: str(x.id), lock=e_labels_lock)
     def get_effective_labels(self) -> List[str]:
@@ -2397,26 +2392,27 @@ class ManagedObject(NOCModel):
         Iterate over object diagnostics
         :return:
         """
-        yield DiagnosticConfig(
-            SA_DIAG,
-            display_description="ServiceActivation. Allow active device interaction",
-            blocked=Interaction.ServiceActivation not in self.interactions,
-            default_state=DiagnosticState.enabled,
-            run_policy="D",
-            reason="Deny by Allowed interaction by State"
-            if Interaction.ServiceActivation not in self.interactions
-            else "",
-        )
-        yield DiagnosticConfig(
-            ALARM_DIAG,
-            display_description="FaultManagement. Allow Raise Alarm on device",
-            blocked=Interaction.Alarm not in self.interactions,
-            default_state=DiagnosticState.enabled,
-            run_policy="D",
-            reason="Deny by Allowed interaction by State"
-            if Interaction.Alarm not in self.interactions
-            else "",
-        )
+        # yield DiagnosticConfig(
+        #     SA_DIAG,
+        #     display_description="ServiceActivation. Allow active device interaction",
+        #     blocked=Interaction.ServiceActivation not in self.interactions,
+        #     default_state=DiagnosticState.enabled,
+        #     run_policy="D",
+        #     reason="Deny by Allowed interaction by State"
+        #     if Interaction.ServiceActivation not in self.interactions
+        #     else "",
+        # )
+        # yield DiagnosticConfig(
+        #     ALARM_DIAG,
+        #     display_description="FaultManagement. Allow Raise Alarm on device",
+        #     blocked=Interaction.Alarm not in self.interactions,
+        #     default_state=DiagnosticState.enabled,
+        #     run_policy="D",
+        #     reason="Deny by Allowed interaction by State"
+        #     if Interaction.Alarm not in self.interactions
+        #     else "",
+        # )
+        yield from self.state.iter_diagnostic_configs(self)
         yield from self.object_profile.iter_diagnostic_configs(self)
         for dc in ObjectDiagnosticConfig.iter_object_diagnostics(self):
             yield dc
