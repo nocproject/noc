@@ -17,6 +17,8 @@ from noc.models import is_document, get_model_id, get_model
 from noc.core.scheduler.job import Job
 from noc.core.defer import call_later
 from noc.core.wf.interaction import Interaction
+from noc.core.change.policy import change_tracker
+from noc.core.change.decorator import get_datastreams
 
 logger = logging.getLogger(__name__)
 
@@ -103,6 +105,13 @@ def document_set_state(self, state, state_changed: datetime.datetime = None, bul
         ic_handler()
     # Call state on_enter_handlers
     self.state.on_enter_state(self)
+    change_tracker.register(
+        "update",
+        get_model_id(self),
+        str(self.id),
+        fields=["state"],
+        datastreams=get_datastreams(self, {"state"}),
+    )
 
 
 def document_touch(self, bulk=None):
@@ -204,6 +213,13 @@ def model_set_state(self, state, state_changed: datetime.datetime = None, bulk=N
         )
     if self._has_diagnostics:
         self.diagnostic.reset_diagnostics([d.diagnostic for d in state.iter_diagnostic_configs(self)])
+    change_tracker.register(
+        "update",
+        get_model_id(self),
+        str(self.id),
+        fields=["state"],
+        datastreams=get_datastreams(self, {"state"}),
+    )
 
 
 def model_touch(self, bulk=None):
