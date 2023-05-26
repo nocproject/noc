@@ -130,10 +130,10 @@ class MetricType(Document):
     #
     category = ObjectIdField()
 
-    _id_cache = cachetools.TTLCache(maxsize=100, ttl=60)
-    _name_cache = cachetools.TTLCache(maxsize=100, ttl=60)
-    _field_cache = cachetools.TTLCache(maxsize=100, ttl=60)
-    _bi_id_cache = cachetools.TTLCache(maxsize=100, ttl=60)
+    _id_cache = cachetools.TTLCache(maxsize=200, ttl=300)
+    _name_cache = cachetools.TTLCache(maxsize=200, ttl=300)
+    _field_cache = cachetools.TTLCache(maxsize=200, ttl=300)
+    _bi_id_cache = cachetools.TTLCache(maxsize=200, ttl=300)
 
     def __str__(self):
         return self.name
