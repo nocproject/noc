@@ -1,7 +1,7 @@
 ---
 - name: Set proxy for yum
   lineinfile:
-    dest: /etc/yum.repos.d/RedOS-Base.repo
+    dest: /etc/dnf/dnf.conf
     regexp: "^proxy=.*"
     line: "proxy={{ http_proxy }}"
   become: "True"
