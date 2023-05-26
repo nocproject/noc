@@ -1505,7 +1505,11 @@ class CorrelatorService(FastAPIService):
             for _ in range(0, count):
                 r.append(self.status_changes.popleft())
             self.logger.info("Updating %d statuses", len(r))
-            ObjectStatus.update_status_bulk(r)
+            try:
+                ObjectStatus.update_status_bulk(r)
+            except Exception:
+                error_report()
+                pass
 
 
 if __name__ == "__main__":
