@@ -17,6 +17,8 @@ from noc.models import is_document, get_model_id, get_model
 from noc.core.scheduler.job import Job
 from noc.core.defer import call_later
 from noc.core.wf.interaction import Interaction
+from noc.core.change.policy import change_tracker
+from noc.core.change.decorator import get_datastreams
 
 logger = logging.getLogger(__name__)
 
@@ -103,6 +105,13 @@ def document_set_state(self, state, state_changed: datetime.datetime = None, bul
         ic_handler()
     # Call state on_enter_handlers
     self.state.on_enter_state(self)
+    change_tracker.register(
+        "update",
+        get_model_id(self),
+        str(self.id),
+        fields=["state"],
+        datastreams=get_datastreams(self, {"state"}),
+    )
 
 
 def document_touch(self, bulk=None):
@@ -202,6 +211,17 @@ def model_set_state(self, state, state_changed: datetime.datetime = None, bulk=N
             model_id=get_model_id(self),
             oid=self.id,
         )
+    if self._has_diagnostics:
+        self.diagnostic.reset_diagnostics(
+            [d.diagnostic for d in state.iter_diagnostic_configs(self)]
+        )
+    change_tracker.register(
+        "update",
+        get_model_id(self),
+        str(self.id),
+        fields=["state"],
+        datastreams=get_datastreams(self, {"state"}),
+    )
 
 
 def model_touch(self, bulk=None):
@@ -289,6 +309,7 @@ def workflow(cls):
     cls._has_workflow = True
     cls._has_expired = False
     cls._has_state_changed = False
+    cls._has_diagnostics = False
     if is_document(cls):
         # MongoEngine model
         from mongoengine import signals as mongo_signals
@@ -304,6 +325,8 @@ def workflow(cls):
         ):
             cls.touch = document_touch
             cls._has_expired = True
+        if "diagnostics" in cls._fields:
+            cls._has_diagnostics = True
     else:
         # Django model
         from django.db.models import signals as django_signals
@@ -316,6 +339,9 @@ def workflow(cls):
         if "last_seen" in fields and "expired" in fields and "first_discovered" in fields:
             cls.touch = model_touch
             cls._has_expired = True
+        if "diagnostics" in fields:
+            cls._has_diagnostics = True
+
     cls.fire_transition = fire_transition
     cls.fire_event = fire_event
     return cls

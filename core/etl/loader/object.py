@@ -56,7 +56,7 @@ class ObjectLoader(BaseLoader):
                 r.pop(k)
                 continue
             if k in r:
-                self.logger.debug("[%s] Change data: %e", o, d)
+                self.logger.debug("[%s] Change data: %s", o, d)
                 r.pop(k)
                 o.set_data(
                     interface=d["interface"],
