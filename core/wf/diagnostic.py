@@ -392,7 +392,11 @@ class DiagnosticHub(object):
                 continue
             self.logger.info("[%s] Update object diagnostic", d_name)
             if d_current.state != d_new.state:
-                changed_state.add(d_name)
+                if (
+                    d_current.state == DiagnosticState.failed
+                    or d_new.state == DiagnosticState.failed
+                ):
+                    changed_state.add(d_name)
                 self.register_diagnostic_change(
                     d_name,
                     state=d_new.state,

@@ -727,7 +727,7 @@ class ManagedObjectProfile(NOCModel):
 
     _id_cache = cachetools.TTLCache(maxsize=100, ttl=60)
     _bi_id_cache = cachetools.TTLCache(maxsize=100, ttl=60)
-    _object_profile_metrics = cachetools.TTLCache(maxsize=1000, ttl=60)
+    _object_profile_metrics = cachetools.TTLCache(maxsize=1000, ttl=300)
 
     DEFAULT_WORKFLOW_NAME = "ManagedObject Default"
 
