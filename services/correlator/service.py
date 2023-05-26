@@ -10,7 +10,7 @@
 import sys
 import datetime
 import re
-from collections import defaultdict, deque
+from collections import defaultdict
 import threading
 from typing import DefaultDict, Union, Any, Iterable, Optional, Tuple, Dict, List, Set
 import operator
@@ -87,7 +87,7 @@ class CorrelatorService(FastAPIService):
         self.rca_reverse = defaultdict(set)  # alarm_class -> set([alarm_class])
         self.alarm_rule_set = AlarmRuleSet()
         self.alarm_class_vars = defaultdict(dict)
-        self.status_changes = deque([])  # Save status changes
+        self.status_changes = asyncio.Queue()  # Save status changes
         #
         self.slot_number = 0
         self.total_slots = 0
@@ -121,7 +121,7 @@ class CorrelatorService(FastAPIService):
         )
         self.scheduler.correlator = self
         self.scheduler.run()
-        asyncio.create_task(self.update_object_statuses())
+        self.loop.create_task(self.update_object_statuses())
         # Subscribe stream, move to separate task to let the on_activate to terminate
         self.loop.create_task(
             self.subscribe_stream(
@@ -1485,7 +1485,7 @@ class CorrelatorService(FastAPIService):
         :param ts: Timestamp when change
         :return:
         """
-        self.status_changes.append((oid, status, ts))
+        self.status_changes.put_nowait((oid, status, ts))
 
     async def update_object_statuses(self):
         """
@@ -1496,14 +1496,13 @@ class CorrelatorService(FastAPIService):
 
         self.logger.info("Running object status updater")
         while True:
-            await asyncio.sleep(config.correlator.object_status_update_interval)
             # Count status changes
-            count = len(self.status_changes)
-            if not count:
+            if self.status_changes.empty():
+                await asyncio.sleep(config.correlator.object_status_update_interval)
                 continue
             r = []
-            for _ in range(0, count):
-                r.append(self.status_changes.popleft())
+            for _ in range(0, self.status_changes.qsize()):
+                r.append(self.status_changes.get_nowait())
             self.logger.info("Updating %d statuses", len(r))
             try:
                 ObjectStatus.update_status_bulk(r)
