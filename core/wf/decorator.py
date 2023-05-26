@@ -309,6 +309,7 @@ def workflow(cls):
     cls._has_workflow = True
     cls._has_expired = False
     cls._has_state_changed = False
+    cls._has_diagnostics = False
     if is_document(cls):
         # MongoEngine model
         from mongoengine import signals as mongo_signals
