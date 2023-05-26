@@ -19,7 +19,6 @@ from noc.core.models.cfgmetrics import MetricCollectorConfig
 from noc.core.mib import mib
 from noc.core.text import parse_kv
 
-
 SLA_ICMP_METRIC_MAP = {
     "SLA | RTT | Min": "CISCO-RTTMON-MIB::rttMonStatsCaptureCompletionTimeMin",
     "SLA | RTT | Max": "CISCO-RTTMON-MIB::rttMonStatsCaptureCompletionTimeMax",
@@ -130,6 +129,8 @@ class Script(GetMetricsScript):
     )
 
     rx_ipsla_latest_rtt = re.compile(r"Latest RTT:\s+(\d+)")
+
+    rx_macs_available_count = re.compile(r"Total Mac Address Space Available:\s+(?P<mac_count>\d+)")
 
     """
     RTT Values:
@@ -257,12 +258,12 @@ class Script(GetMetricsScript):
             class_map[oid.rsplit(".", 1)[-1]] = name
         policy_map = {}
         for oid, iftype, direction, ifindex in self.snmp.get_tables(
-            [
-                mib["CISCO-CLASS-BASED-QOS-MIB::cbQosIfType"],
-                mib["CISCO-CLASS-BASED-QOS-MIB::cbQosPolicyDirection"],
-                mib["CISCO-CLASS-BASED-QOS-MIB::cbQosIfIndex"],
-            ],
-            bulk=False,
+                [
+                    mib["CISCO-CLASS-BASED-QOS-MIB::cbQosIfType"],
+                    mib["CISCO-CLASS-BASED-QOS-MIB::cbQosPolicyDirection"],
+                    mib["CISCO-CLASS-BASED-QOS-MIB::cbQosIfIndex"],
+                ],
+                bulk=False,
         ):
             # direction 1 - input, 2 - output
             policy_map[oid.rsplit(".", 1)[-1]] = {
@@ -273,18 +274,18 @@ class Script(GetMetricsScript):
         class_tos_map = {}
         # DSCP collect
         for oid, dscp in self.snmp.getnext(
-            mib["CISCO-CLASS-BASED-QOS-MIB::cbQosSetCfgIpDSCPValue"]
+                mib["CISCO-CLASS-BASED-QOS-MIB::cbQosSetCfgIpDSCPValue"]
         ):
             _, index = oid.rsplit(".", 1)
             class_tos_map[int(index)] = dscp
         config_cmap = {}
         for entry_index, config_index, object_type, parent in self.snmp.get_tables(
-            [
-                mib["CISCO-CLASS-BASED-QOS-MIB::cbQosConfigIndex"],
-                mib["CISCO-CLASS-BASED-QOS-MIB::cbQosObjectsType"],
-                mib["CISCO-CLASS-BASED-QOS-MIB::cbQosParentObjectsIndex"],
-            ],
-            bulk=False,
+                [
+                    mib["CISCO-CLASS-BASED-QOS-MIB::cbQosConfigIndex"],
+                    mib["CISCO-CLASS-BASED-QOS-MIB::cbQosObjectsType"],
+                    mib["CISCO-CLASS-BASED-QOS-MIB::cbQosParentObjectsIndex"],
+                ],
+                bulk=False,
         ):
             if object_type != 2:
                 # class-map only
@@ -396,7 +397,7 @@ class Script(GetMetricsScript):
         probe_status = {}
         # Collect probe oper status
         for oid, oper_status in self.snmp.getnext(
-            mib["CISCO-RTTMON-MIB::rttMonLatestRttOperSense"]
+                mib["CISCO-RTTMON-MIB::rttMonLatestRttOperSense"]
         ):
             _, name = oid.rsplit(".", 1)
             probe_status[name] = oper_status
@@ -518,4 +519,30 @@ class Script(GetMetricsScript):
                 labels=[f"noc::slot::{slot}", f"noc::interface::{port}"],
                 value=int(v),
                 multi=True,
+            )
+
+    @metrics(
+        ["MACs | Available Count"],
+        volatile=False,
+        access="C",  # CLI version
+    )
+    def get_macs_available_count_metrics_cli(self, metrics):
+        """
+        Returns count of available mac addresses in form
+        # probe id -> {
+        #     rtt: RTT in seconds
+        # }
+        :return:
+        """
+
+        v = self.cli("sh mac address-table count  | i Available")
+        # metric_map = {"ipsla operation id": "name", "latest rtt": "rtt", "number of rtt": "num_rtt"}
+
+        mac_av_count = self.rx_macs_available_count.search(v).group("mac_count")
+        print(mac_av_count)
+        if mac_av_count:
+            self.set_metric(
+                id=("MACs | Available Count", None),
+                value=mac_av_count,
+                units="1",
             )
