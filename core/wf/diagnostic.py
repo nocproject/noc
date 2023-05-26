@@ -144,7 +144,10 @@ class DiagnosticItem(BaseModel):
         return self._config
 
     def reset(self, reason="Reset by"):
-        self.state = self.config.default_state
+        if self.config.blocked:
+            self.state = DiagnosticState.blocked
+        else:
+            self.state = self.config.default_state
         self.checks = []
         self.reason = reason
         self.changed = datetime.datetime.now()

@@ -9,7 +9,7 @@
 import operator
 import logging
 from threading import Lock
-from typing import Optional, Union
+from typing import Optional, Union, Iterable
 
 # Third-party modules
 from mongoengine.document import Document, EmbeddedDocument
@@ -30,14 +30,15 @@ from .workflow import Workflow
 from noc.core.mongo.fields import PlainReferenceField
 from noc.core.model.decorator import on_delete_check, on_save
 from noc.core.bi.decorator import bi_sync
-from noc.main.models.remotesystem import RemoteSystem
 from noc.core.handler import get_handler
 from noc.core.defer import defer
 from noc.core.hash import hash_int
 from noc.core.change.decorator import change
 from noc.core.wf.interaction import Interaction
+from noc.core.wf.diagnostic import DiagnosticConfig, DiagnosticState, SA_DIAG, ALARM_DIAG
 from noc.config import config
 from noc.models import get_model_id, LABEL_MODELS, get_model, is_document
+from noc.main.models.remotesystem import RemoteSystem
 from noc.main.models.label import Label
 
 logger = logging.getLogger(__name__)
@@ -318,6 +319,33 @@ class State(Document):
         if interaction.value in self.interaction_settings:
             return self.interaction_settings[interaction.value].enable
         return True
+
+    def iter_diagnostic_configs(self, o=None) -> Iterable[DiagnosticConfig]:
+        """
+        Iterate over object diagnostics
+        :param o: ManagedObject
+        :return:
+        """
+        yield DiagnosticConfig(
+            SA_DIAG,
+            display_description="ServiceActivation. Allow active device interaction",
+            blocked=not self.is_enabled_interaction(Interaction.ServiceActivation),
+            default_state=DiagnosticState.enabled,
+            run_policy="D",
+            reason="Deny by Allowed interaction by State"
+            if not self.is_enabled_interaction(Interaction.ServiceActivation)
+            else "",
+        )
+        yield DiagnosticConfig(
+            ALARM_DIAG,
+            display_description="FaultManagement. Allow Raise Alarm on device",
+            blocked=not self.is_enabled_interaction(Interaction.Alarm),
+            default_state=DiagnosticState.enabled,
+            run_policy="D",
+            reason="Deny by Allowed interaction by State"
+            if not self.is_enabled_interaction(Interaction.Alarm)
+            else "",
+        )
 
     def sync_reffered_labels(self):
         """
