@@ -993,6 +993,11 @@ class CorrelatorService(FastAPIService):
             except Exception:
                 metrics["alarm_dispose_error"] += 1
                 error_report()
+            finally:
+                if self.topo_rca_lock:
+                    # Release pending RCA Lock
+                    await self.topo_rca_lock.release()
+                    self.topo_rca_lock = None
 
     async def clear_by_id(
         self,
@@ -1252,11 +1257,13 @@ class CorrelatorService(FastAPIService):
 
         self.logger.debug("[%s] Topology RCA", alarm.id)
         # Acquire lock
-        if self.is_distributed:
+        if self.is_distributed and alarm.managed_object.rca_neighbors:
             # Set lock until the end of dispose
             mo = alarm.managed_object
             self.topo_rca_lock = RCALock(mo.rca_neighbors + [mo.id])
+            self.logger.debug("[%s] Acquire lock: %s", alarm.id, mo.rca_neighbors)
             await self.topo_rca_lock.acquire()
+        self.logger.debug("[%s] Get neighboring alarms", alarm.id)
         # Get neighboring alarms
         neighbor_alarms = get_neighboring_alarms(alarm)
         # Correlate current alarm
