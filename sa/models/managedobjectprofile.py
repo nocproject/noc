@@ -1139,8 +1139,8 @@ class ManagedObjectProfile(NOCModel):
         return r
 
     def get_metric_discovery_interval(self) -> int:
-        r = [m.get("interval") or 0 for m in self.metrics if m.get("interval")]
-        return min(r) if r else self.metrics_default_interval
+        r = [m.get("interval") or self.metrics_default_interval for m in self.metrics]
+        return min(r) if r else 0
 
 
 @dataclass

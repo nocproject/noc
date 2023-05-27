@@ -24,3 +24,11 @@ class Migration(BaseMigration):
                 blank=True,
             ),
         )
+        self.db.execute(
+            """
+        UPDATE sa_managedobject as mo
+        SET effective_metric_discovery_interval = mop.metrics_default_interval
+        FROM sa_managedobjectprofile as mop
+        WERE mo.object_profile_id = mop.id
+        """
+        )

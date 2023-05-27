@@ -2597,7 +2597,9 @@ class ManagedObject(NOCModel):
         from noc.inv.models.interface import Interface
         from noc.inv.models.sensor import Sensor
 
-        r = [self.object_profile.get_metric_discovery_interval()]
+        r = []
+        if self.object_profile.metrics:
+            r += [self.object_profile.get_metric_discovery_interval()]
         caps = self.get_caps()
         for caps_count, source in [
             ("DB | CPEs", CPE),
@@ -2611,7 +2613,7 @@ class ManagedObject(NOCModel):
             interval = source.get_metric_discovery_interval(self)
             if interval:
                 r += [interval]
-        return max(min(r), config.discovery.min_metric_interval)
+        return max(min(r or 0), config.discovery.min_metric_interval)
 
     @property
     def interactions(self) -> "InteractionHub":

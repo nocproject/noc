@@ -32,8 +32,10 @@ from noc.pm.models.metrictype import MetricType
 from noc.core.mongo.fields import ForeignKeyField, PlainReferenceField
 from noc.core.model.decorator import on_delete_check, on_save
 from noc.core.bi.decorator import bi_sync
+from noc.core.change.decorator import change
 from noc.main.models.label import Label
 from noc.wf.models.workflow import Workflow
+from noc.config import config
 
 id_lock = Lock()
 metrics_lock = Lock()
@@ -59,6 +61,7 @@ class SLAProfileMetrics(EmbeddedDocument):
 
 @bi_sync
 @on_save
+@change
 @on_delete_check(check=[("sla.SLAProbe", "profile")])
 class SLAProfile(Document):
     """
@@ -162,11 +165,25 @@ class SLAProfile(Document):
             r[m.metric_type.name] = cls.config_from_settings(m, spr.metrics_default_interval)
         return r
 
+    def iter_changed_datastream(self, changed_fields=None):
+        from noc.sla.models.slaprobe import SLAProbe
+
+        if not config.datastream.enable_cfgmetricsources:
+            return
+        if (
+            changed_fields
+            and "metrics_default_interval" not in changed_fields
+            and "metrics" not in changed_fields
+        ):
+            return
+        mos = {
+            mo.bi_id for mo in SLAProbe.objects.filter(profile=self).scalar("managed_object") if mo
+        }
+        for bi_id in mos:
+            yield "cfgmetricsources", f"sa.ManagedObject::{bi_id}"
+
     def get_metric_discovery_interval(self) -> int:
-        r = []
-        if self.metrics_default_interval:
-            r.append(self.metrics_default_interval)
-        r += [m.interval for m in self.metrics if m.interval]
+        r = [m.interval or self.metrics_default_interval for m in self.metrics]
         return min(r) if r else 0
 
     def on_save(self):
