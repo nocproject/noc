@@ -5,9 +5,13 @@
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
+# Python modules
+import random
+
 # NOC modules
 from ..base import MODiscoveryJob
 from .metrics import MetricsCheck
+from noc.config import config
 from noc.core.span import Span
 from noc.core.change.policy import change_tracker
 
@@ -35,7 +39,16 @@ class IntervalDiscoveryJob(MODiscoveryJob):
         return self.object.get_effective_periodic_discovery_running_policy()
 
     def get_interval(self):
-        return self.get_metric_interval()
+        """
+        Return calculated object metrics interval
+        :return:
+        """
+        if self.object:
+            return max(
+                self.object.effective_metric_discovery_interval,
+                config.discovery.min_metric_interval,
+            )
+        return random.randint(60, 120)
 
     def get_failed_interval(self):
         return self.object.get_metric_discovery_interval()
