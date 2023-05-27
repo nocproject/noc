@@ -8,6 +8,7 @@
 # Python modules
 import random
 from typing import Optional
+import logging
 import datetime
 import asyncio
 
@@ -19,6 +20,9 @@ from pymongo.errors import DuplicateKeyError
 from noc.config import config
 from noc.core.mongo.connection import get_db
 from noc.core.perf import metrics
+
+
+logger = logging.getLogger(__name__)
 
 
 class RCALock(object):
@@ -80,6 +84,7 @@ class RCALock(object):
                 metrics["rca_lock_acquired"] += 1
                 return
             except DuplicateKeyError:
+                logger.debug("[%s] Duplicate Error when insert lock: %s", self.items, self.lock_id)
                 metrics["rca_locks_collisions"] += 1
                 await asyncio.sleep(t)
                 metrics["rca_locks_wait_ms"] += int(t * 1000)

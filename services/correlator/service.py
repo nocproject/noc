@@ -1252,11 +1252,13 @@ class CorrelatorService(FastAPIService):
 
         self.logger.debug("[%s] Topology RCA", alarm.id)
         # Acquire lock
-        if self.is_distributed:
+        if self.is_distributed and alarm.managed_object.rca_neighbors:
             # Set lock until the end of dispose
             mo = alarm.managed_object
             self.topo_rca_lock = RCALock(mo.rca_neighbors + [mo.id])
+            self.logger.debug("[%s] Acquire lock: %s", alarm.id, mo.rca_neighbors)
             await self.topo_rca_lock.acquire()
+        self.logger.debug("[%s] Get neighboring alarms", alarm.id)
         # Get neighboring alarms
         neighbor_alarms = get_neighboring_alarms(alarm)
         # Correlate current alarm
@@ -1264,6 +1266,8 @@ class CorrelatorService(FastAPIService):
         # Correlate all downlink alarms
         for a in iter_downlink_alarms(alarm):
             correlate_uplinks(a)
+        if self.topo_rca_lock:
+            await self.topo_rca_lock.release()
         self.logger.debug("[%s] Correlation completed", alarm.id)
 
     def get_group_deferred_count(
@@ -1503,12 +1507,11 @@ class CorrelatorService(FastAPIService):
             r = []
             for _ in range(0, self.status_changes.qsize()):
                 r.append(self.status_changes.get_nowait())
-            self.logger.info("Updating %d statuses", len(r))
             try:
                 ObjectStatus.update_status_bulk(r)
             except Exception:
                 error_report()
-                pass
+            self.logger.info("Updated %d statuses", len(r))
 
 
 if __name__ == "__main__":
