@@ -795,7 +795,9 @@ class ManagedObjectProfile(NOCModel):
             ):
                 yield "cfgtrap", mo_id
         if config.datastream.enable_cfgmetricsources and (
-            "metrics" in changed_fields or "enable_metrics" in changed_fields
+            "metrics" in changed_fields
+            or "enable_metrics" in changed_fields
+            or "metrics_default_interval" in changed_fields
         ):
             for mo_id in ManagedObject.objects.filter(object_profile=self).values_list(
                 "bi_id", flat=True
@@ -1138,7 +1140,7 @@ class ManagedObjectProfile(NOCModel):
 
     def get_metric_discovery_interval(self) -> int:
         r = [m.get("interval") or 0 for m in self.metrics if m.get("interval")]
-        return min(r) if r else 0
+        return min(r) if r else self.metrics_default_interval
 
 
 @dataclass

@@ -220,10 +220,17 @@ class InterfaceProfile(Document):
 
         if not config.datastream.enable_cfgmetricsources:
             return
-        if changed_fields and "metrics_default_interval" not in changed_fields and "metrics" not in changed_fields:
+        if (
+            changed_fields
+            and "metrics_default_interval" not in changed_fields
+            and "metrics" not in changed_fields
+        ):
             return
-        for iface in Interface.objects.filter(profile=self, type__in=["physical", "aggregated"]).scalar("managed_object"):
-            yield "cfgmetricsources", f"sa.ManagedObject::{iface.managed_object.bi_id}"
+        mos = {mo.bi_id for mo in Interface.objects.filter(
+            profile=self, type__in=["physical", "aggregated"]
+        ).scalar("managed_object")}
+        for bi_id in mos:
+            yield "cfgmetricsources", f"sa.ManagedObject::{bi_id}"
 
     def __str__(self):
         return self.name

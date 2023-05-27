@@ -131,7 +131,7 @@ from .objectstatus import ObjectStatus
 from .objectdiagnosticconfig import ObjectDiagnosticConfig
 
 # Increase whenever new field added or removed
-MANAGEDOBJECT_CACHE_VERSION = 45
+MANAGEDOBJECT_CACHE_VERSION = 46
 CREDENTIAL_CACHE_VERSION = 6
 
 Credentials = namedtuple(
@@ -2611,11 +2611,7 @@ class ManagedObject(NOCModel):
             interval = source.get_metric_discovery_interval(self)
             if interval:
                 r += [interval]
-        return max(
-            min(r),
-            self.object_profile.metrics_default_interval,
-            config.discovery.min_metric_interval,
-        )
+        return max(min(r), config.discovery.min_metric_interval)
 
     @property
     def interactions(self) -> "InteractionHub":
