@@ -293,6 +293,7 @@ class Sensor(Document):
                 {"name": "value", "is_stored": True},
             ],
             "items": [],
+            "sharding_key": sensor.managed_object.bi_id if sensor.managed_object else None,
             "rules": [ma for ma in MetricRule.iter_rules_actions(sensor.effective_labels)],
         }
 
