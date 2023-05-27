@@ -10,6 +10,7 @@ from typing import Any, Dict
 
 # NOC modules
 from noc.core.datastream.base import DataStream
+from noc.sa.models.managedobject import ManagedObject
 from noc.models import get_model
 
 
@@ -57,3 +58,13 @@ class CfgMetricSourcesDataStream(DataStream):
     @classmethod
     def is_moved(cls, meta, meta_filters) -> bool:
         return False
+
+    @classmethod
+    def on_change(cls, data):
+        if data["type"] != "managed_object":
+            return
+        mo = ManagedObject.get_by_bi_id(data["id"])
+        if mo.effective_metric_discovery_interval != int(data.get("discovery_interval")):
+            mo.effective_metric_discovery_interval = int(data.get("discovery_interval"))
+            mo.save()
+        return True
