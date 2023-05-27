@@ -38,6 +38,7 @@ from noc.core.bi.decorator import bi_sync
 from noc.core.change.decorator import change
 from noc.core.model.decorator import on_delete_check
 from noc.wf.models.workflow import Workflow
+from noc.config import config
 from .ifdescpatterns import IfDescPatterns
 
 id_lock = Lock()
@@ -213,6 +214,16 @@ class InterfaceProfile(Document):
     _interface_profile_metrics = cachetools.TTLCache(maxsize=1000, ttl=60)
 
     DEFAULT_PROFILE_NAME = "default"
+
+    def iter_changed_datastream(self, changed_fields=None):
+        from noc.inv.models.interface import Interface
+
+        if not config.datastream.enable_cfgmetricsources:
+            return
+        if changed_fields and "metrics_default_interval" not in changed_fields and "metrics" not in changed_fields:
+            return
+        for iface in Interface.objects.filter(profile=self, type__in=["physical", "aggregated"]).scalar("managed_object"):
+            yield "cfgmetricsources", f"sa.ManagedObject::{iface.managed_object.bi_id}"
 
     def __str__(self):
         return self.name

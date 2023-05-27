@@ -22,6 +22,7 @@ from typing import Tuple, Iterable, List, Any, Dict, Set, Optional, Union
 # Third-party modules
 import cachetools
 from django.contrib.postgres.fields import ArrayField
+from django.core.validators import MinValueValidator
 from django.db.models import (
     Q,
     CharField,
@@ -705,6 +706,8 @@ class ManagedObject(NOCModel):
         null=True,
         default=dict,
     )
+    # Interval
+    effective_metric_discovery_interval = IntegerField(default=0, validators=[MinValueValidator(0)])
 
     # Overridden objects manager
     objects = ManagedObjectManager()
@@ -2496,6 +2499,7 @@ class ManagedObject(NOCModel):
             "bi_id": mo.bi_id,
             "fm_pool": mo.get_effective_fm_pool().name,
             "labels": labels,
+            "discovery_interval": mo.get_metric_discovery_interval(),
             "metrics": [
                 {
                     "name": mc.metric_type.field_name,
