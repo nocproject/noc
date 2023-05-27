@@ -16,7 +16,11 @@ class Migration(BaseMigration):
     def migrate(self):
         # Add effective_metric_discovery_interval columns
         self.db.add_column(
-            "sa_managedobject", "effective_metric_discovery_interval", IntegerField(
-                default=0, null=True, blank=True,
-            )
+            "sa_managedobject",
+            "effective_metric_discovery_interval",
+            IntegerField(
+                default=0,
+                null=True,
+                blank=True,
+            ),
         )

@@ -226,9 +226,12 @@ class InterfaceProfile(Document):
             and "metrics" not in changed_fields
         ):
             return
-        mos = {mo.bi_id for mo in Interface.objects.filter(
-            profile=self, type__in=["physical", "aggregated"]
-        ).scalar("managed_object")}
+        mos = {
+            mo.bi_id
+            for mo in Interface.objects.filter(
+                profile=self, type__in=["physical", "aggregated"]
+            ).scalar("managed_object")
+        }
         for bi_id in mos:
             yield "cfgmetricsources", f"sa.ManagedObject::{bi_id}"
 
