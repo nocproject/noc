@@ -179,7 +179,8 @@ class MODiscoveryJob(PeriodicJob):
         # Check object status according to policy
         rp = self.get_running_policy()
         if rp == "R" or (rp == "r" and self.object.object_profile.enable_ping):
-            if self.is_object_down:
+            # if self.is_object_down:
+            if not self.object.get_status():
                 self.logger.info("Object is down. Skipping job")
                 return False
         return True
