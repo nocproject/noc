@@ -258,7 +258,6 @@ class Topo(object):
                         # Fix uplinks on graph
                         node["uplinks"] = self.clear_uplinks(uplinks)
         if affected:
-            # @todo: Bulk update + rebuild datastream
             logger.info("%d affected objects detected", len(affected))
             metrics["obj_topo_affected"] += len(affected)
         self.reset_dirty()
@@ -342,7 +341,7 @@ class Topo(object):
         # @todo: Optimize, search for roots
         min_level = min(self.graph.nodes[n]["level"] for n in cc)
         max_level = max(self.graph.nodes[n]["level"] for n in cc)
-        logger.info("Cluster contains %d nodes. Levels %d..%d", power, min_level, max_level)
+        logger.debug("Cluster contains %d nodes. Levels %d..%d", power, min_level, max_level)
         if min_level == max_level:
             # Single ranged cluster, all are roots
             roots = cc
@@ -356,7 +355,7 @@ class Topo(object):
             logger.debug("Processig from root {root}", root)
             for node, uplink in self.iter_uplinks(root, uplinks):
                 uplinks[node].add(uplink)
-        logger.info("Found uplinks for %d objects", len(uplinks))
+        logger.debug("Found uplinks for %d objects", len(uplinks))
         yield from uplinks.items()
 
     def get_uplinks(self, obj: int) -> Set[int]:
