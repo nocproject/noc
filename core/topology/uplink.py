@@ -21,7 +21,7 @@ def update_uplinks(**kwargs):
     from noc.services.topo.types import ObjectSnapshot
 
     topo = Topo(check=True)
-    for mo_id, level, links, uplinks in ManagedObject.objects.filter(is_managed=True).values_list(
+    for mo_id, level, links, uplinks in ManagedObject.objects.filter().values_list(
         "id", "object_profile__level", "links", "uplinks"
     ):
         topo.sync_object(
