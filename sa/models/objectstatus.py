@@ -16,7 +16,7 @@ from typing import List, Dict, Tuple, Optional, Set
 import cachetools
 from mongoengine.document import Document
 from mongoengine.fields import IntField, BooleanField, DateTimeField
-from pymongo import UpdateOne
+from pymongo import UpdateOne, ReadPreference
 
 # NOC modules
 from noc.core.service.loader import get_service
@@ -50,7 +50,13 @@ class ObjectStatus(Document):
 
     @classmethod
     def get_status(cls, object) -> bool:
-        d = ObjectStatus._get_collection().find_one({"object": object.id})
+        d = (
+            ObjectStatus._get_collection()
+            .with_options(
+                read_preference=ReadPreference.SECONDARY_PREFERRED,
+            )
+            .find_one({"object": object.id})
+        )
         if d:
             return d["status"]
         return True
