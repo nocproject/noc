@@ -14,8 +14,9 @@ import threading
 from noc.config import config
 from noc.core.error import NOCError
 from noc.core.debug import ErrorReport
-from noc.sa.models.managedobject import ManagedObject, ObjectUplinks
+from noc.core.change.policy import change_tracker
 from noc.core.service.fastapi import FastAPIService
+from noc.sa.models.managedobject import ManagedObject, ObjectUplinks
 from noc.services.topo.datastream import TopoDataStreamClient
 from noc.services.topo.topo import Topo
 from noc.services.topo.types import ObjectSnapshot
@@ -75,7 +76,7 @@ class TopoService(FastAPIService):
             Run processing and set event on complete.
             """
             try:
-                with ErrorReport():
+                with ErrorReport(), change_tracker.bulk_changes():
                     affected = self.topo.process()
                     if affected and not config.topo.dry_run:
                         self.logger.info("Commiting uplink changes")
