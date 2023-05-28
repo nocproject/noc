@@ -2648,6 +2648,171 @@ class ManagedObjectAttribute(NOCModel):
         cache.delete(f"cred-{self.managed_object.id}", version=CREDENTIAL_CACHE_VERSION)
 
 
+@on_save
+class ManagedObjectStatus(NOCModel):
+    class Meta(object):
+        verbose_name = "Managed Object Status"
+        verbose_name_plural = "Managed Object Status"
+        db_table = "sa_objectstatus"
+        app_label = "sa"
+
+    managed_object = ForeignKey(
+        ManagedObject, verbose_name="Managed Object", on_delete=CASCADE, unique=True
+    )
+    status = BooleanField()
+    last = DateTimeField("Last update Time", auto_now_add=True)
+
+    def __str__(self):
+        return "%s: %s" % (self.managed_object, self.status)
+
+    @classmethod
+    def get_statuses(cls, objects: List[int]) -> Dict[int, bool]:
+        """
+        Returns a map of object id -> status
+        for a list od object ids
+        """
+        from django.db import connection as pg_connection
+
+        s = {}
+        with pg_connection.cursor() as cursor:
+            while objects:
+                chunk, objects = objects[:500], objects[500:]
+                cursor.execute(
+                    """
+                    SELECT managed_object, status
+                    FROM sa_objectstatus
+                    WHERE managed_object = ANY(%s::INT[])
+                    """,
+                    [chunk],
+                )
+                for o, status in cursor:
+                    s[o] = status
+        return s
+
+    @classmethod
+    def set_status(cls, object, status, ts=None):
+        """
+        Update object status
+        :param object: Managed Object instance
+        :param status: New status
+        :param ts: Status change timestamp
+        :return: True, if status has been changed, False - out-of-order update
+        """
+        from django.db import connection as pg_connection
+        from noc.fm.models.outage import Outage
+
+        ts = ts or datetime.datetime.now()
+        # Update naively
+        # Must work in most cases
+        # find_and_modify returns old document or None for upsert
+
+        cursor = pg_connection.cursor()
+        # SELECT AND UPDATE
+        cursor.execute(
+            """
+             INSERT INTO sa_objectstatus as os (managed_object, status, last) VALUES (%s, %s, %s)
+             ON CONFLICT (managed_object) DO UPDATE SET status = EXCLUDED.status, last = EXCLUDED.last
+             WHERE os.status != EXCLUDED.status
+             RETURNING status, last
+             """,
+            [object.id, status, ts],
+        )
+        r = cursor.fetchone()
+        # r = coll.find_one_and_update(
+        #     {"object": object.id}, update={"$set": {"status": status, "last": ts}}, upsert=True
+        # )
+        # @todo No diff on insert and update, SELECT AND UPDATE try?
+        print(r)
+        if not r:
+            # Same status.
+            # work completed
+            # Setting status for first time
+            # Work complete
+            return True
+
+        r_status, last = r
+        if last > ts:
+            # Oops, out-of-order update
+            # Restore correct state
+            # coll.update_one({"object": object.id}, {"status": r["status"], "last": r["last"]})
+            return False
+        if r:
+            # Status changed
+            Outage.register_outage(object, not status, ts=ts)
+        return True
+
+    @classmethod
+    def update_status_bulk(cls, statuses: List[Tuple[int, bool, Optional[int]]]):
+        """
+        Update statuses bulk
+        :param statuses:
+        :return:
+        """
+        from django.db import connection as pg_connection
+        from noc.core.service.loader import get_service
+        from itertools import chain
+
+        now = datetime.datetime.now()
+
+        bulk = []
+        outages: List[Tuple[int, datetime.datetime, datetime.datetime]] = []
+        # Getting current status
+        cs = {}
+        with pg_connection.cursor() as cursor:
+            cursor.execute(
+                """
+                SELECT managed_object, status, last
+                FROM sa_objectstatus
+                """,
+                [[x[0] for x in statuses]],
+            )
+            for o, status, last in cursor:
+                cs[o] = {"status": status, "last": last}
+        for oid, status, ts in statuses:
+            ts = ts or now
+            if oid not in cs or (cs[oid]["status"] != status and cs[oid]["last"] <= ts):
+                bulk += [(oid, status, ts)]
+                if status and oid in cs:
+                    outages.append((oid, cs[oid]["last"], ts))
+                cs[oid] = {"status": status, "last": ts}
+            elif oid in cs and cs[oid]["last"] > ts:
+                # Oops, out-of-order update
+                # Restore correct state
+                pass
+        if not bulk:
+            return
+        values = "(%s, %s, %s)," * len(bulk)
+        with pg_connection.cursor() as cursor:
+            cursor.execute(
+                f"""
+                INSERT INTO sa_objectstatus as os (managed_object, status, last) VALUES {values.strip(",")}
+                ON CONFLICT (managed_object) DO UPDATE SET status = EXCLUDED.status, last = EXCLUDED.last
+                WHERE os.status != EXCLUDED.status
+                """,
+                list(chain.from_iterable(bulk)),
+            )
+        svc = get_service()
+        # Send outages
+        for out in outages:
+            # Sent outages
+            oid, start, stop = out
+            mo = ManagedObject.get_by_id(oid)
+            svc.register_metrics(
+                "outages",
+                [
+                    {
+                        "date": now.date().isoformat(),
+                        "ts": now.replace(microsecond=0).isoformat(),
+                        "managed_object": mo.bi_id,
+                        "start": start.replace(microsecond=0).isoformat(),
+                        "stop": stop.replace(microsecond=0).isoformat(),
+                        "administrative_domain": mo.administrative_domain.bi_id,
+                    }
+                ],
+                key=mo.bi_id,
+            )
+
+
 # object.scripts. ...
 class ScriptsProxy(object):
     def __init__(self, obj, caller=None):
