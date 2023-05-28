@@ -1752,8 +1752,6 @@ class ManagedObject(NOCModel):
         """
         Rebuild topology caches
         """
-        if config.topo.enable_scheduler_task:
-            call_later("noc.core.topology.uplink.update_uplinks", 30)
         # Rebuild PoP links
         container = self.container
         for o in Object.get_managed(self):
@@ -2319,6 +2317,13 @@ class ManagedObject(NOCModel):
                 dlm_windows=[dlm_windows.get(o, 0) for o in ou.rca_neighbors],
             )
             ManagedObject._reset_caches(ou.object_id)
+            change_tracker.register(
+                "update",
+                "sa.ManagedObject",
+                str(ou.object_id),
+                fields=["uplinks", "rca_neighbors"],
+                datastreams=[("managedobject", ou.object_id)],
+            )
 
     @classmethod
     def update_links(cls, linked_objects: List[int], exclude_link_ids: List[str] = None) -> None:
