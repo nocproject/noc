@@ -38,8 +38,8 @@ class Migration(BaseMigration):
             execute_values(
                 cursor,
                 """
-                INSERT INTO sa_objectstatus as os (managed_object, status, last) VALUES %s
-                ON CONFLICT (managed_object) DO NOTHING
+                INSERT INTO sa_objectstatus as os (managed_object_id, status, last) VALUES %s
+                ON CONFLICT (managed_object_id) DO NOTHING
                 """,
                 bulk,
                 page_size=1000,

@@ -2791,7 +2791,7 @@ class ManagedObjectStatus(NOCModel):
                 cursor,
                 """
                 INSERT INTO sa_objectstatus as os (managed_object_id, status, last) VALUES %s
-                ON CONFLICT (managed_object) DO UPDATE SET status = EXCLUDED.status, last = EXCLUDED.last
+                ON CONFLICT (managed_object_id) DO UPDATE SET status = EXCLUDED.status, last = EXCLUDED.last
                 WHERE os.status != EXCLUDED.status
                 """,
                 bulk,
