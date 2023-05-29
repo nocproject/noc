@@ -105,7 +105,8 @@ class LiftBridgeClient(GugoLiftbridgeClient):
             name=name,
             group=group,
             partitions=partitions,
-            **self.get_topic_config(name=name, replication_factor=replication_factor))
+            **self.get_topic_config(name=name, replication_factor=replication_factor),
+        )
 
     async def delete_stream(self, name: str):
         try:
