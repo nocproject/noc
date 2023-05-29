@@ -28,6 +28,7 @@ from mongoengine.fields import (
 # NOC modules
 from noc.core.model.decorator import on_delete_check
 from noc.core.bi.decorator import bi_sync
+from noc.core.change.decorator import change
 from noc.core.mongo.fields import PlainReferenceField, ForeignKeyField
 from noc.main.models.style import Style
 from noc.main.models.label import Label
@@ -35,6 +36,7 @@ from noc.main.models.pool import Pool
 from noc.pm.models.metrictype import MetricType
 from noc.wf.models.workflow import Workflow
 from noc.sa.models.managedobjectprofile import ManagedObjectProfile
+from noc.config import config
 
 
 id_lock = Lock()
@@ -71,6 +73,7 @@ class CPEProfileMetrics(EmbeddedDocument):
 
 
 @bi_sync
+@change
 @Label.model
 @on_delete_check(check=[("inv.CPE", "profile")])
 class CPEProfile(Document):
@@ -179,12 +182,26 @@ class CPEProfile(Document):
         except KeyError:
             pass
 
+    def iter_changed_datastream(self, changed_fields=None):
+        from noc.inv.models.cpe import CPEProfile
+
+        if not config.datastream.enable_cfgmetricsources:
+            return
+        if (
+            changed_fields
+            and "metrics_default_interval" not in changed_fields
+            and "metrics" not in changed_fields
+        ):
+            return
+        cpes = {
+            cpe.bi_id for cpe in CPEProfile.objects.filter(profile=self).scalar("managed_object") if cpe
+        }
+        for bi_id in cpes:
+            yield "cfgmetricsources", f"sa.ManagedObject::{bi_id}"
+
     def on_save(self):
         self._reset_caches(self.id)
 
     def get_metric_discovery_interval(self) -> int:
-        r = []
-        if self.metrics_default_interval:
-            r.append(self.metrics_default_interval)
-        r += [m.interval for m in self.metrics if m.interval]
+        r = [m.interval or self.metrics_default_interval for m in self.metrics]
         return min(r) if r else 0

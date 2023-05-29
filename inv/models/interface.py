@@ -590,7 +590,7 @@ class Interface(Document):
             yield MetricCollectorConfig(
                 collector="managed_object",
                 metrics=tuple(metrics),
-                labels=(f"noc::interface::{i['name']}",),
+                labels=(f"noc::interface::{i['name']}", f"noc::interface_profile::{i_profile.name}::="),
                 hints=[f"ifindex::{ifindex}"] if ifindex else None,
                 # service=i.get("service"),
             )
