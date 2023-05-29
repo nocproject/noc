@@ -40,7 +40,8 @@ class Command(BaseCommand):
     def add_arguments(self, parser):
         subparsers = parser.add_subparsers(dest="cmd", required=True)
         # show-metadata
-        subparsers.add_parser("show-metadata")
+        sm = subparsers.add_parser("show-metadata")
+        sm.add_argument("--name")
         # create-stream
         create_parser = subparsers.add_parser("create-stream")
         create_parser.add_argument("--name")
@@ -83,7 +84,7 @@ class Command(BaseCommand):
     def handle(self, cmd, *args, **options):
         return getattr(self, f'handle_{cmd.replace("-", "_")}')(*args, **options)
 
-    def handle_show_metadata(self, *args, **options):
+    def handle_show_metadata(self, name: Optional[str] = None, *args, **options):
         async def get_meta() -> Metadata:
             async with MessageStreamClient() as client:
                 return await client.fetch_metadata()
@@ -102,6 +103,8 @@ class Command(BaseCommand):
         self.print("# Streams")
         for stream in meta.metadata:
             if stream.startswith("__"):
+                continue
+            if name and stream != name:
                 continue
             print(f"  ## Name: {stream}")
             for p in sorted(meta.metadata[stream]):
