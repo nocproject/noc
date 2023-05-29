@@ -30,14 +30,23 @@ class Migration(BaseMigration):
                         on_delete=models.CASCADE,
                     ),
                 ),
-                ("last", models.DateTimeField("Last update Time", auto_now_add=True)),
+                (
+                    "last",
+                    models.DateTimeField(
+                        "Last update Time", auto_now_add=True, null=True, blank=True
+                    ),
+                ),
                 ("status", models.BooleanField("Status")),
             ),
         )
         # Migration ObjectStatus
         coll = self.mongo_db["noc.cache.object_status"]
         bulk = []
+        # Getting all ManagedObjects for exclude constraints error
+        mos = {row[0] for row in self.db.execute("SELECT id FROM sa_managedobject")}
         for row in coll.find({"object": {"$exists": True}}):
+            if row["object"] not in mos:
+                continue
             bulk += [(row["object"], row["status"], row.get("last"))]
         if bulk:
             cursor = connection.cursor()
