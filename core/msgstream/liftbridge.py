@@ -69,11 +69,10 @@ class LiftBridgeClient(GugoLiftbridgeClient):
             return {}
         s = get_stream(name)
         r = {}
-        minisr = 0
         if s.config.replication_factor:
             replication_factor = min(s.config.replication_factor, replication_factor)
-            minisr = min(2, replication_factor)
-        r["minisr"] = minisr
+            r["minisr"] = min(2, replication_factor)
+        r["replication_factor"] = replication_factor
         if s.config.retention_bytes:
             r["retention_max_bytes"] = s.config.retention_bytes
         if s.config.retention_ages:
