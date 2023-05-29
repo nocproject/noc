@@ -20,7 +20,10 @@ class Migration(BaseMigration):
         self.db.create_table(
             "sa_objectstatus",
             (
-                ("managed_object", models.IntegerField("Task", unique=True, primary_key=True)),
+                (
+                    "managed_object_id",
+                    models.IntegerField("Managed Object Reference", unique=True, primary_key=True),
+                ),
                 ("last", models.DateTimeField("Last update Time", auto_now_add=True)),
                 ("status", models.BooleanField("Status")),
             ),

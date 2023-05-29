@@ -38,6 +38,8 @@ from django.db.models import (
     Case,
     Value,
     Manager,
+    Subquery,
+    OuterRef,
 )
 from pydantic import BaseModel
 from pymongo import ASCENDING
@@ -216,6 +218,9 @@ class ManagedObjectManager(Manager):
             super()
             .get_queryset()
             .annotate(
+                avail_status=Subquery(
+                    ManagedObjectStatus.objects.filter(managed_object=OuterRef('id')).values('status')
+                ),
                 is_managed=Case(
                     When(Q(diagnostics__SA__state="enabled"), then=Value(True)),
                     default=Value(False),
@@ -2679,9 +2684,9 @@ class ManagedObjectStatus(NOCModel):
                 chunk, objects = objects[:500], objects[500:]
                 cursor.execute(
                     """
-                    SELECT managed_object, status
+                    SELECT managed_object_id, status
                     FROM sa_objectstatus
-                    WHERE managed_object = ANY(%s::INT[])
+                    WHERE managed_object_id = ANY(%s::INT[])
                     """,
                     [chunk],
                 )
@@ -2710,8 +2715,8 @@ class ManagedObjectStatus(NOCModel):
         # SELECT AND UPDATE
         cursor.execute(
             """
-             INSERT INTO sa_objectstatus as os (managed_object, status, last) VALUES (%s, %s, %s)
-             ON CONFLICT (managed_object) DO UPDATE SET status = EXCLUDED.status, last = EXCLUDED.last
+             INSERT INTO sa_objectstatus as os (managed_object_id, status, last) VALUES (%s, %s, %s)
+             ON CONFLICT (managed_object_id) DO UPDATE SET status = EXCLUDED.status, last = EXCLUDED.last
              WHERE os.status != EXCLUDED.status
              RETURNING status, last
              """,
@@ -2760,9 +2765,9 @@ class ManagedObjectStatus(NOCModel):
         with pg_connection.cursor() as cursor:
             cursor.execute(
                 """
-                SELECT managed_object, status, last
+                SELECT managed_object_id, status, last
                 FROM sa_objectstatus
-                WHERE managed_object = ANY (%s)
+                WHERE managed_object_id = ANY(%s::INT[])
                 """,
                 [[x[0] for x in statuses]],
             )
@@ -2785,7 +2790,7 @@ class ManagedObjectStatus(NOCModel):
             execute_values(
                 cursor,
                 """
-                INSERT INTO sa_objectstatus as os (managed_object, status, last) VALUES %s
+                INSERT INTO sa_objectstatus as os (managed_object_id, status, last) VALUES %s
                 ON CONFLICT (managed_object) DO UPDATE SET status = EXCLUDED.status, last = EXCLUDED.last
                 WHERE os.status != EXCLUDED.status
                 """,
