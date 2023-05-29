@@ -399,6 +399,9 @@ class Command(BaseCommand):
         if isinstance(slots, str):
             slots = [int(s) for s in slots.split(",")]
         max_slots = run_sync(partial(self.get_slot_limits, "-".join(scheduler.name.split(".")[2:])))
+        if not max_slots:
+            self.print("Unknown scheduler name or it has not slots")
+            return
         self.print(f"Max Slots is {max_slots}")
         query = f"""
         SELECT mod(mo.id, {max_slots}) as slot, profile, count(*) as number
