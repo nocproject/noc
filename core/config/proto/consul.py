@@ -55,8 +55,6 @@ class ConsulProtocol(BaseProtocol):
                 # fix if value is "" - return '""'
                 v = ""
             *path, k1 = k.split("/")
-            if not path:
-                data[k1] = smart_text(v)
             c = data
             for p in path:
                 if p not in c:

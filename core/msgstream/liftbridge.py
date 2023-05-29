@@ -69,11 +69,10 @@ class LiftBridgeClient(GugoLiftbridgeClient):
             return {}
         s = get_stream(name)
         r = {}
-        minisr = 0
         if s.config.replication_factor:
             replication_factor = min(s.config.replication_factor, replication_factor)
-            minisr = min(2, replication_factor)
-        r["minisr"] = minisr
+            r["minisr"] = min(2, replication_factor)
+        r["replication_factor"] = replication_factor
         if s.config.retention_bytes:
             r["retention_max_bytes"] = s.config.retention_bytes
         if s.config.retention_ages:
@@ -101,12 +100,12 @@ class LiftBridgeClient(GugoLiftbridgeClient):
         :param replication_factor:
         :return:
         """
+        cfg = self.get_topic_config(name=name, replication_factor=replication_factor)
         await super().create_stream(
             name=name,
             group=group,
             partitions=partitions,
-            **self.get_topic_config(name=name, replication_factor=replication_factor),
-        )
+            **self.get_topic_config(name=name, replication_factor=replication_factor))
 
     async def delete_stream(self, name: str):
         try:
