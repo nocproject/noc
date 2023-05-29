@@ -48,17 +48,22 @@ class ConsulProtocol(BaseProtocol):
         for i in kv_data:
             k = i["Key"][pl:]
             v = i["Value"]
+            if "slots" in k or k.endswith("/"):
+                # Section
+                continue
             if v == b'""' or v == b"''":
                 # fix if value is "" - return '""'
                 v = ""
-            c = k.count("/")
-            if not c:
-                data[k] = v
-            elif c == 1:
-                d = k.split("/")
-                if d[0] not in data:
-                    data[d[0]] = {}
-                data[d[0]][d[1]] = smart_text(v)
+            *path, k1 = k.split("/")
+            c = data
+            for p in path:
+                if p not in c:
+                    c[p] = {}
+                    c = c[p]
+                else:
+                    c = c[p]
+            c[k1] = smart_text(v)
+        # print(orjson.dumps(data, option=orjson.OPT_INDENT_2).decode("utf8"))
         # Upload
         self.config.update(data)
 
