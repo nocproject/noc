@@ -220,7 +220,7 @@ class ReportDsAlarms(BaseDataSource):
             ads = set(adm_path) & ads
         elif not ads:
             ads = set(adm_path)
-        if user and user.is_superuser:
+        if not user or (user and user.is_superuser):
             return list(ads) or None
         user_ads = set(UserAccess.get_domains(user))
         if not ads:
