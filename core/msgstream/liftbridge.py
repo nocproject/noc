@@ -100,7 +100,6 @@ class LiftBridgeClient(GugoLiftbridgeClient):
         :param replication_factor:
         :return:
         """
-        cfg = self.get_topic_config(name=name, replication_factor=replication_factor)
         await super().create_stream(
             name=name,
             group=group,
