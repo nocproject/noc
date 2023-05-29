@@ -16,13 +16,19 @@ from noc.core.migration.base import BaseMigration
 
 class Migration(BaseMigration):
     def migrate(self):
-        # Model 'Task'
+        ManagedObject = self.db.mock_model(model_name="ManagedObject", db_table="sa_managedobject")
         self.db.create_table(
             "sa_objectstatus",
             (
                 (
-                    "managed_object_id",
-                    models.IntegerField("Managed Object Reference", unique=True, primary_key=True),
+                    "managed_object",
+                    models.OneToOneField(
+                        ManagedObject,
+                        verbose_name="Managed Object Reference",
+                        unique=True,
+                        primary_key=True,
+                        on_delete=models.CASCADE,
+                    ),
                 ),
                 ("last", models.DateTimeField("Last update Time", auto_now_add=True)),
                 ("status", models.BooleanField("Status")),
