@@ -54,6 +54,7 @@ class DataStream(object):
     F_META = "meta"
     F_LABELS_META = "$meta_labels"
     F_ADM_DOMAIN_META = "$meta_adm_domain"
+    F_DELETED = "$deleted"
     HASH_LEN = 16
 
     DEFAULT_LIMIT = 1000
@@ -142,7 +143,7 @@ class DataStream(object):
         :param id:
         :return:
         """
-        return {"id": str(id), "$deleted": True}
+        return {"id": str(id), cls.F_DELETED: True}
 
     @classmethod
     def get_moved_object(cls, id: Union[str, int]) -> Dict[str, Any]:
@@ -303,7 +304,7 @@ class DataStream(object):
             op["$set"][cls.F_META] = cls.clean_meta(
                 meta, doc[cls.F_META] if doc and doc.get(cls.F_META) else {}
             )
-        elif "$deleted" not in data:
+        elif cls.F_DELETED not in data:
             op["$unset"] = {cls.F_META: ""}
         if bulk is None:
             cls.get_collection(fmt).update_one({cls.F_ID: obj_id}, op, upsert=True)
