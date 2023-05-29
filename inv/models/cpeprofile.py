@@ -183,7 +183,7 @@ class CPEProfile(Document):
             pass
 
     def iter_changed_datastream(self, changed_fields=None):
-        from noc.inv.models.cpe import CPEProfile
+        from noc.inv.models.cpe import CPE
 
         if not config.datastream.enable_cfgmetricsources:
             return
@@ -191,12 +191,16 @@ class CPEProfile(Document):
             changed_fields
             and "metrics_default_interval" not in changed_fields
             and "metrics" not in changed_fields
+            and "labels" not in changed_fields
         ):
             return
-        cpes = {
-            cpe.bi_id for cpe in CPEProfile.objects.filter(profile=self).scalar("managed_object") if cpe
-        }
-        for bi_id in cpes:
+        mos = set()
+        for mo, bi_id in CPE.objects.filter(profile=self).scalar("controller", "bi_id"):
+            if mo and (not changed_fields or "metrics_default_interval" in changed_fields):
+                mos.add(mo.bi_id)
+            if not changed_fields or "metrics" in changed_fields or "labels" in changed_fields:
+                yield "cfgmetricsources", f"inv.CPE::{bi_id}"
+        for bi_id in mos:
             yield "cfgmetricsources", f"sa.ManagedObject::{bi_id}"
 
     def on_save(self):
