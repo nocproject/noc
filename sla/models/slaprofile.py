@@ -174,11 +174,15 @@ class SLAProfile(Document):
             changed_fields
             and "metrics_default_interval" not in changed_fields
             and "metrics" not in changed_fields
+            and "labels" not in changed_fields
         ):
             return
-        mos = {
-            mo.bi_id for mo in SLAProbe.objects.filter(profile=self).scalar("managed_object") if mo
-        }
+        mos = set()
+        for mo, bi_id in SLAProbe.objects.filter(profile=self).scalar("managed_object", "bi_id"):
+            if mo and (not changed_fields or "metrics_default_interval" in changed_fields):
+                mos.add(mo.bi_id)
+            if not changed_fields or "metrics" in changed_fields or "labels" in changed_fields:
+                yield "cfgmetricsources", f"sla.SLAProbe::{bi_id}"
         for bi_id in mos:
             yield "cfgmetricsources", f"sa.ManagedObject::{bi_id}"
 
