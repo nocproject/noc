@@ -531,12 +531,18 @@ class MetricsService(FastAPIService):
         if not source:
             return
         composed_metrics = []
+        rules = source.rules or []
+        metric_labels = []
         # Find matched item
         for item in source.items:
             if not item.is_match(k):
                 continue
             if item.composed_metrics:
                 composed_metrics = list(item.composed_metrics)
+            if item.rules:
+                rules = item.rules
+            if item.metric_labels:
+                metric_labels = item.metric_labels
             break
         return SourceInfo(
             bi_id=source.bi_id,
@@ -545,9 +551,9 @@ class MetricsService(FastAPIService):
             service=service,
             fm_pool=source.fm_pool,
             labels=list(source.labels),
-            metric_labels=[],
+            metric_labels=metric_labels,
             composed_metrics=composed_metrics,
-            rules=source.rules or [],
+            rules=rules,
             meta=source.meta,
         )
 
@@ -568,10 +574,10 @@ class MetricsService(FastAPIService):
             return
         source = card.config
         # s_labels = set(self.merge_labels(source.labels, labels))
-        # Appy matched rules
+        # Apply matched rules
         # for rule_id, rule in self.rules.items():
         if source.rules:
-            self.logger.debug("Apply Rules: %s", source.rules)
+            self.logger.debug("[%s] Apply Rules: %s", k, source.rules)
         for rule_id, action_id in source.rules:
             # if k[0] not in rule.match_scopes or not rule.is_matched(s_labels):
             #    continue
