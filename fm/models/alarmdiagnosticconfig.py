@@ -21,6 +21,7 @@ from noc.sa.models.action import Action
 from noc.core.defer import call_later
 from noc.core.handler import get_handler
 from noc.core.debug import error_report
+from noc.core.wf.interaction import Interaction
 from noc.inv.models.resourcegroup import ResourceGroup
 from .alarmclass import AlarmClass
 from .alarmdiagnostic import AlarmDiagnostic
@@ -203,7 +204,7 @@ class AlarmDiagnosticConfig(Document):
         for c in cfg:
             if c.get("header"):
                 result += [c["header"].strip()]
-            if "script" in c and mo.is_managed:
+            if "script" in c and Interaction.ServiceActivation in mo.interactions:
                 logger.info("[%s] Running script %s", alarm.id, c["script"])
                 try:
                     g = getattr(mo.scripts, c["script"])
@@ -214,7 +215,7 @@ class AlarmDiagnosticConfig(Document):
                 except Exception as e:
                     error_report()
                     result += [str(e)]
-            elif not mo.is_managed:
+            elif Interaction.ServiceActivation not in mo.interactions:
                 logger.info(
                     "[%s] Object is not managed, running script %s disabled.", alarm.id, c["script"]
                 )
