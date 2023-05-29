@@ -2722,7 +2722,6 @@ class ManagedObjectStatus(NOCModel):
         #     {"object": object.id}, update={"$set": {"status": status, "last": ts}}, upsert=True
         # )
         # @todo No diff on insert and update, SELECT AND UPDATE try?
-        print(r)
         if not r:
             # Same status.
             # work completed
@@ -2749,8 +2748,8 @@ class ManagedObjectStatus(NOCModel):
         :return:
         """
         from django.db import connection as pg_connection
+        from psycopg2.extras import execute_values
         from noc.core.service.loader import get_service
-        from itertools import chain
 
         now = datetime.datetime.now()
 
@@ -2763,13 +2762,14 @@ class ManagedObjectStatus(NOCModel):
                 """
                 SELECT managed_object, status, last
                 FROM sa_objectstatus
+                WHERE managed_object = ANY (%s)
                 """,
                 [[x[0] for x in statuses]],
             )
             for o, status, last in cursor:
                 cs[o] = {"status": status, "last": last}
         for oid, status, ts in statuses:
-            ts = ts or now
+            ts = (ts or now).replace(microsecond=0, tzinfo=None)
             if oid not in cs or (cs[oid]["status"] != status and cs[oid]["last"] <= ts):
                 bulk += [(oid, status, ts)]
                 if status and oid in cs:
@@ -2781,15 +2781,16 @@ class ManagedObjectStatus(NOCModel):
                 pass
         if not bulk:
             return
-        values = "(%s, %s, %s)," * len(bulk)
         with pg_connection.cursor() as cursor:
-            cursor.execute(
-                f"""
-                INSERT INTO sa_objectstatus as os (managed_object, status, last) VALUES {values.strip(",")}
+            execute_values(
+                cursor,
+                """
+                INSERT INTO sa_objectstatus as os (managed_object, status, last) VALUES %s
                 ON CONFLICT (managed_object) DO UPDATE SET status = EXCLUDED.status, last = EXCLUDED.last
                 WHERE os.status != EXCLUDED.status
                 """,
-                list(chain.from_iterable(bulk)),
+                bulk,
+                page_size=500,
             )
         svc = get_service()
         # Send outages
