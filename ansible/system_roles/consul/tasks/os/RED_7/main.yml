@@ -1,7 +1,7 @@
 ---
 - name: Install RedOS consul depends
   yum:
-    name: python-virtualenv
+    name: python3-virtualenv
     state: present
     update_cache: "True"
   environment:

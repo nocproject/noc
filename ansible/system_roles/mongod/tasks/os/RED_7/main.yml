@@ -3,7 +3,7 @@
   yum_repository:
     name: mongodb
     description: MongoDB Repository
-    baseurl: https://repo.mongodb.org/yum/redhat/7Server/mongodb-org/4.4/x86_64/
+    baseurl: https://repo.mongodb.org/yum/redhat/7Server/mongodb-org/{{ mongod_version }}/x86_64/
     gpgcheck: "True"
     gpgkey: https://www.mongodb.org/static/pgp/server-{{ mongod_version }}.asc
     enabled: "True"
@@ -58,7 +58,7 @@
 
 - name: Install MongoDB
   yum:
-    name: mongodb-org
+    name: mongodb-org-{{ mongod_version }}*
     state: present
     update_cache: "True"
   environment:
