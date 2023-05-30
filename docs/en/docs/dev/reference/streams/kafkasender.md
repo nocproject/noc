@@ -20,6 +20,9 @@ To
 Sharding-Key
 : Key for consistent sharding.
 
+Kafka_partition
+: Kafka partition number.
+
 ## Message Format
 
 `kafkasender` stream does not enforce a specific format. Messages are passed
