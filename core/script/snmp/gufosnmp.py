@@ -52,22 +52,22 @@ class GufoSNMP(SNMP):
 
         async def run():
             logger.debug("[%s] SNMP GET %s", address, oids)
-            try:
-                async with SnmpSession(
-                    addr=address,
-                    community=str(self.script.credentials["snmp_ro"]),
-                    version=GUFO_SNMP_VERSION_MAP[version],
-                    timeout=10,
-                    tos=self.script.tos,
-                    limit_rps=self.rate_limit,
-                ) as session:
+            async with SnmpSession(
+                addr=address,
+                community=str(self.script.credentials["snmp_ro"]),
+                version=GUFO_SNMP_VERSION_MAP[version],
+                timeout=10,
+                tos=self.script.tos,
+                limit_rps=self.rate_limit,
+            ) as session:
+                try:
                     data = await session.get_many(oids)
-            except TimeoutError:
-                if self.timeouts_limit:
-                    self.timeouts -= 1
-                    if not self.timeouts:
-                        raise self.FatalTimeoutError()
-                raise self.TimeOutError()
+                except TimeoutError:
+                    if self.timeouts_limit:
+                        self.timeouts -= 1
+                        if not self.timeouts:
+                            raise self.FatalTimeoutError()
+                    raise self.TimeOutError()
             # Render data if it has display hint
             for k in data:
                 if isinstance(data[k], bytes):
@@ -145,36 +145,36 @@ class GufoSNMP(SNMP):
             logger.debug("[%s] SNMP GETNEXT %s", address, oid)
             if not filter:
                 filter = true
-            while True:
-                try:
-                    async with SnmpSession(
-                        addr=address,
-                        community=str(self.script.credentials["snmp_ro"]),
-                        version=GUFO_SNMP_VERSION_MAP[version],
-                        timeout=timeout,
-                        tos=self.script.tos,
-                        limit_rps=self.rate_limit,
-                    ) as session:
+            async with SnmpSession(
+                addr=address,
+                community=str(self.script.credentials["snmp_ro"]),
+                version=GUFO_SNMP_VERSION_MAP[version],
+                timeout=timeout,
+                tos=self.script.tos,
+                limit_rps=self.rate_limit,
+            ) as session:
+                while True:
+                    try:
                         if bulk:
                             oids_iter = session.getbulk(
                                 oid, max_repetitions=max_repetitions or BULK_MAX_REPETITIONS
                             )
                         else:
                             oids_iter = session.getnext(oid)
-                    result = []
-                    async for oid_, v in oids_iter:
-                        if filter(oid_, v):
-                            if isinstance(v, bytes):
-                                v = mib.render(oid_, v, display_hints)
-                        result += [(oid_, v)]
-                    if only_first and result:
-                        result = result[0:1]
-                    logger.debug("[%s] GETNEXT result: %s", address, result)
-                    return result
-                except TimeoutError:
-                    if not max_retries:
-                        raise self.TimeOutError()
-                    max_retries -= 1
+                        result = []
+                        async for oid_, v in oids_iter:
+                            if filter(oid_, v):
+                                if isinstance(v, bytes):
+                                    v = mib.render(oid_, v, display_hints)
+                            result += [(oid_, v)]
+                        if only_first and result:
+                            result = result[0:1]
+                        logger.debug("[%s] GETNEXT result: %s", address, result)
+                        return result
+                    except TimeoutError:
+                        if not max_retries:
+                            raise self.TimeOutError()
+                        max_retries -= 1
 
         address = self.script.credentials["address"]
         bulk = self.script.has_snmp_bulk() if bulk is None else bulk
@@ -201,27 +201,27 @@ class GufoSNMP(SNMP):
             logger.debug("[%s] SNMP COUNT %s", address, oid)
             if not filter:
                 filter = true
-            try:
-                async with SnmpSession(
-                    addr=address,
-                    community=str(self.script.credentials["snmp_ro"]),
-                    version=GUFO_SNMP_VERSION_MAP[version],
-                    timeout=10,
-                    tos=self.script.tos,
-                    limit_rps=self.rate_limit,
-                ) as session:
+            async with SnmpSession(
+                addr=address,
+                community=str(self.script.credentials["snmp_ro"]),
+                version=GUFO_SNMP_VERSION_MAP[version],
+                timeout=10,
+                tos=self.script.tos,
+                limit_rps=self.rate_limit,
+            ) as session:
+                try:
                     if self.script.has_snmp_bulk():
                         oids_iter = session.getbulk(oid, max_repetitions=BULK_MAX_REPETITIONS)
                     else:
                         oids_iter = session.getnext(oid)
-                result = 0
-                async for oid_, v in oids_iter:
-                    if filter(oid_, v):
-                        result += 1
-                logger.debug("[%s] COUNT result: %s", address, result)
-                return result
-            except TimeoutError:
-                raise self.TimeOutError()
+                except TimeoutError:
+                    raise self.TimeOutError()
+            result = 0
+            async for oid_, v in oids_iter:
+                if filter(oid_, v):
+                    result += 1
+            logger.debug("[%s] COUNT result: %s", address, result)
+            return result
 
         address = self.script.credentials["address"]
         if "snmp_ro" not in self.script.credentials:
@@ -238,3 +238,49 @@ class GufoSNMP(SNMP):
         :returns:
         """
         raise NotImplementedError()
+
+    def get_gufo_chunked(self, oids, chunk_size=20, timeout_limits=3):
+        """
+        Fetch list of oids splitting to several operations when necessary
+
+        :param oids: List of oid
+        :param chunk_size: Maximal GET chunk size
+        :param timeout_limits: SNMP timeout limits
+        :return: dict of oid -> value for all retrieved values
+        """
+        from gufo.snmp import SnmpError as GSNMPError
+
+        async def run():
+            results = {}
+            oo = oids[:]
+            async with SnmpSession(
+                addr=self.script.credentials["address"],
+                community=str(self.script.credentials["snmp_ro"]),
+                version=SnmpVersion.v2c if version == 1 else SnmpVersion.v1,
+                tos=self.script.tos,
+            ) as session:
+                while oo:
+                    chunk, oo = oo[:chunk_size], oo[chunk_size:]
+                    try:
+                        results.update(await session.get_many(chunk))
+                    except TimeoutError:
+                        if self.timeouts_limit:
+                            self.timeouts -= 1
+                            if not self.timeouts:
+                                # Fatal SNMP Timeout
+                                self.logger.error("Fatal timeout error on: %s", oids)
+                                break
+                        self.logger.error("Failed to get SNMP OIDs %s", chunk)
+                        # raise self.TimeOutError()
+                    except GSNMPError as e:
+                        self.logger.error("SNMP error code %s", e.code)
+                        raise self.SNMPError(code=e.code)
+            return results
+
+        self.set_timeout_limits(timeout_limits)
+        if "snmp_ro" not in self.script.credentials:
+            raise SNMPError(code=ERR_SNMP_BAD_COMMUNITY)
+        # if display_hints is None:
+        #     display_hints = self._get_display_hints()
+        version = self._get_snmp_version()
+        return run_sync(run, close_all=False)
