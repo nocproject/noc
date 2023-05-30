@@ -38,7 +38,5 @@ services:
       stopwaitsecs: 2
       stdout_logfile_maxbytes: 10MB
       stdout_logfile_backups: 3
-    required_assets:
-      - bh
     depends:
       - noc
