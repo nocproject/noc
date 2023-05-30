@@ -112,7 +112,7 @@ class ThresholdNode(BaseCDAGNode):
             "timestamp": now.isoformat(),
             "managed_object": self.config.managed_object,
             "alarm_class": th.alarm_class,
-            "labels": (self.config.labels or []) + (th.alarm_labels or []),
+            "labels": list(self.config.labels or []) + (th.alarm_labels or []),
             # x is numpy.float64 type, ?
             "vars": {"ovalue": round(float(x), 3), "tvalue": th.value},
         }
