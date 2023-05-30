@@ -84,11 +84,15 @@ class TopoService(FastAPIService):
                         up_links = []
                         for obj_id in affected:
                             try:
-                                up_links.append(ObjectUplinks(
-                                    object_id=obj_id,
-                                    uplinks=list(sorted(self.topo.get_uplinks(obj_id))),
-                                    rca_neighbors=list(sorted(self.topo.get_rca_neighbors(obj_id))),
-                                ))
+                                up_links.append(
+                                    ObjectUplinks(
+                                        object_id=obj_id,
+                                        uplinks=list(sorted(self.topo.get_uplinks(obj_id))),
+                                        rca_neighbors=list(
+                                            sorted(self.topo.get_rca_neighbors(obj_id))
+                                        ),
+                                    )
+                                )
                             except KeyError:
                                 self.logger.warning("Deleted object with id: %s", obj_id)
                         ManagedObject.update_uplinks(up_links)
