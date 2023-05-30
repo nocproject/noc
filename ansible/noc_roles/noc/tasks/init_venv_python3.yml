@@ -181,8 +181,6 @@
   tags:
     - requirements
 
-
-
 - name: Install -activator- python packages
   pip:
     chdir: "{{ noc_root }}"
