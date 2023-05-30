@@ -166,7 +166,7 @@ class GufoSNMP(SNMP):
                             if filter(oid_, v):
                                 if isinstance(v, bytes):
                                     v = mib.render(oid_, v, display_hints)
-                            result += [(oid_, v)]
+                                result += [(oid_, v)]
                         if only_first and result:
                             result = result[0:1]
                         logger.debug("[%s] GETNEXT result: %s", address, result)
