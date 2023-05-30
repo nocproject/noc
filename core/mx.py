@@ -44,6 +44,7 @@ MX_TO = "To"
 MX_NOTIFICATION = "notification"
 MX_NOTIFICATION_CHANNEL = "Notification-Channel"
 MX_LANG = "Language"
+KAFKA_PARTITION = "Kafka-Partition"
 #
 MX_H_VALUE_SPLITTER = ";"
 # Available message types
@@ -69,6 +70,7 @@ MESSAGE_HEADERS = {
     MX_PROFILE_ID,
     MX_TO,
     MX_LANG,
+    KAFKA_PARTITION,
 }
 # Method -> Sender stream map, ?autoregister
 NOTIFICATION_METHODS = {"mail": "mailsender", "tg": "tgsender", "icq": "icqsender"}

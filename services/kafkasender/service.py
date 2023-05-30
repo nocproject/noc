@@ -21,7 +21,7 @@ from noc.config import config
 from noc.core.service.fastapi import FastAPIService
 from noc.core.perf import metrics
 from noc.core.msgstream.message import Message
-from noc.core.mx import MX_TO, MX_SHARDING_KEY
+from noc.core.mx import MX_TO, MX_SHARDING_KEY, KAFKA_PARTITION
 from noc.core.comp import smart_text
 
 
@@ -46,6 +46,7 @@ class KafkaSenderService(FastAPIService):
         """
         Process incoming message. Usually forwarded by `mx` service.
         Message MUST have `To` header, containing target Kafka topic.
+        Optional parameter 'Kafka_partition' can be specified.
 
         :param msg:
         :return:
@@ -57,21 +58,32 @@ class KafkaSenderService(FastAPIService):
             self.logger.debug("[%d] Missed '%s' header. Dropping", msg.offset, MX_TO)
             metrics["messages_drops"] += 1
             return
-        await self.send_to_kafka(smart_text(dst), msg.value, msg.headers.get(MX_SHARDING_KEY))
+        await self.send_to_kafka(
+            smart_text(dst),
+            msg.value,
+            msg.headers.get(MX_SHARDING_KEY),
+            msg.headers.get(KAFKA_PARTITION),
+        )
         metrics["messages_processed"] += 1
 
-    async def send_to_kafka(self, topic: str, data: bytes, key: Optional[bytes] = None) -> None:
+    async def send_to_kafka(
+        self, topic: str, data: bytes, key: Optional[bytes] = None, partition: Optional[int] = None
+    ) -> None:
         """
         Send data to kafka topic
 
         :param topic:
         :param data:
+        :param key:
+        :param partition:
         :return:
         """
-        self.logger.debug("Sending to topic %s", topic)
+        self.logger.debug("Sending to topic %s, partition: %s", topic, partition)
         producer = await self.get_producer()
+        if partition is not None:
+            partition = int(partition)
         try:
-            await producer.send(topic, data, key=key)
+            await producer.send(topic, data, key=key, partition=partition)
             metrics["messages_sent_ok", ("topic", topic)] += 1
             metrics["bytes_sent", ("topic", topic)] += len(data)
         except KafkaError as e:
