@@ -169,6 +169,18 @@
   register: s
   changed_when: "'CHANGED' in s.stdout"
 
+- name: Uninstall bad python packages
+  pip:
+    chdir: "{{ noc_root }}"
+    requirements: ./.requirements/reverted_modules.xtx
+    virtualenv: "{{ noc_root }}"
+    state: absent
+  environment:
+    http_proxy: "{{ http_proxy }}"
+    https_proxy: "{{ http_proxy }}"
+  tags:
+    - requirements
+
 - name: Install -activator- python packages
   pip:
     chdir: "{{ noc_root }}"
