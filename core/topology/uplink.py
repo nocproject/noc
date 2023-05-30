@@ -32,12 +32,17 @@ def update_uplinks(**kwargs):
         if affected and not config.topo.dry_run:
             # logger.info("Commiting uplink changes")
             # @todo: RCA neighbors
-            ManagedObject.update_uplinks(
-                ObjectUplinks(
-                    object_id=obj_id,
-                    uplinks=list(sorted(topo.get_uplinks(obj_id))),
-                    rca_neighbors=list(sorted(topo.get_rca_neighbors(obj_id))),
-                )
-                for obj_id in affected
-            )
+            up_links = []
+            for obj_id in affected:
+                try:
+                    up_links.append(
+                        ObjectUplinks(
+                            object_id=obj_id,
+                            uplinks=list(sorted(topo.get_uplinks(obj_id))),
+                            rca_neighbors=list(sorted(topo.get_rca_neighbors(obj_id))),
+                        )
+                    )
+                except KeyError:
+                    logger.warning("Deleted object with id: %s", obj_id)
+            ManagedObject.update_uplinks(up_links)
             logger.info("%d changes has been commited", len(affected))
