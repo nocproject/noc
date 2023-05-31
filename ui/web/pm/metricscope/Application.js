@@ -103,6 +103,13 @@ Ext.define("NOC.pm.metricscope.Application", {
                             renderer: NOC.render.Bool
                         },
                         {
+                            dataIndex: "is_key_label",
+                            text: __("Include key Label"),
+                            width: 50,
+                            editor: "checkbox",
+                            renderer: NOC.render.Bool
+                        },
+                        {
                             dataIndex: "is_primary_key",
                             text: __("Primary Key"),
                             width: 50,
