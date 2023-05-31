@@ -265,7 +265,7 @@ class MetricsService(FastAPIService):
                 enable_timedelta=ms.enable_timedelta,
             )
             self.scopes[ms.table_name] = si
-            self.logger.info(
+            self.logger.debug(
                 "[%s] key fields: %s, key labels: %s, required labels: %s",
                 si.scope,
                 si.key_fields,

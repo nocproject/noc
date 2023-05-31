@@ -274,7 +274,10 @@ class Router(object):
                         body = route.transmute(headers, body)
                     except Exception as e:
                         logger.error(
-                            "[%s] Error when transmute message %s: %s", msg.timestamp, body[:500], str(e),
+                            "[%s] Error when transmute message %s: %s",
+                            msg.timestamp,
+                            body[:500],
+                            str(e),
                         )
                         continue
                     if body is None:
