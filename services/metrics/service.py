@@ -212,12 +212,12 @@ class MetricsService(FastAPIService):
                 self.logger.debug("No labels: %s", item)
                 metrics["discard", ("reason", "no_labels")] += 1
                 return  # No labels
-            mk = self.get_key(si, item)
+            mk, req = self.get_key(si, item)
             if si.key_fields and not mk[1]:
                 self.logger.debug("No key fields: %s", item)
                 metrics["discard", ("reason", "no_keyfields")] += 1
                 return  # No key fields
-            if si.key_labels and len(mk[2]) != len(si.key_labels):
+            if si.required_labels and len(req) != len(si.required_labels):
                 self.logger.debug("Missed key label: %s", item)
                 metrics["discard", ("reason", "missed_keylabel")] += 1
                 return  # Missed key label
@@ -257,31 +257,41 @@ class MetricsService(FastAPIService):
             si = ScopeInfo(
                 scope=ms.table_name,
                 key_fields=tuple(sorted(kf.field_name for kf in ms.key_fields)),
-                key_labels=tuple(sorted(kl.label[:-1] for kl in ms.labels if kl.is_required)),
+                key_labels=tuple(
+                    sorted(kl.label[:-1] for kl in ms.labels if kl.is_required or kl.is_key_label)
+                ),
+                required_labels=tuple(sorted(kl.label[:-1] for kl in ms.labels if kl.is_required)),
                 units=units[ms.id],
                 enable_timedelta=ms.enable_timedelta,
             )
             self.scopes[ms.table_name] = si
             self.logger.debug(
-                "[%s] key fields: %s, key labels: %s", si.scope, si.key_fields, si.key_labels
+                "[%s] key fields: %s, key labels: %s, required labels: %s",
+                si.scope,
+                si.key_fields,
+                si.key_labels,
+                si.required_labels,
             )
 
     @staticmethod
-    def get_key(si: ScopeInfo, data: Dict[str, Any]) -> MetricKey:
-        def iter_key_labels():
-            labels = data.get("labels")
-            if not labels or not si.key_labels:
+    def get_key(si: ScopeInfo, data: Dict[str, Any]) -> Tuple[MetricKey, Tuple[str, ...]]:
+        def iter_labels(f_labels):
+            if not labels or not f_labels:
                 return
-            scopes = {f'{ll.rsplit("::", 1)[0]}::': ll for ll in labels}
-            for k in si.key_labels:
+            for k in f_labels:
                 v = scopes.get(k)
                 if v is not None:
                     yield v
 
+        labels = data.get("labels")
+        scopes = {f'{ll.rsplit("::", 1)[0]}::': ll for ll in labels or []}
         return (
-            si.scope,
-            tuple((k, data[k]) for k in si.key_fields if k in data),
-            tuple(iter_key_labels()),
+            (
+                si.scope,
+                tuple((k, data[k]) for k in si.key_fields if k in data),
+                tuple(iter_labels(si.key_labels)),
+            ),
+            tuple(iter_labels(si.required_labels)),
         )
 
     @staticmethod

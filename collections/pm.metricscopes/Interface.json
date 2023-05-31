@@ -12,11 +12,20 @@
         {
             "field_name": "object",
             "model": "inv.Object"
+        },
+        {
+            "field_name": "service",
+            "model": "sa.Service"
+        },
+        {
+            "field_name": "cpe",
+            "model": "inv.CPE"
         }
     ],
-    "enable_timedelta": true,
+    "enable_timedelta": false,
     "labels": [
         {
+            "is_key_label": false,
             "is_order_key": false,
             "is_path": true,
             "is_primary_key": false,
@@ -25,6 +34,7 @@
             "view_column": "chassis"
         },
         {
+            "is_key_label": false,
             "is_order_key": false,
             "is_path": true,
             "is_primary_key": false,
@@ -33,6 +43,7 @@
             "view_column": "slot"
         },
         {
+            "is_key_label": false,
             "is_order_key": false,
             "is_path": true,
             "is_primary_key": false,
@@ -41,6 +52,7 @@
             "view_column": "module"
         },
         {
+            "is_key_label": true,
             "is_order_key": true,
             "is_path": true,
             "is_primary_key": false,
@@ -49,6 +61,7 @@
             "store_column": "interface"
         },
         {
+            "is_key_label": true,
             "is_order_key": true,
             "is_path": true,
             "is_primary_key": false,
@@ -57,6 +70,7 @@
             "store_column": "subinterface"
         },
         {
+            "is_key_label": false,
             "is_order_key": false,
             "is_path": true,
             "is_primary_key": false,
@@ -65,7 +79,8 @@
             "store_column": "queue"
         },
         {
-            "is_order_key": false,
+            "is_key_label": true,
+            "is_order_key": true,
             "is_path": true,
             "is_primary_key": false,
             "is_required": false,
@@ -73,6 +88,7 @@
             "store_column": "traffic_class"
         },
         {
+            "is_key_label": false,
             "is_order_key": false,
             "is_path": false,
             "is_primary_key": false,

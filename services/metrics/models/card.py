@@ -21,6 +21,7 @@ class ScopeInfo(object):
     scope: str
     key_fields: Tuple[str, ...]
     key_labels: Tuple[str, ...]
+    required_labels: Tuple[str, ...]
     units: Dict[str, str]
     enable_timedelta: bool = False
 

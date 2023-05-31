@@ -56,6 +56,7 @@ class LabelItem(EmbeddedDocument):
     # Wildcard label, noc::<scope>::* is preferable
     label = StringField()
     is_required = BooleanField(default=False)
+    is_key_label = BooleanField(default=False)
     # Store data in separate table column `store_field`, if not empty
     # store in `labels` field otherwise
     store_column = StringField()
@@ -90,6 +91,7 @@ class LabelItem(EmbeddedDocument):
         r = {
             "label": self.label,
             "is_required": self.is_required,
+            "is_key_label": self.is_key_label,
             "is_primary_key": self.is_primary_key,
             "is_order_key": self.is_order_key,
             "is_path": self.is_path,
