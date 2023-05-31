@@ -164,8 +164,11 @@ class GufoSNMP(SNMP):
                         result = []
                         async for oid_, v in oids_iter:
                             if filter(oid_, v):
-                                if isinstance(v, bytes):
-                                    v = mib.render(oid_, v, display_hints)
+                                v = (
+                                    mib.render(oid_, v, display_hints)
+                                    if isinstance(v, bytes)
+                                    else v
+                                )
                                 result += [(oid_, v)]
                         if only_first and result:
                             result = result[0:1]
