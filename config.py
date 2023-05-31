@@ -61,6 +61,7 @@ class Config(BaseConfig):
         http_connect_timeout = IntParameter(default=20)
         http_request_timeout = IntParameter(default=30)
         http_validate_cert = BooleanParameter(default=False)
+        snmp_backend = StringParameter(choices=["native", "gufo"], default="native")
 
     class audit(ConfigSection):
         command_ttl = SecondsParameter(default="1m")

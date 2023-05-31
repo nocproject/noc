@@ -40,10 +40,14 @@ from .error import (
     NotSupportedError,
     UnexpectedResultError,
 )
-from .snmp.base import SNMP
 from .snmp.beef import BeefSNMP
 from .http.base import HTTP
 from .sessionstore import SessionStore
+
+if config.activator.snmp_backend == "native":
+    from .snmp.base import SNMP
+elif config.activator.snmp_backend == "gufo":
+    from .snmp.gufosnmp import GufoSNMP as SNMP
 
 
 class BaseScriptMetaclass(type):
