@@ -7,11 +7,11 @@
 
 # Python modules
 from functools import partial
-import logging
 from typing import Any, Callable, Dict, List, Optional, Tuple, Union
 
 # Third-party modules
-from gufo.snmp import SnmpSession, SnmpVersion
+from gufo.snmp import SnmpSession, SnmpVersion, SnmpError as GSNMPError
+
 
 # NOC modules
 from noc.core.snmp.error import SNMPError, BAD_VALUE
@@ -25,8 +25,6 @@ GUFO_SNMP_VERSION_MAP = {
     1: SnmpVersion.v2c,
 }
 BULK_MAX_REPETITIONS = 20
-
-logger = logging.getLogger(__name__)
 
 
 class GufoSNMP(SNMP):
@@ -51,7 +49,7 @@ class GufoSNMP(SNMP):
         """
 
         async def run():
-            logger.debug("[%s] SNMP GET %s", address, oids)
+            self.logger.debug("[%s] SNMP GET %s", address, oids)
             async with SnmpSession(
                 addr=address,
                 community=str(self.script.credentials["snmp_ro"]),
@@ -68,6 +66,9 @@ class GufoSNMP(SNMP):
                         if not self.timeouts:
                             raise self.FatalTimeoutError()
                     raise self.TimeOutError()
+                except GSNMPError as e:
+                    self.logger.error("SNMP error code %s", e.code)
+                    raise self.SNMPError(code=e.code)
             # Render data if it has display hint
             for k in data:
                 if isinstance(data[k], bytes):
@@ -79,13 +80,13 @@ class GufoSNMP(SNMP):
                     if k in oid_map:
                         result[oid_map[k]] = v
                     else:
-                        logger.error("[%s] Invalid oid %s returned in reply", address, k)
+                        self.logger.error("[%s] Invalid oid %s returned in reply", address, k)
             elif data:
                 result = data[oids[0]]
             else:
                 # Device return empty varbinds, perhaps need more info
                 raise SNMPError(code=BAD_VALUE, oid=oids)
-            logger.debug("[%s] GET result: %r", address, result)
+            self.logger.debug("[%s] GET result: %r", address, result)
             return result
 
         address = self.script.credentials["address"]
@@ -142,7 +143,7 @@ class GufoSNMP(SNMP):
             def true(x, y):
                 return True
 
-            logger.debug("[%s] SNMP GETNEXT %s", address, oid)
+            self.logger.debug("[%s] SNMP GETNEXT %s", address, oid)
             if not filter:
                 filter = true
             async with SnmpSession(
@@ -172,12 +173,15 @@ class GufoSNMP(SNMP):
                                 result += [(oid_, v)]
                         if only_first and result:
                             result = result[0:1]
-                        logger.debug("[%s] GETNEXT result: %s", address, result)
+                        self.logger.debug("[%s] GETNEXT result: %s", address, result)
                         return result
                     except TimeoutError:
                         if not max_retries:
                             raise self.TimeOutError()
                         max_retries -= 1
+                    except GSNMPError as e:
+                        self.logger.error("SNMP error code %s", e.code)
+                        raise self.SNMPError(code=e.code)
 
         address = self.script.credentials["address"]
         bulk = self.script.has_snmp_bulk() if bulk is None else bulk
@@ -201,7 +205,7 @@ class GufoSNMP(SNMP):
             def true(x, y):
                 return True
 
-            logger.debug("[%s] SNMP COUNT %s", address, oid)
+            self.logger.debug("[%s] SNMP COUNT %s", address, oid)
             if not filter:
                 filter = true
             async with SnmpSession(
@@ -219,11 +223,14 @@ class GufoSNMP(SNMP):
                         oids_iter = session.getnext(oid)
                 except TimeoutError:
                     raise self.TimeOutError()
+                except GSNMPError as e:
+                    self.logger.error("SNMP error code %s", e.code)
+                    raise self.SNMPError(code=e.code)
             result = 0
             async for oid_, v in oids_iter:
                 if filter(oid_, v):
                     result += 1
-            logger.debug("[%s] COUNT result: %s", address, result)
+            self.logger.debug("[%s] COUNT result: %s", address, result)
             return result
 
         address = self.script.credentials["address"]
@@ -240,9 +247,11 @@ class GufoSNMP(SNMP):
         :param args:
         :returns:
         """
-        raise NotImplementedError()
+        raise NotImplementedError(
+            "Use native SNMP implementation. Set config.activator.snmp_backend = 'native'"
+        )
 
-    def get_gufo_chunked(self, oids, chunk_size=20, timeout_limits=3):
+    def get_chunked(self, oids, chunk_size=20, timeout_limits=3):
         """
         Fetch list of oids splitting to several operations when necessary
 
@@ -251,7 +260,6 @@ class GufoSNMP(SNMP):
         :param timeout_limits: SNMP timeout limits
         :return: dict of oid -> value for all retrieved values
         """
-        from gufo.snmp import SnmpError as GSNMPError
 
         async def run():
             results = {}
