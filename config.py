@@ -259,6 +259,10 @@ class Config(BaseConfig):
         sample = IntParameter(default=0)
         min_metric_interval = IntParameter(default=60)
         job_check_interval = IntParameter(default=1000, min=1000)
+        interface_metric_service = BooleanParameter(
+            default=True,
+            help="Add service field to metric request",
+        )
         object_status_cache_ttl = SecondsParameter(
             default=10,
             help="TTL for object status cache. Used when check run discovery",
