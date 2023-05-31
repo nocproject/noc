@@ -71,6 +71,7 @@ MESSAGE_HEADERS = {
     MX_TO,
     MX_LANG,
     KAFKA_PARTITION,
+    MX_METRICS_SCOPE,
 }
 # Method -> Sender stream map, ?autoregister
 NOTIFICATION_METHODS = {"mail": "mailsender", "tg": "tgsender", "icq": "icqsender"}
