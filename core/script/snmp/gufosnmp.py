@@ -89,6 +89,11 @@ class GufoSNMP(SNMP):
             self.logger.debug("[%s] GET result: %r", address, result)
             return result
 
+        if raw_varbinds:
+            raise NotImplementedError(
+                "`raw_varbinds` parameter is not supported in gufo SNMP implementation."
+                "Use native SNMP implementation. Set config.activator.snmp_backend to 'native'"
+            )
         address = self.script.credentials["address"]
         oid_map = {}
         if isinstance(oids, str):
@@ -183,6 +188,11 @@ class GufoSNMP(SNMP):
                         self.logger.error("SNMP error code %s", e.code)
                         raise self.SNMPError(code=e.code)
 
+        if raw_varbinds:
+            raise NotImplementedError(
+                "`raw_varbinds` parameter is not supported in gufo SNMP implementation."
+                "Use native SNMP implementation. Set config.activator.snmp_backend to 'native'"
+            )
         address = self.script.credentials["address"]
         bulk = self.script.has_snmp_bulk() if bulk is None else bulk
         if "snmp_ro" not in self.script.credentials:
@@ -248,7 +258,8 @@ class GufoSNMP(SNMP):
         :returns:
         """
         raise NotImplementedError(
-            "Use native SNMP implementation. Set config.activator.snmp_backend = 'native'"
+            "Method `set` is not yet implemented in gufo SNMP implementation."
+            "Use native SNMP implementation. Set config.activator.snmp_backend to 'native'"
         )
 
     def get_chunked(self, oids, chunk_size=20, timeout_limits=3):
