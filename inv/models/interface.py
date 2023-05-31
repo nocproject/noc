@@ -588,7 +588,7 @@ class Interface(Document):
                 continue
             ifindex = i.get("ifindex")
             service = i.get("service")
-            if service:
+            if service and config.discovery.interface_metric_service:
                 service = Service.get_by_id(service)
             yield MetricCollectorConfig(
                 collector="managed_object",
@@ -608,7 +608,7 @@ class Interface(Document):
             ):
                 ifindex = si.get("ifindex")
                 service = si.get("service")
-                if service:
+                if service and config.discovery.interface_metric_service:
                     service = Service.get_by_id(service)
                 yield MetricCollectorConfig(
                     collector="managed_object",
