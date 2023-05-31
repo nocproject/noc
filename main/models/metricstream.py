@@ -68,6 +68,8 @@ class MetricStream(Document):
             '    "meta": input.get("meta"),' "    }",
             '    if "ts" in input:',
             '        v["ts"] = input["ts"].replace(" ", "T")',
+            '    if "service" in input:',
+            '        v["service"] = input["service"]',
         ]
         if self.scope.enable_timedelta:
             r += [

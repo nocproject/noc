@@ -100,6 +100,8 @@ class MetricsNode(BaseCDAGNode):
 
         if mx_converters is None:
             mx_converters = self.load_mx_converters()
+        if self.config.scope not in mx_converters:
+            return
         r = mx_converters[self.config.scope](data)
         if self.config.message_meta:
             r["meta"] = self.config.message_meta

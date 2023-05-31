@@ -138,12 +138,18 @@ class Service(Document):
     static_client_groups = ListField(ObjectIdField())
     effective_client_groups = ListField(ObjectIdField())
 
-    _id_cache = cachetools.TTLCache(maxsize=100, ttl=60)
+    _id_cache = cachetools.TTLCache(maxsize=500, ttl=60)
+    _bi_id_cache = cachetools.TTLCache(maxsize=500, ttl=60)
 
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_id_cache"), lock=lambda _: id_lock)
     def get_by_id(cls, id) -> Optional["Service"]:
         return Service.objects.filter(id=id).first()
+
+    @classmethod
+    @cachetools.cachedmethod(operator.attrgetter("_bi_id_cache"), lock=lambda _: id_lock)
+    def get_by_bi_id(cls, bi_id) -> Optional["Service"]:
+        return Service.objects.filter(bi_id=bi_id).first()
 
     def __str__(self):
         return str(self.id) if self.id else "new service"
