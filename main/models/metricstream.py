@@ -78,7 +78,7 @@ class MetricStream(Document):
             ]
         for f in self.fields:
             if f.expose_condition:
-                r += [f'    if not input.get("{f.metric_type.field_name}")', "        return None"]
+                r += [f'    if not input.get("{f.metric_type.field_name}"):', "        return None"]
             if not f.expose_mx:
                 continue
             r += [

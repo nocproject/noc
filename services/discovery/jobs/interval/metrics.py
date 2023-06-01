@@ -6,8 +6,7 @@
 # ---------------------------------------------------------------------
 
 # Python modules
-import time
-from typing import Any, List, Dict, Optional
+from typing import Any, List, Dict
 
 # NOC modules
 from noc.core.jsonutils import iter_chunks
@@ -43,12 +42,6 @@ class MetricsCheck(DiscoveryCheck):
         # Build get_metrics input parameters
         metrics: List[Dict[str, Any]] = []
         #
-        ts = time.time()
-        time_delta = 0
-        if "last_run" in self.job.context and self.job.context["last_run"] < ts:
-            time_delta = int(round(ts - self.job.context["last_run"]))
-            self.job.context["time_delta"] = time_delta
-        self.job.context["last_run"] = ts
         s_data = {"managed_object": self.object.bi_id}
         interval = self.job.get_interval() or self.object.get_metric_discovery_interval()
         runs = self.job.get_runs()
@@ -60,7 +53,6 @@ class MetricsCheck(DiscoveryCheck):
                 mc_metrics.append(m.name)
                 if f"{m.name}.scope" in s_data:
                     continue
-                s_data[f"{mt_name}.time_delta"] = time_delta
                 s_data[f"{mt_name}.scope"] = m.scope_name
                 s_data[f"{mt_name}.field"] = m.field_name
             if not mc_metrics:
@@ -108,7 +100,7 @@ class MetricsCheck(DiscoveryCheck):
         self.logger.info("Collected metrics: %s", len(result))
         # Send metrics
         for d in iter_chunks(
-            self.clean_result(result, time_delta=time_delta),
+            self.clean_result(result),
             max_size=config.msgstream.max_message_size,
         ):
             self.service.publish(
@@ -123,11 +115,10 @@ class MetricsCheck(DiscoveryCheck):
         #   for table in data:
         #      self.service.register_metrics(table, list(data[table].values()), key=self.object.id)
 
-    def clean_result(self, result, time_delta: Optional[int] = None):
+    def clean_result(self, result):
         """
         Clean result for send to Metrics Service
         :param result:
-        :param time_delta:
         :return:
         """
         data = {}
@@ -153,8 +144,6 @@ class MetricsCheck(DiscoveryCheck):
                 if rr.get("cpe"):
                     # For CPE used ID as ManagedObject
                     data[m_id]["managed_object"] = rr["cpe"]
-                if mt.scope.enable_timedelta and time_delta:
-                    data[m_id]["time_delta"] = time_delta
             data[m_id][mt.field_name] = rr["value"]
             data[m_id]["_units"][mt.field_name] = rr["units"]
         return list(data.values())
