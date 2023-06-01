@@ -471,6 +471,7 @@ class ManagedObjectDataStream(DataStream):
         """
         if "$deleted" in data:
             yield cls.get_deleted_object(data["id"])
+            return
         yield {
             "id": data["id"],
             "object_profile": {
