@@ -35,6 +35,7 @@ class GufoSNMP(SNMP):
         oids: Union[Dict[str, str], str],
         cached: bool = False,
         version: Optional[int] = None,
+        timeout: int = 10,
         raw_varbinds=False,
         display_hints: Optional[Dict[str, Callable]] = None,
     ) -> Union[Any, Dict[str, Any]]:
@@ -43,6 +44,7 @@ class GufoSNMP(SNMP):
         :param oids: dict with oids in form {name: oid, ...} or string contains oid
         :param cached: True if get results can be cached during session
         :param version: SNMP Version used, if None - SNMP Capabilities used
+        :param timeout: Timeout for SNMP Response
         :param raw_varbinds: Return value in BER encoding
         :param display_hints: Dict of  oid -> render_function. See BaseProfile.snmp_display_hints for details
         :returns: eigther result scalar or dict of name -> value
@@ -54,7 +56,7 @@ class GufoSNMP(SNMP):
                 addr=address,
                 community=str(self.script.credentials["snmp_ro"]),
                 version=GUFO_SNMP_VERSION_MAP[version],
-                timeout=10,
+                timeout=timeout,
                 tos=self.script.tos,
                 limit_rps=self.rate_limit,
             ) as session:
@@ -121,7 +123,7 @@ class GufoSNMP(SNMP):
         only_first: bool = False,
         bulk: Optional[bool] = None,
         max_repetitions: Optional[int] = None,
-        version: Optional[str] = None,
+        version: Optional[int] = None,
         max_retries: int = 0,
         timeout: int = 10,
         raw_varbinds: bool = False,
@@ -204,11 +206,12 @@ class GufoSNMP(SNMP):
             raise ValueError(f"SNMP-version ({version}) is not supported by GufoSNMP library")
         return run_sync(partial(run, max_retries, filter), close_all=False)
 
-    def count(self, oid, filter=None, version=None) -> int:
+    def count(self, oid, filter=None, version=None, timeout: int = 10) -> int:
         """
         Iterate MIB subtree and count matching instances by gufo_snmp library
         :param oid: OID
         :param filter: Callable accepting oid and value and returning boolean
+        :param timeout: Timeout for SNMP Response
         """
 
         async def run(filter):
@@ -222,7 +225,7 @@ class GufoSNMP(SNMP):
                 addr=address,
                 community=str(self.script.credentials["snmp_ro"]),
                 version=GUFO_SNMP_VERSION_MAP[version],
-                timeout=10,
+                timeout=timeout,
                 tos=self.script.tos,
                 limit_rps=self.rate_limit,
             ) as session:
