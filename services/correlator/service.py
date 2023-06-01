@@ -1515,7 +1515,7 @@ class CorrelatorService(FastAPIService):
             self.logger.info("Updating %d statuses", len(r))
             try:
                 ObjectStatus.update_status_bulk(r)
-                ManagedObjectStatus.update_status_bulk(r)
+                ManagedObjectStatus.update_status_bulk(r, update_jobs=True)
             except Exception:
                 error_report()
                 pass
