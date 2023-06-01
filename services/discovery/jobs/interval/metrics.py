@@ -6,8 +6,7 @@
 # ---------------------------------------------------------------------
 
 # Python modules
-import time
-from typing import Any, List, Dict, Optional
+from typing import Any, List, Dict
 
 # NOC modules
 from noc.core.jsonutils import iter_chunks

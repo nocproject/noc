@@ -29,7 +29,7 @@ from noc.core.mongo.connection_async import connect_async
 from noc.pm.models.metricscope import MetricScope
 from noc.pm.models.metrictype import MetricType
 from noc.core.cdag.node.base import BaseCDAGNode
-from noc.core.cdag.node.probe import ProbeNode, ProbeNodeConfig, NS
+from noc.core.cdag.node.probe import ProbeNode, ProbeNodeConfig
 from noc.core.cdag.node.composeprobe import ComposeProbeNode, ComposeProbeNodeConfig
 from noc.core.cdag.node.alarm import VarItem
 from noc.core.cdag.graph import CDAG
