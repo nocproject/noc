@@ -128,3 +128,12 @@ def fix_range(l_left, l_right, over_value=0):
             return over_value
 
     return innner_fix_range
+
+
+def convert_float(value):
+    """
+    Convert absolute and total values to percent
+    """
+    if isinstance(value, bytes):
+        value = value.decode("utf-8")
+    return float(value)
