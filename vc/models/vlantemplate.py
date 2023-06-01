@@ -95,7 +95,7 @@ class VLANTemplate(Document):
         """
         for vi in self.vlans:
             for vlan in ranges_to_list(vi.vlan):
-                yield int(vlan), Template(vlan.name).render(
+                yield int(vlan), Template(vi.name).render(
                     {"vlan": int(vlan)}
                 ), vi.description, vi.profile
 
