@@ -219,7 +219,9 @@ class ManagedObjectManager(Manager):
             .get_queryset()
             .annotate(
                 avail_status=Subquery(
-                    ManagedObjectStatus.objects.filter(managed_object=OuterRef('id')).values('status')
+                    ManagedObjectStatus.objects.filter(managed_object=OuterRef("id")).values(
+                        "status"
+                    )
                 ),
                 is_managed=Case(
                     When(Q(diagnostics__SA__state="enabled"), then=Value(True)),
@@ -2746,10 +2748,13 @@ class ManagedObjectStatus(NOCModel):
         return True
 
     @classmethod
-    def update_status_bulk(cls, statuses: List[Tuple[int, bool, Optional[int]]], update_jobs: bool = False):
+    def update_status_bulk(
+        cls, statuses: List[Tuple[int, bool, Optional[int]]], update_jobs: bool = False
+    ):
         """
         Update statuses bulk
         :param statuses:
+        :param update_jobs:
         :return:
         """
         from django.db import connection as pg_connection
@@ -2759,8 +2764,7 @@ class ManagedObjectStatus(NOCModel):
         from noc.core.scheduler.scheduler import Scheduler
 
         now = datetime.datetime.now()
-
-        bulk = []
+        bulk = {}
         outages: List[Tuple[int, datetime.datetime, datetime.datetime]] = []
         # Getting current status
         cs = {}
@@ -2790,7 +2794,7 @@ class ManagedObjectStatus(NOCModel):
                 continue
             ts = (ts or now).replace(microsecond=0, tzinfo=None)
             if cs[oid]["status"] is None or cs[oid]["status"] != status and cs[oid]["last"] <= ts:
-                bulk += [(oid, status, ts)]
+                bulk[oid] = (oid, status, ts)  # Only last status
                 if update_jobs:
                     suspended_jobs[(cs[oid]["pool"], status)].append(oid)
                 # Update job timestamp to next
@@ -2811,7 +2815,7 @@ class ManagedObjectStatus(NOCModel):
                 ON CONFLICT (managed_object_id) DO UPDATE SET status = EXCLUDED.status, last = EXCLUDED.last
                 WHERE os.status != EXCLUDED.status
                 """,
-                bulk,
+                list(bulk.values()),
                 page_size=500,
             )
         svc = get_service()

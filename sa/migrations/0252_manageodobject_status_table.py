@@ -5,6 +5,9 @@
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
+# Python modules
+from collections import defaultdict
+
 # Third-party modules
 from django.db import models
 from django.db import connection
@@ -42,12 +45,15 @@ class Migration(BaseMigration):
         # Migration ObjectStatus
         coll = self.mongo_db["noc.cache.object_status"]
         bulk = []
+        suspended_jobs = defaultdict(list)
         # Getting all ManagedObjects for exclude constraints error
-        mos = {row[0] for row in self.db.execute("SELECT id FROM sa_managedobject")}
+        mos = {row[0]: row[1] for row in self.db.execute("SELECT id, pool FROM sa_managedobject")}
         for row in coll.find({"object": {"$exists": True}}):
             if row["object"] not in mos:
                 continue
             bulk += [(row["object"], row["status"], row.get("last"))]
+            if not row["status"]:
+                suspended_jobs[mos[row["object"]]].append(row["object"])
         if bulk:
             cursor = connection.cursor()
             execute_values(
@@ -58,4 +64,11 @@ class Migration(BaseMigration):
                 """,
                 bulk,
                 page_size=1000,
+            )
+        pool_map = {str(p["_id"]): p["name"] for p in self.mongo_db["noc.pools"].find()}
+        for pool, ids in suspended_jobs.items():
+            pool = pool_map[pool]
+            self.mongo_db[f"noc.schedules.discovery.{pool}"].update_many(
+                {"key": {"$in": ids}},
+                {"$set": {"s": "s"}},
             )
