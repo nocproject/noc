@@ -295,3 +295,12 @@ class ProbeNode(BaseCDAGNode):
         :return:
         """
         cls._SCALE = {}
+
+    def get_time_delta(self, ts: int) -> Optional[int]:
+        """
+        Calculate time_delta from node ts
+        return
+        """
+        if not self.state.lt:
+            return None
+        return int((ts - self.state.lt) / NS)
