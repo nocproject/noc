@@ -45,7 +45,9 @@ def fire_transition(self, transition):
     self.state.fire_transition(transition, self)
 
 
-def document_set_state(self, state, state_changed: datetime.datetime = None, bulk=None, create=False):
+def document_set_state(
+    self, state, state_changed: datetime.datetime = None, bulk=None, create=False
+):
     """
     Set state
 
