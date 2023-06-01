@@ -89,7 +89,7 @@ class AlarmRule(object):
                 Match(
                     labels=set(match.labels),
                     alarm_class=match.alarm_class,
-                    exclude_labels=match.exclude_labels if match.exclude_labels else None,
+                    exclude_labels=set(match.exclude_labels) if match.exclude_labels else None,
                     reference_rx=re.compile(match.reference_rx) if match.reference_rx else None,
                 )
             )
