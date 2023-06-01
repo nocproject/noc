@@ -45,7 +45,9 @@ def fire_transition(self, transition):
     self.state.fire_transition(transition, self)
 
 
-def document_set_state(self, state, state_changed: datetime.datetime = None, bulk=None):
+def document_set_state(
+    self, state, state_changed: datetime.datetime = None, bulk=None, create=False
+):
     """
     Set state
 
@@ -57,6 +59,7 @@ def document_set_state(self, state, state_changed: datetime.datetime = None, bul
     :param state:
     :param state_changed:
     :param bulk:
+    :param create: Set if assign default state
     :return:
     """
     # Direct update arguments
@@ -105,13 +108,14 @@ def document_set_state(self, state, state_changed: datetime.datetime = None, bul
         ic_handler()
     # Call state on_enter_handlers
     self.state.on_enter_state(self)
-    change_tracker.register(
-        "update",
-        get_model_id(self),
-        str(self.id),
-        fields=["state"],
-        datastreams=get_datastreams(self, {"state"}),
-    )
+    if not create:
+        change_tracker.register(
+            "update",
+            get_model_id(self),
+            str(self.id),
+            fields=["state"],
+            datastreams=get_datastreams(self, {"state"}),
+        )
 
 
 def document_touch(self, bulk=None):
@@ -141,7 +145,7 @@ def document_touch(self, bulk=None):
         self._get_collection().update_one({"_id": self.pk}, op)
 
 
-def model_set_state(self, state, state_changed: datetime.datetime = None, bulk=None):
+def model_set_state(self, state, state_changed: datetime.datetime = None, bulk=None, create=False):
     """
     Set state
 
@@ -153,6 +157,7 @@ def model_set_state(self, state, state_changed: datetime.datetime = None, bulk=N
     :param state:
     :param state_changed:
     :param bulk:
+    :param create: Set if assign default state
     :return:
     """
     # Direct update arguments
@@ -215,13 +220,14 @@ def model_set_state(self, state, state_changed: datetime.datetime = None, bulk=N
         self.diagnostic.reset_diagnostics(
             [d.diagnostic for d in state.iter_diagnostic_configs(self)]
         )
-    change_tracker.register(
-        "update",
-        get_model_id(self),
-        str(self.id),
-        fields=["state"],
-        datastreams=get_datastreams(self, {"state"}),
-    )
+    if not create:
+        change_tracker.register(
+            "update",
+            get_model_id(self),
+            str(self.id),
+            fields=["state"],
+            datastreams=get_datastreams(self, {"state"}),
+        )
 
 
 def model_touch(self, bulk=None):
@@ -270,7 +276,7 @@ def _on_document_post_save(sender, document, *args, **kwargs):
             )
             return
         logger.debug("[%s] Set initial state to '%s'", document, new_state.name)
-        document.set_state(new_state)
+        document.set_state(new_state, create=True)
 
 
 def _on_model_post_save(sender, instance, *args, **kwargs):
@@ -290,7 +296,7 @@ def _on_model_post_save(sender, instance, *args, **kwargs):
             )
             return
         logger.debug("[%s] Set initial state to '%s'", instance, new_state.name)
-        instance.set_state(new_state)
+        instance.set_state(new_state, create=True)
 
 
 def workflow(cls):
