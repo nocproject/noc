@@ -42,6 +42,7 @@ from .error import (
 )
 from .snmp.base import SNMP
 from .snmp.beef import BeefSNMP
+from .snmp.gufosnmp import GufoSNMP
 from .http.base import HTTP
 from .sessionstore import SessionStore
 
@@ -250,7 +251,12 @@ class BaseScript(object, metaclass=BaseScriptMetaclass):
                 snmp_rate_limit = self.credentials.get("snmp_rate_limit", None) or None
                 if snmp_rate_limit is None:
                     snmp_rate_limit = self.profile.get_snmp_rate_limit(self)
-                self._snmp = SNMP(self, rate=snmp_rate_limit)
+                if config.activator.snmp_backend == "native":
+                    self._snmp = SNMP(self, rate=snmp_rate_limit)
+                elif config.activator.snmp_backend == "gufo":
+                    self._snmp = GufoSNMP(self, rate=snmp_rate_limit)
+                else:
+                    raise ValueError(f"Invalid snmp_backend: {config.activator.snmp_backend}")
         return self._snmp
 
     @property
