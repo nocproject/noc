@@ -690,6 +690,7 @@ class MetricsService(FastAPIService):
         units: Dict[str, str] = data.get("_units") or {}
         tx = self.graph.begin()
         ts = data["ts"]
+        time_delta = None
         for n in data:
             mu = units.get(n) or si.units.get(n)
             if not mu:
@@ -699,6 +700,8 @@ class MetricsService(FastAPIService):
                 probe = self.add_probe(n, k)
             if not probe or probe.name == ComposeProbeNode.name:  # Skip composed probe
                 continue
+            if time_delta is None:
+                time_delta = probe.get_time_delta(ts)
             probe.activate(tx, "ts", ts)
             probe.activate(tx, "x", data[n])
             probe.activate(tx, "unit", mu)
@@ -708,8 +711,8 @@ class MetricsService(FastAPIService):
                 kv = data.get(kf)
                 if kv is not None:
                     sender.activate(tx, kf, kv)
-            if si.enable_timedelta and "time_delta" in data:
-                sender.activate(tx, "time_delta", data["time_delta"])
+            if si.enable_timedelta and time_delta:
+                sender.activate(tx, "time_delta", time_delta)
             sender.activate(tx, "ts", ts)
             sender.activate(tx, "labels", data.get("labels") or [])
         return tx.get_changed_state()
