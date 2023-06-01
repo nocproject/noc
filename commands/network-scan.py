@@ -93,7 +93,6 @@ class Command(BaseCommand):
         community,
         oid,
         timeout,
-        convert,
         version,
         credential,
         pool,
