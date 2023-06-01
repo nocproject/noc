@@ -18,7 +18,6 @@ from noc.core.text import ranges_to_list
 from noc.services.discovery.jobs.base import PolicyDiscoveryCheck
 from noc.core.vpn import get_vpn_id
 from noc.core.service.rpc import RPCError
-from noc.core.change.policy import change_tracker
 from noc.inv.models.forwardinginstance import ForwardingInstance
 from noc.inv.models.interface import Interface
 from noc.inv.models.interfaceprofile import InterfaceProfile
@@ -291,8 +290,6 @@ class InterfaceCheck(PolicyDiscoveryCheck):
                 update_effective_labels=True,
             )
             self.log_changes(f"Interface '{name}' has been changed", changes)
-            if changes:
-                change_tracker.register("update", "inv.Interface", str(iface.id), fields=[])
         else:
             # Create interface
             self.logger.info("Creating interface '%s'", name)
