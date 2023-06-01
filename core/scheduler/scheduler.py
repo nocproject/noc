@@ -11,13 +11,13 @@ import datetime
 import random
 import threading
 import time
-from time import perf_counter
 import asyncio
+from time import perf_counter
+from typing import List, Optional
 
 # Third-party modules
 import pymongo.errors
 from pymongo import DeleteOne, UpdateOne
-from typing import Optional
 
 # NOC modules
 from noc.core.mongo.connection import get_db
@@ -164,6 +164,20 @@ class Scheduler(object):
                 self.logger.info("Nothing to reset")
         else:
             self.logger.info("Failed to reset running jobs")
+
+    def suspend_keys(self, keys: List[int], suspend: bool = True):
+        self.logger.debug("Suspend jobs")
+        r = self.get_collection().update_many(
+            self.get_query({Job.ATTR_KEY: {"$in": keys}}),
+            {"$set": {Job.ATTR_STATUS: Job.S_SUSPEND if suspend else Job.S_WAIT}},
+        )
+        if r.acknowledged:
+            if r.modified_count:
+                self.logger.info("Suspend: %d", r.modified_count)
+            else:
+                self.logger.info("Nothing to suspend")
+        else:
+            self.logger.info("Failed to suspend jobs")
 
     def ensure_indexes(self):
         """

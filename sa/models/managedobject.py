@@ -2746,15 +2746,17 @@ class ManagedObjectStatus(NOCModel):
         return True
 
     @classmethod
-    def update_status_bulk(cls, statuses: List[Tuple[int, bool, Optional[int]]]):
+    def update_status_bulk(cls, statuses: List[Tuple[int, bool, Optional[int]]], update_jobs: bool = False):
         """
         Update statuses bulk
         :param statuses:
         :return:
         """
         from django.db import connection as pg_connection
+        from collections import defaultdict
         from psycopg2.extras import execute_values
         from noc.core.service.loader import get_service
+        from noc.core.scheduler.scheduler import Scheduler
 
         now = datetime.datetime.now()
 
@@ -2762,25 +2764,40 @@ class ManagedObjectStatus(NOCModel):
         outages: List[Tuple[int, datetime.datetime, datetime.datetime]] = []
         # Getting current status
         cs = {}
+        suspended_jobs = defaultdict(list)  # Pool - ids
         with pg_connection.cursor() as cursor:
             cursor.execute(
+                # """
+                # SELECT managed_object_id, status, last, mo.pool
+                # FROM sa_objectstatus
+                # LEFT JOIN sa_managedobject AS mo ON sa_objectstatus.managed_object_id = mo.id
+                # WHERE managed_object_id = ANY(%s::INT[])
+                # """,
                 """
-                SELECT managed_object_id, status, last
-                FROM sa_objectstatus
-                WHERE managed_object_id = ANY(%s::INT[])
+                SELECT id, os.status, os.last, mo.pool
+                FROM sa_managedobject AS mo
+                LEFT JOIN sa_objectstatus AS os ON mo.id = os.managed_object_id
+                WHERE id = ANY(%s::INT[])
                 """,
                 [[x[0] for x in statuses]],
             )
-            for o, status, last in cursor:
-                cs[o] = {"status": status, "last": last}
+            for o, status, last, pool in cursor:
+                pool = Pool.get_by_id(pool)
+                cs[o] = {"status": status, "last": last, "pool": pool.name}
         for oid, status, ts in statuses:
+            if oid not in cs:
+                logger.error("Unknown object id: %s", oid)
+                continue
             ts = (ts or now).replace(microsecond=0, tzinfo=None)
-            if oid not in cs or (cs[oid]["status"] != status and cs[oid]["last"] <= ts):
+            if cs[oid]["status"] is None or cs[oid]["status"] != status and cs[oid]["last"] <= ts:
                 bulk += [(oid, status, ts)]
+                if update_jobs:
+                    suspended_jobs[(cs[oid]["pool"], status)].append(oid)
+                # Update job timestamp to next
                 if status and oid in cs:
                     outages.append((oid, cs[oid]["last"], ts))
                 cs[oid] = {"status": status, "last": ts}
-            elif oid in cs and cs[oid]["last"] > ts:
+            elif cs[oid]["last"] > ts:
                 # Oops, out-of-order update
                 # Restore correct state
                 pass
@@ -2808,7 +2825,7 @@ class ManagedObjectStatus(NOCModel):
                 [
                     {
                         "date": now.date().isoformat(),
-                        "ts": now.replace(microsecond=0).isoformat(),
+                        "ts": now.replace(microsecond=0).isoformat() if start else None,
                         "managed_object": mo.bi_id,
                         "start": start.replace(microsecond=0).isoformat(),
                         "stop": stop.replace(microsecond=0).isoformat(),
@@ -2817,6 +2834,9 @@ class ManagedObjectStatus(NOCModel):
                 ],
                 key=mo.bi_id,
             )
+        for (pool, status), keys in suspended_jobs.items():
+            sc = Scheduler("discovery", pool=pool)
+            sc.suspend_keys(keys, suspend=not status)
 
 
 # object.scripts. ...
