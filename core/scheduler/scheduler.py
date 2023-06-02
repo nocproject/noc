@@ -189,6 +189,7 @@ class Scheduler(object):
             [("ts", 1), ("shard", 1)], partialFilterExpression={"s": "W"}
         )
         self.get_collection().create_index([("jcls", 1), ("key", 1)])
+        self.get_collection().create_index([("key", 1)])
         self.logger.debug("Indexes are ready")
 
     def get_query(self, q):
@@ -475,7 +476,7 @@ class Scheduler(object):
         :param ts: Set next run time (datetime)
         :param delta: Set next run time after delta seconds
         :param duration: Set last run duration (in seconds)
-        :param context_version: Job context format vresion
+        :param context_version: Job context format version
         :param context: Stored job context
         :param context_key: Cache key for context
         """
@@ -510,7 +511,7 @@ class Scheduler(object):
             op["$inc"] = inc_op
 
         if op:
-            q = {Job.ATTR_ID: jid}
+            q = {Job.ATTR_ID: jid, Job.ATTR_STATUS: {"$ne": Job.S_SUSPEND}}
             self.logger.debug("update(%s, %s)", q, op)
             with self.bulk_lock:
                 self.bulk += [UpdateOne(q, op)]

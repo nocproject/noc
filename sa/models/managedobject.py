@@ -129,7 +129,6 @@ from noc.wf.models.state import State
 from .administrativedomain import AdministrativeDomain
 from .authprofile import AuthProfile
 from .managedobjectprofile import ManagedObjectProfile
-from .objectstatus import ObjectStatus
 from .objectdiagnosticconfig import ObjectDiagnosticConfig
 
 # Increase whenever new field added or removed
@@ -1204,10 +1203,10 @@ class ManagedObject(NOCModel):
         return False
 
     def get_status(self):
-        return ObjectStatus.get_status(self)
+        return ManagedObjectStatus.get_status(self)
 
     def get_last_status(self):
-        return ObjectStatus.get_last_status(self)
+        return ManagedObjectStatus.get_last_status(self)
 
     def set_status(self, status, ts=None):
         """
@@ -1216,7 +1215,7 @@ class ManagedObject(NOCModel):
         :param ts: status change time
         :return: False if out-of-order update, True otherwise
         """
-        return ObjectStatus.set_status(self, status, ts=ts)
+        return ManagedObjectStatus.set_status(self, status, ts=ts)
 
     def get_inventory(self):
         """
@@ -2671,6 +2670,36 @@ class ManagedObjectStatus(NOCModel):
 
     def __str__(self):
         return "%s: %s" % (self.managed_object, self.status)
+
+    @classmethod
+    def get_status(cls, o) -> bool:
+        r = cls.get_statuses([o.id])
+        if o.id not in r:
+            return True
+        return r[o.id]
+
+    @classmethod
+    def get_last_status(cls, o) -> Tuple[Optional[bool], Optional[datetime.datetime]]:
+        """
+        Returns last registered status and update time
+        :param object: Managed Object id
+        :return: last status, last update or None
+        """
+        from django.db import connection as pg_connection
+
+        with pg_connection.cursor() as cursor:
+            cursor.execute(
+                """
+                SELECT status, last
+                FROM sa_objectstatus
+                WHERE managed_object_id = %s
+                """,
+                [o.id],
+            )
+            r = cursor.fetchone()
+            if r:
+                return r
+        return None, None
 
     @classmethod
     def get_statuses(cls, objects: List[int]) -> Dict[int, bool]:
