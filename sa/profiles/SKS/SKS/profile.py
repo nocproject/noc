@@ -2,7 +2,7 @@
 # Vendor: SKS (SVYAZKOMPLEKTSERVICE, LLC. - https://www.nposkss.ru)
 # OS:     SKS
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2021 The NOC Project
+# Copyright (C) 2007-2023 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -17,7 +17,7 @@ class Profile(BaseProfile):
     name = "SKS.SKS"
 
     pattern_unprivileged_prompt = rb"^(?P<hostname>\S+)\s*>"
-    pattern_prompt = rb"^(?P<hostname>[^#\n]\S+)(?:\(e1\))?\s*#"
+    pattern_prompt = rb"^(?P<hostname>(?! #)\S+)(?:\(e1\))?\s*#"
     pattern_syntax_error = (
         rb"% Unrecognized command|% Wrong number of parameters|"
         rb"% Unrecognized host or address|"
@@ -129,7 +129,7 @@ class Profile(BaseProfile):
             return "SVI"
         return cls.INTERFACE_TYPES.get(name[:2].lower())
 
-    rx_e1 = re.compile(r"e1 unit-1|!")
+    rx_e1 = re.compile(r"e1 unit-1|!|config-file-header")
     rx_snmp = re.compile(r"snmp-server community 7 (\w+) ")
 
     def cleaned_config(self, cfg):
