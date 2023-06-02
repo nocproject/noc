@@ -96,7 +96,8 @@ class SNMP(object):
         self,
         oids: Union[List[str], str],
         cached: bool = False,
-        version: Optional[str] = None,
+        version: Optional[int] = None,
+        timeout: int = 10,
         raw_varbinds=False,
         display_hints: Optional[Dict[str, Callable]] = None,
     ):
@@ -105,6 +106,7 @@ class SNMP(object):
         :param List[str] oids: string or list of oids
         :param cached: True if get results can be cached during session
         :param version: SNMP Version used, if None - SNMP Capabilities used
+        :param timeout: Timeout for SNMP Response
         :param raw_varbinds: Return value in BER encoding
         :param display_hints: Dict of  oid -> render_function. See BaseProfile.snmp_display_hints for details
         :returns: eigther result scalar or dict of name -> value
@@ -119,6 +121,7 @@ class SNMP(object):
                     tos=self.script.tos,
                     udp_socket=self.get_socket(),
                     version=version,
+                    timeout=timeout,
                     raw_varbinds=raw_varbinds,
                     display_hints=display_hints,
                     response_parser=self.script.profile.get_snmp_response_parser(self.script),
@@ -177,11 +180,12 @@ class SNMP(object):
             raise SNMPError(code=ERR_SNMP_BAD_COMMUNITY)
         return run_sync(run, close_all=False)
 
-    def count(self, oid, filter=None, version=None):
+    def count(self, oid, filter=None, version=None, timeout: int = 10):
         """
         Iterate MIB subtree and count matching instances
         :param oid: OID
         :param filter: Callable accepting oid and value and returning boolean
+        :param timeout: Timeout for SNMP Response
         """
 
         async def run():
@@ -195,6 +199,7 @@ class SNMP(object):
                     tos=self.script.tos,
                     udp_socket=self.get_socket(),
                     version=version,
+                    timeout=timeout,
                     rate_limit=self.rate_limit,
                 )
                 return r
@@ -218,7 +223,7 @@ class SNMP(object):
         only_first: bool = False,
         bulk: Optional[bool] = None,
         max_repetitions: Optional[int] = None,
-        version: Optional[str] = None,
+        version: Optional[int] = None,
         max_retries: int = 0,
         timeout: int = 10,
         raw_varbinds: bool = False,
