@@ -2,7 +2,7 @@
 # Vendor: Eltex
 # OS:     MES
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2022 The NOC Project
+# Copyright (C) 2007-2023 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -35,7 +35,8 @@ class Profile(BaseProfile):
         rb"Wrong number of parameters or invalid range, size or "
         rb"characters entered)"
     )
-    command_disable_pager = "terminal datadump"
+    pattern_operation_error = rb"command authorization failed"
+    # command_disable_pager = "terminal datadump"
     command_super = b"enable"
     command_enter_config = "configure"
     command_leave_config = "end"
@@ -113,6 +114,13 @@ class Profile(BaseProfile):
         "192": "MES-2324FB",
         "235": "MES-2348P",
     }
+
+    def setup_session(self, script):
+        try:
+            script.cli("terminal datadump")
+            script.cli("")  # "сommand authorization failed" - not syntax error
+        except script.CLISyntaxError:
+            pass
 
     REVISIONS = {"190": "rev.B"}
 
