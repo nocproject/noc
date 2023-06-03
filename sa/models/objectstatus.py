@@ -41,9 +41,7 @@ class ObjectStatus(Document):
     # Last update
     last = DateTimeField()
 
-    _failed_object_cache = cachetools.TTLCache(
-        maxsize=10, ttl=config.discovery.object_status_cache_ttl
-    )
+    _failed_object_cache = cachetools.TTLCache(maxsize=10, ttl=60)
 
     def __str__(self):
         return f"{self.object}: {self.status}"
