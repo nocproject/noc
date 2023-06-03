@@ -1,0 +1,13 @@
+{
+    "name": "Interface | Octets | In | Delta",
+    "$collection": "pm.metrictypes",
+    "uuid": "85b235d8-c138-4ffa-a2ba-63ae39214a48",
+    "scope__name": "Interface",
+    "field_name": "octets_in_delta",
+    "field_type": "UInt32",
+    "description": "Delta for total number of octets received on the interface, including framing characters.",
+    "measure": "bytes",
+    "units__code": "byte",
+    "scale__code": "1",
+    "is_delta": true
+}

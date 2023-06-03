@@ -1,16 +1,16 @@
 {
-  "$metric": "Interface | Octets | In",
+  "$metric": "Interface | Octets | In | Delta",
   "$type": "hires",
   "hires": {
     "$type": "ifindex",
     "oid": "IF-MIB::ifHCInOctets.{{ ifIndex }}",
-    "type": "gauge",
+    "type": "delta",
     "units": "byte"
   },
   "normal": {
     "$type": "ifindex",
     "oid": "IF-MIB::ifInOctets.{{ ifIndex }}",
-    "type": "gauge",
+    "type": "delta",
     "units": "byte"
   }
 }
