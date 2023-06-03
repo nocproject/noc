@@ -1217,6 +1217,30 @@ class ManagedObject(NOCModel):
         """
         return ManagedObjectStatus.set_status(self, status, ts=ts)
 
+    @classmethod
+    def get_statuses(cls, objects: List[int]) -> Dict[int, bool]:
+        """
+        Returns a map of object id -> status
+        for a list od object ids
+        """
+        from django.db import connection as pg_connection
+
+        s = {}
+        with pg_connection.cursor() as cursor:
+            while objects:
+                chunk, objects = objects[:500], objects[500:]
+                cursor.execute(
+                    """
+                    SELECT managed_object_id, status
+                    FROM sa_objectstatus
+                    WHERE managed_object_id = ANY(%s::INT[])
+                    """,
+                    [chunk],
+                )
+                for o, status in cursor:
+                    s[o] = status
+        return s
+
     def get_inventory(self):
         """
         Retuns a list of inventory Objects managed by
@@ -2702,30 +2726,6 @@ class ManagedObjectStatus(NOCModel):
         return None, None
 
     @classmethod
-    def get_statuses(cls, objects: List[int]) -> Dict[int, bool]:
-        """
-        Returns a map of object id -> status
-        for a list od object ids
-        """
-        from django.db import connection as pg_connection
-
-        s = {}
-        with pg_connection.cursor() as cursor:
-            while objects:
-                chunk, objects = objects[:500], objects[500:]
-                cursor.execute(
-                    """
-                    SELECT managed_object_id, status
-                    FROM sa_objectstatus
-                    WHERE managed_object_id = ANY(%s::INT[])
-                    """,
-                    [chunk],
-                )
-                for o, status in cursor:
-                    s[o] = status
-        return s
-
-    @classmethod
     def set_status(cls, object, status, ts=None):
         """
         Update object status
@@ -2734,51 +2734,13 @@ class ManagedObjectStatus(NOCModel):
         :param ts: Status change timestamp
         :return: True, if status has been changed, False - out-of-order update
         """
-        from django.db import connection as pg_connection
-        from noc.fm.models.outage import Outage
-
-        ts = ts or datetime.datetime.now()
-        # Update naively
-        # Must work in most cases
-        # find_and_modify returns old document or None for upsert
-
-        cursor = pg_connection.cursor()
-        # SELECT AND UPDATE
-        cursor.execute(
-            """
-             INSERT INTO sa_objectstatus as os (managed_object_id, status, last) VALUES (%s, %s, %s)
-             ON CONFLICT (managed_object_id) DO UPDATE SET status = EXCLUDED.status, last = EXCLUDED.last
-             WHERE os.status != EXCLUDED.status
-             RETURNING status, last
-             """,
-            [object.id, status, ts],
-        )
-        r = cursor.fetchone()
-        # r = coll.find_one_and_update(
-        #     {"object": object.id}, update={"$set": {"status": status, "last": ts}}, upsert=True
-        # )
-        # @todo No diff on insert and update, SELECT AND UPDATE try?
-        if not r:
-            # Same status.
-            # work completed
-            # Setting status for first time
-            # Work complete
-            return True
-
-        r_status, last = r
-        if last > ts:
-            # Oops, out-of-order update
-            # Restore correct state
-            # coll.update_one({"object": object.id}, {"status": r["status"], "last": r["last"]})
-            return False
-        if r:
-            # Status changed
-            Outage.register_outage(object, not status, ts=ts)
-        return True
+        cls.update_status_bulk([(object.id, status, ts)])
 
     @classmethod
     def update_status_bulk(
-        cls, statuses: List[Tuple[int, bool, Optional[int]]], update_jobs: bool = False
+        cls,
+        statuses: List[Tuple[int, bool, Optional[datetime.datetime]]],
+        update_jobs: bool = False,
     ):
         """
         Update statuses bulk
@@ -2827,7 +2789,7 @@ class ManagedObjectStatus(NOCModel):
                 if update_jobs:
                     suspended_jobs[(cs[oid]["pool"], status)].append(oid)
                 # Update job timestamp to next
-                if status and oid in cs:
+                if cs[oid]["last"] and status and oid in cs:
                     outages.append((oid, cs[oid]["last"], ts))
                 cs[oid] = {"status": status, "last": ts}
             elif cs[oid]["last"] > ts:

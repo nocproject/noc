@@ -31,7 +31,6 @@ from noc.sa.interfaces.base import (
     DictListParameter,
     DictParameter,
 )
-from noc.sa.models.objectstatus import ObjectStatus
 from noc.fm.models.activealarm import ActiveAlarm
 from noc.maintenance.models.maintenance import Maintenance
 from noc.core.text import alnum_key
@@ -441,7 +440,7 @@ class MapApplication(ExtApplication):
         # Mark all as unknown
         objects = list(itertools.chain(nid, object_group))
         r = {o: self.ST_UNKNOWN for o in itertools.chain(nid.values(), group_nodes.values())}
-        sr = ObjectStatus.get_statuses(objects)
+        sr = ManagedObject.get_statuses(objects)
         sa = get_alarms(objects)
         mo = Maintenance.currently_affected(objects)
         # Nodes Status
