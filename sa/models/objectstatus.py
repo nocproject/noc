@@ -21,7 +21,6 @@ from pymongo import UpdateOne, ReadPreference
 # NOC modules
 from noc.core.service.loader import get_service
 from noc.fm.models.outage import Outage
-from noc.config import config
 
 id_lock = Lock()
 
