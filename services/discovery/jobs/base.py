@@ -262,111 +262,6 @@ class MODiscoveryJob(PeriodicJob):
             self.object.get_profile().allow_cli_session(None, None)
         return r
 
-    def update_umbrella(self, umbrella_cls, details):
-        """
-        Update umbrella alarm status for managed object
-
-        :param umbrella_cls: Umbrella alarm class (AlarmClass instance)
-        :param details: List of dicts, containing
-            * alarm_class - Detail alarm class
-            * path - Additional path
-            * severity - Alarm severity
-            * vars - dict of alarm vars
-        :return:
-        """
-
-        now = datetime.datetime.now()
-        umbrella = ActiveAlarm.objects.filter(
-            alarm_class=umbrella_cls.id, managed_object=self.object.id
-        ).first()
-        u_sev = sum(d.get("severity", 0) for d in details)
-        umbrella_changed = False
-        if not umbrella and not details:
-            # No money, no honey
-            return
-        elif not umbrella and details:
-            # Open new umbrella
-            umbrella = ActiveAlarm(
-                timestamp=now,
-                managed_object=self.object.id,
-                alarm_class=umbrella_cls.id,
-                severity=u_sev,
-            )
-            umbrella.save()
-            self.logger.info("Opening umbrella alarm %s (%s)", umbrella.id, umbrella_cls.name)
-            umbrella_changed = True
-        elif umbrella and not details:
-            # Close existing umbrella
-            self.logger.info("Clearing umbrella alarm %s (%s)", umbrella.id, umbrella_cls.name)
-            umbrella.clear_alarm("Closing umbrella")
-            umbrella_changed = True
-        elif umbrella and details and u_sev != umbrella.severity:
-            self.logger.info(
-                "Change umbrella alarm %s severity %s -> %s (%s)",
-                umbrella.id,
-                umbrella.severity,
-                u_sev,
-                umbrella_cls.name,
-            )
-            umbrella.change_severity(severity=u_sev)
-            umbrella_changed = True
-        # Get existing details for umbrella
-        active_details = {}  # (alarm class, path) -> alarm
-        if umbrella:
-            for da in ActiveAlarm.objects.filter(root=umbrella.id):
-                d_path = da.vars.get("path", "")
-                active_details[da.alarm_class, d_path] = da
-        # Synchronize details
-        self.logger.info("Active details: %s" % active_details)
-        seen = set()
-        for d in details:
-            d_path = d.get("path", "")
-            d_key = (d["alarm_class"], d_path)
-            d_sev = d.get("severity", 0)
-            # Key for seen details
-            seen.add(d_key)
-            if d_key in active_details and active_details[d_key].severity != d_sev:
-                # Change severity
-                self.logger.info(
-                    "Change detail alarm %s severity %s -> %s",
-                    active_details[d_key].id,
-                    active_details[d_key].severity,
-                    d_sev,
-                )
-                active_details[d_key].change_severity(severity=d_sev)
-                umbrella_changed = True
-            elif d_key not in active_details:
-                # Create alarm
-                self.logger.info("Create detail alarm to path %s", d_key)
-                v = d.get("vars", {})
-                v["path"] = d_path
-                clear_notification_group = d.get("clear_notification_group")
-                clear_template = d.get("clear_template")
-                log = d.get("log")
-                da = ActiveAlarm(
-                    timestamp=now,
-                    managed_object=self.object.id,
-                    alarm_class=d["alarm_class"],
-                    severity=d_sev,
-                    vars=v,
-                    root=umbrella.id,
-                    clear_notification_group=clear_notification_group,
-                    clear_template=clear_template,
-                    log=log,
-                )
-                da.save()
-                self.logger.info(
-                    "Opening detail alarm %s %s (%s)", da.id, d_path, da.alarm_class.name
-                )
-                umbrella_changed = True
-        # Close details when necessary
-        for d in set(active_details) - seen:
-            self.logger.info("Clearing detail alarm %s", active_details[d].id)
-            active_details[d].clear_alarm("Closing")
-            umbrella_changed = True
-        if umbrella and umbrella_changed:
-            AlarmEscalation.watch_escalations(umbrella)
-
     def load_diagnostic(self, is_box: bool = False, is_periodic: bool = False):
         r = set()
         for dc in self.object.iter_diagnostic_configs():
@@ -661,7 +556,6 @@ class DiscoveryCheck(object):
                 else:
                     message = f"Remote error code {e.remote_code}, message: {e}"
                 self.set_problem(
-                    alarm_class=self.error_map.get(e.remote_code),
                     message=message,
                     diagnostic="CLI" if e.remote_code in self.error_map else None,
                     fatal=e.remote_code in self.fatal_errors,
@@ -669,7 +563,6 @@ class DiscoveryCheck(object):
                 span.set_error_from_exc(e, e.remote_code)
             except RPCError as e:
                 self.set_problem(
-                    alarm_class=self.error_map.get(e.default_code),
                     message=f"RPC Error: {e}",
                     diagnostic="CLI" if e.default_code in self.error_map else None,
                     fatal=e.default_code in self.fatal_errors,
@@ -677,10 +570,7 @@ class DiscoveryCheck(object):
                 self.logger.error("Terminated due RPC error: %s", e)
                 span.set_error_from_exc(e, e.default_code)
             except Exception as e:
-                self.set_problem(
-                    alarm_class="Discovery | Error | Unhandled Exception",
-                    message=f"Unhandled exception: {e}",
-                )
+                self.set_problem(message=f"Unhandled exception: {e}")
                 error_report(logger=self.logger)
                 span.set_error_from_exc(e)
 
