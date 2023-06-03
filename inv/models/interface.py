@@ -587,15 +587,16 @@ class Interface(Document):
             if not metrics:
                 continue
             ifindex = i.get("ifindex")
-            service = i.get("service")
-            if service and config.discovery.interface_metric_service:
-                service = Service.get_by_id(service)
+            service = None
+            if config.discovery.interface_metric_service:
+                service = i.get("service")
+                service = Service.get_by_id(service) if service else None
             yield MetricCollectorConfig(
                 collector="managed_object",
                 metrics=tuple(metrics),
                 labels=(f"noc::interface::{i['name']}",),
                 hints=[f"ifindex::{ifindex}"] if ifindex else None,
-                service=service.bi_id if service else None,
+                service=service,
             )
             if not i_profile.allow_subinterface_metrics:
                 continue
@@ -607,9 +608,10 @@ class Interface(Document):
                 )
             ):
                 ifindex = si.get("ifindex")
-                service = si.get("service")
-                if service and config.discovery.interface_metric_service:
-                    service = Service.get_by_id(service)
+                service = None
+                if config.discovery.interface_metric_service:
+                    service = si.get("service")
+                    service = Service.get_by_id(service) if service else None
                 yield MetricCollectorConfig(
                     collector="managed_object",
                     metrics=tuple(metrics),
@@ -618,7 +620,7 @@ class Interface(Document):
                         f"noc::subinterface::{si['name']}",
                     ),
                     hints=[f"ifindex::{ifindex}"] if ifindex else None,
-                    service=service.bi_id if service else None,
+                    service=service,
                 )
 
     @classmethod
