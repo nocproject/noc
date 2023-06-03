@@ -328,6 +328,8 @@ class MODiscoveryJob(PeriodicJob):
         :param group_reference: Group Reference
         :return:
         """
+        from noc.fm.models.alarmclass import AlarmClass
+
         self.logger.info("Updating alarm statuses")
         group_cls: Optional["AlarmClass"] = AlarmClass.get_by_name(group_cls or "Group")
         if not group_cls:
@@ -1692,9 +1694,3 @@ class PolicyDiscoveryCheck(DiscoveryCheck):
 
     def has_required_script(self):
         return super().has_required_script() or self.get_policy() != ["script"]
-
-
-# Avoid circular references
-from noc.fm.models.alarmclass import AlarmClass
-from noc.fm.models.activealarm import ActiveAlarm
-from noc.fm.models.alarmescalation import AlarmEscalation
