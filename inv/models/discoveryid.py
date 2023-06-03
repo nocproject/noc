@@ -54,7 +54,7 @@ class DiscoveryID(Document):
         "collection": "noc.inv.discovery_id",
         "strict": False,
         "auto_create_index": False,
-        "indexes": ["object", "hostname", "hostname_id", "udld_id", "macs"],
+        "indexes": ["object", "hostname", "hostname_id", "udld_id", "router_id", "macs"],
     }
     object = ForeignKeyField(ManagedObject)
     chassis_mac = ListField(EmbeddedDocumentField(MACRange))

@@ -303,4 +303,4 @@ class ProbeNode(BaseCDAGNode):
         """
         if not self.state.lt:
             return None
-        return int((ts - self.state.lt) / NS)
+        return abs(int((ts - self.state.lt) / NS))
