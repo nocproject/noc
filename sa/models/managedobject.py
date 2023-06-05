@@ -2784,7 +2784,7 @@ class ManagedObjectStatus(NOCModel):
                 logger.error("Unknown object id: %s", oid)
                 continue
             ts = (ts or now).replace(microsecond=0, tzinfo=None)
-            if cs[oid]["status"] is None or cs[oid]["status"] != status and cs[oid]["last"] <= ts:
+            if cs[oid]["status"] is None or (cs[oid]["status"] != status and cs[oid]["last"] <= ts):
                 bulk[oid] = (oid, status, ts)  # Only last status
                 if update_jobs:
                     suspended_jobs[(cs[oid]["pool"], status)].append(oid)

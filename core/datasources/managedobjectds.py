@@ -21,7 +21,6 @@ from noc.sa.models.useraccess import UserAccess
 from noc.sa.models.managedobject import ManagedObject
 from noc.sa.models.authprofile import AuthProfile
 from noc.sa.models.profile import Profile
-from noc.sa.models.objectstatus import ObjectStatus
 from noc.main.models.pool import Pool
 from noc.inv.models.capability import Capability
 from noc.inv.models.platform import Platform
@@ -420,12 +419,7 @@ class ManagedObjectDS(BaseDataSource):
                 .find({}, {"name": 1})
             }
         if not fields or "avail" in fields:
-            avail_map = {
-                val["object"]: {True: "yes", False: "no"}[val["status"]]
-                for val in ObjectStatus._get_collection()
-                .with_options(read_preference=ReadPreference.SECONDARY_PREFERRED)
-                .find({"object": {"$exists": 1}}, {"object": 1, "status": 1})
-            }
+            q_fields.append("avail_status")
         if not fields or "adm_path" in fields:
             adm_paths = cls.load_adm_path()
         for num, mo in enumerate(mos.values(*q_fields).iterator(), start=1):
@@ -459,8 +453,8 @@ class ManagedObjectDS(BaseDataSource):
                 yield num, "hostname", hostname_map.get(mo["id"])
             if segment_map:
                 yield num, "segment", segment_map.get(mo["segment"])
-            if avail_map:
-                yield num, "avail", avail_map.get(mo["id"], "--")
+            if "avail_status" in mo:
+                yield num, "avail", "--" if mo["avail_status"] is None else mo["avail_status"]
             if "auth_profile" in mo:
                 yield num, "auth_profile", (
                     AuthProfile.get_by_id(mo["auth_profile"]).name if mo["auth_profile"] else None
