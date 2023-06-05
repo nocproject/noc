@@ -13,7 +13,7 @@ from fastapi import APIRouter, Header, HTTPException
 from pydantic import BaseModel
 
 # NOC modules
-from noc.sa.models.objectstatus import ObjectStatus
+from noc.sa.models.managedobject import ManagedObject
 from ..base import NBIAPI, API_ACCESS_HEADER, FORBIDDEN_MESSAGE
 
 router = APIRouter()
@@ -57,7 +57,7 @@ class ObjectStatusAPI(NBIAPI):
             objects = [int(o) for o in req.objects]
         except ValueError as e:
             raise HTTPException(400, "Bad request: %s" % e)
-        statuses = ObjectStatus.get_statuses(objects)
+        statuses = ManagedObject.get_statuses(objects)
         return {"statuses": [{"id": str(o), "status": statuses.get(o, False)} for o in objects]}
 
 

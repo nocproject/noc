@@ -21,7 +21,6 @@ from pymongo import UpdateOne, ReadPreference
 # NOC modules
 from noc.core.service.loader import get_service
 from noc.fm.models.outage import Outage
-from noc.config import config
 
 id_lock = Lock()
 
@@ -41,9 +40,7 @@ class ObjectStatus(Document):
     # Last update
     last = DateTimeField()
 
-    _failed_object_cache = cachetools.TTLCache(
-        maxsize=10, ttl=config.discovery.object_status_cache_ttl
-    )
+    _failed_object_cache = cachetools.TTLCache(maxsize=10, ttl=60)
 
     def __str__(self):
         return f"{self.object}: {self.status}"

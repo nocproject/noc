@@ -11,9 +11,9 @@ import operator
 # NOC modules
 from .base import BaseCard
 from noc.sa.models.servicesummary import ServiceSummary, SummaryItem
+from noc.sa.models.managedobject import ManagedObject
 from noc.inv.models.networksegment import NetworkSegment
 from noc.fm.models.activealarm import ActiveAlarm
-from noc.sa.models.objectstatus import ObjectStatus
 
 
 class SegmentCard(BaseCard):
@@ -45,7 +45,7 @@ class SegmentCard(BaseCard):
                 {"managed_object": {"$in": mos}}, {"_id": 0, "managed_object": 1}
             )
         )
-        o_status = ObjectStatus.get_statuses(mos)
+        o_status = ManagedObject.get_statuses(mos)
         for o in objects:
             if o["id"] in o_status:
                 if o["id"] in alarms:

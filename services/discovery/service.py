@@ -9,6 +9,7 @@
 # NOC modules
 from noc.config import config
 from noc.core.scheduler.scheduler import Scheduler
+from noc.core.scheduler.job import Job
 from noc.core.service.fastapi import FastAPIService
 
 
@@ -52,10 +53,10 @@ class DiscoveryService(FastAPIService):
             coll = self.scheduler.get_collection()
             coll.update_many(
                 {
-                    "key": {"$mod": [self.total_slots, self.slot_number]},
-                    "shard": {"$ne": self.slot_number},
+                    Job.ATTR_KEY: {"$mod": [self.total_slots, self.slot_number]},
+                    Job.ATTR_SHARD: {"$ne": self.slot_number},
                 },
-                {"$set": {"shard": self.slot_number}},
+                {"$set": {Job.ATTR_SHARD: self.slot_number}},
             )
         # Run scheduler
         self.scheduler.run()

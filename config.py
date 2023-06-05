@@ -264,10 +264,6 @@ class Config(BaseConfig):
             default=True,
             help="Add service field to metric request",
         )
-        object_status_cache_ttl = SecondsParameter(
-            default=10,
-            help="TTL for object status cache. Used when check run discovery",
-        )
 
     class dns(ConfigSection):
         warn_before_expired = SecondsParameter(default="30d")

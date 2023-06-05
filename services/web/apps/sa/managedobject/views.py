@@ -59,7 +59,6 @@ from noc.core.text import alnum_key
 from noc.core.middleware.tls import get_user
 from noc.fm.models.activealarm import ActiveAlarm
 from noc.fm.models.alarmclass import AlarmClass
-from noc.sa.models.objectstatus import ObjectStatus
 
 JP_CLAUSE_PATTERN = """jsonb_path_exists(caps, '$[*] ? (@.capability == "{}") ? (@.value {} {})')"""
 
@@ -208,7 +207,7 @@ class ManagedObjectApplication(ExtModelApplication):
                 {"managed_object": 1},
             )
         )
-        os = ObjectStatus.get_statuses(mo_ids)
+        os = ManagedObject.get_statuses(mo_ids)
         disabled = set(
             ManagedObject.objects.filter(object_profile__enable_ping=False).values_list(
                 "id", flat=True
