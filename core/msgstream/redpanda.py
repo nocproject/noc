@@ -20,6 +20,7 @@ from aiokafka.client import AIOKafkaClient
 from kafka.admin import KafkaAdminClient, NewTopic
 from kafka.errors import (
     KafkaError,
+    KafkaTimeoutError,
     UnknownTopicOrPartitionError,
     NodeNotReadyError,
     KafkaConnectionError,
@@ -418,6 +419,9 @@ class RedPandaClient(object):
             producer.create_batch()
             metrics["messages_sent_ok", ("topic", stream)] += 1
             metrics["bytes_sent", ("topic", stream)] += len(value)
+        except KafkaTimeoutError as e:
+            logger.error("Timeout when sending to topic: %s", stream)
+            raise MsgStreamError(str(e))
         except KafkaError as e:
             metrics["messages_sent_error", ("topic", stream)] += 1
             logger.error("Failed to send to topic %s: %s", stream, e)
