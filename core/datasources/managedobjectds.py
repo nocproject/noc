@@ -165,7 +165,7 @@ class ManagedObjectDS(BaseDataSource):
             FieldInfo(
                 name="avail",
                 description="Object Availability Status",
-                internal_name="id",
+                internal_name="avail_status",
             ),
             # Discovery enabled fields
             FieldInfo(
@@ -418,8 +418,6 @@ class ManagedObjectDS(BaseDataSource):
                 .with_options(read_preference=ReadPreference.SECONDARY_PREFERRED)
                 .find({}, {"name": 1})
             }
-        if not fields or "avail" in fields:
-            q_fields.append("avail_status")
         if not fields or "adm_path" in fields:
             adm_paths = cls.load_adm_path()
         for num, mo in enumerate(mos.values(*q_fields).iterator(), start=1):
@@ -454,7 +452,7 @@ class ManagedObjectDS(BaseDataSource):
             if segment_map:
                 yield num, "segment", segment_map.get(mo["segment"])
             if "avail_status" in mo:
-                yield num, "avail", "--" if mo["avail_status"] is None else mo["avail_status"]
+                yield num, "avail", {None: "--", True: "yes", False: "no"}[mo["avail_status"]]
             if "auth_profile" in mo:
                 yield num, "auth_profile", (
                     AuthProfile.get_by_id(mo["auth_profile"]).name if mo["auth_profile"] else None

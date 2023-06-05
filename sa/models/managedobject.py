@@ -1202,8 +1202,11 @@ class ManagedObject(NOCModel):
             return re.match(rx, interface) is not None
         return False
 
-    def get_status(self):
-        return ManagedObjectStatus.get_status(self)
+    def get_status(self) -> bool:
+        r = self.get_statuses([self.id])
+        if self.id not in r:
+            return True
+        return r[self.id]
 
     def get_last_status(self):
         return ManagedObjectStatus.get_last_status(self)
@@ -2696,13 +2699,6 @@ class ManagedObjectStatus(NOCModel):
         return "%s: %s" % (self.managed_object, self.status)
 
     @classmethod
-    def get_status(cls, o) -> bool:
-        r = cls.get_statuses([o.id])
-        if o.id not in r:
-            return True
-        return r[o.id]
-
-    @classmethod
     def get_last_status(cls, o) -> Tuple[Optional[bool], Optional[datetime.datetime]]:
         """
         Returns last registered status and update time
@@ -2820,7 +2816,7 @@ class ManagedObjectStatus(NOCModel):
                 [
                     {
                         "date": now.date().isoformat(),
-                        "ts": now.replace(microsecond=0).isoformat() if start else None,
+                        "ts": start.replace(microsecond=0).isoformat(),
                         "managed_object": mo.bi_id,
                         "start": start.replace(microsecond=0).isoformat(),
                         "stop": stop.replace(microsecond=0).isoformat(),
