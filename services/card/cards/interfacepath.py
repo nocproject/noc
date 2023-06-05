@@ -16,7 +16,6 @@ import orjson
 # NOC modules
 from noc.config import config
 from noc.sa.models.managedobject import ManagedObject
-from noc.sa.models.objectstatus import ObjectStatus
 from noc.inv.models.interface import Interface
 from noc.core.topology.path import KSPFinder
 from noc.core.topology.constraint.base import BaseConstraint
@@ -270,7 +269,7 @@ class InterfacePathCard(BaseCard):
                 (mo, if_hash, "status", status),
             ]
         # Get current object statuses
-        obj_statuses = ObjectStatus.get_statuses(list(mo_map))
+        obj_statuses = ManagedObject.get_statuses(list(mo_map))
         statuses = {str(mo_map[mo_id]): obj_statuses.get(mo_id, True) for mo_id in obj_statuses}
         return {"metrics": metrics, "statuses": list(statuses.items())}
 
