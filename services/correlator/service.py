@@ -1499,7 +1499,7 @@ class CorrelatorService(FastAPIService):
         Update object statuses
         :return:
         """
-        from noc.sa.models.objectstatus import ObjectStatus
+        from noc.sa.models.managedobject import ManagedObjectStatus
 
         self.logger.info("Running object status updater")
         while True:
@@ -1513,7 +1513,7 @@ class CorrelatorService(FastAPIService):
                 r.append(self.status_changes.popleft())
             self.logger.info("Updating %d statuses", len(r))
             try:
-                ObjectStatus.update_status_bulk(r)
+                ManagedObjectStatus.update_status_bulk(r, update_jobs=True)
             except Exception:
                 error_report()
                 pass

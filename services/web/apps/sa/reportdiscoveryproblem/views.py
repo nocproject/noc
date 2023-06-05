@@ -18,7 +18,6 @@ from noc.sa.models.profile import Profile
 from noc.sa.models.profile import GENERIC_PROFILE
 from noc.sa.models.managedobjectprofile import ManagedObjectProfile
 from noc.inv.models.resourcegroup import ResourceGroup
-from noc.sa.models.objectstatus import ObjectStatus
 from noc.sa.models.useraccess import UserAccess
 from noc.core.translation import ugettext as _
 
@@ -34,7 +33,7 @@ class ReportDiscoveryProblem(object):
         """
         self.mo_ids = list(mos.values_list("id", flat=True))
         if avail_only:
-            status = ObjectStatus.get_statuses(self.mo_ids)
+            status = ManagedObject.get_statuses(self.mo_ids)
             self.mo_ids = [s for s in status if status[s]]
         self.mos_pools = [Pool.get_by_id(p) for p in set(mos.values_list("pool", flat=True))]
         self.coll_name = "noc.schedules.discovery.%s"

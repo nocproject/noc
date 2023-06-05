@@ -25,7 +25,6 @@ from noc.fm.models.archivedalarm import ArchivedAlarm
 from noc.fm.models.outage import Outage
 from noc.fm.models.reboot import Reboot
 from noc.fm.models.uptime import Uptime
-from noc.sa.models.objectstatus import ObjectStatus
 from noc.ip.models.address import Address
 from noc.core.scheduler.job import Job
 
@@ -84,9 +83,6 @@ def wipe(o):
     for a in Address.objects.filter(managed_object=o):
         a.managed_object = None
         a.save()
-    # Wipe object status
-    log.debug("Wiping object status")
-    ObjectStatus.objects.filter(object=o.id).delete()
     # Wipe outages
     log.debug("Wiping outages")
     Outage.objects.filter(object=o.id).delete()
