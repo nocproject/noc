@@ -2706,7 +2706,7 @@ class ManagedObjectStatus(NOCModel):
     def get_last_status(cls, o) -> Tuple[Optional[bool], Optional[datetime.datetime]]:
         """
         Returns last registered status and update time
-        :param object: Managed Object id
+        :param o: Managed Object
         :return: last status, last update or None
         """
         from django.db import connection as pg_connection
@@ -2804,7 +2804,7 @@ class ManagedObjectStatus(NOCModel):
                 """
                 INSERT INTO sa_objectstatus as os (managed_object_id, status, last) VALUES %s
                 ON CONFLICT (managed_object_id) DO UPDATE SET status = EXCLUDED.status, last = EXCLUDED.last
-                WHERE os.status != EXCLUDED.status
+                WHERE os.status != EXCLUDED.status and os.last < EXCLUDED.last
                 """,
                 list(bulk.values()),
                 page_size=500,

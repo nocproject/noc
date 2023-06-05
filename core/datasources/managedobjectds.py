@@ -402,7 +402,7 @@ class ManagedObjectDS(BaseDataSource):
         if annotations:
             mos = mos.annotate(**annotations)
         # Dictionaries
-        hostname_map, segment_map, avail_map = {}, {}, {}
+        hostname_map, segment_map = {}, {}
         # Lookup fields dictionaries
         if not fields or "hostname" in fields:
             hostname_map = {
