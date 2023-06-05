@@ -38,6 +38,8 @@ from django.db.models import (
     Case,
     Value,
     Manager,
+    Subquery,
+    OuterRef,
 )
 from pydantic import BaseModel
 from pymongo import ASCENDING
@@ -127,7 +129,6 @@ from noc.wf.models.state import State
 from .administrativedomain import AdministrativeDomain
 from .authprofile import AuthProfile
 from .managedobjectprofile import ManagedObjectProfile
-from .objectstatus import ObjectStatus
 from .objectdiagnosticconfig import ObjectDiagnosticConfig
 
 # Increase whenever new field added or removed
@@ -216,6 +217,11 @@ class ManagedObjectManager(Manager):
             super()
             .get_queryset()
             .annotate(
+                avail_status=Subquery(
+                    ManagedObjectStatus.objects.filter(managed_object=OuterRef("id")).values(
+                        "status"
+                    )
+                ),
                 is_managed=Case(
                     When(Q(diagnostics__SA__state="enabled"), then=Value(True)),
                     default=Value(False),
@@ -1197,10 +1203,10 @@ class ManagedObject(NOCModel):
         return False
 
     def get_status(self):
-        return ObjectStatus.get_status(self)
+        return ManagedObjectStatus.get_status(self)
 
     def get_last_status(self):
-        return ObjectStatus.get_last_status(self)
+        return ManagedObjectStatus.get_last_status(self)
 
     def set_status(self, status, ts=None):
         """
@@ -1209,7 +1215,31 @@ class ManagedObject(NOCModel):
         :param ts: status change time
         :return: False if out-of-order update, True otherwise
         """
-        return ObjectStatus.set_status(self, status, ts=ts)
+        return ManagedObjectStatus.set_status(self, status, ts=ts)
+
+    @classmethod
+    def get_statuses(cls, objects: List[int]) -> Dict[int, bool]:
+        """
+        Returns a map of object id -> status
+        for a list od object ids
+        """
+        from django.db import connection as pg_connection
+
+        s = {}
+        with pg_connection.cursor() as cursor:
+            while objects:
+                chunk, objects = objects[:500], objects[500:]
+                cursor.execute(
+                    """
+                    SELECT managed_object_id, status
+                    FROM sa_objectstatus
+                    WHERE managed_object_id = ANY(%s::INT[])
+                    """,
+                    [chunk],
+                )
+                for o, status in cursor:
+                    s[o] = status
+        return s
 
     def get_inventory(self):
         """
@@ -2646,6 +2676,162 @@ class ManagedObjectAttribute(NOCModel):
 
     def on_save(self):
         cache.delete(f"cred-{self.managed_object.id}", version=CREDENTIAL_CACHE_VERSION)
+
+
+@on_save
+class ManagedObjectStatus(NOCModel):
+    class Meta(object):
+        verbose_name = "Managed Object Status"
+        verbose_name_plural = "Managed Object Status"
+        db_table = "sa_objectstatus"
+        app_label = "sa"
+
+    managed_object = ForeignKey(
+        ManagedObject, verbose_name="Managed Object", on_delete=CASCADE, unique=True
+    )
+    status = BooleanField()
+    last = DateTimeField("Last update Time", auto_now_add=True)
+
+    def __str__(self):
+        return "%s: %s" % (self.managed_object, self.status)
+
+    @classmethod
+    def get_status(cls, o) -> bool:
+        r = cls.get_statuses([o.id])
+        if o.id not in r:
+            return True
+        return r[o.id]
+
+    @classmethod
+    def get_last_status(cls, o) -> Tuple[Optional[bool], Optional[datetime.datetime]]:
+        """
+        Returns last registered status and update time
+        :param o: Managed Object
+        :return: last status, last update or None
+        """
+        from django.db import connection as pg_connection
+
+        with pg_connection.cursor() as cursor:
+            cursor.execute(
+                """
+                SELECT status, last
+                FROM sa_objectstatus
+                WHERE managed_object_id = %s
+                """,
+                [o.id],
+            )
+            r = cursor.fetchone()
+            if r:
+                return r
+        return None, None
+
+    @classmethod
+    def set_status(cls, object, status, ts=None):
+        """
+        Update object status
+        :param object: Managed Object instance
+        :param status: New status
+        :param ts: Status change timestamp
+        :return: True, if status has been changed, False - out-of-order update
+        """
+        cls.update_status_bulk([(object.id, status, ts)])
+
+    @classmethod
+    def update_status_bulk(
+        cls,
+        statuses: List[Tuple[int, bool, Optional[datetime.datetime]]],
+        update_jobs: bool = False,
+    ):
+        """
+        Update statuses bulk
+        :param statuses:
+        :param update_jobs:
+        :return:
+        """
+        from django.db import connection as pg_connection
+        from collections import defaultdict
+        from psycopg2.extras import execute_values
+        from noc.core.service.loader import get_service
+        from noc.core.scheduler.scheduler import Scheduler
+
+        now = datetime.datetime.now()
+        bulk = {}
+        outages: List[Tuple[int, datetime.datetime, datetime.datetime]] = []
+        # Getting current status
+        cs = {}
+        suspended_jobs = defaultdict(list)  # Pool - ids
+        with pg_connection.cursor() as cursor:
+            cursor.execute(
+                # """
+                # SELECT managed_object_id, status, last, mo.pool
+                # FROM sa_objectstatus
+                # LEFT JOIN sa_managedobject AS mo ON sa_objectstatus.managed_object_id = mo.id
+                # WHERE managed_object_id = ANY(%s::INT[])
+                # """,
+                """
+                SELECT id, os.status, os.last, mo.pool
+                FROM sa_managedobject AS mo
+                LEFT JOIN sa_objectstatus AS os ON mo.id = os.managed_object_id
+                WHERE id = ANY(%s::INT[])
+                """,
+                [[x[0] for x in statuses]],
+            )
+            for o, status, last, pool in cursor:
+                pool = Pool.get_by_id(pool)
+                cs[o] = {"status": status, "last": last, "pool": pool.name}
+        for oid, status, ts in statuses:
+            if oid not in cs:
+                logger.error("Unknown object id: %s", oid)
+                continue
+            ts = (ts or now).replace(microsecond=0, tzinfo=None)
+            if cs[oid]["status"] is None or (cs[oid]["status"] != status and cs[oid]["last"] <= ts):
+                bulk[oid] = (oid, status, ts)  # Only last status
+                if update_jobs:
+                    suspended_jobs[(cs[oid]["pool"], status)].append(oid)
+                # Update job timestamp to next
+                if cs[oid]["last"] and status and oid in cs:
+                    outages.append((oid, cs[oid]["last"], ts))
+                cs[oid] = {"status": status, "last": ts}
+            elif cs[oid]["last"] > ts:
+                # Oops, out-of-order update
+                # Restore correct state
+                pass
+        if not bulk:
+            return
+        with pg_connection.cursor() as cursor:
+            execute_values(
+                cursor,
+                """
+                INSERT INTO sa_objectstatus as os (managed_object_id, status, last) VALUES %s
+                ON CONFLICT (managed_object_id) DO UPDATE SET status = EXCLUDED.status, last = EXCLUDED.last
+                WHERE os.status != EXCLUDED.status and os.last < EXCLUDED.last
+                """,
+                list(bulk.values()),
+                page_size=500,
+            )
+        svc = get_service()
+        # Send outages
+        for out in outages:
+            # Sent outages
+            oid, start, stop = out
+            mo = ManagedObject.get_by_id(oid)
+            svc.register_metrics(
+                "outages",
+                [
+                    {
+                        "date": now.date().isoformat(),
+                        "ts": now.replace(microsecond=0).isoformat() if start else None,
+                        "managed_object": mo.bi_id,
+                        "start": start.replace(microsecond=0).isoformat(),
+                        "stop": stop.replace(microsecond=0).isoformat(),
+                        "administrative_domain": mo.administrative_domain.bi_id,
+                    }
+                ],
+                key=mo.bi_id,
+            )
+        for (pool, status), keys in suspended_jobs.items():
+            sc = Scheduler("discovery", pool=pool)
+            sc.suspend_keys(keys, suspend=not status)
 
 
 # object.scripts. ...

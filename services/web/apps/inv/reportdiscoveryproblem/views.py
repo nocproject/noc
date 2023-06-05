@@ -21,7 +21,6 @@ from noc.inv.models.networksegment import NetworkSegment
 from noc.sa.models.useraccess import UserAccess
 from noc.core.translation import ugettext as _
 from noc.core.profile.loader import GENERIC_PROFILE
-from noc.sa.models.objectstatus import ObjectStatus
 
 
 class ReportDiscoveryTopologyProblemApplication(SimpleReport):
@@ -62,7 +61,7 @@ class ReportDiscoveryTopologyProblemApplication(SimpleReport):
         }
         mos_set = set(mos)
         if available_only:
-            statuses = ObjectStatus.get_statuses(list(mos_set))
+            statuses = ManagedObject.get_statuses(list(mos_set))
             mos_set = {mo for mo in mos_set if statuses.get(mo)}
         # Get all managed objects with generic profile
         for mo in mos:

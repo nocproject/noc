@@ -39,7 +39,6 @@ from noc.services.web.base.reportdatasources.report_objectattributes import Repo
 from noc.sa.interfaces.base import StringParameter, BooleanParameter
 from noc.sa.models.managedobject import ManagedObject
 from noc.sa.models.administrativedomain import AdministrativeDomain
-from noc.sa.models.objectstatus import ObjectStatus
 from noc.sa.models.useraccess import UserAccess
 from noc.sa.models.profile import Profile
 from noc.inv.models.networksegment import NetworkSegment
@@ -283,7 +282,7 @@ class ReportObjectDetailApplication(ExtApplication):
             mos_id = sorted(mos_filter)
         avail = {}
         if "avail" in columns_filter:
-            avail = ObjectStatus.get_statuses(mos_id)
+            avail = ManagedObject.get_statuses(mos_id)
         link_count = iter(ReportObjectLinkCount(mos_id))
         iface_count = iter(ReportObjectIfacesTypeStat(mos_id))
         if "container" in columns_filter:
