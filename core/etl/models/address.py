@@ -20,6 +20,6 @@ class Address(BaseModel):
     building: Reference["Building"]
     street: Reference["Street"]
     num: int
-    num_letter: Optional[str]
+    num_letter: Optional[str] = None
 
     _csv_fields = ["id", "building", "street", "num", "num_letter"]

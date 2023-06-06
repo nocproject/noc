@@ -15,8 +15,8 @@ from .base import BaseModel
 class TTSystem(BaseModel):
     id: str
     name: str
-    handler: Optional[str]
-    connection: Optional[str]
-    description: Optional[str]
+    handler: Optional[str] = None
+    connection: Optional[str] = None
+    description: Optional[str] = None
 
     _csv_fields = ["id", "name", "handler", "connection", "description"]

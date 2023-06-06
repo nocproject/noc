@@ -15,8 +15,8 @@ from .typing import Reference
 
 class AdmDiv(BaseModel):
     id: str
-    parent: Optional[Reference["AdmDiv"]]
     name: str
-    short_name: Optional[str]
+    parent: Optional[Reference["AdmDiv"]] = None
+    short_name: Optional[str] = None
 
     _csv_fields = ["id", "parent", "name", "short_name"]

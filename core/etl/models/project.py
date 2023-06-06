@@ -16,6 +16,6 @@ class Project(BaseModel):
     id: str
     name: str
     code: str
-    description: Optional[str]
+    description: Optional[str] = None
 
     _csv_fields = ["id", "name", "code", "description"]

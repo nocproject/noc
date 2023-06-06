@@ -16,7 +16,7 @@ class ObjectData(_BaseModel):
     interface: str
     attr: str
     value: Any
-    scope: Optional[str]
+    scope: Optional[str] = None
 
 
 class Object(BaseModel):
@@ -24,5 +24,5 @@ class Object(BaseModel):
     name: str
     model: str
     data: List[ObjectData] = []
-    container: Optional[Reference["Object"]]
-    checkpoint: Optional[str]
+    container: Optional[Reference["Object"]] = None
+    checkpoint: Optional[str] = None

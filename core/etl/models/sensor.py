@@ -17,9 +17,9 @@ from .managedobject import ManagedObject
 class Sensor(BaseModel):
     id: str
     local_id: str
-    units: Optional[str]
-    object: Optional[Reference["Object"]]
-    managed_object: Reference["ManagedObject"]
+    units: Optional[str] = None
+    object: Optional[Reference["Object"]] = None
+    managed_object: Reference["ManagedObject"] = None
     # Workflow state
-    state: Optional[str]
+    state: Optional[str] = None
     labels: List[str] = []
