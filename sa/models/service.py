@@ -140,6 +140,7 @@ class Service(Document):
 
     _id_cache = cachetools.TTLCache(maxsize=500, ttl=60)
     _bi_id_cache = cachetools.TTLCache(maxsize=500, ttl=60)
+    _id_bi_id_map_cache = cachetools.LFUCache(maxsize=10000)
 
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_id_cache"), lock=lambda _: id_lock)
@@ -150,6 +151,11 @@ class Service(Document):
     @cachetools.cachedmethod(operator.attrgetter("_bi_id_cache"), lock=lambda _: id_lock)
     def get_by_bi_id(cls, bi_id) -> Optional["Service"]:
         return Service.objects.filter(bi_id=bi_id).first()
+
+    @classmethod
+    @cachetools.cachedmethod(operator.attrgetter("_id_bi_id_map_cache"))
+    def get_bi_id_by_id(cls, sid):
+        return Service.objects.filter(id=sid).scalar("bi_id").first()
 
     def __str__(self):
         return str(self.id) if self.id else "new service"

@@ -588,9 +588,8 @@ class Interface(Document):
                 continue
             ifindex = i.get("ifindex")
             service = None
-            if config.discovery.interface_metric_service:
-                service = i.get("service")
-                service = Service.get_by_id(service) if service else None
+            if config.discovery.interface_metric_service and i.get("service"):
+                service = Service.get_bi_id_by_id(str(i["service"]))
             yield MetricCollectorConfig(
                 collector="managed_object",
                 metrics=tuple(metrics),
@@ -609,9 +608,8 @@ class Interface(Document):
             ):
                 ifindex = si.get("ifindex")
                 service = None
-                if config.discovery.interface_metric_service:
-                    service = si.get("service")
-                    service = Service.get_by_id(service) if service else None
+                if config.discovery.interface_metric_service and i.get("service"):
+                    service = Service.get_bi_id_by_id(str(i["service"]))
                 yield MetricCollectorConfig(
                     collector="managed_object",
                     metrics=tuple(metrics),
