@@ -2755,7 +2755,6 @@ class ManagedObjectStatus(NOCModel):
         outages: List[Tuple[int, datetime.datetime, datetime.datetime]] = []
         # Getting current status
         cs = {}
-        suspended_jobs = defaultdict(list)  # Pool - ids
         with pg_connection.cursor() as cursor:
             cursor.execute(
                 # """
@@ -2775,6 +2774,8 @@ class ManagedObjectStatus(NOCModel):
             for o, status, last, pool in cursor:
                 pool = Pool.get_by_id(pool)
                 cs[o] = {"status": status, "last": last, "pool": pool.name}
+        # Processed new statuses
+        suspended_jobs = defaultdict(list)  # Pool - ids
         for oid, status, ts in statuses:
             if oid not in cs:
                 logger.error("Unknown object id: %s", oid)
@@ -2784,16 +2785,17 @@ class ManagedObjectStatus(NOCModel):
                 bulk[oid] = (oid, status, ts)  # Only last status
                 if update_jobs:
                     suspended_jobs[(cs[oid]["pool"], status)].append(oid)
-                # Update job timestamp to next
-                if cs[oid]["last"] and status and oid in cs:
+                # Update job timestamp to next, Add when outage was closed (device up)
+                if cs[oid]["last"] and status:
                     outages.append((oid, cs[oid]["last"], ts))
-                cs[oid] = {"status": status, "last": ts}
+                cs[oid].update({"status": status, "last": ts})
             elif cs[oid]["last"] > ts:
                 # Oops, out-of-order update
                 # Restore correct state
                 pass
         if not bulk:
             return
+        # Save statuses to db
         with pg_connection.cursor() as cursor:
             execute_values(
                 cursor,
@@ -2816,7 +2818,7 @@ class ManagedObjectStatus(NOCModel):
                 [
                     {
                         "date": now.date().isoformat(),
-                        "ts": start.replace(microsecond=0).isoformat(),
+                        "ts": now.replace(microsecond=0).isoformat(),
                         "managed_object": mo.bi_id,
                         "start": start.replace(microsecond=0).isoformat(),
                         "stop": stop.replace(microsecond=0).isoformat(),
