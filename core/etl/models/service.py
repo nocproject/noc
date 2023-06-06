@@ -24,37 +24,37 @@ class CapsItem(_BaseModel):
 
 class Service(BaseModel):
     id: str
-    parent: Optional[Reference["Service"]]
-    subscriber: Optional[Reference["Subscriber"]]
     profile: Reference["ServiceProfile"]
-    ts: Optional[datetime]
+    parent: Optional[Reference["Service"]] = None
+    subscriber: Optional[Reference["Subscriber"]] = None
+    ts: Optional[datetime] = None
     # Workflow state
-    state: Optional[str]
+    state: Optional[str] = None
     # Last state change
-    state_changed: Optional[datetime]
+    state_changed: Optional[datetime] = None
     # Workflow event
-    event: Optional[str]
-    agreement_id: Optional[str]
-    order_id: Optional[str]
-    stage_id: Optional[str]
-    stage_name: Optional[str]
-    stage_start: Optional[datetime]
-    account_id: Optional[str]
-    address: Optional[str]
-    managed_object: Optional[Reference["ManagedObject"]]
-    nri_port: Optional[str]
-    cpe_serial: Optional[str]
-    cpe_mac: Optional[str]
-    cpe_model: Optional[str]
-    cpe_group: Optional[str]
-    labels: Optional[List[str]]
+    event: Optional[str] = None
+    agreement_id: Optional[str] = None
+    order_id: Optional[str] = None
+    stage_id: Optional[str] = None
+    stage_name: Optional[str] = None
+    stage_start: Optional[datetime] = None
+    account_id: Optional[str] = None
+    address: Optional[str] = None
+    managed_object: Optional[Reference["ManagedObject"]] = None
+    nri_port: Optional[str] = None
+    cpe_serial: Optional[str] = None
+    cpe_mac: Optional[str] = None
+    cpe_model: Optional[str] = None
+    cpe_group: Optional[str] = None
+    labels: Optional[List[str]] = None
     description: Optional[str] = None
-    capabilities: Optional[List[CapsItem]]
-    checkpoint: Optional[str]
+    capabilities: Optional[List[CapsItem]] = None
+    checkpoint: Optional[str] = None
 
     class Config:
         fields = {"state_changed": "logical_status_start", "state": "logical_status"}
-        allow_population_by_field_name = True
+        populate_by_name = True
 
     _csv_fields = [
         "id",
