@@ -17,7 +17,7 @@ class ResourceGroup(BaseModel):
     id: str
     name: str
     technology: str
-    parent: Optional[Reference["ResourceGroup"]]
-    description: Optional[str]
+    parent: Optional[Reference["ResourceGroup"]] = None
+    description: Optional[str] = None
 
     _csv_fields = ["id", "name", "technology", "parent", "description"]

@@ -16,14 +16,14 @@ class Container(BaseModel):
     id: str
     name: str
     model: str
-    path: Optional[str]
-    addr_id: Optional[str]
-    lon: str
-    lat: str
-    addr_text: Optional[str]
-    adm_contact_text: Optional[str]
-    tech_contact_text: Optional[str]
-    billing_contact_text: Optional[str]
+    path: Optional[str] = None
+    addr_id: Optional[str] = None
+    lon: str = ""
+    lat: str = ""
+    addr_text: Optional[str] = None
+    adm_contact_text: Optional[str] = None
+    tech_contact_text: Optional[str] = None
+    billing_contact_text: Optional[str] = None
 
     _csv_fields = [
         "id",

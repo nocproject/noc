@@ -15,7 +15,7 @@ from .base import BaseModel
 class SubscriberProfile(BaseModel):
     id: str
     name: str
-    description: Optional[str]
-    workflow: Optional[str]
+    description: Optional[str] = None
+    workflow: Optional[str] = None
 
     _csv_fields = ["id", "name", "description", "workflow"]
