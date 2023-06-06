@@ -16,9 +16,9 @@ from .networksegmentprofile import NetworkSegmentProfile
 
 class NetworkSegment(BaseModel):
     id: str
-    parent: Optional[Reference["NetworkSegment"]]
     name: str
-    sibling: Optional[Reference["NetworkSegment"]]
-    profile: Reference["NetworkSegmentProfile"]
+    parent: Optional[Reference["NetworkSegment"]] = None
+    sibling: Optional[Reference["NetworkSegment"]] = None
+    profile: Reference["NetworkSegmentProfile"] = None
 
     _csv_fields = ["id", "parent", "name", "sibling", "profile"]

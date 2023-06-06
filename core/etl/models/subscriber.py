@@ -17,11 +17,11 @@ from .subscriberprofile import SubscriberProfile
 class Subscriber(BaseModel):
     id: str
     name: str
-    description: Optional[str]
     profile: Reference["SubscriberProfile"]
-    address: Optional[str]
-    tech_contact_person: Optional[str]
-    tech_contact_phone: Optional[str]
+    description: Optional[str] = None
+    address: Optional[str] = None
+    tech_contact_person: Optional[str] = None
+    tech_contact_phone: Optional[str] = None
 
     _csv_fields = [
         "id",
