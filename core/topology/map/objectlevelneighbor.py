@@ -45,7 +45,7 @@ class ObjectLevelNeighborTopology(TopologyBase):
         # Group objects
         object_mos: List[int] = self.mo.links[:]
         level = self.mo.object_profile.level
-        while True:
+        while object_mos:
             for links, n_level in ManagedObject.objects.filter(id__in=object_mos).values_list(
                 "links", "object_profile__level"
             ):
