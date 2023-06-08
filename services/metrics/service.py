@@ -698,7 +698,11 @@ class MetricsService(FastAPIService):
             probe = card.probes.get(n)
             if self.lazy_init and not probe:
                 probe = self.add_probe(n, k)
-            if not probe or probe.name == ComposeProbeNode.name:  # Skip composed probe
+            if not probe:
+                probe.activate(tx, "time_delta", time_delta)
+                continue
+            elif probe.name == ComposeProbeNode.name:  # Skip composed probe
+                probe.activate(tx, "time_delta", time_delta)
                 continue
             if time_delta is None:
                 time_delta = probe.get_time_delta(ts)
@@ -765,6 +769,9 @@ class MetricsService(FastAPIService):
         sc = self.get_source_config(data)
         if sc_id not in self.sources_config:
             self.sources_config[sc_id] = sc
+            return
+        elif sc == self.sources_config[sc_id]:
+            self.logger.info("Source config is same. Continue")
             return
         self.invalidate_card_config(sc)
         # diff = self.sources_config[sc_id].is_differ(sc)
