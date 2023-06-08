@@ -22,6 +22,7 @@ from mongoengine.fields import (
     DictField,
 )
 from mongoengine.queryset.visitor import Q
+from mongoengine.errors import NotUniqueError
 
 # NOC modules
 from noc.core.topology.loader import loader as t_loader
@@ -225,7 +226,11 @@ class MapSettings(Document):
             if ll.vertices or ll.connector != LC_NORMAL
         ]
         # Finally save
-        self.save()
+        try:
+            self.save()
+        except NotUniqueError:
+            # Already saved settings
+            pass
 
     @classmethod
     def ensure_settings(cls, gen_type: str, gen_id, **kwargs) -> "MapSettings":
@@ -236,6 +241,7 @@ class MapSettings(Document):
         :param kwargs:
         :return:
         """
+        gen_id = str(gen_id)
         q = Q(gen_type=gen_type, gen_id=gen_id)
         if kwargs:
             q |= Q(gen_type=gen_type, gen_params=kwargs)
