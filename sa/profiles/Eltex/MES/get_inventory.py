@@ -254,7 +254,7 @@ class Script(BaseScript):
             if v != 1:
                 v = 0
             name = entity["name"].get(sindex)
-            if name == None:
+            if name is None:
                 continue
             chassis_id = self.get_chassis_id(sindex, entity)
             r += [
@@ -278,7 +278,7 @@ class Script(BaseScript):
             if v != 1:
                 v = 0
             name = entity["name"].get(sindex)
-            if name == None:
+            if name is None:
                 continue
             chassis_id = self.get_chassis_id(sindex, entity)
             r += [
