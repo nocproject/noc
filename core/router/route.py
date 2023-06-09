@@ -124,7 +124,7 @@ class Route(object):
         :return:
         """
         ctx = {"headers": msg.headers, "labels": set()}
-        if MX_LABELS in msg.headers:
+        if MX_LABELS in msg.headers and msg.headers[MX_LABELS]:
             ctx["labels"] = set(
                 msg.headers[MX_LABELS].split(MX_H_VALUE_SPLITTER.encode(encoding=DEFAULT_ENCODING))
             )
