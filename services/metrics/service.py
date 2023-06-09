@@ -699,7 +699,6 @@ class MetricsService(FastAPIService):
             if self.lazy_init and not probe:
                 probe = self.add_probe(n, k)
             if not probe:
-                probe.activate(tx, "time_delta", time_delta)
                 continue
             elif probe.name == ComposeProbeNode.name:  # Skip composed probe
                 probe.activate(tx, "time_delta", time_delta)
