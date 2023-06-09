@@ -342,7 +342,11 @@ class Script(BaseScript):
                         if unit == p[2]:
                             res += [self.get_trans(p)]
                 for r in res:
-                    if r.get("type") == "CHASSIS" and r.get("number") == "1" and self.capabilities.get("SNMP | v2c"):
+                    if (
+                        r.get("type") == "CHASSIS"
+                        and r.get("number") == "1"
+                        and self.capabilities.get("SNMP | v2c")
+                    ):
                         r.update({"sensors": self.get_chassis_sensors()})
         else:
             plat = self.cli("show system", cached=True)
