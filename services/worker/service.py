@@ -29,7 +29,7 @@ class WorkerService(FastAPIService):
 
     async def on_activate(self):
         self.slot_number, self.total_slots = await self.acquire_slot()
-        await self.subscribe_stream("jobs", self.slot_number, self.on_job)
+        await self.subscribe_stream("jobs", self.slot_number, self.on_job, async_cursor=True)
 
     async def on_job(self, msg: Message):
         self.logger.debug("[%s|%s] New job", msg.partition, msg.offset)
