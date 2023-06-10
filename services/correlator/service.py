@@ -524,8 +524,8 @@ class CorrelatorService(FastAPIService):
         a.deferred_groups = deferred_groups
         # Save
         a.save()
-        if event:
-            event.contribute_to_alarm(a)
+        # if event:
+        #     event.contribute_to_alarm(a)
         self.logger.info(
             "[%s|%s|%s] Raise alarm %s(%s): %r [%s]",
             scope_label,
