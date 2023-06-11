@@ -31,6 +31,7 @@ from noc.config import config
 from noc.core.scheduler.scheduler import Scheduler
 from noc.core.service.fastapi import FastAPIService
 from noc.core.mongo.connection import connect
+from noc.core.change.policy import change_tracker
 from noc.sa.models.managedobject import ManagedObject
 from noc.services.correlator.alarmrule import AlarmRuleSet, AlarmRule as CAlarmRule
 from noc.services.correlator.rule import Rule
@@ -523,8 +524,8 @@ class CorrelatorService(FastAPIService):
         a.deferred_groups = deferred_groups
         # Save
         a.save()
-        if event:
-            event.contribute_to_alarm(a)
+        # if event:
+        #     event.contribute_to_alarm(a)
         self.logger.info(
             "[%s|%s|%s] Raise alarm %s(%s): %r [%s]",
             scope_label,
@@ -739,8 +740,9 @@ class CorrelatorService(FastAPIService):
         if not msg_handler:
             self.logger.error("Internal error. No handler for '%s'", req.op)
             return
-        await msg_handler(req)
-        metrics["alarm_dispose"] += 1
+        with change_tracker.bulk_changes():
+            await msg_handler(req)
+            metrics["alarm_dispose"] += 1
 
     async def on_msg_event(self, req: EventRequest) -> None:
         """
