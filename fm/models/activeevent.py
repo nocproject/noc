@@ -49,7 +49,6 @@ class ActiveEvent(Document):
             "timestamp",
             "#reference",
             "alarms",
-            "managed_object",
             ("timestamp", "event_class", "managed_object"),
             {"fields": ["expires"], "expireAfterSeconds": 0},
         ],
