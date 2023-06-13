@@ -34,6 +34,7 @@ from noc.core.tt.error import TTError, TemporaryTTError
 from noc.core.scheduler.job import Job
 from noc.core.span import Span, PARENT_SAMPLE
 from noc.core.fm.enum import RCA_DOWNLINK_MERGE
+from noc.core.change.policy import change_tracker
 from noc.fm.models.escalation import Escalation, EscalationItem
 from noc.core.models.escalationpolicy import EscalationPolicy
 from noc.core.lock.process import ProcessLock
@@ -735,7 +736,7 @@ class EscalationSequence(BaseSequence):
         # Perform escalations
         with Span(client="escalator", sample=self.get_span_sample()) as ctx, self.lock.acquire(
             self.escalation_doc.get_lock_items()
-        ):
+        ), change_tracker.bulk_changes():
             self.check_escalated()
             self.alarm.set_escalation_context()
             # Evaluate escalation chain
