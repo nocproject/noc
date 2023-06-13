@@ -352,7 +352,7 @@ class Topo(object):
         if len(roots) == 1:
             uplinks[list(roots)[0]] = set()
         for root in roots:
-            logger.debug("Processig from root {root}", root)
+            logger.debug("Processing from root %s", root)
             for node, uplink in self.iter_uplinks(root, uplinks):
                 uplinks[node].add(uplink)
         logger.debug("Found uplinks for %d objects", len(uplinks))
