@@ -292,6 +292,21 @@ Ext.define('NOC.sa.managedobject.Application', {
                                         },
                                         '|',
                                         {
+                                            glyph: NOC.glyph.trash_o,
+                                            tooltip: __('Clean Basket'),
+                                            style: {
+                                                pointerEvents: 'all'
+                                            },
+                                            bind: {
+                                                disabled: '{!hasRecords}',
+                                                style: {
+                                                    cursor: '{cursorIcon}'
+                                                }
+                                            },
+                                            handler: 'onSelectedRemoveAll'
+                                        },
+                                        '|',
+                                        {
                                             xtype: 'box',
                                             bind: {
                                                 html: '<span class="x-btn-inner x-btn-inner-default-toolbar-small">' + __('Selected : {total.selection}') + '</span'
