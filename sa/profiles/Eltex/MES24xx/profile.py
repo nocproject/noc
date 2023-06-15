@@ -21,6 +21,7 @@ class Profile(BaseProfile):
     pattern_prompt = rb"(?P<hostname>\S+)(?:\(config[^\)]*\))?#\s*"
     pattern_unprivileged_prompt = rb"^(?P<hostname>\S+)>\s*"
     pattern_syntax_error = rb"^% Invalid (?:Command|input detected at)$"
+    pattern_operation_error = rb"File Transfer in Progress"
     # command_disable_pager = "set cli pagination off"  - need conf t mode
     command_submit = b"\r"
     command_super = b"enable"
