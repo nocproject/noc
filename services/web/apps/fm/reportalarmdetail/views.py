@@ -219,7 +219,7 @@ class ReportAlarmDetailApplication(ExtApplication):
                 csv_header
                 + data.write_csv(
                     # header=[self.HEADER_ROW.get(cc, cc) for cc in out_columns],
-                    sep=";",
+                    separator=";",
                     quote='"',
                     has_header=False,
                 ),
@@ -236,7 +236,7 @@ class ReportAlarmDetailApplication(ExtApplication):
                     + data.select(out_columns).write_csv(
                         # header=[self.HEADER_ROW.get(cc, cc) for cc in out_columns],
                         # columns=out_columns,
-                        sep=";",
+                        separator=";",
                         quote='"',
                         has_header=False,
                     )
