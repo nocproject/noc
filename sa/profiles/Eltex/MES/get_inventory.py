@@ -343,9 +343,9 @@ class Script(BaseScript):
                             res += [self.get_trans(p)]
                 for r in res:
                     if (
-                        r.get("type") == "CHASSIS"
-                        and r.get("number") == "1"
-                        and self.capabilities.get("SNMP | v2c")
+                        r["type"] == "CHASSIS"
+                        and r["number"] == "1"
+                        and self.capabilities.get("SNMP")
                     ):
                         r.update({"sensors": self.get_chassis_sensors()})
         else:
@@ -360,7 +360,7 @@ class Script(BaseScript):
             for p in ports:
                 res += [self.get_trans(p)]
             for r in res:
-                if r.get("type") == "CHASSIS" and self.capabilities.get("SNMP | v2c"):
+                if r["type"] == "CHASSIS" and self.capabilities.get("SNMP"):
                     r.update({"sensors": self.get_chassis_sensors()})
 
         return res
