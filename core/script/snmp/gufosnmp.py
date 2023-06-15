@@ -161,15 +161,14 @@ class GufoSNMP(SNMP):
                 tos=self.script.tos,
                 limit_rps=self.rate_limit,
             ) as session:
+                oids_iter = session.getnext(oid)
+                if bulk:
+                    oids_iter = session.getbulk(
+                        oid, max_repetitions=max_repetitions or BULK_MAX_REPETITIONS
+                    )
+                result = []
                 while True:
                     try:
-                        if bulk:
-                            oids_iter = session.getbulk(
-                                oid, max_repetitions=max_repetitions or BULK_MAX_REPETITIONS
-                            )
-                        else:
-                            oids_iter = session.getnext(oid)
-                        result = []
                         async for oid_, v in oids_iter:
                             if filter(oid_, v):
                                 v = (
@@ -221,6 +220,7 @@ class GufoSNMP(SNMP):
             self.logger.debug("[%s] SNMP COUNT %s", address, oid)
             if not filter:
                 filter = true
+            result = 0
             async with SnmpSession(
                 addr=address,
                 community=str(self.script.credentials["snmp_ro"]),
@@ -229,20 +229,18 @@ class GufoSNMP(SNMP):
                 tos=self.script.tos,
                 limit_rps=self.rate_limit,
             ) as session:
+                oids_iter = session.getnext(oid)
+                if self.script.has_snmp_bulk():
+                    oids_iter = session.getbulk(oid, max_repetitions=BULK_MAX_REPETITIONS)
                 try:
-                    if self.script.has_snmp_bulk():
-                        oids_iter = session.getbulk(oid, max_repetitions=BULK_MAX_REPETITIONS)
-                    else:
-                        oids_iter = session.getnext(oid)
+                    async for oid_, v in oids_iter:
+                        if filter(oid_, v):
+                            result += 1
                 except TimeoutError:
                     raise self.TimeOutError()
                 except GSNMPError as e:
                     self.logger.error("SNMP error code %s", e.code)
                     raise self.SNMPError(code=e.code)
-            result = 0
-            async for oid_, v in oids_iter:
-                if filter(oid_, v):
-                    result += 1
             self.logger.debug("[%s] COUNT result: %s", address, result)
             return result
 
