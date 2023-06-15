@@ -466,16 +466,16 @@ Ext.define('NOC.sa.managedobject.Application', {
                                         glyph: NOC.glyph.times,
                                         handler: "onSetUnmanaged",
                                     },
-                                    // {
-                                    //     text: __("New Maintaince"),
-                                    //     glyph: NOC.glyph.wrench,
-                                    //     handler: "onNewMaintaince"
-                                    // },
-                                    // {
-                                    //     text: __("Add to Maintaince"),
-                                    //     glyph: NOC.glyph.plus,
-                                    //     handler: "onAddToMaintaince"
-                                    // },
+                                    {
+                                        text: __("New Maintaince"),
+                                        glyph: NOC.glyph.wrench,
+                                        handler: "onNewMaintaince"
+                                    },
+                                    {
+                                        text: __("Add to Maintaince"),
+                                        glyph: NOC.glyph.plus,
+                                        handler: "onAddToMaintaince"
+                                    },
                                     {
                                         itemId: "runCmdBtn",
                                         text: __("Run Commands"),
