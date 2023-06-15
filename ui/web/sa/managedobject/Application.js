@@ -294,14 +294,14 @@ Ext.define('NOC.sa.managedobject.Application', {
                                         {
                                             xtype: 'box',
                                             bind: {
-                                                html: __('Selected : {total.selection}')
+                                                html: '<span class="x-btn-inner x-btn-inner-default-toolbar-small">' + __('Selected : {total.selection}') + '</span'
                                             }
                                         },
                                         '|',
                                         {
                                             xtype: 'box',
                                             bind: {
-                                                html: __('Total : {total.all}')
+                                                html: '<span class="x-btn-inner x-btn-inner-default-toolbar-small">' + __('Total : {total.all}') + '</span>'
                                             }
                                         }]
                                 }
@@ -361,27 +361,33 @@ Ext.define('NOC.sa.managedobject.Application', {
                                             }
                                         },
                                         handler: 'onSelectedRemoveAll'
-                                    }, {
+                                    },
+                                    {
                                         text: __('Export'),
                                         glyph: NOC.glyph.arrow_down,
                                         tooltip: __("Save all from basket"),
                                         handler: 'onExportBasket'
 
-                                    }, '->', {
+                                    },
+                                        '->',
+                                    {
                                         glyph: NOC.glyph.shopping_cart,
                                         style: {
                                             pointerEvents: 'all'
                                         },
                                         bind: {
-                                            text: __('Total : {total.selected}'),
+                                            html: '<span class="x-btn-button x-btn-button-default-toolbar-small x-btn-text x-btn-icon x-btn-icon-left x-btn-button-center">'
+                                                + '<span class="x-btn-icon-el x-btn-icon-el-default-toolbar-small x-btn-glyph" style="font-family:FontAwesome;">&#xf07a;</span>'
+                                                + '<span class="x-btn-inner x-btn-inner-default-toolbar-small">' + __('Total : {total.selected}') + '</span>'
+                                                + '<span class="x-btn-icon-el x-btn-icon-el-default-toolbar-small x-btn-glyph" style="font-family:FontAwesome;">&#xf138;</span>'
+                                                + '</span>',
                                             tooltip: __('Hide basket'),
                                             style: {
                                                 cursor: '{cursorIcon}'
                                             }
                                         },
                                         handler: 'toggleBasket'
-                                    }
-                                    ]
+                                    }]
                                 }
                             }]
                         }
