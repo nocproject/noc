@@ -62,6 +62,8 @@ class Script(BaseScript):
                     header = header.splitlines()
                     if any([h.startswith(" " * 15) for h in header]):
                         self.fix_cpe_header(header)
+                    if not header:
+                        continue
                     head = parse_table_header(header)
                     del head[2]  # remove empty header
                     tables_data += self.profile.parse_table1(body, head)
