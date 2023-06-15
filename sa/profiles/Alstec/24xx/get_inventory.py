@@ -1,7 +1,7 @@
 # ---------------------------------------------------------------------
 # Alstec.24xx.get_inventory
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2023 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -123,7 +123,6 @@ class Script(BaseScript):
     def execute_snmp(self, **kwargs):
         platform = self.snmp.get("1.3.6.1.4.1.27142.1.1.1.1.1.3.0")
         serial = self.snmp.get("1.3.6.1.4.1.27142.1.1.1.1.1.4.0")
-        revision = self.snmp.get("1.3.6.1.4.1.27142.1.1.1.1.1.14.0")
         port_num = self.snmp.get("1.3.6.1.2.1.2.1.0")
         if port_num in self.port_map:
             platform = "%s-0%s" % (platform, self.port_map[port_num])
@@ -136,8 +135,12 @@ class Script(BaseScript):
         }
         if serial and len(serial) > 5:
             r["serial"] = serial
-        if revision:
-            r["revision"] = revision
+        try:
+            revision = self.snmp.get("1.3.6.1.4.1.27142.1.1.1.1.1.14.0")
+            if revision:
+                r["revision"] = revision
+        except self.snmp.SNMPError:
+            pass
         if self.is_builtin_controller:
             sensors = self.get_sensors()
             if sensors:
