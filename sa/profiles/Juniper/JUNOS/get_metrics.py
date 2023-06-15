@@ -34,7 +34,7 @@ class RPMMeasurement(enum.Enum):
 
 
 class RPMResultCollection(enum.Enum):
-    currentTest = (1,)
+    currentTest = 1
     lastCompletedTest = 2
     movingAverage = 3
     allTests = 4
