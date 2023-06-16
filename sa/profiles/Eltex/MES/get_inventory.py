@@ -342,11 +342,7 @@ class Script(BaseScript):
                         if unit == p[2]:
                             res += [self.get_trans(p)]
                 for r in res:
-                    if (
-                        r["type"] == "CHASSIS"
-                        and r["number"] == "1"
-                        and self.capabilities.get("SNMP")
-                    ):
+                    if r["type"] == "CHASSIS" and r["number"] == "1" and self.has_snmp():
                         r.update({"sensors": self.get_chassis_sensors()})
         else:
             plat = self.cli("show system", cached=True)
@@ -360,7 +356,7 @@ class Script(BaseScript):
             for p in ports:
                 res += [self.get_trans(p)]
             for r in res:
-                if r["type"] == "CHASSIS" and self.capabilities.get("SNMP"):
+                if r["type"] == "CHASSIS" and self.has_snmp():
                     r.update({"sensors": self.get_chassis_sensors()})
 
         return res
