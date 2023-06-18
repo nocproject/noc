@@ -30,6 +30,11 @@ forms:
       label: "Consul token"
       type: str
       common: environment
+    own_install:
+      label: "Don't try to download packages, assume that they installed by hands"
+      type: bool
+      default: False  # yamllint disable-line rule:truthy
+
 
 services:
   consul:

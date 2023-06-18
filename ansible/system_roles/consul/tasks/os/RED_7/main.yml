@@ -69,10 +69,14 @@
     enabled: "True"
     gpgcheck: "True"
     gpgkey: https://rpm.releases.hashicorp.com/gpg
+  environment:
+    http_proxy: "{{ http_proxy }}"
+    https_proxy: "{{ http_proxy }}"
+  when: not consul_own_install
 
 - name: Install Consul
   yum:
-    name: consul-{{ consul_version }}
+    name: consul{{ -consul_version if consul_own_install }}
     state: present
     update_cache: "True"
     allow_downgrade: "True"
