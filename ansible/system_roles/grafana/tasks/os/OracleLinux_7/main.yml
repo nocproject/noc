@@ -10,19 +10,18 @@
   environment:
     http_proxy: "{{ http_proxy }}"
     https_proxy: "{{ http_proxy }}"
+  when: not grafana_own_install
   tags:
     - repo
 
 - name: Install Grafana
   yum:
-    name: "{{ packages }}"
+    name:
+      - grafana{{ '-'+grafana_version if not grafana_own_install else '' }}
+      - open-sans-fonts
     state: present
     update_cache: "True"
     allow_downgrade: "True"
-  vars:
-    packages:
-      - "grafana-{{ grafana_version }}"
-      - open-sans-fonts
   tags:
     - requirements
   environment:
