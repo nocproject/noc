@@ -4,6 +4,7 @@
 # Copyright (C) 2007-2023 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
+import datetime
 
 # Python modules
 import os
@@ -43,6 +44,7 @@ class EventApplication(ExtDocApplication):
     menu = _("Events")
     model = ActiveEvent
     icon = "icon_find"
+    DEFAULT_EVENT_INTERVAL = 3
 
     model_map = {"A": ActiveEvent, "F": FailedEvent, "S": ArchivedEvent}
 
@@ -95,17 +97,9 @@ class EventApplication(ExtDocApplication):
                         where_list += ["managed_object_bi_id in (-1)"]
                 elif k == "event_class":
                     where_list += [f"event_class_bi_id={EventClass.get_by_id(v).bi_id}"]
-            if where_list:
-                return "where " + " and ".join(where_list)
-            return ""
+            return where_list
 
-        if request.method == "POST":
-            if self.site.is_json(request.META.get("CONTENT_TYPE")):
-                q = self.deserialize(request.body)
-            else:
-                q = {str(k): v[0] if len(v) == 1 else v for k, v in request.POST.lists()}
-        else:
-            q = {str(k): v[0] if len(v) == 1 else v for k, v in request.GET.lists()}
+        q = self.parse_request_query(request)
         # Apply row limit if necessary
         limit = q.get(self.limit_param, self.unlimited_row_limit)
         if limit:
@@ -126,6 +120,16 @@ class EventApplication(ExtDocApplication):
         # Apply row limit if necessary
         if self.row_limit:
             limit = min(limit or self.row_limit, self.row_limit + 1)
+        # Apply date filter
+        start_ts = q.pop("ts__gte", None)
+        end_ts = q.pop("ts__lte", None)
+        if start_ts:
+            start_ts = datetime.datetime.fromtimestamp(start_ts)
+        if end_ts:
+            end_ts = datetime.datetime.fromtimestamp(end_ts)
+        if not start_ts and not end_ts:
+            end_ts = datetime.datetime.now()
+            start_ts = end_ts - datetime.timedelta(days=self.DEFAULT_EVENT_INTERVAL)
         order_list = []
         if request.is_extjs and self.sort_param in q:
             for r in self.deserialize(q[self.sort_param]):
@@ -137,15 +141,14 @@ class EventApplication(ExtDocApplication):
                 else:
                     order_list += [f"{r['property']} {r['direction']}"]
         order_list = order_list or self.default_ordering
+        order_section = ""
         if order_list:
-            order_section = "order by " + ", ".join(order_list)
-        else:
-            order_section = ""
-        limit_section = f"limit {limit} offset {start}"
+            order_section = "ORDER BY " + ", ".join(order_list)
+        limit_section = f"LIMIT {limit} OFFSET {start}"
         q = self.cleaned_query(q)
         where_section = make_where_section(q)
         # Execute query to clickhouse
-        sql = f"""select
+        sql = f"""SELECT
             e.event_id as id,
             e.ts as timestamp,
             e.event_class as event_class_bi_id,
@@ -155,17 +158,32 @@ class EventApplication(ExtDocApplication):
             e.start_ts as start_timestamp,
             e.source, e.raw_vars, e.resolved_vars, e.vars,
             d.alarms as alarms
-            from events e
+            FROM events e
             LEFT OUTER JOIN (
-            SELECT event_id, groupArray(alarm_id) as alarms FROM disposelog  where alarm_id != ''  GROUP BY event_id) as d
+            SELECT event_id, groupArray(alarm_id) as alarms FROM disposelog  WHERE date >= %s AND date <= %s AND alarm_id != ''  GROUP BY event_id) as d
             ON e.event_id == d.event_id
-            {where_section}
+            WHERE date >= %s AND date <= %s AND ts >= %s AND ts <= %s
+            {' and '.join(where_section)}
             {order_section}
             {limit_section}
             format JSON
         """
         cursor = connection()
-        res = orjson.loads(cursor.execute(sql, return_raw=True, args=[]))
+        print("SQL", sql)
+        res = orjson.loads(
+            cursor.execute(
+                sql,
+                return_raw=True,
+                args=[
+                    start_ts.date().isoformat(),
+                    end_ts.date().isoformat(),
+                    start_ts.date().isoformat(),
+                    end_ts.date().isoformat(),
+                    start_ts.replace(microsecond=0).isoformat(),
+                    end_ts.replace(microsecond=0).isoformat(),
+                ],
+            )
+        )
         events = []
         for r in res["data"]:
             events += [ActiveEvent.create_from_dict(r)]

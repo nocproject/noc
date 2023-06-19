@@ -113,7 +113,7 @@ class MetricsNode(BaseCDAGNode):
             MX_METRICS_TYPE,
             {
                 MX_METRICS_SCOPE: self.config.scope.encode(encoding="utf-8"),
-                MX_LABELS: self.config.message_labels,
+                MX_LABELS: self.config.message_labels or b"",
             },
             r["bi_id"],
             group_key=f'{self.config.scope}-{r["bi_id"]}',
