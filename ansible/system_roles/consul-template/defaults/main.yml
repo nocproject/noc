@@ -14,7 +14,7 @@ consul_template_checksum_file_url: "https://releases.hashicorp.com/consul-templa
 consul_template_temp_file: "{{ tower_dist_dir }}/{{ consul_template_pkg }}"
 consul_template_temp_unarchive: "/tmp/consul-template/{{ consul_template_version }}"
 consul_template_temp_file_checksum: "{{ tower_dist_dir }}/{{ consul_template_version }}_SHA256SUMS"
-
+consul_template_own_install: false
 
 consul_template_binary: consul-template
 consul_template_config_file_template: consul-template.cfg.j2
