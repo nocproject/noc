@@ -9,6 +9,7 @@
   run_once: "True"
   environment:
     https_proxy: "{{ http_proxy }}"
+  when: not consul_template_own_install
 
 - name: Get Consul-template package checksum
   command: "grep {{ consul_template_pkg }} {{ consul_template_temp_file_checksum }}"
@@ -18,6 +19,7 @@
   become: "False"
   run_once: "True"
   changed_when: false
+  when: not consul_template_own_install
 
 - name: Download Consul-template
   get_url:
@@ -31,6 +33,7 @@
   run_once: "True"
   environment:
     https_proxy: "{{ http_proxy }}"
+  when: not consul_template_own_install
 
 - name: create consul-template tmp dir
   file:
@@ -46,7 +49,7 @@
     group: "{{ consul_template_group }}"
     mode: 0755
     creates: "{{ consul_template_temp_unarchive }}/{{ consul_template_binary }}"
-  when: not ansible_check_mode
+  when: not ansible_check_mode and not consul_template_own_install
   register: ct_archive_extracted
 
 - name: Overwrite Consul-template binary if needed

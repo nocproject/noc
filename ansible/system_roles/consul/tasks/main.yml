@@ -53,7 +53,7 @@
     - requirements
 
 - name: Install OS packages and consul - remotely
-  import_tasks: install.yml
+  import_tasks: install_wo_repo.yml
   when: ansible_distribution == 'FreeBSD_12'
   tags:
     - requirements

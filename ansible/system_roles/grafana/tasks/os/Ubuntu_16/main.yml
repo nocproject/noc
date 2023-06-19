@@ -12,6 +12,7 @@
   environment:
     https_proxy: "{{ http_proxy }}"
     http_proxy: "{{ http_proxy }}"
+  when: not grafana_own_install
   tags:
     - repo
 
@@ -23,12 +24,13 @@
   environment:
     https_proxy: "{{ http_proxy }}"
     http_proxy: "{{ http_proxy }}"
+  when: not grafana_own_install
   tags:
     - repo
 
 - name: Install Ubuntu packages
   apt:
-    name: grafana={{ grafana_version }}
+    name: grafana{{ '='+grafana_version if not grafana_own_install else '' }}
     state: present
     update_cache: "True"
     cache_valid_time: "{{ apt_cache_valid_time | default (3600) }}"
