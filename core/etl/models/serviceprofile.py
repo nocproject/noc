@@ -13,7 +13,7 @@ from .base import BaseModel
 
 
 class ServiceProfile(BaseModel):
-    id: int
+    id: str
     name: str
     description: Optional[str] = None
     workflow: Optional[str] = None
