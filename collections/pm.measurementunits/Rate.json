@@ -1,0 +1,13 @@
+{
+    "name": "Rate",
+    "$collection": "pm.measurementunits",
+    "uuid": "2680b128-cd7c-4658-8e0e-eb7849b66951",
+    "code": "rate",
+    "description": "Measurement per second (mps) is a measure of throughput",
+    "label": "rate",
+    "dashboard_label": "rate",
+    "convert_from": [{
+        "expr": "delta / time_delta",
+        "unit__code": "1"
+    }]
+}
