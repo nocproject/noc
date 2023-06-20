@@ -147,6 +147,8 @@ class EventApplication(ExtDocApplication):
         limit_section = f"LIMIT {limit} OFFSET {start}"
         q = self.cleaned_query(q)
         where_section = make_where_section(q)
+        if where_section:
+            where_section = " AND " + " AND ".join(where_section)
         # Execute query to clickhouse
         sql = f"""SELECT
             e.event_id as id,
@@ -163,13 +165,12 @@ class EventApplication(ExtDocApplication):
             SELECT event_id, groupArray(alarm_id) as alarms FROM disposelog  WHERE date >= %s AND date <= %s AND alarm_id != ''  GROUP BY event_id) as d
             ON e.event_id == d.event_id
             WHERE date >= %s AND date <= %s AND ts >= %s AND ts <= %s
-            {' and '.join(where_section)}
+            {where_section or ''}
             {order_section}
             {limit_section}
             format JSON
         """
         cursor = connection()
-        print("SQL", sql)
         res = orjson.loads(
             cursor.execute(
                 sql,
@@ -199,7 +200,7 @@ class EventApplication(ExtDocApplication):
         if request.is_extjs:
             ld = len(out)
             if limit and (ld == limit or start > 0):
-                total = res["statistics"]["rows_read"]
+                total = res["rows_before_limit_at_least"]  # res["statistics"]["rows_read"]
             else:
                 total = ld
             out = {"total": total, "success": True, "data": out}
