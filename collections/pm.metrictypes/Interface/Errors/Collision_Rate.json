@@ -7,6 +7,6 @@
     "field_type": "UInt32",
     "description": "The number of output collisions detected on this interface. Rate",
     "measure": null,
-    "units__code": "1",
+    "units__code": "rate",
     "scale__code": "1"
 }
