@@ -171,7 +171,6 @@ class EventApplication(ExtDocApplication):
             format JSON
         """
         cursor = connection()
-        print("SQL", sql)
         res = orjson.loads(
             cursor.execute(
                 sql,
