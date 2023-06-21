@@ -1,0 +1,31 @@
+{
+    "name": "Event Summary",
+    "$collection": "main.reports",
+    "uuid": "3ca3ccd9-5702-4c3e-9fbf-617949d44882",
+    "title": "Event Summary",
+    "description": "Суммарная информацибя по событиям в БД",
+    "bands": [{
+        "name": "Root",
+        "orientation": "H"
+    }],
+    "category": "fm",
+    "code": null,
+    "hide": false,
+    "localization": {
+        "title": {
+            "ru": "Сводка по Событиям (Новый)"
+        }
+    },
+    "parameters": [
+        {
+            "name": "report_type",
+            "description": null,
+            "choices": ["class", "object", "profile"],
+            "hide": false,
+            "label": "Report Type",
+            "required": true,
+            "type": "choice"
+        }
+    ],
+    "report_source": "reporteventsummary"
+}
