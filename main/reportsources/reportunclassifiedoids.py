@@ -24,9 +24,8 @@ SQL = """
      dictGetString('noc_dict.eventclass','name', event_class) as event_class_name,
      count() as cnt
     FROM events
-    WHERE event_class = %d
-    GROUP BY event_class
-
+    WHERE event_class = %s
+    GROUP BY event_class, snmp_trap_oid
 """
 
 
