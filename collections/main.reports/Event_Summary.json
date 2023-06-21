@@ -2,7 +2,7 @@
     "name": "Event Summary",
     "$collection": "main.reports",
     "uuid": "3ca3ccd9-5702-4c3e-9fbf-617949d44882",
-    "title": "Event Summary (New)",
+    "title": "Event Summary",
     "description": "Суммарная информацибя по событиям в БД",
     "bands": [{
         "name": "Root",

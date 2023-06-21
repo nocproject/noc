@@ -2,7 +2,7 @@
     "name": "Unclassified Trap OIDs",
     "$collection": "main.reports",
     "uuid": "9cd28c0d-d221-4606-9854-ccbce24f5cf9",
-    "title": "Unclassified Trap OIDs (New)",
+    "title": "Unclassified Trap OIDs",
     "description": "Покрытие правил классификации событий",
     "bands": [{
         "name": "Root",
