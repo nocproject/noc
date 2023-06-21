@@ -1,7 +1,7 @@
 # ---------------------------------------------------------------------
 # Eltex.TAU.get_interfaces
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2020 The NOC Project
+# Copyright (C) 2007-2023 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -53,7 +53,8 @@ class Script(BaseScript):
                     sub["ipv6_addresses"] = [ip6_address]
                 if "." in ifname:
                     parent, vlan = ifname.split(".")
-                    sub["vlan_ids"] = int(vlan)
+                    if int(vlan)>0:
+                        sub["vlan_ids"] = int(vlan)
                     found = False
                     for i in interfaces:
                         if i["name"] == parent:
