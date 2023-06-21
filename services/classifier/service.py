@@ -107,7 +107,7 @@ NS = 1000000000.0
 
 CABLE_ABDUCT = "Security | Abduct | Cable Abduct"
 
-SNMP_TRAP_OID = "1__3__6__1__6__3__1__1__4__1__0"
+SNMP_TRAP_OID = "1.3.6.1.6.3.1.1.4.1.0"
 
 
 class ClassifierService(FastAPIService):
