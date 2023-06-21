@@ -141,9 +141,9 @@ class ReportAlarmDetailApplication(ExtApplication):
         d_filters = {}
         out_columns = []
         for cc in columns.split(","):
-            if cc == "alarm_id":
-                # out_columns.append("alarm_id")
-                continue
+            # if cc == "alarm_id":
+            #     # out_columns.append("alarm_id")
+            #     continue
             out_columns.append(cc)
 
         ads = []
