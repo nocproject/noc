@@ -12,6 +12,7 @@ import re
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetinterfaces import IGetInterfaces
 from noc.core.ip import IPv4
+from noc.core.validators import is_vlan
 
 
 class Script(BaseScript):
@@ -53,7 +54,7 @@ class Script(BaseScript):
                     sub["ipv6_addresses"] = [ip6_address]
                 if "." in ifname:
                     parent, vlan = ifname.split(".")
-                    if int(vlan) > 0:
+                    if is_vlan(vlan):
                         sub["vlan_ids"] = int(vlan)
                     found = False
                     for i in interfaces:
