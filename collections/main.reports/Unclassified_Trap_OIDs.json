@@ -1,0 +1,20 @@
+{
+    "name": "Unclassified Trap OIDs",
+    "$collection": "main.reports",
+    "uuid": "9cd28c0d-d221-4606-9854-ccbce24f5cf9",
+    "title": "Unclassified Trap OIDs (New)",
+    "description": "Покрытие правил классификации событий",
+    "bands": [{
+        "name": "Root",
+        "orientation": "H"
+    }],
+    "category": "fm",
+    "code": null,
+    "hide": false,
+    "localization": {
+        "title": {
+            "ru": "Неклассифицированные OIDы"
+        }
+    },
+    "report_source": "reportunclassifiedoids"
+}

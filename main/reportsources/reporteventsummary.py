@@ -19,11 +19,11 @@ from noc.core.clickhouse.connect import connection
 
 SQL = """
     SELECT
-     dictGetString('noc_dict.eventclass','name', event_class) as object,
+     %s AS object,
      count() as quantity
     FROM events
-    GROUP BY event_class
-    ORDER BY quantity
+    GROUP BY object
+    ORDER BY quantity DESC
     LIMIT 100
     FORMAT JSONEachRow
 """
@@ -49,10 +49,18 @@ class ReportEventSummary(ReportSource):
 
     def get_data(self, request=None, **kwargs) -> List[BandData]:
         """ """
-        report_type = kwargs.get("report_type")
+        report_type = kwargs.get("report_type") or []
+        if "class" in report_type:
+            obj_field = "dictGetString('noc_dict.eventclass','name', event_class)"
+        elif "object" in report_type:
+            obj_field = "dictGetString('noc_dict.managedobject','name', managed_object)"
+        elif "profile" in report_type:
+            obj_field = "dictGetString('noc_dict.managedobject','profile', managed_object)"
+        else:
+            raise Exception("Invalid report type: %s" % report_type)
         ch = connection()
         data = []
-        r = ch.execute(SQL, return_raw=True)
+        r = ch.execute(SQL % obj_field, return_raw=True)
         for row in r.splitlines():
             row = orjson.loads(row)
             b = BandData(name="row")
