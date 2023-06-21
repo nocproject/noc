@@ -53,7 +53,7 @@ class Script(BaseScript):
                     sub["ipv6_addresses"] = [ip6_address]
                 if "." in ifname:
                     parent, vlan = ifname.split(".")
-                    if int(vlan)>0:
+                    if int(vlan) > 0:
                         sub["vlan_ids"] = int(vlan)
                     found = False
                     for i in interfaces:
