@@ -4,9 +4,9 @@
 # Copyright (C) 2007-2023 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
-import datetime
 
 # Python modules
+import datetime
 from typing import List
 
 # Third-party modules
@@ -21,9 +21,7 @@ from noc.fm.models.eventclass import EventClass
 from noc.fm.models.mib import MIB
 
 SQL = """
-    SELECT 
-     snmp_trap_oid,
-     count() as cnt
+    SELECT snmp_trap_oid, count() as cnt
     FROM events
     WHERE event_class = %s AND date >= %s AND snmp_trap_oid != ''
     GROUP BY snmp_trap_oid
