@@ -14,15 +14,16 @@ from noc.core.loader.base import BaseLoader
 from .base import ReportDataSource
 
 logger = logging.getLogger(__name__)
-BASE_PREFIX = os.path.join("lib", "app", "reportdatasources")
+BASE_PREFIX = os.path.join("services", "web", "base", "reportdatasources")
 
 
 class ReportDataSourceLoader(BaseLoader):
     name = "reportdatasource"
     base_cls = ReportDataSource
-    base_path = ("lib", "app", "reportdatasources")
+    base_path = ("services", "web", "base", "reportdatasources")
     ignored_names = {"base", "loader"}
 
 
 # Create singleton object
 loader = ReportDataSourceLoader()
+
