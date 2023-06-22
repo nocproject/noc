@@ -1,7 +1,7 @@
 # ---------------------------------------------------------------------
 # Eltex.TAU.get_interfaces
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2020 The NOC Project
+# Copyright (C) 2007-2023 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -12,6 +12,7 @@ import re
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetinterfaces import IGetInterfaces
 from noc.core.ip import IPv4
+from noc.core.validators import is_vlan
 
 
 class Script(BaseScript):
@@ -53,7 +54,8 @@ class Script(BaseScript):
                     sub["ipv6_addresses"] = [ip6_address]
                 if "." in ifname:
                     parent, vlan = ifname.split(".")
-                    sub["vlan_ids"] = int(vlan)
+                    if is_vlan(vlan):
+                        sub["vlan_ids"] = int(vlan)
                     found = False
                     for i in interfaces:
                         if i["name"] == parent:
