@@ -26,4 +26,3 @@ class ReportDataSourceLoader(BaseLoader):
 
 # Create singleton object
 loader = ReportDataSourceLoader()
-
