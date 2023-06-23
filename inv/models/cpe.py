@@ -91,7 +91,7 @@ class CPE(Document):
     # Timestamp of first discovery
     first_discovered = DateTimeField(default=datetime.datetime.now)
     # Probe type
-    type = StringField(choices=[(x, x) for x in CPE_TYPES])
+    type = StringField(choices=[(x, x) for x in CPE_TYPES], default="other")
     # IPv4 CPE address, used for ManagedObject sync
     address = StringField(validation=is_ipv4)
     # Capabilities
@@ -209,7 +209,6 @@ class CPE(Document):
                 f"local_id::{cpe.local_id}",
             ]
             if cpe.interface:
-                labels += [f"noc::interface::{cpe.interface}"]
                 iface = cpe.get_cpe_interface()
                 if iface and iface.ifindex:
                     hints += [f"ifindex::{iface.ifindex}"]
