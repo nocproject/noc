@@ -29,11 +29,6 @@ Ext.define("NOC.inv.cpe.Application", {
         Ext.apply(me, {
             columns: [
                 {
-                    text: __("ID"),
-                    dataIndex: "id",
-                    width: 160
-                },
-                {
                     text: __("Global ID"),
                     dataIndex: "global_id",
                     width: 160
@@ -41,7 +36,7 @@ Ext.define("NOC.inv.cpe.Application", {
                 {
                     text: __("Profile"),
                     dataIndex: "profile",
-                    width: 200,
+                    width: 150,
                     renderer: NOC.render.Lookup("profile")
                 },
                 {
@@ -51,9 +46,20 @@ Ext.define("NOC.inv.cpe.Application", {
                     renderer: NOC.render.Lookup("state")
                 },
                 {
+                    text: __("Controller"),
+                    dataIndex: "controller",
+                    renderer: NOC.render.Lookup("controller"),
+                    width: 160
+                },
+                {
+                    text: __("Local ID"),
+                    dataIndex: "local_id",
+                    width: 160
+                },
+                {
                     text: __("Oper Status."),
                     dataIndex: "oper_status",
-                    width: 30,
+                    width: 60,
                     renderer: NOC.render.Bool,
                     sortable: false
                 }
@@ -248,6 +254,12 @@ Ext.define("NOC.inv.cpe.Application", {
             name: "state",
             ftype: "lookup",
             lookup: "wf.state"
+        },
+        {
+            title: __("By Object"),
+            name: "controller",
+            ftype: "lookup",
+            lookup: "sa.managedobject"
         }
     ],
 
