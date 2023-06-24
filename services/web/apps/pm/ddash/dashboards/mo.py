@@ -41,12 +41,11 @@ class MODashboard(JinjaDashboard):
         return super().__new__(dash)
 
     @classmethod
-    def resolve_object(cls, object_id):
-        o = ManagedObject.objects.filter(Q(id=object_id) | Q(bi_id=object_id))[:1]
+    def resolve_object(cls, object_id) -> "ManagedObject":
+        o = ManagedObject.objects.filter(Q(id=object_id) | Q(bi_id=object_id)).first()
         if not o:
             raise cls.NotFound()
-        else:
-            return o[0]
+        return o
 
     def resolve_object_data(self, object):
         def interface_profile_has_metrics(profile):
@@ -132,7 +131,7 @@ class MODashboard(JinjaDashboard):
                         }
                     ]
                     continue
-                if interface_radio_metrics(profile):
+                if "technology::radio::802.11" in iface.effective_labels:
                     radio += [
                         {
                             "name": iface.name,
