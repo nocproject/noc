@@ -462,7 +462,7 @@ Ext.define('NOC.sa.managedobject.Application', {
                             bind: {
                                 disabled: '{!hasRecords}'
                             },
-                            menu: new Ext.menu.Menu({
+                            menu: {
                                 items: [
                                     {
                                         text: __("Group Edit"),
@@ -507,7 +507,7 @@ Ext.define('NOC.sa.managedobject.Application', {
                                         handler: "toNext"
                                     },
                                 ]
-                            })
+                            }
                         }, {
                             itemId: "createBtn",
                             text: __("Add"),
