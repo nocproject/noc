@@ -11,10 +11,7 @@ from collections import defaultdict
 from typing import List
 
 # NOC modules
-from noc.sa.profiles.Generic.get_metrics import (
-    Script as GetMetricsScript,
-    ProfileMetricConfig,
-)
+from noc.sa.profiles.Generic.get_metrics import Script as GetMetricsScript, ProfileMetricConfig
 from noc.core.models.cfgmetrics import MetricCollectorConfig
 from noc.core.text import parse_kv, list_to_ranges
 
