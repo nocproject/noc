@@ -381,6 +381,7 @@ class IGetInterfaces(BaseInterface):
                             "technology::pon",
                             "technology::ethernet",
                             "technology::dsl",
+                            "technology::radio",
                         ],
                     ),
                     "subinterfaces": ListOfParameter(
