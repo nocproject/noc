@@ -245,7 +245,7 @@ class Script(GetMetricsScript):
                         labels=probe.labels + ["noc::interface::0"],
                         multi=True,
                         type="gauge",
-                        scale=mc.scale,
+                        scale=1,
                         units=mc.units,
                     )
                 if "optical_rx_dbm_cpe" in results and results["optical_rx_dbm_cpe"] != "-":
