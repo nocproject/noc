@@ -64,6 +64,8 @@ class Script(BaseScript):
             }
             if name in self.IFINDEX:
                 i["snmp_ifindex"] = self.IFINDEX[name]
+            if name == "eth0":
+                i["hints"] = ["technology::radio::microwave_relay"]
             ifaces += [i]
         c = self.cli("show vlan")
         for match in self.rx_vlan.finditer(c):

@@ -146,4 +146,7 @@ class Script(BaseScript):
                     }
                     if value["mac"] and value["mac"] not in self.EXCLUDE_MAC:
                         interfaces[bss_ifname]["mac"] = value["mac"]
+
+                    if ifname in ["wlan0", "wlan1"]:
+                        interfaces[bss_ifname]["hints"] = ["technology::radio::802.11"]
         return [{"interfaces": list(interfaces.values())}]
