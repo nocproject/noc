@@ -13,7 +13,6 @@ from collections import defaultdict
 # NOC modules
 from noc.sa.profiles.Generic.get_metrics import (
     Script as GetMetricsScript,
-    metrics,
     ProfileMetricConfig,
 )
 from noc.core.models.cfgmetrics import MetricCollectorConfig
@@ -154,66 +153,6 @@ class Script(GetMetricsScript):
             units="1",
         ),
     }
-
-    @metrics(
-        [
-            "Interface | DOM | RxPower",
-            "Interface | DOM | TxPower",
-            "Interface | DOM | Voltage",
-            "Interface | DOM | Bias Current",
-            "Interface | DOM | Temperature",
-            "Interface | DOM | Laser status",
-        ],
-        has_capability="Network | PON | OLT",
-        access="C",  # CLI version
-        volatile=False,  # Not to apply the script several times per session
-    )
-    def collect_dom_metric(self, metrics):
-        v = self.cli("display port state all")
-        for port in self.splitter.split(v):
-            port = {
-                line.rsplit(None, 1)[0].strip(): line.rsplit(None, 1)[1].strip()
-                for line in port.splitlines()
-                if len(line.rsplit(None, 1)) == 2
-            }
-            if not port or not port.get("Port state"):
-                continue
-            if port["Port state"] == "Offline":
-                self.logger.info("Port %s is offline mode" % port["Port state"])
-                continue
-            result = {
-                "interface": port["F/S/P"],
-                "Interface | DOM | Temperature": float(port["Temperature(C)"]),
-                "Interface | DOM | Voltage": float(port["Supply Voltage(V)"]),
-                "Interface | DOM | Bias Current": float(port["TX Bias current(mA)"]),
-                "Interface | DOM | TxPower": float(port["TX power(dBm)"]),
-                "Interface | DOM | Laser status": str(port["Laser state"]),
-            }
-            for m, mc in self.CPE_METRICS_CONFIG:
-                if m not in result or not result[m]:
-                    continue
-                self.set_metric(
-                    id=(
-                        "Interface | DOM | Temperature",
-                        [f'noc::interface::{result["interface"]}'],
-                    ),
-                    labels=[f'noc::interface::{result["interface"]}'],
-                    value=result[m],
-                    multi=True,
-                    units=mc.units,
-                    scale=mc.scale,
-                )
-
-            if result["Interface | DOM | Laser status"]:
-                self.set_metric(
-                    id=(
-                        "Interface | DOM | Laser status",
-                        [f'noc::interface::{result["interface"]}'],
-                    ),
-                    labels=[f'noc::interface::{result["interface"]}'],
-                    value=self.laser_stats_map.get(result["Interface | DOM | Laser status"], 2),
-                    multi=True,
-                )
 
     def get_cpe_metrics(self, metrics: List[MetricCollectorConfig]):
         ont_ifaces = defaultdict(list)
