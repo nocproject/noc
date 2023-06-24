@@ -1,12 +1,14 @@
 # ---------------------------------------------------------------------
 # Huawei.MA5600T.get_metrics
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2022 The NOC Project
+# Copyright (C) 2007-2023 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
 # Python modules
+import re
 from typing import List
+from collections import defaultdict
 
 # NOC modules
 from noc.sa.profiles.Generic.get_metrics import (
@@ -57,16 +59,21 @@ class Script(GetMetricsScript):
         "1.3.6.1.4.1.2011.6.2.1.6.3.1.6.1.0.0": scale(0.001, 2),
     }
 
+    splitter = re.compile(r"\s*-{3}-+\n")
+
     kv_map = {
-        "rx optical power(dbm)": "optical_rx_dbm",
-        "tx optical power(dbm)": "optical_tx_dbm",
-        "laser bias current(ma)": "current_ma",
-        "temperature(c)": "temp_c",
-        "voltage(v)": "voltage_v",
+        "rx optical power(dbm)": "Interface | DOM | RxPower",
+        "tx optical power(dbm)": "Interface | DOM | TxPower",
+        "laser bias current(ma)": "Interface | DOM | Bias Current",
+        "temperature(c)": "Interface | DOM | Temperature",
+        "voltage(v)": "Interface | DOM | Voltage",
         "olt rx ont optical power(dbm)": "optical_rx_dbm_cpe",
-        "upstream frame bip error count": "optical_errors_bip_out",
-        "downstream frame bip error count": "optical_errors_bip_in",
+        "upstream frame bip error count": "Interface | DOM | Errors | BIP | Upstream",
+        "downstream frame bip error count": "Interface | DOM | Errors | BIP | Downstream",
+        "upstream frame hec error count": "Interface | DOM | Errors | HEC | Upstream",
     }
+
+    laser_stats_map = {"Normal": 1}
 
     CPE_METRICS_CONFIG = {
         "Interface | DOM | Temperature": ProfileMetricConfig(
@@ -104,125 +111,49 @@ class Script(GetMetricsScript):
             scale=1,
             units="m,A",
         ),
+        "Interface | DOM | Errors | BIP | Upstream": ProfileMetricConfig(
+            metric="Interface | DOM | Errors | BIP | Upstream",
+            oid="HUAWEI-XPON-MIB::hwGponOntTrafficFlowStatisticUpFrameBipErrCnt",
+            sla_types=[],
+            scale=1,
+            units="1",
+        ),
+        "Interface | DOM | Errors | BIP | Upstream | Delta": ProfileMetricConfig(
+            metric="Interface | DOM | Errors | BIP | Upstream",
+            oid="HUAWEI-XPON-MIB::hwGponOntTrafficFlowStatisticUpFrameBipErrCnt",
+            sla_types=[],
+            scale=1,
+            units="1",
+        ),
+        "Interface | DOM | Errors | HEC | Upstream": ProfileMetricConfig(
+            metric="Interface | DOM | Errors | HEC | Upstream",
+            oid="",
+            sla_types=[],
+            scale=1,
+            units="1",
+        ),
+        "Interface | DOM | Errors | HEC | Upstream | Delta": ProfileMetricConfig(
+            metric="Interface | DOM | Errors | HEC | Upstream",
+            oid="",
+            sla_types=[],
+            scale=1,
+            units="1",
+        ),
+        "Interface | DOM | Errors | BIP | Downstream": ProfileMetricConfig(
+            metric="Interface | DOM | Errors | BIP | Downstream",
+            oid="HUAWEI-XPON-MIB::hwGponOntTrafficFlowStatisticDnFramesBipErrCnt",
+            sla_types=[],
+            scale=1,
+            units="1",
+        ),
+        "Interface | DOM | Errors | BIP | Downstream | Delta": ProfileMetricConfig(
+            metric="Interface | DOM | Errors | BIP | Downstream",
+            oid="HUAWEI-XPON-MIB::hwGponOntTrafficFlowStatisticDnFramesBipErrCnt",
+            sla_types=[],
+            scale=1,
+            units="1",
+        ),
     }
-
-    # @metrics(
-    #     [
-    #         "Interface | DOM | RxPower",
-    #         "Interface | DOM | TxPower",
-    #         "Interface | DOM | Voltage",
-    #         "Interface | DOM | Bias Current",
-    #         "Interface | DOM | Temperature",
-    #         "Interface | DOM | Errors | BIP | Upstream",
-    #         "Interface | DOM | Errors | BIP | Downstream",
-    #     ],
-    #     has_capability="Network | PON | OLT",
-    #     access="C",  # CLI version
-    #     volatile=False,
-    # )
-    # def collect_dom_metrics_cli(self, metrics):
-    #     super().collect_dom_metrics(metrics)
-    #     # self.collect_cpe_metrics_cli(metrics)
-
-    def collect_cpe_metrics_cli(self, metrics):
-        # ifaces = set(m.path[-1].split("/")[:2] for m in metrics)
-        onts = self.scripts.get_cpe_status()  # Getting ONT List
-        self.cli("config")
-        iface = None
-        for cc in sorted(onts, key=lambda x: x["interface"].split("/")):
-            if cc.get("status", "") != "active":
-                continue
-            frame, slot, port, cpe_id = cc["id"].split("/")
-            if iface != (frame, slot):
-                if iface is not None:
-                    self.cli("quit")
-                iface = (frame, slot)
-                self.cli("interface gpon %s/%s" % iface)  # Fix from cpes
-            ipath = [f'noc::chassis::{cc["global_id"]}', "noc::interface::0"]
-            mpath = [f'noc::interface::{"/".join([frame, slot, port])}']
-            v = self.cli("display ont optical-info %s %s" % (port, cpe_id))
-            m = parse_kv(self.kv_map, v)
-
-            self.logger.debug("Collect %s, %s, %s", m, ipath, mpath)
-            if m.get("temp_c", "-") != "-":
-                self.set_metric(
-                    id=("Interface | DOM | Temperature", mpath),
-                    metric="Interface | DOM | Temperature",
-                    labels=ipath,
-                    value=float(m["temp_c"]),
-                    multi=True,
-                    units="C",
-                )
-            if m.get("voltage_v", "-") != "-":
-                self.set_metric(
-                    id=("Interface | DOM | Voltage", mpath),
-                    metric="Interface | DOM | Voltage",
-                    labels=ipath,
-                    value=float(m["voltage_v"]),
-                    multi=True,
-                    units="VDC",
-                )
-            if m.get("optical_rx_dbm", "-") != "-":
-                self.set_metric(
-                    id=("Interface | DOM | RxPower", mpath),
-                    metric="Interface | DOM | RxPower",
-                    labels=ipath,
-                    value=float(m["optical_rx_dbm"]),
-                    multi=True,
-                    units="dBm",
-                )
-            if m.get("optical_rx_dbm_cpe", "-") != "-":
-                self.set_metric(
-                    id=("Interface | DOM | RxPower", mpath),
-                    metric="Interface | DOM | RxPower",
-                    labels=[f'noc::interface::{cc["interface"]}', f'noc::subinterface::{cc["id"]}'],
-                    value=float(
-                        m["optical_rx_dbm_cpe"]
-                        if "," not in m["optical_rx_dbm_cpe"]
-                        else m["optical_rx_dbm_cpe"].split(",")[0]
-                    ),
-                    multi=True,
-                    units="dBm",
-                )
-            if m.get("current_ma", "-") != "-":
-                self.set_metric(
-                    id=("Interface | DOM | Bias Current", mpath),
-                    metric="Interface | DOM | Bias Current",
-                    labels=ipath,
-                    value=float(m["current_ma"]),
-                    multi=True,
-                    units="m,A",
-                )
-            if m.get("optical_tx_dbm", "-") != "-":
-                self.set_metric(
-                    id=("Interface | DOM | TxPower", mpath),
-                    metric="Interface | DOM | TxPower",
-                    labels=ipath,
-                    value=float(m["optical_tx_dbm"]),
-                    multi=True,
-                    units="dBm",
-                )
-            v = self.cli("display statistics ont-line-quality %s %s" % (port, cpe_id))
-            m = parse_kv(self.kv_map, v)
-            if m.get("optical_errors_bip_out", "-") != "-":
-                self.set_metric(
-                    id=("Interface | DOM | Errors | BIP | Upstream", mpath),
-                    metric="Interface | DOM | Errors | BIP | Upstream",
-                    labels=ipath,
-                    value=int(m["optical_errors_bip_out"]),
-                    multi=True,
-                )
-            if m.get("optical_errors_bip_in", "-") != "-":
-                self.set_metric(
-                    id=("Interface | DOM | Errors | BIP | Downstream", mpath),
-                    metric="Interface | DOM | Errors | BIP | Downstream",
-                    labels=ipath,
-                    value=int(m["optical_errors_bip_in"]),
-                    multi=True,
-                )
-
-        self.cli("quit")
-        self.cli("quit")
 
     @metrics(
         [
@@ -231,135 +162,116 @@ class Script(GetMetricsScript):
             "Interface | DOM | Voltage",
             "Interface | DOM | Bias Current",
             "Interface | DOM | Temperature",
-            "Interface | DOM | Errors | BIP | Upstream",
-            "Interface | DOM | Errors | BIP | Downstream",
+            "Interface | DOM | Laser status",
         ],
         has_capability="Network | PON | OLT",
-        access="S",  # CLI version
-        volatile=False,
+        access="C",  # CLI version
+        volatile=False,  # Not to apply the script several times per session
     )
-    def collect_dom_metrics_snmp(self, metrics):
-        super().collect_dom_metrics(metrics)
-        # self.collect_cpe_metrics_snmp(metrics)
+    def collect_dom_metric(self, metrics):
+        v = self.cli("display port state all")
+        for port in self.splitter.split(v):
+            port = {
+                line.rsplit(None, 1)[0].strip(): line.rsplit(None, 1)[1].strip()
+                for line in port.splitlines()
+                if len(line.rsplit(None, 1)) == 2
+            }
+            if not port or not port.get("Port state"):
+                continue
+            if port["Port state"] == "Offline":
+                self.logger.info("Port %s is offline mode" % port["Port state"])
+                continue
+            result = {
+                "interface": port["F/S/P"],
+                "Interface | DOM | Temperature": float(port["Temperature(C)"]),
+                "Interface | DOM | Voltage": float(port["Supply Voltage(V)"]),
+                "Interface | DOM | Bias Current": float(port["TX Bias current(mA)"]),
+                "Interface | DOM | TxPower": float(port["TX power(dBm)"]),
+                "Interface | DOM | Laser status": str(port["Laser state"]),
+            }
+            for m, mc in self.CPE_METRICS_CONFIG:
+                if m not in result or not result[m]:
+                    continue
+                self.set_metric(
+                    id=(
+                        "Interface | DOM | Temperature",
+                        [f'noc::interface::{result["interface"]}'],
+                    ),
+                    labels=[f'noc::interface::{result["interface"]}'],
+                    value=result[m],
+                    multi=True,
+                    units=mc.units,
+                    scale=mc.scale,
+                )
 
-    def collect_cpe_metrics_snmp(self, metrics):
-        names = {x: y for y, x in self.scripts.get_ifindexes(name_oid="IF-MIB::ifName").items()}
-        global_id_map = {}
-        for ont_index, ont_serial in self.snmp.get_tables(
-            [mib["HUAWEI-XPON-MIB::hwGponDeviceOntSn"]]
-        ):
-            global_id_map[ont_index] = ont_serial.encode("hex").upper()
-        for (
-            ont_index,
-            ont_temp_c,
-            ont_current_ma,
-            ont_optical_tx_dbm,
-            ont_optical_rx_dbm,
-            ont_voltage_v,
-            optical_rx_dbm_cpe,
-        ) in self.snmp.get_tables(
-            [
-                mib["HUAWEI-XPON-MIB::hwGponOntOpticalDdmTemperature"],
-                mib["HUAWEI-XPON-MIB::hwGponOntOpticalDdmBiasCurrent"],
-                mib["HUAWEI-XPON-MIB::hwGponOntOpticalDdmTxPower"],
-                mib["HUAWEI-XPON-MIB::hwGponOntOpticalDdmRxPower"],
-                mib["HUAWEI-XPON-MIB::hwGponOntOpticalDdmVoltage"],
-                mib["HUAWEI-XPON-MIB::hwGponOntOpticalDdmOltRxOntPower"],
-            ],
-            bulk=False,
-        ):
-            ifindex, ont_id = ont_index.split(".")
-            ont_id = f"{names[int(ifindex)]}/{ont_id}"
-            ipath = [f"noc::chassis::{global_id_map[ont_index]}", "noc::interface::0"]
-            mpath = [f"noc::interface::{names[int(ifindex)]}"]
-            if ont_temp_c != SNMP_UNKNOWN_VALUE:
+            if result["Interface | DOM | Laser status"]:
                 self.set_metric(
-                    id=("Interface | DOM | Temperature", mpath),
-                    metric="Interface | DOM | Temperature",
-                    labels=ipath,
-                    value=float(ont_temp_c),
-                    multi=True,
-                    units="C",
-                )
-            if ont_current_ma != SNMP_UNKNOWN_VALUE:
-                self.set_metric(
-                    id=("Interface | DOM | Bias Current", mpath),
-                    metric="Interface | DOM | Bias Current",
-                    labels=ipath,
-                    value=float(ont_current_ma),
-                    multi=True,
-                    units="m,A",
-                )
-            if ont_voltage_v != SNMP_UNKNOWN_VALUE:
-                self.set_metric(
-                    id=("Interface | DOM | Voltage", mpath),
-                    metric="Interface | DOM | Voltage",
-                    labels=ipath,
-                    value=float(ont_voltage_v),
-                    multi=True,
-                    units="VDC",
-                )
-            if ont_optical_tx_dbm != SNMP_UNKNOWN_VALUE:
-                self.set_metric(
-                    id=("Interface | DOM | TxPower", mpath),
-                    metric="Interface | DOM | TxPower",
-                    labels=ipath,
-                    value=float(ont_optical_tx_dbm) / 100.0,
+                    id=(
+                        "Interface | DOM | Laser status",
+                        [f'noc::interface::{result["interface"]}'],
+                    ),
+                    labels=[f'noc::interface::{result["interface"]}'],
+                    value=self.laser_stats_map.get(result["Interface | DOM | Laser status"], 2),
                     multi=True,
                 )
-            if ont_optical_rx_dbm != SNMP_UNKNOWN_VALUE:
-                self.set_metric(
-                    id=("Interface | DOM | RxPower", mpath),
-                    metric="Interface | DOM | RxPower",
-                    labels=ipath,
-                    value=float(ont_optical_rx_dbm) / 100.0,
-                    multi=True,
-                    units="dBm",
-                )
-            if optical_rx_dbm_cpe != SNMP_UNKNOWN_VALUE:
-                self.set_metric(
-                    id=("Interface | DOM | RxPower", mpath),
-                    metric="Interface | DOM | RxPower",
-                    labels=[
-                        f"noc::interface::{names[int(ifindex)]}",
-                        f"noc::subinterface::{ont_id}",
-                    ],
-                    value=float(optical_rx_dbm_cpe) / 100.0,
-                    multi=True,
-                    units="dBm",
-                )
-        for (
-            ont_index,
-            ont_optical_errors_bip_out,
-            ont_optical_errors_bip_in,
-        ) in self.snmp.get_tables(
-            [
-                mib["HUAWEI-XPON-MIB::hwGponOntTrafficFlowStatisticUpFrameBipErrCnt"],
-                mib["HUAWEI-XPON-MIB::hwGponOntTrafficFlowStatisticDnFramesBipErrCnt"],
-            ],
-            bulk=False,
-        ):
-            ifindex, ont_id = ont_index.split(".")
-            ipath = [f"noc::chassis::{global_id_map[ont_index]}", "noc::interface::0"]
-            mpath = [f"noc::interface::{names[int(ifindex)]}"]
-            if ont_optical_errors_bip_out != SNMP_UNKNOWN_VALUE:
-                self.set_metric(
-                    id=("Interface | DOM | Errors | BIP | Upstream", mpath),
-                    metric="Interface | DOM | Errors | BIP | Upstream",
-                    labels=ipath,
-                    value=int(ont_optical_errors_bip_out),
-                    multi=True,
-                )
-            if ont_optical_errors_bip_in != SNMP_UNKNOWN_VALUE:
-                self.set_metric(
-                    id=("Interface | DOM | Errors | BIP | Downstream", mpath),
-                    metric="Interface | DOM | Errors | BIP | Downstream",
-                    labels=ipath,
-                    value=int(ont_optical_errors_bip_in),
-                    multi=True,
-                )
+
+    def get_cpe_metrics(self, metrics: List[MetricCollectorConfig]):
+        ont_ifaces = defaultdict(list)
+        ts = self.get_ts()
+        # Group metric by port
+        for probe in metrics:
+            hints = probe.get_hints()
+            frame, slot, port, ont_id = hints["local_id"].split("/")
+            ont_ifaces[(frame, slot)] += [(probe, frame, slot, port, ont_id)]
+        if not ont_ifaces:
+            return
+        self.cli("config")
+        for iface, ont_ids in ont_ifaces.items():
+            self.cli("interface gpon %s/%s" % iface)  # Fix from cpes
+            for probe, frame, slot, port, ont_id in ont_ids:
+                v = self.cli(f"display ont optical-info {port} {ont_id}")
+                results = parse_kv(self.kv_map, v)
+                v = self.cli(f"display statistics ont-line-quality {port} {ont_id}")
+                results.update(parse_kv(self.kv_map, v))
+                for m, mc in self.CPE_METRICS_CONFIG.items():
+                    if mc.metric not in results or results[mc.metric] == "-":
+                        continue
+                    self.set_metric(
+                        id=probe.cpe,
+                        cpe=probe.cpe,
+                        metric=m,
+                        value=float(results[mc.metric]),
+                        ts=ts,
+                        labels=probe.labels + ["noc::interface::0"],
+                        multi=True,
+                        type="gauge",
+                        scale=1,
+                        units=mc.units,
+                    )
+                if "optical_rx_dbm_cpe" in results and results["optical_rx_dbm_cpe"] != "-":
+                    self.set_metric(
+                        id=probe.cpe,
+                        cpe=probe.cpe,
+                        metric="Interface | DOM | RxPower",
+                        value=float(results["optical_rx_dbm_cpe"]),
+                        ts=ts,
+                        labels=probe.labels
+                        + [
+                            f"noc::interface::{frame}/{slot}/{port}",
+                            f"noc::subinterface::{frame}/{slot}/{port}/{ont_id}",
+                        ],
+                        multi=True,
+                        type="gauge",
+                        scale=1,
+                        units="dBm",
+                    )
+
+        self.cli("quit")
+        self.cli("quit")
 
     def collect_cpe_metrics(self, metrics: List[MetricCollectorConfig]):
+        if self.get_access_preference().startswith("C"):
+            return self.get_cpe_metrics(metrics)
         oids = {}
         ts = self.get_ts()
         self.logger.info("Collect CPE Metrics: %s", metrics)
@@ -369,16 +281,21 @@ class Script(GetMetricsScript):
             hints = probe.get_hints()
             _, ont_id = hints["local_id"].rsplit("/", 1)
             for m in probe.metrics:
+                if m not in self.CPE_METRICS_CONFIG:
+                    continue
                 mc = self.CPE_METRICS_CONFIG[m]
+                if not mc.oid:
+                    continue
                 oid = mib[mc.oid, hints.get("ifindex"), ont_id]
                 oids[oid] = (probe, mc)
+        # mib["HUAWEI-XPON-MIB::hwGponOntOpticalDdmOltRxOntPower"],
         results = self.snmp.get_chunked(
             oids=list(oids),
             chunk_size=self.get_snmp_metrics_get_chunk(),
             timeout_limits=self.get_snmp_metrics_get_timeout(),
         )
         for r in results:
-            if results[r] is None:
+            if results[r] is None or results[r] == SNMP_UNKNOWN_VALUE:
                 continue
             probe, mc = oids[r]
             self.set_metric(
