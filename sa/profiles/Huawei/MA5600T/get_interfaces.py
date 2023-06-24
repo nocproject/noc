@@ -74,7 +74,7 @@ class Script(BaseScript):
     )
     rx_ports = re.compile(
         r"^\s*(?P<port>\d+)\s+(?P<type>ADSL|VDSL|GPON|10GE|GE|FE|GE-Optic|GE-Elec|FE-Elec|)\s+.*?"
-        r"(?P<state>[Oo]nline|[Oo]ffline|Activating|Activated|Deactivated|Registered)",
+        r"(?P<state>[Oo]nline|[Oo]ffline|Activating|Activated|Deactivated|Registered)?",
         re.MULTILINE,
     )
 
@@ -350,6 +350,7 @@ class Script(BaseScript):
             # If getting ports
             # ports.update(self.get_ports(v, slot))
             ports = self.get_ports(v, slot)
+            self.logger.debug("[%s] Getting ports: %s", b["type"], len(ports))
             # Detect board_type!
             # Check board ports
             # display board 0/17

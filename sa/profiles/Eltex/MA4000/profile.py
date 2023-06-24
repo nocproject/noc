@@ -11,6 +11,7 @@ import re
 
 # NOC modules
 from noc.core.profile.base import BaseProfile
+from noc.core.text import parse_table
 
 
 class Profile(BaseProfile):
@@ -31,3 +32,21 @@ class Profile(BaseProfile):
 
     def convert_interface_name(self, interface):
         return " ".join(interface.split())
+
+    def get_board(self, script):
+        r = []
+        v = script.cli("show shelf", cached=True)
+        for i in parse_table(v):
+            if i[2] == "none":
+                continue
+            r += [
+                {
+                    "slot": int(i[0]),
+                    "version": i[3],
+                    "serial": i[4],
+                    "status": i[5],
+                    "state": i[6],
+                    "type": i[2],
+                }
+            ]
+        return r
