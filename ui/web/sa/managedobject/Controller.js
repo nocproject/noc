@@ -730,8 +730,10 @@ Ext.define('NOC.sa.managedobject.Controller', {
                     formPanel.recordId = id;
                     formPanel.currentRecord = record;
                     form = formPanel.getForm();
-                    enabledFields = Ext.Array.filter(form.getFields().items, function(field) {field.disabled !== true});
-                    Ext.Array.each(enabledFields, function(field) {field.setDisabled(false)});
+                    Ext.Array.each(form.getFields().items, function(field) {
+                        var isDisabled = Ext.Array.contains(["is_managed"], field.name);
+                        field.setDisabled(isDisabled);
+                    });
                     Ext.iterate(data, function(v) {
                         if(v.indexOf("__") !== -1) {
                             return
