@@ -31,6 +31,7 @@ class ServiceStub(object):
         self.logger = logging.getLogger("stub")
         self.is_ready = threading.Event()
         self.config = None
+        self.slot_number = 0
         self._metrics = defaultdict(list)
         self.loop: Optional[asyncio.BaseEventLoop] = None
 
