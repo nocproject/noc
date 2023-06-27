@@ -1,7 +1,7 @@
 # ----------------------------------------------------------------------
 # managedobject datastream model
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2021 The NOC Project
+# Copyright (C) 2007-2023 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -24,6 +24,13 @@ class CapabilitiesItem(BaseModel):
 
 class SegmentItem(BaseModel):
     id: str
+    name: str
+    remote_system: Optional[RemoteSystemItem]
+    remote_id: Optional[str]
+
+
+class ProjectItem(BaseModel):
+    code: str
     name: str
     remote_system: Optional[RemoteSystemItem]
     remote_id: Optional[str]
@@ -170,6 +177,7 @@ class ManagedObjectDataStreamItem(BaseModel):
     description: Optional[str]
     labels: Optional[List[str]]
     tags: Optional[List[str]]
+    project: Optional[ProjectItem]
     remote_system: Optional[RemoteSystemItem]
     remote_id: Optional[str]
     pool: Optional[str]
