@@ -1,7 +1,7 @@
 # ----------------------------------------------------------------------
 # managedobject datastream
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2022 The NOC Project
+# Copyright (C) 2007-2023 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -75,6 +75,7 @@ class ManagedObjectDataStream(DataStream):
             r["labels"] = labels
             # Alias for compat
             r["tags"] = labels
+        cls._apply_project(mo, r)
         cls._apply_remote_system(mo, r)
         cls._apply_pool(mo, r)
         cls._apply_version(mo, r)
@@ -89,6 +90,18 @@ class ManagedObjectDataStream(DataStream):
         cls._apply_asset(mo, r)
         cls._apply_config(mo, r)
         return r
+
+    @staticmethod
+    def _apply_project(mo: ManagedObject, r):
+        if not mo.project:
+            return
+        r["project"] = {"code": str(mo.project.code), "name": qs(mo.project.name)}
+        if mo.project.remote_system and mo.project.remote_id:
+            r["project"]["remote_system"] = {
+                "id": str(mo.project.remote_system.id),
+                "name": qs(mo.project.remote_system.name),
+            }
+            r["project"]["remote_id"] = mo.project.remote_id
 
     @staticmethod
     def _apply_pool(mo, r):

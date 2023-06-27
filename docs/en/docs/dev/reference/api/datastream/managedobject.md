@@ -22,6 +22,13 @@ state, including capabilities, interfaces and topology
 | address                        | String                        | Management Address                                                                                 |
 | description                    | String                        | Managed Object description                                                                         |
 | tags                           | Array of String               | Managed Object tags                                                                                |
+| project                        | Object {{ complex }}          | Project data                                                                                       |
+| {{ tab }} code                 | String                        | Project's code                                                                                     |
+| {{ tab }} name                 | String                        | Project's name                                                                                     |
+| {{ tab }} remote_system        | Object {{ complex }}          | Project's remote system                                                                            |
+| {{ tab2 }} id                  | String                        | External system's id                                                                               |
+| {{ tab2 }} name                | String                        | External system's name                                                                             |
+| {{ tab }} remote_id            | String                        | Project's external system's id                                                                     |
 | is_managed                     | Boolean                       | Object is managed                                                                                  |
 | object_profile                 | Object {{ complex }}          | [Managed Object Profile's data](../../../../user/reference/concepts/managed-object/index.md#level) |
 | {{ tab }} id                   | String                        | Profile's ID                                                                                       |
