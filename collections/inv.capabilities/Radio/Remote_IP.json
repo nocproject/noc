@@ -1,0 +1,8 @@
+{
+    "name": "Radio | Remote | IP",
+    "$collection": "inv.capabilities",
+    "uuid": "a6bcdfcc-18c3-4461-bcb9-16ff9759ce93",
+    "description": "Remote IP Address from reverse radio relay line.",
+    "type": "str",
+    "card_template": null
+}

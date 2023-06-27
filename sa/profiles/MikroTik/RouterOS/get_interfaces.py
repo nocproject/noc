@@ -21,6 +21,8 @@ class Script(BaseScript):
     type_map = {
         "ether": "physical",
         "wlan": "physical",
+        "wlan60-": "physical",
+        "wlan60-station-": "physical",
         "bridge": "SVI",
         "vlan": "SVI",
         "ppp-out": "tunnel",

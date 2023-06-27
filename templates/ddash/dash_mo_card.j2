@@ -87,6 +87,11 @@
                   {% from "graph_interface_card_radio_level.j2" import interface -%}
                   {{interface(radio_types)}},
                 {% endif %}
+                
+                {%if "mcs" in radio_types.metrics %}
+                  {% from "graph_radio_mcs.j2" import interface -%}
+                  {{interface(radio_types)}},
+                {% endif %}
               ]
             }
     {%endif%}
