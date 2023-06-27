@@ -1,0 +1,8 @@
+{
+    "name": "Radio | Mode",
+    "$collection": "inv.capabilities",
+    "uuid": "6c577e49-60cb-431a-9621-bb984197957e",
+    "description": "Mode of object.",
+    "type": "str",
+    "card_template": null
+}

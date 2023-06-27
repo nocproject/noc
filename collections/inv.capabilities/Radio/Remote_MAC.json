@@ -1,0 +1,8 @@
+{
+    "name": "Radio | Remote | MAC",
+    "$collection": "inv.capabilities",
+    "uuid": "594afd6c-3bf2-4cef-a472-c00f49ae11fb",
+    "description": "Remote MAC Address from reverse radio relay line.",
+    "type": "str",
+    "card_template": null
+}

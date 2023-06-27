@@ -302,6 +302,11 @@
                       {% from "graph_radio_signal_noise_level.j2" import interface -%}
                       {{interface(radio, loop.index)}},
                     {% endif %}
+
+                    {% if "mcs" in radio.ports[0].metrics %}
+                      {% from "graph_radio_mcs.j2" import interface -%}
+                      {{interface(radio, loop.index)}},
+                    {% endif %}
                   ]
                 }
             {%- endfor %}

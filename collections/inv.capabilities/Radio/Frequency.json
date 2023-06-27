@@ -1,0 +1,8 @@
+{
+    "name": "Radio | Frequency",
+    "$collection": "inv.capabilities",
+    "uuid": "956509a7-d112-45ae-b4a4-d238065cbecf",
+    "description": "Frequency in MHz radio.",
+    "type": "int",
+    "card_template": null
+}

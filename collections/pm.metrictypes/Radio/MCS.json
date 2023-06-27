@@ -1,0 +1,12 @@
+{
+    "name": "Radio | MCS",
+    "$collection": "pm.metrictypes",
+    "uuid": "18fc53dd-acf9-439c-871b-54f0ebb7d7c6",
+    "scope__name": "Interface",
+    "field_name": "mcs",
+    "field_type": "Int8",
+    "description": "Modulation Coding Scheme",
+    "measure": null,
+    "units__code": "1",
+    "scale__code": "1"
+}
