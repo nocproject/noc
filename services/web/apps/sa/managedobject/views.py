@@ -372,6 +372,8 @@ class ManagedObjectApplication(ExtModelApplication):
         for f in list(r):
             if f.startswith("caps"):
                 r.pop(f)
+        if "is_managed" in q:
+            del q["is_managed"]
         return r
 
     def extra_query(self, q, order):

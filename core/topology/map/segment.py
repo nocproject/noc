@@ -316,7 +316,10 @@ class SegmentTopology(TopologyBase):
         start: Optional[int] = None,
         page: Optional[int] = None,
     ) -> Iterable[MapItem]:
-        data = NetworkSegment.objects.filter(parent=parent).order_by("name")
+        if parent is not None:
+            data = NetworkSegment.objects.filter(parent=parent).order_by("name")
+        else:
+            data = NetworkSegment.objects.filter().order_by("name")
         if query:
             data = data.filter(name__icontains=query)
         # Apply paging

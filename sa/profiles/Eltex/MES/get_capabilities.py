@@ -99,7 +99,8 @@ class Script(BaseScript):
             s = [
                 e[0]
                 for e in parse_table(
-                    r, footer=r"^Unit\s*(?:Main Power|Fans Status|Redundant Power Supply)"
+                    r,
+                    footer=r"^Unit\s*(?:Main Power|Main Power Supply|Fans Status|Redundant Power Supply)",
                 )
             ]
             while s[-1] == "":

@@ -25,4 +25,4 @@ class TopologyUplinksJob(PeriodicJob):
         """
         Returns next repeat interval
         """
-        return 30
+        return config.topo.interval
