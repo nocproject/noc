@@ -264,7 +264,7 @@ class Script(BaseScript):
                     "description": f"State of {name} on Unit_{chassis_id}",
                     "measurement": "StatusEnum",
                     "labels": [
-                        "noc::sensor::placement::external",
+                        "noc::sensor::placement::internal",
                         "noc::sensor::mode::flag",
                         "noc::sensor::targer::fan",
                         f"noc::chassis::{chassis_id}",
@@ -288,7 +288,7 @@ class Script(BaseScript):
                     "description": f"State of {name} on Unit_{chassis_id}",
                     "measurement": "StatusEnum",
                     "labels": [
-                        "noc::sensor::placement::external",
+                        "noc::sensor::placement::internal",
                         "noc::sensor::mode::flag",
                         "noc::sensor::target::supply",
                         f"noc::chassis::{chassis_id}",
