@@ -43,8 +43,6 @@ nginx_ssl_key_path: /usr/local/etc/nginx/ssl/noc.key
 nginx_reload_command: "service nginx reload"
 nginx_user: www
 
-nsd_log_dir: /var/log/nsq
-nsq_root: /usr/local/nsq
 
 pgbouncer_user: pgbouncer
 pgbouncer_path_pid: /var/run/pgbouncer
@@ -59,9 +57,6 @@ postgres_superuser: postgres
 postgres_proccess: postgres
 
 tower_path: /usr/local/tower
-
-nsqd_reload_command: "service nsqd restart"
-nsqadmin_reload_command: "service nsqadmin restart"
 
 pip_cflags: "-O2 -pipe -fno-strict-aliasing -fstack-protector -Wno-return-type -I/usr/local/include"
 pip_ldflags: "-L/usr/local/lib"

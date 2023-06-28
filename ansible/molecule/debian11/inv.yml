@@ -1157,28 +1157,6 @@ all:
     svc-noc-exec:
       hosts:
         noc-node-debian11: {}
-    svc-nsqd:
-      children:
-        cfg-nsqd-noc-node-debian11:
-          hosts:
-            noc-node-debian11: {}
-        svc-nsqd-read:
-          hosts:
-            noc-node-debian11: {}
-    svc-nsqd-exec:
-      hosts:
-        noc-node-debian11: {}
-    svc-nsqlookupd:
-      children:
-        cfg-nsqlookupd-noc-node-debian11:
-          hosts:
-            noc-node-debian11: {}
-        svc-nsqlookupd-read:
-          hosts:
-            noc-node-debian11: {}
-    svc-nsqlookupd-exec:
-      hosts:
-        noc-node-debian11: {}
     svc-pgbouncer:
       children:
         cfg-pgbouncer-noc-node-debian11:

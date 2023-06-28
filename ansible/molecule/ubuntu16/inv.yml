@@ -1157,28 +1157,6 @@ all:
     svc-noc-exec:
       hosts:
         noc-node-ubuntu16: {}
-    svc-nsqd:
-      children:
-        cfg-nsqd-noc-node-ubuntu16:
-          hosts:
-            noc-node-ubuntu16: {}
-        svc-nsqd-read:
-          hosts:
-            noc-node-ubuntu16: {}
-    svc-nsqd-exec:
-      hosts:
-        noc-node-ubuntu16: {}
-    svc-nsqlookupd:
-      children:
-        cfg-nsqlookupd-noc-node-ubuntu16:
-          hosts:
-            noc-node-ubuntu16: {}
-        svc-nsqlookupd-read:
-          hosts:
-            noc-node-ubuntu16: {}
-    svc-nsqlookupd-exec:
-      hosts:
-        noc-node-ubuntu16: {}
     svc-kafkasender:
       children:
         cfg-kafkasender-noc-node-ubuntu16:
