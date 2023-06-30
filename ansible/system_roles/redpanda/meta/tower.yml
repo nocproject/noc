@@ -16,6 +16,14 @@ forms:
         - info
         - warn
         - error
+    cpu_limit:
+      default: 1
+      type: int
+      label: Amount of cpu cores for service
+    memory_limit:
+      default: 1
+      type: int
+      label: Amount of max memory for service in Gb
 
 services:
   redpanda:
