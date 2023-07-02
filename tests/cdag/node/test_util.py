@@ -170,7 +170,7 @@ def test_alarm(config, values, expected, state):
         # Fixed values
         (
             {"vars": [{"name": "x", "value": "test"}, {"name": "y", "value": "test!"}]},
-            {"x": "test", "y": "test!", "ovalue": 1.0, "tvalue": 1.0},
+            {"x": "test", "y": "test!", "ovalue": 1.0, "tvalue": 1.0, "node_id": "node_id"},
         ),
         # Templated values
         (
@@ -192,6 +192,7 @@ def test_alarm(config, values, expected, state):
                 "span": "0.5",
                 "ovalue": 1.0,
                 "tvalue": 1.0,
+                "node_id": "node_id",
             },
         ),
     ],
