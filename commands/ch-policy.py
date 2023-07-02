@@ -19,7 +19,7 @@ from noc.main.models.chpolicy import CHPolicy
 
 PartInfo = namedtuple("PartInfo", ["name", "rows", "bytes", "min_date", "max_date"])
 PartitionInfo = namedtuple(
-    "PartitionInfo", ["table_name", "partition", "rows", "bytes", "min_date", "max_date"]
+    "PartitionInfo", ["db_name", "table_name", "partition", "rows", "bytes", "min_date", "max_date"]
 )
 
 
@@ -68,7 +68,7 @@ class Command(BaseCommand):
                 )
                 table_claimed += pi.bytes
                 if not is_dry:
-                    partition_claimed += [(p.table, pi.partition)]
+                    partition_claimed += [(pi.db_name, p.table, pi.partition)]
             self.print("  Total %d bytes to be reclaimed" % table_claimed)
             claimed_bytes += table_claimed
         if partition_claimed:
@@ -77,12 +77,10 @@ class Command(BaseCommand):
                 self.print("%d\n" % i)
                 time.sleep(1)
             for c in partition_claimed:
-                table, part = c[0], c[1]
+                db_name, table, part = c[0], c[1], c[2]
                 if table.startswith(".inner"):
                     table = table[7:]
-                ch.execute(
-                    "ALTER TABLE %s.%s DROP PARTITION '%s'" % (config.clickhouse.db, table, part)
-                )
+                ch.execute(f"ALTER TABLE {db_name}.{table} DROP PARTITION '{part}'")
             self.print("# Done. %d bytes to be reclaimed" % claimed_bytes)
 
     def get_inactive_partition(self, connect):
@@ -98,11 +96,9 @@ class Command(BaseCommand):
           FROM system.parts
           WHERE
             active = 0
-            AND database = %s
           GROUP BY table, partition
           ORDER BY table, partition
-        """,
-            args=(config.clickhouse.db,),
+        """
         ):
             ap.add((row[0], row[1]))
         return ap
@@ -117,14 +113,11 @@ class Command(BaseCommand):
         partitions = defaultdict(list)
         for row in connect.execute(
             """
-          SELECT table, partition, SUM(rows), SUM(bytes), MIN(min_date), MAX(max_date)
+          SELECT table, partition, SUM(rows), SUM(bytes), MIN(min_date), MAX(max_date), database
           FROM system.parts
-          WHERE
-            database = %s
-          GROUP BY table, partition
-          ORDER BY table, partition
-        """,
-            args=(config.clickhouse.db,),
+          GROUP BY database, table, partition
+          ORDER BY database, table, partition
+        """
         ):
             if (row[0], row[1]) in exclude_partition:
                 self.print(
@@ -134,6 +127,7 @@ class Command(BaseCommand):
                 continue
             partitions[row[0]] += [
                 PartitionInfo(
+                    db_name=row[6],
                     table_name=row[0],
                     partition=row[1],
                     rows=int(row[2]),

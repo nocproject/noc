@@ -57,8 +57,8 @@ class Command(BaseCommand):
             scheduler, pool = s.split(".")
         if scheduler in SHARDING_SCHEDULER:
             # raise argparse.ArgumentTypeError("Scheduler: %s, not supporting sharding")
-            return Scheduler(scheduler, pool=pool).get_collection()
-        return Scheduler(scheduler).get_collection()
+            return Scheduler(scheduler, pool=pool)
+        return Scheduler(scheduler)
 
     def add_arguments(self, parser):
         parser.add_argument(
@@ -182,7 +182,7 @@ class Command(BaseCommand):
                 options["key"] += [int(line)]
         return getattr(self, "handle_%s" % cmd.replace("-", "_"))(*args, **options)
 
-    def handle_list(self, scheduler, *args, **options):
+    def handle_list(self, scheduler: Scheduler, *args, **options):
         q = {}
         if options.get("name"):
             q["jcls"] = options["name"]
@@ -193,7 +193,7 @@ class Command(BaseCommand):
         # Print header
         getattr(self, "init_%s" % fname)()
         # Print jobs
-        for j in scheduler.find(q).sort("ts").limit(50):
+        for j in scheduler.get_collection().find(q).sort("ts").limit(50):
             format(j)
 
     def handle_get(self, scheduler, *args, **options):
@@ -266,10 +266,11 @@ class Command(BaseCommand):
             if bulk:
                 c.bulk_write(bulk)
 
-    def handle_reschedule(self, scheduler, *args, **options):
+    def handle_reschedule(self, scheduler: Scheduler, *args, **options):
         bulk = []
         q = {}
         shift_interval = self.default_time
+        coll = scheduler.get_collection()
         if options.get("name"):
             q["jcls"] = options["name"]
         if options.get("key"):
@@ -279,7 +280,7 @@ class Command(BaseCommand):
         start = options.get("start")
         if options.get("end"):
             shift_interval = max(shift_interval, options["end"] - options["start"])
-        for j in scheduler.find(q).sort("ts"):
+        for j in coll.find(q).sort("ts"):
             start += shift_interval
             self.print("Change: ", j["ts"], "-->", start)
             bulk += [UpdateOne({"_id": j["_id"]}, {"$set": {"ts": start}})]
@@ -288,7 +289,7 @@ class Command(BaseCommand):
             for i in reversed(range(1, 10)):
                 self.print("%d\n" % i)
                 time.sleep(1)
-            scheduler.bulk_write(bulk)
+            coll.bulk_write(bulk)
             # Job.get_next_timestamp(64000)
 
     @staticmethod
@@ -387,9 +388,16 @@ class Command(BaseCommand):
             self.print("%20s %s" % ("Pool", "Threads est."))
             self.print("%40s %d" % (pool.name, math.ceil(job_count)))
 
+    @classmethod
+    def get_max_slots(cls, scheduler: Scheduler) -> int:
+        slots = 0
+        if scheduler.pool:
+            slots = run_sync(partial(cls.get_slot_limits, f"{scheduler.name}-{scheduler.pool}"))
+        return slots
+
     def handle_stats(
         self,
-        scheduler,
+        scheduler: Scheduler,
         mos: Optional[List[int]] = None,
         slots: Optional[List[int]] = None,
         **options,
@@ -398,20 +406,21 @@ class Command(BaseCommand):
 
         if isinstance(slots, str):
             slots = [int(s) for s in slots.split(",")]
-        max_slots = run_sync(partial(self.get_slot_limits, "-".join(scheduler.name.split(".")[2:])))
+        max_slots = self.get_max_slots(scheduler)
         if not max_slots:
             self.print("Unknown scheduler name or it has not slots")
             return
+        pool = Pool.get_by_name(scheduler.pool)
         self.print(f"Max Slots is {max_slots}")
         query = f"""
         SELECT mod(mo.id, {max_slots}) as slot, profile, count(*) as number
         FROM sa_managedobject mo JOIN sa_managedobjectprofile mop ON (mo.object_profile_id = mop.id)
-        WHERE mop.enable_periodic_discovery = true {"AND mo.id=ANY(%s)" if mos else ""}
+        WHERE mop.enable_periodic_discovery = true AND pool = %s {"AND mo.id=ANY(%s)" if mos else ""}
         GROUP BY profile, slot
         {"HAVING mod(mo.id, %d)=ANY(%%s)" % max_slots if slots else ""}
         ORDER BY slot, number desc
         """
-        params = []
+        params = [str(pool.id)]
         if mos:
             params += [mos]
         if slots:
@@ -419,16 +428,19 @@ class Command(BaseCommand):
         cursor = pg_conn.cursor()
         cursor.execute(query, params)
         c_slot = None
+        total = 0
         for slot, profile, count in cursor.fetchall():
             if c_slot and c_slot != slot:
                 self.print(f"{'=' * 10} Slot {slot} {'=' * 10}")
             p = Profile.get_by_id(profile)
             self.print(f"Profile: {p} - Count {count}")
             c_slot = slot
+            total += count
+        self.print(f"Total: {total}")
 
     def handle_bucket_duration(
         self,
-        scheduler,
+        scheduler: Scheduler,
         min_duration=5,
         buckets=5,
         slots: Optional[List[int]] = None,
@@ -438,10 +450,10 @@ class Command(BaseCommand):
     ):
         if isinstance(slots, str):
             slots = [int(s) for s in slots.split(",")]
-        max_slots = run_sync(partial(self.get_slot_limits, "-".join(scheduler.name.split(".")[2:])))
+        max_slots = self.get_max_slots(scheduler)
         self.print(f"Max Slots is {max_slots}")
         r = self.get_bucket_ldur(
-            scheduler, slots=slots, max_slots=max_slots, buckets=buckets, min_duration=min_duration
+            scheduler.get_collection(), slots=slots, max_slots=max_slots, buckets=buckets, min_duration=min_duration
         )
         for num, bucket in enumerate(r):
             self.print("\n", "=" * 80)
@@ -461,7 +473,7 @@ class Command(BaseCommand):
 
     def handle_bucket_late(
         self,
-        scheduler,
+        scheduler: Scheduler,
         min_duration=5,
         buckets=5,
         slots: Optional[List[int]] = None,
@@ -471,10 +483,10 @@ class Command(BaseCommand):
     ):
         if isinstance(slots, str):
             slots = [int(s) for s in slots.split(",")]
-        max_slots = run_sync(partial(self.get_slot_limits, "-".join(scheduler.name.split(".")[2:])))
+        max_slots = self.get_max_slots(scheduler)
         self.print(f"Max Slots is {max_slots}")
         r = self.get_bucket_late(
-            scheduler, slots=slots, max_slots=max_slots, buckets=buckets, min_duration=min_duration
+            scheduler.get_collection(), slots=slots, max_slots=max_slots, buckets=buckets, min_duration=min_duration
         )
         print(max_slots)
         for num, bucket in enumerate(r):
@@ -507,8 +519,9 @@ class Command(BaseCommand):
             {
                 "$match": {
                     "slot": {"$in": slots},
+                    "jcls": "noc.services.discovery.jobs.interval.job.IntervalDiscoveryJob",
                     # "jcls": "noc.services.discovery.jobs.periodic.job.PeriodicDiscoveryJob",
-                    "jcls": "noc.services.discovery.jobs.box.job.BoxDiscoveryJob",
+                    # "jcls": "noc.services.discovery.jobs.box.job.BoxDiscoveryJob",
                     "ldur": {"$gte": min_duration},
                 }
             },
@@ -530,8 +543,9 @@ class Command(BaseCommand):
         pipeline = [
             {
                 "$match": {
+                    "jcls": "noc.services.discovery.jobs.interval.job.IntervalDiscoveryJob",
                     # "jcls": "noc.services.discovery.jobs.periodic.job.PeriodicDiscoveryJob",
-                    "jcls": "noc.services.discovery.jobs.box.job.BoxDiscoveryJob",
+                    # "jcls": "noc.services.discovery.jobs.box.job.BoxDiscoveryJob",
                     "s": "R",
                 }
             },
