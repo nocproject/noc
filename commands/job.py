@@ -453,7 +453,11 @@ class Command(BaseCommand):
         max_slots = self.get_max_slots(scheduler)
         self.print(f"Max Slots is {max_slots}")
         r = self.get_bucket_ldur(
-            scheduler.get_collection(), slots=slots, max_slots=max_slots, buckets=buckets, min_duration=min_duration
+            scheduler.get_collection(),
+            slots=slots,
+            max_slots=max_slots,
+            buckets=buckets,
+            min_duration=min_duration,
         )
         for num, bucket in enumerate(r):
             self.print("\n", "=" * 80)
@@ -486,7 +490,11 @@ class Command(BaseCommand):
         max_slots = self.get_max_slots(scheduler)
         self.print(f"Max Slots is {max_slots}")
         r = self.get_bucket_late(
-            scheduler.get_collection(), slots=slots, max_slots=max_slots, buckets=buckets, min_duration=min_duration
+            scheduler.get_collection(),
+            slots=slots,
+            max_slots=max_slots,
+            buckets=buckets,
+            min_duration=min_duration,
         )
         print(max_slots)
         for num, bucket in enumerate(r):
