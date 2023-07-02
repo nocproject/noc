@@ -220,7 +220,11 @@ def test_alarm_vars(config, expected):
         msg = messages[0]
         if expected is None:
             assert "vars" in msg.value
-            assert msg.value["vars"] == {"tvalue": default_cfg["activation_level"], "ovalue": 1.0}
+            assert msg.value["vars"] == {
+                "tvalue": default_cfg["activation_level"],
+                "ovalue": 1.0,
+                "node_id": "node",
+            }
         else:
             assert "vars" in msg.value
             assert msg.value["vars"] == expected
