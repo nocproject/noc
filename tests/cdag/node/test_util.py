@@ -170,7 +170,7 @@ def test_alarm(config, values, expected, state):
         # Fixed values
         (
             {"vars": [{"name": "x", "value": "test"}, {"name": "y", "value": "test!"}]},
-            {"x": "test", "y": "test!", "ovalue": 1.0, "tvalue": 1.0},
+            {"x": "test", "y": "test!", "ovalue": 1.0, "tvalue": 1.0, "node_id": "node"},
         ),
         # Templated values
         (
@@ -192,6 +192,7 @@ def test_alarm(config, values, expected, state):
                 "span": "0.5",
                 "ovalue": 1.0,
                 "tvalue": 1.0,
+                "node_id": "node",
             },
         ),
     ],
@@ -219,7 +220,11 @@ def test_alarm_vars(config, expected):
         msg = messages[0]
         if expected is None:
             assert "vars" in msg.value
-            assert msg.value["vars"] == {"tvalue": default_cfg["activation_level"], "ovalue": 1.0}
+            assert msg.value["vars"] == {
+                "tvalue": default_cfg["activation_level"],
+                "ovalue": 1.0,
+                "node_id": "node",
+            }
         else:
             assert "vars" in msg.value
             assert msg.value["vars"] == expected
