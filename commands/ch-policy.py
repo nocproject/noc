@@ -11,7 +11,6 @@ import time
 import datetime
 
 # NOC modules
-from noc.config import config
 from noc.core.mongo.connection import connect
 from noc.core.management.base import BaseCommand
 from noc.core.clickhouse.connect import connection

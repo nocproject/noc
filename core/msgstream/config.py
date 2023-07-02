@@ -6,7 +6,6 @@
 # ----------------------------------------------------------------------
 
 # Python modules
-from functools import partial
 from dataclasses import dataclass
 from typing import Optional, List
 
