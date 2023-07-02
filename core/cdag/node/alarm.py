@@ -117,9 +117,13 @@ class AlarmNode(BaseCDAGNode):
             "timestamp": now.isoformat(),
             "managed_object": self.config.managed_object,
             "alarm_class": self.config.alarm_class,
-            "labels": self.config.labels or [],
+            "labels": list(self.config.labels or []),
             # x is numpy.float64 type, ?
-            "vars": {"ovalue": round(float(x), 3), "tvalue": self.config.activation_level},
+            "vars": {
+                "ovalue": round(float(x), 3),
+                "tvalue": self.config.activation_level,
+                "node_id": self.node_id,
+            },
         }
         # Render vars
         if self.config.vars:
