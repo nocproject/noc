@@ -114,7 +114,11 @@ class ThresholdNode(BaseCDAGNode):
             "alarm_class": th.alarm_class,
             "labels": list(self.config.labels or []) + (th.alarm_labels or []),
             # x is numpy.float64 type, ?
-            "vars": {"ovalue": round(float(x), 3), "tvalue": th.value},
+            "vars": {
+                "ovalue": round(float(x), 3),
+                "tvalue": th.value,
+                "node_id": self.node_id,
+            },
         }
         # Render vars
         if self.config.vars:

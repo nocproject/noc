@@ -6,7 +6,6 @@
 # ----------------------------------------------------------------------
 
 # Python modules
-from functools import partial
 from dataclasses import dataclass
 from typing import Optional, List
 
@@ -40,16 +39,11 @@ class StreamItem(object):
     def get_partitions(self) -> int:
         if self.config.partitions is not None:
             return self.config.partitions
-
-        from noc.core.ioloop.util import run_sync
-        from noc.core.dcs.loader import get_dcs, DEFAULT_DCS
-
         # Slot-based streams
-        dcs = get_dcs(DEFAULT_DCS)
         slot = self.slot or self.name
         if self.shard:
             slot = f"{slot}-{self.shard}"
-        return run_sync(partial(dcs.get_slot_limit, slot))
+        return config.get_slot_limits(slot)
 
     @property
     def cursor_name(self) -> Optional[str]:
