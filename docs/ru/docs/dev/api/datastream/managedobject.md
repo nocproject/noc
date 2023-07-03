@@ -11,29 +11,37 @@ state, including capabilities, interfaces and topology
 
 | Name                           | Type                          | Description                                                                                       |
 | ------------------------------ | ----------------------------- |---------------------------------------------------------------------------------------------------|
-| id                             | String                        | [Managed Object's](../../../user/reference/concepts/managed-object/index.md) id                |
+| id                             | String                        | [Managed Object's](../../../user/reference/concepts/managed-object/index.md) id                   |
 | change_id                      | String                        | [Record's Change Id](index.md#change-id)                                                          |
-| remote_system                  | Object {{ complex }}          | Source [remote system](../../../user/reference/concepts/remote-system/index.md) for object     |
+| remote_system                  | Object {{ complex }}          | Source [remote system](../../../user/reference/concepts/remote-system/index.md) for object        |
 | {{ tab }} id                   | String                        | External system's id                                                                              |
 | {{ tab }} name                 | String                        | External system's name                                                                            |
 | remote_id                      | String                        | External system's id (Opaque attribbute)                                                          |
 | bi_id                          | Integer                       | BI Database id (metrics)                                                                          |
 | name                           | String                        | Object's name                                                                                     |
-| profile                        | String                        | [SA Profile](../../../user/reference/concepts/sa-profile/index.md)                             |
+| profile                        | String                        | [SA Profile](../../../user/reference/concepts/sa-profile/index.md)                                |
 | vendor                         | String                        | Vendor                                                                                            |
 | platform                       | String                        | Platform                                                                                          |
 | version                        | String                        | Firmware version                                                                                  |
 | address                        | String                        | Management Address                                                                                |
 | description                    | String                        | Managed Object description                                                                        |
+| labels                         | Array of String               | Managed Object labels                                                                             |
 | tags                           | Array of String               | Managed Object tags                                                                               |
+| project                        | Object {{ complex }}          | Project data                                                                                      |
+| {{ tab }} code                 | String                        | Project's code                                                                                    |
+| {{ tab }} name                 | String                        | Project's name                                                                                    |
+| {{ tab }} remote_system        | Object {{ complex }}          | Project's remote system                                                                           |
+| {{ tab2 }} id                  | String                        | External system's id                                                                              |
+| {{ tab2 }} name                | String                        | External system's name                                                                            |
+| {{ tab }} remote_id            | String                        | Project's external system's id                                                                    |
 | is_managed                     | Boolean                       | Object is managed                                                                                 |
-| object_profile                 | Object {{ complex }}          | [Managed Object Profile's data](../../../user/reference/concepts/managed-object/index.md#level) |
+| object_profile                 | Object {{ complex }}          | [Managed Object Profile's data](../../../user/reference/concepts/managed-object/index.md#level)   |
 | {{ tab }} id                   | String                        | Profile's ID                                                                                      |
 | {{ tab }} name                 | String                        | Profile's Name                                                                                    |
-| {{ tab }} level                | Integer                       | Managed Object's [level](../../../user/reference/concepts/managed-object-profile/index.md)     |
+| {{ tab }} level                | Integer                       | Managed Object's [level](../../../user/reference/concepts/managed-object-profile/index.md)        |
 | {{ tab }} enable_ping          | Boolean                       | Ping probe is enabled                                                                             |
-| {{ tab }} enable_box           | Boolean                       | [Box discovery](../../../admin/reference/discovery/box/index.md) is enabled                    |
-| {{ tab }} enable_periodic      | Boolean                       | [Periodic discovery](../../../admin/reference/discovery/periodic/index.md) is enabled          |
+| {{ tab }} enable_box           | Boolean                       | [Box discovery](../../../admin/reference/discovery/box/index.md) is enabled                       |
+| {{ tab }} enable_periodic      | Boolean                       | [Periodic discovery](../../../admin/reference/discovery/periodic/index.md) is enabled             |
 | {{ tab }} tags                 | Array of String               | Managed Object Profile tags                                                                       |
 | config                         | Object {{ complex }}          | Optional Object's config metadata (if any)                                                        |
 | {{ tab }} revision             | String                        | Config revision ID                                                                                |
@@ -42,15 +50,15 @@ state, including capabilities, interfaces and topology
 | capabilities                   | Array of Object {{ complex }} | List of object's [capabilities](#caps)                                                            |
 | {{ tab }} name                 | String                        | Capability's name                                                                                 |
 | {{ tab }} value                | String                        | Capabbility's value                                                                               |
-| service_groups                 | Array of Object {{ complex }} | Service [Resource Groups](../../../user/reference/concepts/resource-group/index.md)            |
-| {{ tab }} id                   | String                        | [Resource Group's](../../../user/reference/concepts/resource-group/index.md) id                |
-| {{ tab }} name                 | String                        | [Resource Group's](../../../user/reference/concepts/resource-group/index.md) id                |
-| {{ tab }} technology           | String                        | [Technology's](../../../user/reference/concepts/technology/index.md) name                      |
+| service_groups                 | Array of Object {{ complex }} | Service [Resource Groups](../../../user/reference/concepts/resource-group/index.md)               |
+| {{ tab }} id                   | String                        | [Resource Group's](../../../user/reference/concepts/resource-group/index.md) id                   |
+| {{ tab }} name                 | String                        | [Resource Group's](../../../user/reference/concepts/resource-group/index.md) id                   |
+| {{ tab }} technology           | String                        | [Technology's](../../../user/reference/concepts/technology/index.md) name                         |
 | {{ tab }} static               | Boolean                       | true if group is static                                                                           |
-| client_groups                  | Array of Object {{ complex }} | Client [Resource Groups](../../../user/reference/concepts/resource-group/index.md)             |
-| {{ tab }} id                   | String                        | [Resource Group's](../../../user/reference/concepts/resource-group/index.md) id                |
-| {{ tab }} name                 | String                        | [Resource Group's](../../../user/reference/concepts/resource-group/index.md) id                |
-| {{ tab }} technology           | String                        | [Technology's](../../../user/reference/concepts/technology/index.md) name                      |
+| client_groups                  | Array of Object {{ complex }} | Client [Resource Groups](../../../user/reference/concepts/resource-group/index.md)                |
+| {{ tab }} id                   | String                        | [Resource Group's](../../../user/reference/concepts/resource-group/index.md) id                   |
+| {{ tab }} name                 | String                        | [Resource Group's](../../../user/reference/concepts/resource-group/index.md) id                   |
+| {{ tab }} technology           | String                        | [Technology's](../../../user/reference/concepts/technology/index.md) name                         |
 | {{ tab }} static               | Boolean                       | true if group is static                                                                           |
 | forwarding-instances           | Array of Object {{ complex }} | List of VPNs and virtual tables                                                                   |
 | {{ tab }} name                 | String                        | Forwarding instance name                                                                          |
@@ -93,7 +101,7 @@ state, including capabilities, interfaces and topology
 | {{ tab2 }} is_uplink           | Boolean                       | True, if link is uplink                                                                           |
 | {{ tab }} services             | Array of Object {{ complex }} | Services related to the port                                                                      |
 | {{ tab2 }} id                  | String                        | Service\'s ID                                                                                     |
-| {{ tab2 }} remote_system       | Object                        | Source [remote system](../../../user/reference/concepts/remote-system/index.md) for service    |
+| {{ tab2 }} remote_system       | Object                        | Source [remote system](../../../user/reference/concepts/remote-system/index.md) for service       |
 | {{ tab3 }} id                  | String                        | External system's id                                                                              |
 | {{ tab3 }} name                | String                        | External system's name                                                                            |
 | {{ tab2 }} remote_id           | String                        | Service id in External system (Opaque attribute)                                                  |
@@ -102,13 +110,13 @@ state, including capabilities, interfaces and topology
 | {{ tab }} model                | Object {{ complex }}          | Inventory model (Object model)                                                                    |
 | {{ tab2 }} id                  | String                        | Inventory model\'s ID                                                                             |
 | {{ tab2 }} name                | String                        | Inventory model\'s name                                                                           |
-| {{ tab2 }} tags                | Array of String               | [Object model's tags](../../object-model/tags.md)                              |
+| {{ tab2 }} tags                | Array of String               | [Object model's tags](../../object-model/tags.md)                                                 |
 | {{ tab2 }} vendor              | Object {{ complex }}          | Inventory model\'s vendor                                                                         |
 | {{ tab3 }} id                  | String                        | Vendor\'s ID                                                                                      |
 | {{ tab3 }} name                | String                        | Vendor\'s Name                                                                                    |
 | {{ tab }} serial               | String                        | Inventory object's serial number                                                                  |
-| {{ tab }} part_no              | Array of String               | Inventory object's Part Numbers                                                                    |
-| {{ tab }} order_part_no        | Array of String               | Inventory object's Order Part Numbers                                                              |
+| {{ tab }} part_no              | Array of String               | Inventory object's Part Numbers                                                                   |
+| {{ tab }} order_part_no        | Array of String               | Inventory object's Order Part Numbers                                                             |
 | {{ tab }} revision             | String                        | Inventory object's hardware revision                                                              |
 | {{ tab }} data                 | Object {{ complex }}          | Attached data (see `Model Interfaces`)                                                            |
 | {{ tab }} slots                | Array of Object {{ complex }} | Object's slots configuration                                                                      |

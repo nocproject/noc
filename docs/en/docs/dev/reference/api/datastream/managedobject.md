@@ -21,6 +21,7 @@ state, including capabilities, interfaces and topology
 | version                        | String                        | Firmware version                                                                                   |
 | address                        | String                        | Management Address                                                                                 |
 | description                    | String                        | Managed Object description                                                                         |
+| labels                         | Array of String               | Managed Object labels                                                                              |
 | tags                           | Array of String               | Managed Object tags                                                                                |
 | project                        | Object {{ complex }}          | Project data                                                                                       |
 | {{ tab }} code                 | String                        | Project's code                                                                                     |
