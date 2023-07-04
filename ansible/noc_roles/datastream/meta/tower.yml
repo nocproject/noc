@@ -37,6 +37,14 @@ forms:
       default: ""
       label: "Allow access to service from IPs:"
       description: "in CIDR notation, separated with comma"
+    enable_address:
+      label: "enable_address"
+      type: bool
+      default: False  # yamllint disable-line rule:truthy
+    enable_address_wait:
+      label: "enable_address_wait"
+      type: bool
+      default: False  # yamllint disable-line rule:truthy
     enable_administrativedomain:
       label: "enable_administrativedomain"
       type: bool
@@ -93,12 +101,28 @@ forms:
       label: "enable_managedobject_wait"
       type: bool
       default: False  # yamllint disable-line rule:truthy
+    enable_prefix:
+      label: "enable_prefix"
+      type: bool
+      default: False  # yamllint disable-line rule:truthy
+    enable_prefix_wait:
+      label: "enable_prefix_wait"
+      type: bool
+      default: False  # yamllint disable-line rule:truthy
     enable_resourcegroup:
       label: "enable_resourcegroup"
       type: bool
       default: False  # yamllint disable-line rule:truthy
     enable_resourcegroup_wait:
       label: "enable_resourcegroup_wait"
+      type: bool
+      default: False  # yamllint disable-line rule:truthy
+    enable_vrf:
+      label: "enable_vrf"
+      type: bool
+      default: False  # yamllint disable-line rule:truthy
+    enable_vrf_wait:
+      label: "enable_vrf_wait"
       type: bool
       default: False  # yamllint disable-line rule:truthy
 
