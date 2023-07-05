@@ -13,7 +13,6 @@ import sys
 import asyncio
 import codecs
 import hashlib
-import random
 
 # Third-party modules
 import orjson
