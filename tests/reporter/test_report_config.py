@@ -28,10 +28,6 @@ def test_report_config(report):
     with open(os.path.join(path, f"{report}.yml"), "rb") as f:
         cfg = yaml.safe_load(f)
     args = cfg.pop("args", None) or {}
-    if "profile" in args:
-        from noc.sa.models.profile import Profile
-
-        args["profile"] = Profile.get_by_name(args["profile"])
     if "request" in args:
         args["request"] = RequestStub(None)
     r_cfg = ReportConfig(**cfg)

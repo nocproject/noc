@@ -36,6 +36,11 @@ class ReportClassificationRule(ReportSource):
             return None
 
         profile = kwargs.get("profile")
+        if isinstance(profile, str):
+            # For test running
+            from noc.sa.models.profile import Profile
+
+            profile = Profile.get_by_name(profile)
         data = []
         for r in EventClassificationRule.objects.order_by("preference"):
             p_re = get_profile(r)
