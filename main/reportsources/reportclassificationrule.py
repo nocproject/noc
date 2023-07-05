@@ -39,7 +39,7 @@ class ReportClassificationRule(ReportSource):
         data = []
         for r in EventClassificationRule.objects.order_by("preference"):
             p_re = get_profile(r)
-            if profile and p_re and not re.search(p_re, profile):
+            if profile and p_re and not re.search(p_re, profile.name):
                 # Skip
                 continue
             # d1
