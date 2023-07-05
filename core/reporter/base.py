@@ -309,11 +309,14 @@ class ReportEngine(object):
                 data = sql.query(Jinja2Template(query.query).render(q_ctx))
                 if query.transpose:
                     data = data.transpose(include_header=True)
-            if data is None or data.is_empty():
-                if not num:
-                    # If first query is empty, nothing to join
-                    return rows
+            if num and data is None:
+                # for join query check data exists
                 continue
+            elif data is None:
+                raise ValueError("First query without result")
+            elif data.is_empty():
+                # If first query is empty, nothing to join
+                return data
             if rows is not None and joined_field:
                 # df_left_join = df_customers.join(df_orders, on="customer_id", how="left")
                 rows = rows.join(data, on=joined_field, how="left")
