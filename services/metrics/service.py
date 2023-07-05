@@ -95,14 +95,10 @@ class MetricsService(FastAPIService):
         self.change_log = ChangeLog(self.slot_number)
         connect_async()
         self.load_scopes()
-        if global_config.metrics.compact_on_start:
-            await self.change_log.compact()
         self.start_state = await self.change_log.get_state()
         self.graph = CDAG("metrics")
         if global_config.metrics.flush_interval > 0:
             asyncio.create_task(self.log_runner())
-        if global_config.metrics.compact_interval > 0:
-            asyncio.create_task(self.compact_runnner())
         # Start tracking changes
         asyncio.get_running_loop().create_task(self.get_metric_rules_mappings())
         asyncio.get_running_loop().create_task(self.get_object_mappings())
@@ -127,8 +123,6 @@ class MetricsService(FastAPIService):
             await self.change_log.flush()
             async with self.sync_cursor_condition:
                 self.sync_cursor_condition.notify_all()
-            if global_config.metrics.compact_on_stop:
-                await self.change_log.compact()
             self.change_log = None
 
     async def log_runner(self):
@@ -140,14 +134,6 @@ class MetricsService(FastAPIService):
                 await self.change_log.flush()
                 async with self.sync_cursor_condition:
                     self.sync_cursor_condition.notify_all()
-
-    async def compact_runnner(self):
-        self.logger.info("Run compact runner")
-        # Randomize compaction on different slots to prevent the load spikes
-        await asyncio.sleep(random.random() * global_config.metrics.compact_interval)
-        while True:
-            await self.change_log.compact()
-            await asyncio.sleep(global_config.metrics.compact_interval)
 
     async def get_object_mappings(self):
         """
