@@ -13,11 +13,18 @@ import logging
 import asyncio
 import datetime
 
-# Third-party modules
-from pymongo import ASCENDING
-
 # NOC modules
 from noc.core.service.loader import get_service
+from noc.core.clickhouse.connect import connection as ch_connection
+
+SQL_STATE = """
+    SELECT node_id, argMax(state, ts) as state
+    FROM metricslog
+    WHERE slot = %s
+    GROUP BY node_id
+    FORMAT JSONEachRow
+
+"""
 
 
 class ChangeLog(object):
@@ -37,16 +44,15 @@ class ChangeLog(object):
         Retrieve current state snapshot
         """
         self.logger.info("Retrieving current state")
-        coll = self.get_collection()
         state = {}
+        ch = ch_connection()
         async with self.lock:
             self.logger.info("Lock acquired")
             n = 0
-            async for doc in coll.find({"slot": self.slot}).sort([("_id", ASCENDING)]):
-                d = doc.get("data")
-                if not d:
-                    continue
-                state.update(self.decode(doc["data"]))
+            result = ch.execute(SQL_STATE % self.slot, return_raw=True)
+            for row in result.splitlines():
+                row = orjson.loads(row)
+                state[row["node_id"]] = orjson.loads(row["state"])
                 n += 1
         self.logger.info("%d states are retrieved from %d log items", len(state), n)
         return state
