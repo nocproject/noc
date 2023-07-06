@@ -535,7 +535,7 @@ class DiscoveryCheck(object):
         return [
             ll
             for ll in Label.merge_labels(obj.iter_effective_labels(obj))
-            if obj.can_set_label(ll) or ll[-1] in MATCH_OPS
+            if obj.can_set_label(ll) or ll[-1] in MATCH_OPS or ll[-1] == "*"
         ]
 
     def update_if_changed(
