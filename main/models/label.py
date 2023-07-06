@@ -468,11 +468,14 @@ class Label(Document):
         return Label.get_effective_settings(self.name)
 
     @classmethod
-    def merge_labels(cls, iter_labels: Iterable[List[str]]) -> List[str]:
+    def merge_labels(
+        cls, iter_labels: Iterable[List[str]], add_wildcard: bool = False
+    ) -> List[str]:
         """
         Merge sets of labels, processing the scopes.
 
         :param iter_labels: Iterator yielding lists of labels
+        :param add_wildcard: Add wildcard scope label
         :return:
         """
         seen_scopes: Set[str] = set()
@@ -482,11 +485,15 @@ class Label(Document):
             for label in labels:
                 if label in seen:
                     continue
-                elif "::" in label and not label[-1] in MATCH_OPS:
+                elif "::" in label and label[-1] not in MATCH_OPS:
                     scope = label.rsplit("::", 1)[0]
                     if scope in seen_scopes:
                         continue
                     seen_scopes.add(scope)
+                    wildcard = f"{scope}::*"
+                    if add_wildcard and wildcard not in seen and scope != "noc":
+                        r.append(wildcard)
+                        seen.add(wildcard)
                 r.append(label)
                 seen.add(label)
         return r
@@ -745,8 +752,8 @@ class Label(Document):
                 )
                 el = {
                     ll
-                    for ll in Label.merge_labels(labels_iter(instance))
-                    if ll[-1] in MATCH_OPS or can_set_label(ll)
+                    for ll in Label.merge_labels(labels_iter(instance), add_wildcard=True)
+                    if ll[-1] in MATCH_OPS or can_set_label(ll) or ll[-1] == "*"
                 }
                 if not instance.effective_labels or el != set(instance.effective_labels):
                     instance.effective_labels = list(sorted(el))
