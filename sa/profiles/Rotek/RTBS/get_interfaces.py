@@ -203,6 +203,8 @@ class Script(BaseScript):
                     iface["subinterfaces"][0]["enabled_afi"] = ["IPv4"]
                 else:
                     iface["subinterfaces"][0]["enabled_afi"] = ["BRIDGE"]
+                if ifname == "ra0":
+                    iface["hints"] = ["technology::radio::802.11"]
                 interfaces += [iface]
                 ri = ssid.get(ifname)
                 if ri:
