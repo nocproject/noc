@@ -468,7 +468,9 @@ class Label(Document):
         return Label.get_effective_settings(self.name)
 
     @classmethod
-    def merge_labels(cls, iter_labels: Iterable[List[str]], add_wildcard: bool = False) -> List[str]:
+    def merge_labels(
+        cls, iter_labels: Iterable[List[str]], add_wildcard: bool = False
+    ) -> List[str]:
         """
         Merge sets of labels, processing the scopes.
 
