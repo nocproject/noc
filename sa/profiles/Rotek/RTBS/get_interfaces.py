@@ -1,7 +1,7 @@
 # ---------------------------------------------------------------------
 # Rotek.RTBS.get_interfaces
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2020 The NOC Project
+# Copyright (C) 2007-2023 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -203,6 +203,8 @@ class Script(BaseScript):
                     iface["subinterfaces"][0]["enabled_afi"] = ["IPv4"]
                 else:
                     iface["subinterfaces"][0]["enabled_afi"] = ["BRIDGE"]
+                if ifname == "ra0":
+                    iface["hints"] = ["technology::radio::802.11"]
                 interfaces += [iface]
                 ri = ssid.get(ifname)
                 if ri:
