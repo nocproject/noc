@@ -131,7 +131,7 @@ class MODashboard(JinjaDashboard):
                         }
                     ]
                     continue
-                if "technology::radio::802.11" in iface.effective_labels:
+                if "technology::radio::*" in iface.effective_labels:
                     radio += [
                         {
                             "name": iface.name,
