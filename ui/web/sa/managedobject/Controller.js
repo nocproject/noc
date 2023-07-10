@@ -601,7 +601,7 @@ Ext.define('NOC.sa.managedobject.Controller', {
                 this.getView().getLayout().setActiveItem('managedobject-form');
                 Ext.Array.each(groupEditFields, function(field) {
                     var value = selection[0][field.name];
-                    if(value) {
+                    if(selection[0].hasOwnProperty(field.name)) {
                         if(isSameValue(selection, field.name)) {
                             if(isLookup(selection[0], field.name)) {
                                 value = {[field.displayField]: selection[0][field.name + '__label'], [field.valueField]: selection[0][field.name]};
@@ -755,9 +755,7 @@ Ext.define('NOC.sa.managedobject.Controller', {
                             r[v] = field.cleanValue(record, rest_url);
                             return;
                         }
-                        if(!Ext.isEmpty(data[v])) {
-                            r[v] = data[v];
-                        }
+                        r[v] = data[v];
                     });
                     //
                     this.getView().down('[itemId=managedobject-form]').down().form = form;
