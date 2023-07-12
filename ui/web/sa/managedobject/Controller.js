@@ -609,10 +609,6 @@ Ext.define('NOC.sa.managedobject.Controller', {
                         } else {
                             value = "Leave unchanged";
                         }
-                    } else {
-                        value = "Leave unchanged";
-                    }
-                    if(value) {
                         field.setValue(value);
                         field.initValue();
                     }
@@ -622,9 +618,7 @@ Ext.define('NOC.sa.managedobject.Controller', {
                 }
             },
             failure: function() {
-                if(gridView) {
-                    parentCmp.unmask();
-                }
+                parentCmp.unmask();
                 NOC.error(__("Failed get group MO detail"));
             }
         });
