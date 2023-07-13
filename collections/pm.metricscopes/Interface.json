@@ -22,7 +22,7 @@
             "model": "inv.CPE"
         }
     ],
-    "enable_timedelta": false,
+    "enable_timedelta": true,
     "labels": [
         {
             "is_key_label": false,
