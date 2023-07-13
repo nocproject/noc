@@ -573,7 +573,7 @@ Ext.define('NOC.sa.managedobject.Controller', {
         ));
         this.displayButtons(["closeBtn", "groupSaveBtn"]);
         formPanel.ids = selectedIds;
-        form.reset();
+        form.reset(true);
         parentCmp.mask(__('Loading'));
         Ext.Ajax.request({
             url: this.url + "full/",
@@ -618,9 +618,7 @@ Ext.define('NOC.sa.managedobject.Controller', {
                 }
             },
             failure: function() {
-                if(gridView) {
-                    parentCmp.unmask();
-                }
+                parentCmp.unmask();
                 NOC.error(__("Failed get group MO detail"));
             }
         });
@@ -759,7 +757,7 @@ Ext.define('NOC.sa.managedobject.Controller', {
                     });
                     //
                     this.getView().down('[itemId=managedobject-form]').down().form = form;
-                    form.reset();
+                    form.reset(true);
                     form.setValues(r);
                     this.loadInlineStore(formPanel, data.id);
                     view.setHistoryHash(data.id);
