@@ -203,7 +203,7 @@ class Script(BaseScript):
         for match in self.rx_ports.finditer(v):
             state = match.group("state")
             if not state and not match.group("type"):
-                 continue
+                continue
             ports[f'0/{slot_n}/{match.group("port")}'] = {
                 "num": match.group("port"),
                 "state": state.lower() in {"online", "activated", "registered"} if state else True,
