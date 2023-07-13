@@ -202,7 +202,7 @@ class Service(Document):
         caps = Capability.get_by_name(key)
         value = caps.clean_value(value)
         for item in self.caps:
-            if str(item.capability) == str(caps.id):
+            if str(item.capability.id) == str(caps.id):
                 if not scope or item.scope == scope:
                     item.value = value
                     break
