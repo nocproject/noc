@@ -22,8 +22,10 @@ class SendRequestItem(BaseModel):
 
     @model_validator(mode="before")
     def build_metrics(cls, values: Dict[str, Any]) -> Dict[str, Any]:
-        r: Dict[str, Any] = {f: values[f] for f in cls.__fields__ if f in values and f != "metrics"}
-        r["metrics"] = {f: values[f] for f in values if f not in cls.__fields__}
+        r: Dict[str, Any] = {
+            f: values[f] for f in cls.model_fields if f in values and f != "metrics"
+        }
+        r["metrics"] = {f: values[f] for f in values if f not in cls.model_fields}
         return r
 
 

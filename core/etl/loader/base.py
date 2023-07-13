@@ -467,7 +467,7 @@ class BaseLoader(object):
         ov = self.clean(o)
         # Post save update fields (example capabilities)
         psf: Dict[str, Any] = {}
-        for fn in self.data_model.__fields__:
+        for fn in self.data_model.model_fields:
             if fn == "id" or fn in self.workflow_fields:
                 continue
             if self.post_save_fields and fn in self.post_save_fields:
@@ -671,7 +671,7 @@ class BaseLoader(object):
 
         self.logger.debug("Update Document clean map")
         for fn, ft in self.model._fields.items():
-            if fn not in self.data_model.__fields__:
+            if fn not in self.data_model.model_fields:
                 continue
             if isinstance(ft, BooleanField):
                 self.clean_map[fn] = self.clean_bool
@@ -700,7 +700,7 @@ class BaseLoader(object):
 
         self.logger.debug("Update Model clean map")
         for f in self.model._meta.fields:
-            if f.name not in self.data_model.__fields__:
+            if f.name not in self.data_model.model_fields:
                 continue
             if isinstance(f, BooleanField):
                 self.clean_map[f.name] = self.clean_bool
@@ -761,7 +761,7 @@ class BaseLoader(object):
             if not ls:
                 ls = line.get_current_state()
             ms = self.iter_jsonl(ls, data_model=line.data_model)
-            m_data[self.data_model.__fields__[f].name] = set(row.id for row in ms)
+            m_data[self.data_model.model_fields[f].name] = set(row.id for row in ms)
         # Process data
         n_errors = 0
         for row in new_state:
@@ -769,7 +769,7 @@ class BaseLoader(object):
             lr = len(row)
             # Check required fields
             for f in required_fields:
-                if f not in self.data_model.__fields__:
+                if f not in self.data_model.model_fields:
                     continue
                 if f not in row:
                     self.logger.error(

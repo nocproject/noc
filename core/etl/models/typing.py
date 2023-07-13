@@ -9,7 +9,7 @@
 from typing import Generic, TypeVar
 
 # Third-party modules
-from pydantic.fields import ModelField
+from pydantic.fields import FieldInfo
 
 
 T = TypeVar("T")
@@ -25,5 +25,5 @@ class Reference(Generic[T]):
         yield cls.validate
 
     @classmethod
-    def validate(cls, v, field: ModelField):
+    def validate(cls, v, field: FieldInfo):
         return str(v)

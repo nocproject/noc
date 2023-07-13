@@ -27,10 +27,10 @@ class InputItem(BaseModel):
 class NodeItem(BaseModel):
     name: str
     type: str
-    description: Optional[str]
-    config: Optional[Dict[str, Any]]
-    inputs: Optional[List[InputItem]]
-    match: Optional[Dict[str, Any]]
+    description: Optional[str] = None
+    config: Optional[Dict[str, Any]] = None
+    inputs: Optional[List[InputItem]] = None
+    match: Optional[Dict[str, Any]] = None
     sticky: bool = False
 
 
