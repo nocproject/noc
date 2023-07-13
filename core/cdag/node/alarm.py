@@ -33,14 +33,14 @@ class VarItem(BaseModel):
 class AlarmNodeConfig(BaseModel):
     alarm_class: str
     reference: Optional[str] = None
-    dry_run = False  # For service test used
+    dry_run: bool = False  # For service test used
     pool: str = ""
     partition: int = 0
-    managed_object: Optional[str]  # Not user-settable
-    sla_probe: Optional[str]  # Not user-settable
-    sensor: Optional[str]  # Not user-settable
-    service: Optional[str]  # Not user-settable
-    labels: Optional[List[str]]
+    managed_object: Optional[str] = None  # Not user-settable
+    sla_probe: Optional[str] = None  # Not user-settable
+    sensor: Optional[str] = None  # Not user-settable
+    service: Optional[str] = None  # Not user-settable
+    labels: Optional[List[str]] = None
     error_text_template: Optional[str] = None
     activation_level: float = 1.0
     deactivation_level: float = 1.0

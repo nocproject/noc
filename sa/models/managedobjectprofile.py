@@ -21,7 +21,7 @@ from django.contrib.postgres.fields import ArrayField
 from django.core.validators import MinValueValidator
 from django.db import models
 from django.db.models.query_utils import Q as d_Q
-from pydantic import BaseModel, validator
+from pydantic import BaseModel, RootModel, field_validator
 
 # NOC modules
 from noc.core.translation import ugettext as _
@@ -94,8 +94,7 @@ class ModelMetricConfigItem(BaseModel):
         return self.metric_type
 
 
-class MetricConfigItems(BaseModel):
-    __root__: List[ModelMetricConfigItem]
+MetricConfigItems = RootModel[List[ModelMetricConfigItem]]
 
 
 class MatchRule(BaseModel):
@@ -103,7 +102,7 @@ class MatchRule(BaseModel):
     labels: List[str] = []
     handler: Optional[str]
 
-    @validator("handler")
+    @field_validator("handler")
     def handler_must_handler(cls, v):  # pylint: disable=no-self-argument
         if not v:
             return v
@@ -115,8 +114,7 @@ class MatchRule(BaseModel):
         return str(h.id)
 
 
-class MatchRules(BaseModel):
-    __root__: List[Optional[MatchRule]] = []
+MatchRules = RootModel[List[Optional[MatchRule]]]
 
 
 m_valid = DictListParameter(

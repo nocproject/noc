@@ -98,8 +98,10 @@ class BaseCDAGNodeMetaclass(type):
         # Slotted state
         if hasattr(n, "state_cls"):
             state_slots = tuple(sys.intern(x) for x in n.state_cls.__fields__)
-            req_state_fields = [f.name for f in n.state_cls.__fields__.values() if f.required]
-            opt_state_fields = [f.name for f in n.state_cls.__fields__.values() if not f.required]
+            req_state_fields = [k for k, v in n.state_cls.model_fields.items() if v.is_required()]
+            opt_state_fields = [
+                k for k, v in n.state_cls.model_fields.items() if not v.is_required()
+            ]
             # Generate dict-getter code
             dict_fn = ["def dict(self):"]
             if opt_state_fields:
