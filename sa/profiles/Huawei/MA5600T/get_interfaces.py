@@ -1,7 +1,7 @@
 # ---------------------------------------------------------------------
 # Huawei.MA5600T.get_interfaces
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2022 The NOC Project
+# Copyright (C) 2007-2023 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -202,6 +202,8 @@ class Script(BaseScript):
         ports = {}
         for match in self.rx_ports.finditer(v):
             state = match.group("state")
+            if not state and not match.group("type"):
+                 continue
             ports[f'0/{slot_n}/{match.group("port")}'] = {
                 "num": match.group("port"),
                 "state": state.lower() in {"online", "activated", "registered"} if state else True,
