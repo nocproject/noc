@@ -668,7 +668,7 @@ class MetricsService(FastAPIService):
 
     def activate_card(
         self, card: Card, si: ScopeInfo, k: MetricKey, data: Dict[str, Any]
-    ) -> Dict[str, Dict[str, Any]]:
+    ) -> Dict[Tuple[str, str], Dict[str, Any]]:
         """
         Activate card and return changed state
         """

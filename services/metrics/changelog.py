@@ -66,13 +66,13 @@ class ChangeLog(object):
         async with self.lock:
             if not self.state:
                 return  # Nothing to flush
-            for node_id, state in self.state.items():
+            for (node_id, node_type), state in self.state.items():
                 data += [
                     {
                         "date": ts.date().isoformat(),
                         "ts": ts.isoformat(),
                         "node_id": node_id,
-                        "node_type": "",
+                        "node_type": node_type,
                         "slot": self.slot,
                         "state": orjson.dumps(state).decode("utf-8"),
                     }
