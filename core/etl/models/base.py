@@ -10,25 +10,17 @@ from typing import Any, Iterable, Dict, ForwardRef
 from itertools import zip_longest
 
 # Third-party modules
-from pydantic import BaseModel as _BaseModel
+from pydantic import BaseModel as _BaseModel, ConfigDict
 from pydantic.fields import FieldInfo
-import orjson
 
 # NOC modules
 from .typing import Reference
 
 
-def orjson_dumps(v, *, default):
-    # orjson.dumps returns bytes, to match standard json.dumps we need to decode
-    return orjson.dumps(v, default=default).decode()
-
-
 class BaseModel(_BaseModel):
     id: str
 
-    class Config(object):
-        json_loads = orjson.loads
-        json_dumps = orjson_dumps
+    model_config = ConfigDict(arbitrary_types_allowed=True)
 
     # List of legacy fields in sequental order
     _csv_fields = []
