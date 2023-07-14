@@ -83,4 +83,5 @@ def test_subgraph_node(x, y, expected):
     else:
         assert value == expected
     state = cdag.get_changed_state()[("node", "subgraph")]
-    assert state["state"]["state"] == {"value": expected}
+    print(state)
+    assert state["state"][("state", "state")] == {"value": expected}
