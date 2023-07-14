@@ -498,7 +498,7 @@ def test_probe(unit, data):
         if x_state is None:
             assert n_state == {}
         else:
-            assert n_state["node"] == x_state
+            assert n_state[("node", "probe")] == x_state
 
 
 def setup_module(_module):

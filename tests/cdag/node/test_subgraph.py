@@ -82,5 +82,5 @@ def test_subgraph_node(x, y, expected):
         assert value is None
     else:
         assert value == expected
-    state = cdag.get_changed_state()["node"]
+    state = cdag.get_changed_state()[("node", "subgraph")]
     assert state["state"]["state"] == {"value": expected}
