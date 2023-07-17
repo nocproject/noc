@@ -45,7 +45,7 @@ class AlarmNodeConfig(BaseModel):
     activation_level: float = 1.0
     deactivation_level: float = 1.0
     invert_condition: bool = False
-    vars: Optional[List[VarItem]]
+    vars: Optional[List[VarItem]] = None
 
     @classmethod
     def get_reference(cls, config: "AlarmNodeConfig") -> str:
