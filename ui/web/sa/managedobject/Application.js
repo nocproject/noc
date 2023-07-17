@@ -5,6 +5,14 @@
 
 defaultColumns = [
     {
+        xtype: 'glyphactioncolumn',
+        width: 25,
+        items: [{
+            glyph: NOC.glyph.cart_plus,
+            handler: 'onAddObject'
+        }]
+    },
+    {
         text: __("S"),
         dataIndex: "oper_state",
         sortable: false,
@@ -120,14 +128,6 @@ defaultColumns = [
         renderer: NOC.render.LabelField,
         align: "right",
         width: 100
-    },
-    {
-        xtype: 'glyphactioncolumn',
-        width: 25,
-        items: [{
-            glyph: NOC.glyph.cart_plus,
-            handler: 'onAddObject'
-        }]
     }
 ];
 //
