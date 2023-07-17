@@ -145,7 +145,7 @@ Ext.define('NOC.sa.managedobject.form.FormController', {
         });
     },
     onResetRecord: function() {
-        this.getView().getForm().reset();
+        this.getView().up('[itemId=sa-managedobject]').getController().clearForm(this.getView().form);
         this.getView().up('[itemId=sa-managedobject]').getController().resetInlineStore(this.getView());
     },
     onConfig: function() {
@@ -217,7 +217,7 @@ Ext.define('NOC.sa.managedobject.form.FormController', {
         parentController.resetInlineStore(formPanel, defaults);
         parentController.displayButtons(["closeBtn", "saveBtn", "resetBtn"]);
         formPanel.recordId = undefined;
-        formPanel.getForm().reset();
+        this.getView().up('[itemId=sa-managedobject]').getController().clearForm(formPanel.getForm());
         formPanel.getForm().setValues(defaultValues);
     },
     saveRecord: function(data) {
