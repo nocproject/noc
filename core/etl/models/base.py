@@ -6,7 +6,7 @@
 # ----------------------------------------------------------------------
 
 # Python modules
-from typing import Any, Iterable, Dict, ForwardRef
+from typing import Any, Iterable, Dict, _GenericAlias, _SpecialForm
 from itertools import zip_longest
 
 # Third-party modules
@@ -36,9 +36,29 @@ class BaseModel(_BaseModel):
 
     @classmethod
     def get_mapped_fields(cls) -> Dict[str, str]:
-        def q(fi: FieldInfo) -> str:
-            if isinstance(fi.annotation, ForwardRef):
-                return fi.annotation.__forward_arg__.lower()
-            return fi.annotation.__name__.lower()
+        def is_reference(field: FieldInfo):
+            annotation = field.annotation
+            if isinstance(annotation, _GenericAlias):
+                if annotation.__origin__ is Reference:
+                    return True
+                elif isinstance(annotation.__origin__, _SpecialForm):
+                    for arg in annotation.__args__:
+                        if isinstance(arg, _GenericAlias) and arg.__origin__ is Reference:
+                            return True
+            return False
 
-        return {fn: q(f) for fn, f in cls.model_fields.items() if f.annotation is Reference}
+        def q(field: FieldInfo) -> str:
+            annotation = field.annotation
+            ref = None
+            if isinstance(annotation, _GenericAlias):
+                if annotation.__origin__ is Reference:
+                    ref = annotation
+                elif isinstance(annotation.__origin__, _SpecialForm):
+                    for arg in annotation.__args__:
+                        if isinstance(arg, _GenericAlias) and arg.__origin__ is Reference:
+                            ref = arg
+                            break
+            if ref:
+                return ref.__args__[0].__name__.lower()
+
+        return {fn: q(f) for fn, f in cls.model_fields.items() if is_reference(f)}
