@@ -19,6 +19,7 @@ from noc.core.defer import call_later
 from noc.core.wf.interaction import Interaction
 from noc.core.change.policy import change_tracker
 from noc.core.change.decorator import get_datastreams
+from noc.core.change.model import ChangeField
 
 logger = logging.getLogger(__name__)
 
@@ -64,6 +65,7 @@ def document_set_state(
     """
     # Direct update arguments
     set_op = {"state": state.id}
+    cf = ChangeField(field="state", old=str(self.state.id) if self.state else None, new=str(state))
     prev_labels = self.state.labels if self.state else []
     # Set state field
     self.state = state
@@ -113,7 +115,7 @@ def document_set_state(
             "update",
             get_model_id(self),
             str(self.id),
-            fields=["state"],
+            fields=[cf],
             datastreams=get_datastreams(self, {"state"}),
         )
 
@@ -162,6 +164,7 @@ def model_set_state(self, state, state_changed: datetime.datetime = None, bulk=N
     """
     # Direct update arguments
     set_op = {"state": str(state.id)}
+    cf = ChangeField(field="state", old=str(self.state.id) if self.state else None, new=str(state))
     prev_labels = self.state.labels if self.state else []
     # Set state field
     self.state = state
@@ -225,7 +228,7 @@ def model_set_state(self, state, state_changed: datetime.datetime = None, bulk=N
             "update",
             get_model_id(self),
             str(self.id),
-            fields=["state"],
+            fields=[cf],
             datastreams=get_datastreams(self, {"state"}),
         )
 
