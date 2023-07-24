@@ -72,7 +72,7 @@ class Transaction(object):
             return
         d = state.dict()
         if d:
-            self._states[(node.node_id, node.name)] = d
+            self._states[node.node_id, node.name] = d
 
     def get_changed_state(self) -> Dict[Tuple[str, str], Any]:
         """

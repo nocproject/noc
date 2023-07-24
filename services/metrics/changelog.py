@@ -79,7 +79,7 @@ class ChangeLog(object):
                 ]
             self.state = {}  # Reset
         self.logger.debug("Flush State Record: %d", len(data))
-        self.service.register_metrics("metricslog", data)
+        self.service.register_metrics("metricstate", data)
 
     async def feed(self, state: Dict[str, Dict[str, Any]]) -> None:
         """

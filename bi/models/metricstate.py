@@ -17,9 +17,9 @@ from noc.core.clickhouse.engines import ReplacingMergeTree
 from noc.core.translation import ugettext as _
 
 
-class MetricsLogs(Model):
+class MetricState(Model):
     class Meta(object):
-        db_table = "metricslog"
+        db_table = "metricstate"
         engine = ReplacingMergeTree("date", ("node_id",))
 
     date = DateField(description=_("Date"))
