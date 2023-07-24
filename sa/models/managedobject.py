@@ -2307,6 +2307,7 @@ class ManagedObject(NOCModel):
         :return:
         """
         from django.db import connection as pg_connection
+        from noc.core.change.model import ChangeField
 
         obj_data: List[ObjectUplinks] = []
         seen_neighbors: Set[int] = set()
@@ -2354,7 +2355,10 @@ class ManagedObject(NOCModel):
                 "update",
                 "sa.ManagedObject",
                 str(ou.object_id),
-                fields=["uplinks", "rca_neighbors"],
+                fields=[
+                    ChangeField(field="uplinks", new=ou.uplinks),
+                    ChangeField(field="rca_neighbors", new=ou.rca_neighbors),
+                ],
                 datastreams=[("managedobject", ou.object_id)],
             )
 
