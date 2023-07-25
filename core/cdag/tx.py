@@ -6,7 +6,7 @@
 # ----------------------------------------------------------------------
 
 # Python modules
-from typing import Any, Dict
+from typing import Any, Dict, Tuple
 
 # NOC modules
 from .typing import ValueType
@@ -19,7 +19,7 @@ class Transaction(object):
         self.inputs: Dict[str, Dict[str, ValueType]] = {}
         # id(node) -> int
         self.req_left: Dict[str, int] = {}
-        self._states: Dict[str, Any] = {}
+        self._states: Dict[Tuple[str, str], Any] = {}
 
     def activate(self, node: str, name: str, value: ValueType) -> None:
         # Find node
@@ -72,9 +72,9 @@ class Transaction(object):
             return
         d = state.dict()
         if d:
-            self._states[node.node_id] = d
+            self._states[node.node_id, node.name] = d
 
-    def get_changed_state(self) -> Dict[str, Any]:
+    def get_changed_state(self) -> Dict[Tuple[str, str], Any]:
         """
         Get side effect of transaction
         :return:

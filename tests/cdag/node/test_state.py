@@ -20,5 +20,5 @@ def test_state_node(value):
     ns = cdag.get_node().get_state()
     assert ns.value == value
     state = cdag.get_changed_state()
-    assert state and "node" in state and "value" in state["node"]
-    assert state["node"]["value"] == value
+    assert state and ("node", "state") in state and "value" in state[("node", "state")]
+    assert state[("node", "state")]["value"] == value
