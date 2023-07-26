@@ -19,7 +19,7 @@ from noc.core.clickhouse.connect import connection as ch_connection
 
 SQL_STATE = """
     SELECT node_id, argMax(state, ts) as state
-    FROM metricslog
+    FROM metricstate
     WHERE slot = %s
     GROUP BY node_id
     FORMAT JSONEachRow
