@@ -15,6 +15,7 @@ import datetime
 
 # NOC modules
 from noc.core.service.loader import get_service
+from noc.core.hash import hash_int
 from noc.core.clickhouse.connect import connection as ch_connection
 
 SQL_STATE = """
@@ -61,25 +62,29 @@ class ChangeLog(object):
         """
         Store all collected changes
         """
-        data = []
+        states_count = 0
         ts = datetime.datetime.now().replace(microsecond=0)
         async with self.lock:
             if not self.state:
                 return  # Nothing to flush
             for (node_id, node_type), state in self.state.items():
-                data += [
-                    {
-                        "date": ts.date().isoformat(),
-                        "ts": ts.isoformat(),
-                        "node_id": node_id,
-                        "node_type": node_type,
-                        "slot": self.slot,
-                        "state": orjson.dumps(state).decode("utf-8"),
-                    }
-                ]
+                self.service.register_metrics(
+                    "metricstate",
+                    [
+                        {
+                            "date": ts.date().isoformat(),
+                            "ts": ts.isoformat(),
+                            "node_id": node_id,
+                            "node_type": node_type,
+                            "slot": self.slot,
+                            "state": orjson.dumps(state).decode("utf-8"),
+                        }
+                    ],
+                    key=hash_int(node_id),
+                )
+                states_count += 1
             self.state = {}  # Reset
-        self.logger.debug("Flush State Record: %d", len(data))
-        self.service.register_metrics("metricstate", data)
+        self.logger.debug("Flush State Record: %d", states_count)
 
     async def feed(self, state: Dict[str, Dict[str, Any]]) -> None:
         """
