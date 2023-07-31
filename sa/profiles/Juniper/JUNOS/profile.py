@@ -55,6 +55,7 @@ class Profile(BaseProfile):
         "is_gte_16": {"version": {"$gte": "16"}},
         "is_srx_6xx": {"platform": {"$regex": r"srx6.\d+"}},
         "is_cli_help_supported": {"caps": {"$in": ["Juniper | CLI | Help"]}},
+        "is_vmx": {"platform": {"$regex": "vmx"}},
     }
 
     rx_ver = re.compile(r"\d+")
