@@ -85,7 +85,7 @@ class SimpleReportFormatter(DataFormatter):
             r += data.select(out_columns).write_csv(
                 # header=[self.HEADER_ROW.get(cc, cc) for cc in out_columns],
                 # columns=out_columns,
-                sep=self.csv_delimiter,
+                separator=self.csv_delimiter,
                 quote='"',
                 has_header=False,
             )
