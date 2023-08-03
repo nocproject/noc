@@ -11,7 +11,7 @@ from typing import List, Iterable
 # NOC modules
 from noc.core.text import filter_non_printable
 from noc.core.snmp.version import SNMP_v1, SNMP_v2c
-from .base import ObjectChecker, CheckResult, ProfileSet
+from .base import ObjectChecker, CheckResult, CredentialItem
 from ..profile.checker import ProfileChecker as ProfileCheckerProfile
 from ..script.credentialchecker import Protocol
 from ..wf.diagnostic import DiagnosticState, SNMP_DIAG
@@ -58,7 +58,7 @@ class ProfileChecker(ObjectChecker):
                 check="PROFILE",
                 status=bool(profile),
                 data={"profile": profile.name},
-                action=ProfileSet(profile=profile.name),
+                credentials=[CredentialItem(field=profile, value=profile.name)],
             )
             return
         yield CheckResult(

@@ -9,7 +9,7 @@
 from typing import List, Iterable, Dict
 
 # NOC modules
-from .base import Check, ObjectChecker, CheckResult, CLICredentialSet
+from .base import Check, ObjectChecker, CheckResult, CredentialItem
 from ..script.credentialchecker import CredentialChecker as CredentialCheckerScript, CLICredential
 from ..script.scheme import Protocol
 
@@ -56,19 +56,19 @@ class CLIProtocolChecker(ObjectChecker):
                 yield CheckResult(check=c, status=True, skipped=True)
                 continue
             protocols += [self.PROTO_CHECK_MAP[c]]
-        action = None
+        credentials = None
         r = {}
         for proto_r in cc.iter_result(protocols):
             if proto_r.protocol not in protocols:
                 continue
             r[proto_r.protocol] = proto_r
-            if not action and proto_r.status and proto_r.credential:
-                action = CLICredentialSet(
-                    user=proto_r.credential.user,
-                    password=proto_r.credential.password,
-                    super_password=proto_r.credential.super_password,
-                )
-            if action and len(protocols) == len(r):
+            if not credentials and proto_r.status and proto_r.credential:
+                credentials = [
+                    CredentialItem(field="user", value=proto_r.credential.user),
+                    CredentialItem(field="password", value=proto_r.credential.password),
+                    CredentialItem(field="super_password", value=proto_r.credential.super_password),
+                ]
+            if credentials and len(protocols) == len(r):
                 break
         for x in r.values():
             yield CheckResult(
@@ -76,5 +76,5 @@ class CLIProtocolChecker(ObjectChecker):
                 status=x.status,
                 error=x.error,
                 skipped=x.skipped,
-                action=action,
+                credentials=credentials,
             )

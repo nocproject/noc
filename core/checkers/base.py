@@ -8,16 +8,10 @@
 # Python modules
 import logging
 from dataclasses import dataclass
-from typing import List, Optional, Dict, Any, Union, Iterable
+from typing import List, Optional, Dict, Any, Union, Iterable, Literal
 
 # NOC modules
 from noc.core.log import PrefixLoggerAdapter
-
-
-@dataclass(frozen=True)
-class ProfileSet(object):
-    profile: str
-    action: str = "set_sa_profile"
 
 
 @dataclass(frozen=True)
@@ -28,20 +22,19 @@ class MetricValue(object):
 
 
 @dataclass(frozen=True)
-class CLICredentialSet(object):
-    user: Optional[str] = None
-    password: Optional[str] = None
-    super_password: Optional[str] = None
-    delete: bool = False
-    action: str = "set_credential"
+class CapsItem(object):
+    caps: str
+    value: Optional[str] = None
+    scope: Optional[str] = None
+    # source diagnostic
+    # scope - diagnostic_name
 
 
 @dataclass(frozen=True)
-class SNMPCredentialSet(object):
-    snmp_ro: Optional[str] = None
-    snmp_rw: Optional[str] = None
-    delete: bool = False
-    action: str = "set_credential"
+class CredentialItem(object):
+    field: Literal["user", "password", "super_password", "profile", "snmp_ro", "snmp_rw", "schema"]
+    op: Literal["set", "reset"] = "set"
+    value: Optional[str] = None
 
 
 @dataclass(frozen=True)
@@ -53,7 +46,9 @@ class CheckResult(object):
     error: Optional[str] = None  # Description if Fail
     data: Optional[Dict[str, Any]] = None  # Collected check data
     # Action: Set Profile, Credential, Send Notification (Diagnostic Header) ?
-    action: Optional[Union[ProfileSet, CLICredentialSet, SNMPCredentialSet]] = None
+    # action: Optional[Union[ProfileSet, CLICredentialSet, SNMPCredentialSet]] = None
+    credentials: Optional[List[CredentialItem]] = None
+    caps: Optional[List[CapsItem]] = None
     # Metrics collected
     metrics: Optional[List[MetricValue]] = None
 

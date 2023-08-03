@@ -1,14 +1,14 @@
 # ---------------------------------------------------------------------
 # Diagnostics check
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2022 The NOC Project
+# Copyright (C) 2007-2023 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
 # Python modules
 import datetime
 import logging
-from typing import Dict, List, Optional, Literal, Iterable, Any, Union
+from typing import Dict, List, Optional, Literal, Iterable, Any
 from collections import defaultdict
 
 # NOC modules
@@ -18,9 +18,8 @@ from noc.core.checkers.base import (
     Check,
     CheckResult,
     CheckData,
-    ProfileSet,
-    CLICredentialSet,
-    SNMPCredentialSet,
+    CapsItem,
+    CredentialItem,
     MetricValue,
 )
 from noc.core.checkers.loader import loader
@@ -90,14 +89,13 @@ class DiagnosticCheck(DiscoveryCheck):
                     continue
                 # Get checker
                 checks: List[CheckResult] = []
-                actions: List[CLICredentialSet] = []
+                credentials: List[CredentialItem] = []
+                capabilities: List[CapsItem] = []
                 for cr in self.iter_checks(dc.checks):
-                    if cr.action and not hasattr(self, f"action_{cr.action.action}"):
-                        self.logger.warning(
-                            "[%s|%s] Unknown action: %s", d.diagnostic, cr.check, cr.action.action
-                        )
-                    elif cr.action:
-                        actions.append(cr.action)
+                    if cr.credentials:
+                        credentials += cr.credentials
+                    if cr.caps:
+                        capabilities += cr.caps
                     checks.append(cr)
                     m_labels = [f"noc::check::name::{cr.check}", f"noc::diagnostic::{d.diagnostic}"]
                     if cr.arg0:
@@ -110,10 +108,10 @@ class DiagnosticCheck(DiscoveryCheck):
                         metrics += cr.metrics
                     if cr.data:
                         d_data[d.diagnostic].update(cr.data)
-                # Apply actions
-                for a in actions:
-                    h = getattr(self, f"action_{a.action}")
-                    h(a)
+                # Apply credentials
+                if credentials:
+                    self.logger.debug("Apply credentials: %s", credentials)
+                    self.apply_credentials(credentials)
                 # Update diagnostics
                 d_hub.update_checks(
                     [
@@ -155,61 +153,42 @@ class DiagnosticCheck(DiscoveryCheck):
                     error_report()
                 self.logger.error("[%s] Error when run checker: %s", checker.name, str(e))
 
-    def action_set_sa_profile(self, data: ProfileSet):
+    def apply_credentials(self, credentials: List[CredentialItem]):
         """
-        Setting Object Profile Check result
-        :param data:
-        :return:
-        """
-        # if "profile" not in data:
-        #     return  # Cannot detect
-        profile = Profile.get_by_name(data.profile)
-        if profile.id == self.object.profile.id:
-            self.logger.info("Profile is correct: %s", profile)
-            return
-        self.logger.info(
-            "Profile change detected: %s -> %s. Fixing database, resetting platform info",
-            self.object.profile.name,
-            profile.name,
-        )
-        self.invalidate_neighbor_cache()
-        self.object.profile = profile
-        self.object.vendor = None
-        self.object.platform = None
-        self.object.version = None
-        ManagedObject.objects.filter(id=self.object.id).update(
-            profile=profile,
-            vendor=None,
-            platform=None,
-            version=None,
-        )
-        self.object._reset_caches(self.object.id, credential=True)
-        self.object.update_init()
-
-    def action_set_credential(self, data: Union[CLICredentialSet, SNMPCredentialSet]):
-        """
-        :param data:
+        Set credentials to ManagedObject
+        :param credentials:
         :return:
         """
         changed = {}
         object_credentials = self.object.credentials
-        # Iter available cred
-        for cred in object_credentials._fields:
-            if not hasattr(data, cred):
+        for cred in credentials:
+            if not hasattr(self.object, cred.field):
                 continue
-            oc = getattr(object_credentials, cred)
-            nc = getattr(data, cred)
-            if nc != oc:
-                changed[cred] = nc
-                setattr(self.object, cred, nc)
-        # Reset auth profile to continue operations with new credentials
-        if changed:
-            self.logger.info("Setting credentials")
-            self.object.auth_profile = None
-            changed["auth_profile"] = None
-            ManagedObject.objects.filter(id=self.object.id).update(**changed)
-            self.object._reset_caches(self.object.id, credential=True)
-            self.object.update_init()
+            if cred.op == "reset" and cred.field != "profile":
+                changed[cred.field] = None
+            elif cred.field == "profile":
+                profile = Profile.get_by_name(cred.value)
+                if profile.id == self.object.profile.id:
+                    self.logger.info("Profile is correct: %s", profile)
+                    continue
+                self.invalidate_neighbor_cache()
+                changed.update(
+                    {"vendor": None, "platform": None, "version": None, "profile": str(profile.id)}
+                )
+            elif (
+                hasattr(object_credentials, cred.field)
+                and getattr(object_credentials, cred.field) != cred.value
+            ):
+                changed[cred.field] = cred.value
+            elif cred.field == "scheme":
+                changed["scheme"] = int(cred.value)
+        if not changed:
+            return
+        for f, v in changed.items():
+            setattr(self.object, f, v)
+        ManagedObject.objects.filter(id=self.object.id).update(**changed)
+        self.object._reset_caches(self.object.id, credential=True)
+        self.object.update_init()
 
     def register_diagnostic_metrics(self, metrics: List[MetricValue]):
         """
