@@ -29,9 +29,13 @@ class ManagedObjectLabelsStatDS(BaseDataSource):
     name = "managedobjectlabelsstatds"
     row_index = "managed_object_id"
 
-    fields = [
-        FieldInfo(name="managed_object_id", type=FieldType.UINT),
-    ] + [FieldInfo(name=f, type=FieldType.BOOL) for f in get_labels()]
+    fields = [FieldInfo(name="managed_object_id", type=FieldType.UINT)]
+
+    @classmethod
+    def iter_ds_fields(cls) -> Iterable[FieldInfo]:
+        yield from super().iter_ds_fields()
+        for ll in get_labels():
+            yield FieldInfo(name=ll, type=FieldType.BOOL)
 
     @classmethod
     async def iter_query(
