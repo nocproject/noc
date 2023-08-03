@@ -43,7 +43,7 @@ class Script(GetMetricsScript):
             oid="NQA-MIB::nqaJitterCollectStatsPacketLossRatio",
             sla_types=["udp-jitter"],
             scale=1,
-            units="pkt",
+            units="%",
         ),
         "SLA | Packets | Loss | Out": ProfileMetricConfig(
             metric="SLA | Packets | Loss | Out",
@@ -366,6 +366,8 @@ class Script(GetMetricsScript):
                 mc = self.SLA_METRICS_CONFIG[m]
                 if status_oid == "NQA-MIB::nqaResultsCompletions":
                     oid = mib[mc.oid, key, stat_index[key], 1]
+                elif mc.oid == "NQA-MIB::nqaJitterCollectStatsPacketLossRatio":
+                    oid = mib[mc.oid, key, 1]
                 else:
                     oid = mib[mc.oid, key, stat_index[key]]
                 oids[oid] = (probe, mc)
