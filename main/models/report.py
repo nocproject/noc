@@ -372,10 +372,10 @@ class Report(Document):
                 if not q.datasource:
                     continue
                 ds = loader[q.datasource]
-                r[q.datasource] = [f.name for f in ds.fields]
+                r[q.datasource] = [f.name for f in ds.iter_ds_fields()]
                 if not num:
                     # default
-                    r[""] = [f.name for f in ds.fields]
+                    r[""] = [f.name for f in ds.iter_ds_fields()]
             break
         return r
 
