@@ -60,24 +60,6 @@ class Script(BaseScript):
                     r[-1]["tos"] = int(t["dscp-code-points"], 2)
         return r
 
-    def execute_cli_json(self):
-        r = []
-        v = self.cli("show configuration services rpm | display json")
-        v = orjson.loads(v)
-        for p in v["configuration"]["services"]["rpm"]["probe"]:
-            for t in p["test"]:
-                r += [
-                    {
-                        "group": p["name"],
-                        "name": t["name"],
-                        "type": self.TEST_TYPES[t["probe-type"]],
-                        "target": t["target"]["address"],
-                    }
-                ]
-                if "dscp-code-points" in t:
-                    r[-1]["tos"] = int(t["dscp-code-points"], 2)
-        return r
-
     def execute_cli(self):
         try:
             v = self.cli("show configuration services rpm | display json")
