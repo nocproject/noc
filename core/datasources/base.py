@@ -129,7 +129,11 @@ class BaseDataSource(object):
         if not r:
             return pl.DataFrame(
                 [],
-                schema=[(c.name, c.type.value) for c in cls.iter_ds_fields() if cls.is_out_field(c, fields)],
+                schema=[
+                    (c.name, c.type.value)
+                    for c in cls.iter_ds_fields()
+                    if cls.is_out_field(c, fields)
+                ],
             )
         return pl.DataFrame(
             [
