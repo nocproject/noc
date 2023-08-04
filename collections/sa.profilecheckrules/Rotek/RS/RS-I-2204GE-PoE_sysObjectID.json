@@ -1,0 +1,13 @@
+{
+    "name": "Rotek | RS | ROTEK RS(I)-2204GE-PoE sysObjectID",
+    "$collection": "sa.profilecheckrules",
+    "uuid": "cee6a35a-2c18-4ea3-b974-54069d938ccf",
+    "description": null,
+    "preference": 100,
+    "method": "snmp_v2c_get",
+    "param": "SNMPv2-MIB::sysObjectID.0",
+    "match_method": "eq",
+    "value": "1.3.6.1.4.1.44967.6241",
+    "action": "match",
+    "profile__name": "Rotek.SWOS"
+}
