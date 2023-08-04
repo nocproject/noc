@@ -32,7 +32,7 @@ class CapsItem(object):
 
 @dataclass(frozen=True)
 class CredentialItem(object):
-    field: Literal["user", "password", "super_password", "profile", "snmp_ro", "snmp_rw", "schema"]
+    field: Literal["user", "password", "super_password", "profile", "snmp_ro", "snmp_rw", "scheme"]
     op: Literal["set", "reset"] = "set"
     value: Optional[str] = None
 

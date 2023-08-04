@@ -67,6 +67,7 @@ class CLIProtocolChecker(ObjectChecker):
                     CredentialItem(field="user", value=proto_r.credential.user),
                     CredentialItem(field="password", value=proto_r.credential.password),
                     CredentialItem(field="super_password", value=proto_r.credential.super_password),
+                    CredentialItem(field="scheme", value=str(proto_r.protocol.value)),
                 ]
             if credentials and len(protocols) == len(r):
                 break
