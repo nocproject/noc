@@ -58,7 +58,7 @@ class ProfileChecker(ObjectChecker):
                 check="PROFILE",
                 status=bool(profile),
                 data={"profile": profile.name},
-                credentials=[CredentialItem(field=profile, value=profile.name)],
+                credentials=[CredentialItem(field="profile", value=profile.name)],
             )
             return
         yield CheckResult(
