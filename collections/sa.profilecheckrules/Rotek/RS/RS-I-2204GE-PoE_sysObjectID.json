@@ -1,7 +1,7 @@
 {
     "name": "Rotek | RS | ROTEK RS(I)-2204GE-PoE sysObjectID",
     "$collection": "sa.profilecheckrules",
-    "uuid": "6178d382-4462-4e5a-930d-54ea1c486c8c",
+    "uuid": "6178d382-4462-4e5a-930d-85ea1c486c8c",
     "description": null,
     "preference": 100,
     "method": "snmp_v2c_get",
