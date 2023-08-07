@@ -36,6 +36,9 @@ from .models.jsonds import (
     Annotation,
     VariableRequest,
     TagValueQuery,
+    MetricsPayloadRequest,
+    MetricsResponseItem,
+    MetricPayloadOptionsRequest,
 )
 
 SQL = """
@@ -109,6 +112,18 @@ class JsonDSAPI(object):
         :return:
         """
         self.logger.info("Search Request: %s", req)
+        return self.get_metrics_for_search()
+
+    async def api_grafanads_metrics(
+        self, payload: MetricsPayloadRequest, user: User = Depends(get_current_user)
+    ):
+        """
+        Method for /search endpoint on datasource
+        :param payload:
+        :param user:
+        :return:
+        """
+        self.logger.info("Search Request: %s", payload)
         return self.get_metrics()
 
     async def api_grafanads_variable(
@@ -164,6 +179,26 @@ class JsonDSAPI(object):
         for mt in MetricType.objects.filter():
             r.append(
                 {
+                    "label": mt.name,
+                    "value": str(mt.id),
+                }
+            )
+        # Append Query Configs
+        for qc in cls.QUERY_CONFIGS or []:
+            if qc.alias:
+                r += [{"label": qc.description or qc.alias, "value": qc.alias}]
+        return r
+
+    @classmethod
+    def get_metrics_for_search(cls) -> List[Dict[str, str]]:
+        """
+        Return Available Metrics for datasource
+        :return:
+        """
+        r = []
+        for mt in MetricType.objects.filter():
+            r.append(
+                {
                     "text": mt.name,
                     "value": str(mt.id),
                 }
@@ -205,6 +240,11 @@ class JsonDSAPI(object):
             if target.target in self.query_config:
                 query_config = self.query_config[target.target]
                 metric_type = MetricType.get_by_name(query_config.metric_type)
+            elif target.payload and "metric" in target.payload:
+                metric_type = MetricType.get_by_id(target.payload["metric"])
+                query_config = QueryConfig(
+                    metric_type=metric_type.name, query_expression=metric_type.field_name
+                )
             else:
                 metric_type = MetricType.get_by_id(target.target)
                 query_config = QueryConfig(
@@ -375,6 +415,27 @@ class JsonDSAPI(object):
             ]
         return " AND ".join(r)
 
+    def resolve_payload_options(
+        self,
+        metric,
+        name,
+        user,
+        payload: Optional[Dict[str, str]] = None,
+    ) -> List[Dict[str, str]]:
+        """ """
+        return []
+
+    async def api_metric_payload_options(
+        self,
+        req: MetricPayloadOptionsRequest,
+        user: User = Depends(get_current_user),
+    ):
+        """
+        Metric Payload Options API
+        """
+        self.logger.info("Payload Options Request: %s", req)
+        return self.resolve_payload_options(req.metric, req.name, user, req.payload)
+
     @staticmethod
     def resolve_object_query(
         model_id, value, query_function: Optional[List[str]] = None, user: User = None
@@ -451,7 +512,7 @@ class JsonDSAPI(object):
                     q_values += [str(value)]
                 r += [f'{query_field} IN ({",".join(q_values)})']
                 continue
-            elif query_field not in columns:
+            elif query_field not in columns or not values:
                 continue
             values = [f"'{str(vv)}'" for vv in values]
             if not query_function:
@@ -507,6 +568,24 @@ class JsonDSAPI(object):
             tags=self.openapi_tags,
             name=f"{self.api_name}_search",
             description="Getting available metrics",
+        )
+        self.router.add_api_route(
+            path=f"/api/grafanads/{self.api_name}/metrics",
+            endpoint=self.api_grafanads_metrics,
+            methods=["POST"],
+            response_model=List[MetricsResponseItem],
+            tags=self.openapi_tags,
+            name=f"{self.api_name}_metrics",
+            description="Getting available metrics",
+        )
+        self.router.add_api_route(
+            path=f"/api/grafanads/{self.api_name}/metric-payload-options",
+            endpoint=self.api_metric_payload_options,
+            methods=["POST"],
+            response_model=List[MetricsResponseItem],
+            tags=self.openapi_tags,
+            name=f"{self.api_name}_metric_payload_options",
+            description="Getting payload options",
         )
         self.router.add_api_route(
             path=f"/api/grafanads/{self.api_name}/query",
