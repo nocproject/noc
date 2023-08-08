@@ -55,6 +55,12 @@ Ext.define('NOC.sa.managedobject.form.FormController', {
             return;
         }
         var v = me.getFormData();
+        // normalize custom fields
+        Ext.each(me.up('[itemId=sa-managedobject]').noc.cust_form_fields, function(field) {
+            if(field.xtype === 'datefield' && !Ext.isEmpty(v[field.name])) {
+                v[field.name] = Ext.Date.format(v[field.name], field.altFormats);
+            }
+        })
         // ToDo remove id, when new record
         // if(!me.currentRecord && v[me.idField] !== undefined) {
         //     delete v[me.idField];
@@ -221,9 +227,16 @@ Ext.define('NOC.sa.managedobject.form.FormController', {
         formPanel.getForm().setValues(defaultValues);
     },
     saveRecord: function(data) {
-        var me = this,
-            formPanel = this.getView().down('[itemId=managedobject-form-panel]'),
-            record = Ext.create("NOC.sa.managedobject.Model");
+        var me = this, record,
+            view = this.getView(),
+            formPanel = view.down('[itemId=managedobject-form-panel]'),
+            cust_field_model = view.up('[itemId=sa-managedobject]').noc.cust_model_fields || [];
+
+        NOC.sa.managedobject.Model.addFields(cust_field_model.map(function(field) {
+            if(field.type === 'date') {field.type = "string"}
+            return field;
+        }));
+        record = NOC.sa.managedobject.Model.create(cust_field_model);
 
         record.self.setProxy({type: "managedobject"});
         record.getProxy().getWriter().setWriteAllFields(true);
