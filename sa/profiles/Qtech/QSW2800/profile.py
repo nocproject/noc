@@ -37,7 +37,7 @@ class Profile(BaseProfile):
     password_submit = b"\r\n"
     command_submit = b"\r"
     pattern_prompt = (
-        rb"^(?P<hostname>[a-zA-Z0-9]\S{0,30})(?:\(sdiag\))?(?:[\.\-_\d\w]+)?(?:\(config[^\)]*\))?#"
+        rb"^(?P<hostname>[a-zA-Z0-9]\S{0,40})(?:\(sdiag\))?(?:[\.\-_\d\w]+)?(?:\(config[^\)]*\))?#"
     )
 
     config_tokenizer = "indent"
