@@ -55,6 +55,12 @@ Ext.define('NOC.sa.managedobject.form.FormController', {
             return;
         }
         var v = me.getFormData();
+        // normalize custom fields
+        Ext.each(me.up('[itemId=sa-managedobject]').noc.cust_form_fields, function(field) {
+            if(field.xtype === 'datefield' && !Ext.isEmpty(v[field.name])) {
+                v[field.name] = Ext.Date.format(v[field.name], field.altFormats);
+            }
+        })
         // ToDo remove id, when new record
         // if(!me.currentRecord && v[me.idField] !== undefined) {
         //     delete v[me.idField];

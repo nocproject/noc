@@ -405,7 +405,7 @@ class CustomField(NOCModel):
                 f["altFormats"] = "Y-m-d"
             if self.type == "datetime":
                 f["format"] = "Y-m-d H:i:s"
-                f["altFormats"] = "Y-m-dTH:i:s"
+                f["altFormats"] = "Y-m-d\\TH:i:s"
         else:
             raise ValueError("Invalid field type '%s'" % self.type)
         return f
