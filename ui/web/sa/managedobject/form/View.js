@@ -1654,4 +1654,20 @@ Ext.define('NOC.sa.managedobject.form.View', {
             }
         ]
     }],
+    initComponent: function() {
+        // add custom fields
+        var cust_fields = this.up('[itemId=sa-managedobject]').noc.cust_form_fields;
+        this.callParent();
+        if(!Ext.isEmpty(cust_fields)) {
+            this.down('form').add({
+                xtype: "fieldset",
+                anchor: "100%",
+                minHeight: 130,
+                title: __("Custom Fields"),
+                collapsible: true,
+                collapsed: false,
+                items: cust_fields
+            })
+        }
+    },
 });
