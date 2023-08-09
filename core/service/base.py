@@ -674,8 +674,7 @@ class BaseService(object):
                 return  # Created in concurrent thread
             self.publish_queue = MessageStreamQueue(self.loop)
             self.metrics_queue = QBuffer(
-                max_size=config.msgstream.max_message_size
-                - config.msgstream.max_message_size * 0.01
+                max_size=int(config.msgstream.max_message_size * 99 / 100)
             )
             self.mx_queue = MBuffer()
             self.loop.create_task(self.publisher())
