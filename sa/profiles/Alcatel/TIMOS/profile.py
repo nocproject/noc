@@ -2,7 +2,7 @@
 # Vendor: Alcatel
 # OS:     TIMOS
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2020 The NOC Project
+# Copyright (C) 2007-2023 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -24,7 +24,7 @@ class Profile(BaseProfile):
     command_disable_pager = "environment no more"
     command_exit = "logout"
     config_volatile = [r"^# Finished.*$", r"^# Generated.*$"]
-    rogue_chars = [re.compile(rb"\r\s+\r"), b"\r"]
+    rogue_chars = [re.compile(rb"^\s{37,}\r"), b"\r"]
     config_tokenizer = "indent"
     config_tokenizer_settings = {"line_comment": "#", "end_of_context": "exit", "string_quote": '"'}
 

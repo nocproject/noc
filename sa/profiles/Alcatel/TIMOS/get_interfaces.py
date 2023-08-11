@@ -1,7 +1,7 @@
 # ----------------------------------------------------------------------
 #  Alcatel.TIMOS.get_interfaces
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2020 The NOC Project
+# Copyright (C) 2007-2023 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -26,7 +26,7 @@ class Script(BaseScript):
         .*?
         Admin\sState\s*?:\s(?P<admin_status>.*?)\s+?
         Oper\s\(v4/v6\)\s*?:\s(?P<oper_status>.*?)\n
-        (Down\sReason\sCode\s:\s.*?\n)*
+        (Down\sReason\s(?:Code|V4|V6)\s+:\s.*?\n)*
         Protocols\s*?:\s(?P<protocols>.*?)\n
         (?P<ipaddr_section>(IP\sAddr/mask|IPv6\sAddr).*?)?-{79}\n
         Details\n
