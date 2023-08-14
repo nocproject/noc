@@ -357,14 +357,14 @@ class RedPandaClient(object):
         consumer = await self.get_consumer()
         msg = await consumer.__anext__()
         return Message(
-                value=msg.value,
-                subject=msg.topic,
-                offset=msg.offset,
-                timestamp=msg.timestamp,
-                key=msg.key,
-                partition=msg.partition,
-                headers=dict(msg.headers),
-            )
+            value=msg.value,
+            subject=msg.topic,
+            offset=msg.offset,
+            timestamp=msg.timestamp,
+            key=msg.key,
+            partition=msg.partition,
+            headers=dict(msg.headers),
+        )
 
     async def subscribe(
         self,
