@@ -40,7 +40,7 @@ class Migration(BaseMigration):
         for aa in (active_alarms,):
             for doc in aa.find(
                 {"managed_object": {"$exists": True}, "alarm_class": {"$exists": True}},
-                {"managed_object": 1, "alarm_class": 1, "vars": 1},
+                {"vars.message": 0},
             ):
                 if doc["alarm_class"] not in ac_map:
                     continue
