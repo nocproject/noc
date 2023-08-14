@@ -292,10 +292,10 @@ class RedPandaClient(object):
         partition: Optional[int] = None,
         start_offset: Optional[int] = None,
         start_timestamp: Optional[float] = None,
-        resume: bool = False,
+        resume: bool = True,
         cursor_id: Optional[str] = None,
         timeout: Optional[int] = None,
-    ) -> AsyncIterable[Message]:
+    ) -> None:
         """
 
         Client Example:
@@ -332,6 +332,8 @@ class RedPandaClient(object):
             )
         else:
             consumer.subscribe(topics=streams)
+        if not resume:
+            return
         for tp in consumer.assignment():
             if start_offset is not None:
                 consumer.seek(tp, start_offset)
@@ -341,15 +343,20 @@ class RedPandaClient(object):
                 )
                 consumer.seek(tp, offset[tp].offset)
             else:
-                logger.info("Getting stored offset for stream '%s'", tp)
+                logger.debug("Getting stored offset for stream '%s'", tp)
                 r = await consumer.seek_to_committed(tp)
                 if r[tp] is not None:
                     logger.info("Resuming from offset %d", r[tp])
                 else:
                     await consumer.seek_to_end(tp)
-        # async with consumer as c:
-        async for msg in consumer:
-            yield Message(
+
+    def __aiter__(self):
+        return self
+
+    async def __anext__(self):
+        consumer = await self.get_consumer()
+        msg = await consumer.__anext__()
+        return Message(
                 value=msg.value,
                 subject=msg.topic,
                 offset=msg.offset,
@@ -358,10 +365,6 @@ class RedPandaClient(object):
                 partition=msg.partition,
                 headers=dict(msg.headers),
             )
-            # if cursor_id:
-            #     await consumer.commit(
-            #         {TopicPartition(msg.topic, partition=msg.partition): msg.offset + 1}
-            #     )
 
     async def subscribe(
         self,
@@ -374,7 +377,20 @@ class RedPandaClient(object):
         timeout: Optional[int] = None,
         allow_isr: bool = False,
     ) -> AsyncIterable[Message]:
-        async for msg in self._subscribe(
+        """
+        For compatible NOC Client method
+        :param stream:
+        :param partition:
+        :param start_offset:
+        :param start_timestamp:
+        :param resume:
+        :param cursor_id:
+        :param timeout:
+        :param allow_isr:
+        :return:
+        """
+        # async with consumer as c:
+        await self._subscribe(
             streams=[stream],
             group_id=stream,
             partition=partition,
@@ -383,7 +399,8 @@ class RedPandaClient(object):
             resume=resume,
             cursor_id=cursor_id,
             timeout=timeout,
-        ):
+        )
+        async for msg in self:
             yield msg
 
     async def publish(
