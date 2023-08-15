@@ -164,11 +164,7 @@ class DiagnosticCheck(DiscoveryCheck):
         for cred in credentials:
             if not hasattr(self.object, cred.field):
                 continue
-            value = cred.value
-            if cred.field == "scheme":
-                value = int(value)
-            elif cred.op == "reset":
-                value = None
+            # Profile processed
             if cred.field == "profile":
                 profile = (
                     Profile.get_default_profile()
@@ -181,11 +177,19 @@ class DiagnosticCheck(DiscoveryCheck):
                 changed.update(
                     {"vendor": None, "platform": None, "version": None, "profile": str(profile.id)}
                 )
-            if getattr(object_credentials, cred.field) != value:
-                changed[cred.field] = value
+            elif cred.field == "scheme":
+                if self.object.scheme == int(cred.value):
+                    continue
+                changed[cred.field] = int(cred.value) if cred.op == "set" else 1
+            elif getattr(object_credentials, cred.field) != cred.value:
+                changed[cred.field] = cred.value if cred.op == "set" else None
         if not changed:
+            self.logger.info("Nothing credential changed")
             return
+        if self.object.auth_profile:
+            self.object.auth_profile = None
         for f, v in changed.items():
+            self.logger.info("Update field: %s", f)
             setattr(self.object, f, v)
         ManagedObject.objects.filter(id=self.object.id).update(**changed)
         if "profile" in changed:

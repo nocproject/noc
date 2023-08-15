@@ -59,7 +59,6 @@ class SNMPProtocolChecker(ObjectChecker):
                 credentials = [
                     CredentialItem(field="snmp_ro", value=proto_r.credential.snmp_ro),
                     CredentialItem(field="snmp_rw", value=proto_r.credential.snmp_rw),
-                    CredentialItem(field="auth_profile", op="reset"),
                 ]
             if credentials and len(protocols) == len(r):
                 break
