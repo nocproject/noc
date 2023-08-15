@@ -164,29 +164,33 @@ class DiagnosticCheck(DiscoveryCheck):
         for cred in credentials:
             if not hasattr(self.object, cred.field):
                 continue
-            if cred.op == "reset" and cred.field != "profile":
-                changed[cred.field] = None
-            elif cred.field == "profile":
-                profile = Profile.get_by_name(cred.value)
+            value = cred.value
+            if cred.field == "scheme":
+                value = int(value)
+            elif cred.op == "reset":
+                value = None
+            if cred.field == "profile":
+                profile = (
+                    Profile.get_default_profile()
+                    if cred.op == "reset"
+                    else Profile.get_by_name(cred.value)
+                )
                 if profile.id == self.object.profile.id:
                     self.logger.info("Profile is correct: %s", profile)
                     continue
-                self.invalidate_neighbor_cache()
                 changed.update(
                     {"vendor": None, "platform": None, "version": None, "profile": str(profile.id)}
                 )
-            elif (
-                hasattr(object_credentials, cred.field)
-                and getattr(object_credentials, cred.field) != cred.value
-            ):
-                changed[cred.field] = cred.value
-            elif cred.field == "scheme":
-                changed["scheme"] = int(cred.value)
+            if getattr(object_credentials, cred.field) != value:
+                changed[cred.field] = value
         if not changed:
             return
         for f, v in changed.items():
             setattr(self.object, f, v)
         ManagedObject.objects.filter(id=self.object.id).update(**changed)
+        if "profile" in changed:
+            # Invalidate Neighbor cache, Move to on_save ?
+            self.invalidate_neighbor_cache()
         self.object._reset_caches(self.object.id, credential=True)
         self.object.update_init()
 
