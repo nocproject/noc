@@ -52,9 +52,9 @@ class CLIProtocolChecker(ObjectChecker):
                 c = c.name
             if c not in self.PROTO_CHECK_MAP:
                 continue
-            if self.PROTO_CHECK_MAP[c].value != self.object.scheme:
-                yield CheckResult(check=c, status=True, skipped=True)
-                continue
+            # if self.PROTO_CHECK_MAP[c].value != self.object.scheme:
+            #     yield CheckResult(check=c, status=True, skipped=True)
+            #     continue
             protocols += [self.PROTO_CHECK_MAP[c]]
         credentials = None
         r = {}

@@ -128,7 +128,8 @@ class DiagnosticCheck(DiscoveryCheck):
                 )
         if metrics:
             self.register_diagnostic_metrics(metrics)
-        self.logger.info("Object Diagnostics: %s", self.object.diagnostics)
+        self.object.diagnostic.refresh_diagnostics()
+        self.logger.debug("Object Diagnostics: %s", self.object.diagnostics)
         # Fire workflow event diagnostic ?
 
     def iter_checks(self, checks: List[Check]) -> Iterable[CheckResult]:
