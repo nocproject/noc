@@ -10,6 +10,7 @@
 import datetime
 import time
 import csv
+import polars as pl
 from io import BytesIO, TextIOWrapper
 from zipfile import ZipFile, ZIP_DEFLATED
 from tempfile import TemporaryFile
@@ -223,8 +224,7 @@ class ReportMetricsDetailApplication(ExtApplication):
         mac_counters = {}
         if "mac_counter" in columns_filter:
             mac_ds = ds_loader["interfacemacsstatds"]
-            data = mac_ds.query_sync(resolve_managedobject_id=False)
-            mac_counters = data.to_dict()
+            mac_counters = mac_ds.query_sync(resolve_managedobject_id=False)
         if reporttype == "load_interfaces" and interface_profile:
             interface_profile = InterfaceProfile.objects.filter(id=interface_profile).first()
             filters += [{"name": "interface_profile", "value": [interface_profile.name]}]
@@ -257,9 +257,11 @@ class ReportMetricsDetailApplication(ExtApplication):
                 d_url["oname"] = row["object_name"]
                 row["interface_load_url"] = url % d_url
             if "mac_counter" in columns_filter:
-                row["mac_counter"] = mac_counters["mac_count"].get(
-                    (int(row["managed_object"]), row["iface_name"]), ""
-                )
+                mac_counter = mac_counters.filter(
+                    (pl.col("managed_object_id") == int(row["managed_object"]))
+                    & (pl.col("interface_name") == row["iface_name"])
+                ).select(pl.col("mac_count"))
+                row["mac_counter"] = mac_counter[0, 0] if len(mac_counter) > 0 else ""
             res = []
             for y in columns:
                 res.append(row.get(y, ""))
