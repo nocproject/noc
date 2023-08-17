@@ -165,6 +165,7 @@ class DiagnosticCheck(DiscoveryCheck):
         object_credentials = self.object.credentials
         for cred in credentials:
             if not hasattr(self.object, cred.field):
+                # Unknown attribute
                 continue
             if (
                 hasattr(object_credentials, cred.field)

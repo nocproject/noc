@@ -14,8 +14,6 @@ from dateutil.parser import parse
 from time import perf_counter
 from typing import Optional
 
-import orjson
-
 # NOC modules
 from noc.core.management.base import BaseCommand
 from noc.core.ioloop.util import run_sync
@@ -23,8 +21,6 @@ from gufo.liftbridge.client import LiftbridgeClient, Metadata, PartitionMetadata
 from gufo.liftbridge.types import StartPosition
 from noc.config import config
 from noc.core.text import alnum_key
-from noc.core.jsonutils import orjson_defaults
-
 
 TS_NS = 1000_0000_00
 
@@ -86,9 +82,6 @@ class Command(BaseCommand):
         benchmark_subscriber_parser = subparsers.add_parser("benchmark-subscriber")
         benchmark_subscriber_parser.add_argument("--name")
         benchmark_subscriber_parser.add_argument("--cursor")
-        # benchmark-alarm-publisher
-        benchmark_alarm_publisher_parser = subparsers.add_parser("benchmark-alarm-publisher")
-        benchmark_alarm_publisher_parser.add_argument("--name")
 
     async def resolve_liftbridge(self):
         addresses = await config.find_parameter("liftbridge.addresses").async_get()
@@ -191,7 +184,7 @@ class Command(BaseCommand):
                             msg.headers,
                         )
                     )
-                    # print(msg.value)
+                    print(msg.value)
 
         if start_ts:
             start_offset = None
@@ -289,36 +282,6 @@ class Command(BaseCommand):
                         )
 
         run_sync(subscriber)
-
-    def handle_benchmark_alarm_publisher(
-        self,
-        name: str,
-        *args,
-        **kwargs,
-    ):
-        from noc.core.mongo.connection import connect
-        from noc.fm.models.archivedalarm import ArchivedAlarm
-
-        async def publisher():
-            async with LiftbridgeClient(self._broker) as client:
-                coll = ArchivedAlarm._get_collection()
-                t0 = perf_counter()
-                num = 0
-                avg_a = []
-                for num, aa in enumerate(coll.find(), start=1):
-                    aa.pop("reference", None)
-                    aa.pop("groups", None)
-                    payload = orjson.dumps(aa, default=orjson_defaults)
-                    await client.publish(payload, stream=name, wait_for_stream=True)
-                    avg_a.append(len(payload))
-                    if len(avg_a) > 100:
-                        avg_a = [sum(avg_a) / len(avg_a)]
-                dt = perf_counter() - t0
-            self.print(f"{num} messages sent in {dt * 1000:.2f}ms")
-            self.print(f"{num / dt} msg/sec, {num * (sum(avg_a) / len(avg_a)) / dt} bytes/sec")
-
-        connect()
-        run_sync(publisher)
 
 
 if __name__ == "__main__":
