@@ -170,6 +170,8 @@ Ext.define("NOC.sa.credentialcheckrule.Application", {
                             ["SSH", "SSH"],
                             ["HTTP", "HTTP"],
                             ["HTTPS", "HTTPS"],
+                            ["SNMPv1", "SNMPv1"],
+                            ["SNMPv2c", "SNMPv2c"]
 
                         ]
                     }
