@@ -128,6 +128,7 @@ class DiagnosticCheck(DiscoveryCheck):
                 )
         if metrics:
             self.register_diagnostic_metrics(metrics)
+        self.logger.info("Object Diagnostics: %s", self.object.diagnostics)
         # Fire workflow event diagnostic ?
 
     def iter_checks(self, checks: List[Check]) -> Iterable[CheckResult]:
@@ -164,6 +165,12 @@ class DiagnosticCheck(DiscoveryCheck):
         for cred in credentials:
             if not hasattr(self.object, cred.field):
                 continue
+            if (
+                hasattr(object_credentials, cred.field)
+                and getattr(object_credentials, cred.field) == cred.value
+            ):
+                # Same credential
+                continue
             # Profile processed
             if cred.field == "profile":
                 profile = (
@@ -181,13 +188,14 @@ class DiagnosticCheck(DiscoveryCheck):
                 if self.object.scheme == int(cred.value):
                     continue
                 changed[cred.field] = int(cred.value) if cred.op == "set" else 1
-            elif getattr(object_credentials, cred.field) != cred.value:
+            elif getattr(self.object, cred.field) != cred.value:
                 changed[cred.field] = cred.value if cred.op == "set" else None
         if not changed:
             self.logger.info("Nothing credential changed")
             return
         if self.object.auth_profile:
             self.object.auth_profile = None
+            changed["auth_profile"] = None
         for f, v in changed.items():
             self.logger.info("Update field: %s", f)
             setattr(self.object, f, v)
