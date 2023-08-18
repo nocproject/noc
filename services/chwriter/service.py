@@ -108,18 +108,17 @@ class CHWriterService(FastAPIService):
 
     async def process_stream_bulk(self, streams: List[str]) -> None:
         self.logger.info("[%s] Subscribing", streams)
-        cursor_id = self.get_cursor_id()
         for stream in streams:
             table = stream[3:]
             channel = Channel(self, table)
             self.channels[table] = channel
         async with MessageStreamClient() as client:
-            async for msg in client.client._subscribe(
-                streams,
+            await client.client._subscribe(
+                streams=[stream async for stream in self.iter_ch_streams()],
                 group_id="ch",
                 partition=config.chwriter.shard_id,
-                cursor_id=cursor_id,
-            ):
+            )
+            async for msg in client.client:
                 await self.channels[msg.subject[3:]].feed(msg)
 
     async def flush_data(self):
@@ -130,6 +129,14 @@ class CHWriterService(FastAPIService):
         async with MessageStreamClient() as client:
             cursor_id = self.get_cursor_id()
             partition_id = config.chwriter.shard_id
+            if MessageStreamClient.has_bulk_mode():
+                # For Kafka-like client subscribe to all topics
+                await client.client._subscribe(
+                    streams=[stream async for stream in self.iter_ch_streams()],
+                    group_id="ch",
+                    partition=partition_id,
+                    resume=False,
+                )
             while not self.stopping:
                 ch = await self.flush_queue.get()
                 n_records = ch.records
