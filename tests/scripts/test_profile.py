@@ -50,12 +50,9 @@ def test_profile_type(sa_profile):
 def test_profile_name(sa_profile):
     profile = loader.get_profile(sa_profile)
     assert getattr(profile, "name"), "Profile should has name"
-    req_name = profile.__module__
-    if req_name.startswith("noc.sa.profiles."):
-        req_name = req_name[16:]
-        if req_name == "Generic.profile":
-            pytest.skip("Generic profile")
-        parts = req_name.split(".")
-        assert 2 <= len(parts) <= 3
-        req_name = "%s.%s" % (parts[0], parts[1])
-    assert profile.name == req_name
+    parts = profile.__module__.split(".")
+    assert parts[-1] == "profile", "Profile must be in profile.py"
+    if parts[-4:] == ["sa", "profiles", "Generic", "profile"]:
+        pytest.skip("Generic profile")
+    name = f"{parts[-3]}.{parts[-2]}"
+    assert profile.name == name
