@@ -1,0 +1,15 @@
+INHERIT: ../mkdocs-base.yml
+site_name: "NOC: NBI Reference"
+site_description: >
+        NOC NBI API Refeerebce
+edit_uri: -/edit/master/docs/nbi-reference/
+site_dir: ../../build/docs/nbi-reference/
+nav:
+        - Overview: index.md
+        - config: config.md
+        - configrevisions: configrevisions.md
+        - getmappings: getmappings.md
+        - objectmetrics: objectmetrics.md
+        - objectstatus: objectstatus.md
+        - path: path.md
+        - telemetry: telemetry.md

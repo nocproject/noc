@@ -11,10 +11,10 @@ uuid: a9c7d32b-9640-4755-a05b-8095b33eaa80
 
 ## Variables
 
-Variable | Description | Default
---- | --- | ---
-interface | interface | {{ no }}
-description | Interface description | `=InterfaceDS.description`
+| Variable    | Description           | Default                    |
+| ----------- | --------------------- | -------------------------- |
+| interface   | interface             | {{ no }}                   |
+| description | Interface description | `=InterfaceDS.description` |
 
 ## Alarm Correlation
 
@@ -31,22 +31,22 @@ graph TD
 ### Consequences
 `Network | STP | STP Loop Detected` alarm may be root cause of
 
-Alarm Class | Description
---- | ---
-[Network \| Link \| Link Down](../link/link-down.md) | STP Loop Detected
+| Alarm Class                                          | Description       |
+| ---------------------------------------------------- | ----------------- |
+| [Network \| Link \| Link Down](../link/link-down.md) | STP Loop Detected |
 
 ## Events
 
 ### Opening Events
 `Network | STP | STP Loop Detected` may be raised by events
 
-Event Class | Description
---- | ---
-[Network \| STP \| STP Loop Detected](../../../event-classes/network/stp/stp-loop-detected.md) | dispose
+| Event Class                                                                                           | Description |
+| ----------------------------------------------------------------------------------------------------- | ----------- |
+| [Network \| STP \| STP Loop Detected](ref://event-classes-reference/network/stp/stp-loop-detected.md) | dispose     |
 
 ### Closing Events
 `Network | STP | STP Loop Detected` may be cleared by events
 
-Event Class | Description
---- | ---
-[Network \| STP \| STP Loop Cleared](../../../event-classes/network/stp/stp-loop-cleared.md) | dispose
+| Event Class                                                                                         | Description |
+| --------------------------------------------------------------------------------------------------- | ----------- |
+| [Network \| STP \| STP Loop Cleared](ref://event-classes-reference/network/stp/stp-loop-cleared.md) | dispose     |

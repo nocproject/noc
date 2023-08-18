@@ -11,9 +11,9 @@ uuid: ed3566d9-75dc-46e6-a012-1c05387cd5dd
 
 ## Variables
 
-Variable | Description | Default
---- | --- | ---
-unit | Unit number | {{ no }}
+| Variable | Description | Default  |
+| -------- | ----------- | -------- |
+| unit     | Unit number | {{ no }} |
 
 ## Alarm Correlation
 
@@ -30,22 +30,22 @@ graph TD
 ### Consequences
 `Chassis | Stack | Stack Degraded` alarm may be root cause of
 
-Alarm Class | Description
---- | ---
-[Config \| Config Sync Failed](../../config/config-sync-failed.md) | Stack Degraded
+| Alarm Class                                                        | Description    |
+| ------------------------------------------------------------------ | -------------- |
+| [Config \| Config Sync Failed](../../config/config-sync-failed.md) | Stack Degraded |
 
 ## Events
 
 ### Opening Events
 `Chassis | Stack | Stack Degraded` may be raised by events
 
-Event Class | Description
---- | ---
-[Chassis \| Stack \| Stack Degraded](../../../event-classes/chassis/stack/stack-degraded.md) | dispose
+| Event Class                                                                                         | Description |
+| --------------------------------------------------------------------------------------------------- | ----------- |
+| [Chassis \| Stack \| Stack Degraded](ref://event-classes-reference/chassis/stack/stack-degraded.md) | dispose     |
 
 ### Closing Events
 `Chassis | Stack | Stack Degraded` may be cleared by events
 
-Event Class | Description
---- | ---
-[Chassis \| Stack \| Stack is Raised](../../../event-classes/chassis/stack/stack-is-raised.md) | dispose
+| Event Class                                                                                           | Description |
+| ----------------------------------------------------------------------------------------------------- | ----------- |
+| [Chassis \| Stack \| Stack is Raised](ref://event-classes-reference/chassis/stack/stack-is-raised.md) | dispose     |

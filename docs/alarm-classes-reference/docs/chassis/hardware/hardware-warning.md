@@ -16,6 +16,6 @@ Device becomes unstable or is not responding
 ### Opening Events
 `Chassis | Hardware | Hardware Warning` may be raised by events
 
-Event Class | Description
---- | ---
-[Chassis \| Hardware \| Hardware Warning](../../../event-classes/chassis/hardware/hardware-warning.md) | dispose
+| Event Class                                                                                                   | Description |
+| ------------------------------------------------------------------------------------------------------------- | ----------- |
+| [Chassis \| Hardware \| Hardware Warning](ref://event-classes-reference/chassis/hardware/hardware-warning.md) | dispose     |

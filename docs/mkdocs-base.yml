@@ -49,3 +49,5 @@ plugins:
         ru:
           name: Русский
           build: true
+hooks:
+  - macros.py

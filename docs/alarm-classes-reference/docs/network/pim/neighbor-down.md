@@ -17,13 +17,13 @@ Check links and local and neighbor router configuration
 
 ## Variables
 
-Variable | Description | Default
---- | --- | ---
-interface | Interface | {{ no }}
-neighbor | Neighbor's IP | {{ no }}
-vrf | VRF | {{ no }}
-reason | Reason | {{ no }}
-description | Interface description | `=InterfaceDS.description`
+| Variable    | Description           | Default                    |
+| ----------- | --------------------- | -------------------------- |
+| interface   | Interface             | {{ no }}                   |
+| neighbor    | Neighbor's IP         | {{ no }}                   |
+| vrf         | VRF                   | {{ no }}                   |
+| reason      | Reason                | {{ no }}                   |
+| description | Interface description | `=InterfaceDS.description` |
 
 ## Alarm Correlation
 
@@ -42,23 +42,23 @@ graph TD
 ### Root Causes
 `Network | PIM | Neighbor Down` alarm may be consequence of
 
-Alarm Class | Description
---- | ---
-[Network \| Link \| Link Down](../link/link-down.md) | Link Down
-[Network \| BFD \| Session Down](../bfd/session-down.md) | Link Down
+| Alarm Class                                              | Description |
+| -------------------------------------------------------- | ----------- |
+| [Network \| Link \| Link Down](../link/link-down.md)     | Link Down   |
+| [Network \| BFD \| Session Down](../bfd/session-down.md) | Link Down   |
 
 ## Events
 
 ### Opening Events
 `Network | PIM | Neighbor Down` may be raised by events
 
-Event Class | Description
---- | ---
-[Network \| PIM \| Neighbor Down](../../../event-classes/network/pim/neighbor-down.md) | dispose
+| Event Class                                                                                   | Description |
+| --------------------------------------------------------------------------------------------- | ----------- |
+| [Network \| PIM \| Neighbor Down](ref://event-classes-reference/network/pim/neighbor-down.md) | dispose     |
 
 ### Closing Events
 `Network | PIM | Neighbor Down` may be cleared by events
 
-Event Class | Description
---- | ---
-[Network \| PIM \| Neighbor Up](../../../event-classes/network/pim/neighbor-up.md) | dispose
+| Event Class                                                                               | Description |
+| ----------------------------------------------------------------------------------------- | ----------- |
+| [Network \| PIM \| Neighbor Up](ref://event-classes-reference/network/pim/neighbor-up.md) | dispose     |

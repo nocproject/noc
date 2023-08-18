@@ -20,13 +20,13 @@ Lower storm detect threshold, filter waste traffic on connected devices, restric
 ### Opening Events
 `Chassis | CPU | CPU Exhausted` may be raised by events
 
-Event Class | Description
---- | ---
-[Vendor \| DLink \| DxS \| Chassis \| CPU \| Safeguard Engine enters EXHAUSTED mode](../../../event-classes/vendor/dlink/dxs/chassis/cpu/safeguard-engine-enters-exhausted-mode.md) | dispose
+| Event Class                                                                                                                                                                                | Description |
+| ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ----------- |
+| [Vendor \| DLink \| DxS \| Chassis \| CPU \| Safeguard Engine enters EXHAUSTED mode](ref://event-classes-reference/vendor/dlink/dxs/chassis/cpu/safeguard-engine-enters-exhausted-mode.md) | dispose     |
 
 ### Closing Events
 `Chassis | CPU | CPU Exhausted` may be cleared by events
 
-Event Class | Description
---- | ---
-[Vendor \| DLink \| DxS \| Chassis \| CPU \| Safeguard Engine enters NORMAL mode](../../../event-classes/vendor/dlink/dxs/chassis/cpu/safeguard-engine-enters-normal-mode.md) | dispose
+| Event Class                                                                                                                                                                          | Description |
+| ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ----------- |
+| [Vendor \| DLink \| DxS \| Chassis \| CPU \| Safeguard Engine enters NORMAL mode](ref://event-classes-reference/vendor/dlink/dxs/chassis/cpu/safeguard-engine-enters-normal-mode.md) | dispose     |

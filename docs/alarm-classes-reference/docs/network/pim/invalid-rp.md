@@ -15,16 +15,16 @@ Configure all leaf routers (first-hop routers to multicast sources) with the IP 
 
 ## Variables
 
-Variable | Description | Default
---- | --- | ---
-pim_router | PIM router IP | {{ no }}
-invalid_rp | Invalid RP IP | {{ no }}
+| Variable   | Description   | Default  |
+| ---------- | ------------- | -------- |
+| pim_router | PIM router IP | {{ no }} |
+| invalid_rp | Invalid RP IP | {{ no }} |
 
 ## Events
 
 ### Opening Events
 `Network | PIM | Invalid RP` may be raised by events
 
-Event Class | Description
---- | ---
-[Network \| PIM \| Invalid RP](../../../event-classes/network/pim/invalid-rp.md) | dispose
+| Event Class                                                                             | Description |
+| --------------------------------------------------------------------------------------- | ----------- |
+| [Network \| PIM \| Invalid RP](ref://event-classes-reference/network/pim/invalid-rp.md) | dispose     |

@@ -17,12 +17,12 @@ Check links and local and neighbor router configuration
 
 ## Variables
 
-Variable | Description | Default
---- | --- | ---
-interface | Interface | {{ no }}
-neighbor | Neighbor's NSAP or name | {{ no }}
-level | Level | {{ no }}
-reason | Adjacency lost reason | {{ no }}
+| Variable  | Description             | Default  |
+| --------- | ----------------------- | -------- |
+| interface | Interface               | {{ no }} |
+| neighbor  | Neighbor's NSAP or name | {{ no }} |
+| level     | Level                   | {{ no }} |
+| reason    | Adjacency lost reason   | {{ no }} |
 
 ## Alarm Correlation
 
@@ -41,23 +41,23 @@ graph TD
 ### Root Causes
 `Network | IS-IS | Adjacency Down` alarm may be consequence of
 
-Alarm Class | Description
---- | ---
-[Network \| Link \| Link Down](../link/link-down.md) | Link Down
-[Network \| BFD \| Session Down](../bfd/session-down.md) | Link Down
+| Alarm Class                                              | Description |
+| -------------------------------------------------------- | ----------- |
+| [Network \| Link \| Link Down](../link/link-down.md)     | Link Down   |
+| [Network \| BFD \| Session Down](../bfd/session-down.md) | Link Down   |
 
 ## Events
 
 ### Opening Events
 `Network | IS-IS | Adjacency Down` may be raised by events
 
-Event Class | Description
---- | ---
-[Network \| IS-IS \| Adjacency Down](../../../event-classes/network/is-is/adjacency-down.md) | dispose
+| Event Class                                                                                         | Description |
+| --------------------------------------------------------------------------------------------------- | ----------- |
+| [Network \| IS-IS \| Adjacency Down](ref://event-classes-reference/network/is-is/adjacency-down.md) | dispose     |
 
 ### Closing Events
 `Network | IS-IS | Adjacency Down` may be cleared by events
 
-Event Class | Description
---- | ---
-[Network \| IS-IS \| Adjacency Up](../../../event-classes/network/is-is/adjacency-up.md) | dispose
+| Event Class                                                                                     | Description |
+| ----------------------------------------------------------------------------------------------- | ----------- |
+| [Network \| IS-IS \| Adjacency Up](ref://event-classes-reference/network/is-is/adjacency-up.md) | dispose     |

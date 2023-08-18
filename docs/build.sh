@@ -8,8 +8,10 @@ for cfg in */mkdocs.yml; do
     if [ $book = "ru" ]; then
         continue
     fi
-    echo "# Building ${book}"
+    echo "##"
+    echo "## Building ${book}"
+    echo "##"
     cd $book    
-    mkdocs build
+    mkdocs build --strict
     cd ..
 done

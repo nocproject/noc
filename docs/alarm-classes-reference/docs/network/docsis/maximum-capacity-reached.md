@@ -15,18 +15,18 @@ Load-balance the modems that are requesting the reserved upstream rate on anothe
 
 ## Variables
 
-Variable | Description | Default
---- | --- | ---
-interface | Cable interface | {{ no }}
-upstream | Upstream | {{ no }}
-cur_bps | Current bps reservation | {{ no }}
-res_bps | Reserved bps | {{ no }}
+| Variable  | Description             | Default  |
+| --------- | ----------------------- | -------- |
+| interface | Cable interface         | {{ no }} |
+| upstream  | Upstream                | {{ no }} |
+| cur_bps   | Current bps reservation | {{ no }} |
+| res_bps   | Reserved bps            | {{ no }} |
 
 ## Events
 
 ### Opening Events
 `Network | DOCSIS | Maximum Capacity Reached` may be raised by events
 
-Event Class | Description
---- | ---
-[Network \| DOCSIS \| Maximum Capacity Reached](../../../event-classes/network/docsis/maximum-capacity-reached.md) | dispose
+| Event Class                                                                                                               | Description |
+| ------------------------------------------------------------------------------------------------------------------------- | ----------- |
+| [Network \| DOCSIS \| Maximum Capacity Reached](ref://event-classes-reference/network/docsis/maximum-capacity-reached.md) | dispose     |

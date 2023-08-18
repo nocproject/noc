@@ -11,18 +11,18 @@ uuid: 7a98aeaf-a2d3-473f-80f5-44040d4f0e1e
 
 ## Variables
 
-Variable | Description | Default
---- | --- | ---
-ip | Flapped IP | {{ no }}
-from_interface | From interface | {{ no }}
-to_interface | To interface | {{ no }}
-mac | MAC | {{ no }}
+| Variable       | Description    | Default  |
+| -------------- | -------------- | -------- |
+| ip             | Flapped IP     | {{ no }} |
+| from_interface | From interface | {{ no }} |
+| to_interface   | To interface   | {{ no }} |
+| mac            | MAC            | {{ no }} |
 
 ## Events
 
 ### Opening Events
 `Network | IP | IP Flap` may be raised by events
 
-Event Class | Description
---- | ---
-[Network \| IP \| IP Flap](../../../event-classes/network/ip/ip-flap.md) | dispose
+| Event Class                                                                     | Description |
+| ------------------------------------------------------------------------------- | ----------- |
+| [Network \| IP \| IP Flap](ref://event-classes-reference/network/ip/ip-flap.md) | dispose     |

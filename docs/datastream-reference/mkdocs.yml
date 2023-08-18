@@ -1,0 +1,21 @@
+INHERIT: ../mkdocs-base.yml
+site_name: "NOC: DataStream Reference"
+site_description: >
+        The reference of the NOC DataStream API
+edit_uri: -/edit/master/docs/datastream-reference/
+site_dir: ../../build/docs/datastream-reference/
+nav:
+        - Overview: index.md
+        - address: address.md
+        - administrativedomain: administrativedomain.md
+        - alarm: alarm.md
+        - cfgmetrics: cfgmetrics.md
+        - cfgping: cfgping.md
+        - cfgsyslog: cfgsyslog.md
+        - cfgtrap: cfgtrap.md
+        - dnszone: dnszone.md
+        - managedobject: managedobject.md
+        - dnszone: dnszone.md
+        - prefix: prefix.md
+        - resourcegroup: resourcegroup.md
+        - vrf: vrf.md

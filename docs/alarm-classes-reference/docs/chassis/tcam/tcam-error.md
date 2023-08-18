@@ -13,15 +13,15 @@ From random instability to complete operation failure
 
 ## Variables
 
-Variable | Description | Default
---- | --- | ---
-reason | Reason | {{ no }}
+| Variable | Description | Default  |
+| -------- | ----------- | -------- |
+| reason   | Reason      | {{ no }} |
 
 ## Events
 
 ### Opening Events
 `Chassis | TCAM | TCAM Error` may be raised by events
 
-Event Class | Description
---- | ---
-[Chassis \| TCAM \| TCAM Error](../../../event-classes/chassis/tcam/tcam-error.md) | dispose
+| Event Class                                                                               | Description |
+| ----------------------------------------------------------------------------------------- | ----------- |
+| [Chassis \| TCAM \| TCAM Error](ref://event-classes-reference/chassis/tcam/tcam-error.md) | dispose     |

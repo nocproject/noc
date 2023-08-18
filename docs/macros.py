@@ -7,6 +7,7 @@
 # ----------------------------------------------------------------------
 
 # Python modules
+import re
 from collections import defaultdict
 import os
 from typing import DefaultDict, Set, Dict, Iterable, Any, List
@@ -239,3 +240,10 @@ def define_env(env: MacrosPlugin):
             iid: MR id
         """
         return f"[MR{iid}](https://code.getnoc.com/noc/noc/merge_requests/{iid})"
+
+
+rx_ref = re.compile(r"\(ref://([^/]+)")
+
+
+def on_page_markdown(markdown, page, **kwargs) -> str:
+    return rx_ref.sub(lambda x: f"(/{x.group(1)}", markdown)

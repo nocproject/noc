@@ -15,15 +15,15 @@ Replace faulty RAM module
 
 ## Variables
 
-Variable | Description | Default
---- | --- | ---
-bank | Bank Name | {{ no }}
+| Variable | Description | Default  |
+| -------- | ----------- | -------- |
+| bank     | Bank Name   | {{ no }} |
 
 ## Events
 
 ### Opening Events
 `Chassis | RAM | RAM Failed` may be raised by events
 
-Event Class | Description
---- | ---
-[Chassis \| RAM \| RAM Failed](../../../event-classes/chassis/ram/ram-failed.md) | dispose
+| Event Class                                                                             | Description |
+| --------------------------------------------------------------------------------------- | ----------- |
+| [Chassis \| RAM \| RAM Failed](ref://event-classes-reference/chassis/ram/ram-failed.md) | dispose     |

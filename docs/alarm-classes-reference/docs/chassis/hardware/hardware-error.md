@@ -16,6 +16,6 @@ Device becomes unstable or is not responding
 ### Opening Events
 `Chassis | Hardware | Hardware Error` may be raised by events
 
-Event Class | Description
---- | ---
-[Chassis \| Hardware \| Hardware Error](../../../event-classes/chassis/hardware/hardware-error.md) | dispose
+| Event Class                                                                                               | Description |
+| --------------------------------------------------------------------------------------------------------- | ----------- |
+| [Chassis \| Hardware \| Hardware Error](ref://event-classes-reference/chassis/hardware/hardware-error.md) | dispose     |

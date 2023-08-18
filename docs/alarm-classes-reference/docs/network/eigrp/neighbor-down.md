@@ -17,13 +17,13 @@ Check links and local and neighbor router configuration
 
 ## Variables
 
-Variable | Description | Default
---- | --- | ---
-as | EIGRP autonomus system | {{ no }}
-interface | Interface | {{ no }}
-neighbor | Neighbor's Router ID | {{ no }}
-reason | Adjacency lost reason | {{ no }}
-description | Interface description | `=InterfaceDS.description`
+| Variable    | Description            | Default                    |
+| ----------- | ---------------------- | -------------------------- |
+| as          | EIGRP autonomus system | {{ no }}                   |
+| interface   | Interface              | {{ no }}                   |
+| neighbor    | Neighbor's Router ID   | {{ no }}                   |
+| reason      | Adjacency lost reason  | {{ no }}                   |
+| description | Interface description  | `=InterfaceDS.description` |
 
 ## Alarm Correlation
 
@@ -40,22 +40,22 @@ graph TD
 ### Root Causes
 `Network | EIGRP | Neighbor Down` alarm may be consequence of
 
-Alarm Class | Description
---- | ---
-[Network \| Link \| Link Down](../link/link-down.md) | Link Down
+| Alarm Class                                          | Description |
+| ---------------------------------------------------- | ----------- |
+| [Network \| Link \| Link Down](../link/link-down.md) | Link Down   |
 
 ## Events
 
 ### Opening Events
 `Network | EIGRP | Neighbor Down` may be raised by events
 
-Event Class | Description
---- | ---
-[Network \| EIGRP \| Neighbor Down](../../../event-classes/network/eigrp/neighbor-down.md) | dispose
+| Event Class                                                                                       | Description |
+| ------------------------------------------------------------------------------------------------- | ----------- |
+| [Network \| EIGRP \| Neighbor Down](ref://event-classes-reference/network/eigrp/neighbor-down.md) | dispose     |
 
 ### Closing Events
 `Network | EIGRP | Neighbor Down` may be cleared by events
 
-Event Class | Description
---- | ---
-[Network \| EIGRP \| Neighbor Up](../../../event-classes/network/eigrp/neighbor-up.md) | dispose
+| Event Class                                                                                   | Description |
+| --------------------------------------------------------------------------------------------- | ----------- |
+| [Network \| EIGRP \| Neighbor Up](ref://event-classes-reference/network/eigrp/neighbor-up.md) | dispose     |

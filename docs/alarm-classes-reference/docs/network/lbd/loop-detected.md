@@ -13,10 +13,10 @@ Check hardware link and topology
 
 ## Variables
 
-Variable | Description | Default
---- | --- | ---
-interface | interface | {{ no }}
-description | Interface description | `=InterfaceDS.description`
+| Variable    | Description           | Default                    |
+| ----------- | --------------------- | -------------------------- |
+| interface   | interface             | {{ no }}                   |
+| description | Interface description | `=InterfaceDS.description` |
 
 ## Alarm Correlation
 
@@ -33,22 +33,22 @@ graph TD
 ### Consequences
 `Network | LBD | Loop Detected` alarm may be root cause of
 
-Alarm Class | Description
---- | ---
-[Network \| Link \| Link Down](../link/link-down.md) | LBD Loop
+| Alarm Class                                          | Description |
+| ---------------------------------------------------- | ----------- |
+| [Network \| Link \| Link Down](../link/link-down.md) | LBD Loop    |
 
 ## Events
 
 ### Opening Events
 `Network | LBD | Loop Detected` may be raised by events
 
-Event Class | Description
---- | ---
-[Network \| LBD \| Loop Detected](../../../event-classes/network/lbd/loop-detected.md) | dispose
+| Event Class                                                                                   | Description |
+| --------------------------------------------------------------------------------------------- | ----------- |
+| [Network \| LBD \| Loop Detected](ref://event-classes-reference/network/lbd/loop-detected.md) | dispose     |
 
 ### Closing Events
 `Network | LBD | Loop Detected` may be cleared by events
 
-Event Class | Description
---- | ---
-[Network \| LBD \| Loop Cleared](../../../event-classes/network/lbd/loop-cleared.md) | dispose
+| Event Class                                                                                 | Description |
+| ------------------------------------------------------------------------------------------- | ----------- |
+| [Network \| LBD \| Loop Cleared](ref://event-classes-reference/network/lbd/loop-cleared.md) | dispose     |

@@ -7,497 +7,259 @@ repo_name: Gitlab
 edit_uri: -/edit/master/docs/en/docs
 copyright: 2007-2023, The NOC Project
 nav:
-      - Home: index.md
-      - User's Guide:
-              - Overview: user/index.md
-              - Get Started:
-                      - Overview: user/tutorial/index.md
-              - How-to Guides:
-                      - Overview: user/howto/index.md
-                      - Loading GIS data with etl command: user/howto/fias/index.md
-              - Background:
-                      - Overview: user/background/index.md
-              - Reference:
-                      - Overview: user/reference/index.md
-                      - Concepts:
-                              - Overview: user/reference/concepts/index.md
-                              - Administrative Domain: user/reference/concepts/administrative-domain/index.md
-                              - Allocation Group: user/reference/concepts/allocation-group/index.md
-                              - API Key: user/reference/concepts/apikey/index.md
-                              - Container: user/reference/concepts/container/index.md
-                              - Dialplan: user/reference/concepts/dialplan/index.md
-                              - DNS Zone: user/reference/concepts/dns-zone/index.md
-                              - External Storage: user/reference/concepts/external-storage/index.md
-                              - Group: user/reference/concepts/group/index.md
-                              - Handler: user/reference/concepts/handler/index.md
-                              - Interface: user/reference/concepts/interface/index.md
-                              - Interface Profile: user/reference/concepts/interface-profile/index.md
-                              - Label: user/reference/concepts/label/index.md
-                              - Managed Object: user/reference/concepts/managed-object/index.md
-                              - Managed Object Profile: user/reference/concepts/managed-object-profile/index.md
-                              - Network Segment: user/reference/concepts/network-segment/index.md
-                              - Network Segment Profile: user/reference/concepts/network-segment-profile/index.md
-                              - Notification Group: user/reference/concepts/notification-group/index.md
-                              - Phone Number: user/reference/concepts/phone-number/index.md
-                              - Phone Number Profile: user/reference/concepts/phone-number-profile/index.md
-                              - Phone Range: user/reference/concepts/phone-range/index.md
-                              - Phone Range Profile: user/reference/concepts/phone-range-profile/index.md
-                              - Pool: user/reference/concepts/pool/index.md
-                              - Prefix: user/reference/concepts/prefix/index.md
-                              - Prefix Profile: user/reference/concepts/prefix-profile/index.md
-                              - Remote System: user/reference/concepts/remote-system/index.md
-                              - Resource Group: user/reference/concepts/resource-group/index.md
-                              - SA Profile: user/reference/concepts/sa-profile/index.md
-                              - Sensor: user/reference/concepts/sensor/index.md
-                              - Sensor Profile: user/reference/concepts/sensor-profile/index.md
-                              - Service: user/reference/concepts/service/index.md
-                              - Service Profile: user/reference/concepts/service-profile/index.md
-                              - Subscriber: user/reference/concepts/subscriber/index.md
-                              - Subscriber Profile: user/reference/concepts/subscriber-profile/index.md
-                              - Technology: user/reference/concepts/technology/index.md
-                              - Template: user/reference/concepts/template/index.md
-                              - Threshold Profile: user/reference/concepts/threshold-profile/index.md
-                              - User: user/reference/concepts/user/index.md
-                              - VC Filter: user/reference/concepts/vc-filter/index.md
-                              - Vendor: user/reference/concepts/vendor/index.md
-                              - VLAN: user/reference/concepts/vlan/index.md
-                              - VLAN Profile: user/reference/concepts/vlan-profile/index.md
-                              - VPN: user/reference/concepts/vpn/index.md
-                              - VPN Profile: user/reference/concepts/vpn-profile/index.md
-                              - Workflow: user/reference/concepts/workflow/index.md
-                      - Technologies:
-                              - Group: user/reference/technology/group.md
-                              - "Network | CGNAT Termination": user/reference/technology/Network/cgnat-termination.md
-      - Admin's Guide:
-              - Overview: admin/index.md
-              - Get Started:
-                      - Overview: admin/tutorial/index.md
-              - How-to Guides:
-                      - Overview: admin/howto/index.md
-              - Background:
-                      - Overview: admin/background/index.md
-              - Reference:
-                      - Overview: admin/reference/index.md
-                      - Services:
-                              - activator: admin/reference/services/activator.md
-                              - bi: admin/reference/services/bi.md
-                              - card: admin/reference/services/card.md
-                              - chwriter: admin/reference/services/chwriter.md
-                              - classifier: admin/reference/services/classifier.md
-                              - correlator: admin/reference/services/correlator.md
-                              - datasource: admin/reference/services/datasource.md
-                              - datastream: admin/reference/services/datastream.md
-                              - discovery: admin/reference/services/discovery.md
-                              - escalator: admin/reference/services/escalator.md
-                              - grafanads: admin/reference/services/grafanads.md
-                              - icqsender: admin/reference/services/icqsender/index.md
-                              - kafkasender: admin/reference/services/kafkasender.md
-                              - login: admin/reference/services/login.md
-                              - mailsender: admin/reference/services/mailsender.md
-                              - metrics: admin/reference/services/metrics.md
-                              - metricscollector: admin/reference/services/metricscollector.md
-                              - mrt: admin/reference/services/mrt.md
-                              - mx: admin/reference/services/mx.md
-                              - nbi: admin/reference/services/nbi.md
-                              - ping: admin/reference/services/ping.md
-                              - sae: admin/reference/services/sae.md
-                              - scheduler: admin/reference/services/scheduler.md
-                              - syslogcollector: admin/reference/services/syslogcollector.md
-                              - tgsender: admin/reference/services/tgsender.md
-                              - trapcollector: admin/reference/services/trapcollector.md
-                              - web: admin/reference/services/web.md
-                              - worker: admin/reference/services/worker.md
-                              - ui: admin/reference/services/ui.md
-                      - Configuration:
-                              - Configuration System Overview: admin/reference/config/index.md
-                              - Date and Time Formats: admin/reference/datetime-format.md
-                              - Global Configuration: admin/reference/config/global.md
-                              - "[activator] Section": admin/reference/config/activator.md
-                              - "[audit] section": admin/reference/config/audit.md
-                              - "[backup] section": admin/reference/config/backup.md
-                              - "[bi] section": admin/reference/config/bi.md
-                              - "[biosegmentation] section": admin/reference/config/biosegmentation.md
-                              - "[cache] section": admin/reference/config/cache.md
-                              - "[card] section": admin/reference/config/card.md
-                              - "[chwriter] section": admin/reference/config/chwriter.md
-                              - "[classifier] section": admin/reference/config/classifier.md
-                              - "[clickhouse] section": admin/reference/config/clickhouse.md
-                              - "[collections] section": admin/reference/config/collections.md
-                              - "[consul] section": admin/reference/config/consul.md
-                              - "[correlator] section": admin/reference/config/correlator.md
-                              - "[customization] section": admin/reference/config/customization.md
-                              - "[datasource] section": admin/reference/config/datasource.md
-                              - "[datastream] section": admin/reference/config/datastream.md
-                              - "[dcs] section": admin/reference/config/dcs.md
-                              - "[discovery] section": admin/reference/config/discovery.md
-                              - "[dns] section": admin/reference/config/dns.md
-                              - "[escalator] section": admin/reference/config/escalator.md
-                              - "[etl] section": admin/reference/config/etl.md
-                              - "[features] section": admin/reference/config/features.md
-                              - "[fm] section": admin/reference/config/fm.md
-                              - "[geocoding] section": admin/reference/config/geocoding.md
-                              - "[gis] section": admin/reference/config/gis.md
-                              - "[grafanads] section": admin/reference/config/grafanads.md
-                              - "[help] section": admin/reference/config/help.md
-                              - "[http_client] section": admin/reference/config/http_client.md
-                              - "[icqsender] section": admin/reference/config/icqsender.md
-                              - "[initial] section": admin/reference/config/initial.md
-                              - "[kafkasender] section": admin/reference/config/kafkasender.md
-                              - "[layout] section": admin/reference/config/layout.md
-                              - "[liftbridge] section": admin/reference/config/liftbridge.md
-                              - "[logging] section": admin/reference/config/logging.md
-                              - "[login] section": admin/reference/config/login.md
-                              - "[mailsender] section": admin/reference/config/mailsender.md
-                              - "[memcached] section": admin/reference/config/memcached.md
-                              - "[message] section": admin/reference/config/message.md
-                              - "[metrics] section": admin/reference/config/metrics.md
-                              - "[mongo] section": admin/reference/config/mongo.md
-                              - "[mrt] section": admin/reference/config/mrt.md
-                              - "[nbi] section": admin/reference/config/nbi.md
-                              - "[path] section": admin/reference/config/path.md
-                              - "[peer] section": admin/reference/config/peer.md
-                              - "[performance] section": admin/reference/config/performance.md
-                              - "[pg] section": admin/reference/config/pg.md
-                              - "[ping] section": admin/reference/config/ping.md
-                              - "[proxy] section": admin/reference/config/proxy.md
-                              - "[redis] section": admin/reference/config/redis.md
-                              - "[rpc] section": admin/reference/config/rpc.md
-                              - "[sae] section": admin/reference/config/sae.md
-                              - "[scheduler] section": admin/reference/config/scheduler.md
-                              - "[script] section": admin/reference/config/script.md
-                              - "[selfmon] section": admin/reference/config/selfmon.md
-                              - "[sentry] section": admin/reference/config/sentry.md
-                              - "[syslogcollector] section": admin/reference/config/syslogcollector.md
-                              - "[tests] section": admin/reference/config/tests.md
-                              - "[tgsender] section": admin/reference/config/tgsender.md
-                              - "[threadpool] section": admin/reference/config/threadpool.md
-                              - "[traceback] section": admin/reference/config/traceback.md
-                              - "[trapcollector] section": admin/reference/config/trapcollector.md
-                              - "[ui] section": admin/reference/config/ui.md
-                              - "[web] section": admin/reference/config/web.md
-                      - Discovery:
-                              - Box Discovery:
-                                      - Overview: admin/reference/discovery/box/index.md
-                                      - Suggest SNMP: admin/reference/discovery/box/suggestsnmp.md
-                                      - Suggest CLI: admin/reference/discovery/box/suggestcli.md
-                                      - Profile: admin/reference/discovery/box/profile.md
-                                      - Version: admin/reference/discovery/box/version.md
-                                      - Caps: admin/reference/discovery/box/caps.md
-                                      - Asset: admin/reference/discovery/box/asset.md
-                                      - Interface: admin/reference/discovery/box/interface.md
-                                      - VRF: admin/reference/discovery/box/vrf.md
-                                      - VLAN: admin/reference/discovery/box/vlan.md
-                                      - SLA: admin/reference/discovery/box/sla.md
-                                      - ID: admin/reference/discovery/box/id.md
-                                      - Config: admin/reference/discovery/box/config.md
-                                      - CPE: admin/reference/discovery/box/cpe.md
-                                      - Segmentation: admin/reference/discovery/box/segmentation.md
-                                      - LLDP: admin/reference/discovery/box/lldp.md
-                                      - BFD: admin/reference/discovery/box/bfd.md
-                                      - CDP: admin/reference/discovery/box/cdp.md
-                                      - LACP: admin/reference/discovery/box/lacp.md
-                                      - OAM: admin/reference/discovery/box/oam.md
-                                      - FDP: admin/reference/discovery/box/fdp.md
-                                      - STP: admin/reference/discovery/box/stp.md
-                                      - REP: admin/reference/discovery/box/rep.md
-                                      - UDLD: admin/reference/discovery/box/udld.md
-                                      - Huawei NDP: admin/reference/discovery/box/huawei_ndp.md
-                                      - NRI: admin/reference/discovery/box/nri.md
-                                      - HouseKeeping: admin/reference/discovery/box/hk.md
-                              - Periodic Discovery:
-                                      - Overview: admin/reference/discovery/periodic/index.md
-                                      - interfacestatus: admin/reference/discovery/periodic/interfacestatus.md
-                                      - uptime: admin/reference/discovery/periodic/uptime.md
-                                      - mac: admin/reference/discovery/periodic/mac.md
-                                      - metrics: admin/reference/discovery/periodic/metrics.md
-                                      - cpestatus: admin/reference/discovery/periodic/cpestatus.md
-                              - AS Discovery:
-                                      - Overview: admin/reference/discovery/as/index.md
-                                      - Prefix Discovery: admin/reference/discovery/as/prefix.md
-                              - Segment Discovery:
-                                      - Overview: admin/reference/discovery/segment/index.md
-                                      - MAC Discovery: admin/reference/discovery/segment/mac.md
-                      - Internal Metrics: admin/reference/internal-metrics.md
-                      - Man Pages:
-                              - about: admin/reference/man/about.md
-                              - beef: admin/reference/man/beef.md
-                              - bi: admin/reference/man/bi.md
-                              - clean-asset: admin/reference/man/clean-asset.md
-                              - collection: admin/reference/man/collection.md
-                              - compile-mib: admin/reference/man/compile-mib.md
-                              - confdb: admin/reference/man/confdb.md
-                              - config: admin/reference/man/config.md
-                              - convert-moin: admin/reference/man/convert-moin.md
-                              - crashinfo: admin/reference/man/crashinfo.md
-                              - csv-export: admin/reference/man/csv-export.md
-                              - csv-import: admin/reference/man/csv-import.md
-                              - ctl: admin/reference/man/ctl.md
-                              - datastream: admin/reference/man/datastream.md
-                              - discovery: admin/reference/man/discovery.md
-                              - dump-addr: admin/reference/man/dump-addr.md
-                              - dump-crashinfo: admin/reference/man/dump-crashinfo.md
-                              - ensure-indexes: admin/reference/man/ensure-indexes.md
-                              - escalation: admin/reference/man/escalation.md
-                              - etl: admin/reference/man/etl.md
-                              - events: admin/reference/man/events.md
-                              - fix: admin/reference/man/fix.md
-                              - get-device-identity: admin/reference/man/get-device-identity.md
-                              - get-device-sample: admin/reference/man/get-device-sample.md
-                              - get-uuid: admin/reference/man/get-uuid.md
-                              - gridvcs: admin/reference/man/gridvcs.md
-                              - import-mib: admin/reference/man/import-mib.md
-                              - import-rancid: admin/reference/man/import-rancid.md
-                              - import-zone: admin/reference/man/import-zone.md
-                              - index: admin/reference/man/index.md
-                              - inject-event: admin/reference/man/inject-event.md
-                              - interface-profile: admin/reference/man/interface-profile.md
-                              - job: admin/reference/man/job.md
-                              - l3-topology: admin/reference/man/l3-topology.md
-                              - link: admin/reference/man/link.md
-                              - login: admin/reference/man/login.md
-                              - lookup-mib: admin/reference/man/lookup-mib.md
-                              - make-cmib: admin/reference/man/make-cmib.md
-                              - metrics: admin/reference/man/metrics.md
-                              - migrate-ch: admin/reference/man/migrate-ch.md
-                              - migrate: admin/reference/man/migrate.md
-                              - mongo: admin/reference/man/mongo.md
-                              - newapp: admin/reference/man/newapp.md
-                              - notify: admin/reference/man/notify.md
-                              - nri-link: admin/reference/man/nri-link.md
-                              - nri: admin/reference/man/nri.md
-                              - parse-events: admin/reference/man/parse-events.md
-                              - ping: admin/reference/man/ping.md
-                              - prefix-list: admin/reference/man/prefix-list.md
-                              - pretty: admin/reference/man/pretty.md
-                              - psql: admin/reference/man/psql.md
-                              - pythonpath: admin/reference/man/pythonpath.md
-                              - rca-debug: admin/reference/man/rca-debug.md
-                              - rpc: admin/reference/man/rpc.md
-                              - run: admin/reference/man/run.md
-                              - script: admin/reference/man/script.md
-                              - service: admin/reference/man/service.md
-                              - shell: admin/reference/man/shell.md
-                              - snmp: admin/reference/man/snmp.md
-                              - stencil: admin/reference/man/stencil.md
-                              - sync-doc: admin/reference/man/sync-doc.md
-                              - sync-mibs: admin/reference/man/sync-mibs.md
-                              - sync-perm: admin/reference/man/sync-perm.md
-                              - sync-refbooks: admin/reference/man/sync-refbooks.md
-                              - sync: admin/reference/man/sync.md
-                              - test: admin/reference/man/test.md
-                              - todos: admin/reference/man/todos.md
-                              - translation: admin/reference/man/translation.md
-                              - user: admin/reference/man/user.md
-                              - verify-model: admin/reference/man/verify-model.md
-                              - whois: admin/reference/man/whois.md
-                              - wipe: admin/reference/man/wipe.md
-                              - workflow: admin/reference/man/workflow.md
-                      - noc-agent:
-                              - Overview: admin/reference/agent/index.md
-                              - Collectors:
-                                      - Overview: admin/reference/agent/collectors/index.md
-                                      - block_io: admin/reference/agent/collectors/block_io.md
-                                      - cpu: admin/reference/agent/collectors/cpu.md
-                                      - dns: admin/reference/agent/collectors/dns.md
-                                      - fs: admin/reference/agent/collectors/fs.md
-                                      - http: admin/reference/agent/collectors/http.md
-                                      - memory: admin/reference/agent/collectors/memory.md
-                                      - network: admin/reference/agent/collectors/network.md
-                                      - modbus_rtu: admin/reference/agent/collectors/modbus_rtu.md
-                                      - modbus_tcp: admin/reference/agent/collectors/modbus_tcp.md
-                                      - test: admin/reference/agent/collectors/test.md
-                                      - twamp_reflector: admin/reference/agent/collectors/twamp_reflector.md
-                                      - twamp_sender: admin/reference/agent/collectors/twamp_sender.md
-                                      - uptime: admin/reference/agent/collectors/uptime.md
-                              - Compilation Features: admin/reference/agent/compilation-features.md
-      - Developer's Guide:
-              - Overview: dev/index.md
-              - Get Started:
-                      - Overview: dev/tutorial/index.md
-              - How-to Guides:
-                      - Overview: dev/howto/index.md
-                      - How to Share Collections: dev/howto/sharing-collections/index.md
-                      - How to Setup black Formatter in PyCharm: dev/howto/setup-black-in-pycharm/index.md
-                      - How to Setup flake8 Check in PyCharm: dev/howto/setup-flake8-in-pycharm/index.md
-              - Background:
-                      - Overview: dev/background/index.md
-                      - Connection Restrictions: dev/background/connection-restrictions/index.md
-                      - Connection Type Restrictions: dev/background/connection-type-restrictions/index.md
-              - Reference:
-                      - Overview: dev/reference/index.md
-                      - Merge Request Labels: dev/reference/mr-labels.md
-                      - API:
-                              - DataStream:
-                                      - Overview: dev/reference/api/datastream/index.md
-                                      - address: dev/reference/api/datastream/address.md
-                                      - administrativedomain: dev/reference/api/datastream/administrativedomain.md
-                                      - alarm: dev/reference/api/datastream/alarm.md
-                                      - cfgmetrics: dev/reference/api/datastream/cfgmetrics.md
-                                      - cfgping: dev/reference/api/datastream/cfgping.md
-                                      - cfgsyslog: dev/reference/api/datastream/cfgsyslog.md
-                                      - cfgtrap: dev/reference/api/datastream/cfgtrap.md
-                                      - dnszone: dev/reference/api/datastream/dnszone.md
-                                      - managedobject: dev/reference/api/datastream/managedobject.md
-                                      - dnszone: dev/reference/api/datastream/dnszone.md
-                                      - prefix: dev/reference/api/datastream/prefix.md
-                                      - resourcegroup: dev/reference/api/datastream/resourcegroup.md
-                                      - vrf: dev/reference/api/datastream/vrf.md
-                              - NBI:
-                                      - Overview: dev/reference/api/nbi/index.md
-                                      - config: dev/reference/api/nbi/config.md
-                                      - configrevisions: dev/reference/api/nbi/configrevisions.md
-                                      - getmappings: dev/reference/api/nbi/getmappings.md
-                                      - objectmetrics: dev/reference/api/nbi/objectmetrics.md
-                                      - objectstatus: dev/reference/api/nbi/objectstatus.md
-                                      - path: dev/reference/api/nbi/path.md
-                                      - telemetry: dev/reference/api/nbi/telemetry.md
-                      - BI:
-                              - Dictionaries:
-                                      - administrativedomain: dev/reference/bi/dict/administrativedomain.md
-                                      - alarmclass: dev/reference/bi/dict/alarmclass.md
-                                      - container: dev/reference/bi/dict/container.md
-                                      - interfacedescription: dev/reference/bi/dict/interfacedescription.md
-                                      - interfaceprofile: dev/reference/bi/dict/interfaceprofile.md
-                                      - managedobject: dev/reference/bi/dict/managedobject.md
-                                      - networksegment: dev/reference/bi/dict/networksegment.md
-                                      - platform: dev/reference/bi/dict/platform.md
-                                      - pool: dev/reference/bi/dict/pool.md
-                                      - profile: dev/reference/bi/dict/profile.md
-                                      - vendor: dev/reference/bi/dict/vendor.md
-                                      - version: dev/reference/bi/dict/version.md
-                              - Models:
-                                      - alarms: dev/reference/bi/model/alarms.md
-                                      - mac: dev/reference/bi/model/mac.md
-                                      - managedobjects: dev/reference/bi/model/managedobjects.md
-                                      - netflow: dev/reference/bi/model/netflow.md
-                                      - reboots: dev/reference/bi/model/reboots.md
-                                      - routingneighbors: dev/reference/bi/model/routingneighbors.md
-                                      - span: dev/reference/bi/model/span.md
-                      - ConfDB:
-                              - Overview: dev/reference/confdb/index.md
-                              - Config Fetching: dev/reference/confdb/fetching.md
-                              - Storage: dev/reference/confdb/storage.md
-                              - Tokenizer: dev/reference/confdb/tokenizer.md
-                              - Normalizer: dev/reference/confdb/normalizer.md
-                              - Query: dev/reference/confdb/query.md
-                      #          - Scripts:
+        - Home: index.md
+        - User's Guide:
+                  - Overview: user/index.md
+                  - Get Started:
+                            - Overview: user/tutorial/index.md
+                  - How-to Guides:
+                            - Overview: user/howto/index.md
+                            - Loading GIS data with etl command: user/howto/fias/index.md
+                  - Background:
+                            - Overview: user/background/index.md
+                  - Reference:
+                            - Overview: user/reference/index.md
+                            - Concepts:
+                                      - Overview: user/reference/concepts/index.md
+                                      - Administrative Domain: user/reference/concepts/administrative-domain/index.md
+                                      - Allocation Group: user/reference/concepts/allocation-group/index.md
+                                      - API Key: user/reference/concepts/apikey/index.md
+                                      - Container: user/reference/concepts/container/index.md
+                                      - Dialplan: user/reference/concepts/dialplan/index.md
+                                      - DNS Zone: user/reference/concepts/dns-zone/index.md
+                                      - External Storage: user/reference/concepts/external-storage/index.md
+                                      - Group: user/reference/concepts/group/index.md
+                                      - Handler: user/reference/concepts/handler/index.md
+                                      - Interface: user/reference/concepts/interface/index.md
+                                      - Interface Profile: user/reference/concepts/interface-profile/index.md
+                                      - Label: user/reference/concepts/label/index.md
+                                      - Managed Object: user/reference/concepts/managed-object/index.md
+                                      - Managed Object Profile: user/reference/concepts/managed-object-profile/index.md
+                                      - Network Segment: user/reference/concepts/network-segment/index.md
+                                      - Network Segment Profile: user/reference/concepts/network-segment-profile/index.md
+                                      - Notification Group: user/reference/concepts/notification-group/index.md
+                                      - Phone Number: user/reference/concepts/phone-number/index.md
+                                      - Phone Number Profile: user/reference/concepts/phone-number-profile/index.md
+                                      - Phone Range: user/reference/concepts/phone-range/index.md
+                                      - Phone Range Profile: user/reference/concepts/phone-range-profile/index.md
+                                      - Pool: user/reference/concepts/pool/index.md
+                                      - Prefix: user/reference/concepts/prefix/index.md
+                                      - Prefix Profile: user/reference/concepts/prefix-profile/index.md
+                                      - Remote System: user/reference/concepts/remote-system/index.md
+                                      - Resource Group: user/reference/concepts/resource-group/index.md
+                                      - SA Profile: user/reference/concepts/sa-profile/index.md
+                                      - Sensor: user/reference/concepts/sensor/index.md
+                                      - Sensor Profile: user/reference/concepts/sensor-profile/index.md
+                                      - Service: user/reference/concepts/service/index.md
+                                      - Service Profile: user/reference/concepts/service-profile/index.md
+                                      - Subscriber: user/reference/concepts/subscriber/index.md
+                                      - Subscriber Profile: user/reference/concepts/subscriber-profile/index.md
+                                      - Technology: user/reference/concepts/technology/index.md
+                                      - Template: user/reference/concepts/template/index.md
+                                      - Threshold Profile: user/reference/concepts/threshold-profile/index.md
+                                      - User: user/reference/concepts/user/index.md
+                                      - VC Filter: user/reference/concepts/vc-filter/index.md
+                                      - Vendor: user/reference/concepts/vendor/index.md
+                                      - VLAN: user/reference/concepts/vlan/index.md
+                                      - VLAN Profile: user/reference/concepts/vlan-profile/index.md
+                                      - VPN: user/reference/concepts/vpn/index.md
+                                      - VPN Profile: user/reference/concepts/vpn-profile/index.md
+                                      - Workflow: user/reference/concepts/workflow/index.md
+                            - Technologies:
+                                      - Group: user/reference/technology/group.md
+                                      - "Network | CGNAT Termination": user/reference/technology/Network/cgnat-termination.md
+        - Admin's Guide:
+                  - Overview: admin/index.md
+                  - Get Started:
+                            - Overview: admin/tutorial/index.md
+                  - How-to Guides:
+                            - Overview: admin/howto/index.md
+                  - Background:
+                            - Overview: admin/background/index.md
+                  - Reference:
+                            - Overview: admin/reference/index.md
+                            - Internal Metrics: admin/reference/internal-metrics.md
+                            - noc-agent:
+                                      - Overview: admin/reference/agent/index.md
+                                      - Collectors:
+                                                - Overview: admin/reference/agent/collectors/index.md
+                                                - block_io: admin/reference/agent/collectors/block_io.md
+                                                - cpu: admin/reference/agent/collectors/cpu.md
+                                                - dns: admin/reference/agent/collectors/dns.md
+                                                - fs: admin/reference/agent/collectors/fs.md
+                                                - http: admin/reference/agent/collectors/http.md
+                                                - memory: admin/reference/agent/collectors/memory.md
+                                                - network: admin/reference/agent/collectors/network.md
+                                                - modbus_rtu: admin/reference/agent/collectors/modbus_rtu.md
+                                                - modbus_tcp: admin/reference/agent/collectors/modbus_tcp.md
+                                                - test: admin/reference/agent/collectors/test.md
+                                                - twamp_reflector: admin/reference/agent/collectors/twamp_reflector.md
+                                                - twamp_sender: admin/reference/agent/collectors/twamp_sender.md
+                                                - uptime: admin/reference/agent/collectors/uptime.md
+                                      - Compilation Features: admin/reference/agent/compilation-features.md
+        - Developer's Guide:
+                  - Overview: dev/index.md
+                  - Get Started:
+                            - Overview: dev/tutorial/index.md
+                  - How-to Guides:
+                            - Overview: dev/howto/index.md
+                            - How to Share Collections: dev/howto/sharing-collections/index.md
+                            - How to Setup black Formatter in PyCharm: dev/howto/setup-black-in-pycharm/index.md
+                            - How to Setup flake8 Check in PyCharm: dev/howto/setup-flake8-in-pycharm/index.md
+                  - Background:
+                            - Overview: dev/background/index.md
+                            - Connection Restrictions: dev/background/connection-restrictions/index.md
+                            - Connection Type Restrictions: dev/background/connection-type-restrictions/index.md
+                  - Reference:
+                            - Overview: dev/reference/index.md
+                            - Merge Request Labels: dev/reference/mr-labels.md
+                            - BI:
+                                      - Dictionaries:
+                                                - administrativedomain: dev/reference/bi/dict/administrativedomain.md
+                                                - alarmclass: dev/reference/bi/dict/alarmclass.md
+                                                - container: dev/reference/bi/dict/container.md
+                                                - interfacedescription: dev/reference/bi/dict/interfacedescription.md
+                                                - interfaceprofile: dev/reference/bi/dict/interfaceprofile.md
+                                                - managedobject: dev/reference/bi/dict/managedobject.md
+                                                - networksegment: dev/reference/bi/dict/networksegment.md
+                                                - platform: dev/reference/bi/dict/platform.md
+                                                - pool: dev/reference/bi/dict/pool.md
+                                                - profile: dev/reference/bi/dict/profile.md
+                                                - vendor: dev/reference/bi/dict/vendor.md
+                                                - version: dev/reference/bi/dict/version.md
+                                      - Models:
+                                                - alarms: dev/reference/bi/model/alarms.md
+                                                - mac: dev/reference/bi/model/mac.md
+                                                - managedobjects: dev/reference/bi/model/managedobjects.md
+                                                - netflow: dev/reference/bi/model/netflow.md
+                                                - reboots: dev/reference/bi/model/reboots.md
+                                                - routingneighbors: dev/reference/bi/model/routingneighbors.md
+                                                - span: dev/reference/bi/model/span.md
+                            - ConfDB:
+                                      - Overview: dev/reference/confdb/index.md
+                                      - Config Fetching: dev/reference/confdb/fetching.md
+                                      - Storage: dev/reference/confdb/storage.md
+                                      - Tokenizer: dev/reference/confdb/tokenizer.md
+                                      - Normalizer: dev/reference/confdb/normalizer.md
+                                      - Query: dev/reference/confdb/query.md
+                            #          - Scripts:
 
-                      - Handlers:
-                              - Handlers Overview: dev/reference/handlers/index.md
-                              - Config Filter: dev/reference/handlers/config-filter.md
-                              - Config Diff Filter: dev/reference/handlers/config-diff-filter.md
-                              - Window Function: dev/reference/handlers/window-function.md
-                      - Object Models:
-                              - Overview: dev/reference/object-model/index.md
-                              - ObjectModel Tags: dev/reference/object-model/tags.md
-                      - Model Interfaces:
-                              - Overview: dev/reference/model-interface/index.md
-                              - airflow: dev/reference/model-interface/airflow.md
-                              - asset: dev/reference/model-interface/asset.md
-                              - contacts: dev/reference/model-interface/contacts.md
-                              - container: dev/reference/model-interface/container.md
-                              - cpu: dev/reference/model-interface/cpu.md
-                              - dimensions: dev/reference/model-interface/dimensions.md
-                              - hwlimits: dev/reference/model-interface/hwlimits.md
-                              - geopoint: dev/reference/model-interface/geopoint.md
-                              - length: dev/reference/model-interface/length.md
-                              - management: dev/reference/model-interface/management.md
-                              - modbus: dev/reference/model-interface/modbus.md
-                              - optical: dev/reference/model-interface/optical.md
-                              - plan: dev/reference/model-interface/plan.md
-                              - pop: dev/reference/model-interface/pop.md
-                              - power: dev/reference/model-interface/power.md
-                              - rack: dev/reference/model-interface/rack.md
-                              - rackmount: dev/reference/model-interface/rackmount.md
-                              - sector: dev/reference/model-interface/sector.md
-                              - splitter: dev/reference/model-interface/splitter.md
-                              - stack: dev/reference/model-interface/stack.md
-                              - twinax: dev/reference/model-interface/twinax.md
-                              - weight: dev/reference/model-interface/weight.md
+                            - Handlers:
+                                      - Handlers Overview: dev/reference/handlers/index.md
+                                      - Config Filter: dev/reference/handlers/config-filter.md
+                                      - Config Diff Filter: dev/reference/handlers/config-diff-filter.md
+                                      - Window Function: dev/reference/handlers/window-function.md
+                            - Object Models:
+                                      - Overview: dev/reference/object-model/index.md
+                                      - ObjectModel Tags: dev/reference/object-model/tags.md
+                            - Model Interfaces:
+                                      - Overview: dev/reference/model-interface/index.md
+                                      - airflow: dev/reference/model-interface/airflow.md
+                                      - asset: dev/reference/model-interface/asset.md
+                                      - contacts: dev/reference/model-interface/contacts.md
+                                      - container: dev/reference/model-interface/container.md
+                                      - cpu: dev/reference/model-interface/cpu.md
+                                      - dimensions: dev/reference/model-interface/dimensions.md
+                                      - hwlimits: dev/reference/model-interface/hwlimits.md
+                                      - geopoint: dev/reference/model-interface/geopoint.md
+                                      - length: dev/reference/model-interface/length.md
+                                      - management: dev/reference/model-interface/management.md
+                                      - modbus: dev/reference/model-interface/modbus.md
+                                      - optical: dev/reference/model-interface/optical.md
+                                      - plan: dev/reference/model-interface/plan.md
+                                      - pop: dev/reference/model-interface/pop.md
+                                      - power: dev/reference/model-interface/power.md
+                                      - rack: dev/reference/model-interface/rack.md
+                                      - rackmount: dev/reference/model-interface/rackmount.md
+                                      - sector: dev/reference/model-interface/sector.md
+                                      - splitter: dev/reference/model-interface/splitter.md
+                                      - stack: dev/reference/model-interface/stack.md
+                                      - twinax: dev/reference/model-interface/twinax.md
+                                      - weight: dev/reference/model-interface/weight.md
 
-                      - Inventory Protocols: dev/reference/inventory-protocols.md
-                      - Streams:
-                              - Overview: dev/reference/streams/index.md
-                              - ch.TABLE: dev/reference/streams/ch.md
-                              - dispose.POOL: dev/reference/streams/dispose.md
-                              - events.POOL: dev/reference/streams/events.md
-                              - kafkasender: dev/reference/streams/kafkasender.md
-                              - metrics: dev/reference/streams/metrics.md
-                              - jobs: dev/reference/streams/jobs.md
-                              - mx: dev/reference/streams/mx.md
-                      - Alarm Reference Format: dev/reference/alarm-reference-format.md
-                      - Tools:
-                              - Overview: dev/reference/tools/index.md
-                              - PyCharm: dev/reference/tools/pycharm.md
-                              - black: dev/reference/tools/black.md
-                              - flake8: dev/reference/tools/flake8.md
-      - About:
-              - Overview: about/index.md
-              - License: license.md
-              - Contributing: about/contributing.md
-              - Translations: about/translations.md
-              - Style Guide:
-                      - Overview: about/style/index.md
-                      - Tutorials: about/style/tutorials.md
-                      - How-to Guides: about/style/howto.md
-                      - References: about/style/references.md
-                      - Explanations: about/style/explanations.md
-              - Supported Standards: about/standards.md
-              - Releases:
-      - Glossary: glossary.md
+                            - Inventory Protocols: dev/reference/inventory-protocols.md
+                            - Streams:
+                                      - Overview: dev/reference/streams/index.md
+                                      - ch.TABLE: dev/reference/streams/ch.md
+                                      - dispose.POOL: dev/reference/streams/dispose.md
+                                      - events.POOL: dev/reference/streams/events.md
+                                      - kafkasender: dev/reference/streams/kafkasender.md
+                                      - metrics: dev/reference/streams/metrics.md
+                                      - jobs: dev/reference/streams/jobs.md
+                                      - mx: dev/reference/streams/mx.md
+                            - Alarm Reference Format: dev/reference/alarm-reference-format.md
+                            - Tools:
+                                      - Overview: dev/reference/tools/index.md
+                                      - PyCharm: dev/reference/tools/pycharm.md
+                                      - black: dev/reference/tools/black.md
+                                      - flake8: dev/reference/tools/flake8.md
+        - About:
+                  - Overview: about/index.md
+                  - License: license.md
+                  - Contributing: about/contributing.md
+                  - Translations: about/translations.md
+                  - Style Guide:
+                            - Overview: about/style/index.md
+                            - Tutorials: about/style/tutorials.md
+                            - How-to Guides: about/style/howto.md
+                            - References: about/style/references.md
+                            - Explanations: about/style/explanations.md
+                  - Supported Standards: about/standards.md
+                  - Releases:
+        - Glossary: glossary.md
 theme:
-      name: material
-      features:
-            - navigation.tabs
-            - navigation.instant
-      palette:
-            - scheme: slate
-              toggle:
-                    icon: material/toggle-switch
-                    name: Switch to light mode
-            - scheme: default
-              toggle:
-                    icon: material/toggle-switch-off-outline
-                    name: Switch to dark mode
-      logo: _static/logo.svg
+        name: material
+        features:
+                - navigation.tabs
+                - navigation.instant
+        palette:
+                - scheme: slate
+                  toggle:
+                          icon: material/toggle-switch
+                          name: Switch to light mode
+                - scheme: default
+                  toggle:
+                          icon: material/toggle-switch-off-outline
+                          name: Switch to dark mode
+        logo: _static/logo.svg
 extra_css:
-      - _static/extra.css
+        - _static/extra.css
 use_directory_urls: true
 site_dir: ../../build/docs/en
 strict: false
 markdown_extensions:
-      - toc:
-              permalink: true
-      - admonition
-      - attr_list
-      - def_list
-      - pymdownx.emoji:
-              emoji_index: !!python/name:materialx.emoji.twemoji
-              emoji_generator: !!python/name:materialx.emoji.to_svg
-      - pymdownx.superfences:
-              custom_fences:
-                    - name: mermaid
-                      class: mermaid
-                      format: !!python/name:mermaid2.fence_mermaid
+        - toc:
+                  permalink: true
+        - admonition
+        - attr_list
+        - def_list
+        - pymdownx.emoji:
+                  emoji_index: !!python/name:materialx.emoji.twemoji
+                  emoji_generator: !!python/name:materialx.emoji.to_svg
+        - pymdownx.superfences:
+                  custom_fences:
+                          - name: mermaid
+                            class: mermaid
+                            format: !!python/name:mermaid2.fence_mermaid
 plugins:
-      - search
-      - mermaid2:
-              arguments:
-                    theme: dark
-      - macros:
-              module_name: macros
+        - search
+        - mermaid2:
+                  arguments:
+                          theme: dark
+        - macros:
+                  module_name: macros
 extra:
-      alternate:
-            - name: English
-              link: /master/en/
-              lang: en
-            - name: Russian
-              link: /master/ru/
-              lang: ru
-      "tab": ":material-arrow-right:"
-      "tab2": ":material-arrow-right: :material-arrow-right:"
-      "tab3": ":material-arrow-right: :material-arrow-right: :material-arrow-right:"
-      "complex": ":material-arrow-down:"
-      "yes": ":material-check:"
-      "no": ":material-close:"
-      "wbr": "<wbr>"
+        alternate:
+                - name: English
+                  link: /master/en/
+                  lang: en
+                - name: Russian
+                  link: /master/ru/
+                  lang: ru
+        "tab": ":material-arrow-right:"
+        "tab2": ":material-arrow-right: :material-arrow-right:"
+        "tab3": ":material-arrow-right: :material-arrow-right: :material-arrow-right:"
+        "complex": ":material-arrow-down:"
+        "yes": ":material-check:"
+        "no": ":material-close:"
+        "wbr": "<wbr>"

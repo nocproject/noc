@@ -11,22 +11,22 @@ uuid: 7f0f26b3-00e9-4def-b968-05a3509d6c76
 
 ## Variables
 
-Variable | Description | Default
---- | --- | ---
-name | LSP name | {{ no }}
+| Variable | Description | Default  |
+| -------- | ----------- | -------- |
+| name     | LSP name    | {{ no }} |
 
 ## Events
 
 ### Opening Events
 `Network | MPLS | LSP Down` may be raised by events
 
-Event Class | Description
---- | ---
-[Network \| MPLS \| LSP Down](../../../event-classes/network/mpls/lsp-down.md) | dispose
+| Event Class                                                                           | Description |
+| ------------------------------------------------------------------------------------- | ----------- |
+| [Network \| MPLS \| LSP Down](ref://event-classes-reference/network/mpls/lsp-down.md) | dispose     |
 
 ### Closing Events
 `Network | MPLS | LSP Down` may be cleared by events
 
-Event Class | Description
---- | ---
-[Network \| MPLS \| LSP Up](../../../event-classes/network/mpls/lsp-up.md) | dispose
+| Event Class                                                                       | Description |
+| --------------------------------------------------------------------------------- | ----------- |
+| [Network \| MPLS \| LSP Up](ref://event-classes-reference/network/mpls/lsp-up.md) | dispose     |

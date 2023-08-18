@@ -11,15 +11,15 @@ uuid: e02309ba-800f-4da8-94a4-5bbb060457a6
 
 ## Variables
 
-Variable | Description | Default
---- | --- | ---
-reason | Reason | {{ no }}
+| Variable | Description | Default  |
+| -------- | ----------- | -------- |
+| reason   | Reason      | {{ no }} |
 
 ## Events
 
 ### Opening Events
 `Chassis | RAM | Insufficient Memory` may be raised by events
 
-Event Class | Description
---- | ---
-[Chassis \| RAM \| Insufficient Memory](../../../event-classes/chassis/ram/insufficient-memory.md) | dispose
+| Event Class                                                                                               | Description |
+| --------------------------------------------------------------------------------------------------------- | ----------- |
+| [Chassis \| RAM \| Insufficient Memory](ref://event-classes-reference/chassis/ram/insufficient-memory.md) | dispose     |

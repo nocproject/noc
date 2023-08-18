@@ -15,17 +15,17 @@ Ensure that the shared secret that is in the configuration file is the same as t
 
 ## Variables
 
-Variable | Description | Default
---- | --- | ---
-mac | Cable Modem MAC | {{ no }}
-sid | Cable Modem SID | {{ no }}
-interface | Cable interface | {{ no }}
+| Variable  | Description     | Default  |
+| --------- | --------------- | -------- |
+| mac       | Cable Modem MAC | {{ no }} |
+| sid       | Cable Modem SID | {{ no }} |
+| interface | Cable interface | {{ no }} |
 
 ## Events
 
 ### Opening Events
 `Network | DOCSIS | Invalid Shared Secret` may be raised by events
 
-Event Class | Description
---- | ---
-[Network \| DOCSIS \| Invalid Shared Secret](../../../event-classes/network/docsis/invalid-shared-secret.md) | dispose
+| Event Class                                                                                                         | Description |
+| ------------------------------------------------------------------------------------------------------------------- | ----------- |
+| [Network \| DOCSIS \| Invalid Shared Secret](ref://event-classes-reference/network/docsis/invalid-shared-secret.md) | dispose     |

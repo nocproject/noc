@@ -11,15 +11,15 @@ uuid: 9c73f93b-9249-4296-b386-4ee1f1cb7e83
 
 ## Variables
 
-Variable | Description | Default
---- | --- | ---
-reason | Reason | {{ no }}
+| Variable | Description | Default  |
+| -------- | ----------- | -------- |
+| reason   | Reason      | {{ no }} |
 
 ## Events
 
 ### Opening Events
 `Vendor | Arista | EOS | VMTracer | Failed to connect to vCenter` may be raised by events
 
-Event Class | Description
---- | ---
-[Vendor \| Arista \| EOS \| VMTracer \| Failed to connect to vCenter](../../../../../event-classes/vendor/arista/eos/vmtracer/failed-to-connect-to-vcenter.md) | dispose
+| Event Class                                                                                                                                                     | Description |
+| --------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------- |
+| [Vendor \| Arista \| EOS \| VMTracer \| Failed to connect to vCenter](ref://event-classes-reference/vendor/arista/eos/vmtracer/failed-to-connect-to-vcenter.md) | dispose     |

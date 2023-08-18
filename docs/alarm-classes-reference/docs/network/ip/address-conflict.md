@@ -11,11 +11,11 @@ uuid: ef2b8f0a-3959-4bce-99b8-5eb5298409b9
 
 ## Variables
 
-Variable | Description | Default
---- | --- | ---
-ip | Conflicting IP | {{ no }}
-mac | MAC | {{ no }}
-interface | Interface | {{ no }}
+| Variable  | Description    | Default  |
+| --------- | -------------- | -------- |
+| ip        | Conflicting IP | {{ no }} |
+| mac       | MAC            | {{ no }} |
+| interface | Interface      | {{ no }} |
 
 ## Alarm Correlation
 
@@ -34,22 +34,22 @@ graph TD
 ### Root Causes
 `Network | IP | Address Conflict` alarm may be consequence of
 
-Alarm Class | Description
---- | ---
-[Network \| IP \| Address Conflict](address-conflict.md) | Address Conflict
+| Alarm Class                                              | Description      |
+| -------------------------------------------------------- | ---------------- |
+| [Network \| IP \| Address Conflict](address-conflict.md) | Address Conflict |
 
 ### Consequences
 `Network | IP | Address Conflict` alarm may be root cause of
 
-Alarm Class | Description
---- | ---
-[Network \| IP \| Address Conflict](address-conflict.md) | Address Conflict
+| Alarm Class                                              | Description      |
+| -------------------------------------------------------- | ---------------- |
+| [Network \| IP \| Address Conflict](address-conflict.md) | Address Conflict |
 
 ## Events
 
 ### Opening Events
 `Network | IP | Address Conflict` may be raised by events
 
-Event Class | Description
---- | ---
-[Network \| IP \| Address Conflict](../../../event-classes/network/ip/address-conflict.md) | dispose
+| Event Class                                                                                       | Description |
+| ------------------------------------------------------------------------------------------------- | ----------- |
+| [Network \| IP \| Address Conflict](ref://event-classes-reference/network/ip/address-conflict.md) | dispose     |

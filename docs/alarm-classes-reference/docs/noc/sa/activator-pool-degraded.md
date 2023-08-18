@@ -17,24 +17,24 @@ Check noc-activator processes. Check network connectivity
 
 ## Variables
 
-Variable | Description | Default
---- | --- | ---
-name | Pool Name | {{ no }}
+| Variable | Description | Default  |
+| -------- | ----------- | -------- |
+| name     | Pool Name   | {{ no }} |
 
 ## Events
 
 ### Opening Events
 `NOC | SA | Activator Pool Degraded` may be raised by events
 
-Event Class | Description
---- | ---
-[NOC \| SA \| Leave Activator Pool](../../../event-classes/noc/sa/leave-activator-pool.md) | raise
-[NOC \| SA \| Join Activator Pool](../../../event-classes/noc/sa/join-activator-pool.md) | raise
+| Event Class                                                                                       | Description |
+| ------------------------------------------------------------------------------------------------- | ----------- |
+| [NOC \| SA \| Leave Activator Pool](ref://event-classes-reference/noc/sa/leave-activator-pool.md) | raise       |
+| [NOC \| SA \| Join Activator Pool](ref://event-classes-reference/noc/sa/join-activator-pool.md)   | raise       |
 
 ### Closing Events
 `NOC | SA | Activator Pool Degraded` may be cleared by events
 
-Event Class | Description
---- | ---
-[NOC \| SA \| Leave Activator Pool](../../../event-classes/noc/sa/leave-activator-pool.md) | clear
-[NOC \| SA \| Join Activator Pool](../../../event-classes/noc/sa/join-activator-pool.md) | clear
+| Event Class                                                                                       | Description |
+| ------------------------------------------------------------------------------------------------- | ----------- |
+| [NOC \| SA \| Leave Activator Pool](ref://event-classes-reference/noc/sa/leave-activator-pool.md) | clear       |
+| [NOC \| SA \| Join Activator Pool](ref://event-classes-reference/noc/sa/join-activator-pool.md)   | clear       |

@@ -32,23 +32,23 @@ graph TD
 ### Root Causes
 `NOC | Managed Object | Ping Failed` alarm may be consequence of
 
-Alarm Class | Description
---- | ---
-[Chassis \| PSU \| Power Failed](../../chassis/psu/power-failed.md) | Power Failed
-[System \| Reboot](../../system/reboot.md) | System Reboot
+| Alarm Class                                                         | Description   |
+| ------------------------------------------------------------------- | ------------- |
+| [Chassis \| PSU \| Power Failed](../../chassis/psu/power-failed.md) | Power Failed  |
+| [System \| Reboot](../../system/reboot.md)                          | System Reboot |
 
 ## Events
 
 ### Opening Events
 `NOC | Managed Object | Ping Failed` may be raised by events
 
-Event Class | Description
---- | ---
-[NOC \| Managed Object \| Ping Failed](../../../event-classes/noc/managed-object/ping-failed.md) | dispose
+| Event Class                                                                                             | Description |
+| ------------------------------------------------------------------------------------------------------- | ----------- |
+| [NOC \| Managed Object \| Ping Failed](ref://event-classes-reference/noc/managed-object/ping-failed.md) | dispose     |
 
 ### Closing Events
 `NOC | Managed Object | Ping Failed` may be cleared by events
 
-Event Class | Description
---- | ---
-[NOC \| Managed Object \| Ping OK](../../../event-classes/noc/managed-object/ping-ok.md) | dispose
+| Event Class                                                                                     | Description |
+| ----------------------------------------------------------------------------------------------- | ----------- |
+| [NOC \| Managed Object \| Ping OK](ref://event-classes-reference/noc/managed-object/ping-ok.md) | dispose     |

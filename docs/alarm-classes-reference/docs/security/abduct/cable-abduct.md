@@ -18,6 +18,6 @@ Check electrics and send security team to catch the thief
 ### Opening Events
 `Security | Abduct | Cable Abduct` may be raised by events
 
-Event Class | Description
---- | ---
-[Security \| Abduct \| Cable Abduct](../../../event-classes/security/abduct/cable-abduct.md) | dispose
+| Event Class                                                                                         | Description |
+| --------------------------------------------------------------------------------------------------- | ----------- |
+| [Security \| Abduct \| Cable Abduct](ref://event-classes-reference/security/abduct/cable-abduct.md) | dispose     |

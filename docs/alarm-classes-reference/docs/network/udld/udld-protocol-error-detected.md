@@ -11,10 +11,10 @@ uuid: f5da2fd6-f712-43f1-b788-16812f844239
 
 ## Variables
 
-Variable | Description | Default
---- | --- | ---
-interface | interface | {{ no }}
-description | Interface description | `=InterfaceDS.description`
+| Variable    | Description           | Default                    |
+| ----------- | --------------------- | -------------------------- |
+| interface   | interface             | {{ no }}                   |
+| description | Interface description | `=InterfaceDS.description` |
 
 ## Alarm Correlation
 
@@ -31,22 +31,22 @@ graph TD
 ### Consequences
 `Network | UDLD | UDLD Protocol Error Detected` alarm may be root cause of
 
-Alarm Class | Description
---- | ---
-[Network \| Link \| Err-Disable](../link/err-disable.md) | UDLD
+| Alarm Class                                              | Description |
+| -------------------------------------------------------- | ----------- |
+| [Network \| Link \| Err-Disable](../link/err-disable.md) | UDLD        |
 
 ## Events
 
 ### Opening Events
 `Network | UDLD | UDLD Protocol Error Detected` may be raised by events
 
-Event Class | Description
---- | ---
-[Network \| UDLD \| UDLD Protocol Error Detected](../../../event-classes/network/udld/udld-protocol-error-detected.md) | dispose
+| Event Class                                                                                                                   | Description |
+| ----------------------------------------------------------------------------------------------------------------------------- | ----------- |
+| [Network \| UDLD \| UDLD Protocol Error Detected](ref://event-classes-reference/network/udld/udld-protocol-error-detected.md) | dispose     |
 
 ### Closing Events
 `Network | UDLD | UDLD Protocol Error Detected` may be cleared by events
 
-Event Class | Description
---- | ---
-[Network \| UDLD \| UDLD Protocol Recovery](../../../event-classes/network/udld/udld-protocol-recovery.md) | dispose
+| Event Class                                                                                                       | Description |
+| ----------------------------------------------------------------------------------------------------------------- | ----------- |
+| [Network \| UDLD \| UDLD Protocol Recovery](ref://event-classes-reference/network/udld/udld-protocol-recovery.md) | dispose     |

@@ -24,22 +24,22 @@ graph TD
 ### Consequences
 `System | Reboot` alarm may be root cause of
 
-Alarm Class | Description
---- | ---
-[NOC \| Managed Object \| Ping Failed](../noc/managed-object/ping-failed.md) | System Reboot
+| Alarm Class                                                                  | Description   |
+| ---------------------------------------------------------------------------- | ------------- |
+| [NOC \| Managed Object \| Ping Failed](../noc/managed-object/ping-failed.md) | System Reboot |
 
 ## Events
 
 ### Opening Events
 `System | Reboot` may be raised by events
 
-Event Class | Description
---- | ---
-[System \| Reboot](../../event-classes/system/reboot.md) | dispose
+| Event Class                                                        | Description |
+| ------------------------------------------------------------------ | ----------- |
+| [System \| Reboot](ref://event-classes-reference/system/reboot.md) | dispose     |
 
 ### Closing Events
 `System | Reboot` may be cleared by events
 
-Event Class | Description
---- | ---
-[System \| Started](../../event-classes/system/started.md) | dispose
+| Event Class                                                          | Description |
+| -------------------------------------------------------------------- | ----------- |
+| [System \| Started](ref://event-classes-reference/system/started.md) | dispose     |

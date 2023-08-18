@@ -11,23 +11,23 @@ uuid: 9345af7a-41d8-48d7-b6d5-e216b3fbda20
 
 ## Variables
 
-Variable | Description | Default
---- | --- | ---
-neighbor | TDP Neighbor | {{ no }}
-reason | Reason | {{ no }}
+| Variable | Description  | Default  |
+| -------- | ------------ | -------- |
+| neighbor | TDP Neighbor | {{ no }} |
+| reason   | Reason       | {{ no }} |
 
 ## Events
 
 ### Opening Events
 `Network | MPLS | TDP Neighbor Down` may be raised by events
 
-Event Class | Description
---- | ---
-[Network \| MPLS \| TDP Neighbor Down](../../../event-classes/network/mpls/tdp-neighbor-down.md) | dispose
+| Event Class                                                                                             | Description |
+| ------------------------------------------------------------------------------------------------------- | ----------- |
+| [Network \| MPLS \| TDP Neighbor Down](ref://event-classes-reference/network/mpls/tdp-neighbor-down.md) | dispose     |
 
 ### Closing Events
 `Network | MPLS | TDP Neighbor Down` may be cleared by events
 
-Event Class | Description
---- | ---
-[Network \| MPLS \| TDP Neighbor Up](../../../event-classes/network/mpls/tdp-neighbor-up.md) | dispose
+| Event Class                                                                                         | Description |
+| --------------------------------------------------------------------------------------------------- | ----------- |
+| [Network \| MPLS \| TDP Neighbor Up](ref://event-classes-reference/network/mpls/tdp-neighbor-up.md) | dispose     |

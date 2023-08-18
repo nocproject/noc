@@ -15,17 +15,17 @@ Ensure that the QoS fields in the configuration file are set correctly.
 
 ## Variables
 
-Variable | Description | Default
---- | --- | ---
-mac | Cable Modem MAC | {{ no }}
-sid | Cable Modem SID | {{ no }}
-interface | Cable interface | {{ no }}
+| Variable  | Description     | Default  |
+| --------- | --------------- | -------- |
+| mac       | Cable Modem MAC | {{ no }} |
+| sid       | Cable Modem SID | {{ no }} |
+| interface | Cable interface | {{ no }} |
 
 ## Events
 
 ### Opening Events
 `Network | DOCSIS | Invalid QoS` may be raised by events
 
-Event Class | Description
---- | ---
-[Network \| DOCSIS \| Invalid QoS](../../../event-classes/network/docsis/invalid-qos.md) | dispose
+| Event Class                                                                                     | Description |
+| ----------------------------------------------------------------------------------------------- | ----------- |
+| [Network \| DOCSIS \| Invalid QoS](ref://event-classes-reference/network/docsis/invalid-qos.md) | dispose     |

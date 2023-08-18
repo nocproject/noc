@@ -17,14 +17,14 @@ Check links and local and neighbor router configuration
 
 ## Variables
 
-Variable | Description | Default
---- | --- | ---
-area | OSPF area | {{ no }}
-interface | Interface | {{ no }}
-neighbor | Neighbor's Router ID | {{ no }}
-reason | Adjacency lost reason | {{ no }}
-vrf | VRF | {{ no }}
-description | Interface description | `=InterfaceDS.description`
+| Variable    | Description           | Default                    |
+| ----------- | --------------------- | -------------------------- |
+| area        | OSPF area             | {{ no }}                   |
+| interface   | Interface             | {{ no }}                   |
+| neighbor    | Neighbor's Router ID  | {{ no }}                   |
+| reason      | Adjacency lost reason | {{ no }}                   |
+| vrf         | VRF                   | {{ no }}                   |
+| description | Interface description | `=InterfaceDS.description` |
 
 ## Alarm Correlation
 
@@ -41,22 +41,22 @@ graph TD
 ### Root Causes
 `Network | OSPF | Neighbor Down` alarm may be consequence of
 
-Alarm Class | Description
---- | ---
-[Network \| Link \| Link Down](../link/link-down.md) | Link Down
+| Alarm Class                                          | Description |
+| ---------------------------------------------------- | ----------- |
+| [Network \| Link \| Link Down](../link/link-down.md) | Link Down   |
 
 ## Events
 
 ### Opening Events
 `Network | OSPF | Neighbor Down` may be raised by events
 
-Event Class | Description
---- | ---
-[Network \| OSPF \| Neighbor Down](../../../event-classes/network/ospf/neighbor-down.md) | dispose
+| Event Class                                                                                     | Description |
+| ----------------------------------------------------------------------------------------------- | ----------- |
+| [Network \| OSPF \| Neighbor Down](ref://event-classes-reference/network/ospf/neighbor-down.md) | dispose     |
 
 ### Closing Events
 `Network | OSPF | Neighbor Down` may be cleared by events
 
-Event Class | Description
---- | ---
-[Network \| OSPF \| Neighbor Up](../../../event-classes/network/ospf/neighbor-up.md) | dispose
+| Event Class                                                                                 | Description |
+| ------------------------------------------------------------------------------------------- | ----------- |
+| [Network \| OSPF \| Neighbor Up](ref://event-classes-reference/network/ospf/neighbor-up.md) | dispose     |

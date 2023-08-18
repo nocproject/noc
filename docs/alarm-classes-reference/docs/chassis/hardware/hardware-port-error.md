@@ -13,9 +13,9 @@ Link becomes unstable or is not responding
 
 ## Variables
 
-Variable | Description | Default
---- | --- | ---
-interface | Hardware port | {{ no }}
+| Variable  | Description   | Default  |
+| --------- | ------------- | -------- |
+| interface | Hardware port | {{ no }} |
 
 ## Alarm Correlation
 
@@ -32,22 +32,22 @@ graph TD
 ### Consequences
 `Chassis | Hardware | Hardware Port Error` alarm may be root cause of
 
-Alarm Class | Description
---- | ---
-[Network \| Link \| Link Down](../../network/link/link-down.md) | Hardware Port Error
+| Alarm Class                                                     | Description         |
+| --------------------------------------------------------------- | ------------------- |
+| [Network \| Link \| Link Down](../../network/link/link-down.md) | Hardware Port Error |
 
 ## Events
 
 ### Opening Events
 `Chassis | Hardware | Hardware Port Error` may be raised by events
 
-Event Class | Description
---- | ---
-[Chassis \| Hardware \| Hardware Port Error](../../../event-classes/chassis/hardware/hardware-port-error.md) | dispose
+| Event Class                                                                                                         | Description |
+| ------------------------------------------------------------------------------------------------------------------- | ----------- |
+| [Chassis \| Hardware \| Hardware Port Error](ref://event-classes-reference/chassis/hardware/hardware-port-error.md) | dispose     |
 
 ### Closing Events
 `Chassis | Hardware | Hardware Port Error` may be cleared by events
 
-Event Class | Description
---- | ---
-[Chassis \| Hardware \| Hardware Port Error Recover](../../../event-classes/chassis/hardware/hardware-port-error-recover.md) | dispose
+| Event Class                                                                                                                         | Description |
+| ----------------------------------------------------------------------------------------------------------------------------------- | ----------- |
+| [Chassis \| Hardware \| Hardware Port Error Recover](ref://event-classes-reference/chassis/hardware/hardware-port-error-recover.md) | dispose     |

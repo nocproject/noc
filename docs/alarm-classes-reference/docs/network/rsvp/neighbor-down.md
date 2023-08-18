@@ -17,24 +17,24 @@ Check links and local and neighbor router configuration
 
 ## Variables
 
-Variable | Description | Default
---- | --- | ---
-interface | Interface | {{ no }}
-neighbor | Neighbor's NSAP or name | {{ no }}
-reason | Neighbor lost reason | {{ no }}
+| Variable  | Description             | Default  |
+| --------- | ----------------------- | -------- |
+| interface | Interface               | {{ no }} |
+| neighbor  | Neighbor's NSAP or name | {{ no }} |
+| reason    | Neighbor lost reason    | {{ no }} |
 
 ## Events
 
 ### Opening Events
 `Network | RSVP | Neighbor Down` may be raised by events
 
-Event Class | Description
---- | ---
-[Network \| RSVP \| Neighbor Down](../../../event-classes/network/rsvp/neighbor-down.md) | dispose
+| Event Class                                                                                     | Description |
+| ----------------------------------------------------------------------------------------------- | ----------- |
+| [Network \| RSVP \| Neighbor Down](ref://event-classes-reference/network/rsvp/neighbor-down.md) | dispose     |
 
 ### Closing Events
 `Network | RSVP | Neighbor Down` may be cleared by events
 
-Event Class | Description
---- | ---
-[Network \| RSVP \| Neighbor Up](../../../event-classes/network/rsvp/neighbor-up.md) | dispose
+| Event Class                                                                                 | Description |
+| ------------------------------------------------------------------------------------------- | ----------- |
+| [Network \| RSVP \| Neighbor Up](ref://event-classes-reference/network/rsvp/neighbor-up.md) | dispose     |

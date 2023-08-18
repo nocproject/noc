@@ -15,17 +15,17 @@ Ensure that the CoS fields in the configuration file are set correctly.
 
 ## Variables
 
-Variable | Description | Default
---- | --- | ---
-mac | Cable Modem MAC | {{ no }}
-sid | Cable Modem SID | {{ no }}
-interface | Cable interface | {{ no }}
+| Variable  | Description     | Default  |
+| --------- | --------------- | -------- |
+| mac       | Cable Modem MAC | {{ no }} |
+| sid       | Cable Modem SID | {{ no }} |
+| interface | Cable interface | {{ no }} |
 
 ## Events
 
 ### Opening Events
 `Network | DOCSIS | Invalid CoS` may be raised by events
 
-Event Class | Description
---- | ---
-[Network \| DOCSIS \| Invalid CoS](../../../event-classes/network/docsis/invalid-cos.md) | dispose
+| Event Class                                                                                     | Description |
+| ----------------------------------------------------------------------------------------------- | ----------- |
+| [Network \| DOCSIS \| Invalid CoS](ref://event-classes-reference/network/docsis/invalid-cos.md) | dispose     |

@@ -17,22 +17,22 @@ Check noc-scheduler, noc-sae and noc-activator logs
 
 ## Variables
 
-Variable | Description | Default
---- | --- | ---
-task | Task name | {{ no }}
+| Variable | Description | Default  |
+| -------- | ----------- | -------- |
+| task     | Task name   | {{ no }} |
 
 ## Events
 
 ### Opening Events
 `NOC | Periodic | Periodic Failed` may be raised by events
 
-Event Class | Description
---- | ---
-[NOC \| Periodic \| Periodic Failed](../../../event-classes/noc/periodic/periodic-failed.md) | dispose
+| Event Class                                                                                         | Description |
+| --------------------------------------------------------------------------------------------------- | ----------- |
+| [NOC \| Periodic \| Periodic Failed](ref://event-classes-reference/noc/periodic/periodic-failed.md) | dispose     |
 
 ### Closing Events
 `NOC | Periodic | Periodic Failed` may be cleared by events
 
-Event Class | Description
---- | ---
-[NOC \| Periodic \| Periodic OK](../../../event-classes/noc/periodic/periodic-ok.md) | dispose
+| Event Class                                                                                 | Description |
+| ------------------------------------------------------------------------------------------- | ----------- |
+| [NOC \| Periodic \| Periodic OK](ref://event-classes-reference/noc/periodic/periodic-ok.md) | dispose     |

@@ -11,9 +11,9 @@ uuid: 34ceeb58-db4a-401b-a98b-0a446ad8f4bb
 
 ## Variables
 
-Variable | Description | Default
---- | --- | ---
-node | IP or hostname | {{ no }}
+| Variable | Description    | Default  |
+| -------- | -------------- | -------- |
+| node     | IP or hostname | {{ no }} |
 
 ## Alarm Correlation
 
@@ -30,22 +30,22 @@ graph TD
 ### Consequences
 `Vendor | f5 | BIGIP | Network | Load Balance | Node Down` alarm may be root cause of
 
-Alarm Class | Description
---- | ---
-[Vendor \| f5 \| BIGIP \| Network \| Load Balance \| Service Down](service-down.md) | Node down
+| Alarm Class                                                                         | Description |
+| ----------------------------------------------------------------------------------- | ----------- |
+| [Vendor \| f5 \| BIGIP \| Network \| Load Balance \| Service Down](service-down.md) | Node down   |
 
 ## Events
 
 ### Opening Events
 `Vendor | f5 | BIGIP | Network | Load Balance | Node Down` may be raised by events
 
-Event Class | Description
---- | ---
-[Vendor \| f5 \| BIGIP \| Network \| Load Balance \| Node Down](../../../../../../event-classes/vendor/f5/bigip/network/load-balance/node-down.md) | dispose
+| Event Class                                                                                                                                      | Description |
+| ------------------------------------------------------------------------------------------------------------------------------------------------ | ----------- |
+| [Vendor \| f5 \| BIGIP \| Network \| Load Balance \| Node Down](ref://event-classes-reference/vendor/f5/bigip/network/load-balance/node-down.md) | dispose     |
 
 ### Closing Events
 `Vendor | f5 | BIGIP | Network | Load Balance | Node Down` may be cleared by events
 
-Event Class | Description
---- | ---
-[Vendor \| f5 \| BIGIP \| Network \| Load Balance \| Node Up](../../../../../../event-classes/vendor/f5/bigip/network/load-balance/node-up.md) | dispose
+| Event Class                                                                                                                                  | Description |
+| -------------------------------------------------------------------------------------------------------------------------------------------- | ----------- |
+| [Vendor \| f5 \| BIGIP \| Network \| Load Balance \| Node Up](ref://event-classes-reference/vendor/f5/bigip/network/load-balance/node-up.md) | dispose     |

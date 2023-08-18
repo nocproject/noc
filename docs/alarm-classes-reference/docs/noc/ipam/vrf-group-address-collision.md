@@ -15,19 +15,19 @@ Check address allocation and equipment configuration
 
 ## Variables
 
-Variable | Description | Default
---- | --- | ---
-address | Address | {{ no }}
-vrf | VRF | {{ no }}
-interface | Interface | {{ no }}
-existing_vrf | Existing VRF | {{ no }}
-existing_object | Existing Object | {{ no }}
+| Variable        | Description     | Default  |
+| --------------- | --------------- | -------- |
+| address         | Address         | {{ no }} |
+| vrf             | VRF             | {{ no }} |
+| interface       | Interface       | {{ no }} |
+| existing_vrf    | Existing VRF    | {{ no }} |
+| existing_object | Existing Object | {{ no }} |
 
 ## Events
 
 ### Opening Events
 `NOC | IPAM | VRF Group Address Collision` may be raised by events
 
-Event Class | Description
---- | ---
-[NOC \| IPAM \| VRF Group Address Collision](../../../event-classes/noc/ipam/vrf-group-address-collision.md) | dispose
+| Event Class                                                                                                         | Description |
+| ------------------------------------------------------------------------------------------------------------------- | ----------- |
+| [NOC \| IPAM \| VRF Group Address Collision](ref://event-classes-reference/noc/ipam/vrf-group-address-collision.md) | dispose     |

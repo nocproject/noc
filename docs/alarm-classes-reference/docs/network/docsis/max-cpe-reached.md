@@ -15,19 +15,19 @@ Locate the specified device and place the device on a different cable modem with
 
 ## Variables
 
-Variable | Description | Default
---- | --- | ---
-mac | CPE MAC | {{ no }}
-ip | CPE IP | {{ no }}
-modem_mac | Cable Modem MAC | {{ no }}
-sid | Cable Modem SID | {{ no }}
-interface | Cable interface | {{ no }}
+| Variable  | Description     | Default  |
+| --------- | --------------- | -------- |
+| mac       | CPE MAC         | {{ no }} |
+| ip        | CPE IP          | {{ no }} |
+| modem_mac | Cable Modem MAC | {{ no }} |
+| sid       | Cable Modem SID | {{ no }} |
+| interface | Cable interface | {{ no }} |
 
 ## Events
 
 ### Opening Events
 `Network | DOCSIS | Max CPE Reached` may be raised by events
 
-Event Class | Description
---- | ---
-[Network \| DOCSIS \| Max CPE Reached](../../../event-classes/network/docsis/max-cpe-reached.md) | dispose
+| Event Class                                                                                             | Description |
+| ------------------------------------------------------------------------------------------------------- | ----------- |
+| [Network \| DOCSIS \| Max CPE Reached](ref://event-classes-reference/network/docsis/max-cpe-reached.md) | dispose     |

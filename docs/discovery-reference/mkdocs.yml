@@ -1,0 +1,49 @@
+INHERIT: ../mkdocs-base.yml
+site_name: "NOC: Discovery Reference"
+site_description: >
+        The reference of the NOC discovery
+edit_uri: -/edit/master/docs/discovery-reference/
+site_dir: ../../build/docs/discovery-reference/
+nav:
+        - Overview: index.md
+        - Box Discovery:
+                  - Overview: box/index.md
+                  - Suggest SNMP: box/suggestsnmp.md
+                  - Suggest CLI: box/suggestcli.md
+                  - Profile: box/profile.md
+                  - Version: box/version.md
+                  - Caps: box/caps.md
+                  - Asset: box/asset.md
+                  - Interface: box/interface.md
+                  - VRF: box/vrf.md
+                  - VLAN: box/vlan.md
+                  - SLA: box/sla.md
+                  - ID: box/id.md
+                  - Config: box/config.md
+                  - CPE: box/cpe.md
+                  - Segmentation: box/segmentation.md
+                  - LLDP: box/lldp.md
+                  - BFD: box/bfd.md
+                  - CDP: box/cdp.md
+                  - LACP: box/lacp.md
+                  - OAM: box/oam.md
+                  - FDP: box/fdp.md
+                  - STP: box/stp.md
+                  - REP: box/rep.md
+                  - UDLD: box/udld.md
+                  - Huawei NDP: box/huawei_ndp.md
+                  - NRI: box/nri.md
+                  - HouseKeeping: box/hk.md
+        - Periodic Discovery:
+                  - Overview: periodic/index.md
+                  - interfacestatus: periodic/interfacestatus.md
+                  - uptime: periodic/uptime.md
+                  - mac: periodic/mac.md
+                  - metrics: periodic/metrics.md
+                  - cpestatus: periodic/cpestatus.md
+        - AS Discovery:
+                  - Overview: as/index.md
+                  - Prefix Discovery: as/prefix.md
+        - Segment Discovery:
+                  - Overview: segment/index.md
+                  - MAC Discovery: segment/mac.md

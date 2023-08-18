@@ -15,17 +15,17 @@ Check the modem interface configuration for privacy mandatory, or check for erro
 
 ## Variables
 
-Variable | Description | Default
---- | --- | ---
-mac | Cable Modem MAC | {{ no }}
-sid | Cable Modem SID | {{ no }}
-interface | Cable interface | {{ no }}
+| Variable  | Description     | Default  |
+| --------- | --------------- | -------- |
+| mac       | Cable Modem MAC | {{ no }} |
+| sid       | Cable Modem SID | {{ no }} |
+| interface | Cable interface | {{ no }} |
 
 ## Events
 
 ### Opening Events
 `Network | DOCSIS | BPI Unautorized` may be raised by events
 
-Event Class | Description
---- | ---
-[Network \| DOCSIS \| BPI Unautorized](../../../event-classes/network/docsis/bpi-unautorized.md) | dispose
+| Event Class                                                                                             | Description |
+| ------------------------------------------------------------------------------------------------------- | ----------- |
+| [Network \| DOCSIS \| BPI Unautorized](ref://event-classes-reference/network/docsis/bpi-unautorized.md) | dispose     |

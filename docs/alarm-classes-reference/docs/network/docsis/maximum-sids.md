@@ -15,15 +15,15 @@ Assign the cable modem to another line card.
 
 ## Variables
 
-Variable | Description | Default
---- | --- | ---
-interface | Cable interface | {{ no }}
+| Variable  | Description     | Default  |
+| --------- | --------------- | -------- |
+| interface | Cable interface | {{ no }} |
 
 ## Events
 
 ### Opening Events
 `Network | DOCSIS | Maximum SIDs` may be raised by events
 
-Event Class | Description
---- | ---
-[Network \| DOCSIS \| Maximum SIDs](../../../event-classes/network/docsis/maximum-sids.md) | dispose
+| Event Class                                                                                       | Description |
+| ------------------------------------------------------------------------------------------------- | ----------- |
+| [Network \| DOCSIS \| Maximum SIDs](ref://event-classes-reference/network/docsis/maximum-sids.md) | dispose     |

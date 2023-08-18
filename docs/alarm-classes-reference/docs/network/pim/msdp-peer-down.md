@@ -17,24 +17,24 @@ Check links and local and neighbor router configuration
 
 ## Variables
 
-Variable | Description | Default
---- | --- | ---
-peer | Peer's IP | {{ no }}
-vrf | VRF | {{ no }}
-reason | Reason | {{ no }}
+| Variable | Description | Default  |
+| -------- | ----------- | -------- |
+| peer     | Peer's IP   | {{ no }} |
+| vrf      | VRF         | {{ no }} |
+| reason   | Reason      | {{ no }} |
 
 ## Events
 
 ### Opening Events
 `Network | PIM | MSDP Peer Down` may be raised by events
 
-Event Class | Description
---- | ---
-[Network \| PIM \| MSDP Peer Down](../../../event-classes/network/pim/msdp-peer-down.md) | dispose
+| Event Class                                                                                     | Description |
+| ----------------------------------------------------------------------------------------------- | ----------- |
+| [Network \| PIM \| MSDP Peer Down](ref://event-classes-reference/network/pim/msdp-peer-down.md) | dispose     |
 
 ### Closing Events
 `Network | PIM | MSDP Peer Down` may be cleared by events
 
-Event Class | Description
---- | ---
-[Network \| PIM \| MSDP Peer Up](../../../event-classes/network/pim/msdp-peer-up.md) | dispose
+| Event Class                                                                                 | Description |
+| ------------------------------------------------------------------------------------------- | ----------- |
+| [Network \| PIM \| MSDP Peer Up](ref://event-classes-reference/network/pim/msdp-peer-up.md) | dispose     |
