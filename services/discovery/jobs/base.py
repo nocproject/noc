@@ -233,9 +233,10 @@ class MODiscoveryJob(PeriodicJob):
         discovery_diagnostics = self.load_diagnostic(
             is_box=self.is_box, is_periodic=self.is_periodic
         )
+        self.logger.debug("Updating diagnostics statuses: %s", problems)
         if not discovery_diagnostics:
+            self.logger.info("Discovered diagnostics not found")
             return None
-        self.logger.info("Updating diagnostics statuses")
         now = datetime.datetime.now()
         processed = set()
         # Processed failed diagnostics
