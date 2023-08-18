@@ -1,7 +1,7 @@
 //---------------------------------------------------------------------
 // sa.credentialcheckrule application
 //---------------------------------------------------------------------
-// Copyright (C) 2007-2022 The NOC Project
+// Copyright (C) 2007-2023 The NOC Project
 // See LICENSE for details
 //---------------------------------------------------------------------
 console.debug("Defining NOC.sa.credentialcheckrule.Application");
@@ -151,6 +151,47 @@ Ext.define("NOC.sa.credentialcheckrule.Application", {
                     },
                     renderer: NOC.render.Lookup("auth_profile")
                 },
+            ]
+        },
+        {
+            name: "suggest_protocols",
+            xtype: "gridfield",
+            fieldLabel: __("Topology methods"),
+            columns: [
+                {
+                    text: __("Protocol"),
+                    dataIndex: "protocol",
+                    width: 100,
+                    sortable: false,
+                    editor: {
+                        xtype: "combobox",
+                        store: [
+                            ["TELNET", "TELNET"],
+                            ["SSH", "SSH"],
+                            ["HTTP", "HTTP"],
+                            ["HTTPS", "HTTPS"],
+                            ["SNMPv1", "SNMPv1"],
+                            ["SNMPv2c", "SNMPv2c"]
+
+                        ]
+                    }
+                }
+            ]
+        },
+        {
+            name: "suggest_snmp_oids",
+            xtype: "gridfield",
+            fieldLabel: __("Suggest SNMP OIDs"),
+            columns: [
+                {
+                    text: __("Oid"),
+                    dataIndex: "oid",
+                    width: 300,
+                    sortable: false,
+                    editor: {
+                        xtype: "textfield",
+                    }
+                }
             ]
         },
         {
