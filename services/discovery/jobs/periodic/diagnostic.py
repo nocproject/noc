@@ -128,7 +128,7 @@ class DiagnosticCheck(DiscoveryCheck):
                 )
         if metrics:
             self.register_diagnostic_metrics(metrics)
-        self.object.diagnostic.refresh_diagnostics()
+        # self.object.diagnostic.refresh_diagnostics()
         self.logger.debug("Object Diagnostics: %s", self.object.diagnostics)
         # Fire workflow event diagnostic ?
 
