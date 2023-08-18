@@ -32,7 +32,7 @@ class InterfaceMACsStatDS(BaseDataSource):
     name = "interfacemacsstatds"
 
     fields = [
-        FieldInfo(name="managed_object_id", type=FieldType.UINT),
+        FieldInfo(name="managed_object_id", type=FieldType.UINT64),
         FieldInfo(name="interface_name"),
         FieldInfo(name="mac_count", type=FieldType.UINT),
     ]
