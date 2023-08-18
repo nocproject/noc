@@ -9,7 +9,7 @@
 from typing import List, Iterable, Dict
 
 # NOC modules
-from .base import Check, ObjectChecker, CheckResult, SNMPCredentialSet
+from .base import Check, ObjectChecker, CheckResult, CredentialItem
 from ..script.credentialchecker import CredentialChecker as CredentialCheckerScript, SNMPCredential
 from ..script.scheme import Protocol
 
@@ -49,17 +49,18 @@ class SNMPProtocolChecker(ObjectChecker):
             if c not in self.PROTO_CHECK_MAP:
                 continue
             protocols += [self.PROTO_CHECK_MAP[c]]
-        action = None
+        credentials = None
         r = {}
         for proto_r in cc.iter_result(protocols):
             if proto_r.protocol not in protocols:
                 continue
             r[proto_r.protocol] = proto_r
-            if not action and proto_r.status and proto_r.credential:
-                action = SNMPCredentialSet(
-                    snmp_ro=proto_r.credential.snmp_ro, snmp_rw=proto_r.credential.snmp_rw
-                )
-            if action and len(protocols) == len(r):
+            if not credentials and proto_r.status and proto_r.credential:
+                credentials = [
+                    CredentialItem(field="snmp_ro", value=proto_r.credential.snmp_ro),
+                    CredentialItem(field="snmp_rw", value=proto_r.credential.snmp_rw),
+                ]
+            if credentials and len(protocols) == len(r):
                 break
         for x in r.values():
             yield CheckResult(
@@ -67,5 +68,5 @@ class SNMPProtocolChecker(ObjectChecker):
                 status=x.status,
                 error=x.error,
                 skipped=x.skipped,
-                action=action,
+                credentials=credentials,
             )

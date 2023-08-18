@@ -226,6 +226,9 @@ class DiagnosticHub(object):
     def __exit__(self, exc_type, exc_val, exc_tb):
         self.bulk_mode = False
         self.sync_diagnostics()
+        # Hack for refresh diagnostic Hub on object
+        # For fix it may be use set __diagnostics to object diagnostic
+        self.__object.diagnostic.__diagnostics = None
 
     def __iter__(self) -> Iterable[DiagnosticItem]:
         if self.__diagnostics is None:
