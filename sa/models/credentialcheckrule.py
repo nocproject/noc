@@ -17,12 +17,19 @@ from mongoengine.fields import (
     ListField,
     BooleanField,
 )
+from mongoengine.errors import ValidationError
 
 # NOC modules
 from noc.core.mongo.fields import ForeignKeyField
 from noc.core.script.scheme import Protocol
+from noc.core.validators import is_oid
 from noc.main.models.label import Label
 from noc.sa.models.authprofile import AuthProfile
+
+
+def check_model(oid):
+    if not is_oid(oid):
+        raise ValidationError(f"Bad SNMP OID value: {oid}")
 
 
 class Match(EmbeddedDocument):
@@ -72,7 +79,7 @@ class CredentialCheckRule(Document):
         StringField(choices=[p.name for p in Protocol if p.config.enable_suggest])
     )
     # SNMP OID's for check
-    suggest_snmp_oids = ListField(StringField())
+    suggest_snmp_oids = ListField(StringField(validation=check_model))
 
     def __str__(self):
         return self.name
