@@ -393,11 +393,11 @@ class DiagnosticHub(object):
             d_name = d_new.diagnostic
             d_current = self.get_object_diagnostic(d_name)
             # Diff
-            if d_current == d_new:
+            if d_current == d_new and d_name in self.__object.diagnostics:
                 self.logger.debug("[%s] Diagnostic Same, next.", d_name)
                 continue
             self.logger.info("[%s] Update object diagnostic", d_name)
-            if d_current.state != d_new.state and not self.__object.diagnostics:
+            if d_current.state != d_new.state:
                 if (
                     d_current.state == DiagnosticState.failed
                     or d_new.state == DiagnosticState.failed
