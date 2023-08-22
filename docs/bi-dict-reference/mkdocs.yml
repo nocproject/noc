@@ -1,0 +1,20 @@
+INHERIT: ../mkdocs-base.yml
+site_name: "NOC: BI Dictionaries Reference"
+site_description: >
+        The reference of the NOC BI dictionaries
+edit_uri: -/edit/master/docs/bi-dict-reference/
+site_dir: ../../build/docs/bi-dict-reference/
+nav:
+        - Overview: index.md
+        - administrativedomain: administrativedomain.md
+        - alarmclass: alarmclass.md
+        - container: container.md
+        - interfacedescription: interfacedescription.md
+        - interfaceprofile: interfaceprofile.md
+        - managedobject: managedobject.md
+        - networksegment: networksegment.md
+        - platform: platform.md
+        - pool: pool.md
+        - profile: profile.md
+        - vendor: vendor.md
+        - version: version.md

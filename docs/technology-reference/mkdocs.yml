@@ -1,0 +1,10 @@
+INHERIT: ../mkdocs-base.yml
+site_name: "NOC: Technologies Reference"
+site_description: >
+        The reference of the NOC technologies
+edit_uri: -/edit/master/docs/technology-reference/
+site_dir: ../../build/docs/technology-reference/
+nav:
+        - Overview: index.md
+        - Group: group.md
+        - "Network | CGNAT Termination": Network/cgnat-termination.md

@@ -1,0 +1,8 @@
+INHERIT: ../mkdocs-base.yml
+site_name: "NOC: License"
+site_description: >
+        The NOC license
+edit_uri: -/edit/master/docs/license/
+site_dir: ../../build/docs/license/
+nav:
+        - License: index.md

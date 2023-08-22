@@ -1,0 +1,20 @@
+INHERIT: ../mkdocs-base.yml
+site_name: "NOC: BI Models Reference"
+site_description: >
+        The reference of the NOC BI models
+edit_uri: -/edit/master/docs/bi-models-reference/
+site_dir: ../../build/docs/bi-models-reference/
+nav:
+        - Overview: index.md
+        - administrativedomain: administrativedomain.md
+        - alarmclass: alarmclass.md
+        - container: container.md
+        - interfacedescription: interfacedescription.md
+        - interfaceprofile: interfaceprofile.md
+        - managedobject: managedobject.md
+        - networksegment: networksegment.md
+        - platform: platform.md
+        - pool: pool.md
+        - profile: profile.md
+        - vendor: vendor.md
+        - version: version.md

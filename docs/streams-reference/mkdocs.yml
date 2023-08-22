@@ -1,0 +1,15 @@
+INHERIT: ../mkdocs-base.yml
+site_name: "NOC: Streams Reference"
+site_description: >
+        The reference of the NOC streams
+edit_uri: -/edit/master/docs/streams-reference/
+site_dir: ../../build/docs/streams-reference/
+nav:
+        - Overview: index.md
+        - ch.TABLE: ch.md
+        - dispose.POOL: dispose.md
+        - events.POOL: events.md
+        - kafkasender: kafkasender.md
+        - metrics: metrics.md
+        - jobs: jobs.md
+        - mx: mx.md

@@ -1,0 +1,11 @@
+INHERIT: ../mkdocs-base.yml
+site_name: "NOC: Handlers Reference"
+site_description: >
+        The reference of the NOC handlers
+edit_uri: -/edit/master/docs/handlers-reference/
+site_dir: ../../build/docs/handlers-reference/
+nav:
+        - Handlers Overview: index.md
+        - Config Filter: config-filter.md
+        - Config Diff Filter: config-diff-filter.md
+        - Window Function: window-function.md

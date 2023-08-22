@@ -1,0 +1,13 @@
+INHERIT: ../mkdocs-base.yml
+site_name: "NOC: ConfDB Reference"
+site_description: >
+        The reference of the NOC ConfDB
+edit_uri: -/edit/master/docs/confdb-reference/
+site_dir: ../../build/docs/confdb-reference/
+nav:
+        - Overview: index.md
+        - Config Fetching: fetching.md
+        - Storage: storage.md
+        - Tokenizer: tokenizer.md
+        - Normalizer: normalizer.md
+        - Query: query.md

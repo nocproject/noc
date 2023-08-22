@@ -1,0 +1,8 @@
+INHERIT: ../mkdocs-base.yml
+site_name: "NOC: Loaing FIAS Data Howto"
+site_description: >
+        The process of loading FIAS address data
+edit_uri: -/edit/master/docs/loading-fias-howto/
+site_dir: ../../build/docs/loading-fias-howto/
+nav:
+        - Overview: index.md

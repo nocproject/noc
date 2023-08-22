@@ -1,0 +1,8 @@
+INHERIT: ../mkdocs-base.yml
+site_name: "NOC: Glossary"
+site_description: >
+        The NOC glossary
+edit_uri: -/edit/master/docs/glossary/
+site_dir: ../../build/docs/glossary/
+nav:
+        - Glossary: index.md
