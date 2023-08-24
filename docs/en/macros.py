@@ -14,6 +14,7 @@ import logging
 
 ROOT = os.getcwd()
 PROFILES_ROOT = os.path.join(ROOT, "sa", "profiles")
+DOC_ROOT = os.path.join(ROOT, "docs", "en", "docs")
 
 logger = logging.getLogger("mkdocs")
 logger.info("Initializing NOC macroses")
@@ -26,14 +27,13 @@ def define_env(env):
 
     def load_scripts() -> None:
         nonlocal scripts
-
         if scripts:
             return
         # Load list of all scripts
         scripts = list(
             sorted(
                 x[:-3]
-                for x in os.listdir(os.path.join(doc_root, "dev", "reference", "scripts"))
+                for x in os.listdir(os.path.join(DOC_ROOT, "dev", "reference", "scripts"))
                 if x.endswith(".md") and not x.startswith(".")
             )
         )
@@ -136,4 +136,3 @@ def define_env(env):
     scripts = []  # Ordered list of scripts
     platforms = defaultdict(set)  # vendor -> {platform}
     script_profiles = defaultdict(set)  # script -> {profile}
-    doc_root = "docs/en/docs"
