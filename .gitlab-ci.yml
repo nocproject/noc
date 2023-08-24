@@ -202,9 +202,10 @@ py:test:
 build:Docs:ru:
   stage: Build
   environment: docs
-  image: registry.getnoc.com/infrastructure/mkdocs:master
+  image: python:3.11-slim
   script:
     - set -x
+    - pip3 install -r .requirements/docs.txt
     - mkdocs build --strict --config-file=docs/ru/mkdocs.yml
   tags:
     - docker
@@ -221,9 +222,10 @@ build:Docs:ru:
 build:Docs:en:
   stage: Build
   environment: docs
-  image: registry.getnoc.com/infrastructure/mkdocs:master
+  image: python:3.11-slim
   script:
     - set -x
+    - pip3 install -r .requirements/docs.txt
     - mkdocs build --strict --config-file=docs/en/mkdocs.yml
   tags:
     - docker
