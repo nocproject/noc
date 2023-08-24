@@ -218,6 +218,7 @@ build:Docs:ru:
       changes:
         - "docs/ru/*"
         - "docs/ru/**/*"
+        - ".requirements/docs.txt"
 
 build:Docs:en:
   stage: Build
@@ -238,6 +239,7 @@ build:Docs:en:
       changes:
         - "docs/en/*"
         - "docs/en/**/*"
+        - ".requirements/docs.txt"
 
 #Build Image section
 build:Release Image:
