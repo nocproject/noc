@@ -199,28 +199,7 @@ py:test:
     expire_in: 7 days
 
 # Build Docs section
-build:Docs:ru:
-  stage: Build
-  environment: docs
-  image: python:3.11-slim
-  script:
-    - set -x
-    - pip3 install -r .requirements/docs.txt
-    - mkdocs build --strict --config-file=docs/ru/mkdocs.yml
-  tags:
-    - docker
-  artifacts:
-    paths:
-      - build/docs/ru
-    expire_in: 2 hours
-  rules:
-    - if: ('$CI_PIPELINE_SOURCE == "merge_request_event"' || '$CI_COMMIT_BRANCH == "master"')
-      changes:
-        - "docs/ru/*"
-        - "docs/ru/**/*"
-        - ".requirements/docs.txt"
-
-build:Docs:en:
+build:Docs:
   stage: Build
   environment: docs
   image: python:3.11-slim
@@ -228,11 +207,13 @@ build:Docs:en:
     - set -x
     - pip3 install -r .requirements/docs.txt
     - mkdocs build --strict --config-file=docs/en/mkdocs.yml
+    - mkdocs build --strict --config-file=docs/ru/mkdocs.yml
   tags:
     - docker
   artifacts:
     paths:
       - build/docs/en
+      - build/docs/ru
     expire_in: 2 hours
   rules:
     - if: ('$CI_PIPELINE_SOURCE == "merge_request_event"' || '$CI_COMMIT_BRANCH == "master"')
