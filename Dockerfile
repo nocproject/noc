@@ -79,7 +79,7 @@ RUN \
     -r ./.requirements/dev.txt\
     -r ./.requirements/lint.txt\
     -r ./.requirements/test.txt\
-    -r ./.requiremets/docs.txt\
+    -r ./.requirements/docs.txt\
     && rm -rf /var/lib/apt/lists/*
 
 #
