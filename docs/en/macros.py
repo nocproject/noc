@@ -11,6 +11,9 @@ from collections import defaultdict
 import json
 import glob
 
+ROOT = os.getcwd()
+PROFILES_ROOT = os.path.join(ROOT, "sa", "profiles")
+
 
 def define_env(env):
     YES = ":material-check:"
@@ -50,7 +53,7 @@ def define_env(env):
         vendor, name = profile.split(".")
         supported = {
             f[:-3]
-            for f in os.listdir(os.path.join("sa", "profiles", vendor, name))
+            for f in os.listdir(os.path.join(PROFILES_ROOT, vendor, name))
             if f.endswith(".py")
         }
         # Render

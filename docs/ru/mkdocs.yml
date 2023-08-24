@@ -1090,6 +1090,7 @@ plugins:
   - search
   - macros:
       module_name: macros
+      on_error_fail: true
 extra:
   alternate:
     - name: Английский
@@ -1104,6 +1105,6 @@ extra:
   tab2: ":material-arrow-right: :material-arrow-right:"
   tab3: ":material-arrow-right: :material-arrow-right: :material-arrow-right:"
   complex: ":material-arrow-down:"
-  yes: ":material-check:"
-  no: ":material-close:"
+  "yes": ":material-check:"
+  "no": ":material-close:"
   wbr: "<wbr>"
