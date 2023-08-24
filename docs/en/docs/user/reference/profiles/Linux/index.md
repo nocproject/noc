@@ -8,10 +8,7 @@ network equipment.
 
 ## Supported Profiles
 
-- [Linux.Alt](Linux.Alt.md)
-- [Linux.Astra](Linux.Astra.md)
 - [Linux.Debian](Linux.Debian.md)
-- [Linux.Openwrt](Linux.Openwrt.md)
 - [Linux.RHEL](Linux.RHEL.md)
 
 ## Supported Platforms

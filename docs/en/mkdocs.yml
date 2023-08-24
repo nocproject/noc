@@ -297,10 +297,7 @@ nav:
                   - Linksys.VoIP: user/reference/profiles/Linksys/Linksys.VoIP.md
               - Linux:
                   - Overview: user/reference/profiles/Linux/index.md
-                  - Linux.Alt: user/reference/profiles/Linux/Linux.Alt.md
-                  - Linux.Astra: user/reference/profiles/Linux/Linux.Astra.md
                   - Linux.Debian: user/reference/profiles/Linux/Linux.Debian.md
-                  - Linux.Openwrt: user/reference/profiles/Linux/Linux.Openwrt.md
                   - Linux.RHEL: user/reference/profiles/Linux/Linux.RHEL.md
               - Lucent:
                   - Overview: user/reference/profiles/Lucent/index.md
@@ -2432,6 +2429,7 @@ plugins:
   - search
   - macros:
       module_name: macros
+      on_error_fail: true
 extra:
   alternate:
     - name: English
@@ -2444,6 +2442,6 @@ extra:
   tab2: ":material-arrow-right: :material-arrow-right:"
   tab3: ":material-arrow-right: :material-arrow-right: :material-arrow-right:"
   complex: ":material-arrow-down:"
-  yes: ":material-check:"
-  no: ":material-close:"
+  "yes": ":material-check:"
+  "no": ":material-close:"
   wbr: "<wbr>"
