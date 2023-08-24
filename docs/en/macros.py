@@ -10,9 +10,14 @@ import os
 from collections import defaultdict
 import json
 import glob
+import logging
 
 ROOT = os.getcwd()
 PROFILES_ROOT = os.path.join(ROOT, "sa", "profiles")
+
+logger = logging.getLogger("mkdocs")
+logger.info("Initializing NOC macroses")
+logger.info("Current directory: %s", ROOT)
 
 
 def define_env(env):
