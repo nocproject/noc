@@ -202,12 +202,14 @@ py:test:
 build:Docs:
   stage: Build
   environment: docs
-  image: python:3.11-slim
+  image: python:3.11-bullseye
   script:
-    - set -x
+    - set -e -x
+    - pwd
+    - ls
     - pip3 install -r .requirements/docs.txt
     - mkdocs build --strict --config-file=docs/en/mkdocs.yml
-    - mkdocs build --strict --config-file=docs/ru/mkdocs.yml
+    - mkdocs build --config-file=docs/ru/mkdocs.yml
   tags:
     - docker
   artifacts:
@@ -218,8 +220,8 @@ build:Docs:
   rules:
     - if: ('$CI_PIPELINE_SOURCE == "merge_request_event"' || '$CI_COMMIT_BRANCH == "master"')
       changes:
-        - "docs/en/*"
-        - "docs/en/**/*"
+        - "docs/*"
+        - "docs/**/*"
         - ".requirements/docs.txt"
 
 #Build Image section
