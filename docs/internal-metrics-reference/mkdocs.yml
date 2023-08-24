@@ -1,0 +1,8 @@
+INHERIT: ../mkdocs-base.yml
+site_name: "NOC: Internal Metrics Reference"
+site_description: >
+        The reference of the NOC internal metrics
+edit_uri: -/edit/master/docs/internal-metrics-reference/
+site_dir: ../../build/docs/internal-metrics-reference/
+nav:
+        - Internal Metrics: index.md

@@ -1,11 +1,5 @@
 nav:
-        - Admin's Guide:
-                  - Reference:
-                            - Overview: admin/reference/index.md
-                            - Internal Metrics: admin/reference/internal-metrics.md
        - Developer's Guide:
-                  - How-to Guides:
-                            - How to Share Collections: dev/howto/sharing-collections/index.md
                   - Background:
                             - Connection Restrictions: dev/background/connection-restrictions/index.md
                             - Connection Type Restrictions: dev/background/connection-type-restrictions/index.md
@@ -16,9 +10,6 @@ nav:
                                       - ObjectModel Tags: dev/reference/object-model/tags.md
                             - Inventory Protocols: dev/reference/inventory-protocols.md
                             - Alarm Reference Format: dev/reference/alarm-reference-format.md
-                            - Tools:
-                                      - black: dev/reference/tools/black.md
-                                      - flake8: dev/reference/tools/flake8.md
         - About:
                   - Contributing: about/contributing.md
                   - Translations: about/translations.md

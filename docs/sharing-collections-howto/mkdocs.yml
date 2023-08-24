@@ -1,0 +1,8 @@
+INHERIT: ../mkdocs-base.yml
+site_name: "NOC: How to Share Collections"
+site_description: >
+        How to share the NOC collections
+edit_uri: -/edit/master/docs/sharing-collections-howto/
+site_dir: ../../build/docs/sharing-collections-howto/
+nav:
+        - How To Share Collections: index.md
