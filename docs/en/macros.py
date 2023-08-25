@@ -1,7 +1,7 @@
 # ----------------------------------------------------------------------
 # Documentation macroses
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2020 The NOC Project
+# Copyright (C) 2007-2023 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -15,10 +15,15 @@ import logging
 ROOT = os.getcwd()
 PROFILES_ROOT = os.path.join(ROOT, "sa", "profiles")
 DOC_ROOT = os.path.join(ROOT, "docs", "en", "docs")
+COLLECTIONS_ROOT = os.path.join(ROOT, "collections")
+GITLAB_ROOT = "https://code.getnoc.com/noc/noc"
 
 logger = logging.getLogger("mkdocs")
-logger.info("Initializing NOC macroses")
-logger.info("Current directory: %s", ROOT)
+logger.info("[NOC] - Initializing NOC macroses")
+logger.info("[NOC] - Current directory: %s", ROOT)
+logger.info("[NOC] - Profiles root: %s", PROFILES_ROOT)
+logger.info("[NOC] - Docs root: %s", DOC_ROOT)
+logger.info("[NOC] - Collections root: %s", COLLECTIONS_ROOT)
 
 
 def define_env(env):
@@ -47,7 +52,7 @@ def define_env(env):
         :param iid:
         :return:
         """
-        return f"[MR{iid}](https://code.getnoc.com/noc/noc/merge_requests/{iid})"
+        return f"[MR{iid}]({GITLAB_ROOT}/merge_requests/{iid})"
 
     @env.macro
     def supported_scripts(profile: str) -> str:
@@ -56,17 +61,12 @@ def define_env(env):
         load_scripts()
         # Get profile scripts
         vendor, name = profile.split(".")
-        supported = {
-            f[:-3]
-            for f in os.listdir(os.path.join(PROFILES_ROOT, vendor, name))
-            if f.endswith(".py")
-        }
+        path = os.path.join(PROFILES_ROOT, vendor, name)
+        check_exists(path)
+        supported = {f[:-3] for f in os.listdir(path) if f.endswith(".py")}
         # Render
         for script in scripts:
-            if script in supported:
-                mark = YES
-            else:
-                mark = NO
+            mark = YES if script in supported else NO
             r += [f"[{script}](../../../../dev/reference/scripts/{script}.md) | {mark}"]
         r += [""]
         return "\n".join(r)
@@ -77,7 +77,7 @@ def define_env(env):
 
         if not platforms:
             # Load platforms
-            for root, _, files in os.walk("collections/inv.platforms"):
+            for root, _, files in os.walk(os.path.join(COLLECTIONS_ROOT, "inv.platforms")):
                 for fn in files:
                     if not fn.endswith(".json") or fn.startswith("."):
                         continue
@@ -132,6 +132,15 @@ def define_env(env):
                 "",
             ]
         return "\n".join(r)
+
+    def check_exists(path: str):
+        if os.path.exists(path):
+            return
+        cwd = os.getcwd()
+        logger.error("[NOC] Path doesn't exists: %s", path)
+        logger.error("[NOC] Current directory: %s", cwd)
+        logger.error("[NOC] Current directory list: %s", ", ".join(os.listdir(cwd)))
+        raise FileNotFoundError(path)
 
     scripts = []  # Ordered list of scripts
     platforms = defaultdict(set)  # vendor -> {platform}
