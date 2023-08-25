@@ -17,19 +17,28 @@
 	"customizations": {
 		"vscode": {
 			"settings": {
-				"python.formatting.blackPath": "/usr/local/bin/black",
-				"python.formatting.provider": "black",
 				"python.pythonPath": "/usr/local/bin/python",
 				"[python]": {
+					"editor.defaultFormatter": "ms-python.black-formatter",
+					"black-formatter.path": "/usr/local/bin/black",
 					"editor.formatOnSave": true,
 					"editor.codeActionsOnSave": {
 						"source.fixAll": true
-					}
+					},
+					"ruff.path": "/usr/local/bin/ruff"
+				},
+				"[yaml]": {
+					"editor.defaultFormatter": "redhat.vscode-yaml",
+					"editor.formatOnSave": true,
+					"editor.autoIndent": "advanced",
+					"editor.tabSize": 2,
+					"editor.detectIndentation": false
 				}
 			},
 			// Add the IDs of extensions you want installed when the container is created.
 			"extensions": [
 				"ms-python.python",
+				"ms-python.black-formatter",
 				"yzhang.markdown-all-in-one",
 				"ms-azuretools.vscode-docker",
 				"be5invis.toml",
