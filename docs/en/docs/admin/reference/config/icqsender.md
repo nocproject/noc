@@ -1,6 +1,6 @@
 # [icqsender] section
 
-[Icqsender](../services/icqsender) service configuration
+[Icqsender](../services/icqsender/index.md) service configuration
 
 ## token
 

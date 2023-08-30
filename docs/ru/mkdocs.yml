@@ -614,7 +614,7 @@ nav:
       - How-to Guides:
           - Overview: admin/howto/index.md
           - Deploy NOC: admin/howto/deploy-noc/deploy-noc.md
-          - Discovery devices from network: admin/howto/add-from-network-scan/network-scan.md 
+          - Discovery devices from network: admin/howto/add-from-network-scan/network-scan.md
           - Monitoring NOC: admin/howto/monitoring/monitoring-noc.md
           - Respond to alerts: admin/howto/respond-to-alerts/respond-to-alerts.md
           - Handbook alerts noc: admin/howto/respond-to-alerts/handbook-alerts-noc/ConsulServicesCountDecrease.md
@@ -843,28 +843,28 @@ nav:
       - Merge Request Labels: dev/mr-labels.md
       - API:
           - Datastream:
-            - dev/api/datastream/index.md
-            - address: dev/api/datastream/address.md
-            - administrativedomain: dev/api/datastream/administrativedomain.md
-            - alarm: dev/api/datastream/alarm.md
-            - cfgping: dev/api/datastream/cfgping.md
-            - cfgsyslog: dev/api/datastream/cfgsyslog.md
-            - cfgtrap: dev/api/datastream/cfgtrap.md
-            - dnszone: dev/api/datastream/dnszone.md
-            - managedobject: dev/api/datastream/managedobject.md
-            - dnszone: dev/api/datastream/dnszone.md
-            - prefix: dev/api/datastream/prefix.md
-            - resourcegroup: dev/api/datastream/resourcegroup.md
-            - vrf: dev/api/datastream/vrf.md
+              - dev/api/datastream/index.md
+              - address: dev/api/datastream/address.md
+              - administrativedomain: dev/api/datastream/administrativedomain.md
+              - alarm: dev/api/datastream/alarm.md
+              - cfgping: dev/api/datastream/cfgping.md
+              - cfgsyslog: dev/api/datastream/cfgsyslog.md
+              - cfgtrap: dev/api/datastream/cfgtrap.md
+              - dnszone: dev/api/datastream/dnszone.md
+              - managedobject: dev/api/datastream/managedobject.md
+              - dnszone: dev/api/datastream/dnszone.md
+              - prefix: dev/api/datastream/prefix.md
+              - resourcegroup: dev/api/datastream/resourcegroup.md
+              - vrf: dev/api/datastream/vrf.md
           - NBI:
-            - dev/api/nbi/index.md
-            - config: dev/api/nbi/config.md
-            - configrevisions: dev/api/nbi/configrevisions.md
-            - getmappings: dev/api/nbi/getmappings.md
-            - objectmetrics: dev/api/nbi/objectmetrics.md
-            - objectstatus: dev/api/nbi/objectstatus.md
-            - path: dev/api/nbi/path.md
-            - telemetry: dev/api/nbi/telemetry.md
+              - dev/api/nbi/index.md
+              - config: dev/api/nbi/config.md
+              - configrevisions: dev/api/nbi/configrevisions.md
+              - getmappings: dev/api/nbi/getmappings.md
+              - objectmetrics: dev/api/nbi/objectmetrics.md
+              - objectstatus: dev/api/nbi/objectstatus.md
+              - path: dev/api/nbi/path.md
+              - telemetry: dev/api/nbi/telemetry.md
           - Streams:
               - dev/api/streams/index.md
               - ch.TABLE: dev/api/streams/ch.md
@@ -905,13 +905,13 @@ nav:
           - SA Profile: dev/sa/sa-profiles.md
       - Handlers:
           - dev/handlers/index.md
-          - Address Resolver:  dev/handlers/address-resolver.md
+          - Address Resolver: dev/handlers/address-resolver.md
           - Config Filter: dev/handlers/config-filter.md
           - Config Diff Filter: dev/handlers/config-diff-filter.md
           - Config Validation: dev/handlers/config-validation.md
           - DS Filter: dev/handlers/ds-filter.md
           - Housekeeper: dev/handlers/housekeeper.md
-          - Interface Description:  dev/handlers/ifacedescription.md
+          - Interface Description: dev/handlers/ifacedescription.md
           - Удаление лишних данных из конфигурационного файла MO: dev/handlers/howto-delete-config-data.md
           - Storm Protection: dev/handlers/storm_protection.md
       - Data Models: dev/data-models/index.md
@@ -1085,43 +1085,26 @@ markdown_extensions:
       custom_fences:
         - name: mermaid
           class: mermaid
-          format: !!python/name:mermaid2.fence_mermaid
+          format: !!python/name:pymdownx.superfences.fence_code_format
 plugins:
   - search
-  - glightbox
-  - mermaid2:
-      arguments:
-        theme: dark
   - macros:
       module_name: macros
-  - mkdocstrings:
-      default_handler: python
-      handlers:
-        python:
-          setup_commands:
-              - import sys
-              - sys.path.insert(0, '..')
-              - from unittest.mock import MagicMock as mock
-              - sys.modules["noc.speedup.ber"] = mock()
-          rendering:
-            show_source: false
-          selection:
-            filters:
-              - "!^__"  # exlude all members starting with _
+      on_error_fail: true
 extra:
   alternate:
-      - name: Английский
-        link: /master/en/
-        lang: en
-      - name: Русский
-        link: /master/ru/
-        lang: ru
+    - name: Английский
+      link: /master/en/
+      lang: en
+    - name: Русский
+      link: /master/ru/
+      lang: ru
   tags:
-      background: background
-  "tab": ":material-arrow-right:"
-  "tab2": ":material-arrow-right: :material-arrow-right:"
-  "tab3": ":material-arrow-right: :material-arrow-right: :material-arrow-right:"
-  "complex": ":material-arrow-down:"
+    background: background
+  tab: ":material-arrow-right:"
+  tab2: ":material-arrow-right: :material-arrow-right:"
+  tab3: ":material-arrow-right: :material-arrow-right: :material-arrow-right:"
+  complex: ":material-arrow-down:"
   "yes": ":material-check:"
   "no": ":material-close:"
-  "wbr": "<wbr>"
+  wbr: "<wbr>"
