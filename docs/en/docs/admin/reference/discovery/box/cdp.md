@@ -6,6 +6,6 @@
 
 ## Requirements
 
-* [get_cdp_neighbors](../../../../dev/reference/scripts/get_cdp_neighbors)
+* [get_cdp_neighbors](../../../../dev/reference/scripts/get_cdp_neighbors.md)
 * [Network CDP caps](../../../../user/reference/caps/network/cdp.md)
 * CDP check is enabled in [Managed Object Profile](../../../../user/reference/concepts/managed-object-profile/index.md)

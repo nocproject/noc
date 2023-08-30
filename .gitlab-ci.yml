@@ -199,43 +199,28 @@ py:test:
     expire_in: 7 days
 
 # Build Docs section
-build:Docs:ru:
+build:Docs:
   stage: Build
   environment: docs
-  image: registry.getnoc.com/infrastructure/mkdocs:master
+  image: python:3.11-bullseye
   script:
-    - set -x
-    - mkdocs build --strict --config-file=docs/ru/mkdocs.yml
-  tags:
-    - docker
-  artifacts:
-    paths:
-      - build/docs/ru
-    expire_in: 2 hours
-  rules:
-    - if: ('$CI_PIPELINE_SOURCE == "merge_request_event"' || '$CI_COMMIT_BRANCH == "master"')
-      changes:
-        - "docs/ru/*"
-        - "docs/ru/**/*"
-
-build:Docs:en:
-  stage: Build
-  environment: docs
-  image: registry.getnoc.com/infrastructure/mkdocs:master
-  script:
-    - set -x
+    - set -e -x
+    - pip3 install -r .requirements/docs.txt
     - mkdocs build --strict --config-file=docs/en/mkdocs.yml
+    - mkdocs build --config-file=docs/ru/mkdocs.yml
   tags:
     - docker
   artifacts:
     paths:
       - build/docs/en
+      - build/docs/ru
     expire_in: 2 hours
   rules:
     - if: ('$CI_PIPELINE_SOURCE == "merge_request_event"' || '$CI_COMMIT_BRANCH == "master"')
       changes:
-        - "docs/en/*"
-        - "docs/en/**/*"
+        - "docs/*"
+        - "docs/**/*"
+        - ".requirements/docs.txt"
 
 #Build Image section
 build:Release Image:
