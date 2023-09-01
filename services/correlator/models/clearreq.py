@@ -15,5 +15,5 @@ from pydantic import BaseModel, Field
 class ClearRequest(BaseModel):
     op: Literal["clear"] = Field(None, alias="$op")
     reference: str
-    timestamp: Optional[str]
+    timestamp: Optional[str] = None
     message: Optional[str] = None
