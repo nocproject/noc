@@ -137,3 +137,13 @@ class Script(BaseScript):
         l2tp = self.snmp.get("1.3.6.1.4.1.2636.3.49.1.1.1.1.1.0")
         if is_int(l2tp) and int(l2tp) > 0:
             caps["BRAS | L2TP"] = True
+
+        # jnxVirtualChassisMemberRole
+        role = {1: "master", 2: "backup", 3: "linecard"}
+        vs = {}
+        for v, r in self.snmp.getnext("1.3.6.1.4.1.2636.3.40.1.4.1.1.1.3", bulk=False):
+            oid = v.split(".")[-1]
+            vs[oid] = role[r]
+        if vs and len(vs) > 1:
+            caps["Stack | Members"] = len(vs)
+            caps["Stack | Member Ids"] = " | ".join([str(v) for v in vs])
