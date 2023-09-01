@@ -17,3 +17,19 @@
       isDefault: False  # yamllint disable-line rule:truthy
       editable: False  # yamllint disable-line rule:truthy
   with_items: '{{ groups["svc-grafana-exec"] }}'
+
+- name: call grafana for JsonDS
+  include_role:
+    name: grafana
+    tasks_from: datasources
+    apply:
+      delegate_to: "{{ item }}"
+  vars:
+    grafana_datasource:
+      name: NocJSONDS
+      type: simpod-json-datasource
+      access: direct
+      url: "https://{{ noc_web_host }}/api/grafanads/grafanajsonds"
+      isDefault: False  # yamllint disable-line rule:truthy
+      editable: False  # yamllint disable-line rule:truthy
+  with_items: '{{ groups["svc-grafana-exec"] }}'
