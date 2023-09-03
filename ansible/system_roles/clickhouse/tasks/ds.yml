@@ -12,7 +12,7 @@
       url: "http://{{ ch_host }}:{{ ch_port }}"
       access: proxy
       isDefault: True  # yamllint disable-line rule:truthy
-      editable: False # yamllint disable-line rule:truthy
+      editable: False  # yamllint disable-line rule:truthy
       database: "{{ clickhouse_db }}"
       basicAuth: True  # yamllint disable-line rule:truthy
       basicAuthUser: "readonly"
