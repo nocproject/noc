@@ -27,6 +27,13 @@ file:
     group: root
     filetype: file
     contains: []
+  {{ grafana_provisioning_dir }}/datasources/NocJSONDS.yml:
+    exists: true
+    mode: "0644"
+    owner: root
+    group: root
+    filetype: file
+    contains: []
 package:
   grafana:
     installed: true
@@ -51,9 +58,6 @@ user:
 group:
   grafana:
     exists: true
-process:
-  grafana-server:
-    running: true
 http:
   http://127.0.0.1:{{ grafana_http_port }}/api/health:
     status: 200
