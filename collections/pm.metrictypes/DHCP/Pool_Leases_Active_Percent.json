@@ -1,0 +1,12 @@
+{
+    "name": "DHCP | Pool | Leases | Active | Percent",
+    "$collection": "pm.metrictypes",
+    "uuid": "5ce1ae85-43c7-4947-b41f-91a602ba977e",
+    "scope__name": "IPPool",
+    "field_name": "dhcp_pool_leases_active_percent",
+    "field_type": "UInt8",
+    "description": "Percent of active DHCP leases.",
+    "measure": "%",
+    "units__code": "%",
+    "scale__code": "1"
+}
