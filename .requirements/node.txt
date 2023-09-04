@@ -34,7 +34,7 @@ orjson==3.8.7
 progressbar2==4.0.0
 psycopg2-binary==2.8.6
 polars-lts-cpu==0.17.15
-pydantic==2.3.0
+pydantic==2.2.1
 pymongo==4.3.3
 pyproj==3.4.1
 python-consul==1.1.0
