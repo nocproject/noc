@@ -1,7 +1,7 @@
 # ---------------------------------------------------------------------
 # Juniper.JUNOS.get_metrics
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2022 The NOC Project
+# Copyright (C) 2007-2023 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -248,3 +248,114 @@ class Script(GetMetricsScript):
                 scale=mc.scale,
                 units=mc.units,
             )
+
+    def get_dict_dhcp_pool_name_IP(self):
+        """
+        Prepare dict for labels.
+        {snmp_index:
+            {
+                snmp_index: str,
+                pool_name: str,
+                ip: str,
+                ipv6: bool,
+                prefix: Option(str) # only for ipv6
+            }
+        }
+        """
+        result = {}
+        pool_name_oid = "1.3.6.1.4.1.2636.3.51.1.1.4.1.1.1.3"  # jnxUserAAAAccessPoolName
+        for oid, v in self.snmp.getnext(pool_name_oid, bulk=False):
+            snmp_index = oid.split(pool_name_oid, 1)[-1][1:]
+            result[snmp_index] = {
+                "snmp_index": snmp_index,
+                "pool_name": str(v),
+            }
+
+        pool_ip_oid = "1.3.6.1.4.1.2636.3.51.1.1.4.1.1.1.6"  # jnxUserAAAAccessPoolInetNetwork
+        for oid, v in self.snmp.getnext(pool_ip_oid, bulk=False):
+            snmp_index = oid.split(pool_ip_oid, 1)[-1][1:]
+            if result.get(snmp_index):
+                result[snmp_index].update({"ip": v})
+
+        pool_ip_prefix = (
+            "1.3.6.1.4.1.2636.3.51.1.1.4.1.1.1.7"  # jnxUserAAAAccessPoolInetPrefixLength
+        )
+        for oid, v in self.snmp.getnext(pool_ip_prefix, bulk=False):
+            snmp_index = oid.split(pool_ip_prefix, 1)[-1][1:]
+            if result.get(snmp_index) and v != 0:
+                result[snmp_index].update({"ipv6": True, "prefix": v})
+            else:
+                result[snmp_index].update({"ipv6": False})
+        return result
+
+    def get_metric_value(self, oid_in: str, dhcp_pool_param: dict):
+        for oid, v in self.snmp.getnext(oid_in, bulk=False):
+            snmp_index = oid.split(oid_in, 1)[-1][1:]
+            param = dhcp_pool_param.get(snmp_index)
+            if param:
+                pool = param["pool_name"]
+                pool_ip = param["ip"]
+                pool_ip = pool_ip.replace("::", ";;")  # :: use in separate scope, dont show in card
+                if param["ipv6"]:
+                    pool_ip += f"/{param['prefix']}"
+                yield pool, pool_ip, v
+            yield None, None, None
+
+    @metrics(
+        [
+            "DHCP | Pool | Leases | Active",
+            "DHCP | Pool | Leases | Total",
+            "DHCP | Pool | Leases | Active | Percent",
+        ],
+        has_capability="Network | DHCP",
+        volatile=False,
+        access="S",  # not CLI version
+    )
+    def get_lease_metrics(self, metrics):
+        dhcp_pool_param = self.get_dict_dhcp_pool_name_IP()
+        #  jnxUserAAAAccessPoolAddressesInUse 1.3.6.1.4.1.2636.3.51.1.1.4.1.1.1.11
+        for pool, pool_ip, v in self.get_metric_value(
+            "1.3.6.1.4.1.2636.3.51.1.1.4.1.1.1.11", dhcp_pool_param
+        ):
+            if pool and pool_ip:
+                self.set_metric(
+                    id=("DHCP | Pool | Leases | Active", None),
+                    labels=[
+                        f"noc::ippool::name::{pool}",
+                        f"noc::ippool::prefix::{pool_ip}",
+                        "noc::ippool::type::dhcp",
+                    ],
+                    value=v,
+                    multi=True,
+                )
+        # jnxUserAAAAccessPoolAddressTotal 1.3.6.1.4.1.2636.3.51.1.1.4.1.1.1.10
+        for pool, pool_ip, v in self.get_metric_value(
+            "1.3.6.1.4.1.2636.3.51.1.1.4.1.1.1.10", dhcp_pool_param
+        ):
+            if pool and pool_ip:
+                self.set_metric(
+                    id=("DHCP | Pool | Leases | Total", None),
+                    labels=[
+                        f"noc::ippool::name::{pool}",
+                        f"noc::ippool::prefix::{pool_ip}",
+                        "noc::ippool::type::dhcp",
+                    ],
+                    value=v,
+                    multi=True,
+                )
+        # jnxUserAAAAccessPoolAddressUsage 1.3.6.1.4.1.2636.3.51.1.1.4.1.1.1.12
+        for pool, pool_ip, v in self.get_metric_value(
+            "1.3.6.1.4.1.2636.3.51.1.1.4.1.1.1.12", dhcp_pool_param
+        ):
+            if pool and pool_ip and int(v) < 101:
+                self.set_metric(
+                    id=("DHCP | Pool | Leases | Active | Percent", None),
+                    labels=[
+                        f"noc::ippool::name::{pool}",
+                        f"noc::ippool::prefix::{pool_ip}",
+                        "noc::ippool::type::dhcp",
+                    ],
+                    value=v,
+                    multi=True,
+                    units="%",
+                )

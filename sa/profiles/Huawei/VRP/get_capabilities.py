@@ -1,7 +1,7 @@
 # ---------------------------------------------------------------------
 # Huawei.VRP.get_capabilities
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2023 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -31,6 +31,7 @@ class Script(BaseScript):
     CHECK_SNMP_GET = {
         "Huawei | MIB | HUAWEI-CBQOS-MIB": mib["HUAWEI-CBQOS-MIB::hwCBQoSClassifierIndexNext", 0],
         "BRAS | PPPoE": "1.3.6.1.4.1.2011.5.2.1.14.1.2.0",
+        "Network | DHCP": "1.3.6.1.4.1.2011.6.8.1.7.3.0",  # hwIPUsedTotalNum
     }
     rx_stp = re.compile(r"Protocol Status\s+:\s*Enabled")
 
