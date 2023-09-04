@@ -1,0 +1,8 @@
+{
+    "name": "Network | DHCP",
+    "$collection": "inv.capabilities",
+    "uuid": "ecd7848f-ef9e-45e3-b392-fc2ef179157e",
+    "description": "Dynamic Host Configuration Protocol  is enabled.",
+    "type": "bool",
+    "card_template": null
+}
