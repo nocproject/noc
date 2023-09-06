@@ -13,7 +13,7 @@ from typing import Optional, List, Dict, Literal, Iterable, Any
 # Third-party modules
 import orjson
 from jinja2 import Template
-from pydantic import BaseModel, parse_obj_as
+from pydantic import BaseModel, TypeAdapter
 
 # NOC modules
 from .base import BaseCDAGNode, ValueType, Category
@@ -86,7 +86,9 @@ class ThresholdNode(BaseCDAGNode):
     categories = [Category.UTIL]
 
     def iter_thresholds(self) -> Iterable[ThresholdItem]:
-        for num, th in enumerate(parse_obj_as(List[ThresholdItem], self.config.thresholds)):
+        for num, th in enumerate(
+            TypeAdapter(List[ThresholdItem]).validate_python(self.config.thresholds)
+        ):
             yield num, th
 
     def get_value(self, x: ValueType, **kwargs):

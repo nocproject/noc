@@ -17,7 +17,7 @@ import orjson
 from dateutil import tz
 from fastapi import APIRouter, Depends
 from fastapi.exceptions import HTTPException
-from pydantic import parse_obj_as
+from pydantic import TypeAdapter
 
 # NOC modules
 from noc.aaa.models.user import User
@@ -124,7 +124,7 @@ class JsonDSAPI(object):
         if not self.variable_payload:
             return []
         payload = req.payload
-        payload = parse_obj_as(self.variable_payload, orjson.loads(payload.target))
+        payload = TypeAdapter(self.variable_payload).validate_python(orjson.loads(payload.target))
         h = getattr(payload, "get_variables", None)
         if not h:
             return []

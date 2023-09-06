@@ -22,7 +22,7 @@ import asyncio
 import orjson
 from bson import ObjectId
 from dateutil.parser import parse as parse_date
-from pydantic import parse_obj_as, ValidationError
+from pydantic import TypeAdapter, ValidationError
 import cachetools
 from pymongo import UpdateOne
 
@@ -730,7 +730,7 @@ class CorrelatorService(FastAPIService):
             data["$op"] = "event"
         # Parse request
         try:
-            req = parse_obj_as(DisposeRequest, data)
+            req = TypeAdapter(DisposeRequest).validate_python(data)
         except ValidationError as e:
             self.logger.error("Malformed message: %s", e)
             metrics["malformed_messages"] += 1

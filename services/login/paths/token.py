@@ -13,7 +13,7 @@ import codecs
 # Third-party modules
 from fastapi import APIRouter, Request, Header, Depends
 from starlette.responses import JSONResponse
-from pydantic import ValidationError, parse_obj_as
+from pydantic import ValidationError, TypeAdapter
 
 # NOC modules
 from noc.config import config
@@ -42,9 +42,9 @@ async def token(
         # Content-Type := type "/" subtype *[";" parameter]
         content_type = content_type.split(";")[0]
         if content_type in ("application/json", "text/json"):
-            req = parse_obj_as(TokenRequest, await request.json())
+            req = TypeAdapter(TokenRequest).validate_python(await request.json())
         elif content_type == "application/x-www-form-urlencoded":
-            req = parse_obj_as(TokenRequest, await request.form())
+            req = TypeAdapter(TokenRequest).validate_python(await request.form())
         else:
             return JSONResponse(
                 status_code=400,
