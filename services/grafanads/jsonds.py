@@ -559,6 +559,9 @@ class JsonDSAPI(object):
         """
         return []
 
+    async def api_test(self):
+        return "1"
+
     def setup_routes(self):
         self.router.add_api_route(
             path=f"/api/grafanads/{self.api_name}/search",
@@ -623,4 +626,12 @@ class JsonDSAPI(object):
             tags=self.openapi_tags,
             name=f"{self.api_name}_variable",
             description="Getting target variable",
+        )
+        self.router.add_api_route(
+            path=f"/api/grafanads/{self.api_name}",
+            endpoint=self.api_test,
+            methods=["GET"],
+            tags=self.openapi_tags,
+            name=f"{self.api_name}_test",
+            description="Test DataSource",
         )

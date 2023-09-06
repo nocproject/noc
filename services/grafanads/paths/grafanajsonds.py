@@ -97,8 +97,8 @@ class GrafanaJsonDS(JsonDSAPI):
                     ]
                 payloads += [
                     {
-                        "name": f"{f.field_name}__name",
-                        "label": f"{f.model} Name",
+                        "name": f"{f.field_name}__query",
+                        "label": f"{f.model} Query",
                         "type": "input",
                         "width": 50,
                     }
@@ -128,6 +128,28 @@ class GrafanaJsonDS(JsonDSAPI):
             ]
         return r
 
+    @staticmethod
+    def resolve_managed_object(payload: Dict[str, str]) -> ManagedObject:
+        """
+        Find ManagedObject by query
+        """
+        managed_object = None
+        if "managed_object" in payload:
+            # Resolve by BI ID
+            managed_object = ManagedObject.get_by_bi_id(int(payload["managed_object"]))
+        elif "managed_object__query" in payload:
+            # Resolve by query
+            q = ManagedObject.get_search_Q(payload["managed_object__query"])
+            managed_object = ManagedObject.objects.filter(q).first()
+        elif "managed_object__name" in payload:
+            # Resolve by name
+            managed_object = ManagedObject.objects.filter(
+                name__contains=payload["managed_object__name"]
+            ).first()
+        if not managed_object:
+            raise HTTPException(status_code=404, detail="Not Found Requested Device")
+        return managed_object
+
     def resolve_payload_options(
         self,
         metric,
@@ -153,19 +175,15 @@ class GrafanaJsonDS(JsonDSAPI):
                 .order_by("name")[: self.MAX_OBJECTS]
             ]
         elif name == "interface":
-            if "managed_object" not in payload:
-                return []
-            mo = ManagedObject.get_by_bi_id(int(payload["managed_object"]))
+            mo = self.resolve_managed_object(payload)
             return [
                 {"label": iface.name, "value": iface.name}
-                for iface in Interface.objects.filter(managed_object=mo, type="physical").order_by(
-                    "name"
-                )
+                for iface in Interface.objects.filter(
+                    managed_object=mo, type__in=["aggregated", "physical"]
+                ).order_by("name")
             ]
         elif name == "subinterface":
-            if "managed_object" not in payload:
-                return []
-            mo = ManagedObject.get_by_bi_id(int(payload["managed_object"]))
+            mo = self.resolve_managed_object(payload)
             return [
                 {"label": si.name, "value": si.name}
                 for si in SubInterface.objects.filter(managed_object=mo).order_by("name")
