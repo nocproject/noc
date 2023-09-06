@@ -10,3 +10,8 @@ grafana_user: grafana
 grafana_pg_user: grafana
 grafana_pg_db: grafana
 grafana_own_install: false
+
+grafana_version: "9.5.8"
+grafana_version_simpod_json_datasource: 0.6.3
+grafana_version_clickhouse_datasource: 2.5.3
+grafana_version_natel_discrete_panel: 0.1.1

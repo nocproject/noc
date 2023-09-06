@@ -5,11 +5,6 @@ etc_prefix: /etc
 ansible_python_interpreter: auto
 
 # packages
-grafana_version: "8.4.6"
-grafana_version_simpod_json_datasource: 0.4.2
-grafana_version_clickhouse_datasource: 2.4.2
-grafana_version_natel_discrete_panel: 0.1.0
-
 consul_version: "1.11.2"
 consul_template_version: "0.25.1"
 
