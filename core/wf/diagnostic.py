@@ -146,10 +146,11 @@ class DiagnosticItem(BaseModel):
     def reset(self, reason="Reset by"):
         if self.config.blocked:
             self.state = DiagnosticState.blocked
+            self.reason = self.config.reason
         else:
             self.state = self.config.default_state
+            self.reason = reason
         self.checks = []
-        self.reason = reason
         self.changed = datetime.datetime.now()
 
 
@@ -183,9 +184,9 @@ class DiagnosticHub(object):
         logger=None,
     ):
         self.logger = logger or logging.getLogger(__name__)
-        self.__diagnostics: Optional[Dict[str, DiagnosticItem]] = None
+        self.__diagnostics: Optional[Dict[str, DiagnosticItem]] = None  # Actual diagnostic state
         self.__checks: Dict[Check, List[str]] = defaultdict(list)
-        self.__depended: Dict[str, str] = {}
+        self.__depended: Dict[str, str] = {}  # Depended diagnostics
         if not hasattr(o, "diagnostics"):
             raise NotImplementedError("Diagnostic Interface not supported")
         self.__object = o
@@ -260,12 +261,14 @@ class DiagnosticHub(object):
             item = self.__object.diagnostics.get(dc.diagnostic) or {}
             if not item:
                 item = {"diagnostic": dc.diagnostic, "state": dc.default_state.value}
-            elif item["state"] == "blocked" and not dc.blocked:
-                item["state"] = dc.default_state.value
-            if dc.blocked:
-                item["state"] = "blocked"
-            # item["config"] = dc
             r[dc.diagnostic] = DiagnosticItem(config=dc, **item)
+            if r[dc.diagnostic].state == DiagnosticState.blocked and not dc.blocked:
+                r[dc.diagnostic].state = dc.default_state
+            elif dc.blocked:
+                r[dc.diagnostic].state = DiagnosticState.blocked
+                if dc.reason:
+                    r[dc.diagnostic].reason = dc.reason
+            # item["config"] = dc
             for c in dc.checks or []:
                 self.__checks[c] += [dc.diagnostic]
             for dd in dc.dependent or []:
