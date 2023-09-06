@@ -163,6 +163,7 @@ def model_set_state(self, state, state_changed: datetime.datetime = None, bulk=N
     :return:
     """
     # Direct update arguments
+    logger.debug("[%s] Set state: %s", self.name, state)
     set_op = {"state": str(state.id)}
     cf = ChangeField(field="state", old=str(self.state.id) if self.state else None, new=str(state))
     prev_labels = self.state.labels if self.state else []
@@ -220,9 +221,10 @@ def model_set_state(self, state, state_changed: datetime.datetime = None, bulk=N
             oid=self.id,
         )
     if self._has_diagnostics:
-        self.diagnostic.reset_diagnostics(
-            [d.diagnostic for d in state.iter_diagnostic_configs(self)]
-        )
+        self.diagnostic.refresh_diagnostics()
+        # self.diagnostic.reset_diagnostics(
+        #    [d.diagnostic for d in state.iter_diagnostic_configs(self)]
+        # )
     if not create:
         change_tracker.register(
             "update",

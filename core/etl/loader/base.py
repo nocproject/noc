@@ -22,6 +22,7 @@ from noc.core.log import PrefixLoggerAdapter
 from noc.core.fileutils import safe_rewrite
 from noc.config import config
 from noc.core.comp import smart_text
+from noc.core.debug import error_report
 from noc.core.etl.compression import compressor
 from ..models.base import BaseModel
 
@@ -386,10 +387,18 @@ class BaseLoader(object):
             for k, nv in v.items():
                 setattr(o, k, nv)
             o.save()
+        except Exception as e:
+            error_report()
+            raise e
         return o
 
     def change_object(
-        self, object_id: str, v: Dict[str, Any], inc_changes: Dict[str, Dict[str, List]] = None
+        self,
+        object_id: str,
+        v: Dict[str, Any],
+        inc_changes: Dict[str, Dict[str, List]] = None,
+        state: Optional[str] = None,
+        state_changed: Optional[datetime.datetime] = None,
     ):
         """
         Change object with attributes
@@ -410,6 +419,8 @@ class BaseLoader(object):
                 ov = getattr(o, k, [])
                 nv = list(set(ov).union(set(inc_changes[k]["add"])) - set(inc_changes[k]["remove"]))
             setattr(o, k, nv)
+        if self.workflow_state_sync and state:
+            self.change_workflow(o, state, state_changed)
         o.save()
         return o
 
@@ -441,16 +452,21 @@ class BaseLoader(object):
                     continue
                 if getattr(o, fn) != nv:
                     vv[fn] = nv
-            o = self.change_object(o.id, vv)
+            o = self.change_object(
+                o.id,
+                vv,
+                state=getattr(item, "state", None),
+                state_changed=getattr(item, "state_changed", None),
+            )
         else:
             self.c_add += 1
             o = self.create_object(v)
             if self.workflow_event_model:
                 o.fire_event(self.workflow_add_event)
-        if self.workflow_state_sync:
-            self.change_workflow(
-                o, getattr(item, "state", None), getattr(item, "state_changed", None)
-            )
+            elif self.workflow_state_sync:
+                self.change_workflow(
+                    o, getattr(item, "state", None), getattr(item, "state_changed", None)
+                )
         if o and psf:
             self.post_save(o, psf)
         self.set_mappings(item.id, o.id)
@@ -484,9 +500,13 @@ class BaseLoader(object):
         if n.id not in self.mappings:
             self.logger.error("Cannot map id '%s'. Skipping.", n.id)
             return
-        o = self.change_object(self.mappings[n.id], changes, inc_changes=incremental_changes)
-        if self.workflow_state_sync:
-            self.change_workflow(o, getattr(n, "state", None), getattr(n, "state_changed", None))
+        o = self.change_object(
+            self.mappings[n.id],
+            changes,
+            inc_changes=incremental_changes,
+            state=getattr(n, "state", None),
+            state_changed=getattr(n, "state_changed", None),
+        )
         if o and psf:
             self.post_save(o, psf)
 
