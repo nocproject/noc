@@ -7,7 +7,7 @@
 
 # Python modules
 import datetime
-from typing import List, Optional, Dict, Any, Union, Tuple
+from typing import List, Optional, Dict, Any, Union, Tuple, Literal
 
 # Third-party modules
 from pydantic import BaseModel, Field
@@ -89,6 +89,45 @@ class SearchResponseItem(BaseModel):
 # Search
 class SearchRequset(BaseModel):
     target: str
+
+
+class PayloadSelectOptionItem(BaseModel):
+    value: str
+    label: Optional[str] = None  # The label of the payload select option.
+
+
+class MetricPayload(BaseModel):
+    label: str
+    name: str
+    #  If the value is select, the UI of the payload is a radio box.
+    #  If the value is multi-select, the UI of the payload is a multi selection box;
+    #  if the value is input, the UI of the payload is an input box;
+    #  if the value is textarea, the UI of the payload is a multiline input box. The default is input.
+    type: Literal["select", "multi-select", "textarea", "input"] = "input"
+    placeholder: str = ""  # Input box / selection box prompt information.
+    reload_metric: bool = Field(
+        False, alias="reloadMetric"
+    )  # Whether to overload the metrics API after modifying the value of the payload.
+    width: int = 10  # Set the input / selection box width to a multiple of 8px.
+    options: Optional[List[PayloadSelectOptionItem]] = None
+
+
+class MetricsResponseItem(BaseModel):
+    value: str
+    label: Optional[str] = None
+    payloads: Optional[List[MetricPayload]] = None
+
+
+# Metrics
+class MetricsPayloadRequest(BaseModel):
+    payload: Optional[Dict[str, Any]]
+
+
+# Metric Payload Options
+class MetricPayloadOptionsRequest(BaseModel):
+    metric: str  # Current metric
+    name: str  # The payload name of the option list needs to be obtained.
+    payload: Optional[Dict[str, Any]] = None  # Current payload
 
 
 class VariableRequestTarget(BaseModel):
