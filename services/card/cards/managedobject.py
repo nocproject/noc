@@ -144,7 +144,7 @@ class ManagedObjectCard(BaseCard):
                     current_start = uptime.start
             else:
                 current_state = "down"
-                current_start = self.object.get_last_status()[1]
+                _, current_start = self.object.get_last_status()
         else:
             current_state = "unmanaged"
         if current_start:
