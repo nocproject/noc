@@ -20,7 +20,6 @@ from noc.sa.models.managedobject import ManagedObject, ManagedObjectAttribute
 from noc.fm.models.activealarm import ActiveAlarm
 from noc.sa.models.servicesummary import SummaryItem
 from noc.fm.models.uptime import Uptime
-from noc.fm.models.outage import Outage
 from noc.inv.models.object import Object
 from noc.inv.models.resourcegroup import ResourceGroup
 from noc.inv.models.discoveryid import DiscoveryID
@@ -145,9 +144,7 @@ class ManagedObjectCard(BaseCard):
                     current_start = uptime.start
             else:
                 current_state = "down"
-                outage = Outage.objects.filter(object=self.object.id, stop=None).first()
-                if outage is not None:
-                    current_start = outage.start
+                _, current_start = self.object.get_last_status()
         else:
             current_state = "unmanaged"
         if current_start:
