@@ -50,7 +50,7 @@ class IOLoopContext(object):
         to_cancel = asyncio.all_tasks(self.new_loop)
         for task in to_cancel:
             task.cancel()
-        asyncio.gather(*to_cancel, loop=self.new_loop, return_exceptions=True)
+        asyncio.gather(*to_cancel, return_exceptions=True)
         self.new_loop.run_until_complete(self.new_loop.shutdown_asyncgens())
         #
         self.new_loop.close()
@@ -60,7 +60,6 @@ class IOLoopContext(object):
             asyncio._set_running_loop(self.prev_loop)
         else:
             asyncio._set_running_loop(None)
-            asyncio.get_event_loop_policy().reset_called()
         self.prev_loop = None
 
     def get_loop(self) -> Optional[asyncio.AbstractEventLoop]:

@@ -13,9 +13,13 @@ import tempfile
 import json
 import shutil
 from urllib.parse import urlparse, urlunparse
+import ssl
+
 # NOC modules
 from noc.core.fileutils import urlopen
 from noc.config import config
+
+ssl._create_default_https_context = ssl._create_unverified_context
 
 
 class NPkg(object):
