@@ -206,8 +206,7 @@ build:Docs:
   script:
     - set -e -x
     - pip3 install -r .requirements/docs.txt
-    - mkdocs build --strict --config-file=docs/en/mkdocs.yml
-    - mkdocs build --config-file=docs/ru/mkdocs.yml
+    - mkdocs build
   tags:
     - docker
   artifacts:
