@@ -2398,6 +2398,33 @@ nav:
               - NOC 0.1.8: about/releases/0_1_8.md
               - NOC 0.1.9: about/releases/0_1_9.md
   - Glossary: glossary.md
+# Russian translations
+# nav:
+#   - User's Guide:
+#       - How-to Guides:
+#           - Собственный статичный дашборд с графиками устройства в НОКе: user/howto/how-to-create-custom-device-grafana-dash.md
+#           - Использование Housekeeper для сбора данных с устройства: user/howto/how-to-use-hk-for-collect-device-data.md
+#           - Как импортировать MIB файл в НОК: user/howto/how-to-import-mib-file.md
+#       - Background:
+#           - Работа с конфигурацией оборудования: user/background/configuration-management/index.md
+#           - Работа с топологией: user/background/topology/index.md
+#           - Работа с авариями: user/background/fault-management/index.md
+#           - Работа с метриками: user/background/performance-management/index.md
+#           - Учет BGP сессий: user/background/peering-management/index.md
+#       - Reference:
+#           - Concepts:
+#   - Developer's Guide:
+#       - Tools:
+#           - Инструкция по локализации интерфейса пользователя: dev/tools/howto-language-translation.md
+#           - Использование консоли разработчика для настройки системы: dev/tools/howto-noc-shell-example-work-1.md
+#       - Handlers:
+#           - Удаление лишних данных из конфигурационного файла MO: dev/handlers/howto-delete-config-data.md
+#       - Data Models: dev/data-models/index.md
+#           - Типы соединений: dev/object-model/connection-type.md
+#           - Правила соединений: dev/object-model/connection-rule.md
+#           - Ограничения на соединения: dev/object-model/connection-restrictions.md
+#           - Ограничения на типы соединения: dev/object-model/connection-type-restrictions.md
+#           - Создания Модели Объекта: dev/object-model/how-to-create-object-model.md
 theme:
   name: material
   features:
@@ -2451,6 +2478,10 @@ plugins:
           build: true
           nav_translations:
             Overview: Обзор
+            External Storage: Внешнее хранилище
+            Interface: Интерфейс
+            Interface Profile: Профиль интерфейса
+            Label: Метка
 extra:
   alternate:
     - name: English
