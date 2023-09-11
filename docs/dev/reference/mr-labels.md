@@ -69,4 +69,4 @@ MR must be assigned with one of `kind::*` labels to denote changes type
 
 `backport` label means MR to be cherry-picked and backported
 to previous generations. `backport` label is applicable only
-to `kind::bug` label according to [Release Policy](../../about/releases/policy.md).
+to `kind::bug` label according to [Release Policy](../../releases/policy.md).
