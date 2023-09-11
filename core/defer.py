@@ -125,4 +125,6 @@ def defer(handler: str, key: Optional[int] = None, **kwargs) -> None:
     q = [{"handler": handler, "kwargs": kwargs or {}}]
     if key is None:
         key = dict_hash_int_args(handler=handler, **kwargs)
-    svc.publish(orjson.dumps(q), stream=JOBS_STREAM, partition=key % JOBS_PARTITIONS)
+    d = orjson.dumps(q)
+    logger.info("[%s|%s] Defer message: %s", handler, key, len(d))
+    svc.publish(d, stream=JOBS_STREAM, partition=key % JOBS_PARTITIONS)
