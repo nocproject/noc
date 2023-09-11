@@ -1,7 +1,7 @@
 site_name: NOC Docs
 site_description: NOC Documentation Project
 site_author: The NOC Project
-site_url: https://docs.getnoc.com/master/
+site_url: https://docs.getnoc.com/
 repo_url: https://code.getnoc.com/noc/noc/
 repo_name: Gitlab
 edit_uri: -/edit/master/docs/
@@ -2429,7 +2429,7 @@ theme:
   name: material
   features:
     - navigation.tabs
-    - navigation.instant
+    # - navigation.instant
   palette:
     - scheme: slate
       toggle:
@@ -2483,13 +2483,13 @@ plugins:
             Interface Profile: Профиль интерфейса
             Label: Метка
 extra:
-  alternate:
-    - name: English
-      link: /master/en/
-      lang: en
-    - name: Russian
-      link: /master/ru/
-      lang: ru
+  # alternate:
+  #   - name: English
+  #     link: /master/en/
+  #     lang: en
+  #   - name: Russian
+  #     link: /master/ru/
+  #     lang: ru
   tab: ":material-arrow-right:"
   tab2: ":material-arrow-right: :material-arrow-right:"
   tab3: ":material-arrow-right: :material-arrow-right: :material-arrow-right:"

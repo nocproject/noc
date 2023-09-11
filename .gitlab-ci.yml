@@ -219,6 +219,8 @@ build:Docs:
       changes:
         - "docs/*"
         - "docs/**/*"
+        - "mkdocs.yml"
+        - "macros.py"
         - ".requirements/docs.txt"
 
 #Build Image section
@@ -328,7 +330,7 @@ upload docs:
   extends: .upload
   variables:
     SOURCE: build/docs/*
-    DEST: cdn/$S3_BUCKET/$CI_COMMIT_REF_SLUG/
+    DEST: cdn/$S3_BUCKET/
   rules:
     - if: '$CI_PIPELINE_SOURCE == "schedule"'
       when: never
@@ -336,6 +338,9 @@ upload docs:
       changes:
         - "docs/*"
         - "docs/**/*"
+        - "mkdocs.yml"
+        - "macros.py"
+        - ".requirements/docs.txt"
 
 upload dnssync:
   stage: Upload
