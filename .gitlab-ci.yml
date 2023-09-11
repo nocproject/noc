@@ -206,20 +206,20 @@ build:Docs:
   script:
     - set -e -x
     - pip3 install -r .requirements/docs.txt
-    - mkdocs build --strict --config-file=docs/en/mkdocs.yml
-    - mkdocs build --config-file=docs/ru/mkdocs.yml
+    - mkdocs build
   tags:
     - docker
   artifacts:
     paths:
-      - build/docs/en
-      - build/docs/ru
+      - build/docs
     expire_in: 2 hours
   rules:
     - if: ('$CI_PIPELINE_SOURCE == "merge_request_event"' || '$CI_COMMIT_BRANCH == "master"')
       changes:
         - "docs/*"
         - "docs/**/*"
+        - "mkdocs.yml"
+        - "macros.py"
         - ".requirements/docs.txt"
 
 #Build Image section
@@ -329,7 +329,7 @@ upload docs:
   extends: .upload
   variables:
     SOURCE: build/docs/*
-    DEST: cdn/$S3_BUCKET/$CI_COMMIT_REF_SLUG/
+    DEST: cdn/$S3_BUCKET/
   rules:
     - if: '$CI_PIPELINE_SOURCE == "schedule"'
       when: never
@@ -337,6 +337,9 @@ upload docs:
       changes:
         - "docs/*"
         - "docs/**/*"
+        - "mkdocs.yml"
+        - "macros.py"
+        - ".requirements/docs.txt"
 
 upload dnssync:
   stage: Upload
