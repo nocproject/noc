@@ -2483,13 +2483,9 @@ plugins:
             Interface Profile: Профиль интерфейса
             Label: Метка
 extra:
-  # alternate:
-  #   - name: English
-  #     link: /master/en/
-  #     lang: en
-  #   - name: Russian
-  #     link: /master/ru/
-  #     lang: ru
+  analytics:
+    provider: google
+    property: G-9JQSC5GQTM
   tab: ":material-arrow-right:"
   tab2: ":material-arrow-right: :material-arrow-right:"
   tab3: ":material-arrow-right: :material-arrow-right: :material-arrow-right:"
