@@ -24,6 +24,7 @@ from ..auth import authenticate, get_jwt_token, get_user_from_jwt
 from ..service import LoginService
 
 router = APIRouter()
+ta_TokenRequest = TypeAdapter(TokenRequest)
 
 
 @router.post("/api/login/token", response_model=TokenResponse, tags=["login"])
@@ -42,9 +43,9 @@ async def token(
         # Content-Type := type "/" subtype *[";" parameter]
         content_type = content_type.split(";")[0]
         if content_type in ("application/json", "text/json"):
-            req = TypeAdapter(TokenRequest).validate_python(await request.json())
+            req = ta_TokenRequest.validate_python(await request.json())
         elif content_type == "application/x-www-form-urlencoded":
-            req = TypeAdapter(TokenRequest).validate_python(await request.form())
+            req = ta_TokenRequest.validate_python(await request.form())
         else:
             return JSONResponse(
                 status_code=400,

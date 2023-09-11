@@ -73,6 +73,7 @@ class ThresholdNodeConfig(AlarmNodeConfig):
 
 
 logger = logging.getLogger(__name__)
+ta_ListThresholdItem = TypeAdapter(List[ThresholdItem])
 
 
 class ThresholdNode(BaseCDAGNode):
@@ -86,9 +87,7 @@ class ThresholdNode(BaseCDAGNode):
     categories = [Category.UTIL]
 
     def iter_thresholds(self) -> Iterable[ThresholdItem]:
-        for num, th in enumerate(
-            TypeAdapter(List[ThresholdItem]).validate_python(self.config.thresholds)
-        ):
+        for num, th in enumerate(ta_ListThresholdItem.validate_python(self.config.thresholds)):
             yield num, th
 
     def get_value(self, x: ValueType, **kwargs):

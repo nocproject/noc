@@ -86,6 +86,7 @@ class JsonDSAPI(object):
         self.logger = self.service.logger
         self.router = router
         self.query_config: Dict[str, "QueryConfig"] = self.load_query_config()
+        self.type_adapter = TypeAdapter(self.variable_payload)
         self.setup_routes()
 
     @classmethod
@@ -124,7 +125,7 @@ class JsonDSAPI(object):
         if not self.variable_payload:
             return []
         payload = req.payload
-        payload = TypeAdapter(self.variable_payload).validate_python(orjson.loads(payload.target))
+        payload = self.type_adapter.validate_python(orjson.loads(payload.target))
         h = getattr(payload, "get_variables", None)
         if not h:
             return []
