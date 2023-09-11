@@ -211,8 +211,7 @@ build:Docs:
     - docker
   artifacts:
     paths:
-      - build/docs/en
-      - build/docs/ru
+      - build/docs
     expire_in: 2 hours
   rules:
     - if: ('$CI_PIPELINE_SOURCE == "merge_request_event"' || '$CI_COMMIT_BRANCH == "master"')
