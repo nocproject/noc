@@ -20,6 +20,7 @@ from noc.core.hash import dict_hash_int_args
 from noc.core.deprecations import RemovedInNOC2102Warning
 from noc.core.service.loader import get_service
 from noc.core.ioloop.util import run_sync
+from noc.config import config
 
 logger = logging.getLogger(__name__)
 
@@ -125,6 +126,7 @@ def defer(handler: str, key: Optional[int] = None, **kwargs) -> None:
     q = [{"handler": handler, "kwargs": kwargs or {}}]
     if key is None:
         key = dict_hash_int_args(handler=handler, **kwargs)
-    d = orjson.dumps(q)
-    logger.info("[%s|%s] Defer message: %s", handler, key, len(d))
-    svc.publish(d, stream=JOBS_STREAM, partition=key % JOBS_PARTITIONS)
+    q = orjson.dumps(q)
+    if len(q) > config.msgstream.max_message_size:
+        logger.warning("[%s|%s] Defer max message size exceeded: %s", handler, key, len(d))
+    svc.publish(q, stream=JOBS_STREAM, partition=key % JOBS_PARTITIONS)
