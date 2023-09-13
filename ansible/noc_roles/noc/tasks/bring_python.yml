@@ -6,7 +6,7 @@
     state: directory
   with_items:
     - "{{ noc_dist }}"
-    - "/opt/python{{ noc_py3_ver }}"
+    - "/opt/python{{ py_rel_name }}"
 
 - name: "Python{{ noc_py3_ver }} | Download archive's checksum"
   get_url:
