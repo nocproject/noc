@@ -6,7 +6,7 @@
     state: directory
   with_items:
     - "{{ noc_dist }}"
-    - "/opt/python{{ py_rel_name }}"
+    - "/opt/python{{ noc_py3_ver }}"
 
 - name: "Python{{ noc_py3_ver }} | Download archive's checksum"
   get_url:
@@ -35,8 +35,8 @@
 - name: "Python{{ noc_py3_ver }} | Uncompress"
   unarchive:
     src: "{{ noc_dist }}/Python-{{ py_rel_name }}.tar.gz"
-    dest: "/opt/python{{ py_rel_name }}/"
-    creates: "/opt/python{{ py_rel_name }}"
+    dest: "/opt/python{{ noc_py3_ver }}/"
+    creates: "/opt/python{{ noc_py3_ver }}/Python-{{ py_rel_name }}"
     remote_src: true
   when: python_archive_download is changed
 
