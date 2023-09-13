@@ -6,7 +6,7 @@ forms:
       <strong>Short description</strong>: Classifier service <br/>
       <strong>Long description</strong>: Responsible for the classification of the incoming message flow from syslog-collector and snmp-collector according to the rules recorded in the NOC. After classification into the database, go to the Event, i.e. event.<br/>
       <strong>Scale Recommendations</strong>: At least two per pool.<br/>
-      <strong>docs</strong>: <a href=https://docs.getnoc.com/master/en/admin/reference/services/classifier/ target=_blank>Classifier</a><br/>
+      <strong>docs</strong>: <a href=https://docs.getnoc.com/services-reference/classifier/ target=_blank>Classifier</a><br/>
       <strong>Placement constraint</strong>: On node with correlator<br/>
     power:
       default: 2

@@ -39,4 +39,4 @@ class ToC(object):
 
 @pytest.fixture(scope="session")
 def toc():
-    return ToC(os.path.join("docs", "en", "mkdocs.yml"))
+    return ToC("mkdocs.yml")

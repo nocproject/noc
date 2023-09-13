@@ -6,7 +6,7 @@ forms:
       <strong>Short description</strong>: Grafanads service <br/>
       <strong>Long description</strong>: Displays annotations on grafanas graphs with alarms info <br/>
       <strong>Scale Recommendations</strong>: Have to be at least one per system. Stateless. <br/>
-      <strong>docs</strong>: <a href=https://docs.getnoc.com/master/en/admin/reference/services/grafanads/ target=_blank>Grafanads</a><br/>
+      <strong>docs</strong>: <a href=https://docs.getnoc.com/services-reference/grafanads/ target=_blank>Grafanads</a><br/>
       <strong>Placement constraint</strong>: On node with nginx<br/>
     power:
       default: 2

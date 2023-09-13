@@ -38,7 +38,7 @@ def define_env(env):
         scripts = list(
             sorted(
                 x.split(".", 1)[0]
-                for x in os.listdir(os.path.join(DOC_ROOT, "dev", "reference", "scripts"))
+                for x in os.listdir(os.path.join(DOC_ROOT, "scripts-reference"))
                 if x.endswith(".md") and not x.startswith(".") and not x.startswith("index.")
             )
         )
@@ -67,7 +67,7 @@ def define_env(env):
         # Render
         for script in scripts:
             mark = YES if script in supported else NO
-            r += [f"[{script}](../../../../dev/reference/scripts/{script}.md) | {mark}"]
+            r += [f"[{script}](../../scripts-reference/{script}.md) | {mark}"]
         r += [""]
         return "\n".join(r)
 
@@ -93,7 +93,7 @@ def define_env(env):
             r += [
                 "!!! todo",
                 "    Platform collection is not populated still.",
-                "    You may be first to [contribute](../../../../dev/howto/sharing-collections/index.md)",
+                "    You may be first to [contribute](../../sharing-collections-howto/index.md)",
                 "",
             ]
         return "\n".join(r)
@@ -121,7 +121,7 @@ def define_env(env):
                 "| --- |",
             ]
             r += [
-                f"| [{profile}](../../../user/reference/profiles/{vendor}/{profile.split('.', 1)[1]}.md) |"
+                f"| [{profile}](../profiles-reference/{vendor}/{profile.split('.', 1)[1]}.md) |"
                 for vendor, profile in s_profiles
             ]
             r += [""]
@@ -136,7 +136,7 @@ def define_env(env):
     @env.macro
     def vendor_profiles(vendor: str) -> str:
         r = []
-        for fn in os.listdir(os.path.join("docs", "user", "reference", "profiles", vendor)):
+        for fn in os.listdir(os.path.join("docs", "profiles-reference", vendor)):
             if not fn.endswith(".md") or "." in fn[:-3]:
                 continue
             if fn.startswith("."):

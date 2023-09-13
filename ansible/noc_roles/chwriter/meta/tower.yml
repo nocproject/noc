@@ -6,7 +6,7 @@ forms:
       <strong>Short description</strong>: Clickhouse writer <br/>
       <strong>Long description</strong>: That one is for writing data from Liftbridge to Clickhouse<br/>
       <strong>Scale Recommendations</strong>: At least one per installation.<br/>
-      <strong>docs</strong>: <a href=https://docs.getnoc.com/master/en/admin/reference/services/chwriter/ target=_blank>Chwriter</a><br/>
+      <strong>docs</strong>: <a href=https://docs.getnoc.com/services-reference/chwriter/ target=_blank>Chwriter</a><br/>
       <strong>Placement constraint</strong>: On node with Clickhouse<br/>
     power:
       default: 1

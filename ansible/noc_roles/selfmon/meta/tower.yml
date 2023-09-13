@@ -6,7 +6,7 @@ forms:
       <strong>Short description</strong>: selfmon service <br/>
       <strong>Long description</strong>: Provides metrics about system in prometheus format <br/>
       <strong>Scale Recommendations</strong>: Have to be at least one per system. Stateless. <br/>
-      <strong>docs</strong>: <a href=https://docs.getnoc.com/master/en/admin/reference/services/selfmon/ target=_blank>selfmon</a><br/>
+      <strong>docs</strong>: <a href=https://docs.getnoc.com/services-reference/selfmon/ target=_blank>selfmon</a><br/>
       <strong>Placement constraint</strong>: None<br/>
     power:
       default: 1

@@ -6,7 +6,7 @@ forms:
       <strong>Short description</strong>: Beholder service <br/>
       <strong>Long description</strong>: Executes Bi requests on Clickhouse db<br/>
       <strong>Scale Recommendations</strong>: At least two per installation.<br/>
-      <strong>docs</strong>: <a href=https://docs.getnoc.com/master/en/admin/reference/services/bh/ target=_blank>Bi</a><br/>
+      <strong>docs</strong>: <a href=https://docs.getnoc.com/services-reference/bh/ target=_blank>Bi</a><br/>
       <strong>Placement constraint</strong>: On workers<br/>
     power:
       default: 2
