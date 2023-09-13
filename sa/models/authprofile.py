@@ -14,7 +14,7 @@ from threading import Lock
 import cachetools
 from django.contrib.postgres.fields import ArrayField
 from django.db import models
-from pydantic import BaseModel, validator
+from pydantic import BaseModel, RootModel, field_validator
 
 # NOC modules
 from noc.core.model.base import NOCModel
@@ -36,7 +36,7 @@ class MatchRule(BaseModel):
     labels: List[str] = []
     handler: Optional[str]
 
-    @validator("handler")
+    @field_validator("handler")
     def handler_must_handler(cls, v):  # pylint: disable=no-self-argument
         if not v:
             return v
@@ -48,8 +48,7 @@ class MatchRule(BaseModel):
         return str(h.id)
 
 
-class MatchRules(BaseModel):
-    __root__: List[Optional[MatchRule]] = []
+MatchRules = RootModel[List[Optional[MatchRule]]]
 
 
 @Label.model

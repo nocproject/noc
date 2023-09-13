@@ -47,7 +47,7 @@ class SubgraphConfig(BaseModel):
 
 
 class SubgraphState(BaseModel):
-    state: Optional[Dict[str, Any]]
+    state: Optional[Dict[str, Any]] = None
 
 
 class SubgraphCDAGFactory(ConfigCDAGFactory):

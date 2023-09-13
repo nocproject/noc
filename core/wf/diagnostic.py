@@ -128,7 +128,7 @@ class CheckStatus(BaseModel):
 class DiagnosticItem(BaseModel):
     diagnostic: str
     state: DiagnosticState = DiagnosticState("unknown")
-    checks: Optional[List[CheckStatus]]
+    checks: Optional[List[CheckStatus]] = None
     # scope: Literal["access", "all", "discovery", "default"] = "default"
     # policy: str = "ANY
     reason: Optional[str] = None
