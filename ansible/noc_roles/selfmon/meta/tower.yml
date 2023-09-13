@@ -28,23 +28,23 @@ forms:
     enable_fm:
       label: "enable_fm"
       type: bool
-      default: False # yamllint disable-line rule:truthy
+      default: False  # yamllint disable-line rule:truthy
     enable_inventory:
       label: "enable_inventory"
       type: bool
-      default: False # yamllint disable-line rule:truthy
+      default: False  # yamllint disable-line rule:truthy
     enable_liftbridge:
       label: "enable_liftbridge"
       type: bool
-      default: False # yamllint disable-line rule:truthy
+      default: False  # yamllint disable-line rule:truthy
     enable_managedobject:
       label: "enable_managedobject"
       type: bool
-      default: True # yamllint disable-line rule:truthy
+      default: True  # yamllint disable-line rule:truthy
     enable_task:
       label: "enable_task"
       type: bool
-      default: False # yamllint disable-line rule:truthy
+      default: False  # yamllint disable-line rule:truthy
 
 services:
   selfmon:

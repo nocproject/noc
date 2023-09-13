@@ -30,7 +30,7 @@ forms:
       label: "Listen SNMP Traps"
       type: str
     permit_firewall:
-      default: True # yamllint disable-line rule:truthy
+      default: True  # yamllint disable-line rule:truthy
       label: "Permit trap port in firewall"
       type: bool
       description: "Open traps port in firewall. Works on Centos/Rhel only."
