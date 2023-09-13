@@ -557,7 +557,7 @@ class CollectionDoc(object):
 
     def build_eventclasses(self):
         print("# Writing event classes doc:")
-        toc = ["- Overview: user/reference/event-classes/index.md"]
+        toc = ["- Overview: event-classes-reference/index.md"]
         writer = FileWriter(os.path.join(self.doc_root, "user", "reference", "event-classes"))
         last_path: List[str] = []
         indent: str = ""
@@ -580,7 +580,7 @@ class CollectionDoc(object):
                 last_path = path
             short_name = ec_name.split(" | ")[-1].strip()
             toc += [
-                f'{indent}    - "{short_name}": user/reference/event-classes/{rel_dir}/{ec.file_name}'
+                f'{indent}    - "{short_name}": event-classes-reference/{rel_dir}/{ec.file_name}'
             ]
             # render page
             data = ["---", f"uuid: {ec.uuid}", "---", f"# {ec.name}"]
@@ -642,7 +642,7 @@ class CollectionDoc(object):
 
     def build_alarmclasses(self):
         print("# Writing alarm classes doc:")
-        toc = ["- Overview: user/reference/alarm-classes/index.md"]
+        toc = ["- Overview: alarm-classes-reference/index.md"]
         writer = FileWriter(os.path.join(self.doc_root, "user", "reference", "alarm-classes"))
         last_path: List[str] = []
         indent: str = ""
@@ -665,7 +665,7 @@ class CollectionDoc(object):
                 last_path = path
             short_name = ac_name.split(" | ")[-1].strip()
             toc += [
-                f'{indent}    - "{short_name}": user/reference/alarm-classes/{rel_dir}/{ac.file_name}'
+                f'{indent}    - "{short_name}": alarm-classes-reference/{rel_dir}/{ac.file_name}'
             ]
             # render page
             data = ["---", f"uuid: {ac.uuid}", "---", f"# {ac.name}"]
@@ -774,7 +774,7 @@ class CollectionDoc(object):
         print("# Writing metric scopes doc:")
         writer = FileWriter(os.path.join(self.doc_root, "user", "reference", "metrics", "scopes"))
         tab = "{{ tab }}"
-        toc = ["- Overview: user/reference/metrics/scopes/index.md"]
+        toc = ["- Overview: metric-scopes-reference/index.md"]
         for ms_name in sorted(self.metric_scope):
             ms = self.metric_scope[ms_name]
             data = ["---", f"uuid: {ms.uuid}", "---", f"# {ms.name} Metric Scope"]
@@ -802,7 +802,7 @@ class CollectionDoc(object):
                     f"[{mt.field_name}]({mt_ref}) | {mt.field_type} | [{mq(mt.name)}]({mt_ref})"
                 ]
             data += [""]
-            toc += [f"- {ms.name}: user/reference/metrics/scopes/{ms.file_name}"]
+            toc += [f"- {ms.name}: metric-scopes-reference/{ms.file_name}"]
             writer.write(ms.file_name, data)
         writer.summary()
         self.update_toc("Metric Scopes", toc)
@@ -812,7 +812,7 @@ class CollectionDoc(object):
         writer = FileWriter(os.path.join(self.doc_root, "user", "reference", "metrics", "types"))
         last_path: List[str] = []
         indent: str = ""
-        toc = ["- Overview: user/reference/metrics/types/index.md"]
+        toc = ["- Overview: metric-types-reference/index.md"]
         for mt_name in sorted(self.metric_type):
             mt = self.metric_type[mt_name]
             rel_dir = os.path.join(*mt.dir_path)
@@ -832,7 +832,7 @@ class CollectionDoc(object):
                 last_path = path
             short_name = mt_name.split(" | ")[-1].strip()
             toc += [
-                f'{indent}    - "{short_name}": user/reference/metrics/types/{rel_dir}/{mt.file_name}'
+                f'{indent}    - "{short_name}": metric-types-reference/{rel_dir}/{mt.file_name}'
             ]
             # Render page
             data = ["---", f"uuid: {mt.uuid}", "---", f"# {mt.name} Metric Type"]
@@ -863,7 +863,7 @@ class CollectionDoc(object):
     def build_measurement_units(self) -> None:
         print("# Writing measurement units doc:")
         writer = FileWriter(os.path.join(self.doc_root, "user", "reference", "measurement-units"))
-        toc = ["- Overview: user/reference/measurement-units/index.md"]
+        toc = ["- Overview: measurement-units-reference/index.md"]
         for mu_name in sorted(self.measurement_units):
             mu = self.measurement_units[mu_name]
             data = ["---", f"uuid: {mu.uuid}", "---", f"# {mu.name} Measurement Units"]
@@ -894,7 +894,7 @@ class CollectionDoc(object):
                     for a in mu.alt_units
                 ]
             data += [""]
-            toc += [f"- {mu.name}: user/reference/measurement-units/{mu.file_name}"]
+            toc += [f"- {mu.name}: measurement-units-reference/{mu.file_name}"]
             writer.write(mu.file_name, data)
         writer.summary()
         self.update_toc("Measurement Units", toc)
@@ -904,7 +904,7 @@ class CollectionDoc(object):
         writer = FileWriter(os.path.join(self.doc_root, "dev", "reference", "connection-type"))
         last_path: List[str] = []
         indent: str = ""
-        toc = ["- Overview: dev/reference/connection-type/index.md"]
+        toc = ["- Overview: connection-types-reference/index.md"]
         for ct_name in sorted(self.connection_types):
             ct = self.connection_types[ct_name]
             dir_path = ct.dir_path
@@ -925,7 +925,7 @@ class CollectionDoc(object):
                 last_path = path
             short_name = ct_name.split(" | ")[-1].strip()
             toc += [
-                f'{indent}    - "{short_name}": dev/reference/connection-type/{rel_dir}/{ct.file_name}'
+                f'{indent}    - "{short_name}": connection-types-reference/{rel_dir}/{ct.file_name}'
             ]
             # Render page
             data = ["---", f"uuid: {ct.uuid}", "---", f"# {ct.name} Connection Type"]

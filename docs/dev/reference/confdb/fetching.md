@@ -1,8 +1,8 @@
 # Config Fetching
 
 `Fetching` is the process of retrieving of device configuration.
-Performed by [config check](../../../admin/reference/discovery/box/config.md) of [box discovery](../../../admin/reference/discovery/box/index.md).
-According to the `Config Policy` setting in [Managed Object Profile](../../../user/reference/concepts/managed-object-profile/index.md)
+Performed by [config check](../../discovery-reference/box/config.md) of [box discovery](../../discovery-reference/box/index.md).
+According to the `Config Policy` setting in [Managed Object Profile](../../../concepts/managed-object-profile/index.md)
 there are two method possible:
 
 - Script
@@ -10,12 +10,12 @@ there are two method possible:
 
 ## Fetching via script
 
-[get_config](../../../dev/reference/scripts/get_config.md) script for target platform is necessary.
-Usually it is the second script besides [get_version](../../../dev/reference/scripts/get_version.md) to implement.
+[get_config](../../../scripts-reference/get_config.md) script for target platform is necessary.
+Usually it is the second script besides [get_version](../../../scripts-reference/get_version.md) to implement.
 
 ## Fetching from external storage
 
-`Discovery` can download configuration from [External Storage](../../../user/reference/concepts/external-storage/index.md).
+`Discovery` can download configuration from [External Storage](../../../concepts/external-storage/index.md).
 Supposed that configuration supplied to storage via external process:
 device uploads config by itself or some third-party system (like RANCID),
 performs all dirty work for us. Fetching from external storage is

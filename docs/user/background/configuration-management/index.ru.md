@@ -14,7 +14,7 @@
 
 Управление функционалом доступно через веб интерфейс системы. В следующих пунктах раскроем механизмы, работы функционала. Описание реализации скриптов и парсеров раскрывается в разделе документации для разработчиков и пользователям доступно для ознакомления.
 
-Вся работа с конфигурацией происходит в рамках опроса [Config Discovery](../../../admin/reference/discovery/box/config.md), он активируется галочкой `config` в [настройках](../../reference/concepts/managed-object-profile/index.md#Box(Полный_опрос)). Порядок прохождения опроса следующий:
+Вся работа с конфигурацией происходит в рамках опроса [Config Discovery](../../discovery-reference/box/config.md), он активируется галочкой `config` в [настройках](../../reference/concepts/managed-object-profile/index.md#Box(Полный_опрос)). Порядок прохождения опроса следующий:
 
 1. Сбор
 2. Расчёт разницы между последним и собранным конфигом
@@ -307,7 +307,7 @@ interface gigabitethernet1/0/24 description Description 2
 
 ### Включение политики в работу
 
-Политики валидации отрабатывают в рамках опроса [configvalidation](../../../admin/reference/discovery/box/config.md). Он запускается, если к профилю объекта (`ManagedObject Profile`) привязана политика. Настройки находятся в Профиле объекта (`Managed Object Profile`) на вкладке Конфиг (`Config`), блок [Config Validation](../../reference/concepts/managed-object-profile/index.md#Config(Конфигурация)): 
+Политики валидации отрабатывают в рамках опроса [configvalidation](../../discovery-reference/box/config.md). Он запускается, если к профилю объекта (`ManagedObject Profile`) привязана политика. Настройки находятся в Профиле объекта (`Managed Object Profile`) на вкладке Конфиг (`Config`), блок [Config Validation](../../reference/concepts/managed-object-profile/index.md#Config(Конфигурация)): 
 
 * Политика применения валидации (`Validation Policy`) - настройка валидации:
   * Всегда (`Always`) - политика будет проверяться при каждом опросе
