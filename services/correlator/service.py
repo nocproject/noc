@@ -22,7 +22,7 @@ import asyncio
 import orjson
 from bson import ObjectId
 from dateutil.parser import parse as parse_date
-from pydantic import parse_obj_as, ValidationError
+from pydantic import TypeAdapter, ValidationError
 import cachetools
 from pymongo import UpdateOne
 
@@ -67,6 +67,7 @@ from noc.services.correlator.rcalock import RCALock
 from noc.services.correlator.alarmrule import GroupItem
 
 ref_lock = threading.Lock()
+ta_DisposeRequest = TypeAdapter(DisposeRequest)
 
 
 class CorrelatorService(FastAPIService):
@@ -730,7 +731,7 @@ class CorrelatorService(FastAPIService):
             data["$op"] = "event"
         # Parse request
         try:
-            req = parse_obj_as(DisposeRequest, data)
+            req = ta_DisposeRequest.validate_python(data)
         except ValidationError as e:
             self.logger.error("Malformed message: %s", e)
             metrics["malformed_messages"] += 1

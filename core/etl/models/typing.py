@@ -6,24 +6,25 @@
 # ----------------------------------------------------------------------
 
 # Python modules
-from typing import Generic, TypeVar
+from typing import Generic, TypeVar, Any
 
 # Third-party modules
-from pydantic.fields import ModelField
+from pydantic.fields import FieldInfo
 
 
 T = TypeVar("T")
 
 
 class Reference(Generic[T]):
-    def __init__(self, name: str, model: T):
+    def __init__(self, name: str, model: T, value: Any):
         self.name = name
         self.model = model
+        self.value = value
 
     @classmethod
     def __get_validators__(cls):
         yield cls.validate
 
     @classmethod
-    def validate(cls, v, field: ModelField):
+    def validate(cls, v, field: FieldInfo):
         return str(v)

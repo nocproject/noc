@@ -15,8 +15,8 @@ from pydantic import BaseModel, Field
 class StatusItem(BaseModel):
     managed_object: str
     status: bool
-    timestamp: Optional[str]
-    labels: Optional[List[str]]
+    timestamp: Optional[str] = None
+    labels: Optional[List[str]] = None
 
 
 class SetStatusRequest(BaseModel):

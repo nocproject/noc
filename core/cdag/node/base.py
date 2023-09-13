@@ -93,13 +93,15 @@ class BaseCDAGNodeMetaclass(type):
             n.config_cls_slot = type(
                 f"{n.config_cls.__name__}_Slot",
                 (),
-                {"__slots__": tuple(sys.intern(x) for x in n.config_cls.__fields__)},
+                {"__slots__": tuple(sys.intern(x) for x in n.config_cls.model_fields)},
             )
         # Slotted state
         if hasattr(n, "state_cls"):
-            state_slots = tuple(sys.intern(x) for x in n.state_cls.__fields__)
-            req_state_fields = [f.name for f in n.state_cls.__fields__.values() if f.required]
-            opt_state_fields = [f.name for f in n.state_cls.__fields__.values() if not f.required]
+            state_slots = tuple(sys.intern(x) for x in n.state_cls.model_fields)
+            req_state_fields = [k for k, v in n.state_cls.model_fields.items() if v.is_required()]
+            opt_state_fields = [
+                k for k, v in n.state_cls.model_fields.items() if not v.is_required()
+            ]
             # Generate dict-getter code
             dict_fn = ["def dict(self):"]
             if opt_state_fields:
@@ -214,7 +216,7 @@ class BaseCDAGNode(object, metaclass=BaseCDAGNodeMetaclass):
         Convert pydantic model to slotted class instance
         """
         o = slot_cls()
-        for k in data.__fields__:
+        for k in data.model_fields:
             setattr(o, k, getattr(data, k))
         return o
 

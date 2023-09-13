@@ -41,7 +41,7 @@ from django.db.models import (
     Subquery,
     OuterRef,
 )
-from pydantic import BaseModel
+from pydantic import BaseModel, RootModel
 from pymongo import ASCENDING
 
 # NOC modules
@@ -148,12 +148,10 @@ class MaintenanceItem(BaseModel):
     stop: Optional[datetime.datetime] = None
 
 
-class MaintenanceItems(BaseModel):
-    __root__: Dict[str, MaintenanceItem]
+MaintenanceItems = RootModel[Dict[str, MaintenanceItem]]
 
 
-class CapsItems(BaseModel):
-    __root__: List[ModelCapsItem]
+CapsItems = RootModel[List[ModelCapsItem]]
 
 
 class CheckStatus(BaseModel):
@@ -178,8 +176,7 @@ class DiagnosticItem(BaseModel):
         return any(c.status for c in self.checks if not c.skipped)
 
 
-class DiagnosticItems(BaseModel):
-    __root__: Dict[str, DiagnosticItem]
+DiagnosticItems = RootModel[Dict[str, DiagnosticItem]]
 
 
 def default(obj):

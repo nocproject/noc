@@ -42,8 +42,8 @@ nodes:
 
 DOT = r"""digraph {
   rankdir="LR";
-  n00000 [label="n01\ntype: value\nvalue: 1", shape="cds"];
-  n00001 [label="n02\ntype: value\nvalue: 2", shape="cds"];
+  n00000 [label="n01\ntype: value\nvalue: 1.0", shape="cds"];
+  n00001 [label="n02\ntype: value\nvalue: 2.0", shape="cds"];
   n00002 [label="n03\ntype: add", shape="box"];
   n00003 [label="n04\ntype: state", shape="doubleoctagon"];
   n00000 -> n00002 [label="x"];
