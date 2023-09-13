@@ -6,7 +6,7 @@ forms:
       <strong>Short description</strong>: Escalator service <br/>
       <strong>Long description</strong>: Send notifications to external TT systems.<br/>
       <strong>Scale Recommendations</strong>: Have to be at least one per pool and not more than one on each node.<br/>
-      <strong>docs</strong>: <a href=https://docs.getnoc.com/master/en/admin/reference/services/escalator/ target=_blank>Escalator</a><br/>
+      <strong>docs</strong>: <a href=https://docs.getnoc.com/services-reference/escalator/ target=_blank>Escalator</a><br/>
       <strong>Placement constraint</strong>: Place more correlators to different nodes.<br/>
     power:
       default: 1

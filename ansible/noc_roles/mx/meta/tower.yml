@@ -6,7 +6,7 @@ forms:
       <strong>Short description</strong>: MX service <br/>
       <strong>Long description</strong>: MX sevice send messages over noc components<br/>
       <strong>Scale Recommendations</strong>: At least one per installation. <br/>
-      <strong>docs</strong>: <a href=https://docs.getnoc.com/master/en/admin/reference/services/mx/ target=_blank>MX</a><br/>
+      <strong>docs</strong>: <a href=https://docs.getnoc.com/services-reference/mx/ target=_blank>MX</a><br/>
       <strong>Placement constraint</strong>: No special recommendations. <br/>
     power:
       default: 1

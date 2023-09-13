@@ -6,7 +6,7 @@ forms:
       <strong>Short description</strong>:Login service <br/>
       <strong>Long description</strong>: Internal auth service. Acts as internal api endpoint to auth every web request to NOC web. Can authentificate via LDAP and internal database <br/>
       <strong>Scale Recommendations</strong>: At least two per installation. <br/>
-      <strong>docs</strong>: <a href=https://docs.getnoc.com/master/en/admin/reference/services/login/ target=_blank>Login</a><br/>
+      <strong>docs</strong>: <a href=https://docs.getnoc.com/services-reference/login/ target=_blank>Login</a><br/>
       <strong>Placement constraint</strong>: On node with nginx<br/>
     power:
       default: 2

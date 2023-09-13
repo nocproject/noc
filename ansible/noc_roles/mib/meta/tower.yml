@@ -6,7 +6,7 @@ forms:
       <strong>Short description</strong>: MIB service <br/>
       <strong>Long description</strong>: Launch and supervise tasks from Run commands app<br/>
       <strong>Scale Recommendations</strong>: One per installation if MIB compilation is assumed. <br/>
-      <strong>docs</strong>: <a href=https://docs.getnoc.com/master/en/admin/reference/services/mib/ target=_blank>MIB</a><br/>
+      <strong>docs</strong>: <a href=https://docs.getnoc.com/services-reference/mib/ target=_blank>MIB</a><br/>
       <strong>Placement constraint</strong>: None<br/>
     power:
       default: 1

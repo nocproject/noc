@@ -22,7 +22,7 @@
 
 ![](./img/tower-create-dc.png)
 
-## Скачать новые файлы плейбуков для установки [(Pools)](https://code.getnoc.com/noc/noc/-/edit/master/docs/en/docs/user/reference/concepts/pool/index.md)
+## Скачать новые файлы плейбуков для установки [(Pools)](../../../concepts/pool/index.md)
 
 1. `Environments` → `Pull`
 2. Дожидаемся уведомления `Pull complete`
@@ -46,39 +46,39 @@
 ### Singlenode installation
 
 1. Ставим флажки напротив следующих сервисов:
-	* [activator](https://docs.getnoc.com/master/en/admin/reference/services/activator/)
-	* [bi](https://docs.getnoc.com/master/en/admin/reference/services/bi/)
-	* [card](https://docs.getnoc.com/master/en/admin/reference/services/card/)
-	* [ch_datasource](https://docs.getnoc.com/master/en/admin/reference/services/datasource/)
-	* [chwriter](https://docs.getnoc.com/master/en/admin/reference/services/chwriter/)
-	* [classifier](https://docs.getnoc.com/master/en/admin/reference/services/classifier/)
+	* [activator](https://docs.getnoc.com/master/en/services-reference/activator/)
+	* [bi](https://docs.getnoc.com/master/en/services-reference/bi/)
+	* [card](https://docs.getnoc.com/master/en/services-reference/card/)
+	* [ch_datasource](https://docs.getnoc.com/master/en/services-reference/datasource/)
+	* [chwriter](https://docs.getnoc.com/master/en/services-reference/chwriter/)
+	* [classifier](https://docs.getnoc.com/master/en/services-reference/classifier/)
 	* clickhouse
 	* consul
 	* consul-template
-	* [correlator](https://docs.getnoc.com/master/en/admin/reference/services/correlator/)
-	* [datastream](https://docs.getnoc.com/master/en/admin/reference/services/datastream/)
-	* [discovery](https://docs.getnoc.com/master/en/admin/reference/services/discovery/)
-	* [escalator](https://docs.getnoc.com/master/en/admin/reference/services/escalator/)
+	* [correlator](https://docs.getnoc.com/master/en/services-reference/correlator/)
+	* [datastream](https://docs.getnoc.com/master/en/services-reference/datastream/)
+	* [discovery](https://docs.getnoc.com/master/en/services-reference/discovery/)
+	* [escalator](https://docs.getnoc.com/master/en/services-reference/escalator/)
 	* goss
 	* grafana
-	* [grafanads](https://docs.getnoc.com/master/en/admin/reference/services/grafanads/)
+	* [grafanads](https://docs.getnoc.com/master/en/services-reference/grafanads/)
 	* liftbridge
-	* [login](https://docs.getnoc.com/master/en/admin/reference/services/login/)
-	* [mailsender](https://docs.getnoc.com/master/en/admin/reference/services/mailsender/)
-	* [mib](https://docs.getnoc.com/master/en/admin/reference/services/mib/)
+	* [login](https://docs.getnoc.com/master/en/services-reference/login/)
+	* [mailsender](https://docs.getnoc.com/master/en/services-reference/mailsender/)
+	* [mib](https://docs.getnoc.com/master/en/services-reference/mib/)
 	* mongod
-	* [mrt](https://docs.getnoc.com/master/en/admin/reference/services/mrt/)
+	* [mrt](https://docs.getnoc.com/master/en/services-reference/mrt/)
 	* nats
 	* nginx
 	* noc
-	* [ping](https://docs.getnoc.com/master/en/admin/reference/services/ping)
+	* [ping](https://docs.getnoc.com/master/en/services-reference/ping)
 	* postgres
-	* [sae](https://docs.getnoc.com/master/en/admin/reference/services/sae/)
-	* [scheduler](https://docs.getnoc.com/master/en/admin/reference/services/scheduler/)
-	* [selfmon](https://docs.getnoc.com/master/en/admin/reference/services/selfmon/)
-	* [syslogcollector](https://docs.getnoc.com/master/en/admin/reference/services/syslogcollector/)
-	* [trapcollector](https://docs.getnoc.com/master/en/admin/reference/services/trapcollector/)
-	* [web](https://docs.getnoc.com/master/en/admin/reference/services/web/)
+	* [sae](https://docs.getnoc.com/master/en/services-reference/sae/)
+	* [scheduler](https://docs.getnoc.com/master/en/services-reference/scheduler/)
+	* [selfmon](https://docs.getnoc.com/master/en/services-reference/selfmon/)
+	* [syslogcollector](https://docs.getnoc.com/master/en/services-reference/syslogcollector/)
+	* [trapcollector](https://docs.getnoc.com/master/en/services-reference/trapcollector/)
+	* [web](https://docs.getnoc.com/master/en/services-reference/web/)
 
 2. Нажимаем кнопку Save
 

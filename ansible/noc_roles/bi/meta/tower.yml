@@ -6,7 +6,7 @@ forms:
       <strong>Short description</strong>: Report service <br/>
       <strong>Long description</strong>: Executes Bi requests on Clickhouse db<br/>
       <strong>Scale Recommendations</strong>: At least two per installation.<br/>
-      <strong>docs</strong>: <a href=https://docs.getnoc.com/master/en/admin/reference/services/bi/ target=_blank>Bi</a><br/>
+      <strong>docs</strong>: <a href=https://docs.getnoc.com/services-reference/bi/ target=_blank>Bi</a><br/>
       <strong>Placement constraint</strong>: On node with Clickhouse<br/>
     power:
       default: 2

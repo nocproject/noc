@@ -4,7 +4,7 @@
 Интерфейс служит для определения (`resolve`) IP адреса устройства (`ManagedObject`) по полю `FQDN`.
 Определение адреса запускается перед опросом и пытается определить IP адрес по DNS. Обработчик реализует собственный алгоритм определения IP адреса устройства.
 
-Address Resolver применяется в начале опроса [Discovery](../../admin/reference/discovery/box/index.md).
+Address Resolver применяется в начале опроса [Discovery](../discovery-reference/box/index.md).
 
  
     address_resolver(fqdn):

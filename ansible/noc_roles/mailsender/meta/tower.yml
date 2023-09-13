@@ -6,7 +6,7 @@ forms:
       <strong>Short description</strong>: Sends emails. <br/>
       <strong>Long description</strong>: Reads mail queue from Liftbridge and sends via gateway<br/>
       <strong>Scale Recommendations</strong>: At least one per installation. <br/>
-      <strong>docs</strong>: <a href=https://docs.getnoc.com/master/en/admin/reference/services/mailsender/ target=_blank>Mailsender</a><br/>
+      <strong>docs</strong>: <a href=https://docs.getnoc.com/services-reference/mailsender/ target=_blank>Mailsender</a><br/>
       <strong>Placement constraint</strong>: No special recommendations.<br/>
     power:
       default: 1

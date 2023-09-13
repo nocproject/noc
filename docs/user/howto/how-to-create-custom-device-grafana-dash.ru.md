@@ -81,8 +81,8 @@ GROUP BY t ORDER BY t
 ### JSON Datasource
 
 Используется плагин [simpod-json](https://grafana.com/grafana/plugins/simpod-json-datasource/) 
-и сервис [GrafanaDS](../../admin/reference/services/grafanads.md). 
-Набор данных ограничен доступными через `API` сервиса [GrafanaDS](../../admin/reference/services/grafanads.md), 
+и сервис [GrafanaDS](../../services-reference/grafanads.md). 
+Набор данных ограничен доступными через `API` сервиса [GrafanaDS](../../services-reference/grafanads.md), 
 но может быть расширен путём добавления новых `target` через [custom](../../dev/custom/index.md).
 
 1. При добавлении панели необходимо выбрать `Datasource` - **NOC-MO-SOURCE**
@@ -98,7 +98,7 @@ GROUP BY t ORDER BY t
 Доступны следующие `target`:
 
 | Target            | Запрос | Переменные | Описание                                                                                         | Условия                                                                                                                                                             |
-|-------------------|--------|------------|--------------------------------------------------------------------------------------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| ----------------- | ------ | ---------- | ------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | labels            | x      | v          | Доступные метки [Label](../reference/concepts/label/index.md)                                    | -                                                                                                                                                                   |
 | managed_object    | v      | v          | Запрос устройства [ManagedObject](../reference/concepts/managed-object/index.md)                 | * `labels` - набор меток </br> `administrative_domain` - З.О.                                                                                                       |
 | interface_profile | x      | v          | Запрос профилей интерфейсов [InterfaceProfile](../reference/concepts/interface-profile/index.md) | * `managed_object` - идентификатор устройства                                                                                                                       |

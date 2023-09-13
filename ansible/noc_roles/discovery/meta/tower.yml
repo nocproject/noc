@@ -6,7 +6,7 @@ forms:
       <strong>Short description</strong>: Discovery service <br/>
       <strong>Long description</strong>: Primary SAE service. Launches tasks on activators, parses results writes to databases. <br/>
       <strong>Scale Recommendations</strong>:  At least two per pool. <br/>
-      <strong>docs</strong>: <a href=https://docs.getnoc.com/master/en/admin/reference/services/discovery/ target=_blank>Discovery</a><br/>
+      <strong>docs</strong>: <a href=https://docs.getnoc.com/services-reference/discovery/ target=_blank>Discovery</a><br/>
       <strong>Placement constraint</strong>: High cpu/memory usage.<br/>
     power:
       default: 2

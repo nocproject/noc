@@ -6,7 +6,7 @@ forms:
       <strong>Short description</strong>: Kafka sender<br/>
       <strong>Long description</strong>: Sends messages to external Kafka server.<br/>
       <strong>Scale Recommendations</strong>: No special recommendations. <br/>
-      <strong>docs</strong>: <a href=https://docs.getnoc.com/master/en/admin/reference/services/kafkasender/ target=_blank>kafkasender</a><br/>
+      <strong>docs</strong>: <a href=https://docs.getnoc.com/services-reference/kafkasender/ target=_blank>kafkasender</a><br/>
       <strong>Placement constraint</strong>: No special recommendations.<br/>
     power:
       default: 1

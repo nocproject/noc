@@ -64,7 +64,7 @@
     * `MetricCollector` - `API` для приёма метрик из других систем
     * Агент (`Agent`) - сбор метрик с хостов
 * Сервис метрик (`Metric`) - отвечает за расчёт значений метрик и применение правил порогов
-* Писатель в базу ([CHWriter](../../../admin/reference/services/chwriter.md)) - записывает метрики в базу
+* Писатель в базу ([CHWriter](../../../services-reference/chwriter.md)) - записывает метрики в базу
 * Хранилище (`Clickhouse`) - хранить метрики
 * Отображение графиков (`Grafana`) - отображает собранные метрики на графиках
 
@@ -75,9 +75,9 @@
 
 ### Activator + Metric Discovery
 
-[Activator](../../../admin/reference/services/activator.md) взаимодействует с оборудованием по запросу
- [Discovery](../../../admin/reference/services/discovery.md).
- За съёкм метрик отвечает скрипт [get_metrics](../../../dev/reference/scripts/get_metrics.md) с параметром - список метрик. 
+[Activator](../../../services-reference/activator.md) взаимодействует с оборудованием по запросу
+ [Discovery](../../../services-reference/discovery.md).
+ За съёкм метрик отвечает скрипт [get_metrics](../../../scripts-reference/get_metrics.md) с параметром - список метрик. 
  Из коробки данный скрипт поддерживает стандартный набор метрик по `SNMP`, 
  а дополнительные описываются в профиле [Profile](../../reference/concepts/sa-profile/index.md).
 

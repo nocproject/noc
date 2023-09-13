@@ -49,15 +49,15 @@ System supports life cycle of events ensuring no important events left unnoticed
 События поступают в систему различными путями. Источниками могут быть отдельные как сервисы (коллекторы) так и 
 внутренни события системы. Рассмотрим доступные источники событий:
 
-| Источник | Активный | Протокол | Класс события | класс аварии | 
-|   ---    |  -----    | ---     | ---    | -------      |
-| [ping](../../../admin/reference/services/ping.md)  | v  | ICMP  | - | `NOC || Managed Object || Ping Failed`  | 
-| [trapcollector](../../../admin/reference/services/trapcollector.md) | x | SNMP | By Rule | By Rule |
-| [syslogcollector](../../../admin/reference/services/syslogcollector.md) | x | Syslog | By Rule | By Rule |
-| [Metric Threshold](../../../admin/reference/discovery/periodic/metrics.md) | v | -    | [Threshold Profile](../../../user/reference/concepts/threshold-profile/index.md) | [Threshold Profile](../../../user/reference/concepts/threshold-profile/index.md) | 
-| [Config Validation](../../../admin/reference/discovery/box/config.md) | v | - | [Config Validation Rules](../../../user/background/configuration-management/index.md#Создание%20политики%20валидации%20на%20основе%20запросов%20ConfDB) | 
-| [Alarm Discovery](../../../admin/reference/discovery/periodic/alarms.md) | v | CLI | By Rule | By Rule |
-| [Discovery](../../../admin/reference/discovery/box/index.md) | v | CLI | - | - | 
+| Источник                                                          | Активный | Протокол | Класс события                                                                                                                                           | класс аварии                                                      |
+| ----------------------------------------------------------------- | -------- | -------- | ------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------- |
+| [ping](../../../services-reference/ping.md)                       | v        | ICMP     | -                                                                                                                                                       | `NOC                                                              |  | Managed Object |  | Ping Failed` |
+| [trapcollector](../../../services-reference/trapcollector.md)     | x        | SNMP     | By Rule                                                                                                                                                 | By Rule                                                           |
+| [syslogcollector](../../../services-reference/syslogcollector.md) | x        | Syslog   | By Rule                                                                                                                                                 | By Rule                                                           |
+| [Metric Threshold](../../discovery-reference/periodic/metrics.md) | v        | -        | [Threshold Profile](../../../concepts/threshold-profile/index.md)                                                                                       | [Threshold Profile](../../../concepts/threshold-profile/index.md) |
+| [Config Validation](../../discovery-reference/box/config.md)      | v        | -        | [Config Validation Rules](../../../user/background/configuration-management/index.md#Создание%20политики%20валидации%20на%20основе%20запросов%20ConfDB) |
+| [Alarm Discovery](../../discovery-reference/periodic/alarms.md)   | v        | CLI      | By Rule                                                                                                                                                 | By Rule                                                           |
+| [Discovery](../../discovery-reference/box/index.md)               | v        | CLI      | -                                                                                                                                                       | -                                                                 |
 
 
 ## Обработка событий
@@ -208,7 +208,7 @@ System supports life cycle of events ensuring no important events left unnoticed
 Основная задача коррелятора, это сокращение числа событий путём установления первопричины (корреляции) и группировки. 
 Это позволяет сигнализировать оператору только о том, на что стоит обратить внимание, отсеивая менее важное путём выставление важности (`severity`). 
 
-События в коррелятор [correlator](../../../admin/reference/services/correlator.md) поступают по
+События в коррелятор [correlator](../../../services-reference/correlator.md) поступают по
 очереди [dispose](../../../dev/api/streams/dispose.md) 
 
 Коррелятор ищет связи между событиями их разных источников, осуществляет их корреляцию и группировку, 

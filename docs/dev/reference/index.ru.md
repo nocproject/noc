@@ -6,15 +6,15 @@
 
 ## Перечень доступных обработчиков
 
-| Имя  | Интерфейс    | Запуск                                                           | Настройки     |
-| ---- | --- |------------------------------------------------------------------| ---- | 
-| [Config Filter](config-filter.md) | `Allow Config Filter` | Опрос [Config](../../admin/reference/discovery/box/config.md) | [Managed Object](../../user/reference/concepts/managed-object/index.md) |
-| [Config Diff Filter](config-diff-filter.md) | `Allow Config Diff Filter` | Опрос [Config](../../admin/reference/discovery/box/config.md) | [Managed Object](../../user/reference/concepts/managed-object/index.md) |
-| [Config Validation](config-validation.md) | `Allow Config Validation` | Опрос [Config](../../admin/reference/discovery/box/config.md) | [Managed Object](../../user/reference/concepts/managed-object/index.md) |
-| [Address Resolver](address-resolver.md) | `Allow Address Resolver` | Опрос [Discovery](../../admin/reference/discovery/box/hk.md)  | [Managed Object Profile](../../user/reference/concepts/managed-object-profile/index.md) | 
-| [Housekeeper](housekeeper.md) | `Allow Housekeeping` | Опрос [HK](../../admin/reference/discovery/box/hk.md)         | [Managed Object Profile](../../user/reference/concepts/managed-object-profile/index.md) |
-| [DS Filter](ds-filter.md) | `Allow DS Filter` | [Datastream](../api/datastream/index.md)                         | [DS Filter](../../user/reference/concepts/managed-object-profile/index.md) |
-| [Iface Description](ifacedescription.md) | `Allow Iface Description` | Опрос [ifDesc](../../admin/reference/discovery/box/ifdesc.md) | [Managed Object Profile](../../user/reference/concepts/managed-object-profile/index.md) |
+| Имя                                         | Интерфейс                  | Запуск                                               | Настройки                                                                |
+| ------------------------------------------- | -------------------------- | ---------------------------------------------------- | ------------------------------------------------------------------------ |
+| [Config Filter](config-filter.md)           | `Allow Config Filter`      | Опрос [Config](../discovery-reference/box/config.md) | [Managed Object](../../concepts/managed-object/index.md)                 |
+| [Config Diff Filter](config-diff-filter.md) | `Allow Config Diff Filter` | Опрос [Config](../discovery-reference/box/config.md) | [Managed Object](../../concepts/managed-object/index.md)                 |
+| [Config Validation](config-validation.md)   | `Allow Config Validation`  | Опрос [Config](../discovery-reference/box/config.md) | [Managed Object](../../concepts/managed-object/index.md)                 |
+| [Address Resolver](address-resolver.md)     | `Allow Address Resolver`   | Опрос [Discovery](../discovery-reference/box/hk.md)  | [Managed Object Profile](../../concepts/managed-object-profile/index.md) |
+| [Housekeeper](housekeeper.md)               | `Allow Housekeeping`       | Опрос [HK](../discovery-reference/box/hk.md)         | [Managed Object Profile](../../concepts/managed-object-profile/index.md) |
+| [DS Filter](ds-filter.md)                   | `Allow DS Filter`          | [Datastream](../api/datastream/index.md)             | [DS Filter](../../concepts/managed-object-profile/index.md)              |
+| [Iface Description](ifacedescription.md)    | `Allow Iface Description`  | Опрос [ifDesc](../discovery-reference/box/ifdesc.md) | [Managed Object Profile](../../concepts/managed-object-profile/index.md) |
 
 ## Примеры
 

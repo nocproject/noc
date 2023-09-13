@@ -4,7 +4,7 @@
 Интерфейс для взаимодействия с результатами опроса. Housekeeper запускается в конце опроса и
 служит для манипуляции с устройством (`ManagedObject`) по результатам опроса. 
 
-Housekeeper применяется в конце опроса [Discovery](../../admin/reference/discovery/box/hk.md).
+Housekeeper применяется в конце опроса [Discovery](../discovery-reference/box/hk.md).
 
  
     housekeeper(check):
@@ -17,7 +17,7 @@ Housekeeper применяется в конце опроса [Discovery](../../
 
 ### Назначение профиля объекта 
 
-Устройствам с [Capabilities](../../user/reference/caps/index.md) `"BRAS | IPoE"` назначается профиль объекта `bras`.
+Устройствам с [Capabilities](../../caps-reference/index.md) `"BRAS | IPoE"` назначается профиль объекта `bras`.
 
 ```python
     from noc.sa.models.managedobjectprofile import ManagedObjectProfile

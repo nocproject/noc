@@ -6,7 +6,7 @@ forms:
       <strong>Short description</strong>: Card service <br/>
       <strong>Long description</strong>: Responsible for an alternative web interface - cards. They are ReadOnly pages showing information on network equipment, segments, and accidents.<br/>
       <strong>Scale Recommendations</strong>: At least two per installation.<br/>
-      <strong>docs</strong>: <a href=https://docs.getnoc.com/master/en/admin/reference/services/card/ target=_blank>Card</a><br/>
+      <strong>docs</strong>: <a href=https://docs.getnoc.com/services-reference/card/ target=_blank>Card</a><br/>
       <strong>Placement constraint</strong>: On node with nginx<br/>
     power:
       default: 2
