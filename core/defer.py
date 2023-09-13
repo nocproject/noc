@@ -128,5 +128,5 @@ def defer(handler: str, key: Optional[int] = None, **kwargs) -> None:
         key = dict_hash_int_args(handler=handler, **kwargs)
     q = orjson.dumps(q)
     if len(q) > config.msgstream.max_message_size:
-        logger.warning("[%s|%s] Defer max message size exceeded: %s", handler, key, len(d))
+        logger.warning("[%s|%s] Defer max message size exceeded: %s", handler, key, len(q))
     svc.publish(q, stream=JOBS_STREAM, partition=key % JOBS_PARTITIONS)
