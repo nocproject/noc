@@ -5,6 +5,9 @@
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
+# Python modules
+import os
+
 # Third-party modules
 import pytest
 import yaml
