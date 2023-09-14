@@ -675,7 +675,13 @@ class EscalationSequence(BaseSequence):
         esc_tt: Dict[ObjectId, str] = {}
         for doc in Escalation._get_collection().aggregate(
             [
-                {"$match": {"close_timestamp": {"$exists": False}, "items.alarm": {"$in": alarms}}},
+                {
+                    "$match": {
+                        "close_timestamp": {"$exists": False},
+                        "items.alarm": {"$in": alarms},
+                        "tt_id": {"$exists": True},
+                    }
+                },
                 {"$project": {"_id": 1, "items": 1, "tt_id": 1}},
                 {"$unwind": "$items"},
                 {"$match": {"items.alarm": {"$in": alarms}}},
