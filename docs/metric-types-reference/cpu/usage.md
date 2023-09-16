@@ -8,7 +8,7 @@ CPU Usage in percents
 ## Data Model
 
 Scope
-: [CPU](../metric-scopes-reference/cpu.md)
+: [CPU](../../metric-scopes-reference/cpu.md)
 
 Field
 : `usage`

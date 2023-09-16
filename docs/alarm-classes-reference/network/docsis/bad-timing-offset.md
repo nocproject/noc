@@ -28,4 +28,4 @@ Locate the cable modem based on the MAC address and report the initial timing of
 
 | Event Class                                                                                              | Description |
 | -------------------------------------------------------------------------------------------------------- | ----------- |
-| [Network \| DOCSIS \| Bad Timing Offset](../event-classes-reference/network/docsis/bad-timing-offset.md) | dispose     |
+| [Network \| DOCSIS \| Bad Timing Offset](../../../event-classes-reference/network/docsis/bad-timing-offset.md) | dispose     |

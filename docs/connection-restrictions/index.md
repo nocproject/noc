@@ -4,26 +4,30 @@ Real world does not allow connecting anything to anything. So inventory
 _MUST_ enforce as many restrictions as possible. Connection restrictions
 may be expressed in several complimentary ways:
 
-- [Type](#type)
-- [Direction](#direction)
-- [Gender](#gender)
-- [Protocols](#protocols)
-- [Crossing](#crossing)
+- [Connection Restrictions](#connection-restrictions)
+  - [Type](#type)
+  - [Gender](#gender)
+  - [Direction](#direction)
+  - [Protocols](#protocols)
+  - [Crossing](#crossing)
+    - [Groups](#groups)
+    - [Cross](#cross)
+    - [Examples](#examples)
 
 The connection may be established only when all five kinds of restrictions are met.
 
 ## Type
 
-[Connection Type](../../reference/connection-type/index.md) restricts a physical type of
+[Connection Type](../connection-types-reference/index.md) restricts a physical type of
 connection. I.e. meaningless to connect RJ-45 jack to C14 electrical socket.
 The connection may be established only with the same or compatible types.
 
 Connection type examples:
 
-- [RJ45](../../reference/connection-type/electrical/rj45.md)
-- [C13](../../reference/connection-type/power/iec-60320-c13.md)
-- [C14](../../reference/connection-type/power/iec-60320-c14.md)
-- [LC](../../reference/connection-type/optical/lc.md)
+- [RJ45](../connection-types-reference/electrical/rj45.md)
+- [C13](../connection-types-reference/power/iec-60320-c13.md)
+- [C14](../connection-types-reference/power/iec-60320-c14.md)
+- [LC](../connection-types-reference/optical/lc.md)
 
 Type may be considered as mechanical form-factor, something like the form, size,
 and patterns of pins and holes.
@@ -109,7 +113,7 @@ It may support 2 or 4-wire RS-485 serial protocol. It may be dumb passive cross-
 entry, leading floors away. You still may plug RJ-45 jack anyway, but will be any use of that?
 
 So the protocols define possible usage of connection.
-Refer to the [Inventory Protocols](../../reference/inventory-protocols.md) for
+Refer to the [Inventory Protocols](../inventory-protocols-reference/index.md) for
 the full list of protocols, provided by NOC. Protocols may be symmetric,
 when both peers utilizing the same configuration, like autoconfigured ethernet ports.
 Protocols may be asymmetric, like PoE consumer and PoE provider, RS-232 DTU and DCU.
@@ -207,8 +211,8 @@ crossing settings:
 
     | Name | Direction | Group | Cross |
     | ---- | --------- | ----- | ----: |
-    | 0    | `s`       |       | 1     |
-    | 1    | `s`       |       | 0     |
+    | 0    | `s`       |       |     1 |
+    | 1    | `s`       |       |     0 |
 
     Note that connectors are crossed together and the `group` is not used.
     This case doesn't apply any additional restrictions, as two `s` connections
@@ -222,10 +226,10 @@ crossing settings:
 
     | Name | Direction | Group | Cross |
     | ---- | --------- | ----- | ----: |
-    | 0-0  | `s`       |       | 1-0   |
-    | 0-1  | `s`       |       | 1-1   |
-    | 1-0  | `s`       |       | 0-0   |
-    | 1-1  | `s`       |       | 0-1   |
+    | 0-0  | `s`       |       |   1-0 |
+    | 0-1  | `s`       |       |   1-1 |
+    | 1-0  | `s`       |       |   0-0 |
+    | 1-1  | `s`       |       |   0-1 |
 
     Note that connectors are crossed to the corresponding connector on the other end.
 
@@ -236,11 +240,11 @@ crossing settings:
 
     | Name | Direction | Group | Cross |
     | ---- | --------- | ----: | ----: |
-    | in   | `s`       | 1     |       |
-    | out0 | `s`       | 1     | in    |
-    | out1 | `s`       | 1     | in    |
-    | out2 | `s`       | 1     | in    |
-    | out3 | `s`       | 1     | in    |
+    | in   | `s`       |     1 |       |
+    | out0 | `s`       |     1 |    in |
+    | out1 | `s`       |     1 |    in |
+    | out2 | `s`       |     1 |    in |
+    | out3 | `s`       |     1 |    in |
 
     Note that all connectors are placed and the same group and output connectors
     are crossed to input one.

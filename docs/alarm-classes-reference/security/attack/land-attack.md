@@ -24,4 +24,4 @@ uuid: 35e9d7f3-b6ba-483b-8fb1-d504d6c29295
 
 | Event Class                                                                                    | Description |
 | ---------------------------------------------------------------------------------------------- | ----------- |
-| [Security \| Attack \| Land Attack](../event-classes-reference/security/attack/land-attack.md) | dispose     |
+| [Security \| Attack \| Land Attack](../../../event-classes-reference/security/attack/land-attack.md) | dispose     |

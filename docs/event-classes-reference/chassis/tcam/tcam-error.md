@@ -15,9 +15,9 @@ From random instability to complete operation failure
 
 ## Variables
 
-Variable | Type | Required | Description
---- | --- | --- | ---
-reason | str | {{ no }} | Reason
+| Variable | Type | Required | Description |
+| -------- | ---- | -------- | ----------- |
+| reason   | str  | {{ no }} | Reason      |
 
 ## Alarms
 
@@ -25,6 +25,6 @@ reason | str | {{ no }} | Reason
 
 `Chassis | TCAM | TCAM Error` events may raise following alarms:
 
-Alarm Class | Description
---- | ---
-[Chassis \| TCAM \| TCAM Error](../../../alarm-classes/chassis/tcam/tcam-error.md) | dispose
+| Alarm Class                                                                                  | Description |
+| -------------------------------------------------------------------------------------------- | ----------- |
+| [Chassis \| TCAM \| TCAM Error](../../../alarm-classes-reference/chassis/tcam/tcam-error.md) | dispose     |

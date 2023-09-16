@@ -17,6 +17,6 @@ Battery Power Normal
 
 `Environment | UPS | Battery Power Normal` events may clear following alarms:
 
-Alarm Class | Description
---- | ---
-[Environment \| UPS \| Battery Power Low](../../../alarm-classes/environment/ups/battery-power-low.md) | dispose
+| Alarm Class                                                                                                      | Description |
+| ---------------------------------------------------------------------------------------------------------------- | ----------- |
+| [Environment \| UPS \| Battery Power Low](../../../alarm-classes-reference/environment/ups/battery-power-low.md) | dispose     |

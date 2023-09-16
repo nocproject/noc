@@ -20,18 +20,18 @@ Databases
 
 ## Processed Streams
 
-```mermaid
+``` mermaid
 graph LR
    mx([mx]) -->|kafkasender| kafkasender
 ```
 
 ### Input Streams
 
-| Stream                                                   | Description                       |
-| -------------------------------------------------------- | --------------------------------- |
-| [kafkasender](../../../streams-reference/kafkasender.md) | Messages received from mx service |
+| Stream                                             | Description                       |
+| -------------------------------------------------- | --------------------------------- |
+| [kafkasender](../streams-reference/kafkasender.md) | Messages received from mx service |
 
 ## Configuration
 
-`kafkasender` service may be configured via [[kafkasender]](../config/kafkasender.md)
+`kafkasender` service may be configured via [[kafkasender]](../config-reference/kafkasender.md)
 config section.

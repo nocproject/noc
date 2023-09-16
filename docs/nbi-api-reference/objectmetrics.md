@@ -11,7 +11,7 @@ POST /api/nbi/objectmetrics
 
 Get metrics for one or more [Managed Objects](../concepts/managed-object/index.md).
 Maximal allowed time range is limited by
-[nbi.objectmetrics_max_interval](../../../../config-reference/nbi.md#objectmetrics_max_interval)
+[nbi.objectmetrics_max_interval](../config-reference/nbi.md#objectmetrics_max_interval)
 configuration setting.
 
 <!-- prettier-ignore -->
@@ -77,10 +77,10 @@ object (string)
 : [Managed Object's](../concepts/managed-object/index.md) ID
 
 interfaces (array of string)
-: List of requested interfaces (Only for [Interface Scope](../../../../metric-scopes-reference/index.md)).
+: List of requested interfaces (Only for [Interface Scope](../metric-scopes-reference/index.md)).
 
 metric_types (array of string)
-: List of requested [Metric Types](../../../../metric-types-reference/index.md) names
+: List of requested [Metric Types](../metric-types-reference/index.md) names
 
 
 ### Request Headers
@@ -105,7 +105,7 @@ path (array of strings)
 : Metric path
 
 interface (string):
-Interface (Only for [Interface Scope](../../../../metric-scopes-reference/index.md)).
+Interface (Only for [Interface Scope](../metric-scopes-reference/index.md)).
 
 values (array of arrays)
 : Measured values as pairs of (`timestamp`, `value`)

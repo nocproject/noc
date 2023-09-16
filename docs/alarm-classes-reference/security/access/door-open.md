@@ -22,11 +22,11 @@ uuid: cceea535-e9b4-4bce-a419-9bdf1f0c3ffb
 
 | Event Class                                                                                | Description |
 | ------------------------------------------------------------------------------------------ | ----------- |
-| [Security \| Access \| Door Open](../event-classes-reference/security/access/door-open.md) | dispose     |
+| [Security \| Access \| Door Open](../../../event-classes-reference/security/access/door-open.md) | dispose     |
 
 ### Closing Events
 `Security | Access | Door Open` may be cleared by events
 
 | Event Class                                                                                  | Description |
 | -------------------------------------------------------------------------------------------- | ----------- |
-| [Security \| Access \| Door Close](../event-classes-reference/security/access/door-close.md) | dispose     |
+| [Security \| Access \| Door Close](../../../event-classes-reference/security/access/door-close.md) | dispose     |

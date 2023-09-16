@@ -13,9 +13,9 @@ Failed to connect to vCenter
 
 ## Variables
 
-Variable | Type | Required | Description
---- | --- | --- | ---
-reason | str | {{ no }} | Reason
+| Variable | Type | Required | Description |
+| -------- | ---- | -------- | ----------- |
+| reason   | str  | {{ no }} | Reason      |
 
 ## Alarms
 
@@ -23,6 +23,6 @@ reason | str | {{ no }} | Reason
 
 `Vendor | Arista | EOS | VMTracer | Failed to connect to vCenter` events may raise following alarms:
 
-Alarm Class | Description
---- | ---
-[Vendor \| Arista \| EOS \| VMTracer \| Failed to connect to vCenter](../../../../../alarm-classes/vendor/arista/eos/vmtracer/failed-to-connect-to-vcenter.md) | dispose
+| Alarm Class                                                                                                                                                              | Description |
+| ------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ----------- |
+| [Vendor \| Arista \| EOS \| VMTracer \| Failed to connect to vCenter](../../../../../alarm-classes-reference/vendor/arista/eos/vmtracer/failed-to-connect-to-vcenter.md) | dispose     |

@@ -24,4 +24,4 @@ uuid: f73e3a58-e792-4a3e-99ca-88247247bf7d
 
 | Event Class                                                                                      | Description |
 | ------------------------------------------------------------------------------------------------ | ----------- |
-| [Security \| Attack \| Smurf Attack](../event-classes-reference/security/attack/smurf-attack.md) | dispose     |
+| [Security \| Attack \| Smurf Attack](../../../event-classes-reference/security/attack/smurf-attack.md) | dispose     |

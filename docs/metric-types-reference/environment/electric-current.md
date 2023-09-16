@@ -8,7 +8,7 @@ The metric for the Electric Сurrent
 ## Data Model
 
 Scope
-: [Environment](../metric-scopes-reference/environment.md)
+: [Environment](../../metric-scopes-reference/environment.md)
 
 Field
 : `elec_current`

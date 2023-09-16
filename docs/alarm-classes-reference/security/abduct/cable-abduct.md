@@ -20,4 +20,4 @@ Check electrics and send security team to catch the thief
 
 | Event Class                                                                                      | Description |
 | ------------------------------------------------------------------------------------------------ | ----------- |
-| [Security \| Abduct \| Cable Abduct](../event-classes-reference/security/abduct/cable-abduct.md) | dispose     |
+| [Security \| Abduct \| Cable Abduct](../../../event-classes-reference/security/abduct/cable-abduct.md) | dispose     |

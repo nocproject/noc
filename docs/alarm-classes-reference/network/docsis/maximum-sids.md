@@ -26,4 +26,4 @@ Assign the cable modem to another line card.
 
 | Event Class                                                                                    | Description |
 | ---------------------------------------------------------------------------------------------- | ----------- |
-| [Network \| DOCSIS \| Maximum SIDs](../event-classes-reference/network/docsis/maximum-sids.md) | dispose     |
+| [Network \| DOCSIS \| Maximum SIDs](../../../event-classes-reference/network/docsis/maximum-sids.md) | dispose     |

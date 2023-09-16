@@ -19,11 +19,11 @@ Check interfaces on both sides for possible errors
 
 ## Variables
 
-Variable | Type | Required | Description
---- | --- | --- | ---
-interface | interface_name | {{ yes }} | Affected interface
-speed | str | {{ no }} | Link speed
-duplex | str | {{ no }} | Duplex mode
+| Variable  | Type           | Required  | Description        |
+| --------- | -------------- | --------- | ------------------ |
+| interface | interface_name | {{ yes }} | Affected interface |
+| speed     | str            | {{ no }}  | Link speed         |
+| duplex    | str            | {{ no }}  | Duplex mode        |
 
 ## Alarms
 
@@ -31,9 +31,9 @@ duplex | str | {{ no }} | Duplex mode
 
 `Network | Link | Link Up` events may clear following alarms:
 
-Alarm Class | Description
---- | ---
-[Network \| Link \| Link Down](../../../alarm-classes/network/link/link-down.md) | Clear Link Down
-[Network \| Link \| Err-Disable](../../../alarm-classes/network/link/err-disable.md) | Clear Err-Disable
-[Network \| STP \| BPDU Guard Violation](../../../alarm-classes/network/stp/bpdu-guard-violation.md) | Clear BPDU Guard Violation
-[Network \| STP \| Root Guard Violation](../../../alarm-classes/network/stp/root-guard-violation.md) | Clear Root Guard Violation
+| Alarm Class                                                                                                    | Description                |
+| -------------------------------------------------------------------------------------------------------------- | -------------------------- |
+| [Network \| Link \| Link Down](../../../alarm-classes-reference/network/link/link-down.md)                     | Clear Link Down            |
+| [Network \| Link \| Err-Disable](../../../alarm-classes-reference/network/link/err-disable.md)                 | Clear Err-Disable          |
+| [Network \| STP \| BPDU Guard Violation](../../../alarm-classes-reference/network/stp/bpdu-guard-violation.md) | Clear BPDU Guard Violation |
+| [Network \| STP \| Root Guard Violation](../../../alarm-classes-reference/network/stp/root-guard-violation.md) | Clear Root Guard Violation |

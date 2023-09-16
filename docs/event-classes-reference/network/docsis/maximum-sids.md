@@ -17,9 +17,9 @@ Assign the cable modem to another line card.
 
 ## Variables
 
-Variable | Type | Required | Description
---- | --- | --- | ---
-interface | interface_name | {{ yes }} | Cable interface
+| Variable  | Type           | Required  | Description     |
+| --------- | -------------- | --------- | --------------- |
+| interface | interface_name | {{ yes }} | Cable interface |
 
 ## Alarms
 
@@ -27,6 +27,6 @@ interface | interface_name | {{ yes }} | Cable interface
 
 `Network | DOCSIS | Maximum SIDs` events may raise following alarms:
 
-Alarm Class | Description
---- | ---
-[Network \| DOCSIS \| Maximum SIDs](../../../alarm-classes/network/docsis/maximum-sids.md) | dispose
+| Alarm Class                                                                                          | Description |
+| ---------------------------------------------------------------------------------------------------- | ----------- |
+| [Network \| DOCSIS \| Maximum SIDs](../../../alarm-classes-reference/network/docsis/maximum-sids.md) | dispose     |

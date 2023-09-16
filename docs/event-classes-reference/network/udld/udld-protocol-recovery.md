@@ -13,9 +13,9 @@ UniDirectional Link Detection (UDLD) Protocol Recovery
 
 ## Variables
 
-Variable | Type | Required | Description
---- | --- | --- | ---
-interface | interface_name | {{ yes }} | Interface
+| Variable  | Type           | Required  | Description |
+| --------- | -------------- | --------- | ----------- |
+| interface | interface_name | {{ yes }} | Interface   |
 
 ## Alarms
 
@@ -23,6 +23,6 @@ interface | interface_name | {{ yes }} | Interface
 
 `Network | UDLD | UDLD Protocol Recovery` events may clear following alarms:
 
-Alarm Class | Description
---- | ---
-[Network \| UDLD \| UDLD Protocol Error Detected](../../../alarm-classes/network/udld/udld-protocol-error-detected.md) | dispose
+| Alarm Class                                                                                                                      | Description |
+| -------------------------------------------------------------------------------------------------------------------------------- | ----------- |
+| [Network \| UDLD \| UDLD Protocol Error Detected](../../../alarm-classes-reference/network/udld/udld-protocol-error-detected.md) | dispose     |

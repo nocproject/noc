@@ -19,4 +19,4 @@
 
 ## Used in
 ----
-* [Discovery Box ID](../../discovery-reference/box/id.md)
+* [Discovery Box ID](../discovery-reference/box/id.md)

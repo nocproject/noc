@@ -27,11 +27,11 @@ uuid: 4841c76c-8b00-4a70-bfd0-adafc80800f4
 
 | Event Class                                                                                                  | Description |
 | ------------------------------------------------------------------------------------------------------------ | ----------- |
-| [Network \| STP \| STP Vlan Loop Detected](../event-classes-reference/network/stp/stp-vlan-loop-detected.md) | dispose     |
+| [Network \| STP \| STP Vlan Loop Detected](../../../event-classes-reference/network/stp/stp-vlan-loop-detected.md) | dispose     |
 
 ### Closing Events
 `Network | STP | STP Vlan Loop Detected` may be cleared by events
 
 | Event Class                                                                                                | Description |
 | ---------------------------------------------------------------------------------------------------------- | ----------- |
-| [Network \| STP \| STP Vlan Loop Cleared](../event-classes-reference/network/stp/stp-vlan-loop-cleared.md) | dispose     |
+| [Network \| STP \| STP Vlan Loop Cleared](../../../event-classes-reference/network/stp/stp-vlan-loop-cleared.md) | dispose     |

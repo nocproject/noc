@@ -13,12 +13,12 @@ IP Flapped between interfaces
 
 ## Variables
 
-Variable | Type | Required | Description
---- | --- | --- | ---
-ip | ip_address | {{ yes }} | Flapped IP
-mac | mac | {{ no }} | MAC
-from_interface | interface_name | {{ yes }} | From interface
-to_interface | interface_name | {{ yes }} | To interface
+| Variable       | Type           | Required  | Description    |
+| -------------- | -------------- | --------- | -------------- |
+| ip             | ip_address     | {{ yes }} | Flapped IP     |
+| mac            | mac            | {{ no }}  | MAC            |
+| from_interface | interface_name | {{ yes }} | From interface |
+| to_interface   | interface_name | {{ yes }} | To interface   |
 
 ## Alarms
 
@@ -26,6 +26,6 @@ to_interface | interface_name | {{ yes }} | To interface
 
 `Network | IP | IP Flap` events may raise following alarms:
 
-Alarm Class | Description
---- | ---
-[Network \| IP \| IP Flap](../../../alarm-classes/network/ip/ip-flap.md) | dispose
+| Alarm Class                                                                        | Description |
+| ---------------------------------------------------------------------------------- | ----------- |
+| [Network \| IP \| IP Flap](../../../alarm-classes-reference/network/ip/ip-flap.md) | dispose     |

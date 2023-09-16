@@ -26,4 +26,4 @@ uuid: c7ecc87a-070b-469a-9434-ffe3e924a76b
 
 | Event Class                                                                                | Description |
 | ------------------------------------------------------------------------------------------ | ----------- |
-| [Network \| MAC \| Duplicate MAC](../event-classes-reference/network/mac/duplicate-mac.md) | dispose     |
+| [Network \| MAC \| Duplicate MAC](../../../event-classes-reference/network/mac/duplicate-mac.md) | dispose     |

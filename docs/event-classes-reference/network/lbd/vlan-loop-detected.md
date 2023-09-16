@@ -15,10 +15,10 @@ Connection lost on a specific vlan
 
 ## Variables
 
-Variable | Type | Required | Description
---- | --- | --- | ---
-interface | interface_name | {{ yes }} | LBD interface
-vlan | int | {{ yes }} | Vlan
+| Variable  | Type           | Required  | Description   |
+| --------- | -------------- | --------- | ------------- |
+| interface | interface_name | {{ yes }} | LBD interface |
+| vlan      | int            | {{ yes }} | Vlan          |
 
 ## Alarms
 
@@ -26,6 +26,6 @@ vlan | int | {{ yes }} | Vlan
 
 `Network | LBD | Vlan Loop Detected` events may raise following alarms:
 
-Alarm Class | Description
---- | ---
-[Network \| LBD \| Vlan Loop Detected](../../../alarm-classes/network/lbd/vlan-loop-detected.md) | dispose
+| Alarm Class                                                                                                | Description |
+| ---------------------------------------------------------------------------------------------------------- | ----------- |
+| [Network \| LBD \| Vlan Loop Detected](../../../alarm-classes-reference/network/lbd/vlan-loop-detected.md) | dispose     |

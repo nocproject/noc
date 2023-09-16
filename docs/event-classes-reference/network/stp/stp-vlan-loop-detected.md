@@ -13,10 +13,10 @@ STP Vlan Loop Detected
 
 ## Variables
 
-Variable | Type | Required | Description
---- | --- | --- | ---
-interface | interface_name | {{ yes }} | Interface
-vlan | int | {{ yes }} | vlan
+| Variable  | Type           | Required  | Description |
+| --------- | -------------- | --------- | ----------- |
+| interface | interface_name | {{ yes }} | Interface   |
+| vlan      | int            | {{ yes }} | vlan        |
 
 ## Alarms
 
@@ -24,6 +24,6 @@ vlan | int | {{ yes }} | vlan
 
 `Network | STP | STP Vlan Loop Detected` events may raise following alarms:
 
-Alarm Class | Description
---- | ---
-[Network \| STP \| STP Vlan Loop Detected](../../../alarm-classes/network/stp/stp-vlan-loop-detected.md) | dispose
+| Alarm Class                                                                                                        | Description |
+| ------------------------------------------------------------------------------------------------------------------ | ----------- |
+| [Network \| STP \| STP Vlan Loop Detected](../../../alarm-classes-reference/network/stp/stp-vlan-loop-detected.md) | dispose     |

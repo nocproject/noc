@@ -4,19 +4,19 @@
 Registered events are passed in unified way from various collectors
 to classifier service for further analysis.
 
-Each system [Pool](../../../concepts/pool/index.md) has separate
+Each system [Pool](../concepts/pool/index.md) has separate
 `events` stream instance. i.e. `DEFAULT` pool will use `events.DEFAULT` stream,
 while `CORE` pool will use `events.CORE` stream.
 
 ## Publishers
 
-- [ping](../../../services-reference/ping.md) service.
-- [syslogcollector](../../../services-reference/syslogcollector.md) service.
-- [trapcollector](../../../services-reference/trapcollector.md) service.
+- [ping](../services-reference/ping.md) service.
+- [syslogcollector](../services-reference/syslogcollector.md) service.
+- [trapcollector](../services-reference/trapcollector.md) service.
 
 ## Subscribers
 
-- [classifier](../../../services-reference/classifier.md) service.
+- [classifier](../services-reference/classifier.md) service.
 
 ## Message Headers
 

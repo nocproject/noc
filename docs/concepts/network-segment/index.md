@@ -36,7 +36,7 @@ between its children and the rest of network.
 
 Proper segmentation is the key concept for various areas:
 
-- [Root-Cause Analysis](../glossary/index.md#root-cause-analysis) ([RCA](../glossary/index.md#rca)) for Fault Management
+- [Root-Cause Analysis](../../glossary/index.md#root-cause-analysis) ([RCA](../../glossary/index.md#rca)) for Fault Management
 - Network Maps
 - VLAN management
 - Configuration generation and checking
@@ -100,7 +100,7 @@ graph TB
     MO10 --- MO12
 ```
 
-NOC performs auto-layout of _Tree_ segment maps and proper [RCA](../glossary/index.md#rca)
+NOC performs auto-layout of _Tree_ segment maps and proper [RCA](../../glossary/index.md#rca)
 
 ### Forest
 
@@ -120,7 +120,7 @@ graph TB
 
 _Forest_ offers no redundancy. Any failed Object makes its children
 unavailable.
-NOC performs auto-layout of _Forest_ segment maps and proper [RCA](../glossary/index.md#rca)
+NOC performs auto-layout of _Forest_ segment maps and proper [RCA](../../glossary/index.md#rca)
 
 <!-- prettier-ignore -->
 !!! note
@@ -182,7 +182,7 @@ is performed with cheap switches contained within same PoP with backbone nodes.
 !!! todo
      Show Ring-and-Tree topology and describe fault propagation
 
-NOC performs neat auto-layout of _Ring_ segment maps and proper [RCA](../glossary/index.md#rca)
+NOC performs neat auto-layout of _Ring_ segment maps and proper [RCA](../../glossary/index.md#rca)
 
 ### Mesh
 
@@ -199,7 +199,7 @@ graph TB
 ```
 
 NOC performs probabilistic spring layout for mesh networks which may
-require manual correction and performs proper [RCA](../glossary/index.md#rca) in most cases
+require manual correction and performs proper [RCA](../../glossary/index.md#rca) in most cases
 
 ## Object Uplinks
 
@@ -212,7 +212,7 @@ _Uplink Paths_ are called _Uplinks_. The role of _Uplink_ is to provide
 _Connectivity_ for its _Downlink_. For reserved topologies object's _Uplink_ may be
 its _Downlink_ at the same time.
 
-_Uplinks_ are key concept for [RCA](../glossary/index.md#rca). _Managed Object_ with all unavailable
+_Uplinks_ are key concept for [RCA](../../glossary/index.md#rca). _Managed Object_ with all unavailable
 uplinks looses _Connectivity_ and problem lies somewhere on the _Uplink Paths_.
 
 NOC perform automatic uplinks calculation on topology changes. The proccess
@@ -472,12 +472,12 @@ sequenceDiagram
 MAC topology discovery can be used as last resort when other
 methods are failed. Contrary to other per-object methods MAC
 discovery performed is per-segment basis using previously collected
-MAC addresses. See [Discovery Segment MAC](../discovery-reference/segment/index.md) for details.
+MAC addresses. See [Discovery Segment MAC](../../discovery-reference/segment/index.md) for details.
 
 ## Autosegmentation
 
 Segmentation may be performed automatically during box discovery.
-See [Discovery Box Segmentation](../discovery-reference/box/segmentation.md) for details
+See [Discovery Box Segmentation](../../discovery-reference/box/segmentation.md) for details
 
 ## Redundancy
 

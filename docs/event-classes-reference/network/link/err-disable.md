@@ -13,10 +13,10 @@ Link in err-disable state
 
 ## Variables
 
-Variable | Type | Required | Description
---- | --- | --- | ---
-interface | interface_name | {{ yes }} | interface name
-reason | str | {{ no }} | err-disable reason
+| Variable  | Type           | Required  | Description        |
+| --------- | -------------- | --------- | ------------------ |
+| interface | interface_name | {{ yes }} | interface name     |
+| reason    | str            | {{ no }}  | err-disable reason |
 
 ## Alarms
 
@@ -24,6 +24,6 @@ reason | str | {{ no }} | err-disable reason
 
 `Network | Link | Err-Disable` events may raise following alarms:
 
-Alarm Class | Description
---- | ---
-[Network \| Link \| Err-Disable](../../../alarm-classes/network/link/err-disable.md) | dispose
+| Alarm Class                                                                                    | Description |
+| ---------------------------------------------------------------------------------------------- | ----------- |
+| [Network \| Link \| Err-Disable](../../../alarm-classes-reference/network/link/err-disable.md) | dispose     |

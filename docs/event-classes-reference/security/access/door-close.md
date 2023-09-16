@@ -13,9 +13,9 @@ Door is closed
 
 ## Variables
 
-Variable | Type | Required | Description
---- | --- | --- | ---
-name | str | {{ yes }} | Name
+| Variable | Type | Required  | Description |
+| -------- | ---- | --------- | ----------- |
+| name     | str  | {{ yes }} | Name        |
 
 ## Alarms
 
@@ -23,6 +23,6 @@ name | str | {{ yes }} | Name
 
 `Security | Access | Door Close` events may clear following alarms:
 
-Alarm Class | Description
---- | ---
-[Security \| Access \| Door Open](../../../alarm-classes/security/access/door-open.md) | dispose
+| Alarm Class                                                                                      | Description |
+| ------------------------------------------------------------------------------------------------ | ----------- |
+| [Security \| Access \| Door Open](../../../alarm-classes-reference/security/access/door-open.md) | dispose     |

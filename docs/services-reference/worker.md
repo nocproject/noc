@@ -24,7 +24,7 @@ graph LR
 
 | Stream                                     | Description   |
 | ------------------------------------------ | ------------- |
-| [jobs](../../../streams-reference/jobs.md) | Incoming jobs |
+| [jobs](../streams-reference/jobs.md) | Incoming jobs |
 
 ### Output Streams
 

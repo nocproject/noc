@@ -24,11 +24,11 @@ Link becomes unstable or is not responding
 
 | Event Class                                                                                                          | Description |
 | -------------------------------------------------------------------------------------------------------------------- | ----------- |
-| [Chassis \| Hardware \| Hardware Port Warning](../event-classes-reference/chassis/hardware/hardware-port-warning.md) | dispose     |
+| [Chassis \| Hardware \| Hardware Port Warning](../../../event-classes-reference/chassis/hardware/hardware-port-warning.md) | dispose     |
 
 ### Closing Events
 `Chassis | Hardware | Hardware Port Warning` may be cleared by events
 
 | Event Class                                                                                                                          | Description |
 | ------------------------------------------------------------------------------------------------------------------------------------ | ----------- |
-| [Chassis \| Hardware \| Hardware Port Warning Recover](../event-classes-reference/chassis/hardware/hardware-port-warning-recover.md) | dispose     |
+| [Chassis \| Hardware \| Hardware Port Warning Recover](../../../event-classes-reference/chassis/hardware/hardware-port-warning-recover.md) | dispose     |

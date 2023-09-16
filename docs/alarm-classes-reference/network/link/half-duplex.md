@@ -23,11 +23,11 @@ uuid: 2b7c3501-a858-4296-afa5-512131a51cc9
 
 | Event Class                                                                              | Description |
 | ---------------------------------------------------------------------------------------- | ----------- |
-| [Network \| Link \| Half-Duplex](../event-classes-reference/network/link/half-duplex.md) | dispose     |
+| [Network \| Link \| Half-Duplex](../../../event-classes-reference/network/link/half-duplex.md) | dispose     |
 
 ### Closing Events
 `Network | Link | Half-Duplex` may be cleared by events
 
 | Event Class                                                                              | Description |
 | ---------------------------------------------------------------------------------------- | ----------- |
-| [Network \| Link \| Full-Duplex](../event-classes-reference/network/link/full-duplex.md) | dispose     |
+| [Network \| Link \| Full-Duplex](../../../event-classes-reference/network/link/full-duplex.md) | dispose     |

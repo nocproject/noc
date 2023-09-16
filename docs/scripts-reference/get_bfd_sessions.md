@@ -38,4 +38,4 @@
 
 ## Used in
 -------
-* [Discovery Box BFD](../../discovery-reference/box/bfd.md)
+* [Discovery Box BFD](../discovery-reference/box/bfd.md)

@@ -41,11 +41,11 @@ graph TD
 
 | Event Class                                                                              | Description |
 | ---------------------------------------------------------------------------------------- | ----------- |
-| [Chassis \| PSU \| Power Failed](../event-classes-reference/chassis/psu/power-failed.md) | dispose     |
+| [Chassis \| PSU \| Power Failed](../../../event-classes-reference/chassis/psu/power-failed.md) | dispose     |
 
 ### Closing Events
 `Chassis | PSU | Power Failed` may be cleared by events
 
 | Event Class                                                                                  | Description |
 | -------------------------------------------------------------------------------------------- | ----------- |
-| [NOC \| Managed Object \| Ping OK](../event-classes-reference/noc/managed-object/ping-ok.md) | dispose     |
+| [NOC \| Managed Object \| Ping OK](../../../event-classes-reference/noc/managed-object/ping-ok.md) | dispose     |

@@ -15,8 +15,8 @@ flowchart TD
 
 Работает следующим образом. Мы создаём 2 профиля интерфейсов (`Interface Profile`):
 
-* `CPE. Downlink` - в нём настройку `Политика сбора MAC адресов` [MAC Discovery Policy](../concepts/interface-profile/index.md) выставляем в `Direct Downlink`
-* `CPE. Uplink` - в нём настройку `Политика сбора MAC адресов` [MAC Discovery Policy](../concepts/interface-profile/index.md) выставляем в `Direct Uplink`
+* `CPE. Downlink` - в нём настройку `Политика сбора MAC адресов` [MAC Discovery Policy](../../concepts/interface-profile/index.md) выставляем в `Direct Downlink`
+* `CPE. Uplink` - в нём настройку `Политика сбора MAC адресов` [MAC Discovery Policy](../../concepts/interface-profile/index.md) выставляем в `Direct Uplink`
 
 Дальше профилем `CPE. Downlink` размечаем интерфейсы коммутаторов к которым подключены `CPE`, 
 а `CPE. Uplink` интерфейсы `CPE`, которые смотрят в сторону коммутатора. 
@@ -38,7 +38,7 @@ flowchart TD
 
 ## Требования
 
-* Скрипт [get_chassis_id](../../../../scripts-reference/get_chassis_id.md) для соседнего и [get_chassis_id](../../../../scripts-reference/get_chassis_id.md) для текущего
-* Опрос xMAC включён в профиле объектов [Managed Object Profile](../concepts/managed-object-profile/index.md#Box(Полный_опрос))
-* Метод xMAC в *Методах построения топологии* [Segment Profile](../concepts/network-segment-profile/index.md)
+* Скрипт [get_chassis_id](../../scripts-reference/get_chassis_id.md) для соседнего и [get_chassis_id](../../scripts-reference/get_chassis_id.md) для текущего
+* Опрос xMAC включён в профиле объектов [Managed Object Profile](../../concepts/managed-object-profile/index.md#Box(Полный_опрос))
+* Метод xMAC в *Методах построения топологии* [Segment Profile](../../concepts/network-segment-profile/index.md)
 * Настройки  `Политика сбора MAC адресов` (`MAC Disovery Policy`) в `Профиле Интерфейса` (`Interface Profile`)

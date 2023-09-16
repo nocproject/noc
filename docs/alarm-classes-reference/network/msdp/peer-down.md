@@ -26,11 +26,11 @@ Check msdp peer aviability, check msdp peer configuration changes
 
 | Event Class                                                                          | Description |
 | ------------------------------------------------------------------------------------ | ----------- |
-| [Network \| MSDP \| Peer Down](../event-classes-reference/network/msdp/peer-down.md) | dispose     |
+| [Network \| MSDP \| Peer Down](../../../event-classes-reference/network/msdp/peer-down.md) | dispose     |
 
 ### Closing Events
 `Network | MSDP | Peer Down` may be cleared by events
 
 | Event Class                                                                      | Description |
 | -------------------------------------------------------------------------------- | ----------- |
-| [Network \| MSDP \| Peer Up](../event-classes-reference/network/msdp/peer-up.md) | dispose     |
+| [Network \| MSDP \| Peer Up](../../../event-classes-reference/network/msdp/peer-up.md) | dispose     |

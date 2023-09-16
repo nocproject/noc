@@ -8,7 +8,7 @@ Errors when recieved packets which have CRC checking errors
 ## Data Model
 
 Scope
-: [Interface](../../metric-scopes-reference/interface.md)
+: [Interface](../../../metric-scopes-reference/interface.md)
 
 Field
 : `errors_crc_in`

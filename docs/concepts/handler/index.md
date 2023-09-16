@@ -8,7 +8,7 @@
 NOC Plugin ecosystem bases on `Handlers` - the Python functions which
 allow to customize NOC behavior. NOC offers a lot of hooks where the
 custom code can be injected to alter default behaviour. Refer to
-[Handlers Overview](../handlers-reference/index.md) for possible handlers and examples
+[Handlers Overview](../../handlers-reference/index.md) for possible handlers and examples
 
 ## Naming Conventions
 

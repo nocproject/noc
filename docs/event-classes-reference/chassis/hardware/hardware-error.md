@@ -19,6 +19,6 @@ Device becomes unstable or is not responding
 
 `Chassis | Hardware | Hardware Error` events may raise following alarms:
 
-Alarm Class | Description
---- | ---
-[Chassis \| Hardware \| Hardware Error](../../../alarm-classes/chassis/hardware/hardware-error.md) | dispose
+| Alarm Class                                                                                                  | Description |
+| ------------------------------------------------------------------------------------------------------------ | ----------- |
+| [Chassis \| Hardware \| Hardware Error](../../../alarm-classes-reference/chassis/hardware/hardware-error.md) | dispose     |

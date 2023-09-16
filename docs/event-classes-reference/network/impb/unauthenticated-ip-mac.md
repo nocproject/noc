@@ -17,11 +17,11 @@ Check user IP and MAC, check IMPB entry, check topology
 
 ## Variables
 
-Variable | Type | Required | Description
---- | --- | --- | ---
-ip | ip_address | {{ yes }} | User IP
-mac | mac | {{ yes }} | User MAC
-interface | interface_name | {{ yes }} | Affected interface
+| Variable  | Type           | Required  | Description        |
+| --------- | -------------- | --------- | ------------------ |
+| ip        | ip_address     | {{ yes }} | User IP            |
+| mac       | mac            | {{ yes }} | User MAC           |
+| interface | interface_name | {{ yes }} | Affected interface |
 
 ## Alarms
 
@@ -29,6 +29,6 @@ interface | interface_name | {{ yes }} | Affected interface
 
 `Network | IMPB | Unauthenticated IP-MAC` events may raise following alarms:
 
-Alarm Class | Description
---- | ---
-[Network \| IMPB \| Unauthenticated IP-MAC](../../../alarm-classes/network/impb/unauthenticated-ip-mac.md) | dispose
+| Alarm Class                                                                                                          | Description |
+| -------------------------------------------------------------------------------------------------------------------- | ----------- |
+| [Network \| IMPB \| Unauthenticated IP-MAC](../../../alarm-classes-reference/network/impb/unauthenticated-ip-mac.md) | dispose     |

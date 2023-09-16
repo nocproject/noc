@@ -2,15 +2,15 @@
 
 kafkasender stream is a part of [GMX Pipeline](index.md#generic-message-exchange-pipeline).
 Outbound messages directed to the external Kafka cluster are routed into
-`kafkasender` stream by [mx](../../../services-reference/mx.md) service.
+`kafkasender` stream by [mx](../services-reference/mx.md) service.
 
 ## Publishers
 
-- [mx](../../../services-reference/mx.md) service
+- [mx](../services-reference/mx.md) service
 
 ## Subscribers
 
-- [kafkasender](../../../services-reference/kafkasender.md) service
+- [kafkasender](../services-reference/kafkasender.md) service
 
 ## Message Headers
 

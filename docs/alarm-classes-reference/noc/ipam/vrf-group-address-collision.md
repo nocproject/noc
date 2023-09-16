@@ -30,4 +30,4 @@ Check address allocation and equipment configuration
 
 | Event Class                                                                                                      | Description |
 | ---------------------------------------------------------------------------------------------------------------- | ----------- |
-| [NOC \| IPAM \| VRF Group Address Collision](../event-classes-reference/noc/ipam/vrf-group-address-collision.md) | dispose     |
+| [NOC \| IPAM \| VRF Group Address Collision](../../../event-classes-reference/noc/ipam/vrf-group-address-collision.md) | dispose     |

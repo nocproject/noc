@@ -51,11 +51,11 @@ graph TD
 
 | Event Class                                                                                    | Description |
 | ---------------------------------------------------------------------------------------------- | ----------- |
-| [Network \| EIGRP \| Neighbor Down](../event-classes-reference/network/eigrp/neighbor-down.md) | dispose     |
+| [Network \| EIGRP \| Neighbor Down](../../../event-classes-reference/network/eigrp/neighbor-down.md) | dispose     |
 
 ### Closing Events
 `Network | EIGRP | Neighbor Down` may be cleared by events
 
 | Event Class                                                                                | Description |
 | ------------------------------------------------------------------------------------------ | ----------- |
-| [Network \| EIGRP \| Neighbor Up](../event-classes-reference/network/eigrp/neighbor-up.md) | dispose     |
+| [Network \| EIGRP \| Neighbor Up](../../../event-classes-reference/network/eigrp/neighbor-up.md) | dispose     |

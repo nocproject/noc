@@ -34,4 +34,4 @@ Negotiate the source if it is your customer, or ignore
 
 | Event Class                                                                          | Description |
 | ------------------------------------------------------------------------------------ | ----------- |
-| [Security \| Attack \| Attack](../event-classes-reference/security/attack/attack.md) | dispose     |
+| [Security \| Attack \| Attack](../../../event-classes-reference/security/attack/attack.md) | dispose     |

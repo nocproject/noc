@@ -91,11 +91,11 @@ graph TD
 
 | Event Class                                                                          | Description |
 | ------------------------------------------------------------------------------------ | ----------- |
-| [Network \| Link \| Link Down](../event-classes-reference/network/link/link-down.md) | dispose     |
+| [Network \| Link \| Link Down](../../../event-classes-reference/network/link/link-down.md) | dispose     |
 
 ### Closing Events
 `Network | Link | Link Down` may be cleared by events
 
 | Event Class                                                                      | Description     |
 | -------------------------------------------------------------------------------- | --------------- |
-| [Network \| Link \| Link Up](../event-classes-reference/network/link/link-up.md) | Clear Link Down |
+| [Network \| Link \| Link Up](../../../event-classes-reference/network/link/link-up.md) | Clear Link Down |

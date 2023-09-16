@@ -12,7 +12,7 @@ to ensure consistent code quality.
 - Developer Collaboration Tools:
   - Gitlab
   - Telegram
-- [IDE](../../../glossary.md#ide):
+- [IDE](../../../glossary/index.md#ide):
   - [PyCharm](pycharm.md)
 - Code Formatters:
   - [black](black.md)

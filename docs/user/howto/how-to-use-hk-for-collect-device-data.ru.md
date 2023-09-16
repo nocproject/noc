@@ -87,7 +87,7 @@ def hk_handler(djob):
 
 ### Регистрация обработчика в системе
 
-Регистрация [обработчиков](../reference/concepts/handler/index.md) производится в меню Главное (`Main`) -> Настройки (`Setup`) -> Обработчики (`Handlers`).
+Регистрация [обработчиков](../concepts/handler/index.md) производится в меню Главное (`Main`) -> Настройки (`Setup`) -> Обработчики (`Handlers`).
 ![Регистрация обработчика в системе](image/handlers_new_hk_handler1.png)
  
 1. В *панели навигации* преходим в меню (`Main`) -> Настройки (`Setup`) -> Обработчики (`Handlers`)
@@ -116,7 +116,7 @@ def hk_handler(djob):
 
 ### Настройка запуска
 
-Настройки запуска находятся в [профиле объекта](../reference/concepts/managed-object-profile/index.md)
+Настройки запуска находятся в [профиле объекта](../concepts/managed-object-profile/index.md)
 Управление объектами (`Managed Object`) -> Настройки (`Setup`) -> Профили объекта (`Object Profile`)
 ![](image/managed_object_profile_box_enable_hk_handler.png)
 

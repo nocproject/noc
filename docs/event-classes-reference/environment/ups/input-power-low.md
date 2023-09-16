@@ -17,6 +17,6 @@ Input Power Low
 
 `Environment | UPS | Input Power Low` events may raise following alarms:
 
-Alarm Class | Description
---- | ---
-[Environment \| UPS \| Input Power Low](../../../alarm-classes/environment/ups/input-power-low.md) | dispose
+| Alarm Class                                                                                                  | Description |
+| ------------------------------------------------------------------------------------------------------------ | ----------- |
+| [Environment \| UPS \| Input Power Low](../../../alarm-classes-reference/environment/ups/input-power-low.md) | dispose     |

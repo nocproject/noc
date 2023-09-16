@@ -13,10 +13,10 @@ MPLS Path Up
 
 ## Variables
 
-Variable | Type | Required | Description
---- | --- | --- | ---
-name | str | {{ yes }} | Path name
-bandwidth | int | {{ no }} | Bandwidth (bps)
+| Variable  | Type | Required  | Description     |
+| --------- | ---- | --------- | --------------- |
+| name      | str  | {{ yes }} | Path name       |
+| bandwidth | int  | {{ no }}  | Bandwidth (bps) |
 
 ## Alarms
 
@@ -24,6 +24,6 @@ bandwidth | int | {{ no }} | Bandwidth (bps)
 
 `Network | MPLS | Path Up` events may clear following alarms:
 
-Alarm Class | Description
---- | ---
-[Network \| MPLS \| Path Down](../../../alarm-classes/network/mpls/path-down.md) | dispose
+| Alarm Class                                                                                | Description |
+| ------------------------------------------------------------------------------------------ | ----------- |
+| [Network \| MPLS \| Path Down](../../../alarm-classes-reference/network/mpls/path-down.md) | dispose     |

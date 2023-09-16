@@ -13,11 +13,11 @@ DOM above or below threshold recovered
 
 ## Variables
 
-Variable | Type | Required | Description
---- | --- | --- | ---
-interface | str | {{ yes }} | Physical port
-threshold | str | {{ no }} | Threshold type
-sensor | str | {{ no }} | Measured name
+| Variable  | Type | Required  | Description    |
+| --------- | ---- | --------- | -------------- |
+| interface | str  | {{ yes }} | Physical port  |
+| threshold | str  | {{ no }}  | Threshold type |
+| sensor    | str  | {{ no }}  | Measured name  |
 
 ## Alarms
 
@@ -25,6 +25,6 @@ sensor | str | {{ no }} | Measured name
 
 `Network | Link | DOM | Warning: Out of Threshold Recovered` events may clear following alarms:
 
-Alarm Class | Description
---- | ---
-[Network \| Link \| DOM \| Warning: Out of Threshold](../../../../alarm-classes/network/link/dom/warning-out-of-threshold.md) | dispose
+| Alarm Class                                                                                                                             | Description |
+| --------------------------------------------------------------------------------------------------------------------------------------- | ----------- |
+| [Network \| Link \| DOM \| Warning: Out of Threshold](../../../../alarm-classes-reference/network/link/dom/warning-out-of-threshold.md) | dispose     |

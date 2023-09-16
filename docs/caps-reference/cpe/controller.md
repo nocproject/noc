@@ -6,4 +6,4 @@ Data Type: `bool`
 
 ## Prerequisite for
 
-- [cpe discovery](../discovery-reference/box/cpe.md)
+- [cpe discovery](../../discovery-reference/box/cpe.md)

@@ -17,13 +17,13 @@ Check address allocation and equipment configuration
 
 ## Variables
 
-Variable | Type | Required | Description
---- | --- | --- | ---
-address | str | {{ yes }} | Address
-vrf | str | {{ yes }} | VRF
-interface | str | {{ no }} | Interface
-existing_vrf | str | {{ yes }} | Existing VRF
-existing_object | str | {{ no }} | Existing Object
+| Variable        | Type | Required  | Description     |
+| --------------- | ---- | --------- | --------------- |
+| address         | str  | {{ yes }} | Address         |
+| vrf             | str  | {{ yes }} | VRF             |
+| interface       | str  | {{ no }}  | Interface       |
+| existing_vrf    | str  | {{ yes }} | Existing VRF    |
+| existing_object | str  | {{ no }}  | Existing Object |
 
 ## Alarms
 
@@ -31,6 +31,6 @@ existing_object | str | {{ no }} | Existing Object
 
 `NOC | IPAM | VRF Group Address Collision` events may raise following alarms:
 
-Alarm Class | Description
---- | ---
-[NOC \| IPAM \| VRF Group Address Collision](../../../alarm-classes/noc/ipam/vrf-group-address-collision.md) | dispose
+| Alarm Class                                                                                                            | Description |
+| ---------------------------------------------------------------------------------------------------------------------- | ----------- |
+| [NOC \| IPAM \| VRF Group Address Collision](../../../alarm-classes-reference/noc/ipam/vrf-group-address-collision.md) | dispose     |

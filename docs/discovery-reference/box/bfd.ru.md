@@ -6,7 +6,7 @@
 
 ## Требования
 
-* Скрипт [get_bfd_sessions](../../../../scripts-reference/get_bfd_sessions.md)
-* Возможность [Network BFD](../../../../caps-reference/network/bfd.md)
-* Опрос BFD включён в профиле объектов [Managed Object Profile](../concepts/managed-object-profile/index.md#Box(Полный_опрос))
-* Метод BFD в *Методах построения топологии* [Segment Profile](../concepts/network-segment-profile/index.md)
+* Скрипт [get_bfd_sessions](../../scripts-reference/get_bfd_sessions.md)
+* Возможность [Network BFD](../../caps-reference/network/bfd.md)
+* Опрос BFD включён в профиле объектов [Managed Object Profile](../../concepts/managed-object-profile/index.md#Box(Полный_опрос))
+* Метод BFD в *Методах построения топологии* [Segment Profile](../../concepts/network-segment-profile/index.md)

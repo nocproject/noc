@@ -13,9 +13,9 @@ One or more unit is joined to stack
 
 ## Variables
 
-Variable | Type | Required | Description
---- | --- | --- | ---
-unit | int | {{ yes }} | Unit number
+| Variable | Type | Required  | Description |
+| -------- | ---- | --------- | ----------- |
+| unit     | int  | {{ yes }} | Unit number |
 
 ## Alarms
 
@@ -23,6 +23,6 @@ unit | int | {{ yes }} | Unit number
 
 `Chassis | Stack | Stack is Raised` events may clear following alarms:
 
-Alarm Class | Description
---- | ---
-[Chassis \| Stack \| Stack Degraded](../../../alarm-classes/chassis/stack/stack-degraded.md) | dispose
+| Alarm Class                                                                                            | Description |
+| ------------------------------------------------------------------------------------------------------ | ----------- |
+| [Chassis \| Stack \| Stack Degraded](../../../alarm-classes-reference/chassis/stack/stack-degraded.md) | dispose     |

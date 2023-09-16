@@ -8,7 +8,7 @@ The delta of topology changes detected by this bridge since the management entit
 ## Data Model
 
 Scope
-: [Routing](../../../metric-scopes-reference/routing.md)
+: [Routing](../../../../metric-scopes-reference/routing.md)
 
 Field
 : `stp_topology_changes_delta`

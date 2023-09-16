@@ -44,11 +44,11 @@ graph TD
 
 | Event Class                                                                                          | Description |
 | ---------------------------------------------------------------------------------------------------- | ----------- |
-| [NOC \| Managed Object \| Ping Failed](../event-classes-reference/noc/managed-object/ping-failed.md) | dispose     |
+| [NOC \| Managed Object \| Ping Failed](../../../event-classes-reference/noc/managed-object/ping-failed.md) | dispose     |
 
 ### Closing Events
 `NOC | Managed Object | Ping Failed` may be cleared by events
 
 | Event Class                                                                                  | Description |
 | -------------------------------------------------------------------------------------------- | ----------- |
-| [NOC \| Managed Object \| Ping OK](../event-classes-reference/noc/managed-object/ping-ok.md) | dispose     |
+| [NOC \| Managed Object \| Ping OK](../../../event-classes-reference/noc/managed-object/ping-ok.md) | dispose     |

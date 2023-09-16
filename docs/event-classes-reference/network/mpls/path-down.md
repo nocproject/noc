@@ -13,9 +13,9 @@ MPLS Path Down
 
 ## Variables
 
-Variable | Type | Required | Description
---- | --- | --- | ---
-name | str | {{ yes }} | Path name
+| Variable | Type | Required  | Description |
+| -------- | ---- | --------- | ----------- |
+| name     | str  | {{ yes }} | Path name   |
 
 ## Alarms
 
@@ -23,6 +23,6 @@ name | str | {{ yes }} | Path name
 
 `Network | MPLS | Path Down` events may raise following alarms:
 
-Alarm Class | Description
---- | ---
-[Network \| MPLS \| Path Down](../../../alarm-classes/network/mpls/path-down.md) | dispose
+| Alarm Class                                                                                | Description |
+| ------------------------------------------------------------------------------------------ | ----------- |
+| [Network \| MPLS \| Path Down](../../../alarm-classes-reference/network/mpls/path-down.md) | dispose     |

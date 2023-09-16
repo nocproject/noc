@@ -6,7 +6,7 @@ uuid: 73b90e18-45bb-4a20-8733-559756cc8138
 ## Data Model
 
 Scope
-: [CPU](../../metric-scopes-reference/cpu.md)
+: [CPU](../../../metric-scopes-reference/cpu.md)
 
 Field
 : `load_5min`

@@ -42,11 +42,11 @@ graph TD
 
 | Event Class                                                                                                                | Description |
 | -------------------------------------------------------------------------------------------------------------------------- | ----------- |
-| [Network \| UDLD \| UDLD Protocol Error Detected](../event-classes-reference/network/udld/udld-protocol-error-detected.md) | dispose     |
+| [Network \| UDLD \| UDLD Protocol Error Detected](../../../event-classes-reference/network/udld/udld-protocol-error-detected.md) | dispose     |
 
 ### Closing Events
 `Network | UDLD | UDLD Protocol Error Detected` may be cleared by events
 
 | Event Class                                                                                                    | Description |
 | -------------------------------------------------------------------------------------------------------------- | ----------- |
-| [Network \| UDLD \| UDLD Protocol Recovery](../event-classes-reference/network/udld/udld-protocol-recovery.md) | dispose     |
+| [Network \| UDLD \| UDLD Protocol Recovery](../../../event-classes-reference/network/udld/udld-protocol-recovery.md) | dispose     |

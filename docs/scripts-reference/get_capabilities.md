@@ -19,4 +19,4 @@
 
 ## Used in
 ----
-* [Discovery Box Capabilities](../../discovery-reference/box/caps.md)
+* [Discovery Box Capabilities](../discovery-reference/box/caps.md)

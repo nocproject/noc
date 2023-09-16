@@ -13,9 +13,9 @@ Root Guard Recovery
 
 ## Variables
 
-Variable | Type | Required | Description
---- | --- | --- | ---
-interface | interface_name | {{ yes }} | Interface
+| Variable  | Type           | Required  | Description |
+| --------- | -------------- | --------- | ----------- |
+| interface | interface_name | {{ yes }} | Interface   |
 
 ## Alarms
 
@@ -23,6 +23,6 @@ interface | interface_name | {{ yes }} | Interface
 
 `Network | STP | Root Guard Recovery` events may clear following alarms:
 
-Alarm Class | Description
---- | ---
-[Network \| STP \| Root Guard Violation](../../../alarm-classes/network/stp/root-guard-violation.md) | dispose
+| Alarm Class                                                                                                    | Description |
+| -------------------------------------------------------------------------------------------------------------- | ----------- |
+| [Network \| STP \| Root Guard Violation](../../../alarm-classes-reference/network/stp/root-guard-violation.md) | dispose     |

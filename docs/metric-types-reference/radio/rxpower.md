@@ -8,7 +8,7 @@ Signal Rx Power on transmitter
 ## Data Model
 
 Scope
-: [Interface](../metric-scopes-reference/interface.md)
+: [Interface](../../metric-scopes-reference/interface.md)
 
 Field
 : `rx_power`

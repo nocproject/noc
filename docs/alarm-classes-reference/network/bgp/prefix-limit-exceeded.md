@@ -24,12 +24,12 @@ uuid: 8a0ffe77-c3c0-4327-b52b-7b482e710aec
 
 | Event Class                                                                                                | Description |
 | ---------------------------------------------------------------------------------------------------------- | ----------- |
-| [Network \| BGP \| Prefix Limit Exceeded](../event-classes-reference/network/bgp/prefix-limit-exceeded.md) | dispose     |
+| [Network \| BGP \| Prefix Limit Exceeded](../../../event-classes-reference/network/bgp/prefix-limit-exceeded.md) | dispose     |
 
 ### Closing Events
 `Network | BGP | Prefix Limit Exceeded` may be cleared by events
 
 | Event Class                                                                                          | Description     |
 | ---------------------------------------------------------------------------------------------------- | --------------- |
-| [Network \| BGP \| Established](../event-classes-reference/network/bgp/established.md)               | dispose         |
-| [Network \| BGP \| Peer State Changed](../event-classes-reference/network/bgp/peer-state-changed.md) | clear_maxprefix |
+| [Network \| BGP \| Established](../../../event-classes-reference/network/bgp/established.md)               | dispose         |
+| [Network \| BGP \| Peer State Changed](../../../event-classes-reference/network/bgp/peer-state-changed.md) | clear_maxprefix |

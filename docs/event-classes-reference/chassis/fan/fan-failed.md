@@ -13,9 +13,9 @@ Fan failed
 
 ## Variables
 
-Variable | Type | Required | Description
---- | --- | --- | ---
-name | str | {{ yes }} | Fan Name
+| Variable | Type | Required  | Description |
+| -------- | ---- | --------- | ----------- |
+| name     | str  | {{ yes }} | Fan Name    |
 
 ## Alarms
 
@@ -23,6 +23,6 @@ name | str | {{ yes }} | Fan Name
 
 `Chassis | Fan | Fan Failed` events may raise following alarms:
 
-Alarm Class | Description
---- | ---
-[Chassis \| Fan \| Fan Failed](../../../alarm-classes/chassis/fan/fan-failed.md) | dispose
+| Alarm Class                                                                                | Description |
+| ------------------------------------------------------------------------------------------ | ----------- |
+| [Chassis \| Fan \| Fan Failed](../../../alarm-classes-reference/chassis/fan/fan-failed.md) | dispose     |

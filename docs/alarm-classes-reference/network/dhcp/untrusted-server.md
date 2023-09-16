@@ -23,4 +23,4 @@ uuid: 86a5bbc4-803e-4eb9-906a-fb358e27d7ac
 
 | Event Class                                                                                        | Description |
 | -------------------------------------------------------------------------------------------------- | ----------- |
-| [Network \| DHCP \| Untrusted Server](../event-classes-reference/network/dhcp/untrusted-server.md) | dispose     |
+| [Network \| DHCP \| Untrusted Server](../../../event-classes-reference/network/dhcp/untrusted-server.md) | dispose     |

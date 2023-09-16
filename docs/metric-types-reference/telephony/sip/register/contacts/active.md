@@ -8,7 +8,7 @@ The number of SIP Contacts register on local device (not on all cluster, if avai
 ## Data Model
 
 Scope
-: [Object](../../../../metric-scopes-reference/object.md)
+: [Object](../../../../../metric-scopes-reference/object.md)
 
 Field
 : `sip_register_contacts_active`

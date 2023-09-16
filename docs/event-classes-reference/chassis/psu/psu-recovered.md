@@ -13,9 +13,9 @@ Power Suppply Unit recovered
 
 ## Variables
 
-Variable | Type | Required | Description
---- | --- | --- | ---
-name | str | {{ yes }} | PSU Name
+| Variable | Type | Required  | Description |
+| -------- | ---- | --------- | ----------- |
+| name     | str  | {{ yes }} | PSU Name    |
 
 ## Alarms
 
@@ -23,6 +23,6 @@ name | str | {{ yes }} | PSU Name
 
 `Chassis | PSU | PSU Recovered` events may clear following alarms:
 
-Alarm Class | Description
---- | ---
-[Chassis \| PSU \| PSU Failed](../../../alarm-classes/chassis/psu/psu-failed.md) | dispose
+| Alarm Class                                                                                | Description |
+| ------------------------------------------------------------------------------------------ | ----------- |
+| [Chassis \| PSU \| PSU Failed](../../../alarm-classes-reference/chassis/psu/psu-failed.md) | dispose     |

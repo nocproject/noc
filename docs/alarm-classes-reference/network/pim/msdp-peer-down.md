@@ -30,11 +30,11 @@ Check links and local and neighbor router configuration
 
 | Event Class                                                                                  | Description |
 | -------------------------------------------------------------------------------------------- | ----------- |
-| [Network \| PIM \| MSDP Peer Down](../event-classes-reference/network/pim/msdp-peer-down.md) | dispose     |
+| [Network \| PIM \| MSDP Peer Down](../../../event-classes-reference/network/pim/msdp-peer-down.md) | dispose     |
 
 ### Closing Events
 `Network | PIM | MSDP Peer Down` may be cleared by events
 
 | Event Class                                                                              | Description |
 | ---------------------------------------------------------------------------------------- | ----------- |
-| [Network \| PIM \| MSDP Peer Up](../event-classes-reference/network/pim/msdp-peer-up.md) | dispose     |
+| [Network \| PIM \| MSDP Peer Up](../../../event-classes-reference/network/pim/msdp-peer-up.md) | dispose     |

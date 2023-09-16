@@ -30,11 +30,11 @@ Check links and local and neighbor router configuration
 
 | Event Class                                                                                  | Description |
 | -------------------------------------------------------------------------------------------- | ----------- |
-| [Network \| RSVP \| Neighbor Down](../event-classes-reference/network/rsvp/neighbor-down.md) | dispose     |
+| [Network \| RSVP \| Neighbor Down](../../../event-classes-reference/network/rsvp/neighbor-down.md) | dispose     |
 
 ### Closing Events
 `Network | RSVP | Neighbor Down` may be cleared by events
 
 | Event Class                                                                              | Description |
 | ---------------------------------------------------------------------------------------- | ----------- |
-| [Network \| RSVP \| Neighbor Up](../event-classes-reference/network/rsvp/neighbor-up.md) | dispose     |
+| [Network \| RSVP \| Neighbor Up](../../../event-classes-reference/network/rsvp/neighbor-up.md) | dispose     |

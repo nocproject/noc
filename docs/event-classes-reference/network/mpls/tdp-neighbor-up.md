@@ -13,10 +13,10 @@ MPLS TDP Neighbor Up
 
 ## Variables
 
-Variable | Type | Required | Description
---- | --- | --- | ---
-neighbor | ip_address | {{ yes }} | TDP Neighbor
-reason | str | {{ no }} | Reason
+| Variable | Type       | Required  | Description  |
+| -------- | ---------- | --------- | ------------ |
+| neighbor | ip_address | {{ yes }} | TDP Neighbor |
+| reason   | str        | {{ no }}  | Reason       |
 
 ## Alarms
 
@@ -24,6 +24,6 @@ reason | str | {{ no }} | Reason
 
 `Network | MPLS | TDP Neighbor Up` events may clear following alarms:
 
-Alarm Class | Description
---- | ---
-[Network \| MPLS \| TDP Neighbor Down](../../../alarm-classes/network/mpls/tdp-neighbor-down.md) | dispose
+| Alarm Class                                                                                                | Description |
+| ---------------------------------------------------------------------------------------------------------- | ----------- |
+| [Network \| MPLS \| TDP Neighbor Down](../../../alarm-classes-reference/network/mpls/tdp-neighbor-down.md) | dispose     |

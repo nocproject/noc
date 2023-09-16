@@ -13,10 +13,10 @@ MSDP peer up
 
 ## Variables
 
-Variable | Type | Required | Description
---- | --- | --- | ---
-peer | ip_address | {{ yes }} | Peer's IP
-vrf | str | {{ no }} | VRF
+| Variable | Type       | Required  | Description |
+| -------- | ---------- | --------- | ----------- |
+| peer     | ip_address | {{ yes }} | Peer's IP   |
+| vrf      | str        | {{ no }}  | VRF         |
 
 ## Alarms
 
@@ -24,6 +24,6 @@ vrf | str | {{ no }} | VRF
 
 `Network | MSDP | Peer Up` events may clear following alarms:
 
-Alarm Class | Description
---- | ---
-[Network \| MSDP \| Peer Down](../../../alarm-classes/network/msdp/peer-down.md) | dispose
+| Alarm Class                                                                                | Description |
+| ------------------------------------------------------------------------------------------ | ----------- |
+| [Network \| MSDP \| Peer Down](../../../alarm-classes-reference/network/msdp/peer-down.md) | dispose     |

@@ -13,10 +13,10 @@ Linecard Down
 
 ## Variables
 
-Variable | Type | Required | Description
---- | --- | --- | ---
-number | str | {{ yes }} | Slot number
-reason | str | {{ no }} | Reason
+| Variable | Type | Required  | Description |
+| -------- | ---- | --------- | ----------- |
+| number   | str  | {{ yes }} | Slot number |
+| reason   | str  | {{ no }}  | Reason      |
 
 ## Alarms
 
@@ -24,6 +24,6 @@ reason | str | {{ no }} | Reason
 
 `Chassis | Linecard | LC Down` events may raise following alarms:
 
-Alarm Class | Description
---- | ---
-[Chassis \| Linecard \| LC Down](../../../alarm-classes/chassis/linecard/lc-down.md) | dispose
+| Alarm Class                                                                                    | Description |
+| ---------------------------------------------------------------------------------------------- | ----------- |
+| [Chassis \| Linecard \| LC Down](../../../alarm-classes-reference/chassis/linecard/lc-down.md) | dispose     |

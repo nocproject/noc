@@ -20,4 +20,4 @@
 
 ## Used in
 -------
-* [Discovery Box Version](../../discovery-reference/box/version.md)
+* [Discovery Box Version](../discovery-reference/box/version.md)

@@ -17,6 +17,6 @@ Input Power Failed
 
 `Environment | UPS | Input Power Failed` events may raise following alarms:
 
-Alarm Class | Description
---- | ---
-[Environment \| UPS \| Input Power Failed](../../../alarm-classes/environment/ups/input-power-failed.md) | dispose
+| Alarm Class                                                                                                        | Description |
+| ------------------------------------------------------------------------------------------------------------------ | ----------- |
+| [Environment \| UPS \| Input Power Failed](../../../alarm-classes-reference/environment/ups/input-power-failed.md) | dispose     |

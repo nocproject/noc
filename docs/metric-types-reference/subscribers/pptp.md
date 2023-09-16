@@ -8,7 +8,7 @@ Total active PPTP sessions on the box
 ## Data Model
 
 Scope
-: [Subscriber](../metric-scopes-reference/subscriber.md)
+: [Subscriber](../../metric-scopes-reference/subscriber.md)
 
 Field
 : `pptp`

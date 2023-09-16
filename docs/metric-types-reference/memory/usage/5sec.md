@@ -8,7 +8,7 @@ Memory Usage in percents
 ## Data Model
 
 Scope
-: [Memory](../../metric-scopes-reference/memory.md)
+: [Memory](../../../metric-scopes-reference/memory.md)
 
 Field
 : `usage_5s`

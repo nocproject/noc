@@ -8,7 +8,7 @@ Temparature, in Celsium
 ## Data Model
 
 Scope
-: [Environment](../metric-scopes-reference/environment.md)
+: [Environment](../../metric-scopes-reference/environment.md)
 
 Field
 : `temperature`

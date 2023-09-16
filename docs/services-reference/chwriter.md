@@ -25,8 +25,8 @@ graph LR
 
 | Stream                                       | Description                                    |
 | -------------------------------------------- | ---------------------------------------------- |
-| [ch.TABLE](../../../streams-reference/ch.md) | Incoming ClickHouse data in JSONEachRow format |
+| [ch.TABLE](../streams-reference/ch.md) | Incoming ClickHouse data in JSONEachRow format |
 
 ## Configuration
 
-`chwriter` service is configured via [chwriter configuration section](../../../config-reference/chwriter.md).
+`chwriter` service is configured via [chwriter configuration section](../config-reference/chwriter.md).

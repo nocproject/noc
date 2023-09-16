@@ -24,4 +24,4 @@ uuid: ba10cc93-f17e-4bca-b1e4-53294b614f6d
 
 | Event Class                                                                                                                        | Description |
 | ---------------------------------------------------------------------------------------------------------------------------------- | ----------- |
-| [Network \| Port Security \| Port Security Violation](../event-classes-reference/network/port-security/port-security-violation.md) | dispose     |
+| [Network \| Port Security \| Port Security Violation](../../../event-classes-reference/network/port-security/port-security-violation.md) | dispose     |

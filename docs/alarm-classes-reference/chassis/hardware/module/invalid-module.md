@@ -24,4 +24,4 @@ uuid: 578c1375-6759-4123-86c2-8427de40ff92
 
 | Event Class                                                                                                                | Description |
 | -------------------------------------------------------------------------------------------------------------------------- | ----------- |
-| [Chassis \| Hardware \| Module \| Invalid Module](../../event-classes-reference/chassis/hardware/module/invalid-module.md) | dispose     |
+| [Chassis \| Hardware \| Module \| Invalid Module](../../../../event-classes-reference/chassis/hardware/module/invalid-module.md) | dispose     |

@@ -13,9 +13,9 @@ Failed Clock module or linecard
 
 ## Variables
 
-Variable | Type | Required | Description
---- | --- | --- | ---
-name | str | {{ yes }} | Clock Name
+| Variable | Type | Required  | Description |
+| -------- | ---- | --------- | ----------- |
+| name     | str  | {{ yes }} | Clock Name  |
 
 ## Alarms
 
@@ -23,6 +23,6 @@ name | str | {{ yes }} | Clock Name
 
 `Chassis | Clock | Clock Failed` events may raise following alarms:
 
-Alarm Class | Description
---- | ---
-[Chassis \| Clock \| Clock Failed](../../../alarm-classes/chassis/clock/clock-failed.md) | dispose
+| Alarm Class                                                                                        | Description |
+| -------------------------------------------------------------------------------------------------- | ----------- |
+| [Chassis \| Clock \| Clock Failed](../../../alarm-classes-reference/chassis/clock/clock-failed.md) | dispose     |

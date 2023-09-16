@@ -8,7 +8,7 @@ Metric for displaying the status of sensors
 ## Data Model
 
 Scope
-: [Environment](../metric-scopes-reference/environment.md)
+: [Environment](../../metric-scopes-reference/environment.md)
 
 Field
 : `sensor_status`

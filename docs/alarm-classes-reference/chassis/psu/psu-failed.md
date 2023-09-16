@@ -22,11 +22,11 @@ uuid: d18d5446-7559-4600-a51a-44fba150f135
 
 | Event Class                                                                          | Description |
 | ------------------------------------------------------------------------------------ | ----------- |
-| [Chassis \| PSU \| PSU Failed](../event-classes-reference/chassis/psu/psu-failed.md) | dispose     |
+| [Chassis \| PSU \| PSU Failed](../../../event-classes-reference/chassis/psu/psu-failed.md) | dispose     |
 
 ### Closing Events
 `Chassis | PSU | PSU Failed` may be cleared by events
 
 | Event Class                                                                                | Description |
 | ------------------------------------------------------------------------------------------ | ----------- |
-| [Chassis \| PSU \| PSU Recovered](../event-classes-reference/chassis/psu/psu-recovered.md) | dispose     |
+| [Chassis \| PSU \| PSU Recovered](../../../event-classes-reference/chassis/psu/psu-recovered.md) | dispose     |

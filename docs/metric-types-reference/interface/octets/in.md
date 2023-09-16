@@ -8,7 +8,7 @@ The total number of octets received on the interface, including framing characte
 ## Data Model
 
 Scope
-: [Interface](../../metric-scopes-reference/interface.md)
+: [Interface](../../../metric-scopes-reference/interface.md)
 
 Field
 : `octets_in`

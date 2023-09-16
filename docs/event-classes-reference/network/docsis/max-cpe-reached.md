@@ -17,13 +17,13 @@ Locate the specified device and place the device on a different cable modem with
 
 ## Variables
 
-Variable | Type | Required | Description
---- | --- | --- | ---
-mac | mac | {{ no }} | CPE MAC
-ip | ip_address | {{ no }} | CPE IP
-modem_mac | mac | {{ no }} | Cable Modem MAC
-sid | int | {{ no }} | Cable Modem SID
-interface | interface_name | {{ no }} | Cable interface
+| Variable  | Type           | Required | Description     |
+| --------- | -------------- | -------- | --------------- |
+| mac       | mac            | {{ no }} | CPE MAC         |
+| ip        | ip_address     | {{ no }} | CPE IP          |
+| modem_mac | mac            | {{ no }} | Cable Modem MAC |
+| sid       | int            | {{ no }} | Cable Modem SID |
+| interface | interface_name | {{ no }} | Cable interface |
 
 ## Alarms
 
@@ -31,6 +31,6 @@ interface | interface_name | {{ no }} | Cable interface
 
 `Network | DOCSIS | Max CPE Reached` events may raise following alarms:
 
-Alarm Class | Description
---- | ---
-[Network \| DOCSIS \| Max CPE Reached](../../../alarm-classes/network/docsis/max-cpe-reached.md) | dispose
+| Alarm Class                                                                                                | Description |
+| ---------------------------------------------------------------------------------------------------------- | ----------- |
+| [Network \| DOCSIS \| Max CPE Reached](../../../alarm-classes-reference/network/docsis/max-cpe-reached.md) | dispose     |

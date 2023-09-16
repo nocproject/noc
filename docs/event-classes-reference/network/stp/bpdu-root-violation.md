@@ -13,9 +13,9 @@ BPDU Root Violation
 
 ## Variables
 
-Variable | Type | Required | Description
---- | --- | --- | ---
-interface | interface_name | {{ yes }} | Interface
+| Variable  | Type           | Required  | Description |
+| --------- | -------------- | --------- | ----------- |
+| interface | interface_name | {{ yes }} | Interface   |
 
 ## Alarms
 
@@ -23,6 +23,6 @@ interface | interface_name | {{ yes }} | Interface
 
 `Network | STP | BPDU Root Violation` events may raise following alarms:
 
-Alarm Class | Description
---- | ---
-[Network \| STP \| Root Guard Violation](../../../alarm-classes/network/stp/root-guard-violation.md) | dispose
+| Alarm Class                                                                                                    | Description |
+| -------------------------------------------------------------------------------------------------------------- | ----------- |
+| [Network \| STP \| Root Guard Violation](../../../alarm-classes-reference/network/stp/root-guard-violation.md) | dispose     |

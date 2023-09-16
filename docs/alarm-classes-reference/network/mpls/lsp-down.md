@@ -22,11 +22,11 @@ uuid: 7f0f26b3-00e9-4def-b968-05a3509d6c76
 
 | Event Class                                                                        | Description |
 | ---------------------------------------------------------------------------------- | ----------- |
-| [Network \| MPLS \| LSP Down](../event-classes-reference/network/mpls/lsp-down.md) | dispose     |
+| [Network \| MPLS \| LSP Down](../../../event-classes-reference/network/mpls/lsp-down.md) | dispose     |
 
 ### Closing Events
 `Network | MPLS | LSP Down` may be cleared by events
 
 | Event Class                                                                    | Description |
 | ------------------------------------------------------------------------------ | ----------- |
-| [Network \| MPLS \| LSP Up](../event-classes-reference/network/mpls/lsp-up.md) | dispose     |
+| [Network \| MPLS \| LSP Up](../../../event-classes-reference/network/mpls/lsp-up.md) | dispose     |

@@ -34,4 +34,4 @@ Examine the network for possible loops.
 
 | Event Class                                                                      | Description |
 | -------------------------------------------------------------------------------- | ----------- |
-| [Network \| MAC \| MAC Flap](../event-classes-reference/network/mac/mac-flap.md) | dispose     |
+| [Network \| MAC \| MAC Flap](../../../event-classes-reference/network/mac/mac-flap.md) | dispose     |

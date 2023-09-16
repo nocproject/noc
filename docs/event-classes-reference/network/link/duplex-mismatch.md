@@ -11,9 +11,9 @@ uuid: 05d1ce00-983a-4f90-8802-2a64e80d2742
 
 ## Variables
 
-Variable | Type | Required | Description
---- | --- | --- | ---
-interface | interface_name | {{ yes }} | interface name
+| Variable  | Type           | Required  | Description    |
+| --------- | -------------- | --------- | -------------- |
+| interface | interface_name | {{ yes }} | interface name |
 
 ## Alarms
 
@@ -21,6 +21,6 @@ interface | interface_name | {{ yes }} | interface name
 
 `Network | Link | Duplex Mismatch` events may raise following alarms:
 
-Alarm Class | Description
---- | ---
-[Network \| Link \| Duplex Mismatch](../../../alarm-classes/network/link/duplex-mismatch.md) | dispose
+| Alarm Class                                                                                            | Description |
+| ------------------------------------------------------------------------------------------------------ | ----------- |
+| [Network \| Link \| Duplex Mismatch](../../../alarm-classes-reference/network/link/duplex-mismatch.md) | dispose     |

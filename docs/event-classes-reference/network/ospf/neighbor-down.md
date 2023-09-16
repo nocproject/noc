@@ -19,15 +19,15 @@ Check links and local and neighbor router configuration
 
 ## Variables
 
-Variable | Type | Required | Description
---- | --- | --- | ---
-area | str | {{ no }} | OSPF area
-interface | interface_name | {{ yes }} | Interface
-neighbor | ip_address | {{ yes }} | Neighbor's Router ID
-reason | str | {{ no }} | Adjacency lost reason
-from_state | str | {{ no }} | from state
-to_state | str | {{ no }} | to state
-vrf | str | {{ no }} | VRF
+| Variable   | Type           | Required  | Description           |
+| ---------- | -------------- | --------- | --------------------- |
+| area       | str            | {{ no }}  | OSPF area             |
+| interface  | interface_name | {{ yes }} | Interface             |
+| neighbor   | ip_address     | {{ yes }} | Neighbor's Router ID  |
+| reason     | str            | {{ no }}  | Adjacency lost reason |
+| from_state | str            | {{ no }}  | from state            |
+| to_state   | str            | {{ no }}  | to state              |
+| vrf        | str            | {{ no }}  | VRF                   |
 
 ## Alarms
 
@@ -35,6 +35,6 @@ vrf | str | {{ no }} | VRF
 
 `Network | OSPF | Neighbor Down` events may raise following alarms:
 
-Alarm Class | Description
---- | ---
-[Network \| OSPF \| Neighbor Down](../../../alarm-classes/network/ospf/neighbor-down.md) | dispose
+| Alarm Class                                                                                        | Description |
+| -------------------------------------------------------------------------------------------------- | ----------- |
+| [Network \| OSPF \| Neighbor Down](../../../alarm-classes-reference/network/ospf/neighbor-down.md) | dispose     |

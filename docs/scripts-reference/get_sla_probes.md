@@ -19,4 +19,4 @@
 
 ## Used in
 -------
-* [Discovery Box SLA](../../discovery-reference/box/sla.md)
+* [Discovery Box SLA](../discovery-reference/box/sla.md)

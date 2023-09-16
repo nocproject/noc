@@ -8,7 +8,7 @@ Carrier to Interference + Noise Ratio
 ## Data Model
 
 Scope
-: [Interface](../metric-scopes-reference/interface.md)
+: [Interface](../../metric-scopes-reference/interface.md)
 
 Field
 : `cinr`

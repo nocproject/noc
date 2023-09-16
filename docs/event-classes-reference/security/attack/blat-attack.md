@@ -13,10 +13,10 @@ Blat Attack detected
 
 ## Variables
 
-Variable | Type | Required | Description
---- | --- | --- | ---
-interface | interface_name | {{ yes }} | Interface
-src_ip | ip_address | {{ no }} | Source IP
+| Variable  | Type           | Required  | Description |
+| --------- | -------------- | --------- | ----------- |
+| interface | interface_name | {{ yes }} | Interface   |
+| src_ip    | ip_address     | {{ no }}  | Source IP   |
 
 ## Alarms
 
@@ -24,6 +24,6 @@ src_ip | ip_address | {{ no }} | Source IP
 
 `Security | Attack | Blat Attack` events may raise following alarms:
 
-Alarm Class | Description
---- | ---
-[Security \| Attack \| Blat Attack](../../../alarm-classes/security/attack/blat-attack.md) | dispose
+| Alarm Class                                                                                          | Description |
+| ---------------------------------------------------------------------------------------------------- | ----------- |
+| [Security \| Attack \| Blat Attack](../../../alarm-classes-reference/security/attack/blat-attack.md) | dispose     |

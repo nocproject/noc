@@ -52,11 +52,11 @@ graph TD
 
 | Event Class                                                                                  | Description |
 | -------------------------------------------------------------------------------------------- | ----------- |
-| [Network \| OSPF \| Neighbor Down](../event-classes-reference/network/ospf/neighbor-down.md) | dispose     |
+| [Network \| OSPF \| Neighbor Down](../../../event-classes-reference/network/ospf/neighbor-down.md) | dispose     |
 
 ### Closing Events
 `Network | OSPF | Neighbor Down` may be cleared by events
 
 | Event Class                                                                              | Description |
 | ---------------------------------------------------------------------------------------- | ----------- |
-| [Network \| OSPF \| Neighbor Up](../event-classes-reference/network/ospf/neighbor-up.md) | dispose     |
+| [Network \| OSPF \| Neighbor Up](../../../event-classes-reference/network/ospf/neighbor-up.md) | dispose     |

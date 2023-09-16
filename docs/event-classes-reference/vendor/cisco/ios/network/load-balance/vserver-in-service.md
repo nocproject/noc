@@ -13,11 +13,11 @@ vserver in service
 
 ## Variables
 
-Variable | Type | Required | Description
---- | --- | --- | ---
-module | str | {{ yes }} | Module name
-name | str | {{ yes }} | vserver name
-farm | str | {{ no }} | serverfarm name
+| Variable | Type | Required  | Description     |
+| -------- | ---- | --------- | --------------- |
+| module   | str  | {{ yes }} | Module name     |
+| name     | str  | {{ yes }} | vserver name    |
+| farm     | str  | {{ no }}  | serverfarm name |
 
 ## Alarms
 
@@ -25,6 +25,6 @@ farm | str | {{ no }} | serverfarm name
 
 `Vendor | Cisco | IOS | Network | Load Balance | vserver In Service` events may clear following alarms:
 
-Alarm Class | Description
---- | ---
-[Vendor \| Cisco \| IOS \| Network \| Load Balance \| vserver Out of Service](../../../../../../alarm-classes/vendor/cisco/ios/network/load-balance/vserver-out-of-service.md) | dispose
+| Alarm Class                                                                                                                                                                              | Description |
+| ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------- |
+| [Vendor \| Cisco \| IOS \| Network \| Load Balance \| vserver Out of Service](../../../../../../alarm-classes-reference/vendor/cisco/ios/network/load-balance/vserver-out-of-service.md) | dispose     |

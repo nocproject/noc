@@ -25,4 +25,4 @@ uuid: a0f6d92d-9988-434d-8e3e-f07d6622a5f7
 
 | Event Class                                                                                            | Description |
 | ------------------------------------------------------------------------------------------------------ | ----------- |
-| [Security \| Attack \| Teardrop Attack](../event-classes-reference/security/attack/teardrop-attack.md) | dispose     |
+| [Security \| Attack \| Teardrop Attack](../../../event-classes-reference/security/attack/teardrop-attack.md) | dispose     |

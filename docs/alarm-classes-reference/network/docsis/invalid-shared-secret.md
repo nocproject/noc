@@ -28,4 +28,4 @@ Ensure that the shared secret that is in the configuration file is the same as t
 
 | Event Class                                                                                                      | Description |
 | ---------------------------------------------------------------------------------------------------------------- | ----------- |
-| [Network \| DOCSIS \| Invalid Shared Secret](../event-classes-reference/network/docsis/invalid-shared-secret.md) | dispose     |
+| [Network \| DOCSIS \| Invalid Shared Secret](../../../event-classes-reference/network/docsis/invalid-shared-secret.md) | dispose     |

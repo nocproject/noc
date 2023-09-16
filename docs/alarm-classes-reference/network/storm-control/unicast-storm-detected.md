@@ -25,11 +25,11 @@ Enable DLF (destination lookup failure) filter
 
 | Event Class                                                                                                                      | Description |
 | -------------------------------------------------------------------------------------------------------------------------------- | ----------- |
-| [Network \| Storm Control \| Unicast Storm Detected](../event-classes-reference/network/storm-control/unicast-storm-detected.md) | dispose     |
+| [Network \| Storm Control \| Unicast Storm Detected](../../../event-classes-reference/network/storm-control/unicast-storm-detected.md) | dispose     |
 
 ### Closing Events
 `Network | Storm Control | Unicast Storm Detected` may be cleared by events
 
 | Event Class                                                                                                                    | Description |
 | ------------------------------------------------------------------------------------------------------------------------------ | ----------- |
-| [Network \| Storm Control \| Unicast Storm Cleared](../event-classes-reference/network/storm-control/unicast-storm-cleared.md) | dispose     |
+| [Network \| Storm Control \| Unicast Storm Cleared](../../../event-classes-reference/network/storm-control/unicast-storm-cleared.md) | dispose     |

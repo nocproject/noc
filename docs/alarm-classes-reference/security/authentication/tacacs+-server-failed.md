@@ -22,11 +22,11 @@ uuid: 2e5a0caf-d984-498e-9cdf-974fa74997c5
 
 | Event Class                                                                                                                        | Description |
 | ---------------------------------------------------------------------------------------------------------------------------------- | ----------- |
-| [Security \| Authentication \| TACACS+ server failed](../event-classes-reference/security/authentication/tacacs+-server-failed.md) | dispose     |
+| [Security \| Authentication \| TACACS+ server failed](../../../event-classes-reference/security/authentication/tacacs+-server-failed.md) | dispose     |
 
 ### Closing Events
 `Security | Authentication | TACACS+ server failed` may be cleared by events
 
 | Event Class                                                                                                                              | Description |
 | ---------------------------------------------------------------------------------------------------------------------------------------- | ----------- |
-| [Security \| Authentication \| TACACS+ server recovered](../event-classes-reference/security/authentication/tacacs+-server-recovered.md) | dispose     |
+| [Security \| Authentication \| TACACS+ server recovered](../../../event-classes-reference/security/authentication/tacacs+-server-recovered.md) | dispose     |

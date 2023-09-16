@@ -26,4 +26,4 @@ Replace faulty RAM module
 
 | Event Class                                                                          | Description |
 | ------------------------------------------------------------------------------------ | ----------- |
-| [Chassis \| RAM \| RAM Failed](../event-classes-reference/chassis/ram/ram-failed.md) | dispose     |
+| [Chassis \| RAM \| RAM Failed](../../../event-classes-reference/chassis/ram/ram-failed.md) | dispose     |

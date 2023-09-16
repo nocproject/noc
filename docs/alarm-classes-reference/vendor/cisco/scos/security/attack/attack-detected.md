@@ -34,11 +34,11 @@ Negotiate the source if it is your customer, or ignore
 
 | Event Class                                                                                                                                                  | Description     |
 | ------------------------------------------------------------------------------------------------------------------------------------------------------------ | --------------- |
-| [Vendor \| Cisco \| SCOS \| Security \| Attack \| Attack Detected](../../../../event-classes-reference/vendor/cisco/scos/security/attack/attack-detected.md) | Attack Detected |
+| [Vendor \| Cisco \| SCOS \| Security \| Attack \| Attack Detected](../../../../../../event-classes-reference/vendor/cisco/scos/security/attack/attack-detected.md) | Attack Detected |
 
 ### Closing Events
 `Vendor | Cisco | SCOS | Security | Attack | Attack Detected` may be cleared by events
 
 | Event Class                                                                                                                                                                | Description           |
 | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------- |
-| [Vendor \| Cisco \| SCOS \| Security \| Attack \| End-of-attack detected](../../../../event-classes-reference/vendor/cisco/scos/security/attack/end-of-attack-detected.md) | Clear Attack Detected |
+| [Vendor \| Cisco \| SCOS \| Security \| Attack \| End-of-attack detected](../../../../../../event-classes-reference/vendor/cisco/scos/security/attack/end-of-attack-detected.md) | Clear Attack Detected |

@@ -8,7 +8,7 @@ Actual number of lost packets
 ## Data Model
 
 Scope
-: [SLA](../metric-scopes-reference/sla.md)
+: [SLA](../../metric-scopes-reference/sla.md)
 
 Field
 : `loss`

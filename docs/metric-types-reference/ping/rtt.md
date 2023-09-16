@@ -8,7 +8,7 @@ ICMP Ping round trip time in microseconds
 ## Data Model
 
 Scope
-: [Ping](../metric-scopes-reference/ping.md)
+: [Ping](../../metric-scopes-reference/ping.md)
 
 Field
 : `rtt`

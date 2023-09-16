@@ -6,4 +6,4 @@ Data Type:  `bool`
 
 ## Prerequisite for
 
-- [fdp discovery](../discovery-reference/box/fdp.md)
+- [fdp discovery](../../discovery-reference/box/fdp.md)

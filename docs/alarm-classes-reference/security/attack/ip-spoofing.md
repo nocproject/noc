@@ -25,4 +25,4 @@ uuid: e08eedd4-f661-419c-9529-0e475628239a
 
 | Event Class                                                                                    | Description |
 | ---------------------------------------------------------------------------------------------- | ----------- |
-| [Security \| Attack \| IP Spoofing](../event-classes-reference/security/attack/ip-spoofing.md) | dispose     |
+| [Security \| Attack \| IP Spoofing](../../../event-classes-reference/security/attack/ip-spoofing.md) | dispose     |

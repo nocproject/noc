@@ -17,11 +17,11 @@ Ensure that the shared secret that is in the configuration file is the same as t
 
 ## Variables
 
-Variable | Type | Required | Description
---- | --- | --- | ---
-mac | mac | {{ yes }} | Cable Modem MAC
-sid | int | {{ no }} | Cable Modem SID
-interface | interface_name | {{ no }} | Cable interface
+| Variable  | Type           | Required  | Description     |
+| --------- | -------------- | --------- | --------------- |
+| mac       | mac            | {{ yes }} | Cable Modem MAC |
+| sid       | int            | {{ no }}  | Cable Modem SID |
+| interface | interface_name | {{ no }}  | Cable interface |
 
 ## Alarms
 
@@ -29,6 +29,6 @@ interface | interface_name | {{ no }} | Cable interface
 
 `Network | DOCSIS | Invalid Shared Secret` events may raise following alarms:
 
-Alarm Class | Description
---- | ---
-[Network \| DOCSIS \| Invalid Shared Secret](../../../alarm-classes/network/docsis/invalid-shared-secret.md) | dispose
+| Alarm Class                                                                                                            | Description |
+| ---------------------------------------------------------------------------------------------------------------------- | ----------- |
+| [Network \| DOCSIS \| Invalid Shared Secret](../../../alarm-classes-reference/network/docsis/invalid-shared-secret.md) | dispose     |

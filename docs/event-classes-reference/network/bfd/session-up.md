@@ -13,10 +13,10 @@ BFD Session Up
 
 ## Variables
 
-Variable | Type | Required | Description
---- | --- | --- | ---
-interface | interface_name | {{ yes }} | BFD interface
-peer | ip_address | {{ yes }} | BFD Peer
+| Variable  | Type           | Required  | Description   |
+| --------- | -------------- | --------- | ------------- |
+| interface | interface_name | {{ yes }} | BFD interface |
+| peer      | ip_address     | {{ yes }} | BFD Peer      |
 
 ## Alarms
 
@@ -24,6 +24,6 @@ peer | ip_address | {{ yes }} | BFD Peer
 
 `Network | BFD | Session Up` events may clear following alarms:
 
-Alarm Class | Description
---- | ---
-[Network \| BFD \| Session Down](../../../alarm-classes/network/bfd/session-down.md) | dispose
+| Alarm Class                                                                                    | Description |
+| ---------------------------------------------------------------------------------------------- | ----------- |
+| [Network \| BFD \| Session Down](../../../alarm-classes-reference/network/bfd/session-down.md) | dispose     |

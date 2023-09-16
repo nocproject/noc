@@ -6,4 +6,4 @@
 
 ## Requirements
 
-* Profile check is enabled in [Managed Object Profile](../concepts/managed-object-profile/index.md)
+* Profile check is enabled in [Managed Object Profile](../../concepts/managed-object-profile/index.md)

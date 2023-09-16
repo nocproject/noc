@@ -13,12 +13,12 @@ ARP Moved
 
 ## Variables
 
-Variable | Type | Required | Description
---- | --- | --- | ---
-interface | interface_name | {{ no }} | BFD interface
-ip | ip_address | {{ yes }} | IP
-from_mac | mac | {{ yes }} | From MAC
-to_mac | mac | {{ yes }} | To MAC
+| Variable  | Type           | Required  | Description   |
+| --------- | -------------- | --------- | ------------- |
+| interface | interface_name | {{ no }}  | BFD interface |
+| ip        | ip_address     | {{ yes }} | IP            |
+| from_mac  | mac            | {{ yes }} | From MAC      |
+| to_mac    | mac            | {{ yes }} | To MAC        |
 
 ## Alarms
 
@@ -26,6 +26,6 @@ to_mac | mac | {{ yes }} | To MAC
 
 `Network | IP | ARP Moved` events may raise following alarms:
 
-Alarm Class | Description
---- | ---
-[Network \| IP \| ARP Moved](../../../alarm-classes/network/ip/arp-moved.md) | dispose
+| Alarm Class                                                                            | Description |
+| -------------------------------------------------------------------------------------- | ----------- |
+| [Network \| IP \| ARP Moved](../../../alarm-classes-reference/network/ip/arp-moved.md) | dispose     |

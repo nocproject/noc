@@ -28,4 +28,4 @@ Ensure that the CoS fields in the configuration file are set correctly.
 
 | Event Class                                                                                  | Description |
 | -------------------------------------------------------------------------------------------- | ----------- |
-| [Network \| DOCSIS \| Invalid CoS](../event-classes-reference/network/docsis/invalid-cos.md) | dispose     |
+| [Network \| DOCSIS \| Invalid CoS](../../../event-classes-reference/network/docsis/invalid-cos.md) | dispose     |

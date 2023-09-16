@@ -19,7 +19,7 @@ Download and update whois cache
 
 Prefix-list builder. Where
 * `<name>` - Name of prefix list to generate
-* `<profile>` - SA Profile to use as formatter ([Cisco.IOS](../../../profiles-reference/Cisco/IOS.md) by default)
+* `<profile>` - SA Profile to use as formatter ([Cisco.IOS](../profiles-reference/Cisco/IOS.md) by default)
 * `<as-set>` - AS-set name
 
 ## Examples

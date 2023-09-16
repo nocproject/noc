@@ -1,7 +1,7 @@
 # cfgsyslog DataStream
 
 `cfgsyslog` [DataStream](index.md) contains configuration
-for [syslogcollector](../../../../services-reference/syslogcollector.md) service
+for [syslogcollector](../services-reference/syslogcollector.md) service
 
 ## Fields
 

@@ -22,4 +22,4 @@ uuid: df739179-a360-422b-9f38-efd8c898a0e2
 
 | Event Class                                                                        | Description |
 | ---------------------------------------------------------------------------------- | ----------- |
-| [Network \| DNS \| Bad Query](../event-classes-reference/network/dns/bad-query.md) | dispose     |
+| [Network \| DNS \| Bad Query](../../../event-classes-reference/network/dns/bad-query.md) | dispose     |

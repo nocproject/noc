@@ -7,14 +7,14 @@ uses `ch.interface` stream, while `macs` table uses `ch.macs` stream.
 
 ## Publishers
 
-- [discovery](../../../services-reference/discovery.md) service.
-- [syslogcollector](../../../services-reference/syslogcollector.md) service.
+- [discovery](../services-reference/discovery.md) service.
+- [syslogcollector](../services-reference/syslogcollector.md) service.
 - Any service providing Span telemetry.
 - `./noc bi load` command.
 
 ## Subscribers
 
-- [chwriter](../../../services-reference/chwriter.md) service.
+- [chwriter](../services-reference/chwriter.md) service.
 
 ## Message Headers
 

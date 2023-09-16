@@ -6,4 +6,4 @@ Data Type: `int`
 
 ## Prerequisite for
 
- - [sla discovery](../discovery-reference/box/sla.md)
+ - [sla discovery](../../discovery-reference/box/sla.md)

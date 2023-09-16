@@ -8,9 +8,6 @@ NOC DevTeem uses black to ensure consistent code Python code formatting and
 Every error found considered fatal and CI pipeline will be stopped
 immediately until the code will be reformatted properly.
 
-Please refer [How to Setup black Formatter in PyCharm](../../howto/setup-black-in-pycharm/index.md)
-to integrate `black` with [PyCharm](pycharm.md).
-
 ## Docker Container
 
 NOC DevTeam maintains docker container

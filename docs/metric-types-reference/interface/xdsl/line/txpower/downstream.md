@@ -8,7 +8,7 @@ uuid: 1993cce1-5685-4998-b46a-03c450b2a5d9
 ## Data Model
 
 Scope
-: [Interface](../../../../metric-scopes-reference/interface.md)
+: [Interface](../../../../../metric-scopes-reference/interface.md)
 
 Field
 : `xdsl_line_txpower_down`

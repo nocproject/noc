@@ -8,7 +8,7 @@ The metric for the Energy consumption (kWh)
 ## Data Model
 
 Scope
-: [Environment](../metric-scopes-reference/environment.md)
+: [Environment](../../metric-scopes-reference/environment.md)
 
 Field
 : `energy_consumption`

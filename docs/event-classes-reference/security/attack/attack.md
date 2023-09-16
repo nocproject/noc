@@ -19,13 +19,13 @@ Negotiate the source if it is your customer, or ignore
 
 ## Variables
 
-Variable | Type | Required | Description
---- | --- | --- | ---
-name | str | {{ yes }} | Attack name
-interface | interface_name | {{ no }} | Interface
-src_ip | ip_address | {{ no }} | Source IP
-src_mac | mac | {{ no }} | Source MAC
-vlan | int | {{ no }} | Vlan ID
+| Variable  | Type           | Required  | Description |
+| --------- | -------------- | --------- | ----------- |
+| name      | str            | {{ yes }} | Attack name |
+| interface | interface_name | {{ no }}  | Interface   |
+| src_ip    | ip_address     | {{ no }}  | Source IP   |
+| src_mac   | mac            | {{ no }}  | Source MAC  |
+| vlan      | int            | {{ no }}  | Vlan ID     |
 
 ## Alarms
 
@@ -33,6 +33,6 @@ vlan | int | {{ no }} | Vlan ID
 
 `Security | Attack | Attack` events may raise following alarms:
 
-Alarm Class | Description
---- | ---
-[Security \| Attack \| Attack](../../../alarm-classes/security/attack/attack.md) | dispose
+| Alarm Class                                                                                | Description |
+| ------------------------------------------------------------------------------------------ | ----------- |
+| [Security \| Attack \| Attack](../../../alarm-classes-reference/security/attack/attack.md) | dispose     |

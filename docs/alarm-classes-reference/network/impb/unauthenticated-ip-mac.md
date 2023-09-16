@@ -29,11 +29,11 @@ Check user IP and MAC, check IMPB entry, check topology
 
 | Event Class                                                                                                    | Description |
 | -------------------------------------------------------------------------------------------------------------- | ----------- |
-| [Network \| IMPB \| Unauthenticated IP-MAC](../event-classes-reference/network/impb/unauthenticated-ip-mac.md) | dispose     |
+| [Network \| IMPB \| Unauthenticated IP-MAC](../../../event-classes-reference/network/impb/unauthenticated-ip-mac.md) | dispose     |
 
 ### Closing Events
 `Network | IMPB | Unauthenticated IP-MAC` may be cleared by events
 
 | Event Class                                                                                                                        | Description |
 | ---------------------------------------------------------------------------------------------------------------------------------- | ----------- |
-| [Network \| IMPB \| Recover IMPB stop learning state](../event-classes-reference/network/impb/recover-impb-stop-learning-state.md) | dispose     |
+| [Network \| IMPB \| Recover IMPB stop learning state](../../../event-classes-reference/network/impb/recover-impb-stop-learning-state.md) | dispose     |

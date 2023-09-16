@@ -23,12 +23,12 @@ uuid: ca261ef8-3d29-4270-8fd2-eb616d9e6e76
 
 | Event Class                                                                                            | Description |
 | ------------------------------------------------------------------------------------------------------ | ----------- |
-| [Network \| STP \| BPDU Root Violation](../event-classes-reference/network/stp/bpdu-root-violation.md) | dispose     |
+| [Network \| STP \| BPDU Root Violation](../../../event-classes-reference/network/stp/bpdu-root-violation.md) | dispose     |
 
 ### Closing Events
 `Network | STP | Root Guard Violation` may be cleared by events
 
 | Event Class                                                                                            | Description                |
 | ------------------------------------------------------------------------------------------------------ | -------------------------- |
-| [Network \| STP \| Root Guard Recovery](../event-classes-reference/network/stp/root-guard-recovery.md) | dispose                    |
-| [Network \| Link \| Link Up](../event-classes-reference/network/link/link-up.md)                       | Clear Root Guard Violation |
+| [Network \| STP \| Root Guard Recovery](../../../event-classes-reference/network/stp/root-guard-recovery.md) | dispose                    |
+| [Network \| Link \| Link Up](../../../event-classes-reference/network/link/link-up.md)                       | Clear Root Guard Violation |

@@ -1,7 +1,7 @@
 # cfgping DataStream
 
 `cfgping` [DataStream](index.md) contains configuration
-for [ping](../../../../services-reference/ping.md) service
+for [ping](../services-reference/ping.md) service
 
 ## Fields
 
@@ -21,8 +21,8 @@ for [ping](../../../../services-reference/ping.md) service
 | expr_policy     | String  | Free time behaviour:                                                                      |
 |                 |         | D - furn off pinging                                                                      |
 |                 |         | E - continue pinging, but don't follow status                                             |
-| report_rtt      | Boolean | Report [Ping RTT](../../../../metric-types-reference/index.md) metric per each round      |
-| report_attempts | Boolean | Report [Ping Attempts](../../../../metric-types-reference/index.md) metric per each round |
+| report_rtt      | Boolean | Report [Ping RTT](../metric-types-reference/index.md) metric per each round      |
+| report_attempts | Boolean | Report [Ping Attempts](../metric-types-reference/index.md) metric per each round |
 | status          | Null    | Reserved                                                                                  |
 | name            | String  | [Managed Object's](../concepts/managed-object/index.md) name                              |
 | bi_id           | Integer | [Managed Object's](../concepts/managed-object/index.md) BI Id                             |

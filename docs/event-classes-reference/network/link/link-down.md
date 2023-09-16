@@ -19,9 +19,9 @@ Check configuration, both sides of links and hardware
 
 ## Variables
 
-Variable | Type | Required | Description
---- | --- | --- | ---
-interface | interface_name | {{ yes }} | Affected interface
+| Variable  | Type           | Required  | Description        |
+| --------- | -------------- | --------- | ------------------ |
+| interface | interface_name | {{ yes }} | Affected interface |
 
 ## Alarms
 
@@ -29,6 +29,6 @@ interface | interface_name | {{ yes }} | Affected interface
 
 `Network | Link | Link Down` events may raise following alarms:
 
-Alarm Class | Description
---- | ---
-[Network \| Link \| Link Down](../../../alarm-classes/network/link/link-down.md) | dispose
+| Alarm Class                                                                                | Description |
+| ------------------------------------------------------------------------------------------ | ----------- |
+| [Network \| Link \| Link Down](../../../alarm-classes-reference/network/link/link-down.md) | dispose     |

@@ -10,13 +10,13 @@ to classifier service for further analysis.
 
 ## Отправители
 
-- [ping](../../../services-reference/ping.md) service.
-- [syslogcollector](../../../services-reference/syslogcollector.md) service.
-- [trapcollector](../../../services-reference/trapcollector.md) service.
+- [ping](../services-reference/ping.md) service.
+- [syslogcollector](../services-reference/syslogcollector.md) service.
+- [trapcollector](../services-reference/trapcollector.md) service.
 
 ## Слушатели
 
-- [classifier](../../../services-reference/classifier.md) service.
+- [classifier](../services-reference/classifier.md) service.
 
 ## Заголовки сообшения
 

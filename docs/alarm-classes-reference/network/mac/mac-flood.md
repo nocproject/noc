@@ -27,4 +27,4 @@ uuid: b761d498-a29f-41e0-9e8d-20ce696394a2
 
 | Event Class                                                                        | Description |
 | ---------------------------------------------------------------------------------- | ----------- |
-| [Network \| MAC \| MAC Flood](../event-classes-reference/network/mac/mac-flood.md) | dispose     |
+| [Network \| MAC \| MAC Flood](../../../event-classes-reference/network/mac/mac-flood.md) | dispose     |

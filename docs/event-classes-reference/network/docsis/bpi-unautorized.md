@@ -17,11 +17,11 @@ Check the modem interface configuration for privacy mandatory, or check for erro
 
 ## Variables
 
-Variable | Type | Required | Description
---- | --- | --- | ---
-mac | mac | {{ yes }} | Cable Modem MAC
-sid | int | {{ no }} | Cable Modem SID
-interface | interface_name | {{ no }} | Cable interface
+| Variable  | Type           | Required  | Description     |
+| --------- | -------------- | --------- | --------------- |
+| mac       | mac            | {{ yes }} | Cable Modem MAC |
+| sid       | int            | {{ no }}  | Cable Modem SID |
+| interface | interface_name | {{ no }}  | Cable interface |
 
 ## Alarms
 
@@ -29,6 +29,6 @@ interface | interface_name | {{ no }} | Cable interface
 
 `Network | DOCSIS | BPI Unautorized` events may raise following alarms:
 
-Alarm Class | Description
---- | ---
-[Network \| DOCSIS \| BPI Unautorized](../../../alarm-classes/network/docsis/bpi-unautorized.md) | dispose
+| Alarm Class                                                                                                | Description |
+| ---------------------------------------------------------------------------------------------------------- | ----------- |
+| [Network \| DOCSIS \| BPI Unautorized](../../../alarm-classes-reference/network/docsis/bpi-unautorized.md) | dispose     |

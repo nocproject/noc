@@ -70,7 +70,7 @@ System supports life cycle of events ensuring no important events left unnoticed
 
 ### Класс События
 
-Для работы с событием системе важно понимать его значение. Традиционно, для этого используется Класс События [Event Class](../../reference/concepts/event-class/index.md). 
+Для работы с событием системе важно понимать его значение. Традиционно, для этого используется Класс События [Event Class](../../concepts/event-class/index.md). 
 Также к классу события привязываются настройки касательно дальнейшей работы с событием. В системе предусмотрены 
 несколько специальных классов:
 
@@ -81,9 +81,9 @@ System supports life cycle of events ensuring no important events left unnoticed
 
 ### Классификация событий
 
-Задача этапа классификации определить какому классу [Event Class](../../reference/concepts/event-class/index.md) 
+Задача этапа классификации определить какому классу [Event Class](../../concepts/event-class/index.md) 
 принадлежит поступившее событие и действовать согласно указанным в нём настройкам. Для определения класса события 
-используется набор правил классификации [Event Classification Rule](../../reference/concepts/event-classification-rule/index.md), 
+используется набор правил классификации [Event Classification Rule](../../concepts/event-classification-rule/index.md), 
 расположенных в меню `Управление авариями (Fault Management) -> Настройка (Setup) -> Правила классификации (Classification Rule)`.
 
 События в классификатор поступают по очереди [events](../../../dev/api/streams/events.md). Передаются в формате `JSON` 
@@ -94,7 +94,7 @@ System supports life cycle of events ensuring no important events left unnoticed
     * `SNMP Trap` - коллектор `SNMP Trap`
     * `system` - некоторые системные сервисы (`ping`, `discovery`)
     * `other` - неизвестный источник
-* `collector` - пул [Pool](../../reference/concepts/pool/index.md)
+* `collector` - пул [Pool](../../concepts/pool/index.md)
 * Специфичные данные (зависят от источника):
     * `message` - содержит сообщение `syslog`
     * `1.3.6.1.6.3.1.1.4.1.0` (`snmpTrapOID`) - OID 
@@ -123,7 +123,7 @@ System supports life cycle of events ensuring no important events left unnoticed
 
 #### Структура правила классификации
 
-Основная рабочая часть правила классификации [Classification Rule](../../reference/concepts/event-classification-rule/index.md) 
+Основная рабочая часть правила классификации [Classification Rule](../../concepts/event-classification-rule/index.md) 
 это набор шаблонов, по которым идёт сравнение сообщения. Представляют собой набор регулярных выражений 
 для наложения на название поля и его значение в `data` сообщения. Правило считается совпавшим если 
 совпали все регулярные выражения. *Именованные группы* становятся переменными события.
@@ -132,15 +132,15 @@ System supports life cycle of events ensuring no important events left unnoticed
 
 Событие выглядит следующим образом:
 
-![](../../reference/concepts/event-classification-rule/images/event_class_rules_snmp_net_link_down_eltex.png)
+![](../../concepts/event-classification-rule/images/event_class_rules_snmp_net_link_down_eltex.png)
 
 * `Raw Variables` - переменные пришедшие из коллектора в поле `data`
-* `Resolved Variables` - переменные для которых нашёлся соответствующий [MIB](../../reference/concepts/mib/index.md) и добавленные классификатором. Например, переменная `profile` была добавлена классификатором (`classifier`) из данных устройства (`ManagedObject`)
+* `Resolved Variables` - переменные для которых нашёлся соответствующий [MIB](../../concepts/mib/index.md) и добавленные классификатором. Например, переменная `profile` была добавлена классификатором (`classifier`) из данных устройства (`ManagedObject`)
 * `Event Variables` - переменные попавшие в событие (настраиваются в классе)
 
 Рассмотрим правило, под которое попало данное событие (его можно увидеть на вкладке История `History`):
 
-![](../../reference/concepts/event-classification-rule/images/event_snmp_net_link_down_eltex.png)
+![](../../concepts/event-classification-rule/images/event_snmp_net_link_down_eltex.png)
 
 1. Источник (`source`) соответствует `SNMP Trap`. Фиксирует что правило написано только для событий пришедших по `SNMP`
 2. `profile` фиксирует что правило только для устройств с адаптером `Eltex.MES`
@@ -168,7 +168,7 @@ System supports life cycle of events ensuring no important events left unnoticed
 #### Дедупликация событий
 
 Механизм позволяет исключать повторы событий в рамках заданного интервала времени. Сам интервал настраивается 
-в Классе События [Event Class](../../reference/concepts/event-class/index.md) и действует следующим образом:
+в Классе События [Event Class](../../concepts/event-class/index.md) и действует следующим образом:
 
 1. Если настройка `Deduplication Window` больше 0
 2. Для каждого входящего события считается отпечаток (`fingerprint`), входит устройство, класс события и переменные
@@ -189,12 +189,12 @@ System supports life cycle of events ensuring no important events left unnoticed
 
 #### Время жизни события (TTL)
 
-Механизм удаления событий спустя какое-то время. По прошествии времени, указанного в настройке `TTL` класса события [Event Class](../../reference/concepts/event-class/index.md) 
+Механизм удаления событий спустя какое-то время. По прошествии времени, указанного в настройке `TTL` класса события [Event Class](../../concepts/event-class/index.md) 
 событие будет удалено из системы. Если произошла передача события в коррелятор, то устаревание отменяется.
 
 #### Правила размещения (Disposition Rule)
 
-Дальнейшая судьба события определяется в настройках `Disposition Rule` класса события [Event Class](../../reference/concepts/event-class/index.md). 
+Дальнейшая судьба события определяется в настройках `Disposition Rule` класса события [Event Class](../../concepts/event-class/index.md). 
 Это своего рода таблица маршрутизации. После сопоставления события с классом начинается последовательный обход правил размещения 
 и при совпадении условия (`condition`) выполняется указанное действие.
 
@@ -216,7 +216,7 @@ System supports life cycle of events ensuring no important events left unnoticed
 
 #### Корреляция по правилам
 
-Таблица с правилами корреляции размещаются в Классе аварии [Alarm Class](../../reference/concepts/alarm-class/index.md) в разделе `Root Cause`:
+Таблица с правилами корреляции размещаются в Классе аварии [Alarm Class](../../concepts/alarm-class/index.md) в разделе `Root Cause`:
 
 * **Имя** (`Name`) - название правила
 * **Первопричина** (`Root`) - ссылка на класс аварии первопричины
@@ -255,16 +255,16 @@ System supports life cycle of events ensuring no important events left unnoticed
 После обнаружения аварии на конкретном оборудовании, система вычисляет вес **Weight** аварии и в какой интервал базовых значений важности **Severity** попадает авария. 
 Вес рассчитывается по формуле, в которой учитывается влияние на связанных с устройством компонент через *весовые коэффициенты*: 
 
-* Устройство [ManagedObject](../../reference/concepts/managed-object/index.md). Весовой коэффициент выставляется в профиле объекта [Managed Object Profile](../../reference/concepts/managed-object-profile/index.md#FM)
-* Интерфейсы устройства [Interface](../../reference/concepts/interface/index.md). Весовой коэффициент выставляется в профиле интерфейса [Interface Profile](../../reference/concepts/interface-profile/index.md)
-* Сервисы связанные с устройством [Service](../../reference/concepts/service/index.md). Весовой коэффициент выставляется в профиле сервиса [Service Profile](../../reference/concepts/service-profile/index.md)
-* Абоненты связанные с устройством [Subscribers](../../reference/concepts/subscriber/index.md). Весовой коэффициент выставляется в профиле абонента [Subscriber Profile](../../reference/concepts/subscriber-profile/index.md)
+* Устройство [ManagedObject](../../concepts/managed-object/index.md). Весовой коэффициент выставляется в профиле объекта [Managed Object Profile](../../concepts/managed-object-profile/index.md#FM)
+* Интерфейсы устройства [Interface](../../concepts/interface/index.md). Весовой коэффициент выставляется в профиле интерфейса [Interface Profile](../../concepts/interface-profile/index.md)
+* Сервисы связанные с устройством [Service](../../concepts/service/index.md). Весовой коэффициент выставляется в профиле сервиса [Service Profile](../../concepts/service-profile/index.md)
+* Абоненты связанные с устройством [Subscribers](../../concepts/subscriber/index.md). Весовой коэффициент выставляется в профиле абонента [Subscriber Profile](../../concepts/subscriber-profile/index.md)
 
 <!-- prettier-ignore -->
 !!! info
     К весу первопричины аварии помимо собственного добавляются веса подчинённых.
 
-Уровни важности [Severity](../../reference/concepts/alarm-severity/index.md) аварии 
+Уровни важности [Severity](../../concepts/alarm-severity/index.md) аварии 
 настраиваются в меню `Управление авариями (Fault Management) -> Настройки (Setup) -> Важность аварии (Alarm Severities)`. 
 В ней указывается минимальный вес необходимые для выставления соответствующей важности. По умолчанию представлены следующие уровни:
 

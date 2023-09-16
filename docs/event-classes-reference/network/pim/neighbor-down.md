@@ -19,12 +19,12 @@ Check links and local and neighbor's router configuration
 
 ## Variables
 
-Variable | Type | Required | Description
---- | --- | --- | ---
-interface | interface_name | {{ yes }} | Interface
-neighbor | ip_address | {{ yes }} | Neighbor's IP
-vrf | str | {{ no }} | VRF
-reason | str | {{ no }} | Reason
+| Variable  | Type           | Required  | Description   |
+| --------- | -------------- | --------- | ------------- |
+| interface | interface_name | {{ yes }} | Interface     |
+| neighbor  | ip_address     | {{ yes }} | Neighbor's IP |
+| vrf       | str            | {{ no }}  | VRF           |
+| reason    | str            | {{ no }}  | Reason        |
 
 ## Alarms
 
@@ -32,6 +32,6 @@ reason | str | {{ no }} | Reason
 
 `Network | PIM | Neighbor Down` events may raise following alarms:
 
-Alarm Class | Description
---- | ---
-[Network \| PIM \| Neighbor Down](../../../alarm-classes/network/pim/neighbor-down.md) | dispose
+| Alarm Class                                                                                      | Description |
+| ------------------------------------------------------------------------------------------------ | ----------- |
+| [Network \| PIM \| Neighbor Down](../../../alarm-classes-reference/network/pim/neighbor-down.md) | dispose     |

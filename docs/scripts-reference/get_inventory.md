@@ -17,4 +17,4 @@
 
 ## Used in
 -------
-* [Discovery Box Asset](../../discovery-reference/box/asset.md)
+* [Discovery Box Asset](../discovery-reference/box/asset.md)

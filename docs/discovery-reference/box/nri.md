@@ -6,4 +6,4 @@
 
 ## Requirements
 
-* asset check is enabled in [Managed Object Profile](../concepts/managed-object-profile/index.md)
+* asset check is enabled in [Managed Object Profile](../../concepts/managed-object-profile/index.md)

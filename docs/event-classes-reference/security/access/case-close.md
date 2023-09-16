@@ -13,9 +13,9 @@ Case or cover is closed
 
 ## Variables
 
-Variable | Type | Required | Description
---- | --- | --- | ---
-name | str | {{ yes }} | Name
+| Variable | Type | Required  | Description |
+| -------- | ---- | --------- | ----------- |
+| name     | str  | {{ yes }} | Name        |
 
 ## Alarms
 
@@ -23,6 +23,6 @@ name | str | {{ yes }} | Name
 
 `Security | Access | Case Close` events may clear following alarms:
 
-Alarm Class | Description
---- | ---
-[Security \| Access \| Case Open](../../../alarm-classes/security/access/case-open.md) | dispose
+| Alarm Class                                                                                      | Description |
+| ------------------------------------------------------------------------------------------------ | ----------- |
+| [Security \| Access \| Case Open](../../../alarm-classes-reference/security/access/case-open.md) | dispose     |

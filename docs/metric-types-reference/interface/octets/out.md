@@ -8,7 +8,7 @@ The total number of octets transmitted out of the interface, including framing c
 ## Data Model
 
 Scope
-: [Interface](../../metric-scopes-reference/interface.md)
+: [Interface](../../../metric-scopes-reference/interface.md)
 
 Field
 : `octets_out`

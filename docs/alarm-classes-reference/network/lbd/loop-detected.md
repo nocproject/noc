@@ -44,11 +44,11 @@ graph TD
 
 | Event Class                                                                                | Description |
 | ------------------------------------------------------------------------------------------ | ----------- |
-| [Network \| LBD \| Loop Detected](../event-classes-reference/network/lbd/loop-detected.md) | dispose     |
+| [Network \| LBD \| Loop Detected](../../../event-classes-reference/network/lbd/loop-detected.md) | dispose     |
 
 ### Closing Events
 `Network | LBD | Loop Detected` may be cleared by events
 
 | Event Class                                                                              | Description |
 | ---------------------------------------------------------------------------------------- | ----------- |
-| [Network \| LBD \| Loop Cleared](../event-classes-reference/network/lbd/loop-cleared.md) | dispose     |
+| [Network \| LBD \| Loop Cleared](../../../event-classes-reference/network/lbd/loop-cleared.md) | dispose     |

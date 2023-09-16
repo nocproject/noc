@@ -8,7 +8,7 @@ The UAS counts the seconds when the port is not in the activating status. For th
 ## Data Model
 
 Scope
-: [Interface](../../../../../metric-scopes-reference/interface.md)
+: [Interface](../../../../../../metric-scopes-reference/interface.md)
 
 Field
 : `xdsl_line_errors_uas_delta`

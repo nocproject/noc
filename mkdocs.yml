@@ -1289,16 +1289,6 @@ nav:
       - Technologies Reference:
           - Group: technologies-reference/group.md
           - "Network | CGNAT Termination": technologies-reference/Network/cgnat-termination.md
-      - Admin's Guide:
-          - Overview: admin/index.md
-          - Get Started:
-              - Overview: admin/tutorial/index.md
-          - How-to Guides:
-              - Overview: admin/howto/index.md
-          - Background:
-              - Overview: admin/background/index.md
-          - Reference:
-              - Overview: admin/reference/index.md
       - Services Reference:
           - activator: services-reference/activator.md
           - bi: services-reference/bi.md
@@ -1332,7 +1322,6 @@ nav:
           - ui: services-reference/ui.md
       - Configuration Reference:
           - Configuration System Overview: config-reference/index.md
-          - Date and Time Formats: admin/reference/datetime-format.md
           - Global Configuration: config-reference/global.md
           - "[activator] Section": config-reference/activator.md
           - "[audit] section": config-reference/audit.md
@@ -1534,21 +1523,6 @@ nav:
               - twamp_sender: agent-reference/collectors/twamp_sender.md
               - uptime: agent-reference/collectors/uptime.md
           - Compilation Features: agent-reference/compilation-features.md
-      - Developer's Guide:
-          - Overview: dev/index.md
-          - Get Started:
-              - Overview: dev/tutorial/index.md
-          - How-to Guides:
-              - Overview: dev/howto/index.md
-              - How to Share Collections: dev/howto/sharing-collections/index.md
-              - How to Setup black Formatter in PyCharm: dev/howto/setup-black-in-pycharm/index.md
-              - How to Setup flake8 Check in PyCharm: dev/howto/setup-flake8-in-pycharm/index.md
-          - Background:
-              - Overview: dev/background/index.md
-              - Connection Restrictions: dev/background/connection-restrictions/index.md
-              - Connection Type Restrictions: dev/background/connection-type-restrictions/index.md
-          - Reference:
-              - Overview: dev/reference/index.md
       - Merge Request Labels Reference: mr-labels-reference/index.md
       - DataStream API Reference:
           - Overview: datastream-api-reference/index.md
@@ -1597,12 +1571,12 @@ nav:
           - routingneighbors: bi-models-reference/routingneighbors.md
           - span: bi-models-reference/span.md
       - ConfDB:
-          - Overview: dev/reference/confdb/index.md
-          - Config Fetching: dev/reference/confdb/fetching.md
-          - Storage: dev/reference/confdb/storage.md
-          - Tokenizer: dev/reference/confdb/tokenizer.md
-          - Normalizer: dev/reference/confdb/normalizer.md
-          - Query: dev/reference/confdb/query.md
+          - Overview: confdb-reference/index.md
+          - Config Fetching: confdb-reference/fetching.md
+          - Storage: confdb-reference/storage.md
+          - Tokenizer: confdb-reference/tokenizer.md
+          - Normalizer: confdb-reference/normalizer.md
+          - Query: confdb-reference/query.md
       - Scripts Reference:
           - add_vlan: scripts-reference/add_vlan.md
           - commands: scripts-reference/commands.md
@@ -1731,7 +1705,7 @@ nav:
               - "JetCore":
                   - "Backplane Connector": connection-types-reference/brocade/jetcore/backplane-connector.md
                   - "PS Connector": connection-types-reference/brocade/jetcore/ps-connector.md
-              - "Cables": connection-types-reference//cables.md
+              - "Cables": connection-types-reference/cables.md
           - "Carelink":
               - "SWG":
                   - "CL-SWG-1002 sysObjectID 2": connection-types-reference/carelink/swg/cl-swg-1002-sysobjectid-2.md
@@ -1895,9 +1869,9 @@ nav:
                   - "SCE8000 SCM": connection-types-reference/cisco/sce/sce8000-scm.md
               - "SIP": connection-types-reference/cisco/sip.md
               - "SPA": connection-types-reference/cisco/spa.md
-              - "Combined": connection-types-reference//combined.md
-              - "Composed": connection-types-reference//composed.md
-              - "Conduits": connection-types-reference//conduits.md
+              - "Combined": connection-types-reference/combined.md
+              - "Composed": connection-types-reference/composed.md
+              - "Conduits": connection-types-reference/conduits.md
           - "DLink":
               - "DES30":
                   - "Module": connection-types-reference/dlink/des30/module.md
@@ -1913,7 +1887,7 @@ nav:
                   - "Module": connection-types-reference/dlink/dxs33/module.md
               - "DXS36":
                   - "Module": connection-types-reference/dlink/dxs36/module.md
-              - "Ducts": connection-types-reference//ducts.md
+              - "Ducts": connection-types-reference/ducts.md
           - "Electrical":
               - "2.5mm-jack": connection-types-reference/electrical/2.5mm-jack.md
               - "CENC-36M": connection-types-reference/electrical/cenc-36m.md
@@ -2096,7 +2070,7 @@ nav:
           - "Infinet":
               - "WANFlexX":
                   - "R5000": connection-types-reference/infinet/wanflexx/r5000.md
-              - "Inter-PoP Logical Links": connection-types-reference//inter-pop-logical-links.md
+              - "Inter-PoP Logical Links": connection-types-reference/inter-pop-logical-links.md
           - "Iskratel":
               - "SI2000":
                   - "SB": connection-types-reference/iskratel/si2000/sb.md
@@ -2268,9 +2242,13 @@ nav:
           - How-to Guides: docs-style-guide/howto.md
           - References: docs-style-guide/references.md
           - Explanations: docs-style-guide/explanations.md
+      - Connection Restrictions: connection-restrictions/index.md
+      - Connection Type Restrictions: connection-type-restrictions/index.md
+      - Date and Time Formats: datetime-format/index.md
+      - NOC Release and Tagging Policy: release-policy/index.md
+      - Glossary: glossary/index.md
   - Unsorted:
       - Overview: about/index.md
-      - License: license.md
       - Translations: about/translations.md
       - Supported Standards: about/standards.md
       - User's Guide:
@@ -2280,13 +2258,12 @@ nav:
               - Loading GIS data with etl command: user/howto/fias/index.md
           - Background:
               - Overview: user/background/index.md
-      - Tools:
-          - Overview: dev/reference/tools/index.md
-          - PyCharm: dev/reference/tools/pycharm.md
-          - black: dev/reference/tools/black.md
-          - flake8: dev/reference/tools/flake8.md
+  - Dev Tools:
+      - Overview: dev-tools/index.md
+      - black: dev-tools/black.md
+  - HowTo:
+      - Sharing Collections Howto: sharing-collections-howto/index.md
   - Releases:
-      - NOC Release and Tagging Policy: releases/policy.md
       - NOC 23.1 Generation:
           - NOC 23.1: releases/23_1.md
           - NOC 23.1.1: releases/23_1_1.md
@@ -2391,7 +2368,7 @@ nav:
           - NOC 0.1.7: releases/0_1_7.md
           - NOC 0.1.8: releases/0_1_8.md
           - NOC 0.1.9: releases/0_1_9.md
-  - Glossary: glossary/index.md
+  - License: license.md
 # Russian translations
 # nav:
 #   - User's Guide:

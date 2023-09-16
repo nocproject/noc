@@ -24,4 +24,4 @@ uuid: b5db13a5-ec54-4296-bac6-c296aa985d12
 
 | Event Class                                                                                            | Description |
 | ------------------------------------------------------------------------------------------------------ | ----------- |
-| [Security \| Attack \| TCP SYNFIN Scan](../event-classes-reference/security/attack/tcp-synfin-scan.md) | dispose     |
+| [Security \| Attack \| TCP SYNFIN Scan](../../../event-classes-reference/security/attack/tcp-synfin-scan.md) | dispose     |

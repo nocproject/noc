@@ -13,10 +13,10 @@ Supervisor Up
 
 ## Variables
 
-Variable | Type | Required | Description
---- | --- | --- | ---
-name | str | {{ yes }} | Supervisor name
-reason | str | {{ no }} | Reason
+| Variable | Type | Required  | Description     |
+| -------- | ---- | --------- | --------------- |
+| name     | str  | {{ yes }} | Supervisor name |
+| reason   | str  | {{ no }}  | Reason          |
 
 ## Alarms
 
@@ -24,6 +24,6 @@ reason | str | {{ no }} | Reason
 
 `Chassis | Supervisor | Supervisor Up` events may clear following alarms:
 
-Alarm Class | Description
---- | ---
-[Chassis \| Supervisor \| Supervisor Down](../../../alarm-classes/chassis/supervisor/supervisor-down.md) | dispose
+| Alarm Class                                                                                                        | Description |
+| ------------------------------------------------------------------------------------------------------------------ | ----------- |
+| [Chassis \| Supervisor \| Supervisor Down](../../../alarm-classes-reference/chassis/supervisor/supervisor-down.md) | dispose     |

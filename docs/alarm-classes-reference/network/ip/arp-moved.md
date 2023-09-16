@@ -25,4 +25,4 @@ uuid: 1fa45f6c-385c-421e-97fc-6b5310056418
 
 | Event Class                                                                      | Description |
 | -------------------------------------------------------------------------------- | ----------- |
-| [Network \| IP \| ARP Moved](../event-classes-reference/network/ip/arp-moved.md) | dispose     |
+| [Network \| IP \| ARP Moved](../../../event-classes-reference/network/ip/arp-moved.md) | dispose     |

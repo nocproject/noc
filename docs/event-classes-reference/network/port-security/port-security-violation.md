@@ -13,10 +13,10 @@ Port Security Violation
 
 ## Variables
 
-Variable | Type | Required | Description
---- | --- | --- | ---
-interface | interface_name | {{ yes }} | Interface
-mac | mac | {{ no }} | MAC Address
+| Variable  | Type           | Required  | Description |
+| --------- | -------------- | --------- | ----------- |
+| interface | interface_name | {{ yes }} | Interface   |
+| mac       | mac            | {{ no }}  | MAC Address |
 
 ## Alarms
 
@@ -24,6 +24,6 @@ mac | mac | {{ no }} | MAC Address
 
 `Network | Port Security | Port Security Violation` events may raise following alarms:
 
-Alarm Class | Description
---- | ---
-[Network \| Port Security \| Port Security Violation](../../../alarm-classes/network/port-security/port-security-violation.md) | dispose
+| Alarm Class                                                                                                                              | Description |
+| ---------------------------------------------------------------------------------------------------------------------------------------- | ----------- |
+| [Network \| Port Security \| Port Security Violation](../../../alarm-classes-reference/network/port-security/port-security-violation.md) | dispose     |

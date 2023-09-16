@@ -8,7 +8,7 @@ Metric for pulse output. The number of impulses since switching on.
 ## Data Model
 
 Scope
-: [Environment](../metric-scopes-reference/environment.md)
+: [Environment](../../metric-scopes-reference/environment.md)
 
 Field
 : `pulse`

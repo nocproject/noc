@@ -13,11 +13,11 @@ Invalid MAC detected
 
 ## Variables
 
-Variable | Type | Required | Description
---- | --- | --- | ---
-mac | mac | {{ yes }} | MAC Address
-interface | interface_name | {{ yes }} | Affected interface
-vlan | int | {{ no }} | Affected vlan
+| Variable  | Type           | Required  | Description        |
+| --------- | -------------- | --------- | ------------------ |
+| mac       | mac            | {{ yes }} | MAC Address        |
+| interface | interface_name | {{ yes }} | Affected interface |
+| vlan      | int            | {{ no }}  | Affected vlan      |
 
 ## Alarms
 
@@ -25,6 +25,6 @@ vlan | int | {{ no }} | Affected vlan
 
 `Network | MAC | Invalid MAC` events may raise following alarms:
 
-Alarm Class | Description
---- | ---
-[Network \| MAC \| Invalid MAC](../../../alarm-classes/network/mac/invalid-mac.md) | dispose
+| Alarm Class                                                                                  | Description |
+| -------------------------------------------------------------------------------------------- | ----------- |
+| [Network \| MAC \| Invalid MAC](../../../alarm-classes-reference/network/mac/invalid-mac.md) | dispose     |

@@ -25,4 +25,4 @@ uuid: 7a98aeaf-a2d3-473f-80f5-44040d4f0e1e
 
 | Event Class                                                                  | Description |
 | ---------------------------------------------------------------------------- | ----------- |
-| [Network \| IP \| IP Flap](../event-classes-reference/network/ip/ip-flap.md) | dispose     |
+| [Network \| IP \| IP Flap](../../../event-classes-reference/network/ip/ip-flap.md) | dispose     |

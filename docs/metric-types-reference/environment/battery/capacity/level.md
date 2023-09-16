@@ -8,7 +8,7 @@ Metric Battery Level (%)
 ## Data Model
 
 Scope
-: [Environment](../../../metric-scopes-reference/environment.md)
+: [Environment](../../../../metric-scopes-reference/environment.md)
 
 Field
 : `battery_capacity_level`

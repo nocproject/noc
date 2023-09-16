@@ -60,7 +60,7 @@
 Архитектурно **PM** (`Performance Management`) состоит из следующих сервисов:
 
 * Сборщик (`Collector`) - отвечает за сбор метрик
-    * `Activator + Discovery` - сбор метрик с сетевых устройств [Managed Object](../../reference/concepts/managed-object/index.md)
+    * `Activator + Discovery` - сбор метрик с сетевых устройств [Managed Object](../../concepts/managed-object/index.md)
     * `MetricCollector` - `API` для приёма метрик из других систем
     * Агент (`Agent`) - сбор метрик с хостов
 * Сервис метрик (`Metric`) - отвечает за расчёт значений метрик и применение правил порогов
@@ -79,7 +79,7 @@
  [Discovery](../../../services-reference/discovery.md).
  За съёкм метрик отвечает скрипт [get_metrics](../../../scripts-reference/get_metrics.md) с параметром - список метрик. 
  Из коробки данный скрипт поддерживает стандартный набор метрик по `SNMP`, 
- а дополнительные описываются в профиле [Profile](../../reference/concepts/sa-profile/index.md).
+ а дополнительные описываются в профиле [Profile](../../concepts/sa-profile/index.md).
 
 * `IF-MIB` - все метрики интерфейсов
 * `sysUptime` - аптайм
@@ -145,7 +145,7 @@
 
 Метрики для сбора назначаются в *групповых настройках* - Профилях (`Profile`) для этого на форме размещена панель метрик и настройки сбора:
 
-* **Интервал по умолчанию** (`Metric Default Interval`) - интервал сбора метрик. Если 0 - используется интервал из профиля устройства [Managed Object Profile](../../reference/concepts/managed-object-profile/index.md)
+* **Интервал по умолчанию** (`Metric Default Interval`) - интервал сбора метрик. Если 0 - используется интервал из профиля устройства [Managed Object Profile](../../concepts/managed-object-profile/index.md)
 * **Максимальное дробление интервала** (`Metrics Interval Buckets`) - число вложенных интервалов сбора,
  подробнее см. [Шардирование сбора](index.md#Шардирование%20сбора)
 * Метрики для сбора
@@ -172,7 +172,7 @@
 
 ### Профиль интерфейса
 
-В групповых настройках интерфейса [Interface Profile](../../reference/concepts/interface-profile/index.md)
+В групповых настройках интерфейса [Interface Profile](../../concepts/interface-profile/index.md)
  добавляются снимаемые с интерфейса метрики (в настройках `MetricType` выбран `Scope` Interface).
  Для удобства их имя начинается с `Interface | XXX`.
  Настройки расположены в меню `Учёт объектов -> Настройки -> Профили интерфейса (Inventory -> Setup -> Interface Profiles)`.
@@ -186,7 +186,7 @@
 
 Сами интерфейсы расположены на кнопке `Управление объектами -> Список объектов -> Форма объекта -> Интерфейсы (Service Activation -> Managed Object -> <ManagedObject> -> Intefaces`.
  Для экономии времения рекомендуется использовать механим автоматического назначения профилей:
- [Dynamic Classification Policy](../../reference/concepts/dynamic-classification-policy/index.md)
+ [Dynamic Classification Policy](../../concepts/dynamic-classification-policy/index.md)
 
 
 ### Профиль SLA

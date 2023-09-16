@@ -8,7 +8,7 @@ Interface duplex status (1 - unknown, 2 - half, 3 - full)
 ## Data Model
 
 Scope
-: [Interface](../../metric-scopes-reference/interface.md)
+: [Interface](../../../metric-scopes-reference/interface.md)
 
 Field
 : `status_duplex`

@@ -19,4 +19,4 @@
 
 ## Used in
 -------
-* [Discovery Box LLDP](../../discovery-reference/box/lldp.md)
+* [Discovery Box LLDP](../discovery-reference/box/lldp.md)

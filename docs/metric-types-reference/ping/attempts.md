@@ -8,7 +8,7 @@ ICMP Ping packet loss in per request
 ## Data Model
 
 Scope
-: [Ping](../metric-scopes-reference/ping.md)
+: [Ping](../../metric-scopes-reference/ping.md)
 
 Field
 : `attempts`

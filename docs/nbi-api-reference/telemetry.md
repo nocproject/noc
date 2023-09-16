@@ -61,10 +61,10 @@ metrics (array of objects)
 : List of metrics
 
 metric_type (string)
-: Name of [Metric Type](../../../../metric-types-reference/index.md)
+: Name of [Metric Type](../metric-types-reference/index.md)
 
 path (array of string)
-: Metric Path. Refer to [Metric Scopes](../../../../metric-scopes-reference/index.md) for details
+: Metric Path. Refer to [Metric Scopes](../metric-scopes-reference/index.md) for details
 
 values (array of array)
 : Array of pairs (`timestamp`, `value`). Where timestamp is in ISO 8601 format (i.e. YYYY-MM-DDTHH:MM:SS)
@@ -78,5 +78,3 @@ Private-Token
 
 200
 : Success
-
-
