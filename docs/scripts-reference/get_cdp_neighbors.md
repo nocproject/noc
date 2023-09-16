@@ -19,4 +19,4 @@
 
 ## Used in
 ----
-* [Discovery Box CDP](../../discovery-reference/box/cdp.md)
+* [Discovery Box CDP](../discovery-reference/box/cdp.md)

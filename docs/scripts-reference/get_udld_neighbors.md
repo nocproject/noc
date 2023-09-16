@@ -19,4 +19,4 @@
 
 ## Used in
 -------
-* [Discovery Box UDLD](../../discovery-reference/box/udld.md)
+* [Discovery Box UDLD](../discovery-reference/box/udld.md)

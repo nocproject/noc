@@ -19,9 +19,9 @@ Check both sides of links and hardware
 
 ## Variables
 
-Variable | Type | Required | Description
---- | --- | --- | ---
-interface | interface_name | {{ yes }} | Affected interface
+| Variable  | Type           | Required  | Description        |
+| --------- | -------------- | --------- | ------------------ |
+| interface | interface_name | {{ yes }} | Affected interface |
 
 ## Alarms
 
@@ -29,6 +29,6 @@ interface | interface_name | {{ yes }} | Affected interface
 
 `Network | Link | Link Flap Error Detected` events may raise following alarms:
 
-Alarm Class | Description
---- | ---
-[Network \| Link \| Err-Disable](../../../alarm-classes/network/link/err-disable.md) | dispose
+| Alarm Class                                                                                    | Description |
+| ---------------------------------------------------------------------------------------------- | ----------- |
+| [Network \| Link \| Err-Disable](../../../alarm-classes-reference/network/link/err-disable.md) | dispose     |

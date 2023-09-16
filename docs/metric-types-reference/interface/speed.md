@@ -8,7 +8,7 @@ Interface speed
 ## Data Model
 
 Scope
-: [Interface](../metric-scopes-reference/interface.md)
+: [Interface](../../metric-scopes-reference/interface.md)
 
 Field
 : `speed`

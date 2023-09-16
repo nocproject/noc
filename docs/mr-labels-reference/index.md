@@ -16,13 +16,13 @@ Following labels shows subsystems affected by MR. Any combination of labels is p
 * `ansible` - Ansible Playbook
 * `collections` - collections
 * `core` - core modules
-* `confdb` - [ConfDB syntax](../../dev/reference/confdb/query.md)
+* `confdb` - [ConfDB syntax](../confdb-reference/query.md)
 * `documentation` - documentation
 * `ui` - User Interface
 * `profiles` - SA Profiles
 * `migration` - Database migrations
 * `tests` - Unittests
-* `nbi` - [NBI API](api/nbi/index.md)
+* `nbi` - [NBI API](../nbi-api-reference/index.md)
 * `rust` - Rust infrastructure and modules
 
 ## Priority
@@ -69,4 +69,4 @@ MR must be assigned with one of `kind::*` labels to denote changes type
 
 `backport` label means MR to be cherry-picked and backported
 to previous generations. `backport` label is applicable only
-to `kind::bug` label according to [Release Policy](../../releases/policy.md).
+to `kind::bug` label according to [Release Policy](../release-policy/index.md).

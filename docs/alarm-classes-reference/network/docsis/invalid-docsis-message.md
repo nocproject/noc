@@ -28,4 +28,4 @@ Locate the cable modem that sent this message and replace it with DOCSIS-complia
 
 | Event Class                                                                                                        | Description |
 | ------------------------------------------------------------------------------------------------------------------ | ----------- |
-| [Network \| DOCSIS \| Invalid DOCSIS Message](../event-classes-reference/network/docsis/invalid-docsis-message.md) | dispose     |
+| [Network \| DOCSIS \| Invalid DOCSIS Message](../../../event-classes-reference/network/docsis/invalid-docsis-message.md) | dispose     |

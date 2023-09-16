@@ -13,9 +13,9 @@ MPLS LSP Down
 
 ## Variables
 
-Variable | Type | Required | Description
---- | --- | --- | ---
-name | str | {{ yes }} | LSP name
+| Variable | Type | Required  | Description |
+| -------- | ---- | --------- | ----------- |
+| name     | str  | {{ yes }} | LSP name    |
 
 ## Alarms
 
@@ -23,6 +23,6 @@ name | str | {{ yes }} | LSP name
 
 `Network | MPLS | LSP Down` events may raise following alarms:
 
-Alarm Class | Description
---- | ---
-[Network \| MPLS \| LSP Down](../../../alarm-classes/network/mpls/lsp-down.md) | dispose
+| Alarm Class                                                                              | Description |
+| ---------------------------------------------------------------------------------------- | ----------- |
+| [Network \| MPLS \| LSP Down](../../../alarm-classes-reference/network/mpls/lsp-down.md) | dispose     |

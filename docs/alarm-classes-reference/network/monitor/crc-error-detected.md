@@ -23,11 +23,11 @@ uuid: d9abf793-c82e-485b-8937-e35a9fbddfa4
 
 | Event Class                                                                                                  | Description |
 | ------------------------------------------------------------------------------------------------------------ | ----------- |
-| [Network \| Monitor \| CRC Error Detected](../event-classes-reference/network/monitor/crc-error-detected.md) | dispose     |
+| [Network \| Monitor \| CRC Error Detected](../../../event-classes-reference/network/monitor/crc-error-detected.md) | dispose     |
 
 ### Closing Events
 `Network | Monitor | CRC Error Detected` may be cleared by events
 
 | Event Class                                                                                                | Description |
 | ---------------------------------------------------------------------------------------------------------- | ----------- |
-| [Network \| Monitor \| CRC Error Cleared](../event-classes-reference/network/monitor/crc-error-cleared.md) | dispose     |
+| [Network \| Monitor \| CRC Error Cleared](../../../event-classes-reference/network/monitor/crc-error-cleared.md) | dispose     |

@@ -22,11 +22,11 @@ uuid: 9fb6ce01-29e1-4ef4-9bc6-71f12f3bf83d
 
 | Event Class                                                                          | Description |
 | ------------------------------------------------------------------------------------ | ----------- |
-| [Chassis \| Fan \| Fan Failed](../event-classes-reference/chassis/fan/fan-failed.md) | dispose     |
+| [Chassis \| Fan \| Fan Failed](../../../event-classes-reference/chassis/fan/fan-failed.md) | dispose     |
 
 ### Closing Events
 `Chassis | Fan | Fan Failed` may be cleared by events
 
 | Event Class                                                                                | Description |
 | ------------------------------------------------------------------------------------------ | ----------- |
-| [Chassis \| Fan \| Fan Recovered](../event-classes-reference/chassis/fan/fan-recovered.md) | dispose     |
+| [Chassis \| Fan \| Fan Recovered](../../../event-classes-reference/chassis/fan/fan-recovered.md) | dispose     |

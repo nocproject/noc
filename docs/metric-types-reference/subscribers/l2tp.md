@@ -8,7 +8,7 @@ Total active L2TP sessions on the box
 ## Data Model
 
 Scope
-: [Subscriber](../metric-scopes-reference/subscriber.md)
+: [Subscriber](../../metric-scopes-reference/subscriber.md)
 
 Field
 : `l2tp`

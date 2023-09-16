@@ -6,13 +6,13 @@ inside NOC cluster.
 ## Events Pipeline
 Main `Fault Management` pipeline. Events pipeline registers various events
 either by active (pinging and probing) or by passive (various collectors)
-means. Then, [classifier](../../../services-reference/classifier.md) processes events, assigns them
-[Event Classes](../../../event-classes-reference/index.md)
+means. Then, [classifier](../services-reference/classifier.md) processes events, assigns them
+[Event Classes](../event-classes-reference/index.md)
 and detects events which may signal the raising or clearing alarm conditions.
-Selected events are passed to [correlator](../../../services-reference/correlator.md)
+Selected events are passed to [correlator](../services-reference/correlator.md)
 for further alarm state processing. 
 
-```mermaid
+``` mermaid
 graph LR
   ping -->|events.POOL| classifier
   syslogcollector -->|events.POOL| classifier
@@ -23,7 +23,7 @@ graph LR
 ## Generic Message Exchange Pipeline
 Generic Message Exchange Pipeline processes notifications of various system
 events which may be delivered to outside system. Messages are sent
-to [mx](../../../services-reference/mx.md) service, which performs translation
+to [mx](../services-reference/mx.md) service, which performs translation
 and templating for messages and routes them to one of `*sender` services,
 which perform delivery to outside endpoints.
 

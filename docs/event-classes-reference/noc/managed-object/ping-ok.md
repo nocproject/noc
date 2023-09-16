@@ -23,7 +23,7 @@ No reaction needed
 
 `NOC | Managed Object | Ping OK` events may clear following alarms:
 
-Alarm Class | Description
---- | ---
-[NOC \| Managed Object \| Ping Failed](../../../alarm-classes/noc/managed-object/ping-failed.md) | dispose
-[Chassis \| PSU \| Power Failed](../../../alarm-classes/chassis/psu/power-failed.md) | dispose
+| Alarm Class                                                                                                | Description |
+| ---------------------------------------------------------------------------------------------------------- | ----------- |
+| [NOC \| Managed Object \| Ping Failed](../../../alarm-classes-reference/noc/managed-object/ping-failed.md) | dispose     |
+| [Chassis \| PSU \| Power Failed](../../../alarm-classes-reference/chassis/psu/power-failed.md)             | dispose     |

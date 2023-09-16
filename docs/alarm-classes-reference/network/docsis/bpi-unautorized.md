@@ -28,4 +28,4 @@ Check the modem interface configuration for privacy mandatory, or check for erro
 
 | Event Class                                                                                          | Description |
 | ---------------------------------------------------------------------------------------------------- | ----------- |
-| [Network \| DOCSIS \| BPI Unautorized](../event-classes-reference/network/docsis/bpi-unautorized.md) | dispose     |
+| [Network \| DOCSIS \| BPI Unautorized](../../../event-classes-reference/network/docsis/bpi-unautorized.md) | dispose     |

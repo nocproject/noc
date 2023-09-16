@@ -13,9 +13,9 @@ Multicast Storm Detected
 
 ## Variables
 
-Variable | Type | Required | Description
---- | --- | --- | ---
-interface | interface_name | {{ yes }} | Interface
+| Variable  | Type           | Required  | Description |
+| --------- | -------------- | --------- | ----------- |
+| interface | interface_name | {{ yes }} | Interface   |
 
 ## Alarms
 
@@ -23,6 +23,6 @@ interface | interface_name | {{ yes }} | Interface
 
 `Network | Storm Control | Multicast Storm Detected` events may raise following alarms:
 
-Alarm Class | Description
---- | ---
-[Network \| Storm Control \| Multicast Storm Detected](../../../alarm-classes/network/storm-control/multicast-storm-detected.md) | dispose
+| Alarm Class                                                                                                                                | Description |
+| ------------------------------------------------------------------------------------------------------------------------------------------ | ----------- |
+| [Network \| Storm Control \| Multicast Storm Detected](../../../alarm-classes-reference/network/storm-control/multicast-storm-detected.md) | dispose     |

@@ -13,9 +13,9 @@ Link going into half-duplex state
 
 ## Variables
 
-Variable | Type | Required | Description
---- | --- | --- | ---
-interface | interface_name | {{ yes }} | interface name
+| Variable  | Type           | Required  | Description    |
+| --------- | -------------- | --------- | -------------- |
+| interface | interface_name | {{ yes }} | interface name |
 
 ## Alarms
 
@@ -23,6 +23,6 @@ interface | interface_name | {{ yes }} | interface name
 
 `Network | Link | Half-Duplex` events may raise following alarms:
 
-Alarm Class | Description
---- | ---
-[Network \| Link \| Half-Duplex](../../../alarm-classes/network/link/half-duplex.md) | dispose
+| Alarm Class                                                                                    | Description |
+| ---------------------------------------------------------------------------------------------- | ----------- |
+| [Network \| Link \| Half-Duplex](../../../alarm-classes-reference/network/link/half-duplex.md) | dispose     |

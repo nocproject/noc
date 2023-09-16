@@ -8,7 +8,7 @@ Refer to changing the line parameters (retrain) to adapt to the change of transm
 ## Data Model
 
 Scope
-: [Interface](../../../../../metric-scopes-reference/interface.md)
+: [Interface](../../../../../../metric-scopes-reference/interface.md)
 
 Field
 : `xdsl_line_errors_retrain_delta`

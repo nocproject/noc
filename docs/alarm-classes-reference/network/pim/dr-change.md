@@ -31,4 +31,4 @@ Check links and local and neighbor router configuration
 
 | Event Class                                                                        | Description |
 | ---------------------------------------------------------------------------------- | ----------- |
-| [Network \| PIM \| DR Change](../event-classes-reference/network/pim/dr-change.md) | dispose     |
+| [Network \| PIM \| DR Change](../../../event-classes-reference/network/pim/dr-change.md) | dispose     |

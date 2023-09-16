@@ -8,7 +8,7 @@ Count of the number of Loss of Signal failures since agent reset.
 ## Data Model
 
 Scope
-: [Interface](../../../../../metric-scopes-reference/interface.md)
+: [Interface](../../../../../../metric-scopes-reference/interface.md)
 
 Field
 : `xdsl_line_errors_loss_delta`

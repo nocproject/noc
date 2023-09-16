@@ -17,9 +17,9 @@ Check IMPB entry, check topology
 
 ## Variables
 
-Variable | Type | Required | Description
---- | --- | --- | ---
-interface | interface_name | {{ yes }} | Affected interface
+| Variable  | Type           | Required  | Description        |
+| --------- | -------------- | --------- | ------------------ |
+| interface | interface_name | {{ yes }} | Affected interface |
 
 ## Alarms
 
@@ -27,6 +27,6 @@ interface | interface_name | {{ yes }} | Affected interface
 
 `Network | IMPB | Recover IMPB stop learning state` events may clear following alarms:
 
-Alarm Class | Description
---- | ---
-[Network \| IMPB \| Unauthenticated IP-MAC](../../../alarm-classes/network/impb/unauthenticated-ip-mac.md) | dispose
+| Alarm Class                                                                                                          | Description |
+| -------------------------------------------------------------------------------------------------------------------- | ----------- |
+| [Network \| IMPB \| Unauthenticated IP-MAC](../../../alarm-classes-reference/network/impb/unauthenticated-ip-mac.md) | dispose     |

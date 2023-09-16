@@ -24,11 +24,11 @@ uuid: c4ebe882-c66b-42ec-9c33-47bb6caa25c3
 
 | Event Class                                                                                                                                                                        | Description |
 | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------- |
-| [Vendor \| Cisco \| IOS \| Network \| Load Balance \| vserver Out of Service](../../../../event-classes-reference/vendor/cisco/ios/network/load-balance/vserver-out-of-service.md) | dispose     |
+| [Vendor \| Cisco \| IOS \| Network \| Load Balance \| vserver Out of Service](../../../../../../event-classes-reference/vendor/cisco/ios/network/load-balance/vserver-out-of-service.md) | dispose     |
 
 ### Closing Events
 `Vendor | Cisco | IOS | Network | Load Balance | vserver Out of Service` may be cleared by events
 
 | Event Class                                                                                                                                                                | Description |
 | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------- |
-| [Vendor \| Cisco \| IOS \| Network \| Load Balance \| vserver In Service](../../../../event-classes-reference/vendor/cisco/ios/network/load-balance/vserver-in-service.md) | dispose     |
+| [Vendor \| Cisco \| IOS \| Network \| Load Balance \| vserver In Service](../../../../../../event-classes-reference/vendor/cisco/ios/network/load-balance/vserver-in-service.md) | dispose     |

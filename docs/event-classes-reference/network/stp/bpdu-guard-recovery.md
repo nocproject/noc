@@ -13,9 +13,9 @@ BPDU Guard Recovery
 
 ## Variables
 
-Variable | Type | Required | Description
---- | --- | --- | ---
-interface | interface_name | {{ yes }} | Interface
+| Variable  | Type           | Required  | Description |
+| --------- | -------------- | --------- | ----------- |
+| interface | interface_name | {{ yes }} | Interface   |
 
 ## Alarms
 
@@ -23,6 +23,6 @@ interface | interface_name | {{ yes }} | Interface
 
 `Network | STP | BPDU Guard Recovery` events may clear following alarms:
 
-Alarm Class | Description
---- | ---
-[Network \| STP \| BPDU Guard Violation](../../../alarm-classes/network/stp/bpdu-guard-violation.md) | dispose
+| Alarm Class                                                                                                    | Description |
+| -------------------------------------------------------------------------------------------------------------- | ----------- |
+| [Network \| STP \| BPDU Guard Violation](../../../alarm-classes-reference/network/stp/bpdu-guard-violation.md) | dispose     |

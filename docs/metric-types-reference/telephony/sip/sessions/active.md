@@ -8,7 +8,7 @@ The total number of active SIP sessions.
 ## Data Model
 
 Scope
-: [Object](../../../metric-scopes-reference/object.md)
+: [Object](../../../../metric-scopes-reference/object.md)
 
 Field
 : `sip_sessions_active`

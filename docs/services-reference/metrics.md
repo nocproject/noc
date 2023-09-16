@@ -27,13 +27,13 @@ graph LR
 
 | Stream                                           | Description             |
 | ------------------------------------------------ | ----------------------- |
-| [metrics](../../../streams-reference/metrics.md) | Incoming telemetry data |
+| [metrics](../streams-reference/metrics.md) | Incoming telemetry data |
 
 ### Output streams
 
 | Stream                                 | Description                      |
 | -------------------------------------- | -------------------------------- |
-| [ch](../../../streams-reference/ch.md) | Data to be written to clickhouse |
+| [ch](../streams-reference/ch.md) | Data to be written to clickhouse |
 
 ## Configuration
 

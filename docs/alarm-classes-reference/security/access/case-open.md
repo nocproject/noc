@@ -22,11 +22,11 @@ uuid: bd40639b-5e81-4805-864d-29de2c6de60c
 
 | Event Class                                                                                | Description |
 | ------------------------------------------------------------------------------------------ | ----------- |
-| [Security \| Access \| Case Open](../event-classes-reference/security/access/case-open.md) | dispose     |
+| [Security \| Access \| Case Open](../../../event-classes-reference/security/access/case-open.md) | dispose     |
 
 ### Closing Events
 `Security | Access | Case Open` may be cleared by events
 
 | Event Class                                                                                  | Description |
 | -------------------------------------------------------------------------------------------- | ----------- |
-| [Security \| Access \| Case Close](../event-classes-reference/security/access/case-close.md) | dispose     |
+| [Security \| Access \| Case Close](../../../event-classes-reference/security/access/case-close.md) | dispose     |

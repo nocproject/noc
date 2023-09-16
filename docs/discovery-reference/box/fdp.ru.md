@@ -5,7 +5,7 @@
 
 ## Возможности
 
-* Скрипт [get_fdp_neighbors](../../../../scripts-reference/get_fdp_neighbors.md)
-* Возможность [Network FDP](../../../../caps-reference/network/fdp.md)
-* Опрос FDP включён в профиле объектов [Managed Object Profile](../concepts/managed-object-profile/index.md#Box(Полный_опрос))
-* Метод FDP в *Методах построения топологии* [Segment Profile](../concepts/network-segment-profile/index.md)
+* Скрипт [get_fdp_neighbors](../../scripts-reference/get_fdp_neighbors.md)
+* Возможность [Network FDP](../../caps-reference/network/fdp.md)
+* Опрос FDP включён в профиле объектов [Managed Object Profile](../../concepts/managed-object-profile/index.md#Box(Полный_опрос))
+* Метод FDP в *Методах построения топологии* [Segment Profile](../../concepts/network-segment-profile/index.md)

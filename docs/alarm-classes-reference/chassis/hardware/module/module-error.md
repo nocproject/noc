@@ -24,4 +24,4 @@ uuid: f3d81e67-27fc-4100-ba8d-4f9f01e772da
 
 | Event Class                                                                                                            | Description |
 | ---------------------------------------------------------------------------------------------------------------------- | ----------- |
-| [Chassis \| Hardware \| Module \| Module Error](../../event-classes-reference/chassis/hardware/module/module-error.md) | dispose     |
+| [Chassis \| Hardware \| Module \| Module Error](../../../../event-classes-reference/chassis/hardware/module/module-error.md) | dispose     |

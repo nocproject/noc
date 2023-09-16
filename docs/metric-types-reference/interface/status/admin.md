@@ -8,7 +8,7 @@ Interface admin status
 ## Data Model
 
 Scope
-: [Interface](../../metric-scopes-reference/interface.md)
+: [Interface](../../../metric-scopes-reference/interface.md)
 
 Field
 : `status_admin`

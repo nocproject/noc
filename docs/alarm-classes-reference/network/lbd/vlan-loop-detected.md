@@ -31,11 +31,11 @@ Check topology or use STP to avoid loops
 
 | Event Class                                                                                          | Description |
 | ---------------------------------------------------------------------------------------------------- | ----------- |
-| [Network \| LBD \| Vlan Loop Detected](../event-classes-reference/network/lbd/vlan-loop-detected.md) | dispose     |
+| [Network \| LBD \| Vlan Loop Detected](../../../event-classes-reference/network/lbd/vlan-loop-detected.md) | dispose     |
 
 ### Closing Events
 `Network | LBD | Vlan Loop Detected` may be cleared by events
 
 | Event Class                                                                                        | Description |
 | -------------------------------------------------------------------------------------------------- | ----------- |
-| [Network \| LBD \| Vlan Loop Cleared](../event-classes-reference/network/lbd/vlan-loop-cleared.md) | dispose     |
+| [Network \| LBD \| Vlan Loop Cleared](../../../event-classes-reference/network/lbd/vlan-loop-cleared.md) | dispose     |

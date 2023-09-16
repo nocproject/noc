@@ -15,9 +15,9 @@ Link becomes unstable or is not responding
 
 ## Variables
 
-Variable | Type | Required | Description
---- | --- | --- | ---
-interface | str | {{ yes }} | Hardware port
+| Variable  | Type | Required  | Description   |
+| --------- | ---- | --------- | ------------- |
+| interface | str  | {{ yes }} | Hardware port |
 
 ## Alarms
 
@@ -25,6 +25,6 @@ interface | str | {{ yes }} | Hardware port
 
 `Chassis | Hardware | Hardware Port Error` events may raise following alarms:
 
-Alarm Class | Description
---- | ---
-[Chassis \| Hardware \| Hardware Port Error](../../../alarm-classes/chassis/hardware/hardware-port-error.md) | dispose
+| Alarm Class                                                                                                            | Description |
+| ---------------------------------------------------------------------------------------------------------------------- | ----------- |
+| [Chassis \| Hardware \| Hardware Port Error](../../../alarm-classes-reference/chassis/hardware/hardware-port-error.md) | dispose     |

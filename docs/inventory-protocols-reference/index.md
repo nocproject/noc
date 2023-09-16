@@ -7,32 +7,32 @@ cannot be put in slot, supporting only `TransEth40G`.
 
 ## Power & Energetics
 
-| Protocol | Description                             | Variants                                       |
-| -------- | --------------------------------------- | ---------------------------------------------- |
-| `220VAC` | 220V [AC](../../glossary.md#ac)         | `<220VAC` - Power Source                       |
-|          |                                         | `>220VAC` - Power Consumer (Power Supply Unit) |
-| `110VAC` | 110V [AC](../../glossary.md#ac)         | `<110VAC` - Power Source                       |
-|          |                                         | `>110VAC` - Power Consumer (Power Supply Unit) |
-| `-48VDC` | -36V .. -72V [DC](../../glossary.md#dc) | `<-48VDC` - Power Source                       |
-|          |                                         | `>-48VDC` - Power Consumer (Power Supply Unit) |
-| `+24VDC` | +18V .. +36V [DC](../../glossary.md#dc) | `>+24VDC` - Power Source                       |
-|          |                                         | `<+24VDC` - Power Consumer (Power Supply Unit  |
-| `POE`    | [PoE](../../glossary.md#poe)            | `<POE` - PoE Source Port                       |
-|          |                                         | `>POE` - PoE Consumer Port                     |
+| Protocol | Description                                | Variants                                       |
+| -------- | ------------------------------------------ | ---------------------------------------------- |
+| `220VAC` | 220V [AC](../glossary/index.md#ac)         | `<220VAC` - Power Source                       |
+|          |                                            | `>220VAC` - Power Consumer (Power Supply Unit) |
+| `110VAC` | 110V [AC](../glossary/index.md#ac)         | `<110VAC` - Power Source                       |
+|          |                                            | `>110VAC` - Power Consumer (Power Supply Unit) |
+| `-48VDC` | -36V .. -72V [DC](../glossary/index.md#dc) | `<-48VDC` - Power Source                       |
+|          |                                            | `>-48VDC` - Power Consumer (Power Supply Unit) |
+| `+24VDC` | +18V .. +36V [DC](../glossary/index.md#dc) | `>+24VDC` - Power Source                       |
+|          |                                            | `<+24VDC` - Power Consumer (Power Supply Unit  |
+| `POE`    | [PoE](../glossary/index.md#poe)            | `<POE` - PoE Source Port                       |
+|          |                                            | `>POE` - PoE Consumer Port                     |
 
 ## Serial
 
-| Protocol | Description                        | Variants                         |
-| -------- | ---------------------------------- | -------------------------------- |
-| `RS232`  | [RS-232](../../glossary.md#rs-232) | `>RS232` - DTU (console)         |
-|          |                                    | `<RS232` - DCU (terminal server) |
-| `RS485`  | [RS-485](../../glossary.md#rs-485) | `>RS485` - Slave                 |
-|          |                                    | `<RS485` - Master                |
-|          |                                    | `>RS485-A` - Signal-A slave      |
-|          |                                    | `<RS485-A` - Signal-A master     |
-|          |                                    | `>RS485-B` - Signal-B slave      |
-|          |                                    | `<RS485-B` - Signal-B master     |
-| `G703`   | [G.703](../../glossary.md#g-703)   | `G.703`                          |
+| Protocol | Description                           | Variants                         |
+| -------- | ------------------------------------- | -------------------------------- |
+| `RS232`  | [RS-232](../glossary/index.md#rs-232) | `>RS232` - DTU (console)         |
+|          |                                       | `<RS232` - DCU (terminal server) |
+| `RS485`  | [RS-485](../glossary/index.md#rs-485) | `>RS485` - Slave                 |
+|          |                                       | `<RS485` - Master                |
+|          |                                       | `>RS485-A` - Signal-A slave      |
+|          |                                       | `<RS485-A` - Signal-A master     |
+|          |                                       | `>RS485-B` - Signal-B slave      |
+|          |                                       | `<RS485-B` - Signal-B master     |
+| `G703`   | [G.703](../glossary/index.md#g-703)   | `G.703`                          |
 
 ## USB
 

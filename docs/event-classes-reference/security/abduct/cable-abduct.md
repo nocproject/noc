@@ -21,6 +21,6 @@ Check electrics and send security team to catch the thief
 
 `Security | Abduct | Cable Abduct` events may raise following alarms:
 
-Alarm Class | Description
---- | ---
-[Security \| Abduct \| Cable Abduct](../../../alarm-classes/security/abduct/cable-abduct.md) | dispose
+| Alarm Class                                                                                            | Description |
+| ------------------------------------------------------------------------------------------------------ | ----------- |
+| [Security \| Abduct \| Cable Abduct](../../../alarm-classes-reference/security/abduct/cable-abduct.md) | dispose     |

@@ -30,4 +30,4 @@ Locate the specified device and place the device on a different cable modem with
 
 | Event Class                                                                                          | Description |
 | ---------------------------------------------------------------------------------------------------- | ----------- |
-| [Network \| DOCSIS \| Max CPE Reached](../event-classes-reference/network/docsis/max-cpe-reached.md) | dispose     |
+| [Network \| DOCSIS \| Max CPE Reached](../../../event-classes-reference/network/docsis/max-cpe-reached.md) | dispose     |

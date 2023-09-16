@@ -22,4 +22,4 @@ uuid: e02309ba-800f-4da8-94a4-5bbb060457a6
 
 | Event Class                                                                                            | Description |
 | ------------------------------------------------------------------------------------------------------ | ----------- |
-| [Chassis \| RAM \| Insufficient Memory](../event-classes-reference/chassis/ram/insufficient-memory.md) | dispose     |
+| [Chassis \| RAM \| Insufficient Memory](../../../event-classes-reference/chassis/ram/insufficient-memory.md) | dispose     |

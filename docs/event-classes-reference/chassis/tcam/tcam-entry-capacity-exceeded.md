@@ -13,9 +13,9 @@ TCAM entry capacity exceeded
 
 ## Variables
 
-Variable | Type | Required | Description
---- | --- | --- | ---
-reason | str | {{ no }} | Reason
+| Variable | Type | Required | Description |
+| -------- | ---- | -------- | ----------- |
+| reason   | str  | {{ no }} | Reason      |
 
 ## Alarms
 
@@ -23,6 +23,6 @@ reason | str | {{ no }} | Reason
 
 `Chassis | TCAM | TCAM Entry Capacity Exceeded` events may raise following alarms:
 
-Alarm Class | Description
---- | ---
-[Chassis \| TCAM \| TCAM Entry Capacity Exceeded](../../../alarm-classes/chassis/tcam/tcam-entry-capacity-exceeded.md) | dispose
+| Alarm Class                                                                                                                      | Description |
+| -------------------------------------------------------------------------------------------------------------------------------- | ----------- |
+| [Chassis \| TCAM \| TCAM Entry Capacity Exceeded](../../../alarm-classes-reference/chassis/tcam/tcam-entry-capacity-exceeded.md) | dispose     |

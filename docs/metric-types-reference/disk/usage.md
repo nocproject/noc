@@ -8,7 +8,7 @@ Disk Usage byte
 ## Data Model
 
 Scope
-: [Disk](../metric-scopes-reference/disk.md)
+: [Disk](../../metric-scopes-reference/disk.md)
 
 Field
 : `disk_usage_b`

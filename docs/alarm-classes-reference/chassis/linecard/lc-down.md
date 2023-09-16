@@ -42,11 +42,11 @@ graph TD
 
 | Event Class                                                                              | Description |
 | ---------------------------------------------------------------------------------------- | ----------- |
-| [Chassis \| Linecard \| LC Down](../event-classes-reference/chassis/linecard/lc-down.md) | dispose     |
+| [Chassis \| Linecard \| LC Down](../../../event-classes-reference/chassis/linecard/lc-down.md) | dispose     |
 
 ### Closing Events
 `Chassis | Linecard | LC Down` may be cleared by events
 
 | Event Class                                                                          | Description |
 | ------------------------------------------------------------------------------------ | ----------- |
-| [Chassis \| Linecard \| LC Up](../event-classes-reference/chassis/linecard/lc-up.md) | dispose     |
+| [Chassis \| Linecard \| LC Up](../../../event-classes-reference/chassis/linecard/lc-up.md) | dispose     |

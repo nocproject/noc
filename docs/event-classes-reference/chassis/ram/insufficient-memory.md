@@ -13,9 +13,9 @@ Insufficient Memory
 
 ## Variables
 
-Variable | Type | Required | Description
---- | --- | --- | ---
-reason | str | {{ no }} | Reason
+| Variable | Type | Required | Description |
+| -------- | ---- | -------- | ----------- |
+| reason   | str  | {{ no }} | Reason      |
 
 ## Alarms
 
@@ -23,6 +23,6 @@ reason | str | {{ no }} | Reason
 
 `Chassis | RAM | Insufficient Memory` events may raise following alarms:
 
-Alarm Class | Description
---- | ---
-[Chassis \| RAM \| Insufficient Memory](../../../alarm-classes/chassis/ram/insufficient-memory.md) | dispose
+| Alarm Class                                                                                                  | Description |
+| ------------------------------------------------------------------------------------------------------------ | ----------- |
+| [Chassis \| RAM \| Insufficient Memory](../../../alarm-classes-reference/chassis/ram/insufficient-memory.md) | dispose     |

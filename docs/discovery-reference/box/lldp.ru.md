@@ -14,7 +14,7 @@
 
 ## Требования
 
-* Скрипт [get_lldp_neighbors](../../../../scripts-reference/get_lldp_neighbors.md)
-* Возможность [Network LLDP caps](../../../../caps-reference/network/lldp.md)
-* Опрос LLDP включён в профиле объектов [Managed Object Profile](../concepts/managed-object-profile/index.md#Box(Полный_опрос))
-* Метод LLDP в *Методах построения топологии* [Segment Profile](../concepts/network-segment-profile/index.md)
+* Скрипт [get_lldp_neighbors](../../scripts-reference/get_lldp_neighbors.md)
+* Возможность [Network LLDP caps](../../caps-reference/network/lldp.md)
+* Опрос LLDP включён в профиле объектов [Managed Object Profile](../../concepts/managed-object-profile/index.md#Box(Полный_опрос))
+* Метод LLDP в *Методах построения топологии* [Segment Profile](../../concepts/network-segment-profile/index.md)

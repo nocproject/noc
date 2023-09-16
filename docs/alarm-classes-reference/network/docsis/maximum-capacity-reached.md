@@ -29,4 +29,4 @@ Load-balance the modems that are requesting the reserved upstream rate on anothe
 
 | Event Class                                                                                                            | Description |
 | ---------------------------------------------------------------------------------------------------------------------- | ----------- |
-| [Network \| DOCSIS \| Maximum Capacity Reached](../event-classes-reference/network/docsis/maximum-capacity-reached.md) | dispose     |
+| [Network \| DOCSIS \| Maximum Capacity Reached](../../../event-classes-reference/network/docsis/maximum-capacity-reached.md) | dispose     |

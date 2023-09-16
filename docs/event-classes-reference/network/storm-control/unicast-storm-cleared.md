@@ -13,9 +13,9 @@ Unicast (DLF) Storm Cleared
 
 ## Variables
 
-Variable | Type | Required | Description
---- | --- | --- | ---
-interface | interface_name | {{ yes }} | Interface
+| Variable  | Type           | Required  | Description |
+| --------- | -------------- | --------- | ----------- |
+| interface | interface_name | {{ yes }} | Interface   |
 
 ## Alarms
 
@@ -23,6 +23,6 @@ interface | interface_name | {{ yes }} | Interface
 
 `Network | Storm Control | Unicast Storm Cleared` events may clear following alarms:
 
-Alarm Class | Description
---- | ---
-[Network \| Storm Control \| Unicast Storm Detected](../../../alarm-classes/network/storm-control/unicast-storm-detected.md) | dispose
+| Alarm Class                                                                                                                            | Description |
+| -------------------------------------------------------------------------------------------------------------------------------------- | ----------- |
+| [Network \| Storm Control \| Unicast Storm Detected](../../../alarm-classes-reference/network/storm-control/unicast-storm-detected.md) | dispose     |

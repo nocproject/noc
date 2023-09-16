@@ -13,9 +13,9 @@ Power failed
 
 ## Variables
 
-Variable | Type | Required | Description
---- | --- | --- | ---
-condition | str | {{ no }} | Condition
+| Variable  | Type | Required | Description |
+| --------- | ---- | -------- | ----------- |
+| condition | str  | {{ no }} | Condition   |
 
 ## Alarms
 
@@ -23,6 +23,6 @@ condition | str | {{ no }} | Condition
 
 `Chassis | PSU | Power Failed` events may raise following alarms:
 
-Alarm Class | Description
---- | ---
-[Chassis \| PSU \| Power Failed](../../../alarm-classes/chassis/psu/power-failed.md) | dispose
+| Alarm Class                                                                                    | Description |
+| ---------------------------------------------------------------------------------------------- | ----------- |
+| [Chassis \| PSU \| Power Failed](../../../alarm-classes-reference/chassis/psu/power-failed.md) | dispose     |

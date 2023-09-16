@@ -22,11 +22,11 @@ uuid: fa641bed-9f72-49b6-b95d-b33936dc3690
 
 | Event Class                                                                                                                      | Description |
 | -------------------------------------------------------------------------------------------------------------------------------- | ----------- |
-| [Security \| Authentication \| RADIUS server failed](../event-classes-reference/security/authentication/radius-server-failed.md) | dispose     |
+| [Security \| Authentication \| RADIUS server failed](../../../event-classes-reference/security/authentication/radius-server-failed.md) | dispose     |
 
 ### Closing Events
 `Security | Authentication | RADIUS server failed` may be cleared by events
 
 | Event Class                                                                                                                            | Description |
 | -------------------------------------------------------------------------------------------------------------------------------------- | ----------- |
-| [Security \| Authentication \| RADIUS server recovered](../event-classes-reference/security/authentication/radius-server-recovered.md) | dispose     |
+| [Security \| Authentication \| RADIUS server recovered](../../../event-classes-reference/security/authentication/radius-server-recovered.md) | dispose     |

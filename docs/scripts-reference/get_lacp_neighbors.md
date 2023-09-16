@@ -19,4 +19,4 @@
 
 ## Used in
 -------
-* [Discovery Box LACP](../../discovery-reference/box/lacp.md)
+* [Discovery Box LACP](../discovery-reference/box/lacp.md)

@@ -57,11 +57,11 @@ graph TD
 
 | Event Class                                                                                                                   | Description |
 | ----------------------------------------------------------------------------------------------------------------------------- | ----------- |
-| [Network \| Link \| DOM \| Alarm: Out of Threshold](../../event-classes-reference/network/link/dom/alarm-out-of-threshold.md) | dispose     |
+| [Network \| Link \| DOM \| Alarm: Out of Threshold](../../../../event-classes-reference/network/link/dom/alarm-out-of-threshold.md) | dispose     |
 
 ### Closing Events
 `Network | Link | DOM | Alarm: Out of Threshold` may be cleared by events
 
 | Event Class                                                                                                                                       | Description |
 | ------------------------------------------------------------------------------------------------------------------------------------------------- | ----------- |
-| [Network \| Link \| DOM \| Alarm: Out of Threshold Recovered](../../event-classes-reference/network/link/dom/alarm-out-of-threshold-recovered.md) | dispose     |
+| [Network \| Link \| DOM \| Alarm: Out of Threshold Recovered](../../../../event-classes-reference/network/link/dom/alarm-out-of-threshold-recovered.md) | dispose     |

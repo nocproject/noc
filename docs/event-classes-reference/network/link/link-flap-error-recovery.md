@@ -13,9 +13,9 @@ Link-flap error recovery
 
 ## Variables
 
-Variable | Type | Required | Description
---- | --- | --- | ---
-interface | interface_name | {{ yes }} | Affected interface
+| Variable  | Type           | Required  | Description        |
+| --------- | -------------- | --------- | ------------------ |
+| interface | interface_name | {{ yes }} | Affected interface |
 
 ## Alarms
 
@@ -23,6 +23,6 @@ interface | interface_name | {{ yes }} | Affected interface
 
 `Network | Link | Link Flap Error Recovery` events may clear following alarms:
 
-Alarm Class | Description
---- | ---
-[Network \| Link \| Err-Disable](../../../alarm-classes/network/link/err-disable.md) | dispose
+| Alarm Class                                                                                    | Description |
+| ---------------------------------------------------------------------------------------------- | ----------- |
+| [Network \| Link \| Err-Disable](../../../alarm-classes-reference/network/link/err-disable.md) | dispose     |

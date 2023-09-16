@@ -42,11 +42,11 @@ graph TD
 
 | Event Class                                                                                                                                                  | Description |
 | ------------------------------------------------------------------------------------------------------------------------------------------------------------ | ----------- |
-| [Vendor \| f5 \| BIGIP \| Network \| Load Balance \| Service Down](../../../../event-classes-reference/vendor/f5/bigip/network/load-balance/service-down.md) | dispose     |
+| [Vendor \| f5 \| BIGIP \| Network \| Load Balance \| Service Down](../../../../../../event-classes-reference/vendor/f5/bigip/network/load-balance/service-down.md) | dispose     |
 
 ### Closing Events
 `Vendor | f5 | BIGIP | Network | Load Balance | Service Down` may be cleared by events
 
 | Event Class                                                                                                                                              | Description |
 | -------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------- |
-| [Vendor \| f5 \| BIGIP \| Network \| Load Balance \| Service Up](../../../../event-classes-reference/vendor/f5/bigip/network/load-balance/service-up.md) | dispose     |
+| [Vendor \| f5 \| BIGIP \| Network \| Load Balance \| Service Up](../../../../../../event-classes-reference/vendor/f5/bigip/network/load-balance/service-up.md) | dispose     |

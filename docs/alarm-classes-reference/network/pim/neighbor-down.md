@@ -54,11 +54,11 @@ graph TD
 
 | Event Class                                                                                | Description |
 | ------------------------------------------------------------------------------------------ | ----------- |
-| [Network \| PIM \| Neighbor Down](../event-classes-reference/network/pim/neighbor-down.md) | dispose     |
+| [Network \| PIM \| Neighbor Down](../../../event-classes-reference/network/pim/neighbor-down.md) | dispose     |
 
 ### Closing Events
 `Network | PIM | Neighbor Down` may be cleared by events
 
 | Event Class                                                                            | Description |
 | -------------------------------------------------------------------------------------- | ----------- |
-| [Network \| PIM \| Neighbor Up](../event-classes-reference/network/pim/neighbor-up.md) | dispose     |
+| [Network \| PIM \| Neighbor Up](../../../event-classes-reference/network/pim/neighbor-up.md) | dispose     |

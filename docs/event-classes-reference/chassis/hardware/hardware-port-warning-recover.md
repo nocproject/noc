@@ -13,9 +13,9 @@ Hardware port or slot warning recovered
 
 ## Variables
 
-Variable | Type | Required | Description
---- | --- | --- | ---
-interface | str | {{ yes }} | Hardware port or slot
+| Variable  | Type | Required  | Description           |
+| --------- | ---- | --------- | --------------------- |
+| interface | str  | {{ yes }} | Hardware port or slot |
 
 ## Alarms
 
@@ -23,6 +23,6 @@ interface | str | {{ yes }} | Hardware port or slot
 
 `Chassis | Hardware | Hardware Port Warning Recover` events may clear following alarms:
 
-Alarm Class | Description
---- | ---
-[Chassis \| Hardware \| Hardware Port Warning](../../../alarm-classes/chassis/hardware/hardware-port-warning.md) | dispose
+| Alarm Class                                                                                                                | Description |
+| -------------------------------------------------------------------------------------------------------------------------- | ----------- |
+| [Chassis \| Hardware \| Hardware Port Warning](../../../alarm-classes-reference/chassis/hardware/hardware-port-warning.md) | dispose     |

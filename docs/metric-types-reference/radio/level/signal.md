@@ -8,7 +8,7 @@ Signal Level
 ## Data Model
 
 Scope
-: [Interface](../../metric-scopes-reference/interface.md)
+: [Interface](../../../metric-scopes-reference/interface.md)
 
 Field
 : `signal_level`

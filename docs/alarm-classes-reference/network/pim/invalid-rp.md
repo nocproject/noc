@@ -27,4 +27,4 @@ Configure all leaf routers (first-hop routers to multicast sources) with the IP 
 
 | Event Class                                                                          | Description |
 | ------------------------------------------------------------------------------------ | ----------- |
-| [Network \| PIM \| Invalid RP](../event-classes-reference/network/pim/invalid-rp.md) | dispose     |
+| [Network \| PIM \| Invalid RP](../../../event-classes-reference/network/pim/invalid-rp.md) | dispose     |

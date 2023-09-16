@@ -25,4 +25,4 @@ uuid: 52b4012f-83cf-4fe8-a35b-1e850d3a34ef
 
 | Event Class                                                                                        | Description |
 | -------------------------------------------------------------------------------------------------- | ----------- |
-| [Security \| Attack \| Ping Of Death](../event-classes-reference/security/attack/ping-of-death.md) | dispose     |
+| [Security \| Attack \| Ping Of Death](../../../event-classes-reference/security/attack/ping-of-death.md) | dispose     |

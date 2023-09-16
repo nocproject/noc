@@ -17,10 +17,10 @@ Configure all leaf routers (first-hop routers to multicast sources) with the IP 
 
 ## Variables
 
-Variable | Type | Required | Description
---- | --- | --- | ---
-pim_router | ip_address | {{ yes }} | PIM Router IP
-invalid_rp | ip_address | {{ yes }} | Invalid RP IP
+| Variable   | Type       | Required  | Description   |
+| ---------- | ---------- | --------- | ------------- |
+| pim_router | ip_address | {{ yes }} | PIM Router IP |
+| invalid_rp | ip_address | {{ yes }} | Invalid RP IP |
 
 ## Alarms
 
@@ -28,6 +28,6 @@ invalid_rp | ip_address | {{ yes }} | Invalid RP IP
 
 `Network | PIM | Invalid RP` events may raise following alarms:
 
-Alarm Class | Description
---- | ---
-[Network \| PIM \| Invalid RP](../../../alarm-classes/network/pim/invalid-rp.md) | dispose
+| Alarm Class                                                                                | Description |
+| ------------------------------------------------------------------------------------------ | ----------- |
+| [Network \| PIM \| Invalid RP](../../../alarm-classes-reference/network/pim/invalid-rp.md) | dispose     |

@@ -8,7 +8,7 @@ uuid: 6254d37b-7c85-4826-b237-6364add8d54d
 ## Data Model
 
 Scope
-: [Interface](../../../../metric-scopes-reference/interface.md)
+: [Interface](../../../../../metric-scopes-reference/interface.md)
 
 Field
 : `xdsl_line_snr_up`

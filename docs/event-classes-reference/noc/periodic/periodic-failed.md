@@ -19,9 +19,9 @@ Check noc-scheduler, noc-sae and noc-activator logs
 
 ## Variables
 
-Variable | Type | Required | Description
---- | --- | --- | ---
-task | str | {{ yes }} | Task's name
+| Variable | Type | Required  | Description |
+| -------- | ---- | --------- | ----------- |
+| task     | str  | {{ yes }} | Task's name |
 
 ## Alarms
 
@@ -29,6 +29,6 @@ task | str | {{ yes }} | Task's name
 
 `NOC | Periodic | Periodic Failed` events may raise following alarms:
 
-Alarm Class | Description
---- | ---
-[NOC \| Periodic \| Periodic Failed](../../../alarm-classes/noc/periodic/periodic-failed.md) | dispose
+| Alarm Class                                                                                            | Description |
+| ------------------------------------------------------------------------------------------------------ | ----------- |
+| [NOC \| Periodic \| Periodic Failed](../../../alarm-classes-reference/noc/periodic/periodic-failed.md) | dispose     |

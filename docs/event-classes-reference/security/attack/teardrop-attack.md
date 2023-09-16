@@ -13,11 +13,11 @@ Teardrop attack detected
 
 ## Variables
 
-Variable | Type | Required | Description
---- | --- | --- | ---
-interface | interface_name | {{ yes }} | Interface
-src_ip | ip_address | {{ yes }} | Source IP
-src_mac | mac | {{ no }} | Source MAC
+| Variable  | Type           | Required  | Description |
+| --------- | -------------- | --------- | ----------- |
+| interface | interface_name | {{ yes }} | Interface   |
+| src_ip    | ip_address     | {{ yes }} | Source IP   |
+| src_mac   | mac            | {{ no }}  | Source MAC  |
 
 ## Alarms
 
@@ -25,6 +25,6 @@ src_mac | mac | {{ no }} | Source MAC
 
 `Security | Attack | Teardrop Attack` events may raise following alarms:
 
-Alarm Class | Description
---- | ---
-[Security \| Attack \| Teardrop Attack](../../../alarm-classes/security/attack/teardrop-attack.md) | dispose
+| Alarm Class                                                                                                  | Description |
+| ------------------------------------------------------------------------------------------------------------ | ----------- |
+| [Security \| Attack \| Teardrop Attack](../../../alarm-classes-reference/security/attack/teardrop-attack.md) | dispose     |

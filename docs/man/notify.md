@@ -3,7 +3,7 @@
 
 ## Name
 
-*notify*: Send notification to [reference-notification-group](../../../concepts/notification-group/index.md)
+*notify*: Send notification to [reference-notification-group](../concepts/notification-group/index.md)
 
 ## Synopsis
 
@@ -21,9 +21,9 @@
 Arguments:
 * --debug - Print debugging message
 * --dry-run - Do not really send message
-* --notification-group=*group_name* - Send message to [reference-notification-group](../../../concepts/notification-group/index.md).
+* --notification-group=*group_name* - Send message to [reference-notification-group](../concepts/notification-group/index.md).
   Multiple *Notification Groups* may be set
-* --template=*template_name* - Render subject and body from [reference-template](../../../concepts/template/index.md).
+* --template=*template_name* - Render subject and body from [reference-template](../concepts/template/index.md).
   Template variables may be set via additional *--var* parameters
 * --var=*key*=*value* - Set template's context variable *key* to value *value*.
   Used with *--template* parameter
@@ -63,5 +63,5 @@ Read body from stdin
 
 ## See also
 
-* [reference-template](../../../concepts/template/index.md)
-* [reference-notification-group](../../../concepts/notification-group/index.md)
+* [reference-template](../concepts/template/index.md)
+* [reference-notification-group](../concepts/notification-group/index.md)

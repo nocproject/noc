@@ -15,13 +15,13 @@ Connection lost
 
 ## Variables
 
-Variable | Type | Required | Description
---- | --- | --- | ---
-interface | str | {{ yes }} | Physical port
-threshold | str | {{ no }} | Threshold type
-sensor | str | {{ no }} | Measured name
-ovalue | str | {{ no }} | Operating value
-tvalue | str | {{ no }} | Threshold value
+| Variable  | Type | Required  | Description     |
+| --------- | ---- | --------- | --------------- |
+| interface | str  | {{ yes }} | Physical port   |
+| threshold | str  | {{ no }}  | Threshold type  |
+| sensor    | str  | {{ no }}  | Measured name   |
+| ovalue    | str  | {{ no }}  | Operating value |
+| tvalue    | str  | {{ no }}  | Threshold value |
 
 ## Alarms
 
@@ -29,6 +29,6 @@ tvalue | str | {{ no }} | Threshold value
 
 `Network | Link | DOM | Alarm: Out of Threshold` events may raise following alarms:
 
-Alarm Class | Description
---- | ---
-[Network \| Link \| DOM \| Alarm: Out of Threshold](../../../../alarm-classes/network/link/dom/alarm-out-of-threshold.md) | dispose
+| Alarm Class                                                                                                                         | Description |
+| ----------------------------------------------------------------------------------------------------------------------------------- | ----------- |
+| [Network \| Link \| DOM \| Alarm: Out of Threshold](../../../../alarm-classes-reference/network/link/dom/alarm-out-of-threshold.md) | dispose     |

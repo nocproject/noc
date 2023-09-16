@@ -24,4 +24,4 @@ From random instability to complete operation failure
 
 | Event Class                                                                            | Description |
 | -------------------------------------------------------------------------------------- | ----------- |
-| [Chassis \| TCAM \| TCAM Error](../event-classes-reference/chassis/tcam/tcam-error.md) | dispose     |
+| [Chassis \| TCAM \| TCAM Error](../../../event-classes-reference/chassis/tcam/tcam-error.md) | dispose     |

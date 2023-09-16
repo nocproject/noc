@@ -17,12 +17,12 @@ Examine the network for possible loops.
 
 ## Variables
 
-Variable | Type | Required | Description
---- | --- | --- | ---
-mac | mac | {{ yes }} | MAC Address
-vlan | int | {{ yes }} | VLAN
-from_interface | interface_name | {{ yes }} | From interface
-to_interface | interface_name | {{ yes }} | To interface
+| Variable       | Type           | Required  | Description    |
+| -------------- | -------------- | --------- | -------------- |
+| mac            | mac            | {{ yes }} | MAC Address    |
+| vlan           | int            | {{ yes }} | VLAN           |
+| from_interface | interface_name | {{ yes }} | From interface |
+| to_interface   | interface_name | {{ yes }} | To interface   |
 
 ## Alarms
 
@@ -30,6 +30,6 @@ to_interface | interface_name | {{ yes }} | To interface
 
 `Network | MAC | MAC Flap` events may raise following alarms:
 
-Alarm Class | Description
---- | ---
-[Network \| MAC \| MAC Flap](../../../alarm-classes/network/mac/mac-flap.md) | dispose
+| Alarm Class                                                                            | Description |
+| -------------------------------------------------------------------------------------- | ----------- |
+| [Network \| MAC \| MAC Flap](../../../alarm-classes-reference/network/mac/mac-flap.md) | dispose     |

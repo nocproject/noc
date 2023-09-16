@@ -8,7 +8,7 @@ Measured round trip time for ICMP packets in microseconds
 ## Data Model
 
 Scope
-: [SLA](../metric-scopes-reference/sla.md)
+: [SLA](../../metric-scopes-reference/sla.md)
 
 Field
 : `icmp_rtt`

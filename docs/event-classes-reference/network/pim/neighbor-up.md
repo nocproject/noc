@@ -19,11 +19,11 @@ No reaction needed
 
 ## Variables
 
-Variable | Type | Required | Description
---- | --- | --- | ---
-interface | interface_name | {{ yes }} | Interface
-neighbor | ip_address | {{ yes }} | Neighbor's IP
-vrf | str | {{ no }} | VRF
+| Variable  | Type           | Required  | Description   |
+| --------- | -------------- | --------- | ------------- |
+| interface | interface_name | {{ yes }} | Interface     |
+| neighbor  | ip_address     | {{ yes }} | Neighbor's IP |
+| vrf       | str            | {{ no }}  | VRF           |
 
 ## Alarms
 
@@ -31,6 +31,6 @@ vrf | str | {{ no }} | VRF
 
 `Network | PIM | Neighbor Up` events may clear following alarms:
 
-Alarm Class | Description
---- | ---
-[Network \| PIM \| Neighbor Down](../../../alarm-classes/network/pim/neighbor-down.md) | dispose
+| Alarm Class                                                                                      | Description |
+| ------------------------------------------------------------------------------------------------ | ----------- |
+| [Network \| PIM \| Neighbor Down](../../../alarm-classes-reference/network/pim/neighbor-down.md) | dispose     |

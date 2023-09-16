@@ -17,11 +17,11 @@ In the event of a link fault, consider shutting down the link.
 
 ## Variables
 
-Variable | Type | Required | Description
---- | --- | --- | ---
-interface | interface_name | {{ yes }} | Interface
-reason | str | {{ no }} | Failure reason
-action | str | {{ no }} | Response action
+| Variable  | Type           | Required  | Description     |
+| --------- | -------------- | --------- | --------------- |
+| interface | interface_name | {{ yes }} | Interface       |
+| reason    | str            | {{ no }}  | Failure reason  |
+| action    | str            | {{ no }}  | Response action |
 
 ## Alarms
 
@@ -29,6 +29,6 @@ action | str | {{ no }} | Response action
 
 `Network | OAM | Client Recieved Remote Failure` events may raise following alarms:
 
-Alarm Class | Description
---- | ---
-[Environment \| Total Power Loss](../../../alarm-classes/environment/total-power-loss.md) | Total power loss
+| Alarm Class                                                                                         | Description      |
+| --------------------------------------------------------------------------------------------------- | ---------------- |
+| [Environment \| Total Power Loss](../../../alarm-classes-reference/environment/total-power-loss.md) | Total power loss |

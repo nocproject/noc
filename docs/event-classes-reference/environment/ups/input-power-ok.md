@@ -17,7 +17,7 @@ Input power returned to normal state
 
 `Environment | UPS | Input Power OK` events may clear following alarms:
 
-Alarm Class | Description
---- | ---
-[Environment \| UPS \| Input Power Failed](../../../alarm-classes/environment/ups/input-power-failed.md) | dispose
-[Environment \| UPS \| Input Power Low](../../../alarm-classes/environment/ups/input-power-low.md) | dispose
+| Alarm Class                                                                                                        | Description |
+| ------------------------------------------------------------------------------------------------------------------ | ----------- |
+| [Environment \| UPS \| Input Power Failed](../../../alarm-classes-reference/environment/ups/input-power-failed.md) | dispose     |
+| [Environment \| UPS \| Input Power Low](../../../alarm-classes-reference/environment/ups/input-power-low.md)       | dispose     |

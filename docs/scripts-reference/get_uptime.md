@@ -19,7 +19,7 @@
 
 ## Used in
 -------
-* [Discovery Periodic Uptime](../../discovery-reference/periodic/uptime.md)
+* [Discovery Periodic Uptime](../discovery-reference/periodic/uptime.md)
 
 Implemented as *Generic Script*, applicable to all profiles
 with SNMP support

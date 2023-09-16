@@ -13,11 +13,11 @@ Ping Of Death detected
 
 ## Variables
 
-Variable | Type | Required | Description
---- | --- | --- | ---
-interface | interface_name | {{ yes }} | Interface
-src_ip | ip_address | {{ yes }} | Source IP
-src_mac | mac | {{ no }} | Source MAC
+| Variable  | Type           | Required  | Description |
+| --------- | -------------- | --------- | ----------- |
+| interface | interface_name | {{ yes }} | Interface   |
+| src_ip    | ip_address     | {{ yes }} | Source IP   |
+| src_mac   | mac            | {{ no }}  | Source MAC  |
 
 ## Alarms
 
@@ -25,6 +25,6 @@ src_mac | mac | {{ no }} | Source MAC
 
 `Security | Attack | Ping Of Death` events may raise following alarms:
 
-Alarm Class | Description
---- | ---
-[Security \| Attack \| Ping Of Death](../../../alarm-classes/security/attack/ping-of-death.md) | dispose
+| Alarm Class                                                                                              | Description |
+| -------------------------------------------------------------------------------------------------------- | ----------- |
+| [Security \| Attack \| Ping Of Death](../../../alarm-classes-reference/security/attack/ping-of-death.md) | dispose     |

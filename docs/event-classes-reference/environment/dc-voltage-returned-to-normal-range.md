@@ -13,13 +13,13 @@ DC voltage returned to normal range
 
 ## Variables
 
-Variable | Type | Required | Description
---- | --- | --- | ---
-name | str | {{ yes }} | Name
-measure | str | {{ no }} | Current State
-min | str | {{ no }} | Min State
-max | str | {{ no }} | Max State
-threshold | str | {{ no }} | Threshold
+| Variable  | Type | Required  | Description   |
+| --------- | ---- | --------- | ------------- |
+| name      | str  | {{ yes }} | Name          |
+| measure   | str  | {{ no }}  | Current State |
+| min       | str  | {{ no }}  | Min State     |
+| max       | str  | {{ no }}  | Max State     |
+| threshold | str  | {{ no }}  | Threshold     |
 
 ## Alarms
 
@@ -27,6 +27,6 @@ threshold | str | {{ no }} | Threshold
 
 `Environment | DC Voltage Returned to Normal Range` events may clear following alarms:
 
-Alarm Class | Description
---- | ---
-[Environment \| DC Voltage Out of Range](../../alarm-classes/environment/dc-voltage-out-of-range.md) | dispose
+| Alarm Class                                                                                                    | Description |
+| -------------------------------------------------------------------------------------------------------------- | ----------- |
+| [Environment \| DC Voltage Out of Range](../../alarm-classes-reference/environment/dc-voltage-out-of-range.md) | dispose     |

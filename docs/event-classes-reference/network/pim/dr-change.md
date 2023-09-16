@@ -19,12 +19,12 @@ Check links and local and neighbor's router configuration
 
 ## Variables
 
-Variable | Type | Required | Description
---- | --- | --- | ---
-interface | interface_name | {{ yes }} | Interface
-from_dr | ip_address | {{ yes }} | From DR
-to_dr | ip_address | {{ yes }} | To DR
-vrf | str | {{ no }} | VRF
+| Variable  | Type           | Required  | Description |
+| --------- | -------------- | --------- | ----------- |
+| interface | interface_name | {{ yes }} | Interface   |
+| from_dr   | ip_address     | {{ yes }} | From DR     |
+| to_dr     | ip_address     | {{ yes }} | To DR       |
+| vrf       | str            | {{ no }}  | VRF         |
 
 ## Alarms
 
@@ -32,6 +32,6 @@ vrf | str | {{ no }} | VRF
 
 `Network | PIM | DR Change` events may raise following alarms:
 
-Alarm Class | Description
---- | ---
-[Network \| PIM \| DR Change](../../../alarm-classes/network/pim/dr-change.md) | dispose
+| Alarm Class                                                                              | Description |
+| ---------------------------------------------------------------------------------------- | ----------- |
+| [Network \| PIM \| DR Change](../../../alarm-classes-reference/network/pim/dr-change.md) | dispose     |

@@ -19,6 +19,6 @@ Change old battery
 
 `Environment | UPS | Battery Power Low` events may raise following alarms:
 
-Alarm Class | Description
---- | ---
-[Environment \| UPS \| Battery Power Low](../../../alarm-classes/environment/ups/battery-power-low.md) | dispose
+| Alarm Class                                                                                                      | Description |
+| ---------------------------------------------------------------------------------------------------------------- | ----------- |
+| [Environment \| UPS \| Battery Power Low](../../../alarm-classes-reference/environment/ups/battery-power-low.md) | dispose     |

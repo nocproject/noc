@@ -48,11 +48,11 @@ graph TD
 
 | Event Class                                                                                                                       | Description |
 | --------------------------------------------------------------------------------------------------------------------------------- | ----------- |
-| [Network \| Link \| DOM \| Warning: Out of Threshold](../../event-classes-reference/network/link/dom/warning-out-of-threshold.md) | dispose     |
+| [Network \| Link \| DOM \| Warning: Out of Threshold](../../../../event-classes-reference/network/link/dom/warning-out-of-threshold.md) | dispose     |
 
 ### Closing Events
 `Network | Link | DOM | Warning: Out of Threshold` may be cleared by events
 
 | Event Class                                                                                                                                           | Description |
 | ----------------------------------------------------------------------------------------------------------------------------------------------------- | ----------- |
-| [Network \| Link \| DOM \| Warning: Out of Threshold Recovered](../../event-classes-reference/network/link/dom/warning-out-of-threshold-recovered.md) | dispose     |
+| [Network \| Link \| DOM \| Warning: Out of Threshold Recovered](../../../../event-classes-reference/network/link/dom/warning-out-of-threshold-recovered.md) | dispose     |

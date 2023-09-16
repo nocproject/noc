@@ -13,9 +13,9 @@ System rebooting
 
 ## Variables
 
-Variable | Type | Required | Description
---- | --- | --- | ---
-user | str | {{ no }} | Username
+| Variable | Type | Required | Description |
+| -------- | ---- | -------- | ----------- |
+| user     | str  | {{ no }} | Username    |
 
 ## Alarms
 
@@ -23,6 +23,6 @@ user | str | {{ no }} | Username
 
 `System | Reboot` events may raise following alarms:
 
-Alarm Class | Description
---- | ---
-[System \| Reboot](../../alarm-classes/system/reboot.md) | dispose
+| Alarm Class                                                        | Description |
+| ------------------------------------------------------------------ | ----------- |
+| [System \| Reboot](../../alarm-classes-reference/system/reboot.md) | dispose     |

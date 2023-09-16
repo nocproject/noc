@@ -11,11 +11,11 @@ uuid: 6cbad313-b948-440c-9271-750375b6a116
 
 ## Variables
 
-Variable | Type | Required | Description
---- | --- | --- | ---
-module | str | {{ yes }} | Module type
-interface | str | {{ no }} | Hardware port or slot
-reason | str | {{ no }} | Reason
+| Variable  | Type | Required  | Description           |
+| --------- | ---- | --------- | --------------------- |
+| module    | str  | {{ yes }} | Module type           |
+| interface | str  | {{ no }}  | Hardware port or slot |
+| reason    | str  | {{ no }}  | Reason                |
 
 ## Alarms
 
@@ -23,6 +23,6 @@ reason | str | {{ no }} | Reason
 
 `Chassis | Hardware | Module | Invalid Module` events may raise following alarms:
 
-Alarm Class | Description
---- | ---
-[Chassis \| Hardware \| Module \| Invalid Module](../../../../alarm-classes/chassis/hardware/module/invalid-module.md) | dispose
+| Alarm Class                                                                                                                      | Description |
+| -------------------------------------------------------------------------------------------------------------------------------- | ----------- |
+| [Chassis \| Hardware \| Module \| Invalid Module](../../../../alarm-classes-reference/chassis/hardware/module/invalid-module.md) | dispose     |

@@ -19,9 +19,9 @@ No reaction needed
 
 ## Variables
 
-Variable | Type | Required | Description
---- | --- | --- | ---
-task | str | {{ yes }} | Task's name
+| Variable | Type | Required  | Description |
+| -------- | ---- | --------- | ----------- |
+| task     | str  | {{ yes }} | Task's name |
 
 ## Alarms
 
@@ -29,6 +29,6 @@ task | str | {{ yes }} | Task's name
 
 `NOC | Periodic | Periodic OK` events may clear following alarms:
 
-Alarm Class | Description
---- | ---
-[NOC \| Periodic \| Periodic Failed](../../../alarm-classes/noc/periodic/periodic-failed.md) | dispose
+| Alarm Class                                                                                            | Description |
+| ------------------------------------------------------------------------------------------------------ | ----------- |
+| [NOC \| Periodic \| Periodic Failed](../../../alarm-classes-reference/noc/periodic/periodic-failed.md) | dispose     |

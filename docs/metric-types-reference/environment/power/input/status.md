@@ -8,7 +8,7 @@ Power input status
 ## Data Model
 
 Scope
-: [Environment](../../../metric-scopes-reference/environment.md)
+: [Environment](../../../../metric-scopes-reference/environment.md)
 
 Field
 : `power_input_status`

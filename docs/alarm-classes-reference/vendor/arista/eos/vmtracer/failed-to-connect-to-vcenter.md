@@ -22,4 +22,4 @@ uuid: 9c73f93b-9249-4296-b386-4ee1f1cb7e83
 
 | Event Class                                                                                                                                                        | Description |
 | ------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ----------- |
-| [Vendor \| Arista \| EOS \| VMTracer \| Failed to connect to vCenter](../../../event-classes-reference/vendor/arista/eos/vmtracer/failed-to-connect-to-vcenter.md) | dispose     |
+| [Vendor \| Arista \| EOS \| VMTracer \| Failed to connect to vCenter](../../../../../event-classes-reference/vendor/arista/eos/vmtracer/failed-to-connect-to-vcenter.md) | dispose     |

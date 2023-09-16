@@ -8,7 +8,7 @@ RF Tx power
 ## Data Model
 
 Scope
-: [Interface](../../metric-scopes-reference/interface.md)
+: [Interface](../../../metric-scopes-reference/interface.md)
 
 Field
 : `rf_tx_dbm`

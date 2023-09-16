@@ -8,7 +8,7 @@ Noise Margin as seen by this ATU with respect to its received signal in tenth dB
 ## Data Model
 
 Scope
-: [Interface](../../../../metric-scopes-reference/interface.md)
+: [Interface](../../../../../metric-scopes-reference/interface.md)
 
 Field
 : `xdsl_line_noise_margin_up`

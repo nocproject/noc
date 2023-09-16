@@ -8,7 +8,7 @@ Received signal strength indicator
 ## Data Model
 
 Scope
-: [Interface](../metric-scopes-reference/interface.md)
+: [Interface](../../metric-scopes-reference/interface.md)
 
 Field
 : `rssi`

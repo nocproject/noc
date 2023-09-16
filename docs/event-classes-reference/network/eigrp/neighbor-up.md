@@ -19,13 +19,13 @@ No specific actions needed
 
 ## Variables
 
-Variable | Type | Required | Description
---- | --- | --- | ---
-as | str | {{ no }} | EIGRP autonomus system
-interface | str | {{ yes }} | Interface
-neighbor | ip_address | {{ yes }} | Neighbor's Router ID
-reason | str | {{ no }} | Adjacency lost reason
-to_state | str | {{ no }} | to state
+| Variable  | Type       | Required  | Description            |
+| --------- | ---------- | --------- | ---------------------- |
+| as        | str        | {{ no }}  | EIGRP autonomus system |
+| interface | str        | {{ yes }} | Interface              |
+| neighbor  | ip_address | {{ yes }} | Neighbor's Router ID   |
+| reason    | str        | {{ no }}  | Adjacency lost reason  |
+| to_state  | str        | {{ no }}  | to state               |
 
 ## Alarms
 
@@ -33,6 +33,6 @@ to_state | str | {{ no }} | to state
 
 `Network | EIGRP | Neighbor Up` events may clear following alarms:
 
-Alarm Class | Description
---- | ---
-[Network \| EIGRP \| Neighbor Down](../../../alarm-classes/network/eigrp/neighbor-down.md) | dispose
+| Alarm Class                                                                                          | Description |
+| ---------------------------------------------------------------------------------------------------- | ----------- |
+| [Network \| EIGRP \| Neighbor Down](../../../alarm-classes-reference/network/eigrp/neighbor-down.md) | dispose     |

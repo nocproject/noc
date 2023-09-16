@@ -55,11 +55,11 @@ graph TD
 
 | Event Class                                                                              | Description |
 | ---------------------------------------------------------------------------------------- | ----------- |
-| [Network \| BFD \| Session Down](../event-classes-reference/network/bfd/session-down.md) | dispose     |
+| [Network \| BFD \| Session Down](../../../event-classes-reference/network/bfd/session-down.md) | dispose     |
 
 ### Closing Events
 `Network | BFD | Session Down` may be cleared by events
 
 | Event Class                                                                          | Description |
 | ------------------------------------------------------------------------------------ | ----------- |
-| [Network \| BFD \| Session Up](../event-classes-reference/network/bfd/session-up.md) | dispose     |
+| [Network \| BFD \| Session Up](../../../event-classes-reference/network/bfd/session-up.md) | dispose     |

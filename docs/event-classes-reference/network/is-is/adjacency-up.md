@@ -19,11 +19,11 @@ No reaction needed
 
 ## Variables
 
-Variable | Type | Required | Description
---- | --- | --- | ---
-neighbor | str | {{ yes }} | Neighbor's NSAP or name
-interface | interface_name | {{ yes }} | Interface
-level | str | {{ no }} | Level
+| Variable  | Type           | Required  | Description             |
+| --------- | -------------- | --------- | ----------------------- |
+| neighbor  | str            | {{ yes }} | Neighbor's NSAP or name |
+| interface | interface_name | {{ yes }} | Interface               |
+| level     | str            | {{ no }}  | Level                   |
 
 ## Alarms
 
@@ -31,6 +31,6 @@ level | str | {{ no }} | Level
 
 `Network | IS-IS | Adjacency Up` events may clear following alarms:
 
-Alarm Class | Description
---- | ---
-[Network \| IS-IS \| Adjacency Down](../../../alarm-classes/network/is-is/adjacency-down.md) | dispose
+| Alarm Class                                                                                            | Description |
+| ------------------------------------------------------------------------------------------------------ | ----------- |
+| [Network \| IS-IS \| Adjacency Down](../../../alarm-classes-reference/network/is-is/adjacency-down.md) | dispose     |

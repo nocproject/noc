@@ -6,4 +6,4 @@ Data Type: `bool`
 
 ## Prerequisite for
 
-- [stp discovery](../discovery-reference/box/stp.md)
+- [stp discovery](../../discovery-reference/box/stp.md)

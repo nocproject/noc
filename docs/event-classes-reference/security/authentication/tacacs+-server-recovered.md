@@ -13,9 +13,9 @@ TACACS+ server recovered
 
 ## Variables
 
-Variable | Type | Required | Description
---- | --- | --- | ---
-ip | ip_address | {{ no }} | TACACS+ server address
+| Variable | Type       | Required | Description            |
+| -------- | ---------- | -------- | ---------------------- |
+| ip       | ip_address | {{ no }} | TACACS+ server address |
 
 ## Alarms
 
@@ -23,6 +23,6 @@ ip | ip_address | {{ no }} | TACACS+ server address
 
 `Security | Authentication | TACACS+ server recovered` events may clear following alarms:
 
-Alarm Class | Description
---- | ---
-[Security \| Authentication \| TACACS+ server failed](../../../alarm-classes/security/authentication/tacacs+-server-failed.md) | dispose
+| Alarm Class                                                                                                                              | Description |
+| ---------------------------------------------------------------------------------------------------------------------------------------- | ----------- |
+| [Security \| Authentication \| TACACS+ server failed](../../../alarm-classes-reference/security/authentication/tacacs+-server-failed.md) | dispose     |

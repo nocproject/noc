@@ -5,6 +5,6 @@
 
 ## Requirements
 
-* [get_interfaces](../../../../scripts-reference/get_interfaces.md)
+* [get_interfaces](../../scripts-reference/get_interfaces.md)
 * Настроены регулярные выражения в `Учёт объектов (Inventory) -> (Настройки) Setup -> ifDesc Patterns`
-* Опрос ifDecr включён в профиле объектов [Managed Object Profile](../concepts/managed-object-profile/index.md#Box(Полный_опрос))
+* Опрос ifDecr включён в профиле объектов [Managed Object Profile](../../concepts/managed-object-profile/index.md#Box(Полный_опрос))

@@ -24,11 +24,11 @@ uuid: 0c6d4a8f-2122-40a7-83c1-00dfa3e74991
 
 | Event Class                                                                                                                                                                    | Description |
 | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ----------- |
-| [Vendor \| Cisco \| IOS \| Network \| Load Balance \| Server Farm Degraded](../../../../event-classes-reference/vendor/cisco/ios/network/load-balance/server-farm-degraded.md) | dispose     |
+| [Vendor \| Cisco \| IOS \| Network \| Load Balance \| Server Farm Degraded](../../../../../../event-classes-reference/vendor/cisco/ios/network/load-balance/server-farm-degraded.md) | dispose     |
 
 ### Closing Events
 `Vendor | Cisco | IOS | Network | Load Balance | Server Farm Degraded` may be cleared by events
 
 | Event Class                                                                                                                                                                        | Description |
 | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------- |
-| [Vendor \| Cisco \| IOS \| Network \| Load Balance \| Server Farm is Operate](../../../../event-classes-reference/vendor/cisco/ios/network/load-balance/server-farm-is-operate.md) | dispose     |
+| [Vendor \| Cisco \| IOS \| Network \| Load Balance \| Server Farm is Operate](../../../../../../event-classes-reference/vendor/cisco/ios/network/load-balance/server-farm-is-operate.md) | dispose     |

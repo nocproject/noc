@@ -13,9 +13,9 @@ Bad DNS query
 
 ## Variables
 
-Variable | Type | Required | Description
---- | --- | --- | ---
-ip | ip_address | {{ yes }} | Source IP
+| Variable | Type       | Required  | Description |
+| -------- | ---------- | --------- | ----------- |
+| ip       | ip_address | {{ yes }} | Source IP   |
 
 ## Alarms
 
@@ -23,6 +23,6 @@ ip | ip_address | {{ yes }} | Source IP
 
 `Network | DNS | Bad Query` events may raise following alarms:
 
-Alarm Class | Description
---- | ---
-[Network \| DNS \| Bad Query](../../../alarm-classes/network/dns/bad-query.md) | dispose
+| Alarm Class                                                                              | Description |
+| ---------------------------------------------------------------------------------------- | ----------- |
+| [Network \| DNS \| Bad Query](../../../alarm-classes-reference/network/dns/bad-query.md) | dispose     |

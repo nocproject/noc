@@ -13,11 +13,11 @@ SLB Server Farm Degraded
 
 ## Variables
 
-Variable | Type | Required | Description
---- | --- | --- | ---
-farm | str | {{ yes }} | SLB server farm name
-real | ip_address | {{ yes }} | Real IP
-state | str | {{ yes }} | Real state
+| Variable | Type       | Required  | Description          |
+| -------- | ---------- | --------- | -------------------- |
+| farm     | str        | {{ yes }} | SLB server farm name |
+| real     | ip_address | {{ yes }} | Real IP              |
+| state    | str        | {{ yes }} | Real state           |
 
 ## Alarms
 
@@ -25,6 +25,6 @@ state | str | {{ yes }} | Real state
 
 `Vendor | Cisco | IOS | Network | Load Balance | Server Farm Degraded` events may raise following alarms:
 
-Alarm Class | Description
---- | ---
-[Vendor \| Cisco \| IOS \| Network \| Load Balance \| Server Farm Degraded](../../../../../../alarm-classes/vendor/cisco/ios/network/load-balance/server-farm-degraded.md) | dispose
+| Alarm Class                                                                                                                                                                          | Description |
+| ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ----------- |
+| [Vendor \| Cisco \| IOS \| Network \| Load Balance \| Server Farm Degraded](../../../../../../alarm-classes-reference/vendor/cisco/ios/network/load-balance/server-farm-degraded.md) | dispose     |

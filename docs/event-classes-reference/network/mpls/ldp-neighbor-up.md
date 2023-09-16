@@ -13,11 +13,11 @@ MPLS LDP Neighbor Up
 
 ## Variables
 
-Variable | Type | Required | Description
---- | --- | --- | ---
-neighbor | ip_address | {{ yes }} | LDP Neighbor
-state | str | {{ no }} | state
-reason | str | {{ no }} | Reason
+| Variable | Type       | Required  | Description  |
+| -------- | ---------- | --------- | ------------ |
+| neighbor | ip_address | {{ yes }} | LDP Neighbor |
+| state    | str        | {{ no }}  | state        |
+| reason   | str        | {{ no }}  | Reason       |
 
 ## Alarms
 
@@ -25,6 +25,6 @@ reason | str | {{ no }} | Reason
 
 `Network | MPLS | LDP Neighbor Up` events may clear following alarms:
 
-Alarm Class | Description
---- | ---
-[Network \| MPLS \| LDP Neighbor Down](../../../alarm-classes/network/mpls/ldp-neighbor-down.md) | dispose
+| Alarm Class                                                                                                | Description |
+| ---------------------------------------------------------------------------------------------------------- | ----------- |
+| [Network \| MPLS \| LDP Neighbor Down](../../../alarm-classes-reference/network/mpls/ldp-neighbor-down.md) | dispose     |

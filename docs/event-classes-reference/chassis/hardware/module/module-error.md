@@ -13,11 +13,11 @@ Hardware module error
 
 ## Variables
 
-Variable | Type | Required | Description
---- | --- | --- | ---
-module | str | {{ yes }} | Module type
-interface | str | {{ no }} | Hardware port or slot
-reason | str | {{ no }} | Reason
+| Variable  | Type | Required  | Description           |
+| --------- | ---- | --------- | --------------------- |
+| module    | str  | {{ yes }} | Module type           |
+| interface | str  | {{ no }}  | Hardware port or slot |
+| reason    | str  | {{ no }}  | Reason                |
 
 ## Alarms
 
@@ -25,6 +25,6 @@ reason | str | {{ no }} | Reason
 
 `Chassis | Hardware | Module | Module Error` events may raise following alarms:
 
-Alarm Class | Description
---- | ---
-[Chassis \| Hardware \| Module \| Module Error](../../../../alarm-classes/chassis/hardware/module/module-error.md) | dispose
+| Alarm Class                                                                                                                  | Description |
+| ---------------------------------------------------------------------------------------------------------------------------- | ----------- |
+| [Chassis \| Hardware \| Module \| Module Error](../../../../alarm-classes-reference/chassis/hardware/module/module-error.md) | dispose     |

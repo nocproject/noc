@@ -4,12 +4,12 @@ mx stream is a part of [GMX Pipeline](index.md#generic-message-exchange-pipeline
 
 ## Publishers
 
-- [datastream](../../../services-reference/datastream.md) service
-- [discovery](../../../services-reference/discovery.md) service
+- [datastream](../services-reference/datastream.md) service
+- [discovery](../services-reference/discovery.md) service
 
 ## Subscribers
 
-- [mx](../../../services-reference/mx.md) service
+- [mx](../services-reference/mx.md) service
 
 ## Message Headers
 

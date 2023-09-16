@@ -13,10 +13,10 @@ MPLS LSP Up
 
 ## Variables
 
-Variable | Type | Required | Description
---- | --- | --- | ---
-name | str | {{ yes }} | LSP name
-bandwidth | int | {{ no }} | Bandwidth (bps)
+| Variable  | Type | Required  | Description     |
+| --------- | ---- | --------- | --------------- |
+| name      | str  | {{ yes }} | LSP name        |
+| bandwidth | int  | {{ no }}  | Bandwidth (bps) |
 
 ## Alarms
 
@@ -24,6 +24,6 @@ bandwidth | int | {{ no }} | Bandwidth (bps)
 
 `Network | MPLS | LSP Up` events may clear following alarms:
 
-Alarm Class | Description
---- | ---
-[Network \| MPLS \| LSP Down](../../../alarm-classes/network/mpls/lsp-down.md) | dispose
+| Alarm Class                                                                              | Description |
+| ---------------------------------------------------------------------------------------- | ----------- |
+| [Network \| MPLS \| LSP Down](../../../alarm-classes-reference/network/mpls/lsp-down.md) | dispose     |

@@ -16,7 +16,7 @@ Documentation is organized into three sections:
 
 Each section is split into four parts:
 
-![Docs Structure](../../doc-structure.svg)
+![Docs Structure](doc-structure.svg)
 
 - [Tutorials](tutorials.md) - A hands-on introduction to NOC for users.
 - [How-to Guides](howto.md) - Step-by-step guides. Cover key tasks and operations and common problems.

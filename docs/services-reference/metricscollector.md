@@ -24,11 +24,11 @@ graph LR
 
 ### Output Streams
 
-| Stream                                           | Description               |
-| ------------------------------------------------ | ------------------------- |
-| [metrics](../../../streams-reference/metrics.md) | Normalized telemetry data |
+| Stream                                     | Description               |
+| ------------------------------------------ | ------------------------- |
+| [metrics](../streams-reference/metrics.md) | Normalized telemetry data |
 
 ## Configuration
 
-`metricscollector` service may be configured via [[metricscollector]](../config/metricscollector.md)
+`metricscollector` service may be configured via [[metricscollector]](../config-reference/metricscollector.md)
 config section.

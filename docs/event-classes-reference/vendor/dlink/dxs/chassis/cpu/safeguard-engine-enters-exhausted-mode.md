@@ -19,9 +19,9 @@ Lower storm detect threshold, filter waste traffic on connected devices, restric
 
 ## Variables
 
-Variable | Type | Required | Description
---- | --- | --- | ---
-unit | int | {{ no }} | Unit number in stack
+| Variable | Type | Required | Description          |
+| -------- | ---- | -------- | -------------------- |
+| unit     | int  | {{ no }} | Unit number in stack |
 
 ## Alarms
 
@@ -29,6 +29,6 @@ unit | int | {{ no }} | Unit number in stack
 
 `Vendor | DLink | DxS | Chassis | CPU | Safeguard Engine enters EXHAUSTED mode` events may raise following alarms:
 
-Alarm Class | Description
---- | ---
-[Chassis \| CPU \| CPU Exhausted](../../../../../../alarm-classes/chassis/cpu/cpu-exhausted.md) | dispose
+| Alarm Class                                                                                               | Description |
+| --------------------------------------------------------------------------------------------------------- | ----------- |
+| [Chassis \| CPU \| CPU Exhausted](../../../../../../alarm-classes-reference/chassis/cpu/cpu-exhausted.md) | dispose     |

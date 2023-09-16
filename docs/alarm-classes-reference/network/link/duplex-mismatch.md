@@ -23,4 +23,4 @@ uuid: 10d86131-7073-4671-9c9f-91924f86af62
 
 | Event Class                                                                                      | Description |
 | ------------------------------------------------------------------------------------------------ | ----------- |
-| [Network \| Link \| Duplex Mismatch](../event-classes-reference/network/link/duplex-mismatch.md) | dispose     |
+| [Network \| Link \| Duplex Mismatch](../../../event-classes-reference/network/link/duplex-mismatch.md) | dispose     |

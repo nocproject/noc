@@ -13,11 +13,11 @@ Duplicate MAC detected
 
 ## Variables
 
-Variable | Type | Required | Description
---- | --- | --- | ---
-mac | mac | {{ yes }} | MAC Address
-one_interface | interface_name | {{ yes }} | First interface
-two_interface | interface_name | {{ yes }} | Second interface
+| Variable      | Type           | Required  | Description      |
+| ------------- | -------------- | --------- | ---------------- |
+| mac           | mac            | {{ yes }} | MAC Address      |
+| one_interface | interface_name | {{ yes }} | First interface  |
+| two_interface | interface_name | {{ yes }} | Second interface |
 
 ## Alarms
 
@@ -25,6 +25,6 @@ two_interface | interface_name | {{ yes }} | Second interface
 
 `Network | MAC | Duplicate MAC` events may raise following alarms:
 
-Alarm Class | Description
---- | ---
-[Network \| MAC \| Duplicate MAC](../../../alarm-classes/network/mac/duplicate-mac.md) | dispose
+| Alarm Class                                                                                      | Description |
+| ------------------------------------------------------------------------------------------------ | ----------- |
+| [Network \| MAC \| Duplicate MAC](../../../alarm-classes-reference/network/mac/duplicate-mac.md) | dispose     |

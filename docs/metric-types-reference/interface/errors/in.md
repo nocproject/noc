@@ -8,7 +8,7 @@ Errors when receive packet
 ## Data Model
 
 Scope
-: [Interface](../../metric-scopes-reference/interface.md)
+: [Interface](../../../metric-scopes-reference/interface.md)
 
 Field
 : `errors_in`

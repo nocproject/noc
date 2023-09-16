@@ -13,11 +13,11 @@ Config Download Failed
 
 ## Variables
 
-Variable | Type | Required | Description
---- | --- | --- | ---
-ip | ip_address | {{ no }} | Server IP
-service | str | {{ no }} | Service name (ftp, tftp)
-user | str | {{ no }} | User name
+| Variable | Type       | Required | Description              |
+| -------- | ---------- | -------- | ------------------------ |
+| ip       | ip_address | {{ no }} | Server IP                |
+| service  | str        | {{ no }} | Service name (ftp, tftp) |
+| user     | str        | {{ no }} | User name                |
 
 ## Alarms
 
@@ -25,6 +25,6 @@ user | str | {{ no }} | User name
 
 `Config | Config Download Failed` events may raise following alarms:
 
-Alarm Class | Description
---- | ---
-[Config \| Config Download Failed](../../alarm-classes/config/config-download-failed.md) | dispose
+| Alarm Class                                                                                        | Description |
+| -------------------------------------------------------------------------------------------------- | ----------- |
+| [Config \| Config Download Failed](../../alarm-classes-reference/config/config-download-failed.md) | dispose     |

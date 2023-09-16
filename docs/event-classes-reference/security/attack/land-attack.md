@@ -13,10 +13,10 @@ Land Attack detected
 
 ## Variables
 
-Variable | Type | Required | Description
---- | --- | --- | ---
-interface | interface_name | {{ yes }} | Interface
-src_ip | ip_address | {{ no }} | Source IP
+| Variable  | Type           | Required  | Description |
+| --------- | -------------- | --------- | ----------- |
+| interface | interface_name | {{ yes }} | Interface   |
+| src_ip    | ip_address     | {{ no }}  | Source IP   |
 
 ## Alarms
 
@@ -24,6 +24,6 @@ src_ip | ip_address | {{ no }} | Source IP
 
 `Security | Attack | Land Attack` events may raise following alarms:
 
-Alarm Class | Description
---- | ---
-[Security \| Attack \| Land Attack](../../../alarm-classes/security/attack/land-attack.md) | dispose
+| Alarm Class                                                                                          | Description |
+| ---------------------------------------------------------------------------------------------------- | ----------- |
+| [Security \| Attack \| Land Attack](../../../alarm-classes-reference/security/attack/land-attack.md) | dispose     |

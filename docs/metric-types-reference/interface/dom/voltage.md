@@ -8,7 +8,7 @@ Transceiver supply voltage
 ## Data Model
 
 Scope
-: [Interface](../../metric-scopes-reference/interface.md)
+: [Interface](../../../metric-scopes-reference/interface.md)
 
 Field
 : `voltage_v`

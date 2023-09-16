@@ -22,4 +22,4 @@ uuid: d8d98bf5-3a57-48df-80c5-3e67f25f43c9
 
 | Event Class                                                                                                                | Description |
 | -------------------------------------------------------------------------------------------------------------------------- | ----------- |
-| [Chassis \| TCAM \| TCAM Entry Capacity Exceeded](../event-classes-reference/chassis/tcam/tcam-entry-capacity-exceeded.md) | dispose     |
+| [Chassis \| TCAM \| TCAM Entry Capacity Exceeded](../../../event-classes-reference/chassis/tcam/tcam-entry-capacity-exceeded.md) | dispose     |

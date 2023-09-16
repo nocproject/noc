@@ -53,11 +53,11 @@ graph TD
 
 | Event Class                                                                                      | Description |
 | ------------------------------------------------------------------------------------------------ | ----------- |
-| [Network \| IS-IS \| Adjacency Down](../event-classes-reference/network/is-is/adjacency-down.md) | dispose     |
+| [Network \| IS-IS \| Adjacency Down](../../../event-classes-reference/network/is-is/adjacency-down.md) | dispose     |
 
 ### Closing Events
 `Network | IS-IS | Adjacency Down` may be cleared by events
 
 | Event Class                                                                                  | Description |
 | -------------------------------------------------------------------------------------------- | ----------- |
-| [Network \| IS-IS \| Adjacency Up](../event-classes-reference/network/is-is/adjacency-up.md) | dispose     |
+| [Network \| IS-IS \| Adjacency Up](../../../event-classes-reference/network/is-is/adjacency-up.md) | dispose     |

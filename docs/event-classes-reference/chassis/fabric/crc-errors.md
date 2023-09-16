@@ -13,9 +13,9 @@ Exessive number of CRC errors on fabric module
 
 ## Variables
 
-Variable | Type | Required | Description
---- | --- | --- | ---
-name | str | {{ yes }} | Farbic module
+| Variable | Type | Required  | Description   |
+| -------- | ---- | --------- | ------------- |
+| name     | str  | {{ yes }} | Farbic module |
 
 ## Alarms
 
@@ -23,6 +23,6 @@ name | str | {{ yes }} | Farbic module
 
 `Chassis | Fabric | CRC Errors` events may raise following alarms:
 
-Alarm Class | Description
---- | ---
-[Chassis \| Fabric \| CRC Errors](../../../alarm-classes/chassis/fabric/crc-errors.md) | dispose
+| Alarm Class                                                                                      | Description |
+| ------------------------------------------------------------------------------------------------ | ----------- |
+| [Chassis \| Fabric \| CRC Errors](../../../alarm-classes-reference/chassis/fabric/crc-errors.md) | dispose     |

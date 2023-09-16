@@ -8,7 +8,7 @@ Metric for device Consume Power (W)
 ## Data Model
 
 Scope
-: [Environment](../metric-scopes-reference/environment.md)
+: [Environment](../../metric-scopes-reference/environment.md)
 
 Field
 : `power_consume`

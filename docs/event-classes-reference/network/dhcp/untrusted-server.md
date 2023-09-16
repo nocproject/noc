@@ -13,10 +13,10 @@ Untrusted DHCP server detected
 
 ## Variables
 
-Variable | Type | Required | Description
---- | --- | --- | ---
-ip | ip_address | {{ yes }} | Source IP
-interface | interface_name | {{ no }} | Source interface
+| Variable  | Type           | Required  | Description      |
+| --------- | -------------- | --------- | ---------------- |
+| ip        | ip_address     | {{ yes }} | Source IP        |
+| interface | interface_name | {{ no }}  | Source interface |
 
 ## Alarms
 
@@ -24,6 +24,6 @@ interface | interface_name | {{ no }} | Source interface
 
 `Network | DHCP | Untrusted Server` events may raise following alarms:
 
-Alarm Class | Description
---- | ---
-[Network \| DHCP \| Untrusted Server](../../../alarm-classes/network/dhcp/untrusted-server.md) | dispose
+| Alarm Class                                                                                              | Description |
+| -------------------------------------------------------------------------------------------------------- | ----------- |
+| [Network \| DHCP \| Untrusted Server](../../../alarm-classes-reference/network/dhcp/untrusted-server.md) | dispose     |

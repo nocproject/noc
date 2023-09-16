@@ -23,6 +23,6 @@ Check object is alive. Check routing to this object. Check firewalls
 
 `NOC | Managed Object | Ping Failed` events may raise following alarms:
 
-Alarm Class | Description
---- | ---
-[NOC \| Managed Object \| Ping Failed](../../../alarm-classes/noc/managed-object/ping-failed.md) | dispose
+| Alarm Class                                                                                                | Description |
+| ---------------------------------------------------------------------------------------------------------- | ----------- |
+| [NOC \| Managed Object \| Ping Failed](../../../alarm-classes-reference/noc/managed-object/ping-failed.md) | dispose     |

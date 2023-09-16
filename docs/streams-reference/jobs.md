@@ -4,7 +4,7 @@
 
 ## Subscribers
 
-- [worker](../../../services-reference/worker.md) service
+- [worker](../services-reference/worker.md) service
 
 ## Message Headers
 

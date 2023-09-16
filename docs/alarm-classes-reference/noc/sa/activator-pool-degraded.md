@@ -28,13 +28,13 @@ Check noc-activator processes. Check network connectivity
 
 | Event Class                                                                                    | Description |
 | ---------------------------------------------------------------------------------------------- | ----------- |
-| [NOC \| SA \| Leave Activator Pool](../event-classes-reference/noc/sa/leave-activator-pool.md) | raise       |
-| [NOC \| SA \| Join Activator Pool](../event-classes-reference/noc/sa/join-activator-pool.md)   | raise       |
+| [NOC \| SA \| Leave Activator Pool](../../../event-classes-reference/noc/sa/leave-activator-pool.md) | raise       |
+| [NOC \| SA \| Join Activator Pool](../../../event-classes-reference/noc/sa/join-activator-pool.md)   | raise       |
 
 ### Closing Events
 `NOC | SA | Activator Pool Degraded` may be cleared by events
 
 | Event Class                                                                                    | Description |
 | ---------------------------------------------------------------------------------------------- | ----------- |
-| [NOC \| SA \| Leave Activator Pool](../event-classes-reference/noc/sa/leave-activator-pool.md) | clear       |
-| [NOC \| SA \| Join Activator Pool](../event-classes-reference/noc/sa/join-activator-pool.md)   | clear       |
+| [NOC \| SA \| Leave Activator Pool](../../../event-classes-reference/noc/sa/leave-activator-pool.md) | clear       |
+| [NOC \| SA \| Join Activator Pool](../../../event-classes-reference/noc/sa/join-activator-pool.md)   | clear       |

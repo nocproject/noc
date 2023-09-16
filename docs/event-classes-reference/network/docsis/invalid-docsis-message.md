@@ -17,11 +17,11 @@ Locate the cable modem that sent this message and replace it with DOCSIS-complia
 
 ## Variables
 
-Variable | Type | Required | Description
---- | --- | --- | ---
-interface | interface_name | {{ no }} | Cable interface
-mac | mac | {{ no }} | Cable Modem MAC
-sid | int | {{ no }} | Cable Modem SID
+| Variable  | Type           | Required | Description     |
+| --------- | -------------- | -------- | --------------- |
+| interface | interface_name | {{ no }} | Cable interface |
+| mac       | mac            | {{ no }} | Cable Modem MAC |
+| sid       | int            | {{ no }} | Cable Modem SID |
 
 ## Alarms
 
@@ -29,6 +29,6 @@ sid | int | {{ no }} | Cable Modem SID
 
 `Network | DOCSIS | Invalid DOCSIS Message` events may raise following alarms:
 
-Alarm Class | Description
---- | ---
-[Network \| DOCSIS \| Invalid DOCSIS Message](../../../alarm-classes/network/docsis/invalid-docsis-message.md) | dispose
+| Alarm Class                                                                                                              | Description |
+| ------------------------------------------------------------------------------------------------------------------------ | ----------- |
+| [Network \| DOCSIS \| Invalid DOCSIS Message](../../../alarm-classes-reference/network/docsis/invalid-docsis-message.md) | dispose     |

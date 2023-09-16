@@ -24,4 +24,4 @@ uuid: da287612-26d3-4086-a11b-67b0b52595b1
 
 | Event Class                                                                                    | Description |
 | ---------------------------------------------------------------------------------------------- | ----------- |
-| [Security \| Attack \| Blat Attack](../event-classes-reference/security/attack/blat-attack.md) | dispose     |
+| [Security \| Attack \| Blat Attack](../../../event-classes-reference/security/attack/blat-attack.md) | dispose     |

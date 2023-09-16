@@ -13,15 +13,15 @@ End-of-attack detected
 
 ## Variables
 
-Variable | Type | Required | Description
---- | --- | --- | ---
-from_ip | ip_address | {{ yes }} | From IP
-to_ip | ip_address | {{ no }} | To IP
-from_side | str | {{ yes }} | From Side
-proto | str | {{ yes }} | Protocol
-flows | int | {{ yes }} | Flows
-duration | str | {{ yes }} | Duration
-action | str | {{ yes }} | Action
+| Variable  | Type       | Required  | Description |
+| --------- | ---------- | --------- | ----------- |
+| from_ip   | ip_address | {{ yes }} | From IP     |
+| to_ip     | ip_address | {{ no }}  | To IP       |
+| from_side | str        | {{ yes }} | From Side   |
+| proto     | str        | {{ yes }} | Protocol    |
+| flows     | int        | {{ yes }} | Flows       |
+| duration  | str        | {{ yes }} | Duration    |
+| action    | str        | {{ yes }} | Action      |
 
 ## Alarms
 
@@ -29,6 +29,6 @@ action | str | {{ yes }} | Action
 
 `Vendor | Cisco | SCOS | Security | Attack | End-of-attack detected` events may clear following alarms:
 
-Alarm Class | Description
---- | ---
-[Vendor \| Cisco \| SCOS \| Security \| Attack \| Attack Detected](../../../../../../alarm-classes/vendor/cisco/scos/security/attack/attack-detected.md) | Clear Attack Detected
+| Alarm Class                                                                                                                                                        | Description           |
+| ------------------------------------------------------------------------------------------------------------------------------------------------------------------ | --------------------- |
+| [Vendor \| Cisco \| SCOS \| Security \| Attack \| Attack Detected](../../../../../../alarm-classes-reference/vendor/cisco/scos/security/attack/attack-detected.md) | Clear Attack Detected |

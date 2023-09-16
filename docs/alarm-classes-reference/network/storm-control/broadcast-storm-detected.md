@@ -23,11 +23,11 @@ uuid: 5b11cdab-c51f-4f28-8785-11ed0fc55de7
 
 | Event Class                                                                                                                          | Description |
 | ------------------------------------------------------------------------------------------------------------------------------------ | ----------- |
-| [Network \| Storm Control \| Broadcast Storm Detected](../event-classes-reference/network/storm-control/broadcast-storm-detected.md) | dispose     |
+| [Network \| Storm Control \| Broadcast Storm Detected](../../../event-classes-reference/network/storm-control/broadcast-storm-detected.md) | dispose     |
 
 ### Closing Events
 `Network | Storm Control | Broadcast Storm Detected` may be cleared by events
 
 | Event Class                                                                                                                        | Description |
 | ---------------------------------------------------------------------------------------------------------------------------------- | ----------- |
-| [Network \| Storm Control \| Broadcast Storm Cleared](../event-classes-reference/network/storm-control/broadcast-storm-cleared.md) | dispose     |
+| [Network \| Storm Control \| Broadcast Storm Cleared](../../../event-classes-reference/network/storm-control/broadcast-storm-cleared.md) | dispose     |

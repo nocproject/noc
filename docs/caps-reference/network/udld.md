@@ -6,4 +6,4 @@ Data Type: `bool`
 
 ## Prerequisite for
 
-- [udld discovery](../discovery-reference/box/udld.md)
+- [udld discovery](../../discovery-reference/box/udld.md)

@@ -8,7 +8,7 @@ Count of the number of Errored Seconds since agent reset.  The errored second pa
 ## Data Model
 
 Scope
-: [Interface](../../../../../metric-scopes-reference/interface.md)
+: [Interface](../../../../../../metric-scopes-reference/interface.md)
 
 Field
 : `xdsl_line_errors_es_delta`

@@ -13,11 +13,11 @@ Flooding MAC Detected
 
 ## Variables
 
-Variable | Type | Required | Description
---- | --- | --- | ---
-mac | mac | {{ yes }} | MAC Address
-vlan | int | {{ yes }} | VLAN
-interface | interface_name | {{ no }} | Interface
+| Variable  | Type           | Required  | Description |
+| --------- | -------------- | --------- | ----------- |
+| mac       | mac            | {{ yes }} | MAC Address |
+| vlan      | int            | {{ yes }} | VLAN        |
+| interface | interface_name | {{ no }}  | Interface   |
 
 ## Alarms
 
@@ -25,6 +25,6 @@ interface | interface_name | {{ no }} | Interface
 
 `Network | MAC | MAC Flood` events may raise following alarms:
 
-Alarm Class | Description
---- | ---
-[Network \| MAC \| MAC Flood](../../../alarm-classes/network/mac/mac-flood.md) | dispose
+| Alarm Class                                                                              | Description |
+| ---------------------------------------------------------------------------------------- | ----------- |
+| [Network \| MAC \| MAC Flood](../../../alarm-classes-reference/network/mac/mac-flood.md) | dispose     |

@@ -150,7 +150,7 @@ STP
 : Spanning Tree Protocol
 
 subscriber
-: See [subscriber](concepts/subscriber/index.md)
+: See [subscriber](../concepts/subscriber/index.md)
 
 Telnet
 : [Telnet](https://en.wikipedia.org/wiki/Telnet) Protocol. Unencrypted [CLI](#cli) protocol

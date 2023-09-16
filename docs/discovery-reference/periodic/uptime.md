@@ -9,5 +9,5 @@
 
 # Requirements
 
-* [get_uptime](../../../../scripts-reference/get_uptime.md)
-* Uptime check is enabled in [Managed Object Profile](../concepts/managed-object-profile/index.md)
+* [get_uptime](../../scripts-reference/get_uptime.md)
+* Uptime check is enabled in [Managed Object Profile](../../concepts/managed-object-profile/index.md)

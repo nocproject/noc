@@ -13,9 +13,9 @@ Self-Test Failed
 
 ## Variables
 
-Variable | Type | Required | Description
---- | --- | --- | ---
-name | str | {{ no }} | Test name
+| Variable | Type | Required | Description |
+| -------- | ---- | -------- | ----------- |
+| name     | str  | {{ no }} | Test name   |
 
 ## Alarms
 
@@ -23,6 +23,6 @@ name | str | {{ no }} | Test name
 
 `Environment | UPS | Self-Test Failed` events may raise following alarms:
 
-Alarm Class | Description
---- | ---
-[Environment \| UPS \| Self-Test Failed](../../../alarm-classes/environment/ups/self-test-failed.md) | dispose
+| Alarm Class                                                                                                    | Description |
+| -------------------------------------------------------------------------------------------------------------- | ----------- |
+| [Environment \| UPS \| Self-Test Failed](../../../alarm-classes-reference/environment/ups/self-test-failed.md) | dispose     |

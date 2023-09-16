@@ -22,4 +22,4 @@ uuid: 00d2fdb9-6684-4a6b-8ebe-c3c1cf6657b7
 
 | Event Class                                                                                | Description |
 | ------------------------------------------------------------------------------------------ | ----------- |
-| [Chassis \| Fabric \| CRC Errors](../event-classes-reference/chassis/fabric/crc-errors.md) | dispose     |
+| [Chassis \| Fabric \| CRC Errors](../../../event-classes-reference/chassis/fabric/crc-errors.md) | dispose     |

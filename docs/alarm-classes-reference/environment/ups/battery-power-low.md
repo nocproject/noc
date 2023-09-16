@@ -18,11 +18,11 @@ Change old battery
 
 | Event Class                                                                                                | Description |
 | ---------------------------------------------------------------------------------------------------------- | ----------- |
-| [Environment \| UPS \| Battery Power Low](../event-classes-reference/environment/ups/battery-power-low.md) | dispose     |
+| [Environment \| UPS \| Battery Power Low](../../../event-classes-reference/environment/ups/battery-power-low.md) | dispose     |
 
 ### Closing Events
 `Environment | UPS | Battery Power Low` may be cleared by events
 
 | Event Class                                                                                                      | Description |
 | ---------------------------------------------------------------------------------------------------------------- | ----------- |
-| [Environment \| UPS \| Battery Power Normal](../event-classes-reference/environment/ups/battery-power-normal.md) | dispose     |
+| [Environment \| UPS \| Battery Power Normal](../../../event-classes-reference/environment/ups/battery-power-normal.md) | dispose     |

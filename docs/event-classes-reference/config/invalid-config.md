@@ -17,6 +17,6 @@ Some lines in config are invalid
 
 `Config | Invalid Config` events may raise following alarms:
 
-Alarm Class | Description
---- | ---
-[Config \| Invalid Config](../../alarm-classes/config/invalid-config.md) | dispose
+| Alarm Class                                                                        | Description |
+| ---------------------------------------------------------------------------------- | ----------- |
+| [Config \| Invalid Config](../../alarm-classes-reference/config/invalid-config.md) | dispose     |

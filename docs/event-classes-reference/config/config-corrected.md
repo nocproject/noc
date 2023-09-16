@@ -17,6 +17,6 @@ Correct invalid config
 
 `Config | Config Corrected` events may clear following alarms:
 
-Alarm Class | Description
---- | ---
-[Config \| Invalid Config](../../alarm-classes/config/invalid-config.md) | dispose
+| Alarm Class                                                                        | Description |
+| ---------------------------------------------------------------------------------- | ----------- |
+| [Config \| Invalid Config](../../alarm-classes-reference/config/invalid-config.md) | dispose     |

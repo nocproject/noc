@@ -52,4 +52,4 @@ graph TD
 
 | Event Class                                                                                    | Description |
 | ---------------------------------------------------------------------------------------------- | ----------- |
-| [Network \| IP \| Address Conflict](../event-classes-reference/network/ip/address-conflict.md) | dispose     |
+| [Network \| IP \| Address Conflict](../../../event-classes-reference/network/ip/address-conflict.md) | dispose     |

@@ -8,7 +8,7 @@ The total number of topology changes detected by this bridge since the managemen
 ## Data Model
 
 Scope
-: [Routing](../../metric-scopes-reference/routing.md)
+: [Routing](../../../metric-scopes-reference/routing.md)
 
 Field
 : `stp_topology_changes`

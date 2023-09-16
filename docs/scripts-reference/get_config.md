@@ -19,4 +19,4 @@
 
 ## Used in
 ----
-* [Discovery Box Config](../../discovery-reference/box/config.md)
+* [Discovery Box Config](../discovery-reference/box/config.md)

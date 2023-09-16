@@ -13,9 +13,9 @@ Linecard Up
 
 ## Variables
 
-Variable | Type | Required | Description
---- | --- | --- | ---
-number | str | {{ yes }} | Slot number
+| Variable | Type | Required  | Description |
+| -------- | ---- | --------- | ----------- |
+| number   | str  | {{ yes }} | Slot number |
 
 ## Alarms
 
@@ -23,6 +23,6 @@ number | str | {{ yes }} | Slot number
 
 `Chassis | Linecard | LC Up` events may clear following alarms:
 
-Alarm Class | Description
---- | ---
-[Chassis \| Linecard \| LC Down](../../../alarm-classes/chassis/linecard/lc-down.md) | dispose
+| Alarm Class                                                                                    | Description |
+| ---------------------------------------------------------------------------------------------- | ----------- |
+| [Chassis \| Linecard \| LC Down](../../../alarm-classes-reference/chassis/linecard/lc-down.md) | dispose     |

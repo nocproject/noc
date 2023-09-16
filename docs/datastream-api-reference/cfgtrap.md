@@ -1,7 +1,7 @@
 # cfgtrap DataStream
 
 `cfgtrap` [DataStream](index.md) contains configuration
-for [services-trapcollector](../../../../services-reference/trapcollector.md) service
+for [services-trapcollector](../services-reference/trapcollector.md) service
 
 ## Fields
 

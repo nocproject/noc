@@ -19,10 +19,10 @@ No reaction needed
 
 ## Variables
 
-Variable | Type | Required | Description
---- | --- | --- | ---
-interface | interface_name | {{ yes }} | Interface
-neighbor | ip_address | {{ yes }} | Neighbor's NSAP or name
+| Variable  | Type           | Required  | Description             |
+| --------- | -------------- | --------- | ----------------------- |
+| interface | interface_name | {{ yes }} | Interface               |
+| neighbor  | ip_address     | {{ yes }} | Neighbor's NSAP or name |
 
 ## Alarms
 
@@ -30,6 +30,6 @@ neighbor | ip_address | {{ yes }} | Neighbor's NSAP or name
 
 `Network | RSVP | Neighbor Up` events may clear following alarms:
 
-Alarm Class | Description
---- | ---
-[Network \| RSVP \| Neighbor Down](../../../alarm-classes/network/rsvp/neighbor-down.md) | dispose
+| Alarm Class                                                                                        | Description |
+| -------------------------------------------------------------------------------------------------- | ----------- |
+| [Network \| RSVP \| Neighbor Down](../../../alarm-classes-reference/network/rsvp/neighbor-down.md) | dispose     |

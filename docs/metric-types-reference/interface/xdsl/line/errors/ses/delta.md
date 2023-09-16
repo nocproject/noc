@@ -13,7 +13,7 @@ This parameter is inhibited during UAS.
 ## Data Model
 
 Scope
-: [Interface](../../../../../metric-scopes-reference/interface.md)
+: [Interface](../../../../../../metric-scopes-reference/interface.md)
 
 Field
 : `xdsl_line_errors_ses_delta`

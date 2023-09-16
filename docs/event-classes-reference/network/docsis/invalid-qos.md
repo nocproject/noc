@@ -17,11 +17,11 @@ Ensure that the QoS fields in the configuration file are set correctly.
 
 ## Variables
 
-Variable | Type | Required | Description
---- | --- | --- | ---
-mac | mac | {{ yes }} | Cable Modem MAC
-sid | int | {{ no }} | Cable Modem SID
-interface | interface_name | {{ no }} | Cable interface
+| Variable  | Type           | Required  | Description     |
+| --------- | -------------- | --------- | --------------- |
+| mac       | mac            | {{ yes }} | Cable Modem MAC |
+| sid       | int            | {{ no }}  | Cable Modem SID |
+| interface | interface_name | {{ no }}  | Cable interface |
 
 ## Alarms
 
@@ -29,6 +29,6 @@ interface | interface_name | {{ no }} | Cable interface
 
 `Network | DOCSIS | Invalid QoS` events may raise following alarms:
 
-Alarm Class | Description
---- | ---
-[Network \| DOCSIS \| Invalid QoS](../../../alarm-classes/network/docsis/invalid-qos.md) | dispose
+| Alarm Class                                                                                        | Description |
+| -------------------------------------------------------------------------------------------------- | ----------- |
+| [Network \| DOCSIS \| Invalid QoS](../../../alarm-classes-reference/network/docsis/invalid-qos.md) | dispose     |

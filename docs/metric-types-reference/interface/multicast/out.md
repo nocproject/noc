@@ -8,7 +8,7 @@ Multicast packets on output interface
 ## Data Model
 
 Scope
-: [Interface](../../metric-scopes-reference/interface.md)
+: [Interface](../../../metric-scopes-reference/interface.md)
 
 Field
 : `multicast_out`

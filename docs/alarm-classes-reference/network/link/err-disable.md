@@ -52,13 +52,13 @@ graph TD
 
 | Event Class                                                                                                        | Description |
 | ------------------------------------------------------------------------------------------------------------------ | ----------- |
-| [Network \| Link \| Err-Disable](../event-classes-reference/network/link/err-disable.md)                           | dispose     |
-| [Network \| Link \| Link Flap Error Detected](../event-classes-reference/network/link/link-flap-error-detected.md) | dispose     |
+| [Network \| Link \| Err-Disable](../../../event-classes-reference/network/link/err-disable.md)                           | dispose     |
+| [Network \| Link \| Link Flap Error Detected](../../../event-classes-reference/network/link/link-flap-error-detected.md) | dispose     |
 
 ### Closing Events
 `Network | Link | Err-Disable` may be cleared by events
 
 | Event Class                                                                                                        | Description       |
 | ------------------------------------------------------------------------------------------------------------------ | ----------------- |
-| [Network \| Link \| Link Flap Error Recovery](../event-classes-reference/network/link/link-flap-error-recovery.md) | dispose           |
-| [Network \| Link \| Link Up](../event-classes-reference/network/link/link-up.md)                                   | Clear Err-Disable |
+| [Network \| Link \| Link Flap Error Recovery](../../../event-classes-reference/network/link/link-flap-error-recovery.md) | dispose           |
+| [Network \| Link \| Link Up](../../../event-classes-reference/network/link/link-up.md)                                   | Clear Err-Disable |

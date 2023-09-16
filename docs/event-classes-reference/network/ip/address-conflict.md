@@ -13,11 +13,11 @@ Conflicted addresses
 
 ## Variables
 
-Variable | Type | Required | Description
---- | --- | --- | ---
-ip | ip_address | {{ yes }} | Conflicting IP
-mac | mac | {{ no }} | MAC
-interface | interface_name | {{ no }} | Interface
+| Variable  | Type           | Required  | Description    |
+| --------- | -------------- | --------- | -------------- |
+| ip        | ip_address     | {{ yes }} | Conflicting IP |
+| mac       | mac            | {{ no }}  | MAC            |
+| interface | interface_name | {{ no }}  | Interface      |
 
 ## Alarms
 
@@ -25,6 +25,6 @@ interface | interface_name | {{ no }} | Interface
 
 `Network | IP | Address Conflict` events may raise following alarms:
 
-Alarm Class | Description
---- | ---
-[Network \| IP \| Address Conflict](../../../alarm-classes/network/ip/address-conflict.md) | dispose
+| Alarm Class                                                                                          | Description |
+| ---------------------------------------------------------------------------------------------------- | ----------- |
+| [Network \| IP \| Address Conflict](../../../alarm-classes-reference/network/ip/address-conflict.md) | dispose     |

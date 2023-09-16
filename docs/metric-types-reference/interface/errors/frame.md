@@ -8,7 +8,7 @@ Errors when received frames whose actual length differs with 802.3
 ## Data Model
 
 Scope
-: [Interface](../../metric-scopes-reference/interface.md)
+: [Interface](../../../metric-scopes-reference/interface.md)
 
 Field
 : `errors_frame_in`

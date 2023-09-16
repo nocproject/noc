@@ -13,10 +13,10 @@ Service Down
 
 ## Variables
 
-Variable | Type | Required | Description
---- | --- | --- | ---
-node | str | {{ yes }} | IP or hostname
-port | int | {{ yes }} | Service port
+| Variable | Type | Required  | Description    |
+| -------- | ---- | --------- | -------------- |
+| node     | str  | {{ yes }} | IP or hostname |
+| port     | int  | {{ yes }} | Service port   |
 
 ## Alarms
 
@@ -24,6 +24,6 @@ port | int | {{ yes }} | Service port
 
 `Vendor | f5 | BIGIP | Network | Load Balance | Service Up` events may clear following alarms:
 
-Alarm Class | Description
---- | ---
-[Vendor \| f5 \| BIGIP \| Network \| Load Balance \| Service Down](../../../../../../alarm-classes/vendor/f5/bigip/network/load-balance/service-down.md) | dispose
+| Alarm Class                                                                                                                                                        | Description |
+| ------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ----------- |
+| [Vendor \| f5 \| BIGIP \| Network \| Load Balance \| Service Down](../../../../../../alarm-classes-reference/vendor/f5/bigip/network/load-balance/service-down.md) | dispose     |

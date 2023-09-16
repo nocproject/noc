@@ -10,8 +10,8 @@ NOC documentation is distributed under a
 Please review the following documents for our style, conventions,
 processes and practices for the NOC Documentation:
 
-- [Style Guide](style/index.md)
-- [Documentation Structure](style/index.md#documentation-structure)
+- [Style Guide](../docs-style-guide/index.md)
+- [Documentation Structure](../docs-style-guide/index.md#documentation-structure)
 
 Do not hesitate to open a ticket in our [GitLab](https://code.getnoc.com/noc/noc) project
 or to contact the [NOC Docs telegram channel](http://t.me/nocdocs) if you have any questions,

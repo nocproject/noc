@@ -8,7 +8,7 @@ Object  RFC1213-MIB:SysUptime
 ## Data Model
 
 Scope
-: [Object](../metric-scopes-reference/object.md)
+: [Object](../../metric-scopes-reference/object.md)
 
 Field
 : `sys_uptime`

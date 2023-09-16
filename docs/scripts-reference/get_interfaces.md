@@ -17,4 +17,4 @@
 
 ## Used in
 -------
-* [Discovery Box Interface](../../discovery-reference/box/interface.md)
+* [Discovery Box Interface](../discovery-reference/box/interface.md)

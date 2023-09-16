@@ -41,11 +41,11 @@ graph TD
 
 | Event Class                                                                                      | Description |
 | ------------------------------------------------------------------------------------------------ | ----------- |
-| [Chassis \| Stack \| Stack Degraded](../event-classes-reference/chassis/stack/stack-degraded.md) | dispose     |
+| [Chassis \| Stack \| Stack Degraded](../../../event-classes-reference/chassis/stack/stack-degraded.md) | dispose     |
 
 ### Closing Events
 `Chassis | Stack | Stack Degraded` may be cleared by events
 
 | Event Class                                                                                        | Description |
 | -------------------------------------------------------------------------------------------------- | ----------- |
-| [Chassis \| Stack \| Stack is Raised](../event-classes-reference/chassis/stack/stack-is-raised.md) | dispose     |
+| [Chassis \| Stack \| Stack is Raised](../../../event-classes-reference/chassis/stack/stack-is-raised.md) | dispose     |

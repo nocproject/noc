@@ -13,9 +13,9 @@ RADIUS server recovered
 
 ## Variables
 
-Variable | Type | Required | Description
---- | --- | --- | ---
-ip | ip_address | {{ no }} | RADIUS server address
+| Variable | Type       | Required | Description           |
+| -------- | ---------- | -------- | --------------------- |
+| ip       | ip_address | {{ no }} | RADIUS server address |
 
 ## Alarms
 
@@ -23,6 +23,6 @@ ip | ip_address | {{ no }} | RADIUS server address
 
 `Security | Authentication | RADIUS server recovered` events may clear following alarms:
 
-Alarm Class | Description
---- | ---
-[Security \| Authentication \| RADIUS server failed](../../../alarm-classes/security/authentication/radius-server-failed.md) | dispose
+| Alarm Class                                                                                                                            | Description |
+| -------------------------------------------------------------------------------------------------------------------------------------- | ----------- |
+| [Security \| Authentication \| RADIUS server failed](../../../alarm-classes-reference/security/authentication/radius-server-failed.md) | dispose     |

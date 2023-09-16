@@ -13,9 +13,9 @@ STP Loop Cleared
 
 ## Variables
 
-Variable | Type | Required | Description
---- | --- | --- | ---
-interface | interface_name | {{ yes }} | Interface
+| Variable  | Type           | Required  | Description |
+| --------- | -------------- | --------- | ----------- |
+| interface | interface_name | {{ yes }} | Interface   |
 
 ## Alarms
 
@@ -23,6 +23,6 @@ interface | interface_name | {{ yes }} | Interface
 
 `Network | STP | STP Loop Cleared` events may clear following alarms:
 
-Alarm Class | Description
---- | ---
-[Network \| STP \| STP Loop Detected](../../../alarm-classes/network/stp/stp-loop-detected.md) | dispose
+| Alarm Class                                                                                              | Description |
+| -------------------------------------------------------------------------------------------------------- | ----------- |
+| [Network \| STP \| STP Loop Detected](../../../alarm-classes-reference/network/stp/stp-loop-detected.md) | dispose     |

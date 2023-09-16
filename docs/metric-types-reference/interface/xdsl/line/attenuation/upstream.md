@@ -8,7 +8,7 @@ Measured difference in the total power transmitted by the peer ATU and the total
 ## Data Model
 
 Scope
-: [Interface](../../../../metric-scopes-reference/interface.md)
+: [Interface](../../../../../metric-scopes-reference/interface.md)
 
 Field
 : `xdsl_line_attenuation_up`

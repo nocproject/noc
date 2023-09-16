@@ -43,11 +43,11 @@ graph TD
 
 | Event Class                                                                                                      | Description |
 | ---------------------------------------------------------------------------------------------------------------- | ----------- |
-| [Chassis \| Hardware \| Hardware Port Error](../event-classes-reference/chassis/hardware/hardware-port-error.md) | dispose     |
+| [Chassis \| Hardware \| Hardware Port Error](../../../event-classes-reference/chassis/hardware/hardware-port-error.md) | dispose     |
 
 ### Closing Events
 `Chassis | Hardware | Hardware Port Error` may be cleared by events
 
 | Event Class                                                                                                                      | Description |
 | -------------------------------------------------------------------------------------------------------------------------------- | ----------- |
-| [Chassis \| Hardware \| Hardware Port Error Recover](../event-classes-reference/chassis/hardware/hardware-port-error-recover.md) | dispose     |
+| [Chassis \| Hardware \| Hardware Port Error Recover](../../../event-classes-reference/chassis/hardware/hardware-port-error-recover.md) | dispose     |

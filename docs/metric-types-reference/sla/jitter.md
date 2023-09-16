@@ -8,7 +8,7 @@ Measured deviation of round trip time in microseconds
 ## Data Model
 
 Scope
-: [SLA](../metric-scopes-reference/sla.md)
+: [SLA](../../metric-scopes-reference/sla.md)
 
 Field
 : `jitter`

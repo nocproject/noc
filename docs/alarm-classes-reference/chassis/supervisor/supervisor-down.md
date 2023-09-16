@@ -42,11 +42,11 @@ graph TD
 
 | Event Class                                                                                                  | Description |
 | ------------------------------------------------------------------------------------------------------------ | ----------- |
-| [Chassis \| Supervisor \| Supervisor Down](../event-classes-reference/chassis/supervisor/supervisor-down.md) | dispose     |
+| [Chassis \| Supervisor \| Supervisor Down](../../../event-classes-reference/chassis/supervisor/supervisor-down.md) | dispose     |
 
 ### Closing Events
 `Chassis | Supervisor | Supervisor Down` may be cleared by events
 
 | Event Class                                                                                              | Description |
 | -------------------------------------------------------------------------------------------------------- | ----------- |
-| [Chassis \| Supervisor \| Supervisor Up](../event-classes-reference/chassis/supervisor/supervisor-up.md) | dispose     |
+| [Chassis \| Supervisor \| Supervisor Up](../../../event-classes-reference/chassis/supervisor/supervisor-up.md) | dispose     |

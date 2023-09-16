@@ -17,6 +17,6 @@ System started
 
 `System | Started` events may clear following alarms:
 
-Alarm Class | Description
---- | ---
-[System \| Reboot](../../alarm-classes/system/reboot.md) | dispose
+| Alarm Class                                                        | Description |
+| ------------------------------------------------------------------ | ----------- |
+| [System \| Reboot](../../alarm-classes-reference/system/reboot.md) | dispose     |

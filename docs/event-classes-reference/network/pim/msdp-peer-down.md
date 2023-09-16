@@ -19,11 +19,11 @@ Check links and local and neighbor's router configuration
 
 ## Variables
 
-Variable | Type | Required | Description
---- | --- | --- | ---
-peer | ip_address | {{ yes }} | Peer's IP
-vrf | str | {{ no }} | VRF
-reason | str | {{ no }} | Reason
+| Variable | Type       | Required  | Description |
+| -------- | ---------- | --------- | ----------- |
+| peer     | ip_address | {{ yes }} | Peer's IP   |
+| vrf      | str        | {{ no }}  | VRF         |
+| reason   | str        | {{ no }}  | Reason      |
 
 ## Alarms
 
@@ -31,6 +31,6 @@ reason | str | {{ no }} | Reason
 
 `Network | PIM | MSDP Peer Down` events may raise following alarms:
 
-Alarm Class | Description
---- | ---
-[Network \| PIM \| MSDP Peer Down](../../../alarm-classes/network/pim/msdp-peer-down.md) | dispose
+| Alarm Class                                                                                        | Description |
+| -------------------------------------------------------------------------------------------------- | ----------- |
+| [Network \| PIM \| MSDP Peer Down](../../../alarm-classes-reference/network/pim/msdp-peer-down.md) | dispose     |

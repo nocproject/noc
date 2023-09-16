@@ -42,11 +42,11 @@ graph TD
 
 | Event Class                                                                                        | Description |
 | -------------------------------------------------------------------------------------------------- | ----------- |
-| [Network \| STP \| STP Loop Detected](../event-classes-reference/network/stp/stp-loop-detected.md) | dispose     |
+| [Network \| STP \| STP Loop Detected](../../../event-classes-reference/network/stp/stp-loop-detected.md) | dispose     |
 
 ### Closing Events
 `Network | STP | STP Loop Detected` may be cleared by events
 
 | Event Class                                                                                      | Description |
 | ------------------------------------------------------------------------------------------------ | ----------- |
-| [Network \| STP \| STP Loop Cleared](../event-classes-reference/network/stp/stp-loop-cleared.md) | dispose     |
+| [Network \| STP \| STP Loop Cleared](../../../event-classes-reference/network/stp/stp-loop-cleared.md) | dispose     |

@@ -22,4 +22,4 @@ uuid: cd8a2c67-969e-472a-a32e-624edda8e29a
 
 | Event Class                                                                                              | Description |
 | -------------------------------------------------------------------------------------------------------- | ----------- |
-| [Environment \| UPS \| Self-Test Failed](../event-classes-reference/environment/ups/self-test-failed.md) | dispose     |
+| [Environment \| UPS \| Self-Test Failed](../../../event-classes-reference/environment/ups/self-test-failed.md) | dispose     |

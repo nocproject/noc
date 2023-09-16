@@ -19,11 +19,11 @@ Check links and local and neighbor's router configuration
 
 ## Variables
 
-Variable | Type | Required | Description
---- | --- | --- | ---
-interface | interface_name | {{ yes }} | Interface
-neighbor | ip_address | {{ yes }} | Neighbor's NSAP or name
-reason | str | {{ no }} | Reason
+| Variable  | Type           | Required  | Description             |
+| --------- | -------------- | --------- | ----------------------- |
+| interface | interface_name | {{ yes }} | Interface               |
+| neighbor  | ip_address     | {{ yes }} | Neighbor's NSAP or name |
+| reason    | str            | {{ no }}  | Reason                  |
 
 ## Alarms
 
@@ -31,6 +31,6 @@ reason | str | {{ no }} | Reason
 
 `Network | RSVP | Neighbor Down` events may raise following alarms:
 
-Alarm Class | Description
---- | ---
-[Network \| RSVP \| Neighbor Down](../../../alarm-classes/network/rsvp/neighbor-down.md) | dispose
+| Alarm Class                                                                                        | Description |
+| -------------------------------------------------------------------------------------------------- | ----------- |
+| [Network \| RSVP \| Neighbor Down](../../../alarm-classes-reference/network/rsvp/neighbor-down.md) | dispose     |

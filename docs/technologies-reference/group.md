@@ -1,6 +1,6 @@
 # Group
 
-Arbitrary grouping element for [Resource Groups](../../../concepts/resource-group/index.md)
+Arbitrary grouping element for [Resource Groups](../concepts/resource-group/index.md)
 Has no any specific meaning. Used to organize other groups in hierarchy.
 
 ## Properties

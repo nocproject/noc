@@ -15,9 +15,9 @@ Connection restored
 
 ## Variables
 
-Variable | Type | Required | Description
---- | --- | --- | ---
-interface | interface_name | {{ yes }} | LBD interface
+| Variable  | Type           | Required  | Description   |
+| --------- | -------------- | --------- | ------------- |
+| interface | interface_name | {{ yes }} | LBD interface |
 
 ## Alarms
 
@@ -25,6 +25,6 @@ interface | interface_name | {{ yes }} | LBD interface
 
 `Network | LBD | Loop Cleared` events may clear following alarms:
 
-Alarm Class | Description
---- | ---
-[Network \| LBD \| Loop Detected](../../../alarm-classes/network/lbd/loop-detected.md) | dispose
+| Alarm Class                                                                                      | Description |
+| ------------------------------------------------------------------------------------------------ | ----------- |
+| [Network \| LBD \| Loop Detected](../../../alarm-classes-reference/network/lbd/loop-detected.md) | dispose     |

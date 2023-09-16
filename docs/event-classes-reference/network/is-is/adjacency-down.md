@@ -19,12 +19,12 @@ Check links and local and neighbor's router configuration
 
 ## Variables
 
-Variable | Type | Required | Description
---- | --- | --- | ---
-neighbor | str | {{ yes }} | Neighbor's NSAP or name
-interface | interface_name | {{ yes }} | Interface
-level | str | {{ no }} | Level
-reason | str | {{ no }} | Adjacency lost reason
+| Variable  | Type           | Required  | Description             |
+| --------- | -------------- | --------- | ----------------------- |
+| neighbor  | str            | {{ yes }} | Neighbor's NSAP or name |
+| interface | interface_name | {{ yes }} | Interface               |
+| level     | str            | {{ no }}  | Level                   |
+| reason    | str            | {{ no }}  | Adjacency lost reason   |
 
 ## Alarms
 
@@ -32,6 +32,6 @@ reason | str | {{ no }} | Adjacency lost reason
 
 `Network | IS-IS | Adjacency Down` events may raise following alarms:
 
-Alarm Class | Description
---- | ---
-[Network \| IS-IS \| Adjacency Down](../../../alarm-classes/network/is-is/adjacency-down.md) | dispose
+| Alarm Class                                                                                            | Description |
+| ------------------------------------------------------------------------------------------------------ | ----------- |
+| [Network \| IS-IS \| Adjacency Down](../../../alarm-classes-reference/network/is-is/adjacency-down.md) | dispose     |

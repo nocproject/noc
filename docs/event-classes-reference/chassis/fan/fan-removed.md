@@ -13,9 +13,9 @@ Fan removed
 
 ## Variables
 
-Variable | Type | Required | Description
---- | --- | --- | ---
-name | str | {{ yes }} | Fan Name
+| Variable | Type | Required  | Description |
+| -------- | ---- | --------- | ----------- |
+| name     | str  | {{ yes }} | Fan Name    |
 
 ## Alarms
 
@@ -23,6 +23,6 @@ name | str | {{ yes }} | Fan Name
 
 `Chassis | Fan | Fan Removed` events may raise following alarms:
 
-Alarm Class | Description
---- | ---
-[Chassis \| Fan \| Fan Removed](../../../alarm-classes/chassis/fan/fan-removed.md) | dispose
+| Alarm Class                                                                                  | Description |
+| -------------------------------------------------------------------------------------------- | ----------- |
+| [Chassis \| Fan \| Fan Removed](../../../alarm-classes-reference/chassis/fan/fan-removed.md) | dispose     |

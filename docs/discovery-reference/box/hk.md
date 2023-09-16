@@ -6,4 +6,4 @@
 
 ## Requirements
 
-* hk check is enabled in [Managed Object Profile](../concepts/managed-object-profile/index.md)
+* hk check is enabled in [Managed Object Profile](../../concepts/managed-object-profile/index.md)

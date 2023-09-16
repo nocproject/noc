@@ -25,4 +25,4 @@ uuid: c32378e8-a6e6-4a00-928f-96b3a7cb5f77
 
 | Event Class                                                                            | Description |
 | -------------------------------------------------------------------------------------- | ----------- |
-| [Network \| MAC \| Invalid MAC](../event-classes-reference/network/mac/invalid-mac.md) | dispose     |
+| [Network \| MAC \| Invalid MAC](../../../event-classes-reference/network/mac/invalid-mac.md) | dispose     |

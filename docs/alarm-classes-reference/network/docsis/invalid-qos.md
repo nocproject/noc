@@ -28,4 +28,4 @@ Ensure that the QoS fields in the configuration file are set correctly.
 
 | Event Class                                                                                  | Description |
 | -------------------------------------------------------------------------------------------- | ----------- |
-| [Network \| DOCSIS \| Invalid QoS](../event-classes-reference/network/docsis/invalid-qos.md) | dispose     |
+| [Network \| DOCSIS \| Invalid QoS](../../../event-classes-reference/network/docsis/invalid-qos.md) | dispose     |

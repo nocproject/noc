@@ -17,9 +17,9 @@ Replace faulty RAM module
 
 ## Variables
 
-Variable | Type | Required | Description
---- | --- | --- | ---
-bank | str | {{ yes }} | Bank Name
+| Variable | Type | Required  | Description |
+| -------- | ---- | --------- | ----------- |
+| bank     | str  | {{ yes }} | Bank Name   |
 
 ## Alarms
 
@@ -27,6 +27,6 @@ bank | str | {{ yes }} | Bank Name
 
 `Chassis | RAM | RAM Failed` events may raise following alarms:
 
-Alarm Class | Description
---- | ---
-[Chassis \| RAM \| RAM Failed](../../../alarm-classes/chassis/ram/ram-failed.md) | dispose
+| Alarm Class                                                                                | Description |
+| ------------------------------------------------------------------------------------------ | ----------- |
+| [Chassis \| RAM \| RAM Failed](../../../alarm-classes-reference/chassis/ram/ram-failed.md) | dispose     |
