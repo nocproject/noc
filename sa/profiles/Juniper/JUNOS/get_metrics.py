@@ -211,7 +211,19 @@ class Script(GetMetricsScript):
                 if m not in self.SLA_METRICS_CONFIG:
                     continue
                 mc = self.SLA_METRICS_CONFIG[m]
-                if not isinstance(mc.oid, tuple):
+                if self.is_vmx and mc.metric in {
+                    "SLA | Jitter | Out | Avg",
+                    "SLA | Jitter | In | Avg",
+                }:
+                    continue
+                if self.is_vmx and mc.metric == "SLA | Jitter | Avg":
+                    oid = mib[
+                        "JUNIPER-RPM-MIB::jnxRpmResCalcAverage",
+                        key,
+                        RPMResultCollection.lastCompletedTest.value,
+                        RPMMeasurement.negRttJitter.value,
+                    ]
+                elif not isinstance(mc.oid, tuple):
                     oid = mib[
                         mc.oid,
                         key,
