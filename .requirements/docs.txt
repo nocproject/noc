@@ -6,4 +6,6 @@
 mkdocs-material==9.2.3
 mkdocstrings[python]==0.22.0
 mkdocs-macros-plugin==1.0.4
-mkdocs-static-i18n==1.0.0
+mkdocs-static-i18n==1.0.3
+mkdocs-gen-files==0.5.0
+mkdocs-literate-nav==0.6.1
