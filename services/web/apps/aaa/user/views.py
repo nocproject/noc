@@ -77,6 +77,21 @@ class UserApplication(ExtModelApplication):
                         ]
         return r
 
+    @view(method=["POST"], url=r"^$", access="create", api=True)
+    def api_create(self, request):
+        response = super().api_create(request)
+        if response.status_code == self.CREATED:
+            user_id = self.deserialize(response.content).get("id")
+            user = self.get_object_or_404(self.model, pk=user_id)
+            attrs = (
+                self.deserialize(request.body)
+                if self.site.is_json(request.META.get("CONTENT_TYPE"))
+                else self.deserialize_form(request)
+            )
+            user.set_password(attrs["password"])
+            user.save()
+        return response
+
     @view(method=["GET"], url=r"^(?P<id>\d+)/?$", access="read", api=True)
     def api_read(self, request, id):
         """
