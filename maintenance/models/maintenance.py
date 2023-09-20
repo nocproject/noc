@@ -9,6 +9,7 @@
 import datetime
 import operator
 import re
+import logging
 from threading import Lock
 from typing import Optional, List, Set
 
@@ -40,6 +41,8 @@ from noc.sa.models.administrativedomain import AdministrativeDomain
 from noc.main.models.notificationgroup import NotificationGroup
 
 id_lock = Lock()
+
+logger = logging.getLogger(__name__)
 
 # Query for remove maintenance from affected structure
 SQL_REMOVE = """
@@ -231,126 +234,82 @@ class Maintenance(Document):
         return affected
 
 
-def update_affected_objects(
-    maintenance_id, start: datetime.datetime, stop: Optional[datetime.datetime] = None
-):
-    """
-    Calculate and fill affected objects
-    """
+def update_affected_objects(maintenance_id: str, **kwargs):
+    def get_object_downlinks(mo_ids):
+        """
 
-    # All affected maintenance objects
-    mai_objects: List[int] = list(
-        ManagedObject.objects.filter(
-            is_managed=True, affected_maintenances__has_key=str(maintenance_id)
-        ).values_list("id", flat=True)
-    )
-
-    def get_downlinks(objects: Set[int]):
-        # Get all additional objects which may be affected
-        r = {
-            mo_id
-            for mo_id in ManagedObject.objects.filter(
-                is_managed=True, uplinks__overlap=list(objects)
-            ).values_list("id", flat=True)
-            if mo_id not in objects
-        }
-        if not r:
-            return r
-        # Leave only objects with all uplinks affected
-        rr = set()
-        for mo_id, uplinks in ManagedObject.objects.filter(
-            is_managed=True, id__in=list(r)
-        ).values_list("id", "uplinks"):
-            if len([1 for u in uplinks if u in objects]) == len(uplinks):
-                rr.add(mo_id)
-        return rr
-
-    def get_segment_objects(segment):
-        # Get objects belonging to segment
-        so = set(
-            ManagedObject.objects.filter(is_managed=True, segment=segment).values_list(
-                "id", flat=True
+        :return:
+        """
+        with pg_connection.cursor() as cursor:
+            cursor.execute(
+                """
+                WITH RECURSIVE r AS (
+                    SELECT id, uplinks
+                    FROM sa_managedobject
+                    WHERE id = ANY(%s)
+                    UNION
+                    SELECT sa.id, sa.uplinks
+                    FROM sa_managedobject AS sa JOIN r ON r.id = ANY(sa.uplinks)
+                )
+                SELECT id FROM r;
+            """,
+                [mo_ids],
             )
-        )
-        # Get objects from underlying segments
-        for ns in NetworkSegment._get_collection().find({"parent": segment}, {"_id": 1}):
-            so |= get_segment_objects(ns["_id"])
-        return so
+            return [r[0] for r in cursor]
 
-    data = Maintenance.get_by_id(maintenance_id)
-    # Calculate affected objects
-    affected: Set[int] = set(o.object.id for o in data.direct_objects if o.object)
-    for o in data.direct_segments:
-        if o.segment:
-            affected |= get_segment_objects(o.segment.id)
-    while True:
-        r = get_downlinks(affected)
-        if not r:
-            break
-        affected |= r
+    maintenance = Maintenance.get_by_id(maintenance_id)
+    if not maintenance:
+        logger.error("[%s] Unknown Maintenance", maintenance_id)
+        return
+    logger.info("[%s] Calculate affected", maintenance_id)
+    # Calculate affected
+    affected_segments = []
+    for ds in maintenance.direct_segments:
+        affected_segments += [str(r) for r in ds.segment.get_nested_ids()]
+    affected_objects = get_object_downlinks([o.object.id for o in maintenance.direct_objects])
     # Calculate affected administrative_domain
-    affected_ad = list(
-        set(
-            ManagedObject.objects.filter(is_managed=True, id__in=list(affected)).values_list(
-                "administrative_domain__id", flat=True
-            )
-        )
+    affected_ad = (
+        ManagedObject.objects.filter(segment__in=affected_segments)
+        .distinct("administrative_domain")
+        .values_list("administrative_domain", flat=True)
     )
 
-    # @todo: Calculate affected objects considering topology
-    Maintenance._get_collection().update_one(
-        {"_id": data.id},
-        {"$set": {"administrative_domain": affected_ad}},
+    # Update effective_maintenance
+    affected_data = {"start": maintenance.start, "stop": maintenance.stop}
+    if maintenance.time_pattern:
+        affected_data["time_pattern"] = maintenance.time_pattern.id
+    # Maintenance.objects.filter(id=maintenance_id).update_one(administrative_domain=affected_ad)
+    logger.info(
+        "[%s] Update affected maintenance objects: %s/%s",
+        maintenance_id,
+        len(affected_objects),
+        len(affected_segments),
     )
-    affected_data = {"start": start, "stop": stop}
-    if data.time_pattern:
-        affected_data["time_pattern"] = data.time_pattern.id
+    condition = ""
     with pg_connection.cursor() as cursor:
-        # Cleanup Maintenance objects
-        cursor.execute(SQL_REMOVE, [str(maintenance_id), str(maintenance_id)])
-        # Add Maintenance objects
-        SQL_ADD = """UPDATE sa_managedobject
-        SET affected_maintenances = affected_maintenances || %s::jsonb
-        WHERE id = ANY(%s::int[])"""
+        SQL_ADD = """
+            UPDATE sa_managedobject
+            SET affected_maintenances = affected_maintenances || %s::jsonb
+            WHERE segment = ANY(%s::text[])
+            RETURNING id
+        """
         cursor.execute(
             SQL_ADD,
             [
-                orjson.dumps({str(maintenance_id): affected_data}).decode("utf-8"),
-                list(affected),
-            ],
+                orjson.dumps({str(maintenance.id): affected_data}).decode("utf-8"),
+                affected_segments
+            ]
         )
-    # Clear cache
-    for mo_id in set(mai_objects).union(affected):
-        ManagedObject._reset_caches(mo_id)
-    # Check id objects not in affected
-    # nin_mai = set(affected).difference(set(mai_objects))
-    # Check id objects for delete
-    # in_mai = set(mai_objects).difference(set(affected))
-
-    # if len(nin_mai) != 0 or len(in_mai) != 0:
-    #     with pg_connection.cursor() as cursor:
-    #         # Add Maintenance objects
-    #         if len(nin_mai) != 0:
-    #             SQL_ADD = """UPDATE sa_managedobject
-    #             SET affected_maintenances = jsonb_insert(affected_maintenances,
-    #             '{"%s"}', '{"start": "%s", "stop": "%s"}'::jsonb)
-    #             WHERE id IN %s;""" % (
-    #                 str(maintenance_id),
-    #                 start,
-    #                 stop,
-    #                 "(%s)" % ", ".join(map(repr, nin_mai)),
-    #             )
-    #             cursor.execute(SQL_ADD)
-    #         # Delete Maintenance objects
-    #         if len(in_mai) != 0:
-    #             SQL_REMOVE = """UPDATE sa_managedobject
-    #                  SET affected_maintenances = affected_maintenances #- '{%s}'
-    #                  WHERE id IN %s AND affected_maintenances @> '{"%s": {}}';""" % (
-    #                 str(maintenance_id),
-    #                 "(%s)" % ", ".join(map(repr, in_mai)),
-    #                 str(maintenance_id),
-    #             )
-    #             cursor.execute(SQL_REMOVE)
+        updated = [r[0] for r in cursor]
+        logger.info("[%s] Updated ids: %s", maintenance_id, len(updated))
+        if updated:
+            cursor.execute("""SELECT gin_clean_pending_list('sa_managedobject_affected_maintenances_idx')""")
+            cursor.execute("""
+              UPDATE sa_managedobject
+              SET affected_maintenances = affected_maintenances - %s
+              WHERE affected_maintenances ? %s AND NOT (id = ANY(%s::int[]))
+            """, [str(maintenance.id), str(maintenance.id), updated])
+        logger.info("[%s] End affected_maintenance updated", maintenance_id)
 
 
 def stop(maintenance_id):
