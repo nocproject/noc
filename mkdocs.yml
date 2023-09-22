@@ -1696,18 +1696,12 @@ nav:
       - Overview: about/index.md
       - Translations: about/translations.md
       - Supported Standards: about/standards.md
-      - User's Guide:
-          - Overview: user/index.md
-          - How-to Guides:
-              - Overview: user/howto/index.md
-              - Loading GIS data with etl command: user/howto/fias/index.md
-          - Background:
-              - Overview: user/background/index.md
   - Dev Tools:
       - Overview: dev-tools/index.md
       - black: dev-tools/black.md
   - HowTo:
       - Sharing Collections Howto: sharing-collections-howto/index.md
+      - Loading FIAS Data Howto: fiad-loading-howto/index.md
   - Releases:
       - NOC 23.1 Generation:
           - NOC 23.1: releases/23_1.md
@@ -1883,6 +1877,11 @@ plugins:
   - macros:
       module_name: macros
       on_error_fail: true
+  - gen-files:
+      scripts:
+        - docs/_scripts/gen-connection-types-reference.py
+  - literate-nav:
+      nav_file: SUMMARY.md
   - i18n:
       docs_structure: suffix
       fallback_to_default: true
@@ -1902,11 +1901,6 @@ plugins:
             Interface: Интерфейс
             Interface Profile: Профиль интерфейса
             Label: Метка
-  - gen-files:
-      scripts:
-        - docs/_scripts/gen-connection-types-reference.py
-  - literate-nav:
-      nav_file: SUMMARY.md
 extra:
   analytics:
     provider: google
