@@ -7,9 +7,10 @@
 
 # Python modules
 import time
+import re
 import json
 from dataclasses import dataclass
-from typing import Optional, List, Iterable, DefaultDict, Tuple
+from typing import Optional, List, Iterable, DefaultDict, Tuple, Dict
 import logging
 from collections import defaultdict
 from pathlib import Path
@@ -24,37 +25,33 @@ import jinja2
 
 logger = logging.getLogger("mkdocs")
 
+BUCKET_DEPTH = 1
 COLLECTION_ROOT = Path("collections", "inv.connectiontypes")
 DOCS = Path("docs")
 BOOK = Path("connection-types-reference")
-TEMPLATE = """# @todo: Header
-{% for item in items %}
-## {{ item.name }}
+TEMPLATE = """# {{ title }}
 
-{{ item.description }}
-
-Genders
-: `{{ item.gender }}` - {% if item.gender == "m" %}only male types, compatible female types are selected via `c_groups`
-{% elif item.gender == "f" %}only female types, compatible male types are selected via `c_groups`
-{% elif item.gender == "s" %}symmetric, genderless same type connection
-{% elif item.gender == "ss" %}symmetric, genderless same type connection. More than two objects may be connected
-{% elif item.gender == "mf" %}male and female types
-{% elif item.gender == "mmf" %}one or more male may be connected to one female
-{% elif item.gender == "mff" %}two or one females may be connected to one male
-{% endif %}
-
-{% if item.cgroups %}
-CGroups
-: {% for g in item.cgroups %}- {{ g }}:
-
-{% for gi in cgroups[gi] %}    - {{ gi.name }}
-{% endfor %}
-{% endfor %}
-{% endif %}
+| Connection Type | Description  | Genders | Compatibility Groups |
+| --- | --- | --- |  --- |
+{% for item in items -%}
+| <a id="{{ item.md_anchor }}"></a>{{ item.md_name }} | {{ item.description }} | `{{ item.genders }}` | {% if item.c_group -%}
+{%- for g in item.c_group -%}{{ g }}{% if not loop.last %}, {% endif %}
+{%- endfor -%}
+{%- endif %} |
 {% endfor %}
 """
 
 VALID_GENDERS = {"m", "f", "s", "ss", "mf", "mff", "mmf"}
+PEER_GENDERS = {
+    "m": {"f"},
+    "f": {"m"},
+    "s": {"s"},
+    "ss": {"s", "ss"},
+    "mf": {"m", "f", "mf"},
+    "mff": {"f"},
+    "mmf": {"m"},
+}
+rx_md_anchor = re.compile(r"[ _\|\(\)/]+")
 
 
 @dataclass(order=True)
@@ -98,18 +95,51 @@ class Data(object):
             c_group=data.get("c_group") or None,
         )
 
+    def peer_types(self, cgroup: str, cgroups: Dict[str, List["Data"]]) -> List["Data"]:
+        items = cgroups.get(cgroup) or []
+        return [x for x in items if x.genders in PEER_GENDERS[self.genders]]
 
-def get_bucket(data: Data, depth: int) -> Tuple[str, ...]:
-    """
-    Content section.
+    @property
+    def md_name(self) -> str:
+        """
+        Markdown-quoted name
+        """
+        return self.name.replace("|", "\\|")
 
-    Args:
-        Maximal level of depth
+    @property
+    def md_anchor(self) -> str:
+        return rx_md_anchor.sub("-", self.name.lower())
 
-    Returns:
-        Leading parts of name
-    """
-    return tuple(islice((x.strip() for x in data.name.split("|", 1)), 0, depth))
+    @property
+    def bucket(self) -> Tuple[str, ...]:
+        return tuple(islice((x.strip() for x in self.name.split("|", 1)), 0, BUCKET_DEPTH))
+
+    def link_from(self, src: "Data") -> str:
+        """
+        Generate MD link from source to self.
+
+        Args:
+            src: Source item (page)
+        """
+        dst_bucket = self.bucket
+        src_bucket = src.bucket
+        anchor = f"#{self.md_anchor}"
+        if src_bucket == dst_bucket:
+            return anchor
+        # Calculate common path
+        common = 0
+        for x, y in zip(src_bucket, dst_bucket):
+            if x == y:
+                common += 1
+            else:
+                break
+        # Build link
+        link = []
+        up = len(src_bucket) - common
+        if up > 0:
+            link += [".."] * up
+        link += list(bucket_path(dst_bucket[common:]).parts)
+        return "/".join(link) + anchor
 
 
 def iter_data() -> Iterable[Data]:
@@ -129,10 +159,10 @@ def iter_data() -> Iterable[Data]:
     logger.info("%d items read in %.3fs", n, dt)
 
 
-def get_buckets(depth: int) -> DefaultDict[Tuple[str, ...], List[Data]]:
+def get_buckets() -> DefaultDict[Tuple[str, ...], List[Data]]:
     buckets: DefaultDict[Tuple[str, ...], List[Data]] = defaultdict(list)
     for data in iter_data():
-        buckets[get_bucket(data, depth)].append(data)
+        buckets[data.bucket].append(data)
     return buckets
 
 
@@ -150,6 +180,34 @@ def bucket_path(s: Tuple[str, ...]) -> Path:
     return Path(*tuple(canonical_name(x) for x in s)).with_suffix(".md")
 
 
+rx_split_alnum = re.compile(r"(\d+|[^0-9]+)")
+
+
+def _iter_split_alnum(s: str) -> Iterable[str]:
+    """
+    Iterator yielding alphabetic and numeric sections if string
+
+    :param s:
+    :return:
+    """
+    for match in rx_split_alnum.finditer(s):
+        yield match.group(0)
+
+
+def alnum_key(d: Data) -> str:
+    """
+    Comparable alpha-numeric key
+    """
+
+    def maybe_formatted_int(v: str) -> str:
+        try:
+            return "%012d" % int(v)
+        except ValueError:
+            return v
+
+    return "".join(maybe_formatted_int(x) for x in _iter_split_alnum(d.name))
+
+
 def main():
     """
     Generate Connection Types Reference.
@@ -157,14 +215,15 @@ def main():
     # Compile template
     tpl = jinja2.Template(TEMPLATE)
     # Load buckets
-    buckets = get_buckets(1)
+    buckets = get_buckets()
     # Fill cgroups
     cgroups: DefaultDict[str, List[Data]] = defaultdict(list)
     for items in buckets.values():
         for item in items:
             if item.c_group:
                 for g in item.c_group:
-                    cgroups[g].append(item)
+                    if g:
+                        cgroups[g].append(item)
     for g in cgroups:
         cgroups[g] = list(sorted(cgroups[g]))
     # Generate navigation and content
@@ -173,16 +232,20 @@ def main():
     for bucket in sorted(buckets):
         rel_path = bucket_path(bucket)
         nav[bucket] = rel_path
-        items = list(sorted(buckets[bucket]))
+        items = list(sorted(buckets[bucket], key=alnum_key))
         out = BOOK / rel_path
         logging.debug("Rendering %s (%d items)", out, len(items))
-        with mkdocs_gen_files.open(out, "w") as fp:
-            fp.write(tpl.render(items=items, cgroups=sorted(cgroups)))
+        # with mkdocs_gen_files.open(out, "w") as fp:
+        with open(DOCS / out, "w") as fp:
+            title = " | ".join(bucket)
+            fp.write(tpl.render(items=items, cgroups=cgroups, title=title))
     # Write navigation
-    summary_path = BOOK / "SUMMARY.md"
-    with mkdocs_gen_files.open(summary_path, "w") as fp:
+    summary_path = BOOK / "__SUMMARY__"
+    # with mkdocs_gen_files.open(summary_path, "w") as fp:
+    with open(DOCS / summary_path, "w") as fp:
         fp.writelines(nav.build_literate_nav())
 
 
 # Execute
-main()
+if __name__ == "__main__":
+    main()
