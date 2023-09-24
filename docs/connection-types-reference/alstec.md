@@ -1,5 +1,5 @@
-# Cables
+# Alstec
 
 | Connection Type | Description  | Genders | Compatibility Groups |
 | --- | --- | --- |  --- |
-| <a id="cables"></a>Cables | Cables | `ss` |  |
+| <a id="alstec-cb"></a>Alstec \| CB | Alstec Control Board connecton | `mf` |  |
