@@ -525,6 +525,7 @@ nav:
           - mailsender: services-reference/mailsender.md
           - metrics: services-reference/metrics.md
           - metricscollector: services-reference/metricscollector.md
+          - mib: services-reference/mib.md
           - mrt: services-reference/mrt.md
           - mx: services-reference/mx.md
           - nbi: services-reference/nbi.md
