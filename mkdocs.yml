@@ -1082,6 +1082,8 @@ markdown_extensions:
   - admonition
   - attr_list
   - def_list
+  - pymdownx.snippets
+  - pymdownx.inlinehilite
   - pymdownx.emoji:
       emoji_index: !!python/name:materialx.emoji.twemoji
       emoji_generator: !!python/name:materialx.emoji.to_svg
