@@ -11,7 +11,7 @@ MGMT_VLAN_CAPS = "Management | VlanID"
 IPv4 = "IPv4"
 
 
-def handler_mgmt_vlan(object: ManagedObect) -> None:
+def handler_mgmt_vlan(object: ManagedObject) -> None:
     """
     Scan for an device management IP through the subinterfaces.
     If the sub is found look for `vlan_id` field. The VLAN found
@@ -52,6 +52,6 @@ def hk_handler(job):
     """
     Housekeeper Entrypoint
     """
-    mo: "ManagedObject" = job.object
+    mo: ManagedObject = job.object
     handler_mgmt_vlan(mo)
     handler_vlans_script(mo)
