@@ -207,6 +207,7 @@ build:Docs:
     - set -e -x
     - pip3 install -r .requirements/docs.txt
     - mkdocs build
+    - python3 scripts/docs/minify.py
   tags:
     - docker
   artifacts:
