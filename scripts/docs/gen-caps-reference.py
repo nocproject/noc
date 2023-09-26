@@ -10,7 +10,7 @@ import time
 import re
 import json
 from dataclasses import dataclass
-from typing import Optional, List, Iterable, DefaultDict, Tuple, Dict
+from typing import List, Iterable, DefaultDict, Tuple
 import logging
 from collections import defaultdict
 from pathlib import Path
