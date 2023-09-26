@@ -1787,6 +1787,9 @@ theme:
   name: material
   features:
     - navigation.tabs
+    - navigation.tabs.sticky
+    - navigation.path
+    - navigation.prune
     # - navigation.instant
   palette:
     - scheme: slate
