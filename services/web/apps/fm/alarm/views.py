@@ -56,12 +56,12 @@ from noc.fm.models.alarmescalation import AlarmEscalation
 from noc.core.comp import smart_text
 from noc.core.service.loader import get_service
 
-SQL_EVENTS = """select
+SQL_EVENTS = f"""select
     e.event_id, e.ts,
     e.event_class as event_class_bi_id, e.managed_object as managed_object_bi_id,
     e.start_ts, e.source, e.raw_vars, e.resolved_vars, e.vars
     from events e
-    where e.event_id in (select event_id from disposelog where alarm_id=%s)
+    where e.event_id in (select event_id from {config.clickhouse.db}.disposelog where alarm_id=%s)
     format JSONEachRow
 """
 
