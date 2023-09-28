@@ -4,15 +4,15 @@
 ## NOC | IPAM | VRF Group Address Collision
 
 
-### Probable Causes
+<h3>Probable Causes</h3>
 Equipment misconfiguration of IP address misallocation
 
 
-### Recommended Actions
+<h3>Recommended Actions</h3>
 Check address allocation and equipment configuration
 
 
-### Variables
+<h3>Variables</h3>
 | Name | Description | Defaults |
 | --- | --- | --- |
 | address | Address |  |
@@ -23,42 +23,50 @@ Check address allocation and equipment configuration
 
 
 
+<h3>Related Events</h3>
+| Event Class | Role |
+| --- | --- |
+| [NOC \| IPAM \| VRF Group Address Collision](../event-classes-reference/noc.md#noc-ipam-vrf-group-address-collision) | :material-arrow-up: opening event |
+
+
+
 ## NOC | Managed Object | Access Degraded
 
-### Symptoms
+<h3>Symptoms</h3>
 NOC cannot interact with the box
 
 
-### Probable Causes
+<h3>Probable Causes</h3>
 Device or Access server is misconfigured, community mismatch or misconfigured ACL
 
 
-### Recommended Actions
+<h3>Recommended Actions</h3>
 Check Access configuration
 
 
-### Variables
+<h3>Variables</h3>
 | Name | Description | Defaults |
 | --- | --- | --- |
 | reason | Reason by access lost |  |
 
 
 
+
 ## NOC | Managed Object | Access Lost
 
-### Symptoms
+<h3>Symptoms</h3>
 NOC cannot interact with the box
 
 
-### Probable Causes
+<h3>Probable Causes</h3>
 Device or Access server is misconfigured, community mismatch or misconfigured ACL
 
 
-### Recommended Actions
+<h3>Recommended Actions</h3>
 Check Access configuration
 
 
-### Variables
+<h3>Variables</h3>
 | Name | Description | Defaults |
 | --- | --- | --- |
 | reason | Reason by access lost |  |
@@ -66,58 +74,61 @@ Check Access configuration
 
 
 
+
 ## NOC | Managed Object | Configuration Errors | Misconfigured SNMP
 
-### Symptoms
+<h3>Symptoms</h3>
 NOC cannot interact with the box over SNMP protocol
 
 
-### Probable Causes
+<h3>Probable Causes</h3>
 SNMP server is misconfigured, community mismatch or misconfigured ACL
 
 
-### Recommended Actions
+<h3>Recommended Actions</h3>
 Check SNMP configuration
 
 
-### Variables
+<h3>Variables</h3>
 | Name | Description | Defaults |
 | --- | --- | --- |
 | ip | Request source |  |
 
 
 
+
 ## NOC | Managed Object | Denied Firmware
 
 
-### Probable Causes
+<h3>Probable Causes</h3>
 Installed firmware on device is denied by system policy.
 
 
-### Recommended Actions
+<h3>Recommended Actions</h3>
 Update firmware on device.
 
 
-### Variables
+<h3>Variables</h3>
 | Name | Description | Defaults |
 | --- | --- | --- |
 | path | Path to alarms |  |
 | message | Error detail message  |  |
+
 
 
 
 ## NOC | Managed Object | New Platform
 
 
-### Probable Causes
+<h3>Probable Causes</h3>
 New Platform Creation Policy in  ManagedObject Profile deny added new platform discovered on device.
 
 
-### Recommended Actions
+<h3>Recommended Actions</h3>
 Go to menu Inventory -> Setup -> Platform, added it manually and restart discovery.
 
 
-### Variables
+<h3>Variables</h3>
 | Name | Description | Defaults |
 | --- | --- | --- |
 | path | Path to alarms |  |
@@ -125,33 +136,42 @@ Go to menu Inventory -> Setup -> Platform, added it manually and restart discove
 
 
 
+
 ## NOC | Managed Object | Ping Failed
 
-### Symptoms
+<h3>Symptoms</h3>
 Cannot execute SA tasks on the object
 
 
-### Probable Causes
+<h3>Probable Causes</h3>
 The object is not responding to ICMP echo-requests
 
 
-### Recommended Actions
+<h3>Recommended Actions</h3>
 Check object is alive. Check routing to this object. Check firewalls
+
+
+
+<h3>Related Events</h3>
+| Event Class | Role |
+| --- | --- |
+| [NOC \| Managed Object \| Ping Failed](../event-classes-reference/noc.md#noc-managed-object-ping-failed) | :material-arrow-up: opening event |
+| [NOC \| Managed Object \| Ping OK](../event-classes-reference/noc.md#noc-managed-object-ping-ok) | :material-arrow-down: closing event |
 
 
 
 ## NOC | PM | High Error
 
-### Symptoms
+<h3>Symptoms</h3>
 Values are out of second threshold value.
 
 
-### Probable Causes
+<h3>Probable Causes</h3>
 Metric value cross critical threshold
 
 
 
-### Variables
+<h3>Variables</h3>
 | Name | Description | Defaults |
 | --- | --- | --- |
 | metric | Metric name |  |
@@ -165,21 +185,22 @@ Metric value cross critical threshold
 | window_type | Type of window (time or count) |  |
 | window | Window size |  |
 | window_function | Function apply to window |  |
+
 
 
 
 ## NOC | PM | High Warning
 
-### Symptoms
+<h3>Symptoms</h3>
 Values are out of second threshold value.
 
 
-### Probable Causes
+<h3>Probable Causes</h3>
 Metric value cross critical threshold
 
 
 
-### Variables
+<h3>Variables</h3>
 | Name | Description | Defaults |
 | --- | --- | --- |
 | metric | Metric name |  |
@@ -193,18 +214,19 @@ Metric value cross critical threshold
 | window_type | Type of window (time or count) |  |
 | window | Window size |  |
 | window_function | Function apply to window |  |
+
 
 
 
 ## NOC | PM | Low Error
 
-### Symptoms
+<h3>Symptoms</h3>
 Values are out of first threshold value.
 
 
 
 
-### Variables
+<h3>Variables</h3>
 | Name | Description | Defaults |
 | --- | --- | --- |
 | metric | Metric name |  |
@@ -218,18 +240,19 @@ Values are out of first threshold value.
 | window_type | Type of window (time or count) |  |
 | window | Window size |  |
 | window_function | Function apply to window |  |
+
 
 
 
 ## NOC | PM | Low Warning
 
-### Symptoms
+<h3>Symptoms</h3>
 Values are out of first threshold value.
 
 
 
 
-### Variables
+<h3>Variables</h3>
 | Name | Description | Defaults |
 | --- | --- | --- |
 | metric | Metric name |  |
@@ -243,6 +266,7 @@ Values are out of first threshold value.
 | window_type | Type of window (time or count) |  |
 | window | Window size |  |
 | window_function | Function apply to window |  |
+
 
 
 
@@ -251,7 +275,7 @@ Values are out of first threshold value.
 
 
 
-### Variables
+<h3>Variables</h3>
 | Name | Description | Defaults |
 | --- | --- | --- |
 | interface | None |  |
@@ -260,12 +284,13 @@ Values are out of first threshold value.
 
 
 
+
 ## NOC | PM | Out of Thresholds
 
 
 
 
-### Variables
+<h3>Variables</h3>
 | Name | Description | Defaults |
 | --- | --- | --- |
 | action | Metric Action for processed threshold |  |
@@ -276,44 +301,63 @@ Values are out of first threshold value.
 
 
 
+
 ## NOC | Periodic | Periodic Failed
 
-### Symptoms
+<h3>Symptoms</h3>
 No specific symptoms
 
 
-### Probable Causes
+<h3>Probable Causes</h3>
 Failure occured when noc-scheduler tried to execute periodic task
 
 
-### Recommended Actions
+<h3>Recommended Actions</h3>
 Check noc-scheduler, noc-sae and noc-activator logs
 
 
-### Variables
+<h3>Variables</h3>
 | Name | Description | Defaults |
 | --- | --- | --- |
 | task | Task name |  |
 
 
 
+<h3>Related Events</h3>
+| Event Class | Role |
+| --- | --- |
+| [NOC \| Periodic \| Periodic Failed](../event-classes-reference/noc.md#noc-periodic-periodic-failed) | :material-arrow-up: opening event |
+| [NOC \| Periodic \| Periodic OK](../event-classes-reference/noc.md#noc-periodic-periodic-ok) | :material-arrow-down: closing event |
+
+
+
 ## NOC | SA | Activator Pool Degraded
 
-### Symptoms
+<h3>Symptoms</h3>
 Cannot run SA tasks. Too many timeout errors
 
 
-### Probable Causes
+<h3>Probable Causes</h3>
 noc-activator processes down
 
 
-### Recommended Actions
+<h3>Recommended Actions</h3>
 Check noc-activator processes. Check network connectivity
 
 
-### Variables
+<h3>Variables</h3>
 | Name | Description | Defaults |
 | --- | --- | --- |
 | name | Pool Name |  |
+
+
+
+<h3>Related Events</h3>
+| Event Class | Role |
+| --- | --- |
+| [NOC \| SA \| Join Activator Pool](../event-classes-reference/noc.md#noc-sa-join-activator-pool) | :material-arrow-down: closing event |
+| [NOC \| SA \| Join Activator Pool](../event-classes-reference/noc.md#noc-sa-join-activator-pool) | :material-arrow-up: opening event |
+| [NOC \| SA \| Leave Activator Pool](../event-classes-reference/noc.md#noc-sa-leave-activator-pool) | :material-arrow-down: closing event |
+| [NOC \| SA \| Leave Activator Pool](../event-classes-reference/noc.md#noc-sa-leave-activator-pool) | :material-arrow-up: opening event |
 
 

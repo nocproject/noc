@@ -2,19 +2,19 @@
 
 
 ## Config | Config Changed
-### Symptoms
+<h3>Symptoms</h3>
 Behavior of the network can be changed
 
 
-### Probable Causes
+<h3>Probable Causes</h3>
 Device configuration has been changed by user or SA subsystem
 
 
-### Recommended Actions
+<h3>Recommended Actions</h3>
 No specific action needed unless the change caused unexpected consequences
 
 
-### Variables
+<h3>Variables</h3>
 | Name | Type | Description | Required |
 | --- | --- | --- | --- |
 | user | `str` | Username | {{ no }} |
@@ -27,7 +27,7 @@ No specific action needed unless the change caused unexpected consequences
 
 
 
-### Variables
+<h3>Variables</h3>
 | Name | Type | Description | Required |
 | --- | --- | --- | --- |
 | address | `ip_address` | Server IP | {{ no }} |
@@ -43,7 +43,7 @@ No specific action needed unless the change caused unexpected consequences
 
 
 
-### Related Alarms
+<h3>Related Alarms</h3>
 | Alarm Class | Role | Description |
 | --- | --- | --- |
 | [Config \| Invalid Config](../alarm-classes-reference/config.md#config-invalid-config) | :material-arrow-down: closing event | dispose |
@@ -55,7 +55,7 @@ No specific action needed unless the change caused unexpected consequences
 
 
 
-### Variables
+<h3>Variables</h3>
 | Name | Type | Description | Required |
 | --- | --- | --- | --- |
 | ip | `ip_address` | Server IP | {{ no }} |
@@ -63,7 +63,7 @@ No specific action needed unless the change caused unexpected consequences
 | user | `str` | User name | {{ no }} |
 
 
-### Related Alarms
+<h3>Related Alarms</h3>
 | Alarm Class | Role | Description |
 | --- | --- | --- |
 | [Config \| Config Download Failed](../alarm-classes-reference/config.md#config-config-download-failed) | :material-arrow-up: opening event | dispose |
@@ -75,7 +75,7 @@ No specific action needed unless the change caused unexpected consequences
 
 
 
-### Variables
+<h3>Variables</h3>
 | Name | Type | Description | Required |
 | --- | --- | --- | --- |
 | ip | `ip_address` | Server IP | {{ no }} |
@@ -90,7 +90,7 @@ No specific action needed unless the change caused unexpected consequences
 
 
 
-### Variables
+<h3>Variables</h3>
 | Name | Type | Description | Required |
 | --- | --- | --- | --- |
 | config | `str` | Config type | {{ no }} |
@@ -99,15 +99,15 @@ No specific action needed unless the change caused unexpected consequences
 
 
 ## Config | Config Synced
-### Symptoms
+<h3>Symptoms</h3>
 No specific symptoms
 
 
-### Probable Causes
+<h3>Probable Causes</h3>
 Device configuration been proparated to redundant module
 
 
-### Recommended Actions
+<h3>Recommended Actions</h3>
 No specific action needed
 
 
@@ -118,7 +118,7 @@ No specific action needed
 
 
 
-### Variables
+<h3>Variables</h3>
 | Name | Type | Description | Required |
 | --- | --- | --- | --- |
 | ip | `ip_address` | Server IP | {{ no }} |
@@ -126,7 +126,7 @@ No specific action needed
 | user | `str` | User name | {{ no }} |
 
 
-### Related Alarms
+<h3>Related Alarms</h3>
 | Alarm Class | Role | Description |
 | --- | --- | --- |
 | [Config \| Config Upload Failed](../alarm-classes-reference/config.md#config-config-upload-failed) | :material-arrow-up: opening event | dispose |
@@ -138,7 +138,7 @@ No specific action needed
 
 
 
-### Variables
+<h3>Variables</h3>
 | Name | Type | Description | Required |
 | --- | --- | --- | --- |
 | ip | `ip_address` | Server IP | {{ no }} |
@@ -149,19 +149,19 @@ No specific action needed
 
 
 ## Config | Entering Configuration Mode
-### Symptoms
+<h3>Symptoms</h3>
 Behavior of the network can be changed
 
 
-### Probable Causes
+<h3>Probable Causes</h3>
 User switched to configuration mode
 
 
-### Recommended Actions
+<h3>Recommended Actions</h3>
 No specific action needed
 
 
-### Variables
+<h3>Variables</h3>
 | Name | Type | Description | Required |
 | --- | --- | --- | --- |
 | user | `str` | Username | {{ no }} |
@@ -170,19 +170,19 @@ No specific action needed
 
 
 ## Config | Exiting Configuration Mode
-### Symptoms
+<h3>Symptoms</h3>
 Behavior of the network can be changed
 
 
-### Probable Causes
+<h3>Probable Causes</h3>
 User switched off configuration mode
 
 
-### Recommended Actions
+<h3>Recommended Actions</h3>
 No specific action needed
 
 
-### Variables
+<h3>Variables</h3>
 | Name | Type | Description | Required |
 | --- | --- | --- | --- |
 | user | `str` | Username | {{ no }} |
@@ -195,7 +195,7 @@ No specific action needed
 
 
 
-### Related Alarms
+<h3>Related Alarms</h3>
 | Alarm Class | Role | Description |
 | --- | --- | --- |
 | [Config \| Invalid Config](../alarm-classes-reference/config.md#config-invalid-config) | :material-arrow-up: opening event | dispose |

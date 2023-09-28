@@ -6,7 +6,7 @@
 
 
 
-### Variables
+<h3>Variables</h3>
 | Name | Type | Description | Required |
 | --- | --- | --- | --- |
 | user | `str` | Username | {{ no }} |
@@ -19,7 +19,7 @@
 
 
 
-### Variables
+<h3>Variables</h3>
 | Name | Type | Description | Required |
 | --- | --- | --- | --- |
 | name | `str` | Process name | {{ yes }} |
@@ -27,7 +27,7 @@
 | status | `str` | Exit status | {{ no }} |
 
 
-### Related Alarms
+<h3>Related Alarms</h3>
 | Alarm Class | Role | Description |
 | --- | --- | --- |
 | [System \| Process Crashed](../alarm-classes-reference/system.md#system-process-crashed) | :material-arrow-up: opening event | dispose |
@@ -39,7 +39,7 @@
 
 
 
-### Variables
+<h3>Variables</h3>
 | Name | Type | Description | Required |
 | --- | --- | --- | --- |
 | name | `str` | Process name | {{ yes }} |
@@ -54,7 +54,7 @@
 
 
 
-### Variables
+<h3>Variables</h3>
 | Name | Type | Description | Required |
 | --- | --- | --- | --- |
 | name | `str` | Process name | {{ yes }} |
@@ -68,13 +68,13 @@
 
 
 
-### Variables
+<h3>Variables</h3>
 | Name | Type | Description | Required |
 | --- | --- | --- | --- |
 | user | `str` | Username | {{ no }} |
 
 
-### Related Alarms
+<h3>Related Alarms</h3>
 | Alarm Class | Role | Description |
 | --- | --- | --- |
 | [System \| Reboot](../alarm-classes-reference/system.md#system-reboot) | :material-arrow-up: opening event | dispose |
@@ -86,7 +86,7 @@
 
 
 
-### Related Alarms
+<h3>Related Alarms</h3>
 | Alarm Class | Role | Description |
 | --- | --- | --- |
 | [System \| Reboot](../alarm-classes-reference/system.md#system-reboot) | :material-arrow-down: closing event | dispose |
