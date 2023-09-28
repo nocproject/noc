@@ -907,6 +907,7 @@ nav:
       - Sharing Collections Howto: sharing-collections-howto/index.md
       - Loading FIAS Data Howto: fias-loading-howto/index.md
       - Custom Static Dashbord with Device Charts: custom-dev-grafana-dashboard-howto/index.md
+      - How to Import MIB Files: import-mib-file-howto/index.md
   - Background:
       - Overview: sections-overview/background.md
       - Connection Restrictions: connection-restrictions/index.md
