@@ -6,7 +6,7 @@
 
 
 
-### Variables
+<h3>Variables</h3>
 | Name | Type | Description | Required |
 | --- | --- | --- | --- |
 | metric | `str` | Metric name | {{ yes }} |
@@ -23,7 +23,7 @@
 
 
 
-### Variables
+<h3>Variables</h3>
 | Name | Type | Description | Required |
 | --- | --- | --- | --- |
 | metric | `str` | Metric name | {{ yes }} |

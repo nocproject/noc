@@ -6,7 +6,7 @@
 
 
 
-### Variables
+<h3>Variables</h3>
 | Name | Type | Description | Required |
 | --- | --- | --- | --- |
 | name | `str` | Name | {{ yes }} |
@@ -16,7 +16,7 @@
 | threshold | `str` | Threshold | {{ no }} |
 
 
-### Related Alarms
+<h3>Related Alarms</h3>
 | Alarm Class | Role | Description |
 | --- | --- | --- |
 | [Environment \| AC Voltage Out of Range](../alarm-classes-reference/environment.md#environment-ac-voltage-out-of-range) | :material-arrow-up: opening event | dispose |
@@ -28,7 +28,7 @@
 
 
 
-### Variables
+<h3>Variables</h3>
 | Name | Type | Description | Required |
 | --- | --- | --- | --- |
 | name | `str` | Name | {{ yes }} |
@@ -38,7 +38,7 @@
 | threshold | `str` | Threshold | {{ no }} |
 
 
-### Related Alarms
+<h3>Related Alarms</h3>
 | Alarm Class | Role | Description |
 | --- | --- | --- |
 | [Environment \| AC Voltage Out of Range](../alarm-classes-reference/environment.md#environment-ac-voltage-out-of-range) | :material-arrow-down: closing event | dispose |
@@ -50,7 +50,7 @@
 
 
 
-### Variables
+<h3>Variables</h3>
 | Name | Type | Description | Required |
 | --- | --- | --- | --- |
 | name | `str` | Name | {{ yes }} |
@@ -60,7 +60,7 @@
 | threshold | `str` | Threshold | {{ no }} |
 
 
-### Related Alarms
+<h3>Related Alarms</h3>
 | Alarm Class | Role | Description |
 | --- | --- | --- |
 | [Environment \| Chassis Voltage Out of Range](../alarm-classes-reference/environment.md#environment-chassis-voltage-out-of-range) | :material-arrow-up: opening event | dispose |
@@ -72,7 +72,7 @@
 
 
 
-### Variables
+<h3>Variables</h3>
 | Name | Type | Description | Required |
 | --- | --- | --- | --- |
 | name | `str` | Name | {{ yes }} |
@@ -82,7 +82,7 @@
 | threshold | `str` | Threshold | {{ no }} |
 
 
-### Related Alarms
+<h3>Related Alarms</h3>
 | Alarm Class | Role | Description |
 | --- | --- | --- |
 | [Environment \| Chassis Voltage Out of Range](../alarm-classes-reference/environment.md#environment-chassis-voltage-out-of-range) | :material-arrow-down: closing event | dispose |
@@ -94,7 +94,7 @@
 
 
 
-### Variables
+<h3>Variables</h3>
 | Name | Type | Description | Required |
 | --- | --- | --- | --- |
 | name | `str` | Name | {{ yes }} |
@@ -104,7 +104,7 @@
 | threshold | `str` | Threshold | {{ no }} |
 
 
-### Related Alarms
+<h3>Related Alarms</h3>
 | Alarm Class | Role | Description |
 | --- | --- | --- |
 | [Environment \| DC Voltage Out of Range](../alarm-classes-reference/environment.md#environment-dc-voltage-out-of-range) | :material-arrow-up: opening event | dispose |
@@ -116,7 +116,7 @@
 
 
 
-### Variables
+<h3>Variables</h3>
 | Name | Type | Description | Required |
 | --- | --- | --- | --- |
 | name | `str` | Name | {{ yes }} |
@@ -126,7 +126,7 @@
 | threshold | `str` | Threshold | {{ no }} |
 
 
-### Related Alarms
+<h3>Related Alarms</h3>
 | Alarm Class | Role | Description |
 | --- | --- | --- |
 | [Environment \| DC Voltage Out of Range](../alarm-classes-reference/environment.md#environment-dc-voltage-out-of-range) | :material-arrow-down: closing event | dispose |
@@ -138,7 +138,7 @@
 
 
 
-### Variables
+<h3>Variables</h3>
 | Name | Type | Description | Required |
 | --- | --- | --- | --- |
 | name | `str` | Name | {{ yes }} |
@@ -148,7 +148,7 @@
 | threshold | `str` | Threshold | {{ no }} |
 
 
-### Related Alarms
+<h3>Related Alarms</h3>
 | Alarm Class | Role | Description |
 | --- | --- | --- |
 | [Environment \| Humidity Out of Range](../alarm-classes-reference/environment.md#environment-humidity-out-of-range) | :material-arrow-up: opening event | dispose |
@@ -160,7 +160,7 @@
 
 
 
-### Variables
+<h3>Variables</h3>
 | Name | Type | Description | Required |
 | --- | --- | --- | --- |
 | name | `str` | Name | {{ yes }} |
@@ -170,7 +170,7 @@
 | threshold | `str` | Threshold | {{ no }} |
 
 
-### Related Alarms
+<h3>Related Alarms</h3>
 | Alarm Class | Role | Description |
 | --- | --- | --- |
 | [Environment \| Humidity Out of Range](../alarm-classes-reference/environment.md#environment-humidity-out-of-range) | :material-arrow-down: closing event | dispose |
@@ -182,7 +182,7 @@
 
 
 
-### Variables
+<h3>Variables</h3>
 | Name | Type | Description | Required |
 | --- | --- | --- | --- |
 | name | `str` | Name | {{ yes }} |
@@ -192,7 +192,7 @@
 | threshold | `str` | Threshold | {{ no }} |
 
 
-### Related Alarms
+<h3>Related Alarms</h3>
 | Alarm Class | Role | Description |
 | --- | --- | --- |
 | [Environment \| Module Voltage Out of Range](../alarm-classes-reference/environment.md#environment-module-voltage-out-of-range) | :material-arrow-up: opening event | dispose |
@@ -204,7 +204,7 @@
 
 
 
-### Variables
+<h3>Variables</h3>
 | Name | Type | Description | Required |
 | --- | --- | --- | --- |
 | name | `str` | Name | {{ yes }} |
@@ -214,7 +214,7 @@
 | threshold | `str` | Threshold | {{ no }} |
 
 
-### Related Alarms
+<h3>Related Alarms</h3>
 | Alarm Class | Role | Description |
 | --- | --- | --- |
 | [Environment \| Module Voltage Out of Range](../alarm-classes-reference/environment.md#environment-module-voltage-out-of-range) | :material-arrow-down: closing event | dispose |
@@ -226,7 +226,7 @@
 
 
 
-### Variables
+<h3>Variables</h3>
 | Name | Type | Description | Required |
 | --- | --- | --- | --- |
 | name | `str` | Name | {{ yes }} |
@@ -236,7 +236,7 @@
 | threshold | `str` | Threshold | {{ no }} |
 
 
-### Related Alarms
+<h3>Related Alarms</h3>
 | Alarm Class | Role | Description |
 | --- | --- | --- |
 | [Environment \| Temperature Out of Range](../alarm-classes-reference/environment.md#environment-temperature-out-of-range) | :material-arrow-up: opening event | dispose |
@@ -248,7 +248,7 @@
 
 
 
-### Variables
+<h3>Variables</h3>
 | Name | Type | Description | Required |
 | --- | --- | --- | --- |
 | name | `str` | Name | {{ yes }} |
@@ -258,7 +258,7 @@
 | threshold | `str` | Threshold | {{ no }} |
 
 
-### Related Alarms
+<h3>Related Alarms</h3>
 | Alarm Class | Role | Description |
 | --- | --- | --- |
 | [Environment \| Temperature Out of Range](../alarm-classes-reference/environment.md#environment-temperature-out-of-range) | :material-arrow-down: closing event | dispose |
@@ -269,11 +269,11 @@
 
 
 
-### Recommended Actions
+<h3>Recommended Actions</h3>
 Change old battery
 
 
-### Related Alarms
+<h3>Related Alarms</h3>
 | Alarm Class | Role | Description |
 | --- | --- | --- |
 | [Environment \| UPS \| Battery Power Low](../alarm-classes-reference/environment.md#environment-ups-battery-power-low) | :material-arrow-up: opening event | dispose |
@@ -285,7 +285,7 @@ Change old battery
 
 
 
-### Related Alarms
+<h3>Related Alarms</h3>
 | Alarm Class | Role | Description |
 | --- | --- | --- |
 | [Environment \| UPS \| Battery Power Low](../alarm-classes-reference/environment.md#environment-ups-battery-power-low) | :material-arrow-down: closing event | dispose |
@@ -304,7 +304,7 @@ Change old battery
 
 
 
-### Related Alarms
+<h3>Related Alarms</h3>
 | Alarm Class | Role | Description |
 | --- | --- | --- |
 | [Environment \| UPS \| Input Power Failed](../alarm-classes-reference/environment.md#environment-ups-input-power-failed) | :material-arrow-up: opening event | dispose |
@@ -316,7 +316,7 @@ Change old battery
 
 
 
-### Related Alarms
+<h3>Related Alarms</h3>
 | Alarm Class | Role | Description |
 | --- | --- | --- |
 | [Environment \| UPS \| Input Power Low](../alarm-classes-reference/environment.md#environment-ups-input-power-low) | :material-arrow-up: opening event | dispose |
@@ -328,7 +328,7 @@ Change old battery
 
 
 
-### Related Alarms
+<h3>Related Alarms</h3>
 | Alarm Class | Role | Description |
 | --- | --- | --- |
 | [Environment \| UPS \| Input Power Failed](../alarm-classes-reference/environment.md#environment-ups-input-power-failed) | :material-arrow-down: closing event | dispose |
@@ -342,7 +342,7 @@ Change old battery
 
 
 
-### Related Alarms
+<h3>Related Alarms</h3>
 | Alarm Class | Role | Description |
 | --- | --- | --- |
 | [Environment \| UPS \| Input Voltage or Frequency Problem](../alarm-classes-reference/environment.md#environment-ups-input-voltage-or-frequency-problem) | :material-arrow-up: opening event | dispose |
@@ -354,13 +354,13 @@ Change old battery
 
 
 
-### Variables
+<h3>Variables</h3>
 | Name | Type | Description | Required |
 | --- | --- | --- | --- |
 | name | `str` | Test name | {{ no }} |
 
 
-### Related Alarms
+<h3>Related Alarms</h3>
 | Alarm Class | Role | Description |
 | --- | --- | --- |
 | [Environment \| UPS \| Self-Test Failed](../alarm-classes-reference/environment.md#environment-ups-self-test-failed) | :material-arrow-up: opening event | dispose |
@@ -372,7 +372,7 @@ Change old battery
 
 
 
-### Variables
+<h3>Variables</h3>
 | Name | Type | Description | Required |
 | --- | --- | --- | --- |
 | name | `str` | Test name | {{ no }} |
@@ -385,7 +385,7 @@ Change old battery
 
 
 
-### Variables
+<h3>Variables</h3>
 | Name | Type | Description | Required |
 | --- | --- | --- | --- |
 | name | `str` | Test name | {{ no }} |

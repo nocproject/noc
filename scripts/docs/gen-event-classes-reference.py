@@ -40,19 +40,19 @@ TEMPLATE = """# {{ title }} | *
 {% for item in items %}
 ## {{ item.name }}
 {% if item.symptoms -%}
-### Symptoms
+<h3>Symptoms</h3>
 {{ item.symptoms }}
 {% endif %}
 {% if item.probable_causes %}
-### Probable Causes
+<h3>Probable Causes</h3>
 {{ item.probable_causes }}
 {% endif %}
 {% if item.recommended_actions %}
-### Recommended Actions
+<h3>Recommended Actions</h3>
 {{ item.recommended_actions }}
 {% endif %}
 {% if item.vars %}
-### Variables
+<h3>Variables</h3>
 | Name | Type | Description | Required |
 | --- | --- | --- | --- |
 {% for v in item.vars -%}
@@ -60,7 +60,7 @@ TEMPLATE = """# {{ title }} | *
 {% endfor %}
 {% endif %}
 {% if item.disposition -%}
-### Related Alarms
+<h3>Related Alarms</h3>
 | Alarm Class | Role | Description |
 | --- | --- | --- |
 {% for v in item.disposition -%}
