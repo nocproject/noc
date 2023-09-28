@@ -908,6 +908,7 @@ nav:
       - Loading FIAS Data Howto: fias-loading-howto/index.md
       - Custom Static Dashbord with Device Charts: custom-dev-grafana-dashboard-howto/index.md
       - How to Import MIB Files: import-mib-file-howto/index.md
+      - Using Housekeeper to Collect Device Data: using-hk-to-collect-data-howto/index.md
   - Background:
       - Overview: sections-overview/background.md
       - Connection Restrictions: connection-restrictions/index.md
