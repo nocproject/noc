@@ -1,25 +1,26 @@
-# The NOC Manual
-
+---
+template: index.html
+hide:
+  - navigation
+  - toc
+hero:
+    title: NOC
+    subtitle: The NOC is the scalable, high-performance and open-source OSS system for ISP, service and content providers
+    install_button: Getting Started
+    source_button: Source Code
+---
 Welcome to the NOC Manual! The NOC is the scalable, high-performance and open-source OSS system for ISP,
 service and content providers
 
 ## Documentation Structure
 
-Documentation is organized into three sections:
+Documentation is organized into into four major parts:
 
-- [User's Guide](user/index.md) - intended for NOC end users.
-- [Administrator's Guide](admin/index.md) - intended for NOC administrators. 
-- [Developer's Guide](dev/index.md) - intended for developers who wish
-  to extend NOC's functionality.
-  
-Each section is split into four parts:
 
-![Docs Structure](doc-structure.svg)
-
-- Tutorials: Brief introduction for new users.
-- How-to guides: Step-by-step guides covering common problems.
-- Reference: Technical reference.
-- Explanation: Clarification and discussion of key topics.
+- [Guides](sections-overview/guides.md): Brief introduction for new users.
+- [Reference](sections-overview/references.md): Technical reference.
+- [How-to guides](sections-overview/howto.md): Step-by-step guides covering common problems.
+- [Background](sections-overview/backgroud.md): Clarification and discussion of key topics.
 
 ## Community
 
