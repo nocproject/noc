@@ -10,14 +10,11 @@ import time
 import re
 import json
 from dataclasses import dataclass
-from typing import List, Iterable, DefaultDict, Tuple
+from typing import Iterable
 import logging
-from collections import defaultdict
 from pathlib import Path
-from itertools import islice
 
 # Third-party modules
-import mkdocs_gen_files
 import jinja2
 
 # @todo: Arbitrary ToC depth
