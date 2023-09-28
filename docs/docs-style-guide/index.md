@@ -7,14 +7,7 @@ simple to use, and straightforward to maintain.
 
 ## Documentation Structure
 
-Documentation is organized into three sections:
-
-- [User's Guide](../../user/index.md) - intended for NOC end users.
-- [Administrator's Guide](../../admin/index.md) - intended for NOC administrators.
-- [Developer's Guide](../../dev/index.md) - intended for developers who wish
-  to extend NOC's functionality.
-
-Each section is split into four parts:
+Documentation is organized into  four parts:
 
 ![Docs Structure](doc-structure.svg)
 

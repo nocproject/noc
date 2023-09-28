@@ -8,7 +8,19 @@ edit_uri: -/edit/master/docs/
 copyright: 2007-2023, The NOC Project
 nav:
   - Home: index.md
-  - Documentation:
+  - Installation:
+      - Overview: installation-guide/index.md
+  - Guides:
+      - Overview: sections-overview/guides.md
+      - Docs Contributing Guide: docs-contributing-guide/index.md
+      - Docs Style Guide:
+          - Overview: docs-style-guide/index.md
+          - Tutorials: docs-style-guide/tutorials.md
+          - How-to Guides: docs-style-guide/howto.md
+          - References: docs-style-guide/references.md
+          - Explanations: docs-style-guide/explanations.md
+  - References:
+      - Overview: sections-overview/references.md
       - Concepts:
           - Overview: concepts/index.md
           - Administrative Domain: concepts/administrative-domain/index.md
@@ -55,7 +67,7 @@ nav:
           - VPN: concepts/vpn/index.md
           - VPN Profile: concepts/vpn-profile/index.md
           - Workflow: concepts/workflow/index.md
-      - Profiles Reference:
+      - Profiles:
           - 3Com:
               - Overview: profiles-reference/3Com/index.md
               - 3Com.4500: profiles-reference/3Com/4500.md
@@ -472,10 +484,10 @@ nav:
           - f5:
               - Overview: profiles-reference/f5/index.md
               - f5.BIGIP: profiles-reference/f5/BIGIP.md
-      - Capabilities Reference: caps-reference/
-      - Alarm Classes Reference: alarm-classes-reference/
-      - Event Classes Reference: event-classes-reference/
-      - Measurement Units Reference:
+      - Capabilities: caps-reference/
+      - Alarm Classes: alarm-classes-reference/
+      - Event Classes: event-classes-reference/
+      - Measurement Units:
           - Overview: measurement-units-reference/index.md
           - Ampere: measurement-units-reference/ampere.md
           - Celsius: measurement-units-reference/celsius.md
@@ -486,7 +498,7 @@ nav:
           - Volt AC: measurement-units-reference/volt-ac.md
           - Volt DC: measurement-units-reference/volt-dc.md
           - Watt: measurement-units-reference/watt.md
-      - Metric Scopes Reference:
+      - Metric Scopes:
           - Overview: metric-scopes-reference/index.md
           - CPU: metric-scopes-reference/cpu.md
           - Disk: metric-scopes-reference/disk.md
@@ -501,7 +513,7 @@ nav:
           - SLA: metric-scopes-reference/sla.md
           - Subscriber: metric-scopes-reference/subscriber.md
           - VPN: metric-scopes-reference/vpn.md
-      - Metric Types Reference:
+      - Metric Types:
           - Overview: metric-types-reference/index.md
           - "CPU":
               - "Load":
@@ -642,7 +654,7 @@ nav:
                           - "Active": metric-types-reference/telephony/sip/register/contacts/active.md
                   - "Sessions":
                       - "Active": metric-types-reference/telephony/sip/sessions/active.md
-      - MX Messages Reference:
+      - MX Messages:
           - Overview: mx-messages-reference/index.md
           - Alarm: mx-messages-reference/alarm.md
           - Configuration Changed: mx-messages-reference/config_changed.md
@@ -657,10 +669,10 @@ nav:
           - SNMPTrap: mx-messages-reference/snmptrap.md
           - Syslog: mx-messages-reference/syslog.md
           - Managed Object Version Changed: mx-messages-reference/version_changed.md
-      - Technologies Reference:
+      - Technologies:
           - Group: technologies-reference/group.md
           - "Network | CGNAT Termination": technologies-reference/Network/cgnat-termination.md
-      - Services Reference:
+      - Services:
           - activator: services-reference/activator.md
           - bi: services-reference/bi.md
           - card: services-reference/card.md
@@ -691,7 +703,7 @@ nav:
           - web: services-reference/web.md
           - worker: services-reference/worker.md
           - ui: services-reference/ui.md
-      - Configuration Reference:
+      - Configuration:
           - Configuration System Overview: config-reference/index.md
           - Global Configuration: config-reference/global.md
           - "[activator] Section": config-reference/activator.md
@@ -759,7 +771,7 @@ nav:
           - "[trapcollector] section": config-reference/trapcollector.md
           - "[ui] section": config-reference/ui.md
           - "[web] section": config-reference/web.md
-      - Discovery Reference:
+      - Discovery:
           - Box Discovery:
               - Overview: discovery-reference/box/index.md
               - Suggest SNMP: discovery-reference/box/suggestsnmp.md
@@ -801,81 +813,7 @@ nav:
           - Segment Discovery:
               - Overview: discovery-reference/segment/index.md
               - MAC Discovery: discovery-reference/segment/mac.md
-      - Internal Metrics Reference: internal-metrics-reference/index.md
-      - Man Pages:
-          - about: man/about.md
-          - beef: man/beef.md
-          - bi: man/bi.md
-          - clean-asset: man/clean-asset.md
-          - collection: man/collection.md
-          - compile-mib: man/compile-mib.md
-          - confdb: man/confdb.md
-          - config: man/config.md
-          - convert-moin: man/convert-moin.md
-          - crashinfo: man/crashinfo.md
-          - csv-export: man/csv-export.md
-          - csv-import: man/csv-import.md
-          - ctl: man/ctl.md
-          - datastream: man/datastream.md
-          - discovery: man/discovery.md
-          - dump-addr: man/dump-addr.md
-          - dump-crashinfo: man/dump-crashinfo.md
-          - ensure-indexes: man/ensure-indexes.md
-          - escalation: man/escalation.md
-          - etl: man/etl.md
-          - events: man/events.md
-          - fix: man/fix.md
-          - get-device-identity: man/get-device-identity.md
-          - get-device-sample: man/get-device-sample.md
-          - get-uuid: man/get-uuid.md
-          - gridvcs: man/gridvcs.md
-          - import-mib: man/import-mib.md
-          - import-rancid: man/import-rancid.md
-          - import-zone: man/import-zone.md
-          - index: man/index.md
-          - inject-event: man/inject-event.md
-          - interface-profile: man/interface-profile.md
-          - job: man/job.md
-          - l3-topology: man/l3-topology.md
-          - link: man/link.md
-          - login: man/login.md
-          - lookup-mib: man/lookup-mib.md
-          - make-cmib: man/make-cmib.md
-          - metrics: man/metrics.md
-          - migrate-ch: man/migrate-ch.md
-          - migrate: man/migrate.md
-          - mongo: man/mongo.md
-          - newapp: man/newapp.md
-          - notify: man/notify.md
-          - nri-link: man/nri-link.md
-          - nri: man/nri.md
-          - parse-events: man/parse-events.md
-          - ping: man/ping.md
-          - prefix-list: man/prefix-list.md
-          - pretty: man/pretty.md
-          - psql: man/psql.md
-          - pythonpath: man/pythonpath.md
-          - rca-debug: man/rca-debug.md
-          - rpc: man/rpc.md
-          - run: man/run.md
-          - script: man/script.md
-          - service: man/service.md
-          - shell: man/shell.md
-          - snmp: man/snmp.md
-          - stencil: man/stencil.md
-          - sync-doc: man/sync-doc.md
-          - sync-mibs: man/sync-mibs.md
-          - sync-perm: man/sync-perm.md
-          - sync-refbooks: man/sync-refbooks.md
-          - sync: man/sync.md
-          - test: man/test.md
-          - todos: man/todos.md
-          - translation: man/translation.md
-          - user: man/user.md
-          - verify-model: man/verify-model.md
-          - whois: man/whois.md
-          - wipe: man/wipe.md
-          - workflow: man/workflow.md
+      - Internal Metrics: internal-metrics-reference/index.md
       - noc-agent:
           - Overview: agent-reference/index.md
           - Collectors:
@@ -894,8 +832,8 @@ nav:
               - twamp_sender: agent-reference/collectors/twamp_sender.md
               - uptime: agent-reference/collectors/uptime.md
           - Compilation Features: agent-reference/compilation-features.md
-      - Merge Request Labels Reference: mr-labels-reference/index.md
-      - DataStream API Reference:
+      - Merge Request Labels: mr-labels-reference/index.md
+      - DataStream API:
           - Overview: datastream-api-reference/index.md
           - address: datastream-api-reference/address.md
           - administrativedomain: datastream-api-reference/administrativedomain.md
@@ -910,7 +848,7 @@ nav:
           - prefix: datastream-api-reference/prefix.md
           - resourcegroup: datastream-api-reference/resourcegroup.md
           - vrf: datastream-api-reference/vrf.md
-      - NBI API Reference:
+      - NBI API:
           - Overview: nbi-api-reference/index.md
           - config: nbi-api-reference/config.md
           - configrevisions: nbi-api-reference/configrevisions.md
@@ -919,7 +857,7 @@ nav:
           - objectstatus: nbi-api-reference/objectstatus.md
           - path: nbi-api-reference/path.md
           - telemetry: nbi-api-reference/telemetry.md
-      - BI Dictionaries Reference:
+      - BI Dictionaries:
           - administrativedomain: bi-dict-reference/administrativedomain.md
           - alarmclass: bi-dict-reference/alarmclass.md
           - container: bi-dict-reference/container.md
@@ -932,7 +870,7 @@ nav:
           - profile: bi-dict-reference/profile.md
           - vendor: bi-dict-reference/vendor.md
           - version: bi-dict-reference/version.md
-      - BI Models Reference:
+      - BI Models:
           - alarms: bi-models-reference/alarms.md
           - events: bi-models-reference/events.md
           - mac: bi-models-reference/mac.md
@@ -1007,15 +945,15 @@ nav:
           - set_switchport: scripts-reference/set_switchport.md
           - sync_prefix_lists: scripts-reference/sync_prefix_lists.md
           - sync_vlans: scripts-reference/sync_vlans.md
-      - Handlers Reference:
-          - Handlers Overview: handlers-reference/index.md
+      - Handlers:
+          - Overview: handlers-reference/index.md
           - Config Filter: handlers-reference/config-filter.md
           - Config Diff Filter: handlers-reference/config-diff-filter.md
           - Window Function: handlers-reference/window-function.md
-      - Object Models Reference:
+      - Object Models:
           - Overview: object-models-reference/index.md
           - ObjectModel Tags: object-models-reference/tags.md
-      - Model Interfaces Reference:
+      - Model Interfaces:
           - Overview: model-interfaces-reference/index.md
           - airflow: model-interfaces-reference/airflow.md
           - asset: model-interfaces-reference/asset.md
@@ -1039,9 +977,9 @@ nav:
           - stack: model-interfaces-reference/stack.md
           - twinax: model-interfaces-reference/twinax.md
           - weight: model-interfaces-reference/weight.md
-      - Connection Types Reference: connection-types-reference/
-      - Inventory Protocols Reference: inventory-protocols-reference/index.md
-      - Streams Reference:
+      - Connection Types: connection-types-reference/
+      - Inventory Protocols: inventory-protocols-reference/index.md
+      - Streams:
           - Overview: streams-reference/index.md
           - ch.TABLE: streams-reference/ch.md
           - dispose.POOL: streams-reference/dispose.md
@@ -1051,29 +989,93 @@ nav:
           - jobs: streams-reference/jobs.md
           - mx: streams-reference/mx.md
       - Alarm Reference Format: alarm-reference-format/index.md
-      - Docs Contributing Guide: docs-contributing-guide/index.md
-      - Docs Style Guide:
-          - Overview: docs-style-guide/index.md
-          - Tutorials: docs-style-guide/tutorials.md
-          - How-to Guides: docs-style-guide/howto.md
-          - References: docs-style-guide/references.md
-          - Explanations: docs-style-guide/explanations.md
-      - Connection Restrictions: connection-restrictions/index.md
-      - Connection Type Restrictions: connection-type-restrictions/index.md
       - Date and Time Formats: datetime-format/index.md
-      - NOC Release and Tagging Policy: release-policy/index.md
+      - Man Pages:
+          - about: man/about.md
+          - beef: man/beef.md
+          - bi: man/bi.md
+          - clean-asset: man/clean-asset.md
+          - collection: man/collection.md
+          - compile-mib: man/compile-mib.md
+          - confdb: man/confdb.md
+          - config: man/config.md
+          - convert-moin: man/convert-moin.md
+          - crashinfo: man/crashinfo.md
+          - csv-export: man/csv-export.md
+          - csv-import: man/csv-import.md
+          - ctl: man/ctl.md
+          - datastream: man/datastream.md
+          - discovery: man/discovery.md
+          - dump-addr: man/dump-addr.md
+          - dump-crashinfo: man/dump-crashinfo.md
+          - ensure-indexes: man/ensure-indexes.md
+          - escalation: man/escalation.md
+          - etl: man/etl.md
+          - events: man/events.md
+          - fix: man/fix.md
+          - get-device-identity: man/get-device-identity.md
+          - get-device-sample: man/get-device-sample.md
+          - get-uuid: man/get-uuid.md
+          - gridvcs: man/gridvcs.md
+          - import-mib: man/import-mib.md
+          - import-rancid: man/import-rancid.md
+          - import-zone: man/import-zone.md
+          - index: man/index.md
+          - inject-event: man/inject-event.md
+          - interface-profile: man/interface-profile.md
+          - job: man/job.md
+          - l3-topology: man/l3-topology.md
+          - link: man/link.md
+          - login: man/login.md
+          - lookup-mib: man/lookup-mib.md
+          - make-cmib: man/make-cmib.md
+          - metrics: man/metrics.md
+          - migrate-ch: man/migrate-ch.md
+          - migrate: man/migrate.md
+          - mongo: man/mongo.md
+          - newapp: man/newapp.md
+          - notify: man/notify.md
+          - nri-link: man/nri-link.md
+          - nri: man/nri.md
+          - parse-events: man/parse-events.md
+          - ping: man/ping.md
+          - prefix-list: man/prefix-list.md
+          - pretty: man/pretty.md
+          - psql: man/psql.md
+          - pythonpath: man/pythonpath.md
+          - rca-debug: man/rca-debug.md
+          - rpc: man/rpc.md
+          - run: man/run.md
+          - script: man/script.md
+          - service: man/service.md
+          - shell: man/shell.md
+          - snmp: man/snmp.md
+          - stencil: man/stencil.md
+          - sync-doc: man/sync-doc.md
+          - sync-mibs: man/sync-mibs.md
+          - sync-perm: man/sync-perm.md
+          - sync-refbooks: man/sync-refbooks.md
+          - sync: man/sync.md
+          - test: man/test.md
+          - todos: man/todos.md
+          - translation: man/translation.md
+          - user: man/user.md
+          - verify-model: man/verify-model.md
+          - whois: man/whois.md
+          - wipe: man/wipe.md
+          - workflow: man/workflow.md
+      - Supported Standards: supported-standards/index.md
       - Glossary: glossary/index.md
-  - Unsorted:
-      - Overview: about/index.md
-      - Translations: about/translations.md
-      - Supported Standards: about/standards.md
-  - Dev Tools:
-      - Overview: dev-tools/index.md
-      - black: dev-tools/black.md
-  - HowTo:
+  - How-to:
+      - Overview: sections-overview/howto.md
       - Sharing Collections Howto: sharing-collections-howto/index.md
       - Loading FIAS Data Howto: fias-loading-howto/index.md
+  - Background:
+      - Overview: sections-overview/background.md
+      - Connection Restrictions: connection-restrictions/index.md
+      - Connection Type Restrictions: connection-type-restrictions/index.md
   - Releases:
+      - NOC Release and Tagging Policy: release-policy/index.md
       - NOC 23.1 Generation:
           - NOC 23.1: releases/23_1.md
           - NOC 23.1.1: releases/23_1_1.md
@@ -1208,6 +1210,8 @@ nav:
 #           - Создания Модели Объекта: dev/object-model/how-to-create-object-model.md
 theme:
   name: material
+  logo: _static/logo.svg
+  custom_dir: docs/overrides
   features:
     - navigation.tabs
     - navigation.tabs.sticky
@@ -1215,15 +1219,20 @@ theme:
     - navigation.prune
     # - navigation.instant
   palette:
-    - scheme: slate
+    # Light mode
+    - media: "(prefers-color-scheme: light)"
+      primary: deep purple
+      scheme: default
       toggle:
-        icon: material/toggle-switch
-        name: Switch to light mode
-    - scheme: default
-      toggle:
-        icon: material/toggle-switch-off-outline
+        icon: material/weather-sunny
         name: Switch to dark mode
-  logo: _static/logo.svg
+    # Dark mode
+    - media: "(prefers-color-scheme: dark)"
+      scheme: slate
+      primary: deep purple
+      toggle:
+        icon: material/weather-night
+        name: Switch to light mode
 extra_css:
   - _static/extra.css
 use_directory_urls: true
