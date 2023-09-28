@@ -920,6 +920,7 @@ nav:
       - Overview: sections-overview/background.md
       - Connection Restrictions: connection-restrictions/index.md
       - Connection Type Restrictions: connection-type-restrictions/index.md
+      - Topology Processing Features: topology-processing-features/index.md
   - Releases:
       - NOC Release and Tagging Policy: release-policy/index.md
       - NOC 23.1 Generation:
