@@ -6,7 +6,7 @@
 
 
 
-### Variables
+<h3>Variables</h3>
 | Name | Type | Description | Required |
 | --- | --- | --- | --- |
 | name | `str` | ACL Name | {{ no }} |
@@ -29,7 +29,7 @@
 
 
 
-### Variables
+<h3>Variables</h3>
 | Name | Type | Description | Required |
 | --- | --- | --- | --- |
 | name | `str` | ACL Name | {{ no }} |
@@ -50,15 +50,15 @@
 ## Security | Abduct | Cable Abduct
 
 
-### Probable Causes
+<h3>Probable Causes</h3>
 Multiple access links goes down almost in same time
 
 
-### Recommended Actions
+<h3>Recommended Actions</h3>
 Check electrics and send security team to catch the thief
 
 
-### Related Alarms
+<h3>Related Alarms</h3>
 | Alarm Class | Role | Description |
 | --- | --- | --- |
 | [Security \| Abduct \| Cable Abduct](../alarm-classes-reference/security.md#security-abduct-cable-abduct) | :material-arrow-up: opening event | dispose |
@@ -70,13 +70,13 @@ Check electrics and send security team to catch the thief
 
 
 
-### Variables
+<h3>Variables</h3>
 | Name | Type | Description | Required |
 | --- | --- | --- | --- |
 | name | `str` | Name | {{ yes }} |
 
 
-### Related Alarms
+<h3>Related Alarms</h3>
 | Alarm Class | Role | Description |
 | --- | --- | --- |
 | [Security \| Access \| Case Open](../alarm-classes-reference/security.md#security-access-case-open) | :material-arrow-down: closing event | dispose |
@@ -88,13 +88,13 @@ Check electrics and send security team to catch the thief
 
 
 
-### Variables
+<h3>Variables</h3>
 | Name | Type | Description | Required |
 | --- | --- | --- | --- |
 | name | `str` | Name | {{ yes }} |
 
 
-### Related Alarms
+<h3>Related Alarms</h3>
 | Alarm Class | Role | Description |
 | --- | --- | --- |
 | [Security \| Access \| Case Open](../alarm-classes-reference/security.md#security-access-case-open) | :material-arrow-up: opening event | dispose |
@@ -106,13 +106,13 @@ Check electrics and send security team to catch the thief
 
 
 
-### Variables
+<h3>Variables</h3>
 | Name | Type | Description | Required |
 | --- | --- | --- | --- |
 | name | `str` | Name | {{ yes }} |
 
 
-### Related Alarms
+<h3>Related Alarms</h3>
 | Alarm Class | Role | Description |
 | --- | --- | --- |
 | [Security \| Access \| Door Open](../alarm-classes-reference/security.md#security-access-door-open) | :material-arrow-down: closing event | dispose |
@@ -124,13 +124,13 @@ Check electrics and send security team to catch the thief
 
 
 
-### Variables
+<h3>Variables</h3>
 | Name | Type | Description | Required |
 | --- | --- | --- | --- |
 | name | `str` | Name | {{ yes }} |
 
 
-### Related Alarms
+<h3>Related Alarms</h3>
 | Alarm Class | Role | Description |
 | --- | --- | --- |
 | [Security \| Access \| Door Open](../alarm-classes-reference/security.md#security-access-door-open) | :material-arrow-up: opening event | dispose |
@@ -142,7 +142,7 @@ Check electrics and send security team to catch the thief
 
 
 
-### Variables
+<h3>Variables</h3>
 | Name | Type | Description | Required |
 | --- | --- | --- | --- |
 | group | `str` | Group WebVPN | {{ no }} |
@@ -155,19 +155,19 @@ Check electrics and send security team to catch the thief
 
 
 ## Security | Accounting | WebVPN | Disconnected
-### Symptoms
+<h3>Symptoms</h3>
 No specific symptoms
 
 
-### Probable Causes
+<h3>Probable Causes</h3>
 Session terminated
 
 
-### Recommended Actions
+<h3>Recommended Actions</h3>
 No reaction needed
 
 
-### Variables
+<h3>Variables</h3>
 | Name | Type | Description | Required |
 | --- | --- | --- | --- |
 | group | `str` | Group WebVPN | {{ no }} |
@@ -183,19 +183,19 @@ No reaction needed
 
 
 ## Security | Attack | Attack
-### Symptoms
+<h3>Symptoms</h3>
 Unsolicitized traffic from source
 
 
-### Probable Causes
+<h3>Probable Causes</h3>
 Virus/Botnet activity or malicious actions
 
 
-### Recommended Actions
+<h3>Recommended Actions</h3>
 Negotiate the source if it is your customer, or ignore
 
 
-### Variables
+<h3>Variables</h3>
 | Name | Type | Description | Required |
 | --- | --- | --- | --- |
 | name | `str` | Attack name | {{ yes }} |
@@ -205,7 +205,7 @@ Negotiate the source if it is your customer, or ignore
 | vlan | `int` | Vlan ID | {{ no }} |
 
 
-### Related Alarms
+<h3>Related Alarms</h3>
 | Alarm Class | Role | Description |
 | --- | --- | --- |
 | [Security \| Attack \| Attack](../alarm-classes-reference/security.md#security-attack-attack) | :material-arrow-up: opening event | dispose |
@@ -217,14 +217,14 @@ Negotiate the source if it is your customer, or ignore
 
 
 
-### Variables
+<h3>Variables</h3>
 | Name | Type | Description | Required |
 | --- | --- | --- | --- |
 | interface | `interface_name` | Interface | {{ yes }} |
 | src_ip | `ip_address` | Source IP | {{ no }} |
 
 
-### Related Alarms
+<h3>Related Alarms</h3>
 | Alarm Class | Role | Description |
 | --- | --- | --- |
 | [Security \| Attack \| Blat Attack](../alarm-classes-reference/security.md#security-attack-blat-attack) | :material-arrow-up: opening event | dispose |
@@ -236,7 +236,7 @@ Negotiate the source if it is your customer, or ignore
 
 
 
-### Variables
+<h3>Variables</h3>
 | Name | Type | Description | Required |
 | --- | --- | --- | --- |
 | interface | `interface_name` | Interface | {{ yes }} |
@@ -244,7 +244,7 @@ Negotiate the source if it is your customer, or ignore
 | src_mac | `mac` | Source MAC | {{ no }} |
 
 
-### Related Alarms
+<h3>Related Alarms</h3>
 | Alarm Class | Role | Description |
 | --- | --- | --- |
 | [Security \| Attack \| IP Spoofing](../alarm-classes-reference/security.md#security-attack-ip-spoofing) | :material-arrow-up: opening event | dispose |
@@ -256,14 +256,14 @@ Negotiate the source if it is your customer, or ignore
 
 
 
-### Variables
+<h3>Variables</h3>
 | Name | Type | Description | Required |
 | --- | --- | --- | --- |
 | interface | `interface_name` | Interface | {{ yes }} |
 | src_ip | `ip_address` | Source IP | {{ no }} |
 
 
-### Related Alarms
+<h3>Related Alarms</h3>
 | Alarm Class | Role | Description |
 | --- | --- | --- |
 | [Security \| Attack \| Land Attack](../alarm-classes-reference/security.md#security-attack-land-attack) | :material-arrow-up: opening event | dispose |
@@ -275,7 +275,7 @@ Negotiate the source if it is your customer, or ignore
 
 
 
-### Variables
+<h3>Variables</h3>
 | Name | Type | Description | Required |
 | --- | --- | --- | --- |
 | interface | `interface_name` | Interface | {{ yes }} |
@@ -283,7 +283,7 @@ Negotiate the source if it is your customer, or ignore
 | src_mac | `mac` | Source MAC | {{ no }} |
 
 
-### Related Alarms
+<h3>Related Alarms</h3>
 | Alarm Class | Role | Description |
 | --- | --- | --- |
 | [Security \| Attack \| Ping Of Death](../alarm-classes-reference/security.md#security-attack-ping-of-death) | :material-arrow-up: opening event | dispose |
@@ -295,14 +295,14 @@ Negotiate the source if it is your customer, or ignore
 
 
 
-### Variables
+<h3>Variables</h3>
 | Name | Type | Description | Required |
 | --- | --- | --- | --- |
 | interface | `interface_name` | Interface | {{ yes }} |
 | src_ip | `ip_address` | Source IP | {{ no }} |
 
 
-### Related Alarms
+<h3>Related Alarms</h3>
 | Alarm Class | Role | Description |
 | --- | --- | --- |
 | [Security \| Attack \| Smurf Attack](../alarm-classes-reference/security.md#security-attack-smurf-attack) | :material-arrow-up: opening event | dispose |
@@ -314,14 +314,14 @@ Negotiate the source if it is your customer, or ignore
 
 
 
-### Variables
+<h3>Variables</h3>
 | Name | Type | Description | Required |
 | --- | --- | --- | --- |
 | interface | `interface_name` | Interface | {{ yes }} |
 | src_ip | `ip_address` | Source IP | {{ no }} |
 
 
-### Related Alarms
+<h3>Related Alarms</h3>
 | Alarm Class | Role | Description |
 | --- | --- | --- |
 | [Security \| Attack \| TCP SYNFIN Scan](../alarm-classes-reference/security.md#security-attack-tcp-synfin-scan) | :material-arrow-up: opening event | dispose |
@@ -333,7 +333,7 @@ Negotiate the source if it is your customer, or ignore
 
 
 
-### Variables
+<h3>Variables</h3>
 | Name | Type | Description | Required |
 | --- | --- | --- | --- |
 | interface | `interface_name` | Interface | {{ yes }} |
@@ -341,7 +341,7 @@ Negotiate the source if it is your customer, or ignore
 | src_mac | `mac` | Source MAC | {{ no }} |
 
 
-### Related Alarms
+<h3>Related Alarms</h3>
 | Alarm Class | Role | Description |
 | --- | --- | --- |
 | [Security \| Attack \| Teardrop Attack](../alarm-classes-reference/security.md#security-attack-teardrop-attack) | :material-arrow-up: opening event | dispose |
@@ -353,7 +353,7 @@ Negotiate the source if it is your customer, or ignore
 
 
 
-### Variables
+<h3>Variables</h3>
 | Name | Type | Description | Required |
 | --- | --- | --- | --- |
 | interface | `interface_name` | Interface name | {{ no }} |
@@ -364,19 +364,19 @@ Negotiate the source if it is your customer, or ignore
 
 
 ## Security | Audit | Command
-### Symptoms
+<h3>Symptoms</h3>
 No specific symptoms
 
 
-### Probable Causes
+<h3>Probable Causes</h3>
 Command executed by user logged by audit system
 
 
-### Recommended Actions
+<h3>Recommended Actions</h3>
 No reaction needed
 
 
-### Variables
+<h3>Variables</h3>
 | Name | Type | Description | Required |
 | --- | --- | --- | --- |
 | user | `str` | User | {{ no }} |
@@ -387,19 +387,19 @@ No reaction needed
 
 
 ## Security | Audit | Cron
-### Symptoms
+<h3>Symptoms</h3>
 No specific symptoms
 
 
-### Probable Causes
+<h3>Probable Causes</h3>
 Command executed by cron
 
 
-### Recommended Actions
+<h3>Recommended Actions</h3>
 No reaction needed
 
 
-### Variables
+<h3>Variables</h3>
 | Name | Type | Description | Required |
 | --- | --- | --- | --- |
 | user | `str` | User | {{ no }} |
@@ -413,7 +413,7 @@ No reaction needed
 
 
 
-### Variables
+<h3>Variables</h3>
 | Name | Type | Description | Required |
 | --- | --- | --- | --- |
 | user | `str` | user name | {{ no }} |
@@ -422,16 +422,16 @@ No reaction needed
 
 
 ## Security | Authentication | Authentication Failed
-### Symptoms
+<h3>Symptoms</h3>
 No specific symptoms
 
 
 
-### Recommended Actions
+<h3>Recommended Actions</h3>
 No reaction needed
 
 
-### Variables
+<h3>Variables</h3>
 | Name | Type | Description | Required |
 | --- | --- | --- | --- |
 | user | `str` | User | {{ no }} |
@@ -441,19 +441,19 @@ No reaction needed
 
 
 ## Security | Authentication | Login
-### Symptoms
+<h3>Symptoms</h3>
 No specific symptoms
 
 
-### Probable Causes
+<h3>Probable Causes</h3>
 User successfully logged in
 
 
-### Recommended Actions
+<h3>Recommended Actions</h3>
 No reaction needed
 
 
-### Variables
+<h3>Variables</h3>
 | Name | Type | Description | Required |
 | --- | --- | --- | --- |
 | user | `str` | User | {{ no }} |
@@ -463,19 +463,19 @@ No reaction needed
 
 
 ## Security | Authentication | Login Failed
-### Symptoms
+<h3>Symptoms</h3>
 No specific symptoms
 
 
-### Probable Causes
+<h3>Probable Causes</h3>
 User failed to log in. Username or password mismatch
 
 
-### Recommended Actions
+<h3>Recommended Actions</h3>
 No reaction needed
 
 
-### Variables
+<h3>Variables</h3>
 | Name | Type | Description | Required |
 | --- | --- | --- | --- |
 | user | `str` | User | {{ no }} |
@@ -485,19 +485,19 @@ No reaction needed
 
 
 ## Security | Authentication | Logout
-### Symptoms
+<h3>Symptoms</h3>
 No specific symptoms
 
 
-### Probable Causes
+<h3>Probable Causes</h3>
 User successfully logged out. Session terminated
 
 
-### Recommended Actions
+<h3>Recommended Actions</h3>
 No reaction needed
 
 
-### Variables
+<h3>Variables</h3>
 | Name | Type | Description | Required |
 | --- | --- | --- | --- |
 | user | `str` | User | {{ no }} |
@@ -507,19 +507,19 @@ No reaction needed
 
 
 ## Security | Authentication | Privilege Level Change Fail
-### Symptoms
+<h3>Symptoms</h3>
 No specific symptoms
 
 
-### Probable Causes
+<h3>Probable Causes</h3>
 User privilege level changed
 
 
-### Recommended Actions
+<h3>Recommended Actions</h3>
 No reaction needed
 
 
-### Variables
+<h3>Variables</h3>
 | Name | Type | Description | Required |
 | --- | --- | --- | --- |
 | user | `str` | User | {{ no }} |
@@ -531,19 +531,19 @@ No reaction needed
 
 
 ## Security | Authentication | Privilege Level Changed
-### Symptoms
+<h3>Symptoms</h3>
 No specific symptoms
 
 
-### Probable Causes
+<h3>Probable Causes</h3>
 User privilege level changed
 
 
-### Recommended Actions
+<h3>Recommended Actions</h3>
 No reaction needed
 
 
-### Variables
+<h3>Variables</h3>
 | Name | Type | Description | Required |
 | --- | --- | --- | --- |
 | user | `str` | User | {{ no }} |
@@ -559,13 +559,13 @@ No reaction needed
 
 
 
-### Variables
+<h3>Variables</h3>
 | Name | Type | Description | Required |
 | --- | --- | --- | --- |
 | ip | `ip_address` | RADIUS server address | {{ no }} |
 
 
-### Related Alarms
+<h3>Related Alarms</h3>
 | Alarm Class | Role | Description |
 | --- | --- | --- |
 | [Security \| Authentication \| RADIUS server failed](../alarm-classes-reference/security.md#security-authentication-radius-server-failed) | :material-arrow-up: opening event | dispose |
@@ -577,13 +577,13 @@ No reaction needed
 
 
 
-### Variables
+<h3>Variables</h3>
 | Name | Type | Description | Required |
 | --- | --- | --- | --- |
 | ip | `ip_address` | RADIUS server address | {{ no }} |
 
 
-### Related Alarms
+<h3>Related Alarms</h3>
 | Alarm Class | Role | Description |
 | --- | --- | --- |
 | [Security \| Authentication \| RADIUS server failed](../alarm-classes-reference/security.md#security-authentication-radius-server-failed) | :material-arrow-down: closing event | dispose |
@@ -591,19 +591,19 @@ No reaction needed
 
 
 ## Security | Authentication | Rejected
-### Symptoms
+<h3>Symptoms</h3>
 No specific symptoms
 
 
-### Probable Causes
+<h3>Probable Causes</h3>
 User successfully logged out. Session terminated
 
 
-### Recommended Actions
+<h3>Recommended Actions</h3>
 No reaction needed
 
 
-### Variables
+<h3>Variables</h3>
 | Name | Type | Description | Required |
 | --- | --- | --- | --- |
 | reason | `str` | Reason | {{ no }} |
@@ -615,19 +615,19 @@ No reaction needed
 
 
 ## Security | Authentication | SNMP Authentication Failure
-### Symptoms
+<h3>Symptoms</h3>
 NOC, NMS and monitoring systems cannot interact with the box over SNMP protocol
 
 
-### Probable Causes
+<h3>Probable Causes</h3>
 SNMP server is misconfigured, community mismatch, misconfigured ACL or brute-force attack in progress
 
 
-### Recommended Actions
+<h3>Recommended Actions</h3>
 Check SNMP configuration
 
 
-### Variables
+<h3>Variables</h3>
 | Name | Type | Description | Required |
 | --- | --- | --- | --- |
 | ip | `ip_address` | Request source address | {{ yes }} |
@@ -641,13 +641,13 @@ Check SNMP configuration
 
 
 
-### Variables
+<h3>Variables</h3>
 | Name | Type | Description | Required |
 | --- | --- | --- | --- |
 | ip | `ip_address` | TACACS+ server address | {{ no }} |
 
 
-### Related Alarms
+<h3>Related Alarms</h3>
 | Alarm Class | Role | Description |
 | --- | --- | --- |
 | [Security \| Authentication \| TACACS+ server failed](../alarm-classes-reference/security.md#security-authentication-tacacs+-server-failed) | :material-arrow-up: opening event | dispose |
@@ -659,13 +659,13 @@ Check SNMP configuration
 
 
 
-### Variables
+<h3>Variables</h3>
 | Name | Type | Description | Required |
 | --- | --- | --- | --- |
 | ip | `ip_address` | TACACS+ server address | {{ no }} |
 
 
-### Related Alarms
+<h3>Related Alarms</h3>
 | Alarm Class | Role | Description |
 | --- | --- | --- |
 | [Security \| Authentication \| TACACS+ server failed](../alarm-classes-reference/security.md#security-authentication-tacacs+-server-failed) | :material-arrow-down: closing event | dispose |

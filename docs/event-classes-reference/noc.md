@@ -4,15 +4,15 @@
 ## NOC | IPAM | VRF Group Address Collision
 
 
-### Probable Causes
+<h3>Probable Causes</h3>
 Equipment misconfiguration of IP address misallocation
 
 
-### Recommended Actions
+<h3>Recommended Actions</h3>
 Check address allocation and equipment configuration
 
 
-### Variables
+<h3>Variables</h3>
 | Name | Type | Description | Required |
 | --- | --- | --- | --- |
 | address | `str` | Address | {{ yes }} |
@@ -22,7 +22,7 @@ Check address allocation and equipment configuration
 | existing_object | `str` | Existing Object | {{ no }} |
 
 
-### Related Alarms
+<h3>Related Alarms</h3>
 | Alarm Class | Role | Description |
 | --- | --- | --- |
 | [NOC \| IPAM \| VRF Group Address Collision](../alarm-classes-reference/noc.md#noc-ipam-vrf-group-address-collision) | :material-arrow-up: opening event | dispose |
@@ -30,19 +30,19 @@ Check address allocation and equipment configuration
 
 
 ## NOC | Managed Object | Ping Failed
-### Symptoms
+<h3>Symptoms</h3>
 Cannot execute SA tasks on the object
 
 
-### Probable Causes
+<h3>Probable Causes</h3>
 The object is not responding to ICMP echo-requests
 
 
-### Recommended Actions
+<h3>Recommended Actions</h3>
 Check object is alive. Check routing to this object. Check firewalls
 
 
-### Related Alarms
+<h3>Related Alarms</h3>
 | Alarm Class | Role | Description |
 | --- | --- | --- |
 | [NOC \| Managed Object \| Ping Failed](../alarm-classes-reference/noc.md#noc-managed-object-ping-failed) | :material-arrow-up: opening event | dispose |
@@ -50,19 +50,19 @@ Check object is alive. Check routing to this object. Check firewalls
 
 
 ## NOC | Managed Object | Ping OK
-### Symptoms
+<h3>Symptoms</h3>
 No specific symptoms
 
 
-### Probable Causes
+<h3>Probable Causes</h3>
 The object is alive and responding to ICMP echo-requests
 
 
-### Recommended Actions
+<h3>Recommended Actions</h3>
 No reaction needed
 
 
-### Related Alarms
+<h3>Related Alarms</h3>
 | Alarm Class | Role | Description |
 | --- | --- | --- |
 | [NOC \| Managed Object \| Ping Failed](../alarm-classes-reference/noc.md#noc-managed-object-ping-failed) | :material-arrow-down: closing event | dispose |
@@ -71,25 +71,25 @@ No reaction needed
 
 
 ## NOC | Periodic | Periodic Failed
-### Symptoms
+<h3>Symptoms</h3>
 No specific symptoms
 
 
-### Probable Causes
+<h3>Probable Causes</h3>
 Failure occured when noc-scheduler tried to execute periodic task
 
 
-### Recommended Actions
+<h3>Recommended Actions</h3>
 Check noc-scheduler, noc-sae and noc-activator logs
 
 
-### Variables
+<h3>Variables</h3>
 | Name | Type | Description | Required |
 | --- | --- | --- | --- |
 | task | `str` | Task's name | {{ yes }} |
 
 
-### Related Alarms
+<h3>Related Alarms</h3>
 | Alarm Class | Role | Description |
 | --- | --- | --- |
 | [NOC \| Periodic \| Periodic Failed](../alarm-classes-reference/noc.md#noc-periodic-periodic-failed) | :material-arrow-up: opening event | dispose |
@@ -97,25 +97,25 @@ Check noc-scheduler, noc-sae and noc-activator logs
 
 
 ## NOC | Periodic | Periodic OK
-### Symptoms
+<h3>Symptoms</h3>
 No specific symptoms
 
 
-### Probable Causes
+<h3>Probable Causes</h3>
 noc-scheduler daemon successfully completed periodic task
 
 
-### Recommended Actions
+<h3>Recommended Actions</h3>
 No reaction needed
 
 
-### Variables
+<h3>Variables</h3>
 | Name | Type | Description | Required |
 | --- | --- | --- | --- |
 | task | `str` | Task's name | {{ yes }} |
 
 
-### Related Alarms
+<h3>Related Alarms</h3>
 | Alarm Class | Role | Description |
 | --- | --- | --- |
 | [NOC \| Periodic \| Periodic Failed](../alarm-classes-reference/noc.md#noc-periodic-periodic-failed) | :material-arrow-down: closing event | dispose |
@@ -123,19 +123,19 @@ No reaction needed
 
 
 ## NOC | SA | Join Activator Pool
-### Symptoms
+<h3>Symptoms</h3>
 SA performance increased
 
 
-### Probable Causes
+<h3>Probable Causes</h3>
 noc-activator process been launched
 
 
-### Recommended Actions
+<h3>Recommended Actions</h3>
 No recommended actions
 
 
-### Variables
+<h3>Variables</h3>
 | Name | Type | Description | Required |
 | --- | --- | --- | --- |
 | name | `str` | Activator pool name | {{ yes }} |
@@ -147,7 +147,7 @@ No recommended actions
 | pool_sessions | `int` | Pool's current sessions limit | {{ yes }} |
 
 
-### Related Alarms
+<h3>Related Alarms</h3>
 | Alarm Class | Role | Description |
 | --- | --- | --- |
 | [NOC \| SA \| Activator Pool Degraded](../alarm-classes-reference/noc.md#noc-sa-activator-pool-degraded) | :material-arrow-down: closing event | clear |
@@ -156,19 +156,19 @@ No recommended actions
 
 
 ## NOC | SA | Leave Activator Pool
-### Symptoms
+<h3>Symptoms</h3>
 SA performance decreased
 
 
-### Probable Causes
+<h3>Probable Causes</h3>
 noc-activator process been stopped
 
 
-### Recommended Actions
+<h3>Recommended Actions</h3>
 Check appropriative process
 
 
-### Variables
+<h3>Variables</h3>
 | Name | Type | Description | Required |
 | --- | --- | --- | --- |
 | name | `str` | Activator pool name | {{ yes }} |
@@ -180,7 +180,7 @@ Check appropriative process
 | pool_sessions | `int` | Pool's current sessions limit | {{ yes }} |
 
 
-### Related Alarms
+<h3>Related Alarms</h3>
 | Alarm Class | Role | Description |
 | --- | --- | --- |
 | [NOC \| SA \| Activator Pool Degraded](../alarm-classes-reference/noc.md#noc-sa-activator-pool-degraded) | :material-arrow-down: closing event | clear |
@@ -189,19 +189,19 @@ Check appropriative process
 
 
 ## NOC | Unhandled Exception
-### Symptoms
+<h3>Symptoms</h3>
 Unexpected behavior of NOC
 
 
-### Probable Causes
+<h3>Probable Causes</h3>
 Bug in NOC
 
 
-### Recommended Actions
+<h3>Recommended Actions</h3>
 Grab this event, clear valuable data and submit an issue at http://nocproject.org/
 
 
-### Variables
+<h3>Variables</h3>
 | Name | Type | Description | Required |
 | --- | --- | --- | --- |
 | component | `str` | NOC's component | {{ yes }} |
@@ -213,19 +213,19 @@ Grab this event, clear valuable data and submit an issue at http://nocproject.or
 
 
 ## NOC | Unknown Event Source
-### Symptoms
+<h3>Symptoms</h3>
 Events from particular device are ignored by Fault Management
 
 
-### Probable Causes
+<h3>Probable Causes</h3>
 Event's source address does not belong to any Managed Object's trap_source
 
 
-### Recommended Actions
+<h3>Recommended Actions</h3>
 Add appropriative Managed Object or fix trap_source
 
 
-### Variables
+<h3>Variables</h3>
 | Name | Type | Description | Required |
 | --- | --- | --- | --- |
 | ip | `ip_address` | Event SRC IP | {{ yes }} |

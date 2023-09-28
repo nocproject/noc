@@ -6,7 +6,7 @@
 
 
 
-### Variables
+<h3>Variables</h3>
 | Name | Type | Description | Required |
 | --- | --- | --- | --- |
 | interface | `interface_name` | Radio interface | {{ no }} |
@@ -20,7 +20,7 @@
 
 
 
-### Variables
+<h3>Variables</h3>
 | Name | Type | Description | Required |
 | --- | --- | --- | --- |
 | interface | `interface_name` | Radio interface | {{ no }} |
@@ -35,7 +35,7 @@
 
 
 
-### Variables
+<h3>Variables</h3>
 | Name | Type | Description | Required |
 | --- | --- | --- | --- |
 | mac | `mac` | Station MAC | {{ no }} |
@@ -48,7 +48,7 @@
 
 
 
-### Variables
+<h3>Variables</h3>
 | Name | Type | Description | Required |
 | --- | --- | --- | --- |
 | mac | `mac` | Station MAC | {{ no }} |
@@ -62,14 +62,14 @@
 
 
 
-### Variables
+<h3>Variables</h3>
 | Name | Type | Description | Required |
 | --- | --- | --- | --- |
 | interface | `interface_name` | BFD interface | {{ yes }} |
 | peer | `ip_address` | BFD Peer | {{ yes }} |
 
 
-### Related Alarms
+<h3>Related Alarms</h3>
 | Alarm Class | Role | Description |
 | --- | --- | --- |
 | [Network \| BFD \| Session Down](../alarm-classes-reference/network.md#network-bfd-session-down) | :material-arrow-up: opening event | dispose |
@@ -81,14 +81,14 @@
 
 
 
-### Variables
+<h3>Variables</h3>
 | Name | Type | Description | Required |
 | --- | --- | --- | --- |
 | interface | `interface_name` | BFD interface | {{ yes }} |
 | peer | `ip_address` | BFD Peer | {{ yes }} |
 
 
-### Related Alarms
+<h3>Related Alarms</h3>
 | Alarm Class | Role | Description |
 | --- | --- | --- |
 | [Network \| BFD \| Session Down](../alarm-classes-reference/network.md#network-bfd-session-down) | :material-arrow-down: closing event | dispose |
@@ -100,7 +100,7 @@
 
 
 
-### Variables
+<h3>Variables</h3>
 | Name | Type | Description | Required |
 | --- | --- | --- | --- |
 | peer | `ip_address` | Peer | {{ yes }} |
@@ -109,7 +109,7 @@
 | state | `str` | Transition from state | {{ no }} |
 
 
-### Related Alarms
+<h3>Related Alarms</h3>
 | Alarm Class | Role | Description |
 | --- | --- | --- |
 | [Network \| BGP \| Peer Down](../alarm-classes-reference/network.md#network-bgp-peer-down) | :material-arrow-up: opening event | dispose |
@@ -121,7 +121,7 @@
 
 
 
-### Variables
+<h3>Variables</h3>
 | Name | Type | Description | Required |
 | --- | --- | --- | --- |
 | peer | `ip_address` | Peer | {{ yes }} |
@@ -129,7 +129,7 @@
 | as | `int` | Peer AS | {{ no }} |
 
 
-### Related Alarms
+<h3>Related Alarms</h3>
 | Alarm Class | Role | Description |
 | --- | --- | --- |
 | [Network \| BGP \| Peer Down](../alarm-classes-reference/network.md#network-bgp-peer-down) | :material-arrow-down: closing event | dispose |
@@ -142,7 +142,7 @@
 
 
 
-### Variables
+<h3>Variables</h3>
 | Name | Type | Description | Required |
 | --- | --- | --- | --- |
 | peer | `ip_address` | Peer | {{ yes }} |
@@ -159,7 +159,7 @@
 
 
 
-### Variables
+<h3>Variables</h3>
 | Name | Type | Description | Required |
 | --- | --- | --- | --- |
 | peer | `ip_address` | Peer | {{ yes }} |
@@ -176,7 +176,7 @@
 
 
 
-### Variables
+<h3>Variables</h3>
 | Name | Type | Description | Required |
 | --- | --- | --- | --- |
 | peer | `ip_address` | Peer | {{ yes }} |
@@ -185,7 +185,7 @@
 | reason | `str` | Reason | {{ no }} |
 
 
-### Related Alarms
+<h3>Related Alarms</h3>
 | Alarm Class | Role | Description |
 | --- | --- | --- |
 | [Network \| BGP \| Peer Down](../alarm-classes-reference/network.md#network-bgp-peer-down) | :material-arrow-up: opening event | dispose |
@@ -197,7 +197,7 @@
 
 
 
-### Variables
+<h3>Variables</h3>
 | Name | Type | Description | Required |
 | --- | --- | --- | --- |
 | peer | `ip_address` | Peer | {{ yes }} |
@@ -207,7 +207,7 @@
 | to_state | `str` | Final state | {{ no }} |
 
 
-### Related Alarms
+<h3>Related Alarms</h3>
 | Alarm Class | Role | Description |
 | --- | --- | --- |
 | [Network \| BGP \| Peer Down](../alarm-classes-reference/network.md#network-bgp-peer-down) | :material-arrow-up: opening event | raise |
@@ -221,7 +221,7 @@
 
 
 
-### Variables
+<h3>Variables</h3>
 | Name | Type | Description | Required |
 | --- | --- | --- | --- |
 | peer | `ip_address` | Peer | {{ yes }} |
@@ -229,7 +229,7 @@
 | as | `int` | Peer AS | {{ no }} |
 
 
-### Related Alarms
+<h3>Related Alarms</h3>
 | Alarm Class | Role | Description |
 | --- | --- | --- |
 | [Network \| BGP \| Prefix Limit Exceeded](../alarm-classes-reference/network.md#network-bgp-prefix-limit-exceeded) | :material-arrow-up: opening event | dispose |
@@ -241,7 +241,7 @@
 
 
 
-### Variables
+<h3>Variables</h3>
 | Name | Type | Description | Required |
 | --- | --- | --- | --- |
 | time | `int` | sysUpTime | {{ no }} |
@@ -254,7 +254,7 @@
 
 
 
-### Variables
+<h3>Variables</h3>
 | Name | Type | Description | Required |
 | --- | --- | --- | --- |
 | peer | `ip_address` | Peer | {{ yes }} |
@@ -268,14 +268,14 @@
 
 
 
-### Variables
+<h3>Variables</h3>
 | Name | Type | Description | Required |
 | --- | --- | --- | --- |
 | peer | `ip_address` | Peer | {{ yes }} |
 | reason | `str` | Reason failed | {{ yes }} |
 
 
-### Related Alarms
+<h3>Related Alarms</h3>
 | Alarm Class | Role | Description |
 | --- | --- | --- |
 | [Network \| CEF \| Resource Failure](../alarm-classes-reference/network.md#network-cef-resource-failure) | :material-arrow-up: opening event | dispose |
@@ -287,14 +287,14 @@
 
 
 
-### Variables
+<h3>Variables</h3>
 | Name | Type | Description | Required |
 | --- | --- | --- | --- |
 | ip | `ip_address` | Source IP | {{ yes }} |
 | interface | `interface_name` | Source interface | {{ no }} |
 
 
-### Related Alarms
+<h3>Related Alarms</h3>
 | Alarm Class | Role | Description |
 | --- | --- | --- |
 | [Network \| DHCP \| Untrusted Server](../alarm-classes-reference/network.md#network-dhcp-untrusted-server) | :material-arrow-up: opening event | dispose |
@@ -306,13 +306,13 @@
 
 
 
-### Variables
+<h3>Variables</h3>
 | Name | Type | Description | Required |
 | --- | --- | --- | --- |
 | ip | `ip_address` | Source IP | {{ yes }} |
 
 
-### Related Alarms
+<h3>Related Alarms</h3>
 | Alarm Class | Role | Description |
 | --- | --- | --- |
 | [Network \| DNS \| Bad Query](../alarm-classes-reference/network.md#network-dns-bad-query) | :material-arrow-up: opening event | dispose |
@@ -322,15 +322,15 @@
 ## Network | DOCSIS | BPI Unautorized
 
 
-### Probable Causes
+<h3>Probable Causes</h3>
 An unauthorized cable modem has been deleted to enforce BPI authorization for the specified cable modem. The specified cable modem was not performing BPI negotiation.
 
 
-### Recommended Actions
+<h3>Recommended Actions</h3>
 Check the modem interface configuration for privacy mandatory, or check for errors in the TFTP configuration file.
 
 
-### Variables
+<h3>Variables</h3>
 | Name | Type | Description | Required |
 | --- | --- | --- | --- |
 | mac | `mac` | Cable Modem MAC | {{ yes }} |
@@ -338,7 +338,7 @@ Check the modem interface configuration for privacy mandatory, or check for erro
 | interface | `interface_name` | Cable interface | {{ no }} |
 
 
-### Related Alarms
+<h3>Related Alarms</h3>
 | Alarm Class | Role | Description |
 | --- | --- | --- |
 | [Network \| DOCSIS \| BPI Unautorized](../alarm-classes-reference/network.md#network-docsis-bpi-unautorized) | :material-arrow-up: opening event | dispose |
@@ -348,15 +348,15 @@ Check the modem interface configuration for privacy mandatory, or check for erro
 ## Network | DOCSIS | Bad Timing Offset
 
 
-### Probable Causes
+<h3>Probable Causes</h3>
 The cable modem is not using the correct starting offset during initial ranging, causing a zero, negative timing offset to be recorded by the CMTS for this modem. The CMTS internal algorithms that rely on the timing offset parameter will not analyze any modems that do not use the correct starting offset. The modems may not be able to function, depending on their physical location on the cable plant.
 
 
-### Recommended Actions
+<h3>Recommended Actions</h3>
 Locate the cable modem based on the MAC address and report the initial timing offset problem to the cable modem vendor.
 
 
-### Variables
+<h3>Variables</h3>
 | Name | Type | Description | Required |
 | --- | --- | --- | --- |
 | mac | `mac` | Cable Modem MAC | {{ no }} |
@@ -364,7 +364,7 @@ Locate the cable modem based on the MAC address and report the initial timing of
 | offset | `str` | Time offset | {{ no }} |
 
 
-### Related Alarms
+<h3>Related Alarms</h3>
 | Alarm Class | Role | Description |
 | --- | --- | --- |
 | [Network \| DOCSIS \| Bad Timing Offset](../alarm-classes-reference/network.md#network-docsis-bad-timing-offset) | :material-arrow-up: opening event | dispose |
@@ -374,12 +374,12 @@ Locate the cable modem based on the MAC address and report the initial timing of
 ## Network | DOCSIS | Channel Width Changed
 
 
-### Probable Causes
+<h3>Probable Causes</h3>
 The upstream channel frequency has been changed.
 
 
 
-### Variables
+<h3>Variables</h3>
 | Name | Type | Description | Required |
 | --- | --- | --- | --- |
 | interface | `interface_name` | Cable interface | {{ yes }} |
@@ -392,15 +392,15 @@ The upstream channel frequency has been changed.
 ## Network | DOCSIS | Invalid CoS
 
 
-### Probable Causes
+<h3>Probable Causes</h3>
 The registration of the specified modem has failed because of an invalid or unsupported CoS setting.
 
 
-### Recommended Actions
+<h3>Recommended Actions</h3>
 Ensure that the CoS fields in the configuration file are set correctly.
 
 
-### Variables
+<h3>Variables</h3>
 | Name | Type | Description | Required |
 | --- | --- | --- | --- |
 | mac | `mac` | Cable Modem MAC | {{ yes }} |
@@ -408,7 +408,7 @@ Ensure that the CoS fields in the configuration file are set correctly.
 | interface | `interface_name` | Cable interface | {{ no }} |
 
 
-### Related Alarms
+<h3>Related Alarms</h3>
 | Alarm Class | Role | Description |
 | --- | --- | --- |
 | [Network \| DOCSIS \| Invalid CoS](../alarm-classes-reference/network.md#network-docsis-invalid-cos) | :material-arrow-up: opening event | dispose |
@@ -418,15 +418,15 @@ Ensure that the CoS fields in the configuration file are set correctly.
 ## Network | DOCSIS | Invalid DOCSIS Message
 
 
-### Probable Causes
+<h3>Probable Causes</h3>
 A cable modem that is not DOCSIS-compliant has attempted to send an invalid DOCSIS message.
 
 
-### Recommended Actions
+<h3>Recommended Actions</h3>
 Locate the cable modem that sent this message and replace it with DOCSIS-compliant modem.
 
 
-### Variables
+<h3>Variables</h3>
 | Name | Type | Description | Required |
 | --- | --- | --- | --- |
 | interface | `interface_name` | Cable interface | {{ no }} |
@@ -434,7 +434,7 @@ Locate the cable modem that sent this message and replace it with DOCSIS-complia
 | sid | `int` | Cable Modem SID | {{ no }} |
 
 
-### Related Alarms
+<h3>Related Alarms</h3>
 | Alarm Class | Role | Description |
 | --- | --- | --- |
 | [Network \| DOCSIS \| Invalid DOCSIS Message](../alarm-classes-reference/network.md#network-docsis-invalid-docsis-message) | :material-arrow-up: opening event | dispose |
@@ -444,15 +444,15 @@ Locate the cable modem that sent this message and replace it with DOCSIS-complia
 ## Network | DOCSIS | Invalid QoS
 
 
-### Probable Causes
+<h3>Probable Causes</h3>
 The registration of the specified modem has failed because of an invalid or unsupported QoS setting.
 
 
-### Recommended Actions
+<h3>Recommended Actions</h3>
 Ensure that the QoS fields in the configuration file are set correctly.
 
 
-### Variables
+<h3>Variables</h3>
 | Name | Type | Description | Required |
 | --- | --- | --- | --- |
 | mac | `mac` | Cable Modem MAC | {{ yes }} |
@@ -460,7 +460,7 @@ Ensure that the QoS fields in the configuration file are set correctly.
 | interface | `interface_name` | Cable interface | {{ no }} |
 
 
-### Related Alarms
+<h3>Related Alarms</h3>
 | Alarm Class | Role | Description |
 | --- | --- | --- |
 | [Network \| DOCSIS \| Invalid QoS](../alarm-classes-reference/network.md#network-docsis-invalid-qos) | :material-arrow-up: opening event | dispose |
@@ -470,15 +470,15 @@ Ensure that the QoS fields in the configuration file are set correctly.
 ## Network | DOCSIS | Invalid Shared Secret
 
 
-### Probable Causes
+<h3>Probable Causes</h3>
 The registration of this modem has failed because of an invalid MIC string.
 
 
-### Recommended Actions
+<h3>Recommended Actions</h3>
 Ensure that the shared secret that is in the configuration file is the same as the shared secret that is configured in the cable modem.
 
 
-### Variables
+<h3>Variables</h3>
 | Name | Type | Description | Required |
 | --- | --- | --- | --- |
 | mac | `mac` | Cable Modem MAC | {{ yes }} |
@@ -486,7 +486,7 @@ Ensure that the shared secret that is in the configuration file is the same as t
 | interface | `interface_name` | Cable interface | {{ no }} |
 
 
-### Related Alarms
+<h3>Related Alarms</h3>
 | Alarm Class | Role | Description |
 | --- | --- | --- |
 | [Network \| DOCSIS \| Invalid Shared Secret](../alarm-classes-reference/network.md#network-docsis-invalid-shared-secret) | :material-arrow-up: opening event | dispose |
@@ -496,15 +496,15 @@ Ensure that the shared secret that is in the configuration file is the same as t
 ## Network | DOCSIS | Max CPE Reached
 
 
-### Probable Causes
+<h3>Probable Causes</h3>
 The maximum number of devices that can be attached to the cable modem has been exceeded. Therefore, the device with the specified IP address will not be added to the modem with the specified SID.
 
 
-### Recommended Actions
+<h3>Recommended Actions</h3>
 Locate the specified device and place the device on a different cable modem with another SID.
 
 
-### Variables
+<h3>Variables</h3>
 | Name | Type | Description | Required |
 | --- | --- | --- | --- |
 | mac | `mac` | CPE MAC | {{ no }} |
@@ -514,7 +514,7 @@ Locate the specified device and place the device on a different cable modem with
 | interface | `interface_name` | Cable interface | {{ no }} |
 
 
-### Related Alarms
+<h3>Related Alarms</h3>
 | Alarm Class | Role | Description |
 | --- | --- | --- |
 | [Network \| DOCSIS \| Max CPE Reached](../alarm-classes-reference/network.md#network-docsis-max-cpe-reached) | :material-arrow-up: opening event | dispose |
@@ -524,15 +524,15 @@ Locate the specified device and place the device on a different cable modem with
 ## Network | DOCSIS | Maximum Capacity Reached
 
 
-### Probable Causes
+<h3>Probable Causes</h3>
 The currently reserved capacity on the upstream channel already exceeds its virtual reservation capacity, based on the configured subscription level limit. Increasing the subscription level limit on the current upstream channel will place you at risk of being unable to guarantee the individual reserved rates for modems since this upstream channel is already oversubscribed.
 
 
-### Recommended Actions
+<h3>Recommended Actions</h3>
 Load-balance the modems that are requesting the reserved upstream rate on another upstream channel.
 
 
-### Variables
+<h3>Variables</h3>
 | Name | Type | Description | Required |
 | --- | --- | --- | --- |
 | interface | `interface_name` | Cable interface | {{ yes }} |
@@ -541,7 +541,7 @@ Load-balance the modems that are requesting the reserved upstream rate on anothe
 | res_bps | `int` | Reserved bps | {{ no }} |
 
 
-### Related Alarms
+<h3>Related Alarms</h3>
 | Alarm Class | Role | Description |
 | --- | --- | --- |
 | [Network \| DOCSIS \| Maximum Capacity Reached](../alarm-classes-reference/network.md#network-docsis-maximum-capacity-reached) | :material-arrow-up: opening event | dispose |
@@ -551,21 +551,21 @@ Load-balance the modems that are requesting the reserved upstream rate on anothe
 ## Network | DOCSIS | Maximum SIDs
 
 
-### Probable Causes
+<h3>Probable Causes</h3>
 The maximum number of SIDs has been allocated to the specified line card.
 
 
-### Recommended Actions
+<h3>Recommended Actions</h3>
 Assign the cable modem to another line card.
 
 
-### Variables
+<h3>Variables</h3>
 | Name | Type | Description | Required |
 | --- | --- | --- | --- |
 | interface | `interface_name` | Cable interface | {{ yes }} |
 
 
-### Related Alarms
+<h3>Related Alarms</h3>
 | Alarm Class | Role | Description |
 | --- | --- | --- |
 | [Network \| DOCSIS \| Maximum SIDs](../alarm-classes-reference/network.md#network-docsis-maximum-sids) | :material-arrow-up: opening event | dispose |
@@ -575,15 +575,15 @@ Assign the cable modem to another line card.
 ## Network | DOCSIS | Unregistered Modem Deleted
 
 
-### Probable Causes
+<h3>Probable Causes</h3>
 An unregistered cable modem has been deleted to avoid unaccounted bandwidth usage.
 
 
-### Recommended Actions
+<h3>Recommended Actions</h3>
 Check the cable modem interface configuration for registration bypass, or check for errors in the TFTP configuration file. 
 
 
-### Variables
+<h3>Variables</h3>
 | Name | Type | Description | Required |
 | --- | --- | --- | --- |
 | mac | `mac` | Cable Modem MAC | {{ yes }} |
@@ -594,12 +594,12 @@ Check the cable modem interface configuration for registration bypass, or check 
 ## Network | DOCSIS | Upstream Frequency Changed
 
 
-### Probable Causes
+<h3>Probable Causes</h3>
 The upstream channel frequency has been changed.
 
 
 
-### Variables
+<h3>Variables</h3>
 | Name | Type | Description | Required |
 | --- | --- | --- | --- |
 | interface | `interface_name` | Cable interface | {{ yes }} |
@@ -612,12 +612,12 @@ The upstream channel frequency has been changed.
 ## Network | DOCSIS | Upstream Input Power Level Changed
 
 
-### Probable Causes
+<h3>Probable Causes</h3>
 The upstream channel input power level has been changed.
 
 
 
-### Variables
+<h3>Variables</h3>
 | Name | Type | Description | Required |
 | --- | --- | --- | --- |
 | interface | `interface_name` | Cable interface | {{ yes }} |
@@ -628,19 +628,19 @@ The upstream channel input power level has been changed.
 
 
 ## Network | EIGRP | Neighbor Down
-### Symptoms
+<h3>Symptoms</h3>
 Routing table changes and possible lost of connectivity
 
 
-### Probable Causes
+<h3>Probable Causes</h3>
 Link failure or protocol misconfiguration
 
 
-### Recommended Actions
+<h3>Recommended Actions</h3>
 Check links and local and neighbor router configuration
 
 
-### Variables
+<h3>Variables</h3>
 | Name | Type | Description | Required |
 | --- | --- | --- | --- |
 | as | `str` | EIGRP automonus system | {{ no }} |
@@ -650,7 +650,7 @@ Check links and local and neighbor router configuration
 | to_state | `str` | to state | {{ no }} |
 
 
-### Related Alarms
+<h3>Related Alarms</h3>
 | Alarm Class | Role | Description |
 | --- | --- | --- |
 | [Network \| EIGRP \| Neighbor Down](../alarm-classes-reference/network.md#network-eigrp-neighbor-down) | :material-arrow-up: opening event | dispose |
@@ -658,19 +658,19 @@ Check links and local and neighbor router configuration
 
 
 ## Network | EIGRP | Neighbor Up
-### Symptoms
+<h3>Symptoms</h3>
 Routing table changes
 
 
-### Probable Causes
+<h3>Probable Causes</h3>
 An EIGRP adjacency was established with the indicated neighboring router. The local router can now exchange information with it.
 
 
-### Recommended Actions
+<h3>Recommended Actions</h3>
 No specific actions needed
 
 
-### Variables
+<h3>Variables</h3>
 | Name | Type | Description | Required |
 | --- | --- | --- | --- |
 | as | `str` | EIGRP autonomus system | {{ no }} |
@@ -680,7 +680,7 @@ No specific actions needed
 | to_state | `str` | to state | {{ no }} |
 
 
-### Related Alarms
+<h3>Related Alarms</h3>
 | Alarm Class | Role | Description |
 | --- | --- | --- |
 | [Network \| EIGRP \| Neighbor Down](../alarm-classes-reference/network.md#network-eigrp-neighbor-down) | :material-arrow-down: closing event | dispose |
@@ -692,7 +692,7 @@ No specific actions needed
 
 
 
-### Variables
+<h3>Variables</h3>
 | Name | Type | Description | Required |
 | --- | --- | --- | --- |
 | group | `str` | Group | {{ yes }} |
@@ -703,16 +703,16 @@ No specific actions needed
 
 
 ## Network | IMPB | Dynamic IMPB entry is conflicting with static
-### Symptoms
+<h3>Symptoms</h3>
 Discard user connection attemps
 
 
 
-### Recommended Actions
+<h3>Recommended Actions</h3>
 Check user IP and MAC, check DHCP database
 
 
-### Variables
+<h3>Variables</h3>
 | Name | Type | Description | Required |
 | --- | --- | --- | --- |
 | ip | `ip_address` | User IP | {{ yes }} |
@@ -723,22 +723,22 @@ Check user IP and MAC, check DHCP database
 
 
 ## Network | IMPB | Recover IMPB stop learning state
-### Symptoms
+<h3>Symptoms</h3>
 Restore ability for incoming connections
 
 
 
-### Recommended Actions
+<h3>Recommended Actions</h3>
 Check IMPB entry, check topology
 
 
-### Variables
+<h3>Variables</h3>
 | Name | Type | Description | Required |
 | --- | --- | --- | --- |
 | interface | `interface_name` | Affected interface | {{ yes }} |
 
 
-### Related Alarms
+<h3>Related Alarms</h3>
 | Alarm Class | Role | Description |
 | --- | --- | --- |
 | [Network \| IMPB \| Unauthenticated IP-MAC](../alarm-classes-reference/network.md#network-impb-unauthenticated-ip-mac) | :material-arrow-down: closing event | dispose |
@@ -746,16 +746,16 @@ Check IMPB entry, check topology
 
 
 ## Network | IMPB | Unauthenticated IP-MAC
-### Symptoms
+<h3>Symptoms</h3>
 Discard user connection attempts
 
 
 
-### Recommended Actions
+<h3>Recommended Actions</h3>
 Check user IP and MAC, check IMPB entry, check topology
 
 
-### Variables
+<h3>Variables</h3>
 | Name | Type | Description | Required |
 | --- | --- | --- | --- |
 | ip | `ip_address` | User IP | {{ yes }} |
@@ -763,7 +763,7 @@ Check user IP and MAC, check IMPB entry, check topology
 | interface | `interface_name` | Affected interface | {{ yes }} |
 
 
-### Related Alarms
+<h3>Related Alarms</h3>
 | Alarm Class | Role | Description |
 | --- | --- | --- |
 | [Network \| IMPB \| Unauthenticated IP-MAC](../alarm-classes-reference/network.md#network-impb-unauthenticated-ip-mac) | :material-arrow-up: opening event | dispose |
@@ -775,7 +775,7 @@ Check user IP and MAC, check IMPB entry, check topology
 
 
 
-### Variables
+<h3>Variables</h3>
 | Name | Type | Description | Required |
 | --- | --- | --- | --- |
 | interface | `interface_name` | BFD interface | {{ no }} |
@@ -784,7 +784,7 @@ Check user IP and MAC, check IMPB entry, check topology
 | to_mac | `mac` | To MAC | {{ yes }} |
 
 
-### Related Alarms
+<h3>Related Alarms</h3>
 | Alarm Class | Role | Description |
 | --- | --- | --- |
 | [Network \| IP \| ARP Moved](../alarm-classes-reference/network.md#network-ip-arp-moved) | :material-arrow-up: opening event | dispose |
@@ -796,7 +796,7 @@ Check user IP and MAC, check IMPB entry, check topology
 
 
 
-### Variables
+<h3>Variables</h3>
 | Name | Type | Description | Required |
 | --- | --- | --- | --- |
 | ip | `ip_address` | IP | {{ yes }} |
@@ -810,7 +810,7 @@ Check user IP and MAC, check IMPB entry, check topology
 
 
 
-### Variables
+<h3>Variables</h3>
 | Name | Type | Description | Required |
 | --- | --- | --- | --- |
 | ip | `ip_address` | Conflicting IP | {{ yes }} |
@@ -818,7 +818,7 @@ Check user IP and MAC, check IMPB entry, check topology
 | interface | `interface_name` | Interface | {{ no }} |
 
 
-### Related Alarms
+<h3>Related Alarms</h3>
 | Alarm Class | Role | Description |
 | --- | --- | --- |
 | [Network \| IP \| Address Conflict](../alarm-classes-reference/network.md#network-ip-address-conflict) | :material-arrow-up: opening event | dispose |
@@ -830,7 +830,7 @@ Check user IP and MAC, check IMPB entry, check topology
 
 
 
-### Variables
+<h3>Variables</h3>
 | Name | Type | Description | Required |
 | --- | --- | --- | --- |
 | ip | `ip_address` | Flapped IP | {{ yes }} |
@@ -839,7 +839,7 @@ Check user IP and MAC, check IMPB entry, check topology
 | to_interface | `interface_name` | To interface | {{ yes }} |
 
 
-### Related Alarms
+<h3>Related Alarms</h3>
 | Alarm Class | Role | Description |
 | --- | --- | --- |
 | [Network \| IP \| IP Flap](../alarm-classes-reference/network.md#network-ip-ip-flap) | :material-arrow-up: opening event | dispose |
@@ -847,19 +847,19 @@ Check user IP and MAC, check IMPB entry, check topology
 
 
 ## Network | IP | Port Exhaustion
-### Symptoms
+<h3>Symptoms</h3>
 Failed to establish outgoung connection
 
 
-### Probable Causes
+<h3>Probable Causes</h3>
 No free TCP/UDP ports for outgoung connection
 
 
-### Recommended Actions
+<h3>Recommended Actions</h3>
 Check applications and aging intervals
 
 
-### Variables
+<h3>Variables</h3>
 | Name | Type | Description | Required |
 | --- | --- | --- | --- |
 | src_ip | `ip_address` | Source address | {{ no }} |
@@ -875,7 +875,7 @@ Check applications and aging intervals
 
 
 
-### Variables
+<h3>Variables</h3>
 | Name | Type | Description | Required |
 | --- | --- | --- | --- |
 | reason | `str` | Reason | {{ no }} |
@@ -888,7 +888,7 @@ Check applications and aging intervals
 
 
 
-### Variables
+<h3>Variables</h3>
 | Name | Type | Description | Required |
 | --- | --- | --- | --- |
 | reason | `str` | Reason | {{ no }} |
@@ -897,19 +897,19 @@ Check applications and aging intervals
 
 
 ## Network | IS-IS | Adjacency Down
-### Symptoms
+<h3>Symptoms</h3>
 Routing table changes and possible lost of connectivity
 
 
-### Probable Causes
+<h3>Probable Causes</h3>
 ISIS successfully established adjacency with neighbor
 
 
-### Recommended Actions
+<h3>Recommended Actions</h3>
 Check links and local and neighbor's router configuration
 
 
-### Variables
+<h3>Variables</h3>
 | Name | Type | Description | Required |
 | --- | --- | --- | --- |
 | neighbor | `str` | Neighbor's NSAP or name | {{ yes }} |
@@ -918,7 +918,7 @@ Check links and local and neighbor's router configuration
 | reason | `str` | Adjacency lost reason | {{ no }} |
 
 
-### Related Alarms
+<h3>Related Alarms</h3>
 | Alarm Class | Role | Description |
 | --- | --- | --- |
 | [Network \| IS-IS \| Adjacency Down](../alarm-classes-reference/network.md#network-is-is-adjacency-down) | :material-arrow-up: opening event | dispose |
@@ -930,7 +930,7 @@ Check links and local and neighbor's router configuration
 
 
 
-### Variables
+<h3>Variables</h3>
 | Name | Type | Description | Required |
 | --- | --- | --- | --- |
 | level | `int` | System Level index | {{ no }} |
@@ -942,19 +942,19 @@ Check links and local and neighbor's router configuration
 
 
 ## Network | IS-IS | Adjacency Up
-### Symptoms
+<h3>Symptoms</h3>
 Routing table changes
 
 
-### Probable Causes
+<h3>Probable Causes</h3>
 IS-IS successfully established adjacency with neighbor
 
 
-### Recommended Actions
+<h3>Recommended Actions</h3>
 No reaction needed
 
 
-### Variables
+<h3>Variables</h3>
 | Name | Type | Description | Required |
 | --- | --- | --- | --- |
 | neighbor | `str` | Neighbor's NSAP or name | {{ yes }} |
@@ -962,7 +962,7 @@ No reaction needed
 | level | `str` | Level | {{ no }} |
 
 
-### Related Alarms
+<h3>Related Alarms</h3>
 | Alarm Class | Role | Description |
 | --- | --- | --- |
 | [Network \| IS-IS \| Adjacency Down](../alarm-classes-reference/network.md#network-is-is-adjacency-down) | :material-arrow-down: closing event | dispose |
@@ -974,7 +974,7 @@ No reaction needed
 
 
 
-### Variables
+<h3>Variables</h3>
 | Name | Type | Description | Required |
 | --- | --- | --- | --- |
 | level | `int` | System Level index | {{ no }} |
@@ -988,15 +988,15 @@ No reaction needed
 ## Network | IS-IS | Authentication Failure
 
 
-### Probable Causes
+<h3>Probable Causes</h3>
 Link failure or protocol misconfiguration
 
 
-### Recommended Actions
+<h3>Recommended Actions</h3>
 Check local and neighbor router configuration
 
 
-### Variables
+<h3>Variables</h3>
 | Name | Type | Description | Required |
 | --- | --- | --- | --- |
 | level | `int` | System Level index | {{ no }} |
@@ -1011,7 +1011,7 @@ Check local and neighbor router configuration
 
 
 
-### Variables
+<h3>Variables</h3>
 | Name | Type | Description | Required |
 | --- | --- | --- | --- |
 | level | `int` | System Level index | {{ no }} |
@@ -1025,7 +1025,7 @@ Check local and neighbor router configuration
 
 
 
-### Variables
+<h3>Variables</h3>
 | Name | Type | Description | Required |
 | --- | --- | --- | --- |
 | level | `int` | System Level index | {{ no }} |
@@ -1042,7 +1042,7 @@ Check local and neighbor router configuration
 
 
 
-### Variables
+<h3>Variables</h3>
 | Name | Type | Description | Required |
 | --- | --- | --- | --- |
 | level | `int` | System Level index | {{ no }} |
@@ -1059,7 +1059,7 @@ Check local and neighbor router configuration
 
 
 
-### Variables
+<h3>Variables</h3>
 | Name | Type | Description | Required |
 | --- | --- | --- | --- |
 | level | `int` | System Level index | {{ no }} |
@@ -1074,7 +1074,7 @@ Check local and neighbor router configuration
 
 
 
-### Variables
+<h3>Variables</h3>
 | Name | Type | Description | Required |
 | --- | --- | --- | --- |
 | interface | `interface_name` | Port | {{ yes }} |
@@ -1088,7 +1088,7 @@ Check local and neighbor router configuration
 
 
 
-### Variables
+<h3>Variables</h3>
 | Name | Type | Description | Required |
 | --- | --- | --- | --- |
 | interface | `interface_name` | Port | {{ yes }} |
@@ -1102,7 +1102,7 @@ Check local and neighbor router configuration
 
 
 
-### Variables
+<h3>Variables</h3>
 | Name | Type | Description | Required |
 | --- | --- | --- | --- |
 | interface | `interface_name` | Port | {{ yes }} |
@@ -1112,19 +1112,19 @@ Check local and neighbor router configuration
 
 
 ## Network | LBD | Loop Cleared
-### Symptoms
+<h3>Symptoms</h3>
 Connection restored
 
 
 
 
-### Variables
+<h3>Variables</h3>
 | Name | Type | Description | Required |
 | --- | --- | --- | --- |
 | interface | `interface_name` | LBD interface | {{ yes }} |
 
 
-### Related Alarms
+<h3>Related Alarms</h3>
 | Alarm Class | Role | Description |
 | --- | --- | --- |
 | [Network \| LBD \| Loop Detected](../alarm-classes-reference/network.md#network-lbd-loop-detected) | :material-arrow-down: closing event | dispose |
@@ -1132,19 +1132,19 @@ Connection restored
 
 
 ## Network | LBD | Loop Detected
-### Symptoms
+<h3>Symptoms</h3>
 Connection lost
 
 
 
 
-### Variables
+<h3>Variables</h3>
 | Name | Type | Description | Required |
 | --- | --- | --- | --- |
 | interface | `interface_name` | LBD interface | {{ yes }} |
 
 
-### Related Alarms
+<h3>Related Alarms</h3>
 | Alarm Class | Role | Description |
 | --- | --- | --- |
 | [Network \| LBD \| Loop Detected](../alarm-classes-reference/network.md#network-lbd-loop-detected) | :material-arrow-up: opening event | dispose |
@@ -1152,20 +1152,20 @@ Connection lost
 
 
 ## Network | LBD | Vlan Loop Cleared
-### Symptoms
+<h3>Symptoms</h3>
 Connection restore on a specific vlan
 
 
 
 
-### Variables
+<h3>Variables</h3>
 | Name | Type | Description | Required |
 | --- | --- | --- | --- |
 | interface | `interface_name` | LBD interface | {{ yes }} |
 | vlan | `int` | Vlan | {{ yes }} |
 
 
-### Related Alarms
+<h3>Related Alarms</h3>
 | Alarm Class | Role | Description |
 | --- | --- | --- |
 | [Network \| LBD \| Vlan Loop Detected](../alarm-classes-reference/network.md#network-lbd-vlan-loop-detected) | :material-arrow-down: closing event | dispose |
@@ -1173,20 +1173,20 @@ Connection restore on a specific vlan
 
 
 ## Network | LBD | Vlan Loop Detected
-### Symptoms
+<h3>Symptoms</h3>
 Connection lost on a specific vlan
 
 
 
 
-### Variables
+<h3>Variables</h3>
 | Name | Type | Description | Required |
 | --- | --- | --- | --- |
 | interface | `interface_name` | LBD interface | {{ yes }} |
 | vlan | `int` | Vlan | {{ yes }} |
 
 
-### Related Alarms
+<h3>Related Alarms</h3>
 | Alarm Class | Role | Description |
 | --- | --- | --- |
 | [Network \| LBD \| Vlan Loop Detected](../alarm-classes-reference/network.md#network-lbd-vlan-loop-detected) | :material-arrow-up: opening event | dispose |
@@ -1198,7 +1198,7 @@ Connection lost on a specific vlan
 
 
 
-### Variables
+<h3>Variables</h3>
 | Name | Type | Description | Required |
 | --- | --- | --- | --- |
 | interface | `interface_name` | Affected interface | {{ yes }} |
@@ -1209,12 +1209,12 @@ Connection lost on a specific vlan
 ## Network | LLDP | LLDP Aged Out
 
 
-### Probable Causes
+<h3>Probable Causes</h3>
  
 
 
 
-### Variables
+<h3>Variables</h3>
 | Name | Type | Description | Required |
 | --- | --- | --- | --- |
 | interface | `interface_name` | Affected interface | {{ yes }} |
@@ -1225,15 +1225,15 @@ Connection lost on a specific vlan
 ## Network | LLDP | Native Vlan Not Match
 
 
-### Probable Causes
+<h3>Probable Causes</h3>
  
 
 
-### Recommended Actions
+<h3>Recommended Actions</h3>
 check configuration ports
 
 
-### Variables
+<h3>Variables</h3>
 | Name | Type | Description | Required |
 | --- | --- | --- | --- |
 | interface | `interface_name` | Affected interface | {{ yes }} |
@@ -1244,21 +1244,21 @@ check configuration ports
 
 
 ## Network | LLDP | Remote Tables Change
-### Symptoms
+<h3>Symptoms</h3>
 Possible instability of network connectivity
 
 
-### Probable Causes
+<h3>Probable Causes</h3>
 A lldpRemTablesChange notification is sent when the value of lldpStatsRemTableLastChangeTime changes.
 It can beutilized by an NMS to trigger LLDP remote systems table maintenance polls.
 Note that transmission of lldpRemTablesChange notifications are throttled by the agent, as specified by the 'lldpNotificationInterval' object
 
 
-### Recommended Actions
+<h3>Recommended Actions</h3>
 Large amount of deletes may indicate instable link
 
 
-### Variables
+<h3>Variables</h3>
 | Name | Type | Description | Required |
 | --- | --- | --- | --- |
 | table_inserts | `int` | Number of insers per interval | {{ yes }} |
@@ -1270,19 +1270,19 @@ Large amount of deletes may indicate instable link
 
 
 ## Network | Link | Connection Problem
-### Symptoms
+<h3>Symptoms</h3>
 Poor rate, connection interrupts
 
 
-### Probable Causes
+<h3>Probable Causes</h3>
 Cable damage, hardware or software error either from this or from another side
 
 
-### Recommended Actions
+<h3>Recommended Actions</h3>
 Check configuration, both sides of links and hardware
 
 
-### Variables
+<h3>Variables</h3>
 | Name | Type | Description | Required |
 | --- | --- | --- | --- |
 | interface | `interface_name` | Affected interface | {{ yes }} |
@@ -1291,13 +1291,13 @@ Check configuration, both sides of links and hardware
 
 
 ## Network | Link | DOM | Alarm: Out of Threshold
-### Symptoms
+<h3>Symptoms</h3>
 Connection lost
 
 
 
 
-### Variables
+<h3>Variables</h3>
 | Name | Type | Description | Required |
 | --- | --- | --- | --- |
 | interface | `str` | Physical port | {{ yes }} |
@@ -1307,7 +1307,7 @@ Connection lost
 | tvalue | `str` | Threshold value | {{ no }} |
 
 
-### Related Alarms
+<h3>Related Alarms</h3>
 | Alarm Class | Role | Description |
 | --- | --- | --- |
 | [Network \| Link \| DOM \| Alarm: Out of Threshold](../alarm-classes-reference/network.md#network-link-dom-alarm:-out-of-threshold) | :material-arrow-up: opening event | dispose |
@@ -1319,7 +1319,7 @@ Connection lost
 
 
 
-### Variables
+<h3>Variables</h3>
 | Name | Type | Description | Required |
 | --- | --- | --- | --- |
 | interface | `str` | Physical port | {{ yes }} |
@@ -1327,7 +1327,7 @@ Connection lost
 | sensor | `str` | Measured name | {{ no }} |
 
 
-### Related Alarms
+<h3>Related Alarms</h3>
 | Alarm Class | Role | Description |
 | --- | --- | --- |
 | [Network \| Link \| DOM \| Alarm: Out of Threshold](../alarm-classes-reference/network.md#network-link-dom-alarm:-out-of-threshold) | :material-arrow-down: closing event | dispose |
@@ -1335,13 +1335,13 @@ Connection lost
 
 
 ## Network | Link | DOM | Warning: Out of Threshold
-### Symptoms
+<h3>Symptoms</h3>
 Connection lost
 
 
 
 
-### Variables
+<h3>Variables</h3>
 | Name | Type | Description | Required |
 | --- | --- | --- | --- |
 | interface | `str` | Physical port | {{ yes }} |
@@ -1351,7 +1351,7 @@ Connection lost
 | tvalue | `str` | Threshold value | {{ no }} |
 
 
-### Related Alarms
+<h3>Related Alarms</h3>
 | Alarm Class | Role | Description |
 | --- | --- | --- |
 | [Network \| Link \| DOM \| Warning: Out of Threshold](../alarm-classes-reference/network.md#network-link-dom-warning:-out-of-threshold) | :material-arrow-up: opening event | dispose |
@@ -1363,7 +1363,7 @@ Connection lost
 
 
 
-### Variables
+<h3>Variables</h3>
 | Name | Type | Description | Required |
 | --- | --- | --- | --- |
 | interface | `str` | Physical port | {{ yes }} |
@@ -1371,7 +1371,7 @@ Connection lost
 | sensor | `str` | Measured name | {{ no }} |
 
 
-### Related Alarms
+<h3>Related Alarms</h3>
 | Alarm Class | Role | Description |
 | --- | --- | --- |
 | [Network \| Link \| DOM \| Warning: Out of Threshold](../alarm-classes-reference/network.md#network-link-dom-warning:-out-of-threshold) | :material-arrow-down: closing event | dispose |
@@ -1383,13 +1383,13 @@ Connection lost
 
 
 
-### Variables
+<h3>Variables</h3>
 | Name | Type | Description | Required |
 | --- | --- | --- | --- |
 | interface | `interface_name` | interface name | {{ yes }} |
 
 
-### Related Alarms
+<h3>Related Alarms</h3>
 | Alarm Class | Role | Description |
 | --- | --- | --- |
 | [Network \| Link \| Duplex Mismatch](../alarm-classes-reference/network.md#network-link-duplex-mismatch) | :material-arrow-up: opening event | dispose |
@@ -1401,14 +1401,14 @@ Connection lost
 
 
 
-### Variables
+<h3>Variables</h3>
 | Name | Type | Description | Required |
 | --- | --- | --- | --- |
 | interface | `interface_name` | interface name | {{ yes }} |
 | reason | `str` | err-disable reason | {{ no }} |
 
 
-### Related Alarms
+<h3>Related Alarms</h3>
 | Alarm Class | Role | Description |
 | --- | --- | --- |
 | [Network \| Link \| Err-Disable](../alarm-classes-reference/network.md#network-link-err-disable) | :material-arrow-up: opening event | dispose |
@@ -1420,13 +1420,13 @@ Connection lost
 
 
 
-### Variables
+<h3>Variables</h3>
 | Name | Type | Description | Required |
 | --- | --- | --- | --- |
 | interface | `interface_name` | interface name | {{ yes }} |
 
 
-### Related Alarms
+<h3>Related Alarms</h3>
 | Alarm Class | Role | Description |
 | --- | --- | --- |
 | [Network \| Link \| Half-Duplex](../alarm-classes-reference/network.md#network-link-half-duplex) | :material-arrow-down: closing event | dispose |
@@ -1438,13 +1438,13 @@ Connection lost
 
 
 
-### Variables
+<h3>Variables</h3>
 | Name | Type | Description | Required |
 | --- | --- | --- | --- |
 | interface | `interface_name` | interface name | {{ yes }} |
 
 
-### Related Alarms
+<h3>Related Alarms</h3>
 | Alarm Class | Role | Description |
 | --- | --- | --- |
 | [Network \| Link \| Half-Duplex](../alarm-classes-reference/network.md#network-link-half-duplex) | :material-arrow-up: opening event | dispose |
@@ -1452,25 +1452,25 @@ Connection lost
 
 
 ## Network | Link | Link Down
-### Symptoms
+<h3>Symptoms</h3>
 Connection lost
 
 
-### Probable Causes
+<h3>Probable Causes</h3>
 Administrative action, cable damage, hardware or software error either from this or from another side
 
 
-### Recommended Actions
+<h3>Recommended Actions</h3>
 Check configuration, both sides of links and hardware
 
 
-### Variables
+<h3>Variables</h3>
 | Name | Type | Description | Required |
 | --- | --- | --- | --- |
 | interface | `interface_name` | Affected interface | {{ yes }} |
 
 
-### Related Alarms
+<h3>Related Alarms</h3>
 | Alarm Class | Role | Description |
 | --- | --- | --- |
 | [Network \| Link \| Link Down](../alarm-classes-reference/network.md#network-link-link-down) | :material-arrow-up: opening event | dispose |
@@ -1478,25 +1478,25 @@ Check configuration, both sides of links and hardware
 
 
 ## Network | Link | Link Flap Error Detected
-### Symptoms
+<h3>Symptoms</h3>
 Connection lost
 
 
-### Probable Causes
+<h3>Probable Causes</h3>
 Cable damage, hardware or software error either from this or from another side
 
 
-### Recommended Actions
+<h3>Recommended Actions</h3>
 Check both sides of links and hardware
 
 
-### Variables
+<h3>Variables</h3>
 | Name | Type | Description | Required |
 | --- | --- | --- | --- |
 | interface | `interface_name` | Affected interface | {{ yes }} |
 
 
-### Related Alarms
+<h3>Related Alarms</h3>
 | Alarm Class | Role | Description |
 | --- | --- | --- |
 | [Network \| Link \| Err-Disable](../alarm-classes-reference/network.md#network-link-err-disable) | :material-arrow-up: opening event | dispose |
@@ -1508,13 +1508,13 @@ Check both sides of links and hardware
 
 
 
-### Variables
+<h3>Variables</h3>
 | Name | Type | Description | Required |
 | --- | --- | --- | --- |
 | interface | `interface_name` | Affected interface | {{ yes }} |
 
 
-### Related Alarms
+<h3>Related Alarms</h3>
 | Alarm Class | Role | Description |
 | --- | --- | --- |
 | [Network \| Link \| Err-Disable](../alarm-classes-reference/network.md#network-link-err-disable) | :material-arrow-down: closing event | dispose |
@@ -1522,19 +1522,19 @@ Check both sides of links and hardware
 
 
 ## Network | Link | Link Up
-### Symptoms
+<h3>Symptoms</h3>
 Connection restored
 
 
-### Probable Causes
+<h3>Probable Causes</h3>
 Administrative action, cable or hardware replacement
 
 
-### Recommended Actions
+<h3>Recommended Actions</h3>
 Check interfaces on both sides for possible errors
 
 
-### Variables
+<h3>Variables</h3>
 | Name | Type | Description | Required |
 | --- | --- | --- | --- |
 | interface | `interface_name` | Affected interface | {{ yes }} |
@@ -1542,7 +1542,7 @@ Check interfaces on both sides for possible errors
 | duplex | `str` | Duplex mode | {{ no }} |
 
 
-### Related Alarms
+<h3>Related Alarms</h3>
 | Alarm Class | Role | Description |
 | --- | --- | --- |
 | [Network \| Link \| Link Down](../alarm-classes-reference/network.md#network-link-link-down) | :material-arrow-down: closing event | Clear Link Down |
@@ -1557,7 +1557,7 @@ Check interfaces on both sides for possible errors
 
 
 
-### Variables
+<h3>Variables</h3>
 | Name | Type | Description | Required |
 | --- | --- | --- | --- |
 | mac | `mac` | MAC Address | {{ yes }} |
@@ -1565,7 +1565,7 @@ Check interfaces on both sides for possible errors
 | two_interface | `interface_name` | Second interface | {{ yes }} |
 
 
-### Related Alarms
+<h3>Related Alarms</h3>
 | Alarm Class | Role | Description |
 | --- | --- | --- |
 | [Network \| MAC \| Duplicate MAC](../alarm-classes-reference/network.md#network-mac-duplicate-mac) | :material-arrow-up: opening event | dispose |
@@ -1577,7 +1577,7 @@ Check interfaces on both sides for possible errors
 
 
 
-### Variables
+<h3>Variables</h3>
 | Name | Type | Description | Required |
 | --- | --- | --- | --- |
 | mac | `mac` | MAC Address | {{ yes }} |
@@ -1585,7 +1585,7 @@ Check interfaces on both sides for possible errors
 | vlan | `int` | Affected vlan | {{ no }} |
 
 
-### Related Alarms
+<h3>Related Alarms</h3>
 | Alarm Class | Role | Description |
 | --- | --- | --- |
 | [Network \| MAC \| Invalid MAC](../alarm-classes-reference/network.md#network-mac-invalid-mac) | :material-arrow-up: opening event | dispose |
@@ -1597,7 +1597,7 @@ Check interfaces on both sides for possible errors
 
 
 
-### Variables
+<h3>Variables</h3>
 | Name | Type | Description | Required |
 | --- | --- | --- | --- |
 | mac_limit | `int` | MAC Address Limit | {{ yes }} |
@@ -1605,7 +1605,7 @@ Check interfaces on both sides for possible errors
 | interface | `interface_name` | Interface | {{ no }} |
 
 
-### Related Alarms
+<h3>Related Alarms</h3>
 | Alarm Class | Role | Description |
 | --- | --- | --- |
 | [Network \| MAC \| Link MAC Exceed](../alarm-classes-reference/network.md#network-mac-link-mac-exceed) | :material-arrow-up: opening event | dispose |
@@ -1617,7 +1617,7 @@ Check interfaces on both sides for possible errors
 
 
 
-### Variables
+<h3>Variables</h3>
 | Name | Type | Description | Required |
 | --- | --- | --- | --- |
 | mac | `mac` | MAC Address | {{ yes }} |
@@ -1630,15 +1630,15 @@ Check interfaces on both sides for possible errors
 ## Network | MAC | MAC Flap
 
 
-### Probable Causes
+<h3>Probable Causes</h3>
 The system found the specified host moving between the specified ports.
 
 
-### Recommended Actions
+<h3>Recommended Actions</h3>
 Examine the network for possible loops.
 
 
-### Variables
+<h3>Variables</h3>
 | Name | Type | Description | Required |
 | --- | --- | --- | --- |
 | mac | `mac` | MAC Address | {{ yes }} |
@@ -1647,7 +1647,7 @@ Examine the network for possible loops.
 | to_interface | `interface_name` | To interface | {{ yes }} |
 
 
-### Related Alarms
+<h3>Related Alarms</h3>
 | Alarm Class | Role | Description |
 | --- | --- | --- |
 | [Network \| MAC \| MAC Flap](../alarm-classes-reference/network.md#network-mac-mac-flap) | :material-arrow-up: opening event | dispose |
@@ -1659,7 +1659,7 @@ Examine the network for possible loops.
 
 
 
-### Variables
+<h3>Variables</h3>
 | Name | Type | Description | Required |
 | --- | --- | --- | --- |
 | mac | `mac` | MAC Address | {{ yes }} |
@@ -1667,7 +1667,7 @@ Examine the network for possible loops.
 | interface | `interface_name` | Interface | {{ no }} |
 
 
-### Related Alarms
+<h3>Related Alarms</h3>
 | Alarm Class | Role | Description |
 | --- | --- | --- |
 | [Network \| MAC \| MAC Flood](../alarm-classes-reference/network.md#network-mac-mac-flood) | :material-arrow-up: opening event | dispose |
@@ -1679,7 +1679,7 @@ Examine the network for possible loops.
 
 
 
-### Variables
+<h3>Variables</h3>
 | Name | Type | Description | Required |
 | --- | --- | --- | --- |
 | mac | `mac` | MAC Address | {{ yes }} |
@@ -1694,7 +1694,7 @@ Examine the network for possible loops.
 
 
 
-### Variables
+<h3>Variables</h3>
 | Name | Type | Description | Required |
 | --- | --- | --- | --- |
 | mac | `mac` | MAC Address | {{ yes }} |
@@ -1709,7 +1709,7 @@ Examine the network for possible loops.
 
 
 
-### Variables
+<h3>Variables</h3>
 | Name | Type | Description | Required |
 | --- | --- | --- | --- |
 | ldp_id | `int` | LDP Neighbor | {{ yes }} |
@@ -1723,7 +1723,7 @@ Examine the network for possible loops.
 
 
 
-### Variables
+<h3>Variables</h3>
 | Name | Type | Description | Required |
 | --- | --- | --- | --- |
 | neighbor | `ip_address` | LDP Neighbor | {{ yes }} |
@@ -1731,7 +1731,7 @@ Examine the network for possible loops.
 | reason | `str` | Reason | {{ no }} |
 
 
-### Related Alarms
+<h3>Related Alarms</h3>
 | Alarm Class | Role | Description |
 | --- | --- | --- |
 | [Network \| MPLS \| LDP Neighbor Down](../alarm-classes-reference/network.md#network-mpls-ldp-neighbor-down) | :material-arrow-up: opening event | dispose |
@@ -1743,7 +1743,7 @@ Examine the network for possible loops.
 
 
 
-### Variables
+<h3>Variables</h3>
 | Name | Type | Description | Required |
 | --- | --- | --- | --- |
 | neighbor | `ip_address` | LDP Neighbor | {{ yes }} |
@@ -1751,7 +1751,7 @@ Examine the network for possible loops.
 | reason | `str` | Reason | {{ no }} |
 
 
-### Related Alarms
+<h3>Related Alarms</h3>
 | Alarm Class | Role | Description |
 | --- | --- | --- |
 | [Network \| MPLS \| LDP Neighbor Down](../alarm-classes-reference/network.md#network-mpls-ldp-neighbor-down) | :material-arrow-down: closing event | dispose |
@@ -1763,7 +1763,7 @@ Examine the network for possible loops.
 
 
 
-### Variables
+<h3>Variables</h3>
 | Name | Type | Description | Required |
 | --- | --- | --- | --- |
 | interface | `interface_name` | Affected interface | {{ yes }} |
@@ -1771,7 +1771,7 @@ Examine the network for possible loops.
 | reason | `str` | Reason | {{ no }} |
 
 
-### Related Alarms
+<h3>Related Alarms</h3>
 | Alarm Class | Role | Description |
 | --- | --- | --- |
 | [Network \| MPLS \| LDP Session Down](../alarm-classes-reference/network.md#network-mpls-ldp-session-down) | :material-arrow-up: opening event | dispose |
@@ -1783,7 +1783,7 @@ Examine the network for possible loops.
 
 
 
-### Variables
+<h3>Variables</h3>
 | Name | Type | Description | Required |
 | --- | --- | --- | --- |
 | interface | `interface_name` | Affected interface | {{ yes }} |
@@ -1791,7 +1791,7 @@ Examine the network for possible loops.
 | reason | `str` | Reason | {{ no }} |
 
 
-### Related Alarms
+<h3>Related Alarms</h3>
 | Alarm Class | Role | Description |
 | --- | --- | --- |
 | [Network \| MPLS \| LDP Session Down](../alarm-classes-reference/network.md#network-mpls-ldp-session-down) | :material-arrow-down: closing event | dispose |
@@ -1803,14 +1803,14 @@ Examine the network for possible loops.
 
 
 
-### Variables
+<h3>Variables</h3>
 | Name | Type | Description | Required |
 | --- | --- | --- | --- |
 | name | `str` | LSP name | {{ yes }} |
 | reason | `str` | Reason | {{ no }} |
 
 
-### Related Alarms
+<h3>Related Alarms</h3>
 | Alarm Class | Role | Description |
 | --- | --- | --- |
 | [Network \| MPLS \| LSP Down](../alarm-classes-reference/network.md#network-mpls-lsp-down) | :material-arrow-up: opening event | dispose |
@@ -1822,7 +1822,7 @@ Examine the network for possible loops.
 
 
 
-### Variables
+<h3>Variables</h3>
 | Name | Type | Description | Required |
 | --- | --- | --- | --- |
 | name | `str` | LSP name | {{ yes }} |
@@ -1836,14 +1836,14 @@ Examine the network for possible loops.
 
 
 
-### Variables
+<h3>Variables</h3>
 | Name | Type | Description | Required |
 | --- | --- | --- | --- |
 | name | `str` | LSP name | {{ yes }} |
 | bandwidth | `int` | Bandwidth (bps) | {{ no }} |
 
 
-### Related Alarms
+<h3>Related Alarms</h3>
 | Alarm Class | Role | Description |
 | --- | --- | --- |
 | [Network \| MPLS \| LSP Down](../alarm-classes-reference/network.md#network-mpls-lsp-down) | :material-arrow-down: closing event | dispose |
@@ -1855,7 +1855,7 @@ Examine the network for possible loops.
 
 
 
-### Variables
+<h3>Variables</h3>
 | Name | Type | Description | Required |
 | --- | --- | --- | --- |
 | index | `int` | XC index | {{ no }} |
@@ -1872,7 +1872,7 @@ Examine the network for possible loops.
 
 
 
-### Variables
+<h3>Variables</h3>
 | Name | Type | Description | Required |
 | --- | --- | --- | --- |
 | index | `int` | XC index | {{ no }} |
@@ -1885,13 +1885,13 @@ Examine the network for possible loops.
 
 
 ## Network | MPLS | Link Down
-### Symptoms
+<h3>Symptoms</h3>
 Connection lost
 
 
 
 
-### Variables
+<h3>Variables</h3>
 | Name | Type | Description | Required |
 | --- | --- | --- | --- |
 | interface | `interface_name` | Affected interface in the VPN | {{ yes }} |
@@ -1902,13 +1902,13 @@ Connection lost
 
 
 ## Network | MPLS | Link Up
-### Symptoms
+<h3>Symptoms</h3>
 Connection recover
 
 
 
 
-### Variables
+<h3>Variables</h3>
 | Name | Type | Description | Required |
 | --- | --- | --- | --- |
 | interface | `interface_name` | Affected interface in the VPN | {{ yes }} |
@@ -1923,14 +1923,14 @@ Connection recover
 
 
 
-### Variables
+<h3>Variables</h3>
 | Name | Type | Description | Required |
 | --- | --- | --- | --- |
 | name | `str` | Path name | {{ yes }} |
 | reason | `str` | Reason | {{ no }} |
 
 
-### Related Alarms
+<h3>Related Alarms</h3>
 | Alarm Class | Role | Description |
 | --- | --- | --- |
 | [Network \| MPLS \| Path Down](../alarm-classes-reference/network.md#network-mpls-path-down) | :material-arrow-up: opening event | dispose |
@@ -1942,14 +1942,14 @@ Connection recover
 
 
 
-### Variables
+<h3>Variables</h3>
 | Name | Type | Description | Required |
 | --- | --- | --- | --- |
 | name | `str` | Path name | {{ yes }} |
 | bandwidth | `int` | Bandwidth (bps) | {{ no }} |
 
 
-### Related Alarms
+<h3>Related Alarms</h3>
 | Alarm Class | Role | Description |
 | --- | --- | --- |
 | [Network \| MPLS \| Path Down](../alarm-classes-reference/network.md#network-mpls-path-down) | :material-arrow-down: closing event | dispose |
@@ -1961,14 +1961,14 @@ Connection recover
 
 
 
-### Variables
+<h3>Variables</h3>
 | Name | Type | Description | Required |
 | --- | --- | --- | --- |
 | neighbor | `ip_address` | TDP Neighbor | {{ yes }} |
 | reason | `str` | Reason | {{ no }} |
 
 
-### Related Alarms
+<h3>Related Alarms</h3>
 | Alarm Class | Role | Description |
 | --- | --- | --- |
 | [Network \| MPLS \| TDP Neighbor Down](../alarm-classes-reference/network.md#network-mpls-tdp-neighbor-down) | :material-arrow-up: opening event | dispose |
@@ -1980,14 +1980,14 @@ Connection recover
 
 
 
-### Variables
+<h3>Variables</h3>
 | Name | Type | Description | Required |
 | --- | --- | --- | --- |
 | neighbor | `ip_address` | TDP Neighbor | {{ yes }} |
 | reason | `str` | Reason | {{ no }} |
 
 
-### Related Alarms
+<h3>Related Alarms</h3>
 | Alarm Class | Role | Description |
 | --- | --- | --- |
 | [Network \| MPLS \| TDP Neighbor Down](../alarm-classes-reference/network.md#network-mpls-tdp-neighbor-down) | :material-arrow-down: closing event | dispose |
@@ -1999,7 +1999,7 @@ Connection recover
 
 
 
-### Variables
+<h3>Variables</h3>
 | Name | Type | Description | Required |
 | --- | --- | --- | --- |
 | index | `int` | Tunnel index | {{ no }} |
@@ -2016,7 +2016,7 @@ Connection recover
 
 
 
-### Variables
+<h3>Variables</h3>
 | Name | Type | Description | Required |
 | --- | --- | --- | --- |
 | interface | `interface_name` | Vrf Interface | {{ no }} |
@@ -2034,7 +2034,7 @@ Connection recover
 
 
 
-### Variables
+<h3>Variables</h3>
 | Name | Type | Description | Required |
 | --- | --- | --- | --- |
 | interface | `interface_name` | Vrf Interface | {{ no }} |
@@ -2052,7 +2052,7 @@ Connection recover
 
 
 
-### Variables
+<h3>Variables</h3>
 | Name | Type | Description | Required |
 | --- | --- | --- | --- |
 | ovalue | `int` | Current Number Routes | {{ yes }} |
@@ -2066,7 +2066,7 @@ Connection recover
 
 
 
-### Variables
+<h3>Variables</h3>
 | Name | Type | Description | Required |
 | --- | --- | --- | --- |
 | ovalue | `int` | Current Number Routes | {{ yes }} |
@@ -2080,7 +2080,7 @@ Connection recover
 
 
 
-### Variables
+<h3>Variables</h3>
 | Name | Type | Description | Required |
 | --- | --- | --- | --- |
 | peer | `ip_address` | Peer's IP | {{ yes }} |
@@ -2088,7 +2088,7 @@ Connection recover
 | reason | `str` | Reason | {{ no }} |
 
 
-### Related Alarms
+<h3>Related Alarms</h3>
 | Alarm Class | Role | Description |
 | --- | --- | --- |
 | [Network \| MSDP \| Peer Down](../alarm-classes-reference/network.md#network-msdp-peer-down) | :material-arrow-up: opening event | dispose |
@@ -2100,14 +2100,14 @@ Connection recover
 
 
 
-### Variables
+<h3>Variables</h3>
 | Name | Type | Description | Required |
 | --- | --- | --- | --- |
 | peer | `ip_address` | Peer's IP | {{ yes }} |
 | vrf | `str` | VRF | {{ no }} |
 
 
-### Related Alarms
+<h3>Related Alarms</h3>
 | Alarm Class | Role | Description |
 | --- | --- | --- |
 | [Network \| MSDP \| Peer Down](../alarm-classes-reference/network.md#network-msdp-peer-down) | :material-arrow-down: closing event | dispose |
@@ -2119,13 +2119,13 @@ Connection recover
 
 
 
-### Variables
+<h3>Variables</h3>
 | Name | Type | Description | Required |
 | --- | --- | --- | --- |
 | interface | `interface_name` | Interface | {{ yes }} |
 
 
-### Related Alarms
+<h3>Related Alarms</h3>
 | Alarm Class | Role | Description |
 | --- | --- | --- |
 | [Network \| Monitor \| CRC Error Detected](../alarm-classes-reference/network.md#network-monitor-crc-error-detected) | :material-arrow-down: closing event | dispose |
@@ -2137,13 +2137,13 @@ Connection recover
 
 
 
-### Variables
+<h3>Variables</h3>
 | Name | Type | Description | Required |
 | --- | --- | --- | --- |
 | interface | `interface_name` | Interface | {{ yes }} |
 
 
-### Related Alarms
+<h3>Related Alarms</h3>
 | Alarm Class | Role | Description |
 | --- | --- | --- |
 | [Network \| Monitor \| CRC Error Detected](../alarm-classes-reference/network.md#network-monitor-crc-error-detected) | :material-arrow-up: opening event | dispose |
@@ -2153,11 +2153,11 @@ Connection recover
 ## Network | NTP | Lost synchronization
 
 
-### Probable Causes
+<h3>Probable Causes</h3>
 NTP synchronization with its peer has been lost
 
 
-### Recommended Actions
+<h3>Recommended Actions</h3>
 Perform the following actions:
    Check the network connection to the peer.
    Check to ensure that NTP is running on the peer.
@@ -2165,7 +2165,7 @@ Perform the following actions:
    Check to see if the NTP packets from the peer have passed the validity tests specified in RFC1305.
 
 
-### Variables
+<h3>Variables</h3>
 | Name | Type | Description | Required |
 | --- | --- | --- | --- |
 | server_name | `str` | NTP server name | {{ no }} |
@@ -2179,7 +2179,7 @@ Perform the following actions:
 
 
 
-### Variables
+<h3>Variables</h3>
 | Name | Type | Description | Required |
 | --- | --- | --- | --- |
 | server_name | `str` | NTP server name | {{ no }} |
@@ -2193,7 +2193,7 @@ Perform the following actions:
 
 
 
-### Variables
+<h3>Variables</h3>
 | Name | Type | Description | Required |
 | --- | --- | --- | --- |
 | server_name | `str` | NTP server name | {{ no }} |
@@ -2207,7 +2207,7 @@ Perform the following actions:
 
 
 
-### Variables
+<h3>Variables</h3>
 | Name | Type | Description | Required |
 | --- | --- | --- | --- |
 | adjustment_ms | `int` | Time adjustment in msec | {{ no }} |
@@ -2222,7 +2222,7 @@ Perform the following actions:
 
 
 
-### Variables
+<h3>Variables</h3>
 | Name | Type | Description | Required |
 | --- | --- | --- | --- |
 | server_name | `str` | NTP server name | {{ no }} |
@@ -2235,12 +2235,12 @@ Perform the following actions:
 ## Network | OAM | Client Clear Remote Failure
 
 
-### Probable Causes
+<h3>Probable Causes</h3>
 The remote client received a message to clear a link fault, or a dying gasp (an unrecoverable local failure), or a critical event in the operations, administration, and maintenance Protocol Data Unit (OAMPDU).
 
 
 
-### Variables
+<h3>Variables</h3>
 | Name | Type | Description | Required |
 | --- | --- | --- | --- |
 | interface | `interface_name` | Interface | {{ yes }} |
@@ -2252,15 +2252,15 @@ The remote client received a message to clear a link fault, or a dying gasp (an 
 ## Network | OAM | Client Recieved Remote Failure
 
 
-### Probable Causes
+<h3>Probable Causes</h3>
 The remote client indicates a Link Fault, or a Dying Gasp (an unrecoverable local failure), or a Critical Event in the OAMPDU. In the event of Link Fault, the Fnetwork administrator may consider shutting down the link.
 
 
-### Recommended Actions
+<h3>Recommended Actions</h3>
 In the event of a link fault, consider shutting down the link.
 
 
-### Variables
+<h3>Variables</h3>
 | Name | Type | Description | Required |
 | --- | --- | --- | --- |
 | interface | `interface_name` | Interface | {{ yes }} |
@@ -2268,7 +2268,7 @@ In the event of a link fault, consider shutting down the link.
 | action | `str` | Response action | {{ no }} |
 
 
-### Related Alarms
+<h3>Related Alarms</h3>
 | Alarm Class | Role | Description |
 | --- | --- | --- |
 | [Environment \| Total Power Loss](../alarm-classes-reference/environment.md#environment-total-power-loss) | :material-arrow-up: opening event | Total power loss |
@@ -2278,15 +2278,15 @@ In the event of a link fault, consider shutting down the link.
 ## Network | OAM | Discovery Timeout
 
 
-### Probable Causes
+<h3>Probable Causes</h3>
 The Ethernet OAM client on the specified interface has not received any OAMPDUs in the number of seconds for timeout that were configured by the user. The client has exited the OAM session.
 
 
-### Recommended Actions
+<h3>Recommended Actions</h3>
 No action is required.
 
 
-### Variables
+<h3>Variables</h3>
 | Name | Type | Description | Required |
 | --- | --- | --- | --- |
 | interface | `interface_name` | Interface | {{ yes }} |
@@ -2297,15 +2297,15 @@ No action is required.
 ## Network | OAM | Enter Session
 
 
-### Probable Causes
+<h3>Probable Causes</h3>
 Ethernet OAM client on the specified interface has detected a remote client and has entered the OAM session.
 
 
-### Recommended Actions
+<h3>Recommended Actions</h3>
 No action is required. 
 
 
-### Variables
+<h3>Variables</h3>
 | Name | Type | Description | Required |
 | --- | --- | --- | --- |
 | interface | `interface_name` | Interface | {{ yes }} |
@@ -2316,15 +2316,15 @@ No action is required.
 ## Network | OAM | Entering Master Loopback Mode
 
 
-### Probable Causes
+<h3>Probable Causes</h3>
 The specified interface has entered or exited loopback mode because of protocol control or an external event, such as the interface link going down.
 
 
-### Recommended Actions
+<h3>Recommended Actions</h3>
 No action is required.
 
 
-### Variables
+<h3>Variables</h3>
 | Name | Type | Description | Required |
 | --- | --- | --- | --- |
 | interface | `interface_name` | Interface | {{ yes }} |
@@ -2335,15 +2335,15 @@ No action is required.
 ## Network | OAM | Entering Slave Loopback Mode
 
 
-### Probable Causes
+<h3>Probable Causes</h3>
 The specified interface has entered or exited loopback mode because of protocol control or an external event, such as the interface link going down.
 
 
-### Recommended Actions
+<h3>Recommended Actions</h3>
 No action is required.
 
 
-### Variables
+<h3>Variables</h3>
 | Name | Type | Description | Required |
 | --- | --- | --- | --- |
 | interface | `interface_name` | Interface | {{ yes }} |
@@ -2354,15 +2354,15 @@ No action is required.
 ## Network | OAM | Exit Session
 
 
-### Probable Causes
+<h3>Probable Causes</h3>
 Ethernet OAM client on the specified interface has experienced some state change.
 
 
-### Recommended Actions
+<h3>Recommended Actions</h3>
 No action is required.
 
 
-### Variables
+<h3>Variables</h3>
 | Name | Type | Description | Required |
 | --- | --- | --- | --- |
 | interface | `interface_name` | Interface | {{ yes }} |
@@ -2373,15 +2373,15 @@ No action is required.
 ## Network | OAM | Exiting Master Loopback Mode
 
 
-### Probable Causes
+<h3>Probable Causes</h3>
 The specified interface has entered or exited loopback mode because of protocol control or an external event, such as the interface link going down.
 
 
-### Recommended Actions
+<h3>Recommended Actions</h3>
 No action is required.
 
 
-### Variables
+<h3>Variables</h3>
 | Name | Type | Description | Required |
 | --- | --- | --- | --- |
 | interface | `interface_name` | Interface | {{ yes }} |
@@ -2392,15 +2392,15 @@ No action is required.
 ## Network | OAM | Exiting Slave Loopback Mode
 
 
-### Probable Causes
+<h3>Probable Causes</h3>
 The specified interface has entered or exited loopback mode because of protocol control or an external event, such as the interface link going down.
 
 
-### Recommended Actions
+<h3>Recommended Actions</h3>
 No action is required.
 
 
-### Variables
+<h3>Variables</h3>
 | Name | Type | Description | Required |
 | --- | --- | --- | --- |
 | interface | `interface_name` | Interface | {{ yes }} |
@@ -2411,15 +2411,15 @@ No action is required.
 ## Network | OAM | Monitoring Error
 
 
-### Probable Causes
+<h3>Probable Causes</h3>
 A monitored error has been detected to have crossed the user-specified threshold.
 
 
-### Recommended Actions
+<h3>Recommended Actions</h3>
 No action is required.
 
 
-### Variables
+<h3>Variables</h3>
 | Name | Type | Description | Required |
 | --- | --- | --- | --- |
 | interface | `interface_name` | Interface | {{ yes }} |
@@ -2431,15 +2431,15 @@ No action is required.
 ## Network | OSPF | Authentication Failure
 
 
-### Probable Causes
+<h3>Probable Causes</h3>
 Link failure or protocol misconfiguration
 
 
-### Recommended Actions
+<h3>Recommended Actions</h3>
 Check local and neighbor router configuration
 
 
-### Variables
+<h3>Variables</h3>
 | Name | Type | Description | Required |
 | --- | --- | --- | --- |
 | address | `ip_address` | OSPF Interface IP Address | {{ yes }} |
@@ -2455,15 +2455,15 @@ Check local and neighbor router configuration
 ## Network | OSPF | Interface State Changed
 
 
-### Probable Causes
+<h3>Probable Causes</h3>
 Link failure or protocol misconfiguration
 
 
-### Recommended Actions
+<h3>Recommended Actions</h3>
 Check links and local and neighbor router configuration
 
 
-### Variables
+<h3>Variables</h3>
 | Name | Type | Description | Required |
 | --- | --- | --- | --- |
 | address | `ip_address` | OSPF Interface IP Address | {{ yes }} |
@@ -2479,7 +2479,7 @@ Check links and local and neighbor router configuration
 
 
 
-### Variables
+<h3>Variables</h3>
 | Name | Type | Description | Required |
 | --- | --- | --- | --- |
 | lsdb_area | `str` | The 32-bit identifier of the area from which the LSA was received. | {{ yes }} |
@@ -2496,7 +2496,7 @@ Check links and local and neighbor router configuration
 
 
 
-### Variables
+<h3>Variables</h3>
 | Name | Type | Description | Required |
 | --- | --- | --- | --- |
 | lsdb_area | `str` | The 32-bit identifier of the area from which the LSA was received. | {{ yes }} |
@@ -2513,7 +2513,7 @@ Check links and local and neighbor router configuration
 
 
 
-### Variables
+<h3>Variables</h3>
 | Name | Type | Description | Required |
 | --- | --- | --- | --- |
 | lsdb_type | `int` | The type of the link state advertisement. | {{ no }} |
@@ -2529,19 +2529,19 @@ Check links and local and neighbor router configuration
 
 
 ## Network | OSPF | Neighbor Down
-### Symptoms
+<h3>Symptoms</h3>
 Routing table changes and possible lost of connectivity
 
 
-### Probable Causes
+<h3>Probable Causes</h3>
 Link failure or protocol misconfiguration
 
 
-### Recommended Actions
+<h3>Recommended Actions</h3>
 Check links and local and neighbor router configuration
 
 
-### Variables
+<h3>Variables</h3>
 | Name | Type | Description | Required |
 | --- | --- | --- | --- |
 | area | `str` | OSPF area | {{ no }} |
@@ -2553,7 +2553,7 @@ Check links and local and neighbor router configuration
 | vrf | `str` | VRF | {{ no }} |
 
 
-### Related Alarms
+<h3>Related Alarms</h3>
 | Alarm Class | Role | Description |
 | --- | --- | --- |
 | [Network \| OSPF \| Neighbor Down](../alarm-classes-reference/network.md#network-ospf-neighbor-down) | :material-arrow-up: opening event | dispose |
@@ -2563,15 +2563,15 @@ Check links and local and neighbor router configuration
 ## Network | OSPF | Neighbor State Changed
 
 
-### Probable Causes
+<h3>Probable Causes</h3>
 Link failure or protocol misconfiguration
 
 
-### Recommended Actions
+<h3>Recommended Actions</h3>
 Check links and local and neighbor router configuration
 
 
-### Variables
+<h3>Variables</h3>
 | Name | Type | Description | Required |
 | --- | --- | --- | --- |
 | neighbor_address | `ip_address` | OSPF neighbor IP Address | {{ yes }} |
@@ -2584,19 +2584,19 @@ Check links and local and neighbor router configuration
 
 
 ## Network | OSPF | Neighbor Up
-### Symptoms
+<h3>Symptoms</h3>
 Routing table changes
 
 
-### Probable Causes
+<h3>Probable Causes</h3>
 An OSPF adjacency was established with the indicated neighboring router. The local router can now exchange information with it.
 
 
-### Recommended Actions
+<h3>Recommended Actions</h3>
 No specific actions needed
 
 
-### Variables
+<h3>Variables</h3>
 | Name | Type | Description | Required |
 | --- | --- | --- | --- |
 | area | `str` | OSPF area | {{ no }} |
@@ -2608,7 +2608,7 @@ No specific actions needed
 | vrf | `str` | VRF | {{ no }} |
 
 
-### Related Alarms
+<h3>Related Alarms</h3>
 | Alarm Class | Role | Description |
 | --- | --- | --- |
 | [Network \| OSPF \| Neighbor Down](../alarm-classes-reference/network.md#network-ospf-neighbor-down) | :material-arrow-down: closing event | dispose |
@@ -2616,19 +2616,19 @@ No specific actions needed
 
 
 ## Network | PIM | DR Change
-### Symptoms
+<h3>Symptoms</h3>
 Some multicast flows lost
 
 
-### Probable Causes
+<h3>Probable Causes</h3>
 PIM protocol configuration problem or link failure
 
 
-### Recommended Actions
+<h3>Recommended Actions</h3>
 Check links and local and neighbor's router configuration
 
 
-### Variables
+<h3>Variables</h3>
 | Name | Type | Description | Required |
 | --- | --- | --- | --- |
 | interface | `interface_name` | Interface | {{ yes }} |
@@ -2637,7 +2637,7 @@ Check links and local and neighbor's router configuration
 | vrf | `str` | VRF | {{ no }} |
 
 
-### Related Alarms
+<h3>Related Alarms</h3>
 | Alarm Class | Role | Description |
 | --- | --- | --- |
 | [Network \| PIM \| DR Change](../alarm-classes-reference/network.md#network-pim-dr-change) | :material-arrow-up: opening event | dispose |
@@ -2647,22 +2647,22 @@ Check links and local and neighbor's router configuration
 ## Network | PIM | Invalid RP
 
 
-### Probable Causes
+<h3>Probable Causes</h3>
 A PIM router received a register message from another PIM router that identifies itself as the rendezvous point. If the router is not configured for another rendezvous point, it will not accept the register message.
 
 
-### Recommended Actions
+<h3>Recommended Actions</h3>
 Configure all leaf routers (first-hop routers to multicast sources) with the IP address of the valid rendezvous point.
 
 
-### Variables
+<h3>Variables</h3>
 | Name | Type | Description | Required |
 | --- | --- | --- | --- |
 | pim_router | `ip_address` | PIM Router IP | {{ yes }} |
 | invalid_rp | `ip_address` | Invalid RP IP | {{ yes }} |
 
 
-### Related Alarms
+<h3>Related Alarms</h3>
 | Alarm Class | Role | Description |
 | --- | --- | --- |
 | [Network \| PIM \| Invalid RP](../alarm-classes-reference/network.md#network-pim-invalid-rp) | :material-arrow-up: opening event | dispose |
@@ -2670,19 +2670,19 @@ Configure all leaf routers (first-hop routers to multicast sources) with the IP 
 
 
 ## Network | PIM | MSDP Peer Down
-### Symptoms
+<h3>Symptoms</h3>
 Multicast flows lost
 
 
-### Probable Causes
+<h3>Probable Causes</h3>
 MSDP protocol configuration problem or link failure
 
 
-### Recommended Actions
+<h3>Recommended Actions</h3>
 Check links and local and neighbor's router configuration
 
 
-### Variables
+<h3>Variables</h3>
 | Name | Type | Description | Required |
 | --- | --- | --- | --- |
 | peer | `ip_address` | Peer's IP | {{ yes }} |
@@ -2690,7 +2690,7 @@ Check links and local and neighbor's router configuration
 | reason | `str` | Reason | {{ no }} |
 
 
-### Related Alarms
+<h3>Related Alarms</h3>
 | Alarm Class | Role | Description |
 | --- | --- | --- |
 | [Network \| PIM \| MSDP Peer Down](../alarm-classes-reference/network.md#network-pim-msdp-peer-down) | :material-arrow-up: opening event | dispose |
@@ -2698,26 +2698,26 @@ Check links and local and neighbor's router configuration
 
 
 ## Network | PIM | MSDP Peer Up
-### Symptoms
+<h3>Symptoms</h3>
 Multicast flows send successfully
 
 
-### Probable Causes
+<h3>Probable Causes</h3>
 MSDP successfully established connect with peer
 
 
-### Recommended Actions
+<h3>Recommended Actions</h3>
 No reaction needed
 
 
-### Variables
+<h3>Variables</h3>
 | Name | Type | Description | Required |
 | --- | --- | --- | --- |
 | peer | `ip_address` | Peer's IP | {{ yes }} |
 | vrf | `str` | VRF | {{ no }} |
 
 
-### Related Alarms
+<h3>Related Alarms</h3>
 | Alarm Class | Role | Description |
 | --- | --- | --- |
 | [Network \| PIM \| MSDP Peer Down](../alarm-classes-reference/network.md#network-pim-msdp-peer-down) | :material-arrow-down: closing event | dispose |
@@ -2725,19 +2725,19 @@ No reaction needed
 
 
 ## Network | PIM | Neighbor Down
-### Symptoms
+<h3>Symptoms</h3>
 Multicast flows lost
 
 
-### Probable Causes
+<h3>Probable Causes</h3>
 PIM protocol configuration problem or link failure
 
 
-### Recommended Actions
+<h3>Recommended Actions</h3>
 Check links and local and neighbor's router configuration
 
 
-### Variables
+<h3>Variables</h3>
 | Name | Type | Description | Required |
 | --- | --- | --- | --- |
 | interface | `interface_name` | Interface | {{ yes }} |
@@ -2746,7 +2746,7 @@ Check links and local and neighbor's router configuration
 | reason | `str` | Reason | {{ no }} |
 
 
-### Related Alarms
+<h3>Related Alarms</h3>
 | Alarm Class | Role | Description |
 | --- | --- | --- |
 | [Network \| PIM \| Neighbor Down](../alarm-classes-reference/network.md#network-pim-neighbor-down) | :material-arrow-up: opening event | dispose |
@@ -2754,19 +2754,19 @@ Check links and local and neighbor's router configuration
 
 
 ## Network | PIM | Neighbor Up
-### Symptoms
+<h3>Symptoms</h3>
 Multicast flows send successfully
 
 
-### Probable Causes
+<h3>Probable Causes</h3>
 PIM successfully established connect with neighbor
 
 
-### Recommended Actions
+<h3>Recommended Actions</h3>
 No reaction needed
 
 
-### Variables
+<h3>Variables</h3>
 | Name | Type | Description | Required |
 | --- | --- | --- | --- |
 | interface | `interface_name` | Interface | {{ yes }} |
@@ -2774,7 +2774,7 @@ No reaction needed
 | vrf | `str` | VRF | {{ no }} |
 
 
-### Related Alarms
+<h3>Related Alarms</h3>
 | Alarm Class | Role | Description |
 | --- | --- | --- |
 | [Network \| PIM \| Neighbor Down](../alarm-classes-reference/network.md#network-pim-neighbor-down) | :material-arrow-down: closing event | dispose |
@@ -2786,7 +2786,7 @@ No reaction needed
 
 
 
-### Variables
+<h3>Variables</h3>
 | Name | Type | Description | Required |
 | --- | --- | --- | --- |
 | ovalue | `int` | PPPOE Current Sessions | {{ yes }} |
@@ -2801,14 +2801,14 @@ No reaction needed
 
 
 
-### Variables
+<h3>Variables</h3>
 | Name | Type | Description | Required |
 | --- | --- | --- | --- |
 | interface | `interface_name` | Interface | {{ yes }} |
 | mac | `mac` | MAC Address | {{ no }} |
 
 
-### Related Alarms
+<h3>Related Alarms</h3>
 | Alarm Class | Role | Description |
 | --- | --- | --- |
 | [Network \| Port Security \| Port Security Violation](../alarm-classes-reference/network.md#network-port-security-port-security-violation) | :material-arrow-up: opening event | dispose |
@@ -2816,19 +2816,19 @@ No reaction needed
 
 
 ## Network | Port | Loss of Signal
-### Symptoms
+<h3>Symptoms</h3>
 Connection lost
 
 
-### Probable Causes
+<h3>Probable Causes</h3>
 Administrative action, cable damage, hardware or software error either from this or from another side
 
 
-### Recommended Actions
+<h3>Recommended Actions</h3>
 Check configuration, both sides of links and hardware
 
 
-### Variables
+<h3>Variables</h3>
 | Name | Type | Description | Required |
 | --- | --- | --- | --- |
 | interface | `interface_name` | Affected interface | {{ yes }} |
@@ -2836,7 +2836,7 @@ Check configuration, both sides of links and hardware
 | card | `str` | Card name | {{ no }} |
 
 
-### Related Alarms
+<h3>Related Alarms</h3>
 | Alarm Class | Role | Description |
 | --- | --- | --- |
 | [Network \| Port \| Loss of Signal](../alarm-classes-reference/network.md#network-port-loss-of-signal) | :material-arrow-up: opening event | dispose |
@@ -2844,19 +2844,19 @@ Check configuration, both sides of links and hardware
 
 
 ## Network | Port | Loss of Signal Resume
-### Symptoms
+<h3>Symptoms</h3>
 Connection lost
 
 
-### Probable Causes
+<h3>Probable Causes</h3>
 Administrative action, cable damage, hardware or software error either from this or from another side
 
 
-### Recommended Actions
+<h3>Recommended Actions</h3>
 Check configuration, both sides of links and hardware
 
 
-### Variables
+<h3>Variables</h3>
 | Name | Type | Description | Required |
 | --- | --- | --- | --- |
 | interface | `interface_name` | Affected interface | {{ yes }} |
@@ -2864,7 +2864,7 @@ Check configuration, both sides of links and hardware
 | card | `str` | Card name | {{ no }} |
 
 
-### Related Alarms
+<h3>Related Alarms</h3>
 | Alarm Class | Role | Description |
 | --- | --- | --- |
 | [Network \| Port \| Loss of Signal](../alarm-classes-reference/network.md#network-port-loss-of-signal) | :material-arrow-down: closing event | dispose |
@@ -2876,7 +2876,7 @@ Check configuration, both sides of links and hardware
 
 
 
-### Variables
+<h3>Variables</h3>
 | Name | Type | Description | Required |
 | --- | --- | --- | --- |
 | index | `str` | Variable index | {{ no }} |
@@ -2891,7 +2891,7 @@ Check configuration, both sides of links and hardware
 
 
 
-### Variables
+<h3>Variables</h3>
 | Name | Type | Description | Required |
 | --- | --- | --- | --- |
 | index | `str` | Variable index | {{ no }} |
@@ -2901,19 +2901,19 @@ Check configuration, both sides of links and hardware
 
 
 ## Network | RSVP | Neighbor Down
-### Symptoms
+<h3>Symptoms</h3>
 Routing table changes and possible lost of connectivity
 
 
-### Probable Causes
+<h3>Probable Causes</h3>
 RSVP protocol configuration problem or link failure
 
 
-### Recommended Actions
+<h3>Recommended Actions</h3>
 Check links and local and neighbor's router configuration
 
 
-### Variables
+<h3>Variables</h3>
 | Name | Type | Description | Required |
 | --- | --- | --- | --- |
 | interface | `interface_name` | Interface | {{ yes }} |
@@ -2921,7 +2921,7 @@ Check links and local and neighbor's router configuration
 | reason | `str` | Reason | {{ no }} |
 
 
-### Related Alarms
+<h3>Related Alarms</h3>
 | Alarm Class | Role | Description |
 | --- | --- | --- |
 | [Network \| RSVP \| Neighbor Down](../alarm-classes-reference/network.md#network-rsvp-neighbor-down) | :material-arrow-up: opening event | dispose |
@@ -2929,26 +2929,26 @@ Check links and local and neighbor's router configuration
 
 
 ## Network | RSVP | Neighbor Up
-### Symptoms
+<h3>Symptoms</h3>
 Routing table changes
 
 
-### Probable Causes
+<h3>Probable Causes</h3>
 RSVP successfully established Neighbor with neighbor
 
 
-### Recommended Actions
+<h3>Recommended Actions</h3>
 No reaction needed
 
 
-### Variables
+<h3>Variables</h3>
 | Name | Type | Description | Required |
 | --- | --- | --- | --- |
 | interface | `interface_name` | Interface | {{ yes }} |
 | neighbor | `ip_address` | Neighbor's NSAP or name | {{ yes }} |
 
 
-### Related Alarms
+<h3>Related Alarms</h3>
 | Alarm Class | Role | Description |
 | --- | --- | --- |
 | [Network \| RSVP \| Neighbor Down](../alarm-classes-reference/network.md#network-rsvp-neighbor-down) | :material-arrow-down: closing event | dispose |
@@ -2960,7 +2960,7 @@ No reaction needed
 
 
 
-### Variables
+<h3>Variables</h3>
 | Name | Type | Description | Required |
 | --- | --- | --- | --- |
 | interface | `interface_name` | Interface | {{ no }} |
@@ -2974,13 +2974,13 @@ No reaction needed
 
 
 
-### Variables
+<h3>Variables</h3>
 | Name | Type | Description | Required |
 | --- | --- | --- | --- |
 | interface | `interface_name` | Interface | {{ yes }} |
 
 
-### Related Alarms
+<h3>Related Alarms</h3>
 | Alarm Class | Role | Description |
 | --- | --- | --- |
 | [Network \| STP \| BPDU Guard Violation](../alarm-classes-reference/network.md#network-stp-bpdu-guard-violation) | :material-arrow-down: closing event | dispose |
@@ -2992,13 +2992,13 @@ No reaction needed
 
 
 
-### Variables
+<h3>Variables</h3>
 | Name | Type | Description | Required |
 | --- | --- | --- | --- |
 | interface | `interface_name` | Interface | {{ yes }} |
 
 
-### Related Alarms
+<h3>Related Alarms</h3>
 | Alarm Class | Role | Description |
 | --- | --- | --- |
 | [Network \| STP \| BPDU Guard Violation](../alarm-classes-reference/network.md#network-stp-bpdu-guard-violation) | :material-arrow-up: opening event | dispose |
@@ -3010,13 +3010,13 @@ No reaction needed
 
 
 
-### Variables
+<h3>Variables</h3>
 | Name | Type | Description | Required |
 | --- | --- | --- | --- |
 | interface | `interface_name` | Interface | {{ yes }} |
 
 
-### Related Alarms
+<h3>Related Alarms</h3>
 | Alarm Class | Role | Description |
 | --- | --- | --- |
 | [Network \| STP \| Root Guard Violation](../alarm-classes-reference/network.md#network-stp-root-guard-violation) | :material-arrow-up: opening event | dispose |
@@ -3028,7 +3028,7 @@ No reaction needed
 
 
 
-### Variables
+<h3>Variables</h3>
 | Name | Type | Description | Required |
 | --- | --- | --- | --- |
 | port | `interface_name` | Interface | {{ no }} |
@@ -3039,13 +3039,13 @@ No reaction needed
 
 
 ## Network | STP | Root Changed
-### Symptoms
+<h3>Symptoms</h3>
 Unexpected MAC address table cleanups, short-time traffic disruptions
 
 
 
 
-### Variables
+<h3>Variables</h3>
 | Name | Type | Description | Required |
 | --- | --- | --- | --- |
 | interface | `interface_name` | Interface | {{ yes }} |
@@ -3060,13 +3060,13 @@ Unexpected MAC address table cleanups, short-time traffic disruptions
 
 
 
-### Variables
+<h3>Variables</h3>
 | Name | Type | Description | Required |
 | --- | --- | --- | --- |
 | interface | `interface_name` | Interface | {{ yes }} |
 
 
-### Related Alarms
+<h3>Related Alarms</h3>
 | Alarm Class | Role | Description |
 | --- | --- | --- |
 | [Network \| STP \| Root Guard Violation](../alarm-classes-reference/network.md#network-stp-root-guard-violation) | :material-arrow-down: closing event | dispose |
@@ -3078,13 +3078,13 @@ Unexpected MAC address table cleanups, short-time traffic disruptions
 
 
 
-### Variables
+<h3>Variables</h3>
 | Name | Type | Description | Required |
 | --- | --- | --- | --- |
 | interface | `interface_name` | Interface | {{ yes }} |
 
 
-### Related Alarms
+<h3>Related Alarms</h3>
 | Alarm Class | Role | Description |
 | --- | --- | --- |
 | [Network \| STP \| STP Loop Detected](../alarm-classes-reference/network.md#network-stp-stp-loop-detected) | :material-arrow-down: closing event | dispose |
@@ -3096,13 +3096,13 @@ Unexpected MAC address table cleanups, short-time traffic disruptions
 
 
 
-### Variables
+<h3>Variables</h3>
 | Name | Type | Description | Required |
 | --- | --- | --- | --- |
 | interface | `interface_name` | Interface | {{ yes }} |
 
 
-### Related Alarms
+<h3>Related Alarms</h3>
 | Alarm Class | Role | Description |
 | --- | --- | --- |
 | [Network \| STP \| STP Loop Detected](../alarm-classes-reference/network.md#network-stp-stp-loop-detected) | :material-arrow-up: opening event | dispose |
@@ -3110,13 +3110,13 @@ Unexpected MAC address table cleanups, short-time traffic disruptions
 
 
 ## Network | STP | STP Port Role Changed
-### Symptoms
+<h3>Symptoms</h3>
 possible start of spanning tree rebuilding or interface oper status change
 
 
 
 
-### Variables
+<h3>Variables</h3>
 | Name | Type | Description | Required |
 | --- | --- | --- | --- |
 | interface | `interface_name` | Interface | {{ yes }} |
@@ -3128,13 +3128,13 @@ possible start of spanning tree rebuilding or interface oper status change
 
 
 ## Network | STP | STP Port State Changed
-### Symptoms
+<h3>Symptoms</h3>
 possible start of spanning tree rebuilding or interface oper status change
 
 
 
 
-### Variables
+<h3>Variables</h3>
 | Name | Type | Description | Required |
 | --- | --- | --- | --- |
 | interface | `interface_name` | Interface | {{ yes }} |
@@ -3150,14 +3150,14 @@ possible start of spanning tree rebuilding or interface oper status change
 
 
 
-### Variables
+<h3>Variables</h3>
 | Name | Type | Description | Required |
 | --- | --- | --- | --- |
 | interface | `interface_name` | Interface | {{ yes }} |
 | vlan | `int` | vlan | {{ yes }} |
 
 
-### Related Alarms
+<h3>Related Alarms</h3>
 | Alarm Class | Role | Description |
 | --- | --- | --- |
 | [Network \| STP \| STP Vlan Loop Detected](../alarm-classes-reference/network.md#network-stp-stp-vlan-loop-detected) | :material-arrow-down: closing event | dispose |
@@ -3169,14 +3169,14 @@ possible start of spanning tree rebuilding or interface oper status change
 
 
 
-### Variables
+<h3>Variables</h3>
 | Name | Type | Description | Required |
 | --- | --- | --- | --- |
 | interface | `interface_name` | Interface | {{ yes }} |
 | vlan | `int` | vlan | {{ yes }} |
 
 
-### Related Alarms
+<h3>Related Alarms</h3>
 | Alarm Class | Role | Description |
 | --- | --- | --- |
 | [Network \| STP \| STP Vlan Loop Detected](../alarm-classes-reference/network.md#network-stp-stp-vlan-loop-detected) | :material-arrow-up: opening event | dispose |
@@ -3188,7 +3188,7 @@ possible start of spanning tree rebuilding or interface oper status change
 
 
 
-### Variables
+<h3>Variables</h3>
 | Name | Type | Description | Required |
 | --- | --- | --- | --- |
 | limit | `int` | Platform limit | {{ no }} |
@@ -3197,13 +3197,13 @@ possible start of spanning tree rebuilding or interface oper status change
 
 
 ## Network | STP | Topology Changed
-### Symptoms
+<h3>Symptoms</h3>
 Unexpected MAC address table cleanups, short-time traffic disruptions
 
 
 
 
-### Variables
+<h3>Variables</h3>
 | Name | Type | Description | Required |
 | --- | --- | --- | --- |
 | interface | `interface_name` | Interface | {{ yes }} |
@@ -3218,13 +3218,13 @@ Unexpected MAC address table cleanups, short-time traffic disruptions
 
 
 
-### Variables
+<h3>Variables</h3>
 | Name | Type | Description | Required |
 | --- | --- | --- | --- |
 | interface | `interface_name` | Interface | {{ yes }} |
 
 
-### Related Alarms
+<h3>Related Alarms</h3>
 | Alarm Class | Role | Description |
 | --- | --- | --- |
 | [Network \| Storm Control \| Broadcast Storm Detected](../alarm-classes-reference/network.md#network-storm-control-broadcast-storm-detected) | :material-arrow-down: closing event | dispose |
@@ -3236,13 +3236,13 @@ Unexpected MAC address table cleanups, short-time traffic disruptions
 
 
 
-### Variables
+<h3>Variables</h3>
 | Name | Type | Description | Required |
 | --- | --- | --- | --- |
 | interface | `interface_name` | Interface | {{ yes }} |
 
 
-### Related Alarms
+<h3>Related Alarms</h3>
 | Alarm Class | Role | Description |
 | --- | --- | --- |
 | [Network \| Storm Control \| Broadcast Storm Detected](../alarm-classes-reference/network.md#network-storm-control-broadcast-storm-detected) | :material-arrow-up: opening event | dispose |
@@ -3254,13 +3254,13 @@ Unexpected MAC address table cleanups, short-time traffic disruptions
 
 
 
-### Variables
+<h3>Variables</h3>
 | Name | Type | Description | Required |
 | --- | --- | --- | --- |
 | interface | `interface_name` | Interface | {{ yes }} |
 
 
-### Related Alarms
+<h3>Related Alarms</h3>
 | Alarm Class | Role | Description |
 | --- | --- | --- |
 | [Network \| Storm Control \| Multicast Storm Detected](../alarm-classes-reference/network.md#network-storm-control-multicast-storm-detected) | :material-arrow-down: closing event | dispose |
@@ -3272,13 +3272,13 @@ Unexpected MAC address table cleanups, short-time traffic disruptions
 
 
 
-### Variables
+<h3>Variables</h3>
 | Name | Type | Description | Required |
 | --- | --- | --- | --- |
 | interface | `interface_name` | Interface | {{ yes }} |
 
 
-### Related Alarms
+<h3>Related Alarms</h3>
 | Alarm Class | Role | Description |
 | --- | --- | --- |
 | [Network \| Storm Control \| Multicast Storm Detected](../alarm-classes-reference/network.md#network-storm-control-multicast-storm-detected) | :material-arrow-up: opening event | dispose |
@@ -3290,13 +3290,13 @@ Unexpected MAC address table cleanups, short-time traffic disruptions
 
 
 
-### Variables
+<h3>Variables</h3>
 | Name | Type | Description | Required |
 | --- | --- | --- | --- |
 | interface | `interface_name` | Interface | {{ yes }} |
 
 
-### Related Alarms
+<h3>Related Alarms</h3>
 | Alarm Class | Role | Description |
 | --- | --- | --- |
 | [Network \| Storm Control \| Storm Detected](../alarm-classes-reference/network.md#network-storm-control-storm-detected) | :material-arrow-down: closing event | dispose |
@@ -3308,13 +3308,13 @@ Unexpected MAC address table cleanups, short-time traffic disruptions
 
 
 
-### Variables
+<h3>Variables</h3>
 | Name | Type | Description | Required |
 | --- | --- | --- | --- |
 | interface | `interface_name` | Interface | {{ yes }} |
 
 
-### Related Alarms
+<h3>Related Alarms</h3>
 | Alarm Class | Role | Description |
 | --- | --- | --- |
 | [Network \| Storm Control \| Storm Detected](../alarm-classes-reference/network.md#network-storm-control-storm-detected) | :material-arrow-up: opening event | dispose |
@@ -3326,13 +3326,13 @@ Unexpected MAC address table cleanups, short-time traffic disruptions
 
 
 
-### Variables
+<h3>Variables</h3>
 | Name | Type | Description | Required |
 | --- | --- | --- | --- |
 | interface | `interface_name` | Interface | {{ yes }} |
 
 
-### Related Alarms
+<h3>Related Alarms</h3>
 | Alarm Class | Role | Description |
 | --- | --- | --- |
 | [Network \| Storm Control \| Unicast Storm Detected](../alarm-classes-reference/network.md#network-storm-control-unicast-storm-detected) | :material-arrow-down: closing event | dispose |
@@ -3343,17 +3343,17 @@ Unexpected MAC address table cleanups, short-time traffic disruptions
 
 
 
-### Recommended Actions
+<h3>Recommended Actions</h3>
 Enable DLF (destination lookup failure) filter
 
 
-### Variables
+<h3>Variables</h3>
 | Name | Type | Description | Required |
 | --- | --- | --- | --- |
 | interface | `interface_name` | Interface | {{ yes }} |
 
 
-### Related Alarms
+<h3>Related Alarms</h3>
 | Alarm Class | Role | Description |
 | --- | --- | --- |
 | [Network \| Storm Control \| Unicast Storm Detected](../alarm-classes-reference/network.md#network-storm-control-unicast-storm-detected) | :material-arrow-up: opening event | dispose |
@@ -3365,13 +3365,13 @@ Enable DLF (destination lookup failure) filter
 
 
 
-### Variables
+<h3>Variables</h3>
 | Name | Type | Description | Required |
 | --- | --- | --- | --- |
 | interface | `interface_name` | Interface | {{ yes }} |
 
 
-### Related Alarms
+<h3>Related Alarms</h3>
 | Alarm Class | Role | Description |
 | --- | --- | --- |
 | [Network \| UDLD \| UDLD Protocol Error Detected](../alarm-classes-reference/network.md#network-udld-udld-protocol-error-detected) | :material-arrow-up: opening event | dispose |
@@ -3383,13 +3383,13 @@ Enable DLF (destination lookup failure) filter
 
 
 
-### Variables
+<h3>Variables</h3>
 | Name | Type | Description | Required |
 | --- | --- | --- | --- |
 | interface | `interface_name` | Interface | {{ yes }} |
 
 
-### Related Alarms
+<h3>Related Alarms</h3>
 | Alarm Class | Role | Description |
 | --- | --- | --- |
 | [Network \| UDLD \| UDLD Protocol Error Detected](../alarm-classes-reference/network.md#network-udld-udld-protocol-error-detected) | :material-arrow-down: closing event | dispose |
@@ -3401,7 +3401,7 @@ Enable DLF (destination lookup failure) filter
 
 
 
-### Variables
+<h3>Variables</h3>
 | Name | Type | Description | Required |
 | --- | --- | --- | --- |
 | status | `str` | Port status | {{ yes }} |
@@ -3415,7 +3415,7 @@ Enable DLF (destination lookup failure) filter
 
 
 
-### Variables
+<h3>Variables</h3>
 | Name | Type | Description | Required |
 | --- | --- | --- | --- |
 | vlan | `int` | VLAN ID | {{ yes }} |
@@ -3429,7 +3429,7 @@ Enable DLF (destination lookup failure) filter
 
 
 
-### Variables
+<h3>Variables</h3>
 | Name | Type | Description | Required |
 | --- | --- | --- | --- |
 | vlan | `int` | VLAN ID | {{ yes }} |
@@ -3443,7 +3443,7 @@ Enable DLF (destination lookup failure) filter
 
 
 
-### Variables
+<h3>Variables</h3>
 | Name | Type | Description | Required |
 | --- | --- | --- | --- |
 | interface | `interface_name` | Interface | {{ yes }} |

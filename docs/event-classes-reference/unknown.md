@@ -2,49 +2,49 @@
 
 
 ## Unknown | Default
-### Symptoms
+<h3>Symptoms</h3>
 No specific symptoms
 
 
-### Probable Causes
+<h3>Probable Causes</h3>
 No matching classification rule found
 
 
-### Recommended Actions
+<h3>Recommended Actions</h3>
 Grab this event, create appropriative classification rule and reclassify the event again
 
 
 
 
 ## Unknown | Ignore
-### Symptoms
+<h3>Symptoms</h3>
 No specific symptoms
 
 
-### Probable Causes
+<h3>Probable Causes</h3>
 Event without any usable information for FM
 
 
-### Recommended Actions
+<h3>Recommended Actions</h3>
 No specific action needed
 
 
 
 
 ## Unknown | SNMP Trap
-### Symptoms
+<h3>Symptoms</h3>
 No specific symptoms
 
 
-### Probable Causes
+<h3>Probable Causes</h3>
 No matching classification rule found
 
 
-### Recommended Actions
+<h3>Recommended Actions</h3>
 Grab this event, create appropriative classification rule and reclassify the event again
 
 
-### Variables
+<h3>Variables</h3>
 | Name | Type | Description | Required |
 | --- | --- | --- | --- |
 | trap_oid | `oid` | SNMP Trap OID | {{ yes }} |
@@ -54,19 +54,19 @@ Grab this event, create appropriative classification rule and reclassify the eve
 
 
 ## Unknown | Syslog
-### Symptoms
+<h3>Symptoms</h3>
 No specific symptoms
 
 
-### Probable Causes
+<h3>Probable Causes</h3>
 No matching classification rule found
 
 
-### Recommended Actions
+<h3>Recommended Actions</h3>
 Grab this event, create appropriative classification rule and reclassify the event again
 
 
-### Variables
+<h3>Variables</h3>
 | Name | Type | Description | Required |
 | --- | --- | --- | --- |
 | syslog_message | `str` | Full syslog message | {{ yes }} |

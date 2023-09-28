@@ -6,13 +6,13 @@
 
 
 
-### Variables
+<h3>Variables</h3>
 | Name | Type | Description | Required |
 | --- | --- | --- | --- |
 | reason | `str` | Reason | {{ no }} |
 
 
-### Related Alarms
+<h3>Related Alarms</h3>
 | Alarm Class | Role | Description |
 | --- | --- | --- |
 | [Vendor \| Arista \| EOS \| VMTracer \| Failed to connect to vCenter](../alarm-classes-reference/vendor.md#vendor-arista-eos-vmtracer-failed-to-connect-to-vcenter) | :material-arrow-up: opening event | dispose |
@@ -24,7 +24,7 @@
 
 
 
-### Variables
+<h3>Variables</h3>
 | Name | Type | Description | Required |
 | --- | --- | --- | --- |
 | proto | `str` | Protocol | {{ no }} |
@@ -44,7 +44,7 @@
 
 
 
-### Variables
+<h3>Variables</h3>
 | Name | Type | Description | Required |
 | --- | --- | --- | --- |
 | src_interface | `interface_name` | Source Interface | {{ no }} |
@@ -62,7 +62,7 @@
 
 
 
-### Variables
+<h3>Variables</h3>
 | Name | Type | Description | Required |
 | --- | --- | --- | --- |
 | proto | `str` | Protocol | {{ no }} |
@@ -83,7 +83,7 @@
 
 
 
-### Variables
+<h3>Variables</h3>
 | Name | Type | Description | Required |
 | --- | --- | --- | --- |
 | farm | `str` | SLB server farm name | {{ yes }} |
@@ -91,7 +91,7 @@
 | state | `str` | Real state | {{ yes }} |
 
 
-### Related Alarms
+<h3>Related Alarms</h3>
 | Alarm Class | Role | Description |
 | --- | --- | --- |
 | [Vendor \| Cisco \| IOS \| Network \| Load Balance \| Server Farm Degraded](../alarm-classes-reference/vendor.md#vendor-cisco-ios-network-load-balance-server-farm-degraded) | :material-arrow-up: opening event | dispose |
@@ -103,7 +103,7 @@
 
 
 
-### Variables
+<h3>Variables</h3>
 | Name | Type | Description | Required |
 | --- | --- | --- | --- |
 | farm | `str` | SLB server farm name | {{ yes }} |
@@ -111,7 +111,7 @@
 | state | `str` | Real state | {{ yes }} |
 
 
-### Related Alarms
+<h3>Related Alarms</h3>
 | Alarm Class | Role | Description |
 | --- | --- | --- |
 | [Vendor \| Cisco \| IOS \| Network \| Load Balance \| Server Farm Degraded](../alarm-classes-reference/vendor.md#vendor-cisco-ios-network-load-balance-server-farm-degraded) | :material-arrow-down: closing event | dispose |
@@ -123,7 +123,7 @@
 
 
 
-### Variables
+<h3>Variables</h3>
 | Name | Type | Description | Required |
 | --- | --- | --- | --- |
 | module | `str` | Module name | {{ yes }} |
@@ -131,7 +131,7 @@
 | farm | `str` | serverfarm name | {{ no }} |
 
 
-### Related Alarms
+<h3>Related Alarms</h3>
 | Alarm Class | Role | Description |
 | --- | --- | --- |
 | [Vendor \| Cisco \| IOS \| Network \| Load Balance \| vserver Out of Service](../alarm-classes-reference/vendor.md#vendor-cisco-ios-network-load-balance-vserver-out-of-service) | :material-arrow-down: closing event | dispose |
@@ -143,7 +143,7 @@
 
 
 
-### Variables
+<h3>Variables</h3>
 | Name | Type | Description | Required |
 | --- | --- | --- | --- |
 | module | `str` | Module name | {{ yes }} |
@@ -151,7 +151,7 @@
 | farm | `str` | serverfarm name | {{ no }} |
 
 
-### Related Alarms
+<h3>Related Alarms</h3>
 | Alarm Class | Role | Description |
 | --- | --- | --- |
 | [Vendor \| Cisco \| IOS \| Network \| Load Balance \| vserver Out of Service](../alarm-classes-reference/vendor.md#vendor-cisco-ios-network-load-balance-vserver-out-of-service) | :material-arrow-up: opening event | dispose |
@@ -159,19 +159,19 @@
 
 
 ## Vendor | Cisco | SCOS | Security | Attack | Attack Detected
-### Symptoms
+<h3>Symptoms</h3>
 Possible DoS/DDoS traffic from source
 
 
-### Probable Causes
+<h3>Probable Causes</h3>
 Virus/Botnet activity or malicious actions
 
 
-### Recommended Actions
+<h3>Recommended Actions</h3>
 Negotiate the source if it is your customer, or ignore
 
 
-### Variables
+<h3>Variables</h3>
 | Name | Type | Description | Required |
 | --- | --- | --- | --- |
 | from_ip | `ip_address` | From IP | {{ yes }} |
@@ -183,7 +183,7 @@ Negotiate the source if it is your customer, or ignore
 | action | `str` | Action | {{ yes }} |
 
 
-### Related Alarms
+<h3>Related Alarms</h3>
 | Alarm Class | Role | Description |
 | --- | --- | --- |
 | [Vendor \| Cisco \| SCOS \| Security \| Attack \| Attack Detected](../alarm-classes-reference/vendor.md#vendor-cisco-scos-security-attack-attack-detected) | :material-arrow-up: opening event | Attack Detected |
@@ -195,7 +195,7 @@ Negotiate the source if it is your customer, or ignore
 
 
 
-### Variables
+<h3>Variables</h3>
 | Name | Type | Description | Required |
 | --- | --- | --- | --- |
 | from_ip | `ip_address` | From IP | {{ yes }} |
@@ -207,7 +207,7 @@ Negotiate the source if it is your customer, or ignore
 | action | `str` | Action | {{ yes }} |
 
 
-### Related Alarms
+<h3>Related Alarms</h3>
 | Alarm Class | Role | Description |
 | --- | --- | --- |
 | [Vendor \| Cisco \| SCOS \| Security \| Attack \| Attack Detected](../alarm-classes-reference/vendor.md#vendor-cisco-scos-security-attack-attack-detected) | :material-arrow-down: closing event | Clear Attack Detected |
@@ -215,25 +215,25 @@ Negotiate the source if it is your customer, or ignore
 
 
 ## Vendor | DLink | DxS | Chassis | CPU | Safeguard Engine enters EXHAUSTED mode
-### Symptoms
+<h3>Symptoms</h3>
 Device not responce, can not establish new connections
 
 
-### Probable Causes
+<h3>Probable Causes</h3>
 High CPU utilization
 
 
-### Recommended Actions
+<h3>Recommended Actions</h3>
 Lower storm detect threshold, filter waste traffic on connected devices, restrict SNMP Views
 
 
-### Variables
+<h3>Variables</h3>
 | Name | Type | Description | Required |
 | --- | --- | --- | --- |
 | unit | `int` | Unit number in stack | {{ no }} |
 
 
-### Related Alarms
+<h3>Related Alarms</h3>
 | Alarm Class | Role | Description |
 | --- | --- | --- |
 | [Chassis \| CPU \| CPU Exhausted](../alarm-classes-reference/chassis.md#chassis-cpu-cpu-exhausted) | :material-arrow-up: opening event | dispose |
@@ -241,19 +241,19 @@ Lower storm detect threshold, filter waste traffic on connected devices, restric
 
 
 ## Vendor | DLink | DxS | Chassis | CPU | Safeguard Engine enters NORMAL mode
-### Symptoms
+<h3>Symptoms</h3>
 Device returned to work in normal mode
 
 
 
 
-### Variables
+<h3>Variables</h3>
 | Name | Type | Description | Required |
 | --- | --- | --- | --- |
 | unit | `int` | Unit number in stack | {{ no }} |
 
 
-### Related Alarms
+<h3>Related Alarms</h3>
 | Alarm Class | Role | Description |
 | --- | --- | --- |
 | [Chassis \| CPU \| CPU Exhausted](../alarm-classes-reference/chassis.md#chassis-cpu-cpu-exhausted) | :material-arrow-down: closing event | dispose |
@@ -265,13 +265,13 @@ Device returned to work in normal mode
 
 
 
-### Variables
+<h3>Variables</h3>
 | Name | Type | Description | Required |
 | --- | --- | --- | --- |
 | node | `str` | IP or hostname | {{ yes }} |
 
 
-### Related Alarms
+<h3>Related Alarms</h3>
 | Alarm Class | Role | Description |
 | --- | --- | --- |
 | [Vendor \| f5 \| BIGIP \| Network \| Load Balance \| Node Down](../alarm-classes-reference/vendor.md#vendor-f5-bigip-network-load-balance-node-down) | :material-arrow-up: opening event | dispose |
@@ -283,13 +283,13 @@ Device returned to work in normal mode
 
 
 
-### Variables
+<h3>Variables</h3>
 | Name | Type | Description | Required |
 | --- | --- | --- | --- |
 | node | `str` | IP or hostname | {{ yes }} |
 
 
-### Related Alarms
+<h3>Related Alarms</h3>
 | Alarm Class | Role | Description |
 | --- | --- | --- |
 | [Vendor \| f5 \| BIGIP \| Network \| Load Balance \| Node Down](../alarm-classes-reference/vendor.md#vendor-f5-bigip-network-load-balance-node-down) | :material-arrow-down: closing event | dispose |
@@ -301,14 +301,14 @@ Device returned to work in normal mode
 
 
 
-### Variables
+<h3>Variables</h3>
 | Name | Type | Description | Required |
 | --- | --- | --- | --- |
 | node | `str` | IP or hostname | {{ yes }} |
 | port | `int` | Service port | {{ yes }} |
 
 
-### Related Alarms
+<h3>Related Alarms</h3>
 | Alarm Class | Role | Description |
 | --- | --- | --- |
 | [Vendor \| f5 \| BIGIP \| Network \| Load Balance \| Service Down](../alarm-classes-reference/vendor.md#vendor-f5-bigip-network-load-balance-service-down) | :material-arrow-up: opening event | dispose |
@@ -320,14 +320,14 @@ Device returned to work in normal mode
 
 
 
-### Variables
+<h3>Variables</h3>
 | Name | Type | Description | Required |
 | --- | --- | --- | --- |
 | node | `str` | IP or hostname | {{ yes }} |
 | port | `int` | Service port | {{ yes }} |
 
 
-### Related Alarms
+<h3>Related Alarms</h3>
 | Alarm Class | Role | Description |
 | --- | --- | --- |
 | [Vendor \| f5 \| BIGIP \| Network \| Load Balance \| Service Down](../alarm-classes-reference/vendor.md#vendor-f5-bigip-network-load-balance-service-down) | :material-arrow-down: closing event | dispose |

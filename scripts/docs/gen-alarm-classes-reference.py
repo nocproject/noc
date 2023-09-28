@@ -10,12 +10,13 @@ import time
 import os
 import re
 import json
-from dataclasses import dataclass
-from typing import List, Iterable, DefaultDict, Tuple, Dict, Any
+from dataclasses import dataclass, field
+from typing import List, Iterable, DefaultDict, Tuple, Dict, Any, Optional
 import logging
 from collections import defaultdict
 from pathlib import Path
 from itertools import islice
+from enum import Enum
 
 # Third-party modules
 import mkdocs_gen_files
@@ -27,7 +28,9 @@ import jinja2
 logger = logging.getLogger("mkdocs")
 
 BUCKET_DEPTH = 1
+EC_BUCKET_DEPTH = 1
 COLLECTION_ROOT = Path("collections", "fm.alarmclasses")
+EC_COLLECTION_ROOT = Path("collections", "fm.eventclasses")
 DOCS = Path("docs")
 BOOK = Path("alarm-classes-reference")
 
@@ -36,23 +39,31 @@ TEMPLATE = """# {{ title }}
 {% for item in items %}
 ## {{ item.name }}
 {% if item.symptoms %}
-### Symptoms
+<h3>Symptoms</h3>
 {{ item.symptoms }}
 {% endif %}
 {% if item.probable_causes %}
-### Probable Causes
+<h3>Probable Causes</h3>
 {{ item.probable_causes }}
 {% endif %}
 {% if item.recommended_actions %}
-### Recommended Actions
+<h3>Recommended Actions</h3>
 {{ item.recommended_actions }}
 {% endif %}
 {% if item.vars %}
-### Variables
+<h3>Variables</h3>
 | Name | Description | Defaults |
 | --- | --- | --- |
 {% for v in item.vars -%}
 | {{ v.name }} | {{ v.description }} | {{ v.defaults }} |
+{% endfor %}
+{% endif %}
+{% if item.events %}
+<h3>Related Events</h3>
+| Event Class | Role |
+| --- | --- |
+{% for v in item.events -%}
+| [{{ v.md_name }}]({{ v.event_link }}) | {% if v.action.is_open %}:material-arrow-up: opening event{% elif v.action.is_close %}:material-arrow-down: closing event{% endif %} |
 {% endfor %}
 {% endif %}
 {% endfor %}
@@ -76,6 +87,61 @@ class Var(object):
         return Var(name=d["name"], description=d["description"], default=d.get("default") or "")
 
 
+class Action(Enum):
+    OPEN = "OPEN"
+    CLOSE = "CLOSE"
+    IGNORE = "IGNORE"
+
+    @classmethod
+    def from_action(cls, a: str) -> "Action":
+        if a == "clear":
+            return Action.CLOSE
+        elif a == "raise":
+            return Action.OPEN
+        elif a == "ignore":
+            return Action.IGNORE
+        else:
+            msg = f"Invalid action: {a}"
+            raise ValueError(msg)
+
+    @property
+    def is_ignored(self) -> bool:
+        return self == Action.IGNORE
+
+    @property
+    def is_open(self) -> bool:
+        return self == Action.OPEN
+
+    @property
+    def is_close(self) -> bool:
+        return self == Action.CLOSE
+
+
+@dataclass(order=True)
+class Event(object):
+    name: str
+    action: Action = field(compare=False)
+
+    @property
+    def md_name(self) -> str:
+        """
+        Markdown-quoted name
+        """
+        return self.name.replace("|", "\\|")
+
+    @property
+    def event_link(self) -> str:
+        path = [".."] * BUCKET_DEPTH
+        path.append("event-classes-reference")
+        path += [
+            canonical_name(z)
+            for z in islice((x.strip() for x in self.name.split("|", 1)), 0, EC_BUCKET_DEPTH)
+        ]
+        fp = "/".join(path)
+        anchor = rx_md_anchor.sub("-", self.name.lower())
+        return f"{fp}.md#{anchor}"
+
+
 @dataclass(order=True)
 class Data(object):
     """
@@ -94,6 +160,7 @@ class Data(object):
     probable_causes: str
     recommended_actions: str
     vars: List[Var]
+    events: List[Event]
 
     @classmethod
     def read(cls, path: Path) -> "Data":
@@ -114,6 +181,7 @@ class Data(object):
             probable_causes=data["probable_causes"],
             recommended_actions=data["recommended_actions"],
             vars=[Var.from_json(x) for x in data["vars"]],
+            events=[],
         )
 
     @property
@@ -225,12 +293,30 @@ def alnum_key(d: Data) -> str:
     return "".join(maybe_formatted_int(x) for x in _iter_split_alnum(d.name))
 
 
+def get_events() -> Dict[str, List[Event]]:
+    r: DefaultDict[str, List[Event]] = defaultdict(list)
+    for path in EC_COLLECTION_ROOT.rglob("*.json"):
+        with open(path) as fp:
+            data = json.loads(fp.read())
+            disposition = data.get("disposition")
+            if not disposition:
+                continue
+            for item in disposition:
+                action = Action.from_action(item["action"])
+                if action.is_ignored:
+                    continue
+                r[item["alarm_class__name"]].append(Event(name=data["name"], action=action))
+    return r
+
+
 def main():
     """
     Generate Connection Types Reference.
     """
     # Compile template
     tpl = jinja2.Template(TEMPLATE)
+    # Load events
+    ev_map = get_events()
     # Load buckets
     buckets = get_buckets()
     # Generate navigation and content
@@ -240,6 +326,8 @@ def main():
         rel_path = bucket_path(bucket)
         nav[bucket] = rel_path
         items = list(sorted(buckets[bucket], key=alnum_key))
+        for item in items:
+            item.events = list(sorted(ev_map[item.name]))
         out = BOOK / rel_path
         logging.debug("Rendering %s (%d items)", out, len(items))
         # with mkdocs_gen_files.open(out, "w") as fp:

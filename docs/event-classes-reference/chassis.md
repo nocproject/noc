@@ -6,7 +6,7 @@
 
 
 
-### Variables
+<h3>Variables</h3>
 | Name | Type | Description | Required |
 | --- | --- | --- | --- |
 | cpu | `str` | CPU Name | {{ no }} |
@@ -19,7 +19,7 @@
 
 
 
-### Variables
+<h3>Variables</h3>
 | Name | Type | Description | Required |
 | --- | --- | --- | --- |
 | cpu | `str` | CPU Name | {{ no }} |
@@ -30,12 +30,12 @@
 ## Chassis | CPU | CoPP Drop
 
 
-### Probable Causes
+<h3>Probable Causes</h3>
 CoPP protects control plane by dropping traffic exceeding thresholds
 
 
 
-### Variables
+<h3>Variables</h3>
 | Name | Type | Description | Required |
 | --- | --- | --- | --- |
 | cpu | `str` | CPU Name | {{ no }} |
@@ -50,13 +50,13 @@ CoPP protects control plane by dropping traffic exceeding thresholds
 
 
 
-### Variables
+<h3>Variables</h3>
 | Name | Type | Description | Required |
 | --- | --- | --- | --- |
 | name | `str` | Clock Name | {{ yes }} |
 
 
-### Related Alarms
+<h3>Related Alarms</h3>
 | Alarm Class | Role | Description |
 | --- | --- | --- |
 | [Chassis \| Clock \| Clock Failed](../alarm-classes-reference/chassis.md#chassis-clock-clock-failed) | :material-arrow-up: opening event | dispose |
@@ -68,13 +68,13 @@ CoPP protects control plane by dropping traffic exceeding thresholds
 
 
 
-### Variables
+<h3>Variables</h3>
 | Name | Type | Description | Required |
 | --- | --- | --- | --- |
 | name | `str` | Clock Name | {{ yes }} |
 
 
-### Related Alarms
+<h3>Related Alarms</h3>
 | Alarm Class | Role | Description |
 | --- | --- | --- |
 | [Chassis \| Clock \| Clock Failed](../alarm-classes-reference/chassis.md#chassis-clock-clock-failed) | :material-arrow-down: closing event | dispose |
@@ -86,13 +86,13 @@ CoPP protects control plane by dropping traffic exceeding thresholds
 
 
 
-### Variables
+<h3>Variables</h3>
 | Name | Type | Description | Required |
 | --- | --- | --- | --- |
 | name | `str` | Farbic module | {{ yes }} |
 
 
-### Related Alarms
+<h3>Related Alarms</h3>
 | Alarm Class | Role | Description |
 | --- | --- | --- |
 | [Chassis \| Fabric \| CRC Errors](../alarm-classes-reference/chassis.md#chassis-fabric-crc-errors) | :material-arrow-up: opening event | dispose |
@@ -104,13 +104,13 @@ CoPP protects control plane by dropping traffic exceeding thresholds
 
 
 
-### Variables
+<h3>Variables</h3>
 | Name | Type | Description | Required |
 | --- | --- | --- | --- |
 | name | `str` | Fan Name | {{ yes }} |
 
 
-### Related Alarms
+<h3>Related Alarms</h3>
 | Alarm Class | Role | Description |
 | --- | --- | --- |
 | [Chassis \| Fan \| Fan Failed](../alarm-classes-reference/chassis.md#chassis-fan-fan-failed) | :material-arrow-up: opening event | dispose |
@@ -122,13 +122,13 @@ CoPP protects control plane by dropping traffic exceeding thresholds
 
 
 
-### Variables
+<h3>Variables</h3>
 | Name | Type | Description | Required |
 | --- | --- | --- | --- |
 | name | `str` | Fan Name | {{ yes }} |
 
 
-### Related Alarms
+<h3>Related Alarms</h3>
 | Alarm Class | Role | Description |
 | --- | --- | --- |
 | [Chassis \| Fan \| Fan Removed](../alarm-classes-reference/chassis.md#chassis-fan-fan-removed) | :material-arrow-down: closing event | dispose |
@@ -140,13 +140,13 @@ CoPP protects control plane by dropping traffic exceeding thresholds
 
 
 
-### Variables
+<h3>Variables</h3>
 | Name | Type | Description | Required |
 | --- | --- | --- | --- |
 | name | `str` | Fan Name | {{ yes }} |
 
 
-### Related Alarms
+<h3>Related Alarms</h3>
 | Alarm Class | Role | Description |
 | --- | --- | --- |
 | [Chassis \| Fan \| Fan Failed](../alarm-classes-reference/chassis.md#chassis-fan-fan-failed) | :material-arrow-down: closing event | dispose |
@@ -158,13 +158,13 @@ CoPP protects control plane by dropping traffic exceeding thresholds
 
 
 
-### Variables
+<h3>Variables</h3>
 | Name | Type | Description | Required |
 | --- | --- | --- | --- |
 | name | `str` | Fan Name | {{ yes }} |
 
 
-### Related Alarms
+<h3>Related Alarms</h3>
 | Alarm Class | Role | Description |
 | --- | --- | --- |
 | [Chassis \| Fan \| Fan Removed](../alarm-classes-reference/chassis.md#chassis-fan-fan-removed) | :material-arrow-up: opening event | dispose |
@@ -176,7 +176,7 @@ CoPP protects control plane by dropping traffic exceeding thresholds
 
 
 
-### Variables
+<h3>Variables</h3>
 | Name | Type | Description | Required |
 | --- | --- | --- | --- |
 | device | `str` | Device name | {{ yes }} |
@@ -190,7 +190,7 @@ CoPP protects control plane by dropping traffic exceeding thresholds
 
 
 
-### Variables
+<h3>Variables</h3>
 | Name | Type | Description | Required |
 | --- | --- | --- | --- |
 | device | `str` | Device name | {{ yes }} |
@@ -204,7 +204,7 @@ CoPP protects control plane by dropping traffic exceeding thresholds
 
 
 
-### Variables
+<h3>Variables</h3>
 | Name | Type | Description | Required |
 | --- | --- | --- | --- |
 | device | `str` | Device name | {{ yes }} |
@@ -213,13 +213,13 @@ CoPP protects control plane by dropping traffic exceeding thresholds
 
 
 ## Chassis | Hardware | Hardware Error
-### Symptoms
+<h3>Symptoms</h3>
 Device becomes unstable or is not responding
 
 
 
 
-### Related Alarms
+<h3>Related Alarms</h3>
 | Alarm Class | Role | Description |
 | --- | --- | --- |
 | [Chassis \| Hardware \| Hardware Error](../alarm-classes-reference/chassis.md#chassis-hardware-hardware-error) | :material-arrow-up: opening event | dispose |
@@ -227,19 +227,19 @@ Device becomes unstable or is not responding
 
 
 ## Chassis | Hardware | Hardware Port Error
-### Symptoms
+<h3>Symptoms</h3>
 Link becomes unstable or is not responding
 
 
 
 
-### Variables
+<h3>Variables</h3>
 | Name | Type | Description | Required |
 | --- | --- | --- | --- |
 | interface | `str` | Hardware port | {{ yes }} |
 
 
-### Related Alarms
+<h3>Related Alarms</h3>
 | Alarm Class | Role | Description |
 | --- | --- | --- |
 | [Chassis \| Hardware \| Hardware Port Error](../alarm-classes-reference/chassis.md#chassis-hardware-hardware-port-error) | :material-arrow-up: opening event | dispose |
@@ -251,13 +251,13 @@ Link becomes unstable or is not responding
 
 
 
-### Variables
+<h3>Variables</h3>
 | Name | Type | Description | Required |
 | --- | --- | --- | --- |
 | interface | `str` | Hardware port | {{ yes }} |
 
 
-### Related Alarms
+<h3>Related Alarms</h3>
 | Alarm Class | Role | Description |
 | --- | --- | --- |
 | [Chassis \| Hardware \| Hardware Port Error](../alarm-classes-reference/chassis.md#chassis-hardware-hardware-port-error) | :material-arrow-down: closing event | dispose |
@@ -265,19 +265,19 @@ Link becomes unstable or is not responding
 
 
 ## Chassis | Hardware | Hardware Port Warning
-### Symptoms
+<h3>Symptoms</h3>
 Link becomes unstable or is not responding
 
 
 
 
-### Variables
+<h3>Variables</h3>
 | Name | Type | Description | Required |
 | --- | --- | --- | --- |
 | interface | `str` | Hardware port or slot | {{ yes }} |
 
 
-### Related Alarms
+<h3>Related Alarms</h3>
 | Alarm Class | Role | Description |
 | --- | --- | --- |
 | [Chassis \| Hardware \| Hardware Port Warning](../alarm-classes-reference/chassis.md#chassis-hardware-hardware-port-warning) | :material-arrow-up: opening event | dispose |
@@ -289,13 +289,13 @@ Link becomes unstable or is not responding
 
 
 
-### Variables
+<h3>Variables</h3>
 | Name | Type | Description | Required |
 | --- | --- | --- | --- |
 | interface | `str` | Hardware port or slot | {{ yes }} |
 
 
-### Related Alarms
+<h3>Related Alarms</h3>
 | Alarm Class | Role | Description |
 | --- | --- | --- |
 | [Chassis \| Hardware \| Hardware Port Warning](../alarm-classes-reference/chassis.md#chassis-hardware-hardware-port-warning) | :material-arrow-down: closing event | dispose |
@@ -303,13 +303,13 @@ Link becomes unstable or is not responding
 
 
 ## Chassis | Hardware | Hardware Warning
-### Symptoms
+<h3>Symptoms</h3>
 Device becomes unstable or is not responding
 
 
 
 
-### Related Alarms
+<h3>Related Alarms</h3>
 | Alarm Class | Role | Description |
 | --- | --- | --- |
 | [Chassis \| Hardware \| Hardware Warning](../alarm-classes-reference/chassis.md#chassis-hardware-hardware-warning) | :material-arrow-up: opening event | dispose |
@@ -321,7 +321,7 @@ Device becomes unstable or is not responding
 
 
 
-### Variables
+<h3>Variables</h3>
 | Name | Type | Description | Required |
 | --- | --- | --- | --- |
 | module | `str` | Module type | {{ yes }} |
@@ -329,7 +329,7 @@ Device becomes unstable or is not responding
 | reason | `str` | Reason | {{ no }} |
 
 
-### Related Alarms
+<h3>Related Alarms</h3>
 | Alarm Class | Role | Description |
 | --- | --- | --- |
 | [Chassis \| Hardware \| Module \| Invalid Module](../alarm-classes-reference/chassis.md#chassis-hardware-module-invalid-module) | :material-arrow-up: opening event | dispose |
@@ -341,7 +341,7 @@ Device becomes unstable or is not responding
 
 
 
-### Variables
+<h3>Variables</h3>
 | Name | Type | Description | Required |
 | --- | --- | --- | --- |
 | module | `str` | Module type | {{ yes }} |
@@ -349,7 +349,7 @@ Device becomes unstable or is not responding
 | reason | `str` | Reason | {{ no }} |
 
 
-### Related Alarms
+<h3>Related Alarms</h3>
 | Alarm Class | Role | Description |
 | --- | --- | --- |
 | [Chassis \| Hardware \| Module \| Invalid Module](../alarm-classes-reference/chassis.md#chassis-hardware-module-invalid-module) | :material-arrow-up: opening event | dispose |
@@ -361,7 +361,7 @@ Device becomes unstable or is not responding
 
 
 
-### Variables
+<h3>Variables</h3>
 | Name | Type | Description | Required |
 | --- | --- | --- | --- |
 | module | `str` | Module type | {{ yes }} |
@@ -369,7 +369,7 @@ Device becomes unstable or is not responding
 | reason | `str` | Reason | {{ no }} |
 
 
-### Related Alarms
+<h3>Related Alarms</h3>
 | Alarm Class | Role | Description |
 | --- | --- | --- |
 | [Chassis \| Hardware \| Module \| Module Down](../alarm-classes-reference/chassis.md#chassis-hardware-module-module-down) | :material-arrow-up: opening event | dispose |
@@ -381,7 +381,7 @@ Device becomes unstable or is not responding
 
 
 
-### Variables
+<h3>Variables</h3>
 | Name | Type | Description | Required |
 | --- | --- | --- | --- |
 | module | `str` | Module type | {{ yes }} |
@@ -389,7 +389,7 @@ Device becomes unstable or is not responding
 | reason | `str` | Reason | {{ no }} |
 
 
-### Related Alarms
+<h3>Related Alarms</h3>
 | Alarm Class | Role | Description |
 | --- | --- | --- |
 | [Chassis \| Hardware \| Module \| Module Error](../alarm-classes-reference/chassis.md#chassis-hardware-module-module-error) | :material-arrow-up: opening event | dispose |
@@ -401,7 +401,7 @@ Device becomes unstable or is not responding
 
 
 
-### Variables
+<h3>Variables</h3>
 | Name | Type | Description | Required |
 | --- | --- | --- | --- |
 | module | `str` | Module type | {{ yes }} |
@@ -415,7 +415,7 @@ Device becomes unstable or is not responding
 
 
 
-### Variables
+<h3>Variables</h3>
 | Name | Type | Description | Required |
 | --- | --- | --- | --- |
 | module | `str` | Module type | {{ yes }} |
@@ -423,7 +423,7 @@ Device becomes unstable or is not responding
 | reason | `str` | Reason | {{ no }} |
 
 
-### Related Alarms
+<h3>Related Alarms</h3>
 | Alarm Class | Role | Description |
 | --- | --- | --- |
 | [Chassis \| Hardware \| Module \| Module Down](../alarm-classes-reference/chassis.md#chassis-hardware-module-module-down) | :material-arrow-up: opening event | dispose |
@@ -435,7 +435,7 @@ Device becomes unstable or is not responding
 
 
 
-### Variables
+<h3>Variables</h3>
 | Name | Type | Description | Required |
 | --- | --- | --- | --- |
 | module | `str` | Module type | {{ yes }} |
@@ -443,7 +443,7 @@ Device becomes unstable or is not responding
 | reason | `str` | Reason | {{ no }} |
 
 
-### Related Alarms
+<h3>Related Alarms</h3>
 | Alarm Class | Role | Description |
 | --- | --- | --- |
 | [Chassis \| Hardware \| Module \| Module Down](../alarm-classes-reference/chassis.md#chassis-hardware-module-module-down) | :material-arrow-up: opening event | dispose |
@@ -455,7 +455,7 @@ Device becomes unstable or is not responding
 
 
 
-### Variables
+<h3>Variables</h3>
 | Name | Type | Description | Required |
 | --- | --- | --- | --- |
 | module | `str` | Module type | {{ yes }} |
@@ -469,7 +469,7 @@ Device becomes unstable or is not responding
 
 
 
-### Variables
+<h3>Variables</h3>
 | Name | Type | Description | Required |
 | --- | --- | --- | --- |
 | module | `str` | Module type | {{ yes }} |
@@ -483,14 +483,14 @@ Device becomes unstable or is not responding
 
 
 
-### Variables
+<h3>Variables</h3>
 | Name | Type | Description | Required |
 | --- | --- | --- | --- |
 | module | `str` | Module type | {{ yes }} |
 | interface | `str` | Hardware port or slot | {{ no }} |
 
 
-### Related Alarms
+<h3>Related Alarms</h3>
 | Alarm Class | Role | Description |
 | --- | --- | --- |
 | [Chassis \| Hardware \| Module \| Module Down](../alarm-classes-reference/chassis.md#chassis-hardware-module-module-down) | :material-arrow-down: closing event | dispose |
@@ -502,7 +502,7 @@ Device becomes unstable or is not responding
 
 
 
-### Variables
+<h3>Variables</h3>
 | Name | Type | Description | Required |
 | --- | --- | --- | --- |
 | module | `str` | Module type | {{ yes }} |
@@ -516,7 +516,7 @@ Device becomes unstable or is not responding
 
 
 
-### Variables
+<h3>Variables</h3>
 | Name | Type | Description | Required |
 | --- | --- | --- | --- |
 | tvalue | `str` | Threshold value | {{ yes }} |
@@ -530,7 +530,7 @@ Device becomes unstable or is not responding
 
 
 
-### Variables
+<h3>Variables</h3>
 | Name | Type | Description | Required |
 | --- | --- | --- | --- |
 | unit | `int` | Unit number | {{ no }} |
@@ -546,7 +546,7 @@ Device becomes unstable or is not responding
 
 
 
-### Variables
+<h3>Variables</h3>
 | Name | Type | Description | Required |
 | --- | --- | --- | --- |
 | unit | `int` | Unit number | {{ yes }} |
@@ -560,7 +560,7 @@ Device becomes unstable or is not responding
 
 
 
-### Variables
+<h3>Variables</h3>
 | Name | Type | Description | Required |
 | --- | --- | --- | --- |
 | issu_state | `str` | The current ISSU state of the system. | {{ yes }} |
@@ -576,14 +576,14 @@ Device becomes unstable or is not responding
 
 
 
-### Variables
+<h3>Variables</h3>
 | Name | Type | Description | Required |
 | --- | --- | --- | --- |
 | number | `str` | Slot number | {{ yes }} |
 | reason | `str` | Reason | {{ no }} |
 
 
-### Related Alarms
+<h3>Related Alarms</h3>
 | Alarm Class | Role | Description |
 | --- | --- | --- |
 | [Chassis \| Linecard \| LC Down](../alarm-classes-reference/chassis.md#chassis-linecard-lc-down) | :material-arrow-up: opening event | dispose |
@@ -595,14 +595,14 @@ Device becomes unstable or is not responding
 
 
 
-### Variables
+<h3>Variables</h3>
 | Name | Type | Description | Required |
 | --- | --- | --- | --- |
 | number | `str` | Slot number | {{ yes }} |
 | reason | `str` | Reason | {{ no }} |
 
 
-### Related Alarms
+<h3>Related Alarms</h3>
 | Alarm Class | Role | Description |
 | --- | --- | --- |
 | [Chassis \| Linecard \| LC Error](../alarm-classes-reference/chassis.md#chassis-linecard-lc-error) | :material-arrow-up: opening event | dispose |
@@ -614,14 +614,14 @@ Device becomes unstable or is not responding
 
 
 
-### Variables
+<h3>Variables</h3>
 | Name | Type | Description | Required |
 | --- | --- | --- | --- |
 | number | `str` | Slot number | {{ yes }} |
 | reason | `str` | Reason | {{ no }} |
 
 
-### Related Alarms
+<h3>Related Alarms</h3>
 | Alarm Class | Role | Description |
 | --- | --- | --- |
 | [Chassis \| Linecard \| LC Error](../alarm-classes-reference/chassis.md#chassis-linecard-lc-error) | :material-arrow-down: closing event | dispose |
@@ -633,7 +633,7 @@ Device becomes unstable or is not responding
 
 
 
-### Variables
+<h3>Variables</h3>
 | Name | Type | Description | Required |
 | --- | --- | --- | --- |
 | number | `str` | Slot number | {{ yes }} |
@@ -646,13 +646,13 @@ Device becomes unstable or is not responding
 
 
 
-### Variables
+<h3>Variables</h3>
 | Name | Type | Description | Required |
 | --- | --- | --- | --- |
 | number | `str` | Slot number | {{ yes }} |
 
 
-### Related Alarms
+<h3>Related Alarms</h3>
 | Alarm Class | Role | Description |
 | --- | --- | --- |
 | [Chassis \| Linecard \| LC Down](../alarm-classes-reference/chassis.md#chassis-linecard-lc-down) | :material-arrow-up: opening event | dispose |
@@ -664,13 +664,13 @@ Device becomes unstable or is not responding
 
 
 
-### Variables
+<h3>Variables</h3>
 | Name | Type | Description | Required |
 | --- | --- | --- | --- |
 | number | `str` | Slot number | {{ yes }} |
 
 
-### Related Alarms
+<h3>Related Alarms</h3>
 | Alarm Class | Role | Description |
 | --- | --- | --- |
 | [Chassis \| Linecard \| LC Down](../alarm-classes-reference/chassis.md#chassis-linecard-lc-down) | :material-arrow-up: opening event | dispose |
@@ -682,13 +682,13 @@ Device becomes unstable or is not responding
 
 
 
-### Variables
+<h3>Variables</h3>
 | Name | Type | Description | Required |
 | --- | --- | --- | --- |
 | number | `str` | Slot number | {{ yes }} |
 
 
-### Related Alarms
+<h3>Related Alarms</h3>
 | Alarm Class | Role | Description |
 | --- | --- | --- |
 | [Chassis \| Linecard \| LC Down](../alarm-classes-reference/chassis.md#chassis-linecard-lc-down) | :material-arrow-up: opening event | dispose |
@@ -700,13 +700,13 @@ Device becomes unstable or is not responding
 
 
 
-### Variables
+<h3>Variables</h3>
 | Name | Type | Description | Required |
 | --- | --- | --- | --- |
 | number | `str` | Slot number | {{ yes }} |
 
 
-### Related Alarms
+<h3>Related Alarms</h3>
 | Alarm Class | Role | Description |
 | --- | --- | --- |
 | [Chassis \| Linecard \| LC Down](../alarm-classes-reference/chassis.md#chassis-linecard-lc-down) | :material-arrow-down: closing event | dispose |
@@ -718,7 +718,7 @@ Device becomes unstable or is not responding
 
 
 
-### Variables
+<h3>Variables</h3>
 | Name | Type | Description | Required |
 | --- | --- | --- | --- |
 | reason | `str` | The reason of the last switchover | {{ yes }} |
@@ -734,7 +734,7 @@ Device becomes unstable or is not responding
 
 
 
-### Variables
+<h3>Variables</h3>
 | Name | Type | Description | Required |
 | --- | --- | --- | --- |
 | slot | `str` | Slot | {{ no }} |
@@ -756,7 +756,7 @@ Device becomes unstable or is not responding
 
 
 
-### Variables
+<h3>Variables</h3>
 | Name | Type | Description | Required |
 | --- | --- | --- | --- |
 | name | `str` | PSU Name | {{ yes }} |
@@ -771,13 +771,13 @@ Device becomes unstable or is not responding
 
 
 
-### Variables
+<h3>Variables</h3>
 | Name | Type | Description | Required |
 | --- | --- | --- | --- |
 | name | `str` | PSU Name | {{ yes }} |
 
 
-### Related Alarms
+<h3>Related Alarms</h3>
 | Alarm Class | Role | Description |
 | --- | --- | --- |
 | [Chassis \| PSU \| PSU Failed](../alarm-classes-reference/chassis.md#chassis-psu-psu-failed) | :material-arrow-up: opening event | dispose |
@@ -789,7 +789,7 @@ Device becomes unstable or is not responding
 
 
 
-### Variables
+<h3>Variables</h3>
 | Name | Type | Description | Required |
 | --- | --- | --- | --- |
 | name | `str` | PSU Name | {{ yes }} |
@@ -804,13 +804,13 @@ Device becomes unstable or is not responding
 
 
 
-### Variables
+<h3>Variables</h3>
 | Name | Type | Description | Required |
 | --- | --- | --- | --- |
 | name | `str` | PSU Name | {{ yes }} |
 
 
-### Related Alarms
+<h3>Related Alarms</h3>
 | Alarm Class | Role | Description |
 | --- | --- | --- |
 | [Chassis \| PSU \| PSU Failed](../alarm-classes-reference/chassis.md#chassis-psu-psu-failed) | :material-arrow-down: closing event | dispose |
@@ -822,13 +822,13 @@ Device becomes unstable or is not responding
 
 
 
-### Variables
+<h3>Variables</h3>
 | Name | Type | Description | Required |
 | --- | --- | --- | --- |
 | condition | `str` | Condition | {{ no }} |
 
 
-### Related Alarms
+<h3>Related Alarms</h3>
 | Alarm Class | Role | Description |
 | --- | --- | --- |
 | [Chassis \| PSU \| Power Failed](../alarm-classes-reference/chassis.md#chassis-psu-power-failed) | :material-arrow-up: opening event | dispose |
@@ -840,13 +840,13 @@ Device becomes unstable or is not responding
 
 
 
-### Variables
+<h3>Variables</h3>
 | Name | Type | Description | Required |
 | --- | --- | --- | --- |
 | reason | `str` | Reason | {{ no }} |
 
 
-### Related Alarms
+<h3>Related Alarms</h3>
 | Alarm Class | Role | Description |
 | --- | --- | --- |
 | [Chassis \| RAM \| Insufficient Memory](../alarm-classes-reference/chassis.md#chassis-ram-insufficient-memory) | :material-arrow-up: opening event | dispose |
@@ -858,7 +858,7 @@ Device becomes unstable or is not responding
 
 
 
-### Variables
+<h3>Variables</h3>
 | Name | Type | Description | Required |
 | --- | --- | --- | --- |
 | buffer | `str` | Buffer name | {{ yes }} |
@@ -868,22 +868,22 @@ Device becomes unstable or is not responding
 
 
 ## Chassis | RAM | RAM Failed
-### Symptoms
+<h3>Symptoms</h3>
 From random instability to complete operation failure
 
 
 
-### Recommended Actions
+<h3>Recommended Actions</h3>
 Replace faulty RAM module
 
 
-### Variables
+<h3>Variables</h3>
 | Name | Type | Description | Required |
 | --- | --- | --- | --- |
 | bank | `str` | Bank Name | {{ yes }} |
 
 
-### Related Alarms
+<h3>Related Alarms</h3>
 | Alarm Class | Role | Description |
 | --- | --- | --- |
 | [Chassis \| RAM \| RAM Failed](../alarm-classes-reference/chassis.md#chassis-ram-ram-failed) | :material-arrow-up: opening event | dispose |
@@ -895,13 +895,13 @@ Replace faulty RAM module
 
 
 
-### Variables
+<h3>Variables</h3>
 | Name | Type | Description | Required |
 | --- | --- | --- | --- |
 | unit | `int` | Unit number | {{ yes }} |
 
 
-### Related Alarms
+<h3>Related Alarms</h3>
 | Alarm Class | Role | Description |
 | --- | --- | --- |
 | [Chassis \| Stack \| Stack Degraded](../alarm-classes-reference/chassis.md#chassis-stack-stack-degraded) | :material-arrow-up: opening event | dispose |
@@ -913,13 +913,13 @@ Replace faulty RAM module
 
 
 
-### Variables
+<h3>Variables</h3>
 | Name | Type | Description | Required |
 | --- | --- | --- | --- |
 | unit | `int` | Unit number | {{ yes }} |
 
 
-### Related Alarms
+<h3>Related Alarms</h3>
 | Alarm Class | Role | Description |
 | --- | --- | --- |
 | [Chassis \| Stack \| Stack Degraded](../alarm-classes-reference/chassis.md#chassis-stack-stack-degraded) | :material-arrow-down: closing event | dispose |
@@ -931,14 +931,14 @@ Replace faulty RAM module
 
 
 
-### Variables
+<h3>Variables</h3>
 | Name | Type | Description | Required |
 | --- | --- | --- | --- |
 | name | `str` | Supervisor name | {{ yes }} |
 | reason | `str` | Reason | {{ no }} |
 
 
-### Related Alarms
+<h3>Related Alarms</h3>
 | Alarm Class | Role | Description |
 | --- | --- | --- |
 | [Chassis \| Supervisor \| Supervisor Down](../alarm-classes-reference/chassis.md#chassis-supervisor-supervisor-down) | :material-arrow-up: opening event | dispose |
@@ -950,14 +950,14 @@ Replace faulty RAM module
 
 
 
-### Variables
+<h3>Variables</h3>
 | Name | Type | Description | Required |
 | --- | --- | --- | --- |
 | name | `str` | Supervisor name | {{ yes }} |
 | reason | `str` | Reason | {{ no }} |
 
 
-### Related Alarms
+<h3>Related Alarms</h3>
 | Alarm Class | Role | Description |
 | --- | --- | --- |
 | [Chassis \| Supervisor \| Supervisor Down](../alarm-classes-reference/chassis.md#chassis-supervisor-supervisor-down) | :material-arrow-down: closing event | dispose |
@@ -969,13 +969,13 @@ Replace faulty RAM module
 
 
 
-### Variables
+<h3>Variables</h3>
 | Name | Type | Description | Required |
 | --- | --- | --- | --- |
 | reason | `str` | Reason | {{ no }} |
 
 
-### Related Alarms
+<h3>Related Alarms</h3>
 | Alarm Class | Role | Description |
 | --- | --- | --- |
 | [Chassis \| TCAM \| TCAM Entry Capacity Exceeded](../alarm-classes-reference/chassis.md#chassis-tcam-tcam-entry-capacity-exceeded) | :material-arrow-up: opening event | dispose |
@@ -983,19 +983,19 @@ Replace faulty RAM module
 
 
 ## Chassis | TCAM | TCAM Error
-### Symptoms
+<h3>Symptoms</h3>
 From random instability to complete operation failure
 
 
 
 
-### Variables
+<h3>Variables</h3>
 | Name | Type | Description | Required |
 | --- | --- | --- | --- |
 | reason | `str` | Reason | {{ no }} |
 
 
-### Related Alarms
+<h3>Related Alarms</h3>
 | Alarm Class | Role | Description |
 | --- | --- | --- |
 | [Chassis \| TCAM \| TCAM Error](../alarm-classes-reference/chassis.md#chassis-tcam-tcam-error) | :material-arrow-up: opening event | dispose |
