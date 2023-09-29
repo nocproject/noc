@@ -1,7 +1,7 @@
 # ----------------------------------------------------------------------
 # Test profile docs
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2020 The NOC Project
+# Copyright (C) 2007-2023 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -56,7 +56,7 @@ def test_vendor_doc_exists(vendor):
 def test_vendor_doc_toc(toc, vendor):
     if vendor in XFAIL_VENDORS:
         pytest.xfail("Excluded")
-    path = ["Documentation", "Profiles Reference", vendor, "Overview"]
+    path = ["References", "Profiles", vendor, "Overview"]
     assert path in toc
     v = toc[path].split("/")
     assert v == ["profiles-reference", vendor, "index.md"]
