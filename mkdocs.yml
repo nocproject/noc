@@ -487,17 +487,7 @@ nav:
       - Capabilities: caps-reference/
       - Alarm Classes: alarm-classes-reference/
       - Event Classes: event-classes-reference/
-      - Measurement Units:
-          - Overview: measurement-units-reference/index.md
-          - Ampere: measurement-units-reference/ampere.md
-          - Celsius: measurement-units-reference/celsius.md
-          - Hertz: measurement-units-reference/hertz.md
-          - Meter: measurement-units-reference/meter.md
-          - RPM: measurement-units-reference/rpm.md
-          - Second: measurement-units-reference/second.md
-          - Volt AC: measurement-units-reference/volt-ac.md
-          - Volt DC: measurement-units-reference/volt-dc.md
-          - Watt: measurement-units-reference/watt.md
+      - Measurement Units: measurement-units-reference/index.md
       - Metric Scopes:
           - Overview: metric-scopes-reference/index.md
           - CPU: metric-scopes-reference/cpu.md

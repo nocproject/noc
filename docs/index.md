@@ -20,7 +20,7 @@ Documentation is organized into into four major parts:
 - [Guides](sections-overview/guides.md): Brief introduction for new users.
 - [Reference](sections-overview/references.md): Technical reference.
 - [How-to guides](sections-overview/howto.md): Step-by-step guides covering common problems.
-- [Background](sections-overview/backgroud.md): Clarification and discussion of key topics.
+- [Background](sections-overview/background.md): Clarification and discussion of key topics.
 
 ## Community
 
