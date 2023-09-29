@@ -45,6 +45,7 @@ class ReportPendingLinks(object):
     @staticmethod
     def load(ids, ignore_profiles=None, filter_exists_link=False):
         problems = defaultdict(dict)  # id -> problem
+        rx_nf = re.compile(r"Remote object '(.*?)' is not found")
         rg = re.compile(
             r"Pending\slink:\s(?P<local_iface>.+?)(\s-\s)(?P<remote_mo>.+?):(?P<remote_iface>\S+)",
             re.IGNORECASE,
@@ -111,10 +112,9 @@ class ReportPendingLinks(object):
                     if (mo.id, iface) in ignored_ifaces:
                         continue
                     # print iface
-                    if "is not found" in discovery["problems"]["lldp"][iface]:
-                        _, parsed_x = discovery["problems"]["lldp"][iface].split("'", 1)
-                        parsed_x, _ = parsed_x.rsplit("'", 1)
-                        parsed_x = ast.literal_eval(parsed_x)
+                    match = rx_nf.search(discovery["problems"]["lldp"][iface])
+                    if match:
+                        parsed_x = ast.literal_eval(match.group(1))
                         problems[mo.id] = {
                             iface: {
                                 "problem": "Remote object is not found",
@@ -127,7 +127,7 @@ class ReportPendingLinks(object):
                             }
                         }
                     if "Pending link:" in discovery["problems"]["lldp"][iface]:
-                        pend_str = rg.match(discovery["problems"]["lldp"][iface])
+                        pend_str = rg.search(discovery["problems"]["lldp"][iface])
                         try:
                             rmo = ManagedObject.objects.get(name=pend_str.group("remote_mo"))
                         except ManagedObject.DoesNotExist:
