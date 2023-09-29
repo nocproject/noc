@@ -23,7 +23,7 @@ Message contains JSON array, containing objects of following structure
 | ---------- | -------- | -------------------------------------------------------------------- |
 | ts         | DateTime | ISO 8601 timestamp (i.e. `YYYY-MM-DDTHH:MM:SS`) of collected metrics |
 | bi_id      | Number   | Managed Object's BI ID                                               |
-| scope      | String   | [Metric Scope](../metric-scopes-reference/index.md) name             |
+| scope      | String   | [Metric Scope](../metrics-reference/index.md) name                   |
 | `<metric>` | Any      | Measured `<metric>` value. Depends on metric scope                   |
 
 ## Example
