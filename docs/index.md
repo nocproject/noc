@@ -31,4 +31,4 @@ Join [Telegram channel](https://t.me/nocproject)
 and project’s [Gitlab](https://code.getnoc.com/noc/noc/) tracker.
 
 ## License
-This Manual is licensed under a [Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International License](doc-license.md).
+NOC is open-source software and licensed under the terms of [BSD 3-clause License](license.md).
