@@ -1080,7 +1080,7 @@ theme:
         icon: material/weather-night
         name: Switch to light mode
 extra_css:
-  - _static/extra.css
+  - assets/extra.css
 use_directory_urls: true
 site_dir: build/docs
 strict: false
