@@ -8,9 +8,9 @@ Sources of extractions are `FIAS` data and `OKTMO` data.
 
 - `CACHE_PATH` (dir for getting archive and csv files and extracting dbf files)
 - `OKTMO_URL` (url for getting OKTMO archive file)
-- `OKTMO_REGION` (region [code](oktmo_region_codes.md) of OKTMO data)
+- `OKTMO_REGION` (region [code](oktmo-region-codes.md) of OKTMO data)
 - `FIAS_URL` (url for getting FIAS archive file)
-- `FIAS_REGION` (region [code](fias_region_codes.md) of FIAS data)
+- `FIAS_REGION` (region [code](fias-region-codes.md) of FIAS data)
 
 ### Handler of Remote System:
 
@@ -35,7 +35,7 @@ Sources of extractions are `FIAS` data and `OKTMO` data.
 - `FIAS_URL`: `https://fias-file.nalog.ru/downloads/2021.04.27/fias_dbf.zip`
 - `FIAS_REGION`: `24`
 
-![fias](fias-remote-system.png)
+![fias](fias-remote-system-scr.png)
 
 #### Command of extracting:
 
