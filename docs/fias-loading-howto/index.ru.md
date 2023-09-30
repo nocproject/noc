@@ -35,7 +35,7 @@
 - `FIAS_URL`: `https://fias-file.nalog.ru/downloads/2021.04.27/fias_dbf.zip`
 - `FIAS_REGION`: `24`
 
-![fias](fias-remote-system.png)
+![fias](fias-remote-system-scr.png)
 
 #### Команда извлечения данных:
 

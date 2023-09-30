@@ -4,7 +4,7 @@
 
 1. Навести курсор в правый верхний угол и нажать `Change Password…`
 
-![](./img/tower-main-window.png)
+![](tower-main-window.png)
 
 ## Cоздать окружение (Environment)
 
@@ -13,21 +13,21 @@
 3. В поле Type — указываем Evaluation или Production  
 4. Дальше сохраняем, нажав кнопку Save
 
-![](./img/tower-create-env.png)
+![](tower-create-env.png)
 
 ## Создать датацентр(Datacenters)
 
 1. `Datacenters` → `Create new`
 2. Вводим в поле Name имя dc1 и нажимаем `Save`
 
-![](./img/tower-create-dc.png)
+![](tower-create-dc.png)
 
 ## Скачать новые файлы плейбуков для установки [(Pools)](../../../concepts/pool/index.md)
 
 1. `Environments` → `Pull`
 2. Дожидаемся уведомления `Pull complete`
 
-![](./img/tower-pull-playbooks.png)
+![](tower-pull-playbooks.png)
 
 ## Добавить машины (Nodes)
 
@@ -39,7 +39,7 @@
 6. В поле Login As вводим ansible
 7. Нажимаем `Save`
 
-![](./img/tower-add-node.png)
+![](tower-add-node.png)
 
 ## Выбираем сервисы, которые необходимо задеплоить (Services)
 
@@ -82,7 +82,7 @@
 
 2. Нажимаем кнопку Save
 
-![](./img/tower-add-service.png)
+![](tower-add-service.png)
 
 ### Multinode installation
 
@@ -92,4 +92,4 @@
 
 1. Переходим во вкладку `Environments`, нажимаем на кнопку `Deploy` и устанавливаем сервисы NOC’а на сервер
 
-![](./img/tower-run-deploy.png)
+![](tower-run-deploy.png)

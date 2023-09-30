@@ -39,8 +39,8 @@ Internally uses [Vertamedia Clickhouse Datasource](https://grafana.com/grafana/p
 !!! note
 
     It is mandatory to keep in mind ClickHouse table structures.
-    Refer to the [Metric Types Reference](../metric-types-reference/index.md) and
-    [Metric Scopes Reference](../metric-scopes-reference/index.md) for details.
+    Refer to the [Metric Types Reference](../metrics-reference/index.md) and
+    [Metric Scopes Reference](../metrics-reference/index.md) for details.
 
 When adding the panel:
 
@@ -48,7 +48,7 @@ When adding the panel:
 2. Fill `FROM` parameters:
    
    * Database: `noc`
-   * Table: Select [Metric Scope](../metric-scopes-reference/index.md)
+   * Table: Select [Metric Scope](../metrics-reference/index.md)
    * Timestamp Column: `ts`
 
 3. Press `Go to Query` button.
@@ -89,8 +89,8 @@ GROUP BY t ORDER BY t
 
 !!! note
 
-    Refer to the [Metric Types Reference](../metric-types-reference/index.md) and
-    [Metric Scopes Reference](../metric-scopes-reference/index.md) for the available
+    Refer to the [Metric Types Reference](../metrics-reference/index.md) and
+    [Metric Scopes Reference](../metrics-reference/index.md) for the available
     tables and their structure.
 
 ### JSON Datasource

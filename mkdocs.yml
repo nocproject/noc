@@ -13,6 +13,7 @@ nav:
   - Guides:
       - Overview: sections-overview/guides.md
       - Docs Contributing Guide: docs-contributing-guide/index.md
+      - Docs Translation Guide: docs-translation-guide/index.md
       - Docs Style Guide:
           - Overview: docs-style-guide/index.md
           - Tutorials: docs-style-guide/tutorials.md
@@ -532,6 +533,7 @@ nav:
           - ping: services-reference/ping.md
           - sae: services-reference/sae.md
           - scheduler: services-reference/scheduler.md
+          - selfmon: services-reference/selfmon.md
           - syslogcollector: services-reference/syslogcollector.md
           - tgsender: services-reference/tgsender.md
           - topo: services-reference/topo.md
@@ -904,11 +906,16 @@ nav:
       - Glossary: glossary/index.md
   - How-to:
       - Overview: sections-overview/howto.md
+      - Deploy NOC: deploy-noc-howto/index.md
       - Sharing Collections Howto: sharing-collections-howto/index.md
-      - Loading FIAS Data Howto: fias-loading-howto/index.md
+      - Loading FIAS Data Howto:
+          - Overview: fias-loading-howto/index.md
+          - Region Codes: fias-loading-howto/fias-region-codes.md
+          - OKTMO Codes: fias-loading-howto/oktmo-region-codes.md
       - Custom Static Dashbord with Device Charts: custom-dev-grafana-dashboard-howto/index.md
       - How to Import MIB Files: import-mib-file-howto/index.md
       - Using Housekeeper to Collect Device Data: using-hk-to-collect-data-howto/index.md
+      - Upgrade Your Single-node Postgres Server: upgrade-single-postgres-howto/index.md
   - Background:
       - Overview: sections-overview/background.md
       - Connection Restrictions: connection-restrictions/index.md
@@ -1049,7 +1056,7 @@ nav:
 #           - Создания Модели Объекта: dev/object-model/how-to-create-object-model.md
 theme:
   name: material
-  logo: _static/logo.svg
+  logo: assets/logo.svg
   custom_dir: docs/overrides
   features:
     - navigation.tabs
