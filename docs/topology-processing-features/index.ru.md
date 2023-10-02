@@ -4,15 +4,15 @@
 На его основе можно менять поведение системы, это предоставляет следующие возможности:  
 
 * Строить L2 топологию по данным с оборудования и внешних систем (`Remote System`)
-* Строить L2 связи между интерфейсами [Interface](../../concepts/interface/index.md) устройства [ManagedObject](../../concepts/managed-object/index.md).
+* Строить L2 связи между интерфейсами [Interface](../concepts/interface/index.md) устройства [ManagedObject](../concepts/managed-object/index.md).
 * Показывать топологию на карте сети
 * Определять причины аварии по топологии
 * Производить поиск пути по топологии
 * Строить отчёты на основании данных по топологии
-* Предоставлять топологическую информацию через `API` - [Datastream](../../../dev/api/datastream/managedobject.md)
+* Предоставлять топологическую информацию через `API` - [Datastream](../../dev/api/datastream/managedobject.md)
 
 
-L2 топология (`L2 Topology`) строится между интерфейсами [Interface](../../concepts/interface/index.md) устройства [ManagedObject](../../concepts/managed-object/index.md). 
+L2 топология (`L2 Topology`) строится между интерфейсами [Interface](../concepts/interface/index.md) устройства [ManagedObject](../concepts/managed-object/index.md). 
 Помимо ручного создания связей (`Link`), через интерфейс пользователя, система может выстраивать связи на основе данных с оборудования. Можно выделить следующие этапы работы с топологией:
 
 * Построение связей между устройствами (вручную или по итогам опроса)
@@ -42,7 +42,7 @@ L2 топология (`L2 Topology`) строится между интерфе
     * Иные
 * **Топологический метод** (`Topology Method`) - это способ с помощью которого система строит связь. Помимо обычных, совпадающих с топологическими протоколами, в системе присутствует несколько дополнительных.
 
-Для создания связи (`Link`) обязательно наличие интерфейса [Interface](../../concepts/interface/index.md) на всех связанных устройствах.
+Для создания связи (`Link`) обязательно наличие интерфейса [Interface](../concepts/interface/index.md) на всех связанных устройствах.
 Дальнейший список требования отличается в завимости от метода создания связи (`Link`). Рассмотри доступные.
 
 ### Создание связи вручную
@@ -59,7 +59,7 @@ L2 топология (`L2 Topology`) строится между интерфе
 * Устройство должно поддерживать возможность показать список соседей с указанием их интерфейсов
 * Идентификатор соседа из списка должен позволять найти устройство в системе
 * Идентификатор порта соседа должен позволять найти порт соседа в системе
-* В профилях [SA Profile](../../concepts/sa-profile/index.md) устройств должны быть реализованы скрипты для получения информации о соседях
+* В профилях [SA Profile](../concepts/sa-profile/index.md) устройств должны быть реализованы скрипты для получения информации о соседях
 
 ### Процедура построений связи
 
@@ -138,8 +138,8 @@ flowchart TD
 
 #### Формирование списка кандидатов
 
-По полученному списку идентификаторов происходит поиск соседнего устройства [ManagedObject](../../concepts/managed-object/index.md) 
-и его порта [Interface](../../concepts/interface/index.md). 
+По полученному списку идентификаторов происходит поиск соседнего устройства [ManagedObject](../concepts/managed-object/index.md) 
+и его порта [Interface](../concepts/interface/index.md). 
 При успехе пара `текущее устройство -> порт,  соседнее устройство -> соседний порт` добавляются в список кандидатов. 
 После формирования списка кандидатов начинается его проверка - система запрашивает таблицу соседей *соседнего устройства* 
 и проверяет что за указанным *соседним портом* находится *текущее устройство*.
@@ -150,7 +150,7 @@ flowchart TD
 #### Построение связи
 
 В случае подтверждения начинается процедура создания связи (`Link`). 
-Она регулируется настройкой `Политика при опросе` [Discovery Policy](../../concepts/interface-profile/index.md) в профиле интерфейса (`Interface Profile`). Доступны опции:
+Она регулируется настройкой `Политика при опросе` [Discovery Policy](../concepts/interface-profile/index.md) в профиле интерфейса (`Interface Profile`). Доступны опции:
 
 * `Ignored` (Игнорировать) - не создавать связь (`Link`) с этим портом
 * `Create New` (Создавать новый) - не создавать связь, если таковая уже есть
@@ -179,7 +179,7 @@ flowchart TD
 поскольку опрос не может обнаружить её отсутствие: по причине его отключения или отсутствия соседа. Не всегда это может быть удобным. 
 
 Если требуются очищать связи не обновляемые в течении какого-то времени, можно воспользоваться аргументом `ttl_policy` 
-команды [./noc link](../../../man/link.md).
+команды [./noc link](../man/link.md).
 
 ### Методы построения связи
 
@@ -191,30 +191,30 @@ flowchart TD
 * Возможность (`Capabilities`) необходимая для запуска опроса
 
 
-| Метод                                                            | Протокол   | Скрипт                                                                             | Caps            |
-| ---------------------------------------------------------------- | ---------- | ---------------------------------------------------------------------------------- | --------------- |
-| [CDP](../../discovery-reference/box/cdp.md)                      | CDP        | [get_cdp_neighbors](../../../scripts-reference/get_cdp_neighbors.md)               | `Network  CDP`  |
-| [REP](../../discovery-reference/box/rep.md)                      | REP        | [get_rep_topology](../../../scripts-reference/get_rep_topology.md)                 | `Network  REP`  |
-| [LLDP](../../discovery-reference/box/lldp.md)                    | LLDP       | [get_lldp_neighbors](../../../scripts-reference/get_lldp_neighbors.md)             | `Network  LLDP` |
-| [STP](../../discovery-reference/box/stp.md)                      | STP        | [get_spanning_tree](../../../scripts-reference/get_spanning_tree.md)               | `Network  STP`  |
-| [UDLD](../../discovery-reference/box/udld.md)                    | UDLD       | [get_udld_neighbors](../../../scripts-reference/get_udld_neighbors.md)             | `Network  UDLD` |
-| [OAM](../../discovery-reference/box/oam.md)                      | OAM        | [get_oam_status](../../../scripts-reference/get_oam_status.md)                     | `Network  OAM`  |
-| [BFD](../../discovery-reference/box/bfd.md)                      | BFD        | [get_bfd_sessions](../../../scripts-reference/get_bfd_sessions.md)                 | `Network  BFD`  |
-| [FDP](../../discovery-reference/box/fdp.md)                      | FDP        | [get_fdp_neighbors](../../../scripts-reference/get_fdp_neighbors.md)               | `Network  FDP`  |
-| [Huawei NDP (NTDP)](../../discovery-reference/box/huawei_ndp.md) | Huawei NDP | [get_huawei_ndp_neighbors](../../../scripts-reference/get_huawei_ndp_neighbors.md) | `Network  FDP`  |
-| [LACP](../../discovery-reference/box/lacp.md)                    | LACP       | [get_lacp_neighbors](../../../scripts-reference/get_lacp_neighbors.md)             | `Network  LACP` |
-| [NRI](../../discovery-reference/box/nri.md)                      | -          | -                                                                                  | -               |
-| [ifDesc](../../discovery-reference/box/ifdesc.md)                | -          | -                                                                                  | -               |
-| [xMAC](../../discovery-reference/box/xmac.md)                    | -          | [get_mac_address_table](../../../scripts-reference/get_mac_address_table.md)       | -               |
+| Метод                                                   | Протокол   | Скрипт                                                                 | Caps            |
+| ------------------------------------------------------- | ---------- | ---------------------------------------------------------------------- | --------------- |
+| [CDP](../discovery-reference/box/cdp.md)                | CDP        | [get_cdp_neighbors](../scripts-reference/get_cdp_neighbors.md)         | `Network  CDP`  |
+| [REP](../discovery-reference/box/rep.md)                | REP        | [get_rep_topology](../scripts-reference/get_rep_topology.md)           | `Network  REP`  |
+| [LLDP](../discovery-reference/box/lldp.md)              | LLDP       | [get_lldp_neighbors](../scripts-reference/get_lldp_neighbors.md)       | `Network  LLDP` |
+| [STP](../discovery-reference/box/stp.md)                | STP        | [get_spanning_tree](../scripts-reference/get_spanning_tree.md)         | `Network  STP`  |
+| [UDLD](../discovery-reference/box/udld.md)              | UDLD       | [get_udld_neighbors](../scripts-reference/get_udld_neighbors.md)       | `Network  UDLD` |
+| [OAM](../discovery-reference/box/oam.md)                | OAM        | [get_oam_status](../scripts-reference/get_oam_status.md)               | `Network  OAM`  |
+| [BFD](../discovery-reference/box/bfd.md)                | BFD        | [get_bfd_sessions](../scripts-reference/get_bfd_sessions.md)      | `Network  BFD`  |
+| [FDP](../discovery-reference/box/fdp.md)                | FDP        | [get_fdp_neighbors](../scripts-reference/get_fdp_neighbors.md)    | `Network  FDP`  |
+| [Huawei NDP (NTDP)](../discovery-reference/box/huawei_ndp.md) | Huawei NDP | [get_huawei_ndp_neighbors](../scripts-reference/get_huawei_ndp_neighbors.md) | `Network  FDP`  |
+| [LACP](../discovery-reference/box/lacp.md)              | LACP       | [get_lacp_neighbors](../scripts-reference/get_lacp_neighbors.md)  | `Network  LACP` |
+| [NRI](../discovery-reference/box/nri.md)                | -          | -                                                                      | -               |
+| [ifDesc](../discovery-reference/box/ifdesc.md)          | -          | -                                                                      | -               |
+| [xMAC](../discovery-reference/box/xmac.md)              | -          | [get_mac_address_table](../scripts-reference/get_mac_address_table.md) | -               |
 
-[Segment](../../discovery-reference/segment/mac.md) - отдельный метод построения связей на основе таблицы MAC адресов (`FDB`). 
+[Segment](../discovery-reference/segment/mac.md) - отдельный метод построения связей на основе таблицы MAC адресов (`FDB`). 
 В отличие от перечисленных в таблице он строит связи между устройствами одного сегмента и работает по расписанию сегмента.
 
 
 ## Расчёт направления вверх
 
 Обычный граф связности является ненаправленным: все узлы графа разнозначны друг другу. 
-Но в реальных условиях сети делятся на слабосвязанные между собой кластеры - сегменты [Network Segment](../../concepts/network-segment/index.md). 
+Но в реальных условиях сети делятся на слабосвязанные между собой кластеры - сегменты [Network Segment](../concepts/network-segment/index.md). 
 Связь между кластерами осуществляется через выделенные узлы (обзываются агрегаторы, концентраторы и т.д.). 
 Информацию важно знать для правильной работы [RCA](../../../glossary/index.md#rca) - определения причины аварии по топологии. 
 Если связность кластера проходит через один узел, то её недоступность вызовет недоступность всех узлов кластера.
@@ -268,7 +268,7 @@ flowchart TD
 
 ### Иерархия сегментов
 
-В НОКе для устройства обязательно задаётся его сегмент [Network Segment](../../concepts/network-segment/index.md). 
+В НОКе для устройства обязательно задаётся его сегмент [Network Segment](../concepts/network-segment/index.md). 
 Устройства, находящиеся в родительском сегменте по отношению к сегменту устройства, являются вышестоящими и направление вверх считается через них. 
 
 ### IP Адрес
@@ -278,20 +278,20 @@ flowchart TD
 
 ## Настройки 
 
-Настройки опроса по методам находятся на вкладке `Box` в разделe топология [Managed Object Profile](../../concepts/managed-object-profile/index.md#Box(Полный_опрос)). 
+Настройки опроса по методам находятся на вкладке `Box` в разделe топология [Managed Object Profile](../concepts/managed-object-profile/index.md#Box(Полный_опрос)). 
 Для активации метода необходимо поставить напротив него галочку.
 
 Требования по каждому из методов указаны в разделе. Необходимо учитывать следующие требования:
 
-* L2 связь строится между интерфейсами, по этой причине у устройства должен быть включён опрос инетерфейсов [Interface](../../discovery-reference/box/interface.md)
-* Для запуска методов он должен поддерживаться на устройстве, так что необходимо включить опрос возможностей [Capabilities](../../discovery-reference/box/caps.md). Для методов `ifDesc`, `xMAC` и `NRI` не требуется.
-* Часть методов производят поиск устройств по идентификатору, для них необходимо включить опрос [ID](../../discovery-reference/box/id.md)
+* L2 связь строится между интерфейсами, по этой причине у устройства должен быть включён опрос инетерфейсов [Interface](../discovery-reference/box/interface.md)
+* Для запуска методов он должен поддерживаться на устройстве, так что необходимо включить опрос возможностей [Capabilities](../discovery-reference/box/caps.md). Для методов `ifDesc`, `xMAC` и `NRI` не требуется.
+* Часть методов производят поиск устройств по идентификатору, для них необходимо включить опрос [ID](../discovery-reference/box/id.md)
 
 Помимо настройки опроса необходимо включить метод в приоритете методов.
 
 ### Приоритет методов
 
-Настройка приоритетов расположена в Профиле сегмента [Network Segment Profile](../../concepts/network-segment-profile/index.md) - `Методы построения топологии`. 
+Настройка приоритетов расположена в Профиле сегмента [Network Segment Profile](../concepts/network-segment-profile/index.md) - `Методы построения топологии`. 
 Если устройство поддерживает несколько методов построения связи может возникнуть ситуация когда информация 
 от разных методов отличается. Например по описанию интерфейса (`ifDesc`) связь строится с одним устройством, а по `LLDP` с другим. 
 В это случае победит метод, расположенный выше по приоритету.
@@ -311,7 +311,7 @@ flowchart TD
 Для облегчения ситуации предусмотрен *Кэш соседей* (`Neighbor cache`). При его включении на указанное время (`TTL`) система 
 запоминает соседей устройства и при не заходит на него. По истечении времени кэш очищается и при опросе потребуется заход на устройство.
 
-Настройка расположена в Профиле объекта [Managed Object Profile](../../concepts/managed-object-profile/index.md#Box(Полный_опрос)) 
+Настройка расположена в Профиле объекта [Managed Object Profile](../concepts/managed-object-profile/index.md#Box(Полный_опрос)) 
 `Управление объектами` (`Service Activation`) -> `Настройки` (`Setup`) -> `Профиль объекта` (`ManagedObject Profile`) на вкладке `Box`. 
 По умолчанию выставлена в 0, т.е. отключено. Значение больше 0 определяет время в течении которого система **запоминает полученную с устройства информацию** и при поиске соседа обращается к ней, а не к устройству. 
 Использование соседей из кэша можно увидеть в логе опроса по записи: ` [discovery|box|<MONAME>|lldp] Use neighbors cache`.
@@ -325,7 +325,7 @@ flowchart TD
 
 * Схема сегмента 
 * Ттрассировка пути на верх из карточки
-* Расчёт пути [path](../../../dev/api/nbi/path.md)
+* Расчёт пути [path](../nbi-api-reference/path.md)
 * Расчёт RCA в авариях [Корреляция по топологии](../fault-management/index.md#Корреляция%20по%20топологии)
 * Отчёты по метрикам с учётом топологии
 
