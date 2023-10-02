@@ -30,7 +30,11 @@ def get_event(event_id):
         d.alarms as alarms
         from events e
         LEFT OUTER JOIN (
-        SELECT event_id, groupArray(alarm_id) as alarms FROM disposelog  where alarm_id != ''  GROUP BY event_id) as d
+            SELECT event_id, groupArray(alarm_id) as alarms
+            FROM disposelog
+            WHERE event_id='{event_id}' AND alarm_id != ''
+            GROUP BY event_id
+        ) as d
         ON e.event_id == d.event_id
         where event_id='{event_id}'
         format JSON
