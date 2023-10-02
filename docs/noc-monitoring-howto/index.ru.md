@@ -315,11 +315,11 @@ Status: <b>{{.Status | str_UpperCase}} ✅</b>
 
 1. Заходим в веб-интерфейс NOC Tower <ip адрес сервера с Tower>:8888
 2. Выбираем в Environment и нажимаем Pull
-![](./img/pull-enviroments.png)
+![](pull-enviroments.png)
 3. Далее переходим в Services, выбираем selfmon, отмечаем флажками что хотим мониторить
-![](./img/selfmon-service.png)
+![](selfmon-service.png)
 4. Деплоим изменения
-![](./img/deploy-tower.png)
+![](deploy-tower.png)
 
 ## Ребутаем сервисы NOC
 

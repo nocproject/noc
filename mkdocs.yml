@@ -916,6 +916,7 @@ nav:
       - How to Import MIB Files: import-mib-file-howto/index.md
       - Using Housekeeper to Collect Device Data: using-hk-to-collect-data-howto/index.md
       - Upgrade Your Single-node Postgres Server: upgrade-single-postgres-howto/index.md
+      - NOC Monitoring: noc-monitoring-howto/index.md
   - Background:
       - Overview: sections-overview/background.md
       - Connection Restrictions: connection-restrictions/index.md
