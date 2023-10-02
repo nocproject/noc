@@ -146,6 +146,15 @@ class Script(BaseScript):
         if not self.has_detail:
             v = self.cli("show fiber-ports optical-transceiver interface %s" % ifname)
         match = self.rx_trans.search(v)
+        if not match:  # in some rare cases switch do not show any transceiver information
+            r = {"type": "XCVR", "vendor": "OEM"}
+            if ifname.startswith("gi"):
+                r["number"] = "gi%s" % ifname.split("/")[-1]
+                r["part_no"] = "NoName | Transceiver | 1G | SFP"
+            if ifname.startswith("te"):
+                r["number"] = "te%s" % ifname.split("/")[-1]
+                r["part_no"] = "NoName | Transceiver | Unknown SFP"  # impossible ?
+            return r
         r = {"type": "XCVR", "vendor": match.group("vendor")}
         if match.group("serial"):
             r["serial"] = match.group("serial")
