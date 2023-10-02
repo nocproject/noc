@@ -11,6 +11,7 @@ from collections import defaultdict
 import json
 import glob
 import logging
+from typing import List, Dict
 
 ROOT = os.getcwd()
 PROFILES_ROOT = os.path.join(ROOT, "sa", "profiles")
@@ -155,6 +156,24 @@ def define_env(env):
         logger.error("[NOC] Current directory: %s", cwd)
         logger.error("[NOC] Current directory list: %s", ", ".join(os.listdir(cwd)))
         raise FileNotFoundError(path)
+
+    @env.macro
+    def show_highlights(items: List[Dict[str, str]]) -> str:
+        r = [
+            "<section class='noc-highlights-section'>",
+            # "<div class='dark-mask'></div>",
+            "<div class='noc-highlights'>",
+        ]
+        for item in items:
+            r += [
+                "<div class='item'>",
+                f"<div class='title'>{item['title']}</div>",
+                f"<div class='text'>{item['description']}</div>",
+                f"<div class='link'><a href='highlights/{item['link']}/'>More...</a></div>",
+                "</div>",
+            ]
+        r += ["</div>", "</section>"]
+        return "\n".join(r)
 
     scripts = []  # Ordered list of scripts
     platforms = defaultdict(set)  # vendor -> {platform}

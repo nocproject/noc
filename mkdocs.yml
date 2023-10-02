@@ -1,5 +1,5 @@
-site_name: NOC Docs
-site_description: NOC Documentation Project
+site_name: NOC
+site_description: NOC, the open-source network management system
 site_author: The NOC Project
 site_url: https://docs.getnoc.com/
 repo_url: https://code.getnoc.com/noc/noc/
@@ -924,6 +924,20 @@ nav:
       - Connection Restrictions: connection-restrictions/index.md
       - Connection Type Restrictions: connection-type-restrictions/index.md
       - Topology Processing Features: topology-processing-features/index.md
+      - NOC Products Highlights:
+          Overview: highlights/index.md
+          Vendor-Agnostic: highlights/vendor-agnostic.md
+          Open-source: highlights/opensource.md
+          Microservices Architecture: highlights/microservices.md
+          Web-Scale: highlights/webscale.md
+          Big Data: highlights/big-data.md
+          Discovery: highlights/discovery.md
+          Network Automation: highlights/network-automation.md
+          Inventory: highlights/inventory.md
+          Fault Management: highlights/fault-management.md
+          Performance Management: highlights/performance-management.md
+          Service Activation: highlights/service-activation.md
+          Integration: highlights/integration.md
   - Releases:
       - NOC Release and Tagging Policy: release-policy/index.md
       - NOC 23.1 Generation:
@@ -1065,7 +1079,7 @@ theme:
   features:
     - navigation.tabs
     - navigation.tabs.sticky
-    - navigation.path
+    # - navigation.path
     - navigation.prune
     # - navigation.instant
   palette:
