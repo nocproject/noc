@@ -637,6 +637,8 @@ nav:
               - UDLD: discovery-reference/box/udld.md
               - Huawei NDP: discovery-reference/box/huawei_ndp.md
               - NRI: discovery-reference/box/nri.md
+              - ifDesc: discovery-reference/box/ifdesc.md
+              - xMAC: discovery-reference/box/xmac.md
               - HouseKeeping: discovery-reference/box/hk.md
           - Periodic Discovery:
               - Overview: discovery-reference/periodic/index.md
@@ -921,6 +923,7 @@ nav:
       - Overview: sections-overview/background.md
       - Connection Restrictions: connection-restrictions/index.md
       - Connection Type Restrictions: connection-type-restrictions/index.md
+      - Topology Processing Features: topology-processing-features/index.md
   - Releases:
       - NOC Release and Tagging Policy: release-policy/index.md
       - NOC 23.1 Generation:
