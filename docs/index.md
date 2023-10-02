@@ -8,14 +8,80 @@ hero:
     subtitle: The NOC is the scalable, high-performance and open-source OSS system for ISP, service and content providers
     install_button: Getting Started
     source_button: Source Code
+highlights:
+  - title: Vendor-agnostic
+    description: >
+      Breaking the vendor locks with 100+ of supported vendors. 
+      Adding new vendors and platforms on daily routine basis.
+    link: vendor-agnostic
+  - title: Open-source
+    description: >
+      Distributed under the terms of BSD Licence. Large established community.
+    link: open-source
+  - title: Microservices Architecture
+    description: >
+      Microservices architecture with flexible processing pipelines 
+      offers great amount of flexibility, customization and load balancing.
+    link: microservices
+  - title: Webscale
+    description: >
+      Scale as you go. Starting from simple single-node installation
+      and up to clusters controlling world’s largest networks with a million of objects.
+    link: webscale
+  - title: Big Data
+    description: >
+      Introduces Big Data analysis to the Network Management. 
+      Builtin analytics database and provided BI tools allows to
+    link: big-data
+  - title: Discovery
+    description: >
+      Sophisticated multi-protocol network topology discovery.
+      Configuration and resource usage discovery.
+    link: discovery
+  - title: Inventory
+    description: >
+      Centralized database of physical and logical resources.
+      Tracks physical assets like chassis and modules. Tracks
+      logical resources (IP, VLAN, Phone Numbers) usage as well.
+      IP address planning via IPAM
+    link: inventory
+  - title: Fault Management
+    description: >
+      Root Cause Analysis, topology correlation, escalation.
+      Active probing and passive alarm condition detection
+      in syslog and SNMP traps.
+    link: fault-management
+  - title: Performance Management
+    description: >
+      Flexible metrics collection via SNMP and CLI.
+      Long-term metrics storage. Automatic configuration of dashboards.
+      Complex threshold control with window functions.
+    link: performance-management
+  - title: Service Activation
+    description: >
+      Device interaction via telnet, SSH, web, TL1, MML and SNMP interfaces.
+    link: service-activation
+  - title: Network Automation
+    description: >
+      Complex network automation framework with simple-to-use Python API.
+    link: network-automation
+  - title: Integration
+    description: >
+      Plays nice with others. NOC is a part of your infrastructure.
+      ETL interface allows to import data from existing systems.
+      DataStream API and NBI interfaces provide services to other system.
+    link: integration
 ---
-Welcome to the NOC Manual! The NOC is the scalable, high-performance and open-source OSS system for ISP,
+Welcome to the NOC! 
+
+The NOC is the scalable, high-performance and open-source OSS system for ISP,
 service and content providers
+
+{{ show_highlights(page.meta.highlights) }}
 
 ## Documentation Structure
 
 Documentation is organized into into four major parts:
-
 
 - [Guides](sections-overview/guides.md): Brief introduction for new users.
 - [Reference](sections-overview/references.md): Technical reference.

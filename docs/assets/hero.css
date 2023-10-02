@@ -51,6 +51,52 @@
     display: none;
 }
 
+.noc-highlights-section {
+    background: url('/assets/fixed-background.jpg') center top no-repeat;
+    background-attachment: fixed;
+    background-size: cover;
+}
+
+/* .dark-mask {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: #000;
+    opacity: 0.3;
+} */
+
+.noc-highlights {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    max-width: 1150px;
+    margin-left: auto;
+    margin-right: auto;
+    gap: 2em;
+}
+
+.noc-highlights .item {
+    width: 350px;
+}
+
+.noc-highlights .title {
+    font-weight: bold;
+    text-align: center;
+    text-transform: uppercase;
+    font-size: 1.2em;
+    line-height: 1.5;
+}
+
+.noc-highlights .text {
+    text-align: center;
+}
+
+.noc-highlights .link {
+    text-align: center;
+}
+
 @keyframes Sway {
 
     0%,
