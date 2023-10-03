@@ -51,11 +51,11 @@
     display: none;
 }
 
-.noc-highlights-section {
+/*.noc-highlights-section {
     background: url('/assets/fixed-background.jpg') center top no-repeat;
     background-attachment: fixed;
     background-size: cover;
-}
+}*/
 
 /* .dark-mask {
     position: absolute;
@@ -90,7 +90,7 @@
 }
 
 .noc-highlights .text {
-    text-align: center;
+    text-align: justify;
 }
 
 .noc-highlights .link {
