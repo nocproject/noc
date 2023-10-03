@@ -11,12 +11,13 @@ hero:
 highlights:
   - title: Vendor-agnostic
     description: >
-      Breaking the vendor locks with 100+ of supported vendors. 
-      Adding new vendors and platforms on daily routine basis.
+      Break free from vendor limitations. With support for 100+ vendors and ongoing expansion, 
+      experience true vendor-agnostic solutions for flexible network management
     link: vendor-agnostic
   - title: Open-source
     description: >
-      Distributed under the terms of BSD Licence. Large established community.
+      Embrace the power of open source. NOC is distributed under the BSD License,
+      fostering collaboration within a vibrant and extensive community
     link: open-source
   - title: Microservices Architecture
     description: >
@@ -59,11 +60,14 @@ highlights:
     link: performance-management
   - title: Service Activation
     description: >
-      Device interaction via telnet, SSH, web, TL1, MML and SNMP interfaces.
+      Effortless device interaction through telnet, 
+      SSH, web, TL1, MML, and SNMP interfaces for seamless service activation.
     link: service-activation
   - title: Network Automation
     description: >
-      Complex network automation framework with simple-to-use Python API.
+      Unlock the potential of network automation with our comprehensive framework,
+      featuring an easy-to-use Python API. Streamline tasks, orchestrate processes, 
+      and achieve greater efficiency in managing your network infrastructure."
     link: network-automation
   - title: Integration
     description: >
