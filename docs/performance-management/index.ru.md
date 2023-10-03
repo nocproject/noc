@@ -1,6 +1,4 @@
-# Performance Management (CH)
-
-## Описание
+# Performance Management
 
 Подсистема Performance Management (PM) в НОКе заведует `Метриками`. В целом, метрики и работа с ними не отличаются от таковой в других системах с поправкой на заморочки с настройки. 
 
@@ -60,26 +58,26 @@
 Архитектурно **PM** (`Performance Management`) состоит из следующих сервисов:
 
 * Сборщик (`Collector`) - отвечает за сбор метрик
-    * `Activator + Discovery` - сбор метрик с сетевых устройств [Managed Object](../../concepts/managed-object/index.md)
+    * `Activator + Discovery` - сбор метрик с сетевых устройств [Managed Object](../concepts/managed-object/index.md)
     * `MetricCollector` - `API` для приёма метрик из других систем
     * Агент (`Agent`) - сбор метрик с хостов
 * Сервис метрик (`Metric`) - отвечает за расчёт значений метрик и применение правил порогов
-* Писатель в базу ([CHWriter](../../../services-reference/chwriter.md)) - записывает метрики в базу
+* Писатель в базу ([CHWriter](../services-reference/chwriter.md)) - записывает метрики в базу
 * Хранилище (`Clickhouse`) - хранить метрики
 * Отображение графиков (`Grafana`) - отображает собранные метрики на графиках
 
 Остановися подробнее на каждом компоненте и опишем его роль в процессе работы с метриками.
 
-![](images/Metrics_proccessed.png)
+![](metrics-proccessed.png)
 
 
 ### Activator + Metric Discovery
 
-[Activator](../../../services-reference/activator.md) взаимодействует с оборудованием по запросу
- [Discovery](../../../services-reference/discovery.md).
- За съёкм метрик отвечает скрипт [get_metrics](../../../scripts-reference/get_metrics.md) с параметром - список метрик. 
+[Activator](../services-reference/activator.md) взаимодействует с оборудованием по запросу
+ [Discovery](../services-reference/discovery.md).
+ За съёкм метрик отвечает скрипт [get_metrics](../scripts-reference/get_metrics.md) с параметром - список метрик. 
  Из коробки данный скрипт поддерживает стандартный набор метрик по `SNMP`, 
- а дополнительные описываются в профиле [Profile](../../concepts/sa-profile/index.md).
+ а дополнительные описываются в профиле [Profile](../concepts/sa-profile/index.md).
 
 * `IF-MIB` - все метрики интерфейсов
 * `sysUptime` - аптайм
@@ -92,20 +90,21 @@
  Базовый `get_metrics` расположен в `sa/profiles/Generic`
 
 !!! note
+
     Конфигурация для сбора метрик формируется на стороне `Discovery` и передаётся на активатор
 
 
 ### Сервис метрик (`Metric`)
 
 Обрабатывает поступающие метрики:
-1. Проводит проверку поступающих метрик на соответствие [MetricScope](../../reference/metrics/scopes/index.md).
+1. Проводит проверку поступающих метрик на соответствие [MetricScope](../metrics-reference/index.md).
 2. Нормализует полученные значения и вычисляет значения счётчиков
 3. Применяет правила и вычисляет пороги
 4. Отправляет метрики на запись в хранилище
 
 ### CHWRITER
 
-Записывает метрики в соответствующие таблицы. Имена таблиц описаны в [MetricScope](../../reference/metrics/scopes/index.md)
+Записывает метрики в соответствующие таблицы. Имена таблиц описаны в [MetricScope](../metrics-reference/index.md)
 
 ### ClickHouse (CH)
 
@@ -116,7 +115,7 @@
 Показывает собранные метрики в виде графиков. Для работы с хранилищем используется `clickhouse-plugin`.
  Графики доступны из форму устройства, кнопка Графики (`Graphs`), откроется общий дашборд по устройству:
 
-![](images/grafana_device_dash1.png)
+![](grafana-device-dash1.png)
 
 Дашборд по устройствам разделён на несколько облстей:
 
@@ -131,6 +130,7 @@
 * Графики оптических метрик `DOM`
 
 !!! note
+
     Если по какому-либо интерфейсу отсутствует панель - необходимо проверить включён ли для него сбор метрик.
 
 
@@ -141,13 +141,14 @@
  После этого начнётся сбор назначенных для устройства метрик.
 
 !!! note
+
     Для сбора метрик должен быть доступ на устройства, т.е. система должна его успешно опрашивать.
 
 Метрики для сбора назначаются в *групповых настройках* - Профилях (`Profile`) для этого на форме размещена панель метрик и настройки сбора:
 
 * **Интервал по умолчанию** (`Metric Default Interval`) - интервал сбора метрик. Если 0 - используется интервал из профиля устройства [Managed Object Profile](../../concepts/managed-object-profile/index.md)
 * **Максимальное дробление интервала** (`Metrics Interval Buckets`) - число вложенных интервалов сбора,
- подробнее см. [Шардирование сбора](index.md#Шардирование%20сбора)
+ подробнее см. [Шардирование сбора](#шардирование-сбора)
 * Метрики для сбора
     * **Тип метрики** (`MetricType`) - Тип собираемой метрики. Должна быть поддержка со стороны профиля [SA Profile](../../../dev/sa/sa-profiles.md)
     * **Сохранять** (`Is Stored`) - Сохранять метрику в базу
@@ -155,7 +156,7 @@
 
 
 Для метрик устройств, назначаемых в *профиле объекта* (`Managed Object Profile`)
- график автоматически добавляется на панель с [графаной](index.md#Grafana).
+ график автоматически добавляется на панель с [Grafana](#Grafana).
 
 
 ### Профиль объекта
@@ -164,7 +165,7 @@
  это любые метрики за исключением интерфейсных и `SLA` (они настраиваются в собственных профилях).
   Профиль объекта расположен в `Управление объектами -> Настройки -> Профиль объекта -> Метрики (Service Activation -> Setup -> Managed Object Profile -> Metrics`, на вкладке Метрики. 
 
-![](images/object_profile_metrics1.png)
+![](object-profile-metrics1.png)
 
 
 Настройка **(1)** `enable_metric` запускает опрос метрик на устройстве. Если не выставлена, то любые его метрики собираться не будут.
@@ -172,7 +173,7 @@
 
 ### Профиль интерфейса
 
-В групповых настройках интерфейса [Interface Profile](../../concepts/interface-profile/index.md)
+В групповых настройках интерфейса [Interface Profile](../concepts/interface-profile/index.md)
  добавляются снимаемые с интерфейса метрики (в настройках `MetricType` выбран `Scope` Interface).
  Для удобства их имя начинается с `Interface | XXX`.
  Настройки расположены в меню `Учёт объектов -> Настройки -> Профили интерфейса (Inventory -> Setup -> Interface Profiles)`.
@@ -182,11 +183,11 @@
 * Выключить если интерфейс отключён (`Disable if Admin Down`)
 * Выключить, если интерфейс не активен (`Disable if Oper Down`)
 
-![](images/interface_profile_metrics1.png)
+![](interface-profile-metrics1.png)
 
 Сами интерфейсы расположены на кнопке `Управление объектами -> Список объектов -> Форма объекта -> Интерфейсы (Service Activation -> Managed Object -> <ManagedObject> -> Intefaces`.
  Для экономии времения рекомендуется использовать механим автоматического назначения профилей:
- [Dynamic Classification Policy](../../concepts/dynamic-classification-policy/index.md)
+ [Dynamic Classification Policy](../concepts/dynamic-classification-policy/index.md)
 
 
 ### Профиль SLA
@@ -194,7 +195,7 @@
 В групповых настройках *SLA пробы* добавляются метрики `SLA` (в настройках `MetricType` выбран `Scope` SLA).
  Для удобства их имя начинается с `SLA | XXX`. Настройки расположены в меню `SLA -> Настройки -> Профили SLA (SLA -> Setup -> SLA Profiles)`
 
-![](images/sla_profile_metrics1.png)
+![](sla-profile-metrics1.png)
 
 
 ### Профиль CPE
@@ -203,7 +204,7 @@
  Метрики аналогичны устройству, но снимаются с контроллера `Managed Object`.
  Настройки расположены в меню `Учёт объектов -> Настройки -> Профили CPE (Inventory -> Setup -> CPE Profiles)`
 
-![](images/cpe_profile_metrics1.png)
+![](cpe-profile-metrics1.png)
 
 ### Профиль Сенсора
 
@@ -211,7 +212,7 @@
  есть только настройка **(1)** *Включить сбор* (`Enable collect`).
  Настройки расположены в меню `Учёт объектов -> Настройки -> Профили Сенсора (Inventory -> Setup -> Sensor Profiles)`
 
-![](images/sensor_profile_metrics1.png)
+![](sensor-profile-metrics1.png)
 
 ### Шардирование сбора
 
@@ -244,7 +245,7 @@
     * `Action Param` - настройки для `MetricAction`
 * **Условия срабатывания** (`Match Condition`) - набор меток при наличии которых правило будет применено к метрике
 
-![](images/metric_rules_thresholds1.png)
+![](metric-rules-thresholds1.png)
 
 При задании *преобразования* (`Metric Action`) *тип метрики* (`Metric Type`) не учитывается и пороги применяются к
  результату преобразования. Для изменения *важности аварии* (`severity`) необходимо использовать метки (`Labels`)
@@ -263,7 +264,7 @@
 Находятся в `Управление производительностью -> Настройки -> Манипуляции с метрикой (Performance Management -> Setup -> Metric Action)`.
  Процесс обработки метрики выглядит следующим образом:
 
-![](images/MetricAction_proccessed.png)
+![](metricaction-proccessed.png)
 
 
 Метрики обозначенны в **(2)** `Input` поступают на обоработку. Отключённые этапы пропускаются:
@@ -289,17 +290,18 @@
 * **Compose Metric** - отправить метрику в базу, необходим заполненный `MetricType`
 * **Alarm** - Поднять аварию, необходим заполненный `Alarm Class`
 
-![](images/metric_actions_errors1.png)
+![](metric-actions-errors1.png)
 
 
 ## Добавление своих метрик
 
 Добавление новой метрики проходит в 2 шага:
 
-1. Добавление в систему имени метрики [Metric Type](../../reference/metrics/types/index.md)
-2. Добавление сбора метрики в профиле [SA Profile](../../../dev/sa/sa-profiles.md)
+1. Добавление в систему имени метрики [Metric Type](../reference/metrics/types/index.md)
+2. Добавление сбора метрики в профиле [SA Profile](../profiles-reference/index.md)
 
 !!! note
+
     Для случая когда имя метрики уже есть (н-р `CPU | Usage`), а сбор не реализован необходимо поправить профиль
 
 
@@ -319,9 +321,10 @@
     * *Выражение* (`Expression`)
 * **Delta Value** - Преобразование значения в `Delta` разница межда текущим и последним значениями
 
-![](images/metric_type_form1.png)
+![](metric-type-form1.png)
 
 !!! attention
+
     После добавления MetricType необходим перезапуск сервиса `Меtric Type`
 
 
@@ -342,6 +345,7 @@
  Сигналом о каких-то сбоях при сборе метрик является отсутствие графиков либо панелей с графиками.
 
 !!! attention
+
     График Ping/RTT можно не учитывать, поскольку он формируется отдельно (пингером)
 
 Можно рассмотреть 2 ситуации:
@@ -376,6 +380,7 @@
 * `|metrics]  SLA not configured, skipping SLA metrics` - для случая сбора метрик по `SLA`. Необходимо проверить настройки сбора `SLA` метрик (см. пункт)
 
 !!! note
+
     Дополнительную информацию по работе опроса можно получить запустив его в режиме отладки `./noc discovery --debug run interval MONAME`. В конце вывода отобразятся собранные метрики
 
 ##### Проверка доступа до устройства
@@ -389,9 +394,9 @@
  на скриншоте (зелёные галочки напротив `SNMP`, `SNMP | v1` или `SNMP | v2`)
 3. Собранные интерфейсы с индексами. Проверить можно на вкладке *Интерфейсы* (`Interfaces`).
 
-![](images/managed_object_caps_for_metrics.png)
+![](managed-object-caps-for-metrics.png)
 
-![](images/managed_object_interface_ifindex_column.png)
+![](managed-object-interface-ifindex-column.png)
 
 #### Проверка сервиса метрик (Metrics)
 
@@ -414,8 +419,6 @@
 
 Если среди них есть строчки с ошибками `2023-04-23 07:09:36,847 [chwriter] [reboots] Failed to write records`,
  то необходимо провести повторную миграцию схемы.
-
-
 
 ### Разное
 
