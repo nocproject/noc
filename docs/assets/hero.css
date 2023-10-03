@@ -109,6 +109,22 @@
     }
 }
 
+.hero-version {
+    width: 400px;
+}
+
+.hero-version-link {
+    color: white !important;
+}
+
+.hero-buttons {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    width: 400px;
+    text-align: center;
+}
+
 @media screen and (min-width: 960px) {
     .mdx-hero {
         display: flex;
@@ -121,5 +137,13 @@
 
     .hero-content {
         width: 50%;
+    }
+
+    .hero-buttons {
+        flex-direction: row;
+    }
+
+    .hero-version {
+        text-align: center;
     }
 }
