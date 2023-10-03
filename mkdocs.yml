@@ -924,6 +924,7 @@ nav:
       - Connection Restrictions: connection-restrictions/index.md
       - Connection Type Restrictions: connection-type-restrictions/index.md
       - Topology Processing Features: topology-processing-features/index.md
+      - Configuration Management: configuration-management/index.md
       - NOC Products Highlights:
           Overview: highlights/index.md
           Vendor-Agnostic: highlights/vendor-agnostic.md

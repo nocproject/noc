@@ -1,7 +1,5 @@
 # Управление конфигурацией
 
-## Возможности работы с конфигурацией в НОКе
-
 Работа с конфигурацией оборудования один из самых развитых компонентов НОКа. Он позволяет:
 
 * Сбор конфигурации с оборудования
@@ -14,7 +12,7 @@
 
 Управление функционалом доступно через веб интерфейс системы. В следующих пунктах раскроем механизмы, работы функционала. Описание реализации скриптов и парсеров раскрывается в разделе документации для разработчиков и пользователям доступно для ознакомления.
 
-Вся работа с конфигурацией происходит в рамках опроса [Config Discovery](../../discovery-reference/box/config.md), он активируется галочкой `config` в [настройках](../../concepts/managed-object-profile/index.md#Box(Полный_опрос)). Порядок прохождения опроса следующий:
+Вся работа с конфигурацией происходит в рамках опроса [Config Discovery](../discovery-reference/box/config.md), он активируется галочкой `config` в [настройках](../concepts/managed-object-profile/index.md#Box(Полный_опрос)). Порядок прохождения опроса следующий:
 
 1. Сбор
 2. Расчёт разницы между последним и собранным конфигом
@@ -22,10 +20,9 @@
 4. Зеркалирование (если настроено)
 5. Валидация (handlers)
 
+## Сбор конфигурации
 
-## Сбор_конфигурации
-
-На первом этапе опроса (`Discovery`) происходит сбор текущей конфигурации. В зависимости от [настройки](../../concepts/managed-object-profile/index.md#Config(Конфигурация)) `Config Policy` сбор может происходить с устройства (`Script`), либо с внешнего хранилища (`Download`). Доступны следующие политики:
+На первом этапе опроса (`Discovery`) происходит сбор текущей конфигурации. В зависимости от [настройки](../concepts/managed-object-profile/index.md#Config(Конфигурация)) `Config Policy` сбор может происходить с устройства (`Script`), либо с внешнего хранилища (`Download`). Доступны следующие политики:
 
 * `Script` - запрашивать конфигурацию с устройства
 * `Script, Download` - вначале пробуем получить конфигурация с устройства, в случае провала пробуем загрузить с хранилища
@@ -34,8 +31,8 @@
 
 Для реализации запроса конфигурации с внешнего хранилища необходимо задать настройки:
 
-* Внешнее хранилище файлов `(`Storage`) - ссылка на [хранилище](../../concepts/external-storage/index.md) файлов 
-* Шаблон пути (`Path template`) - ссылка на [шаблон](../../concepts/template/index.md) пути к файлу конфигурации
+* Внешнее хранилище файлов `(`Storage`) - ссылка на [хранилище](../concepts/external-storage/index.md) файлов 
+* Шаблон пути (`Path template`) - ссылка на [шаблон](../concepts/template/index.md) пути к файлу конфигурации
 
 Через настройку `Config Fetch Policy` можно указать предпочтения при сборе конфигурации с устройства (`требуется поддержка со стороны адаптера оборудования`):
 
@@ -50,7 +47,8 @@
 
 <!-- prettier-ignore -->
 !!! info
-  Доступна возможность кастомизации процедуры обработки:
+
+    Доступна возможность кастомизации процедуры обработки:
 
     * `Config Filter Handler` - позволяет исключать строки из конфигурации
     * `Config Diff Handler` - позволяет реализовать собственный механизм расчёта разницы конфигурации
@@ -61,8 +59,8 @@
     * Отключить (`Disable`) - отключить зеркалирование
     * При изменении (`On Change`) - запускать только если конфигурация менялась
     * Всегда (`Always`) - всегда запускать
-* Хранилище (`Storage`) - ссылка на [хранилище](../../concepts/external-storage/index.md)
-* Шаблон пути (`Path Template`) - ссылка на [шаблон](../../concepts/template/index.md) пути для сохранения.
+* Хранилище (`Storage`) - ссылка на [хранилище](../concepts/external-storage/index.md)
+* Шаблон пути (`Path Template`) - ссылка на [шаблон](../concepts/template/index.md) пути для сохранения.
 
 В шаблоне пути доступны переменные:
 
@@ -97,15 +95,15 @@
 * `virtual-router` - настройки VRF, IP, сабинтерфейсов
 * `media` - настройки видео и аудио (используется для представления видеонаблюдения)
 
-![](images/confdb-mo-tree-query-colladsed.png)
+![](confdb-mo-tree-query-collapsed-scr.png)
 
 Каждый пункт раскрывается в дерево заполненное результатами работы механизма. Полнота зависит от реализации парсеров для конкретных профилей (`SA Profile`). Полный набор доступных фактов можно посмотреть командой `./noc confdb syntax`. Полнота заполнения `ConfDB` не является самоцелью, главное - это наличие необходимых параметров. Рассмотрим подробнее пункты дерева и синтаксис запросов
 
-![](images/confdb-mo-tree-query-expanded.png
+![](confdb-mo-tree-query-expanded.png
 )
 ### Формирование дерева фактов
 
-Подробно механизм описан в документации для разработчиков [ConfDB Overview](../../../dev/confdb/index.md), мы же ознакомимся с основами, чтобы понимать куда тыкать.
+Подробно механизм описан в документации для разработчиков [ConfDB Overview](../confdb-reference/index.mdindex.md), мы же ознакомимся с основами, чтобы понимать куда тыкать.
 
 Для формирования `ConfDB` конфигурация проходит несколько последовательных этапов, каждый из них отвечает строго за один тип преобразований. Это позволяет не переусложнять реализацию отвечающих за данный этап функций. Рассмотрим этапы в последовательности их выполнения и реализуемых ими преобразований.
 
@@ -138,12 +136,12 @@ interface gigabitethernet1/0/24 description Description 2
 * `line` - Простой построчный синтаксис - пример `Dlink`
 * `routeros` - устройства `Mikrotik`
 
-Результат работы токенизатора можно увидеть в секции `raw`. По умолчанию она удаляется из итогового представления. Включить её можно настройкой [Raw Policy](../../concepts/managed-object-profile/index.md#Config(Конфигурация))
+Результат работы токенизатора можно увидеть в секции `raw`. По умолчанию она удаляется из итогового представления. Включить её можно настройкой [Raw Policy](../concepts/managed-object-profile/index.md#Config(Конфигурация))
 
 
 #### Нормализация
 
-На этом этапе происходит наполнение дерева фактами на основе работы с токенизированными строками. Для работы необходим написанный нормализатор (`normalizer`) для профиля [SA Profile](../../concepts/sa-profile/index.md). Также на этом этапе формируется секция подсказок - `hints`, которая используется на следующем этапе.
+На этом этапе происходит наполнение дерева фактами на основе работы с токенизированными строками. Для работы необходим написанный нормализатор (`normalizer`) для профиля [SA Profile](../concepts/sa-profile/index.md). Также на этом этапе формируется секция подсказок - `hints`, которая используется на следующем этапе.
 
 Если нормализаторы отсутствуют, то в дереве будут доступны только секции `raw` и `meta`. Просмотреть результат полученный после нормализации можно командой `./noc confdb normalizer --object <MONAME>`
 
@@ -169,7 +167,7 @@ interface gigabitethernet1/0/24 description Description 2
 
 Работать с запросами можно в интерфейсе `ConfDB` (кнопка `Query`) или командой `./noc confdb query`
 
-![](images/confdb-mo-tree-query-form.png)
+![](confdb-mo-tree-query-form-scr.png)
 
 Для примера запросим интерфейс с именем `GigabitEthernet0/0/1` у которого есть `description`:
 
@@ -183,14 +181,15 @@ interface gigabitethernet1/0/24 description Description 2
   * `Match` и `NotMatch`. Выполняется запрос к `ConfDB`. Если в пути есть переменные - они заполняются значениями.
   * `Set` - устанавливает переменной указанное значение
 
-> ```python
-> ./noc confdb query --object "200" --query "Match('interfaces', X, 'description', Y)"
-> 
-> Result:
-> {'Y': 'description to_11_2.1', 'X': 'GigabitEthernet0/0/1'}
-> {'Y': 'description to_AGG1', 'X': 'GigabitEthernet0/0/2'}
-> ```
-> В данном случае мы получили список интерфейсов у которых заполнено описание. Их имена в переменной `X`, а описания в переменной `Y`
+```
+./noc confdb query --object "200" --query "Match('interfaces', X, 'description', Y)"
+```
+Результат:
+``` python
+{'Y': 'description to_11_2.1', 'X': 'GigabitEthernet0/0/1'}
+{'Y': 'description to_AGG1', 'X': 'GigabitEthernet0/0/2'}
+```
+В данном случае мы получили список интерфейсов у которых заполнено описание. Их имена в переменной `X`, а описания в переменной `Y`
 
 2) Операции над контекстом:
 
@@ -200,13 +199,14 @@ interface gigabitethernet1/0/24 description Description 2
   * `Group` - схлопывание контекстов
   * `Collapse` - разворачивание контекста в несколько
 
-> ```python
-> ./noc confdb query --object "200" --query "Match('interfaces', X, 'description', Y) and Filter(X=='GigabitEthernet0/0/1')"
-> 
-> Result:
-> {'Y': 'description to_11_2.1', 'X': 'GigabitEthernet0/0/1'}
-> ```
-> Мы оставили только интерфейс с именем `GigabitEthernet0/0/1`
+```
+./noc confdb query --object "200" --query "Match('interfaces', X, 'description', Y) and Filter(X=='GigabitEthernet0/0/1')"
+```
+результат:
+``` python
+{'Y': 'description to_11_2.1', 'X': 'GigabitEthernet0/0/1'}
+```
+Мы оставили только интерфейс с именем `GigabitEthernet0/0/1`
 
 3) Вывод контекста 
 
@@ -214,16 +214,17 @@ interface gigabitethernet1/0/24 description Description 2
   * `Fact` - установить значение в базе
   * `Sprintf` - распечатать переменную
 
-> ```python
-> ./noc confdb query --object "200" --query "Match('interfaces', X, 'description', Y) and Dump("Stage2") and Filter(X=='GigabitEthernet0/0/1')" 
-> Stage2: {'Y': 'description to_SSNSK_60OKTBR_11_2.1', 'X': 'GigabitEthernet0/0/1'}
-> {'Y': 'description to_SSNSK_60OKTBR_11_2.1', 'X': 'GigabitEthernet0/0/1'}
->
-> Result:
-> Stage2: {'Y': 'description to_SSNSK_AGG1', 'X': 'GigabitEthernet0/0/2'}
-> ```
+```
+./noc confdb query --object "200" --query "Match('interfaces', X, 'description', Y) and Dump("Stage2") and Filter(X=='GigabitEthernet0/0/1')" 
+Stage2: {'Y': 'description to_SSNSK_60OKTBR_11_2.1', 'X': 'GigabitEthernet0/0/1'}
+{'Y': 'description to_SSNSK_60OKTBR_11_2.1', 'X': 'GigabitEthernet0/0/1'}
+```
+результат:
+```
+Stage2: {'Y': 'description to_SSNSK_AGG1', 'X': 'GigabitEthernet0/0/2'}
+```
 
-Полное описание доступно в [ConfDB Query](../../../dev/confdb/index.md).
+Полное описание доступно в [ConfDB Query](../confdb-reference/index.md).
 
 ### Тестирование запросов
 
@@ -235,16 +236,17 @@ interface gigabitethernet1/0/24 description Description 2
 
 В левой части отобразится дерево `ConfDB`. По нажатии на копку `Query` откроется текстовое поле с кнопкой `Запуск`. В него можно вписать текст запроса и посмотреть результат (снизу после нажатия Запуск).
 
-![](images/confdb-mo-tree-query-form.png)
+![](confdb-mo-tree-query-form-scr.png)
 
 <!-- prettier-ignore -->
 !!! info
-  Для выполнения запросов к секции `raw` необходимо включить её в настройках [ManagedObjectProfile](../../concepts/managed-object-profile/index.md#Config(Конфигурация)).
+
+    Для выполнения запросов к секции `raw` необходимо включить её в настройках [ManagedObjectProfile](../concepts/managed-object-profile/index.md#Config(Конфигурация)).
 
 Например, запрос для вывода интерфейсов и их типов выглядит как: `Match('interfaces', X, 'type', Y)`.
 
 Запросы в секцию `raw` для вывода всех адресов `syslog` серверов `Huawei`: `Match('raw', X, 'info-center', 'loghost', Y)`
-![](images/confdb-mo-tree-query-raw-syslog.png)
+![](confdb-mo-tree-query-raw-syslog-scr.png)
 
 Поскольку наполнение секции `raw` зависит от формата конфига (т.е. производителя оборудования), то запросы к ней работают в рамках одного профиля. Разве что синтаксис конфигурации практически идентичен. В отличие от этого запросы в основную секцию будут одинаковы для всех.
 
@@ -258,7 +260,7 @@ interface gigabitethernet1/0/24 description Description 2
 
 Для использования в системе запросы должны быть заранее созданы. Управление запросами находится в меню `Управление конфигурацией` -> `Настройки` -> `ConfDB Queries`. В нём можно добавить новый запрос или изменить назначение существующего. Форма редактирования запроса состоит из следующих полей:
 
-![](images/confdb-query-edit-form-ntp.png)
+![](confdb-query-edit-form-ntp-scr.png)
 
 * Имя запроса (`Name`) - уникальное имя
 * Описание (`Description`)
@@ -289,7 +291,7 @@ interface gigabitethernet1/0/24 description Description 2
 
 Интерфейс работы с политиками валидации находится в меню `Configuration Management (Управление конфигурацией) -> Setup (Настройки) -> Object Validation Policies (Политики валидации объекта)`. Форма добавления/изменения политики выглядит так
 
-![](images/confdb-validation-policy-edit-form-eltex.png)
+![](confdb-validation-policy-edit-form-eltex-scr.png)
 
 * Name (Имя) - говорящее имя политики
 * Description (Описание) - текст описания
@@ -300,14 +302,14 @@ interface gigabitethernet1/0/24 description Description 2
     * Фильтр правила (`Filter Rule`) - запрос для фильтрации правила (должен быть отмечен как Object Filter). Используется при необходимости применения правила к ограниченному перечню объектов (н-р конкретных моделям)
     * Активно (`Active`) - рабочее или не рабочее правило
     * Код (`Code`) - код аварии, применяется при необходимо обработке аварий внешней системой
-    * Шаблон ошибки (`Error Template`) - ссылка на [шаблон](../../concepts/template/index.md) сообщения аварии
+    * Шаблон ошибки (`Error Template`) - ссылка на [шаблон](../concepts/template/index.md) сообщения аварии
     * Alarm Class (`Класс аварии`) - ссылка на класс аварии открываемой при нарушении правила
     * `Fatal` - в случае нарушения опроса остановить опрос устройства
 
 
 ### Включение политики в работу
 
-Политики валидации отрабатывают в рамках опроса [configvalidation](../../discovery-reference/box/config.md). Он запускается, если к профилю объекта (`ManagedObject Profile`) привязана политика. Настройки находятся в Профиле объекта (`Managed Object Profile`) на вкладке Конфиг (`Config`), блок [Config Validation](../../concepts/managed-object-profile/index.md#Config(Конфигурация)): 
+Политики валидации отрабатывают в рамках опроса [configvalidation](../discovery-reference/box/config.md). Он запускается, если к профилю объекта (`ManagedObject Profile`) привязана политика. Настройки находятся в Профиле объекта (`Managed Object Profile`) на вкладке Конфиг (`Config`), блок [Config Validation](../concepts/managed-object-profile/index.md#Config(Конфигурация)): 
 
 * Политика применения валидации (`Validation Policy`) - настройка валидации:
   * Всегда (`Always`) - политика будет проверяться при каждом опросе
@@ -319,7 +321,8 @@ interface gigabitethernet1/0/24 description Description 2
 
 <!-- prettier-ignore -->
 !!! info
-  По умолчанию Политика применяется только при изменении конфигурации. Поведение определяется настройкой в `Managed Object Profile -> Вкладка Config -> Validation Policy: Always`
+
+    По умолчанию Политика применяется только при изменении конфигурации. Поведение определяется настройкой в `Managed Object Profile -> Вкладка Config -> Validation Policy: Always`
 
 При выборе строки с box справа покажется лог опроса. Необходимо нажать Run (Запуск). После окончания опроса необходимо Обновить лог. Записи о найденных проблемах будут в строке [configvalidation], Записи о поднятых авариях внизу.
 
