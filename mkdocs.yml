@@ -963,6 +963,8 @@ nav:
           Performance Management: highlights/performance-management.md
           Service Activation: highlights/service-activation.md
           Integration: highlights/integration.md
+  - Blog:
+      - blog/index.md
   - Releases:
       - NOC Release and Tagging Policy: release-policy/index.md
       - NOC 23.1 Generation:
@@ -1145,15 +1147,14 @@ markdown_extensions:
           format: !!python/name:pymdownx.superfences.fence_code_format
 watch:
   - docs/
-  - collections/inv.connectiontypes/
+  - mkdocs.yml
 plugins:
   - search
   - macros:
       module_name: macros
       on_error_fail: true
-  # - gen-files:
-  #     scripts:
-  #       - scripts/docs/gen-connection-types-reference.py
+  - blog:
+      blog_dir: blog/
   - literate-nav:
       nav_file: __SUMMARY__
   - i18n:
