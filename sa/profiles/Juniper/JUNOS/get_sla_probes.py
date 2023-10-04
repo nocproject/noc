@@ -46,18 +46,19 @@ class Script(BaseScript):
     def parse_json_out(cls, v):
         r = []
         v = orjson.loads(v)
-        for p in v["configuration"]["services"]["rpm"]["probe"]:
-            for t in p["test"]:
-                r += [
-                    {
-                        "group": p["name"],
-                        "name": t["name"],
-                        "type": cls.TEST_TYPES[t["probe-type"]],
-                        "target": t["target"]["address"],
-                    }
-                ]
-                if "dscp-code-points" in t:
-                    r[-1]["tos"] = int(t["dscp-code-points"], 2)
+        if "probe" in v["configuration"]["services"]["rpm"]:
+            for p in v["configuration"]["services"]["rpm"]["probe"]:
+                for t in p["test"]:
+                    r += [
+                        {
+                            "group": p["name"],
+                            "name": t["name"],
+                            "type": cls.TEST_TYPES[t["probe-type"]],
+                            "target": t["target"]["address"],
+                        }
+                    ]
+                    if "dscp-code-points" in t:
+                        r[-1]["tos"] = int(t["dscp-code-points"], 2)
         return r
 
     def execute_cli(self):
