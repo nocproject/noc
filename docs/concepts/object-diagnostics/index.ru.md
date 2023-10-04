@@ -1,7 +1,5 @@
 # Диагностика для устройства
 
-## Ситуация
-
 При работе в системах с большим количеством настроек у пользователя часто возникают вопросы - почему не работает тот или иной функционал.
 Особенно у новичков когда документация не полна и настройки не очевидны (распределены по нескольким местам).
 Традиционно в этом случае с вопросами обращаются к другим пользователям или специалистам.
@@ -27,7 +25,7 @@
 * *Отключён* (`Blocked`) - серый
 * *Неизвестно* (`Unknown`) - индикатор не выводится
 
-![Managed Object Indicators](image/diagnostics_indicators_form1.png)
+![Managed Object Indicators](diagnostics_indicators_form1.png)
 
 ## Диагностика
 
@@ -36,7 +34,7 @@
 Отличие между ними только в настройках - у первых они вынесены в код,
 а вторые доступны для изменения и находятся в меню `Управление устройствами (Service Activation) -> Настройки (Setup) -> (Конфигурация диагностик) Object Diagnostic Config`
 
-![Diagnostic Config Form](image/object_diagnostic_config_create_web1.png)
+![Diagnostic Config Form](object_diagnostic_config_create_web1.png)
 
 * **Имя** (`Name`) - название диагностики. Отображается на индикаторе
 * **Описание** (`Description`) - описание диагностики
@@ -107,8 +105,8 @@
 
 Таблица настроек встроенных диагностики 
 
-| Name     | Run Policy        | Checks          | Alarm Class                                      | 
-|----------|-------------------|-----------------|--------------------------------------------------|
+| Name     | Run Policy        | Checks          | Alarm Class                                      |
+| -------- | ----------------- | --------------- | ------------------------------------------------ |
 | PROFILE  | Unknown or Failed | PROFILE         | `Discovery &#124 Guess &#124 Profile`            |
 | SNMP     | Unknown or Failed | SNMPv1, SNMPv2c | `NOC &#124 Managed Object &#124 Access Lost`     |
 | CLI      | Unknown or Failed | TELNET, SSH     | `NOC &#124 Managed Object &#124 Access Lost`     |
