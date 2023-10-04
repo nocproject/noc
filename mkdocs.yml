@@ -1184,3 +1184,4 @@ extra:
   "yes": ":material-check:"
   "no": ":material-close:"
   wbr: "<wbr>"
+  version: "23.1.4"
