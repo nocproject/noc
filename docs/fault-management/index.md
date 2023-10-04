@@ -54,7 +54,7 @@ Further event processing can follow two paths:
 
 ### Event Class
 
-To work with an event in the system, it's important to understand its significance. Traditionally, the Event Class is used for this purpose [Event Class](../../concepts/event-class/index.md). Additionally, event-specific settings are associated with the event class, dictating how the event should be handled. The system includes several special classes:
+To work with an event in the system, it's important to understand its significance. Traditionally, the Event Class is used for this purpose [Event Class](../concepts/event-class/index.md). Additionally, event-specific settings are associated with the event class, dictating how the event should be handled. The system includes several special classes:
 
 * `Unknown | Default` - The default class for events (the `Drop` rule is set).
 
@@ -101,15 +101,15 @@ For example, let's take a look at a classification rule for an `SNMP Trap` of th
 
 The event looks like this:
 
-![SNMP Trap Event](../concepts/event-classification-rule/images/event_class_rules_snmp_net_link_down_eltex.png)
+![SNMP Trap Event](../concepts/event-classification-rule/event_class_rules_snmp_net_link_down_eltex.png)
 
 - `Raw Variables` - variables received from the collector in the `data` field.
-- `Resolved Variables` - variables for which a corresponding [MIB](../../concepts/mib/index.md) has been found and added by the classifier. For instance, the variable `profile` was added by the classifier from the device's data (`ManagedObject`).
+- `Resolved Variables` - variables for which a corresponding [MIB](../concepts/mib/index.md) has been found and added by the classifier. For instance, the variable `profile` was added by the classifier from the device's data (`ManagedObject`).
 - `Event Variables` - variables included in the event (configured in the class).
 
 Let's examine the rule under which this event falls (you can find it on the `History` tab):
 
-![SNMP Trap Classification Rule](../concepts/event-classification-rule/images/event_snmp_net_link_down_eltex.png)
+![SNMP Trap Classification Rule](../concepts/event-classification-rule/event_snmp_net_link_down_eltex.png)
 
 1. The `source` matches `SNMP Trap`, indicating that the rule is intended only for events received via `SNMP`.
 2. `profile` specifies that the rule is only for devices with the `Eltex.MES` adapter.
@@ -151,11 +151,11 @@ This mechanism allows you to track event duplicates from equipment. When a dupli
 
 #### Event Time-to-Live (TTL)
 
-This mechanism involves removing events after a specified time. After the time specified in the `TTL` setting of the Event Class [Event Class](../../concepts/event-class/index.md) elapses, the event will be removed from the system. If the event has been passed to the correlator, expiration is canceled.
+This mechanism involves removing events after a specified time. After the time specified in the `TTL` setting of the Event Class [Event Class](../concepts/event-class/index.md) elapses, the event will be removed from the system. If the event has been passed to the correlator, expiration is canceled.
 
 #### Disposition Rules
 
-The further fate of an event is determined in the settings of the Disposition Rule for the Event Class [Event Class](../../concepts/event-class/index.md). It acts as a routing table. After matching an event with the class, a sequential check of disposition rules begins. When a condition (`condition`) matches, the specified action is executed.
+The further fate of an event is determined in the settings of the Disposition Rule for the Event Class [Event Class](../concepts/event-class/index.md). It acts as a routing table. After matching an event with the class, a sequential check of disposition rules begins. When a condition (`condition`) matches, the specified action is executed.
 
 ### Alarm Classes
 
@@ -200,10 +200,10 @@ The algorithm is quite simple. When building the device topology, the upstream d
 
 After detecting an alarm on specific equipment, the system calculates the weight **Weight** of the alarm and determines in which severity interval of the base importance values **Severity** the alarm falls. The weight is calculated using a formula that takes into account the impact on associated components through *weight coefficients*:
 
-* Device [ManagedObject](../concepts/managed-object/index.md). The weight coefficient is set in the object profile [Managed Object Profile](../../concepts/managed-object-profile/index.md#FM).
-* Interfaces of the device [Interface](../concepts/interface/index.md). The weight coefficient is set in the interface profile [Interface Profile](../../concepts/interface-profile/index.md).
-* Services associated with the device [Service](../concepts/service/index.md). The weight coefficient is set in the service profile [Service Profile](../../concepts/service-profile/index.md).
-* Subscribers associated with the device [Subscribers](../concepts/subscriber/index.md). The weight coefficient is set in the subscriber profile [Subscriber Profile](../../concepts/subscriber-profile/index.md).
+* Device [ManagedObject](../concepts/managed-object/index.md). The weight coefficient is set in the object profile [Managed Object Profile](../concepts/managed-object-profile/index.md#FM).
+* Interfaces of the device [Interface](../concepts/interface/index.md). The weight coefficient is set in the interface profile [Interface Profile](../concepts/interface-profile/index.md).
+* Services associated with the device [Service](../concepts/service/index.md). The weight coefficient is set in the service profile [Service Profile](../concepts/service-profile/index.md).
+* Subscribers associated with the device [Subscribers](../concepts/subscriber/index.md). The weight coefficient is set in the subscriber profile [Subscriber Profile](../concepts/subscriber-profile/index.md).
 
 <!-- prettier-ignore -->
 !!! info

@@ -2,8 +2,8 @@
 
 An object model represents a description of some real-world entity for NOC. The model includes:
 
-* **Attributes** ([Model Data](model-interfaces-reference/index.md)) - various parameters and properties of the model (size in RU, weight, PartNumber...), both built-in and external.
-* **Connections** ([Connections](connection-types-reference/index.md)) - responsible for connecting models to each other. For example, inserting a card into a chassis or plugging a wire into a connector.
+* **Attributes** ([Model Data](../model-interfaces-reference/index.md)) - various parameters and properties of the model (size in RU, weight, PartNumber...), both built-in and external.
+* **Connections** ([Connections](../connection-types-reference/index.md)) - responsible for connecting models to each other. For example, inserting a card into a chassis or plugging a wire into a connector.
 * **Connection Rules** ([Connections Rule](connection-rule.md)) - describe the rules by which models will connect to each other.
 
 So, to create a equipment model, you need to follow these steps:
@@ -52,7 +52,7 @@ At the end, there is a list of connections (the `Connection` block). It lists th
 
 ### Connection (Connection Type)
 
-For a more detailed description, refer to the [ConnectionType](connection-type.md) page.
+For a more detailed description, refer to the [ConnectionType](../connection-types-reference/index.md) page.
 
 Connection types, in a sense, are also objects, but special kinds of objects - **connections**. An analogy for this is the "RJ45" type. To establish a connection, both objects must have the same connection type. In the case of "RJ45," this would be the connector and socket, both of which have the "RJ45" type.
 
@@ -71,7 +71,7 @@ In the second screenshot, when filling out the object "**Carelink | Transceiver 
 1. On one side, it connects to an SFP connector on the equipment. For SFP connections, we've created a connection type "`Transceiver | SFP`."
    * Since it is inserted into the connector rather than connected to it with a cable (as would be the case with a media converter), we set the direction (Direction) to Outer.
    * Socket Type: Male
-   * Protocols ([Protocols](inventory-protocols.md)) and its specifications indicate that it can only support 1 protocol: `TransEth1G`.
+   * Protocols ([Protocols](../inventory-protocols-reference/index.md)) and its specifications indicate that it can only support 1 protocol: `TransEth1G`.
 2. On the other side, it has an optical port, let's call it `rxtx` (since it's a bidirectional transceiver). For optical LC connections, we've created a connection type "`Optical | LC`."
    * Since no object is placed in its connector (a patch cord is directly connected), we set the direction (Direction) to Connection.
    * Socket Type: Female
@@ -82,7 +82,7 @@ In the third screenshot, we fill out the other side of the connection (a switch 
 1. The connection is one-way (the other end of the connector is soldered onto the board, making it an integral part of the chassis). The connection is the same, so we specify "`Transceiver | SFP`."
    * Since another object is placed in the connector, we specify the direction (Direction) as Inner.
    * Socket Type: Female
-   * Protocols: According to the [Protocols](inventory-protocols.md) list: `TransEth100M, TransEth1G`
+   * Protocols: According to the [Protocols](../inventory-protocols-reference/index.md) list: `TransEth100M, TransEth1G`
 
 ### Connection Rules (Connection Rule)
 

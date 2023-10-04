@@ -46,7 +46,7 @@ There are 4 interface profiles in the system:
 * `Uplink`. A trunk port whose description contains the words `Uplink`, `UP`, or `UPLINK`.
 
 Conditions based on matching with VLANs will be needed for conditions with `Access Port` and `Trunk Port`. To do this, you need to create a [VC Filter](../vc-filter/index.md).
-![](../vc-filter/images/vc-filter-any-vlan-form.png)
+![](../vc-filter/vc-filter-any-vlan-form.png)
 
 For the condition with Uplinks, we need to create a [Regex Label](../label/index.md#Regex Labels) `rx_iface_uplink` with the regular expression `(Uplink|UP|UPLINK)` for `Interface Description`:
 ![](regex-label-create-form-iface-descr.png)

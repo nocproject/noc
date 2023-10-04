@@ -26,8 +26,8 @@
 
 Справочник меток расположен в разделе `VC (VC)` -> `Setup (Настройки)` -> `Фильтр VC (VC Filter)`.
 
-![Форма редактирования VC Filter](images/vc-filter-any-vlan-form.png)
+![Форма редактирования VC Filter](vc-filter-any-vlan-form.png)
 
 * **Имя** (`Name`) - наименование метки
-* Описание (`Description`) - описание
+* **Описание** (`Description`) - описание
 * **Выражение** (`Expression`) - выражение набора влан
