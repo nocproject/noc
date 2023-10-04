@@ -97,6 +97,19 @@
     text-align: center;
 }
 
+.hero-version {
+    margin-top: 0.7em;
+}
+
+.hero-version a {
+    font-size: 1.2em;
+    font-weight: bold;
+}
+
+.hero-version a:visited {
+    color: #ffffff;
+}
+
 @keyframes Sway {
 
     0%,
@@ -109,19 +122,11 @@
     }
 }
 
-.hero-version {
-    width: 400px;
-}
-
-.hero-version-link {
-    color: white !important;
-}
-
 .hero-buttons {
     display: flex;
     flex-direction: column;
     gap: 10px;
-    width: 400px;
+    max-width: 410px;
     text-align: center;
 }
 
@@ -141,9 +146,5 @@
 
     .hero-buttons {
         flex-direction: row;
-    }
-
-    .hero-version {
-        text-align: center;
     }
 }

@@ -11,22 +11,18 @@
                 <h1>{{ page.meta.hero.title }}</h1>
                 <p>{{ page.meta.hero.subtitle }}</p>
                 <div class="hero-buttons">
-                    <div class="hero-buttons">
-                        <a href="{{ page.next_page.url | url }}" title="{{ page.next_page.title | e }}"
-                            class="md-button md-button--primary">
-                            {{ page.meta.hero.install_button }}
-                        </a>
-                        <a href="{{ config.repo_url }}" title="Source code" class="md-button" target="_blank">{{
-                            page.meta.hero.source_button
-                            }}
-                        </a>
-                    </div>
-                    <div class="hero-version">
-                        <a class="hero-version-link">Version x.y.z</a>
-                    </div>
+                    <a href="{{ page.next_page.url | url }}" title="{{ page.next_page.title | e }}"
+                        class="md-button md-button--primary">
+                        {{ page.meta.hero.install_button }}
+                    </a>
+                    <a href="{{ config.repo_url }}" title="Source code" class="md-button" target="_blank">{{
+                        page.meta.hero.source_button
+                        }}
+                    </a>
                 </div>
                 <div class="hero-version">
-                    <a class="hero-version-link">Version x.y.z</a>
+                    <a href="releases/{{ config.extra.version.replace('.', '_')}}/">Current Version: {{
+                        config.extra.version }}</a>
                 </div>
             </div>
         </div>
