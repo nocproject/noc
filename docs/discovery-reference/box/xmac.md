@@ -26,7 +26,7 @@ In the `MAC Discovery Policy`, there is also a setting called `Chained Downlink`
 
 ## Requirements
 
-* [get_chassis_id](../scripts-reference/get_chassis_id.md) script for both neighboring and current devices
-* xMAC polling enabled in the [Managed Object Profile](../concepts/managed-object-profile/index.md#Box(Полный_опрос)) settings
-* xMAC method configured in the *Topology Building Methods* of the [Segment Profile](../concepts/network-segment-profile/index.md)
+* [get_chassis_id](../../scripts-reference/get_chassis_id.md) script for both neighboring and current devices
+* xMAC polling enabled in the [Managed Object Profile](../../concepts/managed-object-profile/index.md#Box(Полный_опрос)) settings
+* xMAC method configured in the *Topology Building Methods* of the [Segment Profile](../../concepts/network-segment-profile/index.md)
 * Configuration of the `MAC Discovery Policy` in the `Interface Profile`

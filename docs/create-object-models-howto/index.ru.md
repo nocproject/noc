@@ -1,10 +1,11 @@
+# How-to Create Object Models
 
 Модель объекта представляет собой описание некой сущности реального мира для NOC'а.
 В модель входят:
 
-* **атрибуты** ([Model Data](model-interface/index.md)) - различные параметры и свойства модели (размер в RU, масса, PartNumber ...) 
+* **атрибуты** ([Model Data](model-interfaces-reference/index.md)) - различные параметры и свойства модели (размер в RU, масса, PartNumber ...) 
   встроенные и внешние;
-* **соединения** ([Connections](connection-type.md)) - отвечают за стыковку моделей друг с другом.
+* **соединения** ([Connections](connection-types-reference/index.md)) - отвечают за стыковку моделей друг с другом.
   Например: воткнуть плату в шасси, подключить провод в разъём;
 * **правила для соединений** ([Connections Rule](connection-rule.md)) - описывают правила, 
   по модели будут стыковаться между собой;
@@ -19,7 +20,7 @@
 
 ### Модель (Object Model)
 
-Описание в данном разделе, в основном, повторяет описание со страницы [ObjectModel](index.md).
+Описание в данном разделе, в основном, повторяет описание со страницы [ObjectModel](../object-models-reference/index.md).
 
 В общем виде, модель объекта состоит из *Атрибутов* и *Связей*. 
 К аттрибутам модели в НОКе можно отнести:
@@ -30,14 +31,14 @@
 * **Производитель** (Vendor) (цифра 6)
 * Опциональные аттрибуты модели (например Context, PartNo, размеры (Dimension), занимаемое место в единицах стойки, энергопотребление и т.д.) (цифра 7)
 
-![Пример модели коммутатора DLink](image/noc_inventory_models/inv_setup_obj_mo_examples_Dlink.png)
+![Пример модели коммутатора DLink](inv_setup_obj_mo_examples_Dlink.png)
 
 Для создания модели достаточно заполнить её имя и производителя.
 Имя может иметь произвольный формат, но стандартно, имена имеют форму:
 "`Vendor | ... | ... | PartNo`" (н-р: "`Cisco | 7600 | WS-F6700-DFC3C`", "`DLink | Modules | DEM-420X`")
 задание имени в таком формате позволяет корректно пользоваться фильтрами (цифра 3).
 
-![Список моделей в интерфейсе](image/noc_inventory_models/inv_setup_obj_mo_list_examples_Dlink.png)
+![Список моделей в интерфейсе](inv_setup_obj_mo_list_examples_Dlink.png)
 
 Опциональные аттрибуты модели (цифра 7) можно задавать любые, 
 но определённые имена используются НОКом для служебных нужд (н-р `part_no`)
@@ -65,7 +66,9 @@
 5. **Протоколы** - протоколы, которые поддерживает связь Доступные протоколы
 
 !!! info
-    На данный момент протоколы не влияют на установление соединения. Но их необходимо указывать, т.к. в будущем это поведение изменится
+
+    На данный момент протоколы не влияют на установление соединения.
+    Но их необходимо указывать, т.к. в будущем это поведение изменится
 
 
 ### Соединение (Connection Type)
@@ -85,9 +88,9 @@
 одинаковым типом соединения, т.е. должны подходить друг другу (быть совместимыми). 
 Вот пример двух совместимых устройств - разъёма SFP и Трансивера:
 
-![Тип подключения (форма)](image/noc_inventory_models/inv_setup_conntype_trans_examples.png)
-![Форма создания объектаъ](image/noc_inventory_models/inv_setup_obj_mo_trans_examples.png)
-![Соединение Transiever](image/noc_inventory_models/inv_setup_obj_mo_sfpswitch_examples.png)
+![Тип подключения (форма)](inv_setup_conntype_trans_examples.png)
+![Форма создания объектаъ](inv_setup_obj_mo_trans_examples.png)
+![Соединение Transiever](inv_setup_obj_mo_sfpswitch_examples.png)
 
 На 1 скриншоте отображается созданная связь "**Transceiver | SFP**".
 
@@ -143,8 +146,8 @@
 Как видно на скриншоте у "**ME-3600X-24FS-M**" большое число SFP портов, плюс,
 есть 2 места под блоки питания (1 и 2). 
 
-![Пример соединений ME-3600X-24FS-M](image/noc_inventory_models/inv_setup_obj_mo_me4600_connrule.png)
-![Правила подключения](image/noc_inventory_models/inv_setup_connrule_gen_switch.png)
+![Пример соединений ME-3600X-24FS-M](inv_setup_obj_mo_me4600_connrule.png)
+![Правила подключения](inv_setup_connrule_gen_switch.png)
 
 Если взглянуть на `show interfaces` со стороны коммутатора,
 то увидим что команда возвращает просто список компонентов,
@@ -197,8 +200,8 @@ PID: PWR-ME3KX-AC      , VID: V01  , SN: LIT1433XXXX
 Информацию по объектам, для которых отсутствуют модели можно посмотреть в отчёте 
 `Inventory -> Reports -> "Unknown Models Summary"`.
 
-![Отчёт Part Numbers](image/noc_inventory_models/inv_reports_par_no.png)
-![Отчёт Unknown Models Summary](image/noc_inventory_models/inv_reports_unknown_models.png)
+![Отчёт Part Numbers](inv_reports_par_no.png)
+![Отчёт Unknown Models Summary](inv_reports_unknown_models.png)
 
 ### Исходные данные
 
@@ -217,21 +220,21 @@ PID: PWR-ME3KX-AC      , VID: V01  , SN: LIT1433XXXX
 (debug script (ссылка на отладку)) или через меню `"Service Activation" -> "Managed Object" -> <MO> -> Scripts`.
 По двойному клику на имени скрипта (`get_inventory`) отобразится его вывод.
 
-![Форма ManagedObject](image/noc_inventory_models/sa_mo_Scripts.png)
-![Скрипт get_inventory](image/noc_inventory_models/sa_mo_Scripts_get_inventory.png)
+![Форма ManagedObject](sa_mo_Scripts.png)
+![Скрипт get_inventory](sa_mo_Scripts_get_inventory.png)
 
 Скрипт возвращает таблицу со следющими полями (столбцами):
 
-| Имя поля	    | Описание	                                                                                  | Пример |
-|--------------|--------------------------------------------------------------------------------------------|--- |
-| Type	        | Тип компонента. Поле задаётся в скрипте (на основе данных, возвращаемых оборудованием)	    |
-| Number	    | Номер компонента в устройстве (например номер слота для линейной карты, номер SFP модуля). |	 
-| Builtin	    | 	                                                                                          |
-| Vendor	    | Производитель компонента (н-р производители коммутатора и SFP модуля могут отличаться)	    |
-| Part No	    | Название модели	                                                                           |
-| Revision	    | Номер ревизии компонента	                                                                  |
-| Serial No	|  Серийный номер	                                                                           |
-| Description  | Описание	                                                                                  |
+| Имя поля    | Описание                                                                                   | Пример |
+| ----------- | ------------------------------------------------------------------------------------------ | ------ |
+| Type        | Тип компонента. Поле задаётся в скрипте (на основе данных, возвращаемых оборудованием)     |
+| Number      | Номер компонента в устройстве (например номер слота для линейной карты, номер SFP модуля). |
+| Builtin     |                                                                                            |
+| Vendor      | Производитель компонента (н-р производители коммутатора и SFP модуля могут отличаться)     |
+| Part No     | Название модели                                                                            |
+| Revision    | Номер ревизии компонента                                                                   |
+| Serial No   | Серийный номер                                                                             |
+| Description | Описание                                                                                   |
 
 !!! info
     Среди полей обязательные - это Тип, Number: вместе участвуют в работе правила соединения (Connection Rule)), Part No и/или Serial No - участвуют в сопоставлении данных и модели.
@@ -284,14 +287,14 @@ PID: PWR-ME3KX-AC      , VID: V01  , SN: LIT1433XXXX
 
 Как видим, не очень сходится с тем, что мы видимо в таблице(smile) давайте сопоставлять:
 
-|                                                                    |                                                                                                   | 
-|--------------------------------------------------------------------|---------------------------------------------------------------------------------------------------|
-| 1RU fixed form-factor switch	                                      | это шасси (N3K-C3048TP-1GE) судя по возвращаемым скриптом данным в него вставляется всё остальное |
-| 48 10/100/1000-Mbps RJ-45 ports                                    | 48 портов. Это физические порты являются частью супервизора (N3K-C3048TP-1GE-SUP)                |
-| 4 1/10 Gbps SFP+ uplink ports                                      | 4 SFP порта. Это физические порты являются частью супервизора (N3K-C3048TP-1GE-SUP)              |
-| 2 redundant power supplies                                         | по исходным данным нам вернулось 2 PSU                                                            |
-| 1 fan tray with redundant fans                                     | 	в исходных данных есть                                                                           |
-| 1 I/O module with management, console, and USB flash memory ports  | Являются встроенными, поэтому скрипт их не вернул                                                 |
+|                                                                   |                                                                                                   |
+| ----------------------------------------------------------------- | ------------------------------------------------------------------------------------------------- |
+| 1RU fixed form-factor switch                                      | это шасси (N3K-C3048TP-1GE) судя по возвращаемым скриптом данным в него вставляется всё остальное |
+| 48 10/100/1000-Mbps RJ-45 ports                                   | 48 портов. Это физические порты являются частью супервизора (N3K-C3048TP-1GE-SUP)                 |
+| 4 1/10 Gbps SFP+ uplink ports                                     | 4 SFP порта. Это физические порты являются частью супервизора (N3K-C3048TP-1GE-SUP)               |
+| 2 redundant power supplies                                        | по исходным данным нам вернулось 2 PSU                                                            |
+| 1 fan tray with redundant fans                                    | в исходных данных есть                                                                            |
+| 1 I/O module with management, console, and USB flash memory ports | Являются встроенными, поэтому скрипт их не вернул                                                 |
 
 В общем, выглядит логично. Так что считаем что по этому вопроске всё хорошо.
 
@@ -299,14 +302,14 @@ PID: PWR-ME3KX-AC      , VID: V01  , SN: LIT1433XXXX
 
 Данный пункт можно совместить с последним. Ищем аналоги и, заодно, и совпадения - возможно, всё уже придумано до нас. Открываем Inventory -> Setup -> "Object Model". Вверху в фильтре выбираем Cisco -> Nexus (цифра 8) и начинаем смотреть, что тут есть.
 
-![Список моделей Cisco Nexus](image/noc_inventory_models/inv_setup_obj_mo_find_analog.png)
+![Список моделей Cisco Nexus](inv_setup_obj_mo_find_analog.png)
 
 Наблюдаем модельки для Nexus'ов серии 2K (цифры 5 и 6): *Шасси* и *супервизор*.
 Скорее всего, они нам подойдут. Заходим внутрь шасси и гипервизора и смотрим что там.
 
-![Пример модели шасси Nexus 2k](image/noc_inventory_models/inv_setup_obj_mo_N2K_chass.png)
-![Плата супервизора Nexus 2k](image/noc_inventory_models/inv_setup_obj_mo_N2K_sup.png)
-![Плата супервизора Nexus 5k](image/noc_inventory_models/inv_setup_obj_mo_N5K_sup.png)
+![Пример модели шасси Nexus 2k](inv_setup_obj_mo_N2K_chass.png)
+![Плата супервизора Nexus 2k](inv_setup_obj_mo_N2K_sup.png)
+![Плата супервизора Nexus 5k](inv_setup_obj_mo_N5K_sup.png)
 
 1. В шасси "Cisco | NEXUS | N2K-C2232PP-10GE" в разделе соединений (цифра 2) видим 4 соединения
    (супервизор, блок вентиляторов и 2 для блоков питания) у нас, как раз, столько и указано в документации.
@@ -363,13 +366,13 @@ PID: PWR-ME3KX-AC      , VID: V01  , SN: LIT1433XXXX
 для которого не удастся подобрать аналоги небольшой(smile)
 Исходные данные	
 
-| Type	     | Number  | Vendor  |  Part No	           | Serial No  | Аналоги                                                                                            | Модульность | Готовые модельки                          | Готовые соединения                | 
-|-----------|---------|---------|---------------------|------------|----------------------------------------------------------------------------------------------------|-------------|-------------------------------------------|-----------------------------------|
-| CHASSIS   | None    | Cisco   | N3K-C3048TP-1GE	   | XXXXX	    | Cisco &#124; NEXUS &#124; N2K-C2232PP-10GE                                                         | 	есть	   | нет	                                      | -                                 |
-| SUP	     | 1       | Cisco   | N3K-C3048TP-1GE-SUP | XXXXX      | Cisco &#124; NEXUS  &#124; N2K-C2232PP-10GE-SUP , Cisco &#124; &#124; NEXUS &#124; N5K-C5596UP-SUP | 	нет	       | нет	                                      | Нет                               |                                   
-| FAN	     | 1	   | Cisco	 | N3K-C3048-FAN	   | XXXXX	    | Cisco &#124; NEXUS &#124; N2K-C2232-FAN	                                                         | нет	       | нет	                                      | Нет                               |
-| PSU	     | 1	   | Cisco	 | N2200-PAC-400W      | 	XXXXX   | 	                                                                                                  | 	нет	   | Cisco &#124; NEXUS &#124; N2200-PAC-400W  | 	Есть, но использовать не удастся |
-| PSU	     | 2	   | Cisco	 | N2200-PAC-400W      | 	XXXXX   | 	                                                                                                  | 	нет	   | Cisco &#124; NEXUS &#124; N2200-PAC-400W	 | Есть, но использовать не удастся  |
+| Type    | Number | Vendor | Part No             | Serial No | Аналоги                                                                                            | Модульность | Готовые модельки                         | Готовые соединения               |
+| ------- | ------ | ------ | ------------------- | --------- | -------------------------------------------------------------------------------------------------- | ----------- | ---------------------------------------- | -------------------------------- |
+| CHASSIS | None   | Cisco  | N3K-C3048TP-1GE     | XXXXX     | Cisco &#124; NEXUS &#124; N2K-C2232PP-10GE                                                         | есть        | нет                                      | -                                |
+| SUP     | 1      | Cisco  | N3K-C3048TP-1GE-SUP | XXXXX     | Cisco &#124; NEXUS  &#124; N2K-C2232PP-10GE-SUP , Cisco &#124; &#124; NEXUS &#124; N5K-C5596UP-SUP | нет         | нет                                      | Нет                              |
+| FAN     | 1      | Cisco  | N3K-C3048-FAN       | XXXXX     | Cisco &#124; NEXUS &#124; N2K-C2232-FAN                                                            | нет         | нет                                      | Нет                              |
+| PSU     | 1      | Cisco  | N2200-PAC-400W      | XXXXX     |                                                                                                    | нет         | Cisco &#124; NEXUS &#124; N2200-PAC-400W | Есть, но использовать не удастся |
+| PSU     | 2      | Cisco  | N2200-PAC-400W      | XXXXX     |                                                                                                    | нет         | Cisco &#124; NEXUS &#124; N2200-PAC-400W | Есть, но использовать не удастся |
 
 (таблица соединений)
 
@@ -387,8 +390,8 @@ PID: PWR-ME3KX-AC      , VID: V01  , SN: LIT1433XXXX
 Изменим **Name** (Имя) и **Description** (Описание) типа соединения.
 Отношение родства не поменялись, так что оставим прежними.
 
-![Соединение вентилятора до](image/noc_inventory_models/inv_setup_conntype_N2K_fanToN3K_fan.png)
-![Соединение вентилятора после](image/noc_inventory_models/inv_setup_conntype_N2K_fanToN3K_fan_after.png)
+![Соединение вентилятора до](inv_setup_conntype_N2K_fanToN3K_fan.png)
+![Соединение вентилятора после](inv_setup_conntype_N2K_fanToN3K_fan_after.png)
 
 #### Подключение для супервизора
 
@@ -396,20 +399,20 @@ PID: PWR-ME3KX-AC      , VID: V01  , SN: LIT1433XXXX
 Для этого **клонируем** тип подключения для `Nexus 2K`: `Inventory -> Setup -> "Connection Type" -> "Cisco | Nexus 2k | C2232PP SUP"`
 и переименуем его в "`Cisco | Nexus 3k | C3048 SUP`".
 
-![Соединение супервизора до](image/noc_inventory_models/inv_setup_conntype_N2K_supToN3K_sup.png)
-![Соединение супервизора после](image/noc_inventory_models/inv_setup_conntype_N2K_supToN3K_sup_after.png)
+![Соединение супервизора до](inv_setup_conntype_N2K_supToN3K_sup.png)
+![Соединение супервизора после](inv_setup_conntype_N2K_supToN3K_sup_after.png)
 
 #### Подключение для блока питания
 
 Также по аналогии клонируем тип подключения от Nexus 2k: `Inventory -> Setup -> "Connection Type" -> "Cisco | Nexus 2k | 2200 PSU"`.
 И переименуем его в "`Cisco | Nexus 3k | PSU`"
 
-![Соединение вентилятора до](image/noc_inventory_models/inv_setup_conntype_N2K_supToN3K_psu_after.png)
-![Соединение вентилятора после](image/noc_inventory_models/inv_setup_conntype_N2K_supToN3K_psu.png)
+![Соединение вентилятора до](inv_setup_conntype_N2K_supToN3K_psu_after.png)
+![Соединение вентилятора после](inv_setup_conntype_N2K_supToN3K_psu.png)
 
 Для возможности подключения Блоков питания от Nexus 2k дополним (`Extend`)
 тип подключения "`Cisco | Nexus 2k | 2200 PSU`" типом "`Cisco | Nexus 3k | PSU`" (цифра 5).
-![Расширение подключения PSU](image/noc_inventory_models/inv_setup_conntype_N2K_psu_extend.png)
+![Расширение подключения PSU](inv_setup_conntype_N2K_psu_extend.png)
 
 ### Готовим модели
 
@@ -422,8 +425,8 @@ PID: PWR-ME3KX-AC      , VID: V01  , SN: LIT1433XXXX
 Заходим в модель `Inventory -> Setup -> "Object Models" -> "Cisco | NEXUS | N2K-C2232PP-10GE"`,
 Нажимаем кнопочку Clone (цифра 4) и смотрим - что необходимо поправить.
 
-![Модель Cisco Nexus до](image/noc_inventory_models/inv_setup_obj_mo_N2K_chassToN3K_chass.png)
-![Модель Cisco Nexus после](image/noc_inventory_models/inv_setup_obj_mo_N2K_chassToN3K_chass_after.png)
+![Модель Cisco Nexus до](inv_setup_obj_mo_N2K_chassToN3K_chass.png)
+![Модель Cisco Nexus после](inv_setup_obj_mo_N2K_chassToN3K_chass_after.png)
 
 * **Name** (Имя) (цифра 5), необходимо сменить Part No `N2K-C2232PP-10GE` на `N3K-C3048TP-1GE`
 * **Description** (Описание) (цифра 6), необходимо заменить
@@ -444,8 +447,8 @@ PID: PWR-ME3KX-AC      , VID: V01  , SN: LIT1433XXXX
 
 Заходим в модель `Inventory -> Setup -> "Object Models" -> "Cisco | NEXUS | N2K-C2232-FAN"`,
 Нажимаем кнопочку *Clone* (цифра 4) и смотрим - что необходимо поправить.
-![Модель вентилятора Cisco Nexus до](image/noc_inventory_models/inv_setup_obj_mo_N2K_fanToN3K_fan.png)
-![Модель вентилятора Cisco Nexus после](image/noc_inventory_models/inv_setup_obj_mo_N2K_fanToN3K_fan_after.png)
+![Модель вентилятора Cisco Nexus до](inv_setup_obj_mo_N2K_fanToN3K_fan.png)
+![Модель вентилятора Cisco Nexus после](inv_setup_obj_mo_N2K_fanToN3K_fan_after.png)
 
 #### N3K-C3048TP-1GE-SUP
 
@@ -453,9 +456,9 @@ PID: PWR-ME3KX-AC      , VID: V01  , SN: LIT1433XXXX
 Нажимаем кнопочку *Clone* (цифра 4) и смотрим - что необходимо поправить.
 Кроме обычных полей **Имя** (Name), **Описание** (Description), part_no. Необходимо править большую таблицу с интерфейсами.
 
-![Исохданая Модель супервизора Cisco Nexus](image/noc_inventory_models/inv_setup_obj_mo_N5K_supToN3K_sup.png)
-![Модель супервизора Cisco Nexus после(1)](image/noc_inventory_models/inv_setup_obj_mo_N5K_supToN3K_sup_after1.png)
-![Модель супервизора Cisco Nexus после(2)](image/noc_inventory_models/inv_setup_obj_mo_N5K_supToN3K_sup_after2.png)
+![Исохданая Модель супервизора Cisco Nexus](inv_setup_obj_mo_N5K_supToN3K_sup.png)
+![Модель супервизора Cisco Nexus после(1)](inv_setup_obj_mo_N5K_supToN3K_sup_after1.png)
+![Модель супервизора Cisco Nexus после(2)](inv_setup_obj_mo_N5K_supToN3K_sup_after2.png)
 
 В модели `N3K-C3048TP-1GE-SUP` в отличие от `N5K-C5596UP-SUP` 48 Ethernet интерфейсов типа
 `RJ-45` + *4 Интерфейса SFP* (вместо 48 SFP дырок на `N5K-C5596UP-SUP`).
@@ -487,7 +490,7 @@ PID: PWR-ME3KX-AC      , VID: V01  , SN: LIT1433XXXX
 
 Когда мы делали модель для шасси, то в ней уже было заполнено поле правила. Поэтому воспользуемся им.
 
-![Исходное правило соединения для модели](image/noc_inventory_models/inv_setup_connrule_cisco_nexus.png)
+![Исходное правило соединения для модели](inv_setup_connrule_cisco_nexus.png)
 
 1. Вначале заполняем секцию Context. 
     * Поле **TYPE** должно совпадать с TYPE, который возвращает скрипт get_inventory и в него должно что-то подсоединяться.
@@ -507,7 +510,7 @@ PID: PWR-ME3KX-AC      , VID: V01  , SN: LIT1433XXXX
 Как мы видим - правило нам подходит. На лишние типы подключений (`GEM`) можно не обращать внимания.
 Идём в "`Cisco | NEXUS | N3K-C3048TP-1GE`" и назначаем [Connection Rule](connection-rule.md) (цифра 1).
 
-![Итоговое правило соединения для модели ](image/noc_inventory_models/inv_setup_obj_mo_N3K_chass_wtest.png)
+![Итоговое правило соединения для модели ](inv_setup_obj_mo_N3K_chass_wtest.png)
 
 ## Тестирование
 
@@ -515,7 +518,7 @@ PID: PWR-ME3KX-AC      , VID: V01  , SN: LIT1433XXXX
 В каждой модели или правиле соединений в верхней панели есть кнопка Test (цифра 5 на скриншоте выше).
 При её нажатии НОК скомпонует модель объекта согласно выполненным настройкам. Покажет, возможные варианты.
 
-![Проверка подключения модели](image/noc_inventory_models/inv_setup_obj_mo_N3K_chass_test.png)
+![Проверка подключения модели](inv_setup_obj_mo_N3K_chass_test.png)
 
 На скриншоте НОК нам показывает варианты подключений.
 В слот блока питания возможно подключить: "`Cisco | NEXUS | N2200-PDC-400W`",
@@ -526,8 +529,8 @@ PID: PWR-ME3KX-AC      , VID: V01  , SN: LIT1433XXXX
 Если взглянуть на ситуацию со стороны супервизора, то можно увидеть, что он подключается к шасси.
 Также, в 4 интерфейса возможна установка Трансиверов.
 
-![Возможные подключения для модели супервизора](image/noc_inventory_models/inv_setup_obj_mo_N3K_sup_test.png)
-![Возможные подключения для портов модели](image/noc_inventory_models/inv_setup_obj_mo_N3K_sup_test2.png)
+![Возможные подключения для модели супервизора](inv_setup_obj_mo_N3K_sup_test.png)
+![Возможные подключения для портов модели](inv_setup_obj_mo_N3K_sup_test2.png)
 
 Также доступно тестирование из командной строки
 ```shell title="Пример вывода скрипта"

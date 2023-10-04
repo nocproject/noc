@@ -20,7 +20,7 @@
 
 В профилях (`Profile`) с поддержкой автоматического назначения есть набор правил (`Match Rules`). Критерием совпадения является наличие всех указанных меток (`Match Labels`) в действующих метках сущности либо результат `Истина` работы обработчика.
 
-![](images/interface-profile-form-dyn-class-rules-ex.png)
+![](interface-profile-form-dyn-class-rules-ex.png)
 
 Работа правил регулируется политикой (`Dynamic Classification Policy`):
 
@@ -52,15 +52,15 @@
 ![](../vc-filter/images/vc-filter-any-vlan-form.png) 
 
 Для условия с Аплинков нам понадобится создать [Regex Label](../label/index.md#Regex Labels) `rx_iface_uplink` с заданным регулярным выражением `(Uplink|UP|UPLINK)` для `Interface Description`:
-![](images/regex-label-create-form-iface-descr.png)
+![](regex-label-create-form-iface-descr.png)
 
 После создания в правилах станут доступны метки: `rx_iface_uplink`, `noc::vcfilter::Any VLAN::untagged::&`, `noc::vcfilter::Any VLAN::tagged::&`
 
 Правило для назначения профиля интерфейса получается следующий набор правил. 
 
-| Профиль | Порядок (`Order`) | Метки (`Labels`) |
-| ---    |  ---- | ----    |
-|  `default` | 999 | `noc::adm_domain::default<` |
-| `Клиентский порт` | 100  | `noc::vcfilter::Any VLAN::untagged::&` |
-| `Транковый порт` | 100 | `noc::vcfilter::Any VLAN::tagged::&` |
-| `Аплинк` | 90 | `noc::vcfilter::Any VLAN::tagged::&`, `rx_iface_uplink` |
+| Профиль           | Порядок (`Order`) | Метки (`Labels`)                                        |
+| ----------------- | ----------------- | ------------------------------------------------------- |
+| `default`         | 999               | `noc::adm_domain::default<`                             |
+| `Клиентский порт` | 100               | `noc::vcfilter::Any VLAN::untagged::&`                  |
+| `Транковый порт`  | 100               | `noc::vcfilter::Any VLAN::tagged::&`                    |
+| `Аплинк`          | 90                | `noc::vcfilter::Any VLAN::tagged::&`, `rx_iface_uplink` |

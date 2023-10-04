@@ -99,7 +99,7 @@ Each item expands into a tree filled with the results of the mechanism's work. T
 
 ### Building the Facts Tree
 
-While the detailed mechanism is described in the [ConfDB Overview](../confdb-reference/index.mdindex.md) for developers, we will cover the basics to understand where to navigate.
+While the detailed mechanism is described in the [ConfDB Overview](../confdb-reference/index.md) for developers, we will cover the basics to understand where to navigate.
 
 To build the `ConfDB`, the configuration goes through several sequential stages, each responsible for specific transformations. This prevents overcomplicating the implementation of functions responsible for a given stage. Let's go through the stages in the order of their execution and the transformations they perform.
 

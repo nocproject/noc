@@ -25,12 +25,18 @@ nav:
       - Concepts:
           - Overview: concepts/index.md
           - Administrative Domain: concepts/administrative-domain/index.md
+          - Alarm Class: concepts/alarm-class/index.md
+          - Alarm Severity: concepts/alarm-severity/index.md
           - Allocation Group: concepts/allocation-group/index.md
           - API Key: concepts/apikey/index.md
           - Container: concepts/container/index.md
           - Dialplan: concepts/dialplan/index.md
+          - Dynamic Profile Classification: concepts/dynamic-profile-classification/index.md
           - DNS Zone: concepts/dns-zone/index.md
+          - Event Class: concepts/event-class/index.md
+          - Event Classification Rule: concepts/event-classification-rule/index.md
           - External Storage: concepts/external-storage/index.md
+          - Firmware Policy: concepts/firmware-policy/index.md
           - Group: concepts/group/index.md
           - Handler: concepts/handler/index.md
           - Interface: concepts/interface/index.md
@@ -41,6 +47,7 @@ nav:
           - Network Segment: concepts/network-segment/index.md
           - Network Segment Profile: concepts/network-segment-profile/index.md
           - Notification Group: concepts/notification-group/index.md
+          - Object Diagnostics: concepts/object-diagnostics/index.md
           - Phone Number: concepts/phone-number/index.md
           - Phone Number Profile: concepts/phone-number-profile/index.md
           - Phone Range: concepts/phone-range/index.md
@@ -644,6 +651,7 @@ nav:
               - Overview: discovery-reference/periodic/index.md
               - interfacestatus: discovery-reference/periodic/interfacestatus.md
               - uptime: discovery-reference/periodic/uptime.md
+              - alarms: discovery-reference/periodic/alarms.md
               - mac: discovery-reference/periodic/mac.md
               - metrics: discovery-reference/periodic/metrics.md
               - cpestatus: discovery-reference/periodic/cpestatus.md
@@ -730,6 +738,7 @@ nav:
           - add_vlan: scripts-reference/add_vlan.md
           - commands: scripts-reference/commands.md
           - configure: scripts-reference/configure.md
+          - get_alarms: scripts-reference/get_alarms.md
           - get_arp: scripts-reference/get_arp.md
           - get_bfd_sessions: scripts-reference/get_bfd_sessions.md
           - get_capabilities: scripts-reference/get_capabilities.md
@@ -919,6 +928,10 @@ nav:
       - Using Housekeeper to Collect Device Data: using-hk-to-collect-data-howto/index.md
       - Upgrade Your Single-node Postgres Server: upgrade-single-postgres-howto/index.md
       - NOC Monitoring: noc-monitoring-howto/index.md
+      - Reclaim Database Space: reclaim-db-space-howto/index.md
+      - Create Object Models:
+          - Overview: create-object-models-howto/index.md
+          - Connection Rules: create-object-models-howto/connection-rule.md
   - Background:
       - Overview: sections-overview/background.md
       - Connection Restrictions: connection-restrictions/index.md
