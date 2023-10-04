@@ -19,7 +19,7 @@
 
 - name: Add MongoDB repository
   apt_repository:
-    repo: "deb [ arch=amd64,arm64 ] https://repo.mongodb.org/apt/ubuntu focal/mongodb-org/{{ mongod_version }} multiverse"
+    repo: "{{ mongo_deb_ub_repo }}"
     state: present
     update_cache: "True"
   register: mongo_repo_stat
