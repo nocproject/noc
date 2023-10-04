@@ -97,6 +97,20 @@
     text-align: center;
 }
 
+.hero-version {
+    margin-top: 0.7em;
+}
+
+.hero-version a {
+    font-size: 1.2em;
+    font-weight: bold;
+    text-decoration: underline;
+}
+
+.hero-version a:visited {
+    color: #ffffff;
+}
+
 @keyframes Sway {
 
     0%,
@@ -107,6 +121,14 @@
     50% {
         transform: translateY(20px);
     }
+}
+
+.hero-buttons {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    max-width: 410px;
+    text-align: center;
 }
 
 @media screen and (min-width: 960px) {
@@ -121,5 +143,9 @@
 
     .hero-content {
         width: 50%;
+    }
+
+    .hero-buttons {
+        flex-direction: row;
     }
 }
