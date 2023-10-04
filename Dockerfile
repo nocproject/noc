@@ -30,6 +30,9 @@ COPY . /opt/noc/
 COPY --from=build /build/speedup/*.so /opt/nocspeedup/
 COPY --from=build /build/*.whl /tmp
 WORKDIR /opt/noc/
+
+ARG BUILD_PACKAGES="build-essential cmake gcc libffi-dev libmemcached-dev libssl-dev zlib1g-dev git"
+
 RUN \
     set -x \
     && apt-get update\
