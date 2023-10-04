@@ -64,21 +64,21 @@ class Script(GetMetricsScript):
             oid=("JUNIPER-RPM-MIB::jnxRpmResCalcAverage", 4),
             sla_types=["udp-jitter", "icmp-echo"],
             scale=1,
-            units="m,s",
+            units="u,s",
         ),
         "SLA | Jitter | Out | Avg": ProfileMetricConfig(
             metric="SLA | Jitter | Out | Avg",
             oid=("JUNIPER-RPM-MIB::jnxRpmResCalcAverage", RPMMeasurement.egress.value),
             sla_types=["udp-jitter", "icmp-echo"],
             scale=1,
-            units="m,s",
+            units="u,s",
         ),
         "SLA | Jitter | In | Avg": ProfileMetricConfig(
             metric="SLA | Jitter | In | Avg",
             oid=("JUNIPER-RPM-MIB::jnxRpmResCalcAverage", RPMMeasurement.ingress.value),
             sla_types=["udp-jitter", "icmp-echo"],
             scale=1,
-            units="m,s",
+            units="u,s",
         ),
         #
         "SLA | RTT | Min": ProfileMetricConfig(
@@ -86,14 +86,14 @@ class Script(GetMetricsScript):
             oid=("JUNIPER-RPM-MIB::jnxRpmResCalcMin", RPMMeasurement.roundTripTime.value),
             sla_types=["udp-jitter", "icmp-echo"],
             scale=1,
-            units="m,s",
+            units="u,s",
         ),
         "SLA | RTT | Max": ProfileMetricConfig(
             metric="SLA | RTT | Max",
             oid=("JUNIPER-RPM-MIB::jnxRpmResCalcMax", RPMMeasurement.roundTripTime.value),
             sla_types=["udp-jitter", "icmp-echo"],
             scale=1,
-            units="m,s",
+            units="u,s",
         ),
     }
 
@@ -211,19 +211,7 @@ class Script(GetMetricsScript):
                 if m not in self.SLA_METRICS_CONFIG:
                     continue
                 mc = self.SLA_METRICS_CONFIG[m]
-                if self.is_vmx and mc.metric in {
-                    "SLA | Jitter | Out | Avg",
-                    "SLA | Jitter | In | Avg",
-                }:
-                    continue
-                if self.is_vmx and mc.metric == "SLA | Jitter | Avg":
-                    oid = mib[
-                        "JUNIPER-RPM-MIB::jnxRpmResCalcAverage",
-                        key,
-                        RPMResultCollection.lastCompletedTest.value,
-                        RPMMeasurement.negRttJitter.value,
-                    ]
-                elif not isinstance(mc.oid, tuple):
+                if not isinstance(mc.oid, tuple):
                     oid = mib[
                         mc.oid,
                         key,
@@ -236,6 +224,7 @@ class Script(GetMetricsScript):
                         RPMResultCollection.lastCompletedTest.value,
                         mc.oid[1],
                     ]
+                print(oid, probe, mc)
                 oids[oid] = (probe, mc)
 
         results = self.snmp.get_chunked(
