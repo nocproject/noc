@@ -1,7 +1,7 @@
 ---
 - name: Get MongoDB Key from remote server
   get_url:
-    url: "https://www.mongodb.org/static/pgp/server-{{ mongod_version }}.asc"
+    url: "{{ mongo_deb_gpgkey }}"
     dest: "/tmp/mongo_apt_key.gpg"
   environment:
     https_proxy: "{{ http_proxy }}"
@@ -19,7 +19,7 @@
 
 - name: Add MongoDB repository
   apt_repository:
-    repo: "deb http://repo.mongodb.org/apt/debian {{ ansible_distribution_release }}/mongodb-org/{{ mongod_version }} main"
+    repo: "{{ mongo_deb_repo }}"
     state: present
     update_cache: "True"
   register: mongo_repo_stat

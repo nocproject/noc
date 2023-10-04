@@ -3,9 +3,9 @@
   yum_repository:
     name: mongodb
     description: MongoDB Repository
-    baseurl: https://repo.mongodb.org/yum/redhat/{{ ansible_distribution_major_version }}/mongodb-org/{{ mongod_version }}/x86_64/
+    baseurl: "{{ mongo_rpm_repo }}"
     gpgcheck: "True"
-    gpgkey: https://www.mongodb.org/static/pgp/server-{{ mongod_version }}.asc
+    gpgkey: "{{ mongo_rpm_gpgkey }}"
     enabled: "True"
   register: mongo_repo_stat
   environment:

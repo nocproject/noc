@@ -1,7 +1,7 @@
 ---
 - name: Add MongoDB apt key
   apt_key:
-    url: "https://www.mongodb.org/static/pgp/server-{{ mongod_version }}.asc"
+    url: "{{ mongo_deb_gpgkey }}"
     id: "{{ mongo_apt_id[mongod_version] }}"
     state: present
   environment:
@@ -12,7 +12,7 @@
 
 - name: Add MongoDB repository
   apt_repository:
-    repo: "deb http://repo.mongodb.org/apt/ubuntu {{ ansible_distribution_release }}/mongodb-org/{{ mongod_version }} multiverse"
+    repo: "{{ mongo_deb_ub_repo }}"
     state: present
     update_cache: "True"
   register: mongo_repo_stat
