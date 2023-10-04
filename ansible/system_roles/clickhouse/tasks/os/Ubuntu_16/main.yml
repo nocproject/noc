@@ -11,7 +11,7 @@
 
 - name: Add CH repository
   apt_repository:
-    repo: "deb https://packages.clickhouse.com/deb stable main"
+    repo: "{{ clickhouse_deb_repo }}"
     state: present
     update_cache: "True"
   environment:

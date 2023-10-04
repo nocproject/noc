@@ -3,7 +3,7 @@
   yum_repository:
     name: clickhouse
     description: Clickhouse Official repo
-    baseurl: https://packages.clickhouse.com/rpm/stable/
+    baseurl: "{{ clickhouse_yum_repo }}"
     gpgcheck: "False"
     enabled: "True"
   environment:
