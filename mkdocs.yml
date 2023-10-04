@@ -76,6 +76,7 @@ nav:
           - VPN Profile: concepts/vpn-profile/index.md
           - Workflow: concepts/workflow/index.md
       - Profiles:
+          - Overview: profiles-reference/index.md
           - 3Com:
               - Overview: profiles-reference/3Com/index.md
               - 3Com.4500: profiles-reference/3Com/4500.md
@@ -617,6 +618,7 @@ nav:
           - "[ui] section": config-reference/ui.md
           - "[web] section": config-reference/web.md
       - Discovery:
+          - Overview: discovery-reference/index.md
           - Box Discovery:
               - Overview: discovery-reference/box/index.md
               - Suggest SNMP: discovery-reference/box/suggestsnmp.md
@@ -719,6 +721,7 @@ nav:
           - vendor: bi-dict-reference/vendor.md
           - version: bi-dict-reference/version.md
       - BI Models:
+          - Overview: bi-models-reference/index.md
           - alarms: bi-models-reference/alarms.md
           - events: bi-models-reference/events.md
           - mac: bi-models-reference/mac.md
@@ -913,6 +916,9 @@ nav:
           - whois: man/whois.md
           - wipe: man/wipe.md
           - workflow: man/workflow.md
+      - Operational Alerts:
+          - Overview: operational-alerts-reference/index.md
+          - ConsulServicesCountDecrease: operational-alerts-reference/consul-services-count-decrease.md
       - Supported Standards: supported-standards/index.md
       - Glossary: glossary/index.md
   - How-to:

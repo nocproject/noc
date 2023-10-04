@@ -11,9 +11,17 @@
 <range> ::= <vlan> '-' <vlan>
 ```
 
-## ## Examples
-```
-1
-1-100
-1-100,105,200-210
-```
+## Examples
+* `1-4095` - any VLAN
+* `100-200,300,1000` - VLAN numbers from 100 to 200 (inclusive), as well as 300 and 1000
+* `1` - only VLAN 1
+
+# Settings
+
+The VLAN Filters are located in  `VC` -> `Setup` -> `VC Filter`.
+
+![VC Filter edit form](vc-filter-any-vlan-form.png)
+
+* `Name` - VLAN name
+* `Description` - description
+* `Expression` - VLAN set expression

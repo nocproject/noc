@@ -147,10 +147,10 @@ To initiate metric collection, you must enable polling for metrics. In the *Mana
 
 Metrics for collection are assigned in *group settings*, known as *Profiles*. On the configuration form, you will find a metrics panel with the following settings:
 
-* **Default Interval** (`Metric Default Interval`) - The interval at which metrics are collected. If set to 0, it uses the interval from the [Managed Object Profile](../../concepts/managed-object-profile/index.md) of the device.
+* **Default Interval** (`Metric Default Interval`) - The interval at which metrics are collected. If set to 0, it uses the interval from the [Managed Object Profile](../concepts/managed-object-profile/index.md) of the device.
 * **Maximum Interval Buckets** (`Metrics Interval Buckets`) - The number of nested collection intervals. For more details, see [Metrics Collection Sharding](#metrics-collection-sharding).
 * Metrics for Collection:
-    * **Metric Type** (`MetricType`) - The type of metric to collect. Support should be available from the [SA Profile](../../../dev/sa/sa-profiles.md).
+    * **Metric Type** (`MetricType`) - The type of metric to collect. Support should be available from the [SA Profile](../profiles-reference/index.md).
     * **Store** (`Is Stored`) - Determines whether the metric is saved in the database.
     * **Interval** (`Interval`) - An individual collection interval that overrides the *default interval*.
 

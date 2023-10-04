@@ -47,7 +47,7 @@
 
 ## Описание работы
 
-Настройки класса событий влияют на работу классификатора [classifier](../../../../services-reference/classifier.md), 
+Настройки класса событий влияют на работу классификатора [classifier](../../services-reference/classifier.md), 
 и назначаются на основе правил классификации [Classification Rule](../event-classification-rule/index.md). Если подходящего 
 правила на найдено, то срабатывают правила по умолчанию либо назначается класс `Unknown | Default`:
 

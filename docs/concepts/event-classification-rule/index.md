@@ -45,7 +45,7 @@ Describes the value of an incoming event in the system and also the place to sto
 
 ## Description of Operation
 
-Event class settings affect the operation of the [classifier](../../../../services-reference/classifier.md), 
+Event class settings affect the operation of the [classifier](../../services-reference/classifier.md), 
 and are assigned based on classification rules [Classification Rule](../event-classification-rule/index.md). If no suitable 
 rule is found, default rules are triggered, or the class `Unknown | Default` is assigned:
 
