@@ -1,5 +1,5 @@
 ---
-date: 2023-05015
+date: 2023-05-15
 authors: [dv]
 description: >
     NOC 23.1.3 is released.
