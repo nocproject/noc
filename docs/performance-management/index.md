@@ -174,7 +174,7 @@ In the group settings of an interface [Interface Profile](../concepts/interface-
 
 ![Interface Profile Metrics](interface-profile-metrics1.png)
 
-Interfaces can be found under `Service Activation -> Managed Object -> <ManagedObject> -> Interfaces`. To save time, it is recommended to use the automatic profile assignment mechanism: [Dynamic Classification Policy](../concepts/dynamic-classification-policy/index.md).
+Interfaces can be found under `Service Activation -> Managed Object -> <ManagedObject> -> Interfaces`. To save time, it is recommended to use the automatic profile assignment mechanism: [Dynamic Profile Classification](../concepts/dynamic-profile-classification/index.md).
 
 ## SLA Profile
 
@@ -264,7 +264,7 @@ Metrics marked as **(2)** `Input` are processed as follows:
 
 Adding a new metric involves two steps:
 
-1. Adding the metric's name to the system as a [Metric Type](../reference/metrics/types/index.md).
+1. Adding the metric's name to the system as a [Metric Type](../metrics-reference/index.md).
 2. Adding the metric collection in an [SA Profile](../profiles-reference/index.md).
 
 !!! note

@@ -187,7 +187,7 @@
 
 Сами интерфейсы расположены на кнопке `Управление объектами -> Список объектов -> Форма объекта -> Интерфейсы (Service Activation -> Managed Object -> <ManagedObject> -> Intefaces`.
  Для экономии времения рекомендуется использовать механим автоматического назначения профилей:
- [Dynamic Classification Policy](../concepts/dynamic-classification-policy/index.md)
+ [Dynamic Profile Classification](../concepts/dynamic-profile-classification/index.md)
 
 
 ### Профиль SLA
@@ -297,7 +297,7 @@
 
 Добавление новой метрики проходит в 2 шага:
 
-1. Добавление в систему имени метрики [Metric Type](../reference/metrics/types/index.md)
+1. Добавление в систему имени метрики [Metric Type](../metrics-reference/index.md)
 2. Добавление сбора метрики в профиле [SA Profile](../profiles-reference/index.md)
 
 !!! note

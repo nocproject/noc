@@ -26,7 +26,7 @@
 Слева нажать на значок **плюс** на *левой панели*, по умолчанию это доступно любому пользователю.
 Откроется пустой дашборд. Далее необходимо добавить панели с графиками, переменные и строки.
 
-![Добавление дашборда](image/grafana_add_dashboard.png)
+![Добавление дашборда](grafana_add_dashboard.png)
 
 При добавлении панели необходимо выбрать с каким из датасурсов будет проходить работа
 
@@ -45,7 +45,7 @@
    * Колонка с `timestamp` - `ts`
 3. После станет доступна кнопка перехода к запросу - `Go to Query`
 
-![Запрос графика Clickhouse](image/clickhouse_datasource_query1.png)
+![Запрос графика Clickhouse](clickhouse_datasource_query1.png)
 
 Самый простой способ построить запрос - скопировать из уже построенных дашбордов.
 Устройство (`Managed Object`) выбирается по идентификатору `BI ID`, его можно увидеть в форме 
@@ -81,15 +81,15 @@ GROUP BY t ORDER BY t
 ### JSON Datasource
 
 Используется плагин [simpod-json](https://grafana.com/grafana/plugins/simpod-json-datasource/) 
-и сервис [GrafanaDS](../../services-reference/grafanads.md). 
-Набор данных ограничен доступными через `API` сервиса [GrafanaDS](../../services-reference/grafanads.md), 
+и сервис [GrafanaDS](../services-reference/grafanads.md). 
+Набор данных ограничен доступными через `API` сервиса [GrafanaDS](../services-reference/grafanads.md), 
 но может быть расширен путём добавления новых `target` через [custom](../../dev/custom/index.md).
 
 1. При добавлении панели необходимо выбрать `Datasource` - **NOC-MO-SOURCE**
 2. В выпадающем списке выбираем интересующую метрику (*доступна одна метрика на запрос*)
 3. Заполняем поле запроса, указанные в нём условия попадут в условия (`WHERE`) запроса.
 
-![Запрос графика по загрузке интерфейса](image/grafanads_datasource_query1.png)
+![Запрос графика по загрузке интерфейса](grafanads_datasource_query1.png)
 
 !!! attention
     Значения необходимо всегда заключать в кавычки. JSON обрезает числа больше 32 бит.
@@ -116,14 +116,14 @@ GROUP BY t ORDER BY t
 {"managed_object": "8401354745606300322"}
 ```
 
-![Запрос графика по Аптайму устройства](image/grafanads_datasource_query_uptime_1.png)
+![Запрос графика по Аптайму устройства](grafanads_datasource_query_uptime_1.png)
 
 ## Добавление переменных
 
 Через задание переменных можно шаблонизировать дашборд. Добавление происходит в меню `Variables`, 
 оно доступно через настройки дашборда (шестерёнка справа от кнопки добавления панели). 
 
-![Пример добавления переменной по запросу](image/grafana_variable_example1.png)
+![Пример добавления переменной по запросу](grafana_variable_example1.png)
 
 1. Заполнить поле с именем переменой, по нему она будет доступна для обращения. 
    Тип `Query` позволит обращаться с запросом к `datasource`
@@ -134,8 +134,8 @@ GROUP BY t ORDER BY t
 
 В запросе можно использовать значения других переменных, например добавим переменную `mo_id`
 
-![Переменная MO](image/grafana_mo_id_static_variable.png)
+![Переменная MO](grafana_mo_id_static_variable.png)
 
 И сошлёмся на неё в другой переменной, для запроса интерфейсов. Сылки идут через значок доллара перед именем
 
-![Переменная со ссылкой на другую](image/grafana_variable_interface_example_1.png)
+![Переменная со ссылкой на другую](grafana_variable_interface_example_1.png)
