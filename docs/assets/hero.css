@@ -107,8 +107,13 @@
     text-decoration: underline;
 }
 
+.hero-version a,
 .hero-version a:visited {
     color: #ffffff;
+}
+
+.hero-version a:hover {
+    color: #e67e22;
 }
 
 @keyframes Sway {
