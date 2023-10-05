@@ -4,7 +4,7 @@ hide:
   - navigation
   - toc
 hero:
-    title: NOC
+    title: NOC Project
     subtitle: The NOC is the scalable, high-performance and open-source OSS system for ISP, service and content providers
     install_button: Getting Started
     source_button: Source Code
