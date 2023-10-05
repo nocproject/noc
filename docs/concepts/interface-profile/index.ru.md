@@ -7,7 +7,7 @@
 
 Справочник меток расположен в разделе `Учёт объектов (Inventory)` -> `Setup (Настройки)` -> `Профиль интерфейса (Interface Profile)`.
 
-![](images/interface-profile-edit-form-wnav.png)
+![](interface-profile-edit-form-wnav.png)
 
 * **Описание** (`Description`) - текстовое пояснение
 * **Метки** (`Labels`) - набор меток профиля
@@ -21,18 +21,18 @@
     * Создав(`Create new`)
     * Заменять (`Replace`)
     * Облако (`Cloud`)
-* **Вес аварии** - весовой коэффициент для расчёта веса аварии [Alarm Weight](../../../background/fault-management/index.md#Серьёзность%20и%20Вес)
+* **Вес аварии** - весовой коэффициент для расчёта веса аварии [Alarm Weight](../../fault-management/index.md#Серьёзность%20и%20Вес)
 * **Политика сбора MAC адресов** (`MAC Discovery Policy`)
-    * `Transit` - собирать MAC адреса на интерфейсе (Настройка для опроса [MAC](../discovery-reference/periodic/mac.md))
-    * `Disable` - не собирать MAC адреса на интерфейсе (Настройка для опроса [MAC](../discovery-reference/periodic/mac.md))
-    * `Management VLAN` - собирать MAC с `Management VLAN` (Настройка для опроса [MAC](../discovery-reference/periodic/mac.md))
-    * (`Direct Downlink`) - (Настройка для [xMac](../discovery-reference/box/xmac.md)) порт в сторону соседнего устройства
-    * (`Chained Downlink`) - (Настройка для [xMac](../discovery-reference/box/xmac.md)) порт в сторону промежуточного устройства на пути к конечному
+    * `Transit` - собирать MAC адреса на интерфейсе (Настройка для опроса [MAC](../../discovery-reference/periodic/mac.md))
+    * `Disable` - не собирать MAC адреса на интерфейсе (Настройка для опроса [MAC](../../discovery-reference/periodic/mac.md))
+    * `Management VLAN` - собирать MAC с `Management VLAN` (Настройка для опроса [MAC](../../discovery-reference/periodic/mac.md))
+    * (`Direct Downlink`) - (Настройка для [xMac](../../discovery-reference/box/xmac.md)) порт в сторону соседнего устройства
+    * (`Chained Downlink`) - (Настройка для [xMac](../../discovery-reference/box/xmac.md)) порт в сторону промежуточного устройства на пути к конечному
     * (`Direct Uplink`) - порт в сторону `Direct Downlink` вышестоящего устройства
     * (`Cloud Downlink`) - порт в сторону нескольких `Direct Uplink` соединений, образующих облако
 * **Политика валидации** (`Validation Policy`) - ссылка на политику валидации конфигурации интерфейса (`Interface`) устройства
 * **Политика соединения LAG <-> physical** (`Allow LAG mismatch`) - разрешить связь (`Link`) агрегированного порта `LAG` к физическому
-* **Опрос статуса интерфейса** (`Status Discovery`) - включить опрос статуса [Status Discovery](../discovery-reference/periodic/interfacestatus.md) на интерфейсе
+* **Опрос статуса интерфейса** (`Status Discovery`) - включить опрос статуса [Status Discovery](../../discovery-reference/periodic/interfacestatus.md) на интерфейсе
 * **Уведомление об изменении статуса** (`Status Change Notification`) - ссылка на группу уведомлений, для отправки сообщения об изменении статуса порта (по информации опроса `Interface Status`)
 * **Пользовательский интерфейс** (`User Interface`) - `UNI`, признак пользовательского интерфейса. Может использовать для выборок пользовательских портов
 * **Разрешить автоматическую смену сегмента**
@@ -49,5 +49,3 @@
 * **Integration** интеграцияДанные для интеграции с внешней системой. Заполняются при работе механизма `ETL`
     * **Внешняя система** (`Remote Syste`) - ссылка на внешнюю систему из которой поступил профиль объекта
     * **ID внешней системы** (`Remote ID`) - идентификатор профиля объекта во внешней системе
-
-

@@ -104,7 +104,7 @@ The event looks like this:
 ![SNMP Trap Event](../concepts/event-classification-rule/event_class_rules_snmp_net_link_down_eltex.png)
 
 - `Raw Variables` - variables received from the collector in the `data` field.
-- `Resolved Variables` - variables for which a corresponding [MIB](../concepts/mib/index.md) has been found and added by the classifier. For instance, the variable `profile` was added by the classifier from the device's data (`ManagedObject`).
+- `Resolved Variables` - variables for which a corresponding [MIB](../glossary/index.md#mib) has been found and added by the classifier. For instance, the variable `profile` was added by the classifier from the device's data (`ManagedObject`).
 - `Event Variables` - variables included in the event (configured in the class).
 
 Let's examine the rule under which this event falls (you can find it on the `History` tab):

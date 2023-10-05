@@ -8,7 +8,7 @@ Sometimes it's necessary to reduce the number of documents in MongoDB collection
 
 ### Configuration
 
-To configure this process, you need to specify the settings in `etc/settings.yml` or in KV Consul (`/Root/noc/bi/alarms_archive_policy`) (make sure it is present in [NOC_CONFIG](../../reference/config/index.md#noc_config) in the tower). The settings include:
+To configure this process, you need to specify the settings in `etc/settings.yml` or in KV Consul (`/Root/noc/bi/alarms_archive_policy`) (make sure it is present in [NOC_CONFIG](../config-reference/index.md#noc_config) in the tower). The settings include:
 
 - `4m` – Keep data for 4 months.
 - `5y` – Keep data for 5 years.

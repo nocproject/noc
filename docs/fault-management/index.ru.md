@@ -126,7 +126,7 @@
 ![](../concepts/event-classification-rule/images/event_class_rules_snmp_net_link_down_eltex.png)
 
 * `Raw Variables` - переменные пришедшие из коллектора в поле `data`
-* `Resolved Variables` - переменные для которых нашёлся соответствующий [MIB](../../concepts/mib/index.md) и добавленные классификатором. Например, переменная `profile` была добавлена классификатором (`classifier`) из данных устройства (`ManagedObject`)
+* `Resolved Variables` - переменные для которых нашёлся соответствующий [MIB](../glossary/index.md#mib) и добавленные классификатором. Например, переменная `profile` была добавлена классификатором (`classifier`) из данных устройства (`ManagedObject`)
 * `Event Variables` - переменные попавшие в событие (настраиваются в классе)
 
 Рассмотрим правило, под которое попало данное событие (его можно увидеть на вкладке История `History`):

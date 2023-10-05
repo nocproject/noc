@@ -1,6 +1,6 @@
 # Managed Object Profile
 
-Находятся настройки, применяемые ко всем устройствам, которым назначен профиль.  Основная часть настроек связана с Опросом (`Discovery`) устройства, они общие для всех устройств и настраиваются только через профиль. Остальные настройки дублируют таковые из устройства. 
+Групповые настройки, применяемые ко всем устройствам, которым назначен профиль. Основная часть настроек связана с Опросом (`Discovery`) устройства, они общие для всех устройств и настраиваются только через профиль. Остальные настройки дублируют настройки устройства.
 
 ## Настройки
 
@@ -9,7 +9,7 @@
 ### Common(Общие)
 
 * **Описание** (`Description`) - текстовое пояснение
-* **Уровень** (`Level`) - числовое обозначение положения устройства в [топологической (`Topology`)](../../../background/topology/index.md#Level) иерархии
+* **Уровень** (`Level`) - числовое обозначение положения устройства в топологической (`Topology`) [иерархии](#уровни-иерархии)
 * **Метки** (`Labels`) - набор [Меток](../label/index.md) профиля
 * **Стиль** (`Style`) - стиль записи в таблице устройств (`Managed Object Grid`), в соответствии с ним оформляется строка в таблице
 * **Изображение** (`Shape`) - иконка на топологической карте
@@ -33,7 +33,7 @@
 * **Dynamic Classification Policy** -  Политика назначения профиля 
     * (`Disable`) - Не назначать профиль при сохранении
     * (`By Rule`) - Назначать согласно указанным правилам (`Match Rules`)
-* **Match Rules** - правила назначения профиля [Правила назначение профиля](../dynamic-classification-policy/index.md). Позволяется динамически назначать
+* **Match Rules** - правила назначения профиля [Правила назначение профиля](../dynamic-profile-classification/index.md). Позволяется динамически назначать
 
 ### Access(Доступ)
 
@@ -52,7 +52,7 @@
 
 ### Card(Карточка)
 
-* Карточка (`Card`) - название шаблона [Карточки (`Card`)](../../../../services-reference/card.md), открываемой для `ManagedObject`
+* Карточка (`Card`) - название шаблона [Карточки (`Card`)](../../services-reference/card.md), открываемой для `ManagedObject`
 * Шаблон заголовка карточки (`Card Title Template`) - шаблон для заголовка карточки Устройства `ManagedObject`
 
 
@@ -74,13 +74,12 @@
 * Собирать RTT по Ping (`Report ping RTT`) - собирать метрику `RTT` для проверки доступности
 * Сохранять ошибки в серии (`Report ping attempts`) - сохранять число потерянных пакетов в серии
 
-
 ### FM
 
 * **Политика событий** (`Event Policy`) - политика обработки сообщений FM для устройства
     * (`Enable`) - обрабатывать сообщения FM для устройства
     * (`Disable`) - не обрабатывать сообщения FM для устройства
-* **Вес аварии** (`Alarm Weight`) - настройка для расчёта веса аварии [Alarm Weight](../../../background/fault-management/index.md#Серьёзность%20и%20Вес)
+* **Вес аварии** (`Alarm Weight`) - настройка для расчёта веса аварии [Alarm Weight](../../fault-management/index.md#Серьёзность%20и%20Вес)
 * **Политика архивирования Syslog** (`Syslog Archive Policy`) - отправлять принятые сообщения `Syslog` в архивное хранилище
 * `Merge Downlink` - активировать механизм `Merge Downlink` (!описание)
 
@@ -98,33 +97,33 @@
 * **Проверять при загрузке** (`Check on system start after`) ????????
 * **Проверять при смене конфига** (`Check on config change after`)
 * *Опросы* (`Discovery`) - состав опроса.
-    * [**Профиль** (`Profile`)](../discovery-reference/box/profile.md) - определение рабочего профиля (`SA Profile`) устройство. Ведётся на основе правил `SNMP` из раздела
-    * [**Версия** (`Version`)](../discovery-reference/box/version.md) - сбор версии ПО и платформы с устройства
-    * [(`Caps`)](../discovery-reference/box/caps.md) - сбор возможностей устройства (поддержка SNMP, функционала), информация доступна в разделе `Возможности`
-    * [**Интерфейс** (`Interface`)](../discovery-reference/box/interface.md) - сбор сетевых интерфейсов устройства. 
-    * [(`ID`)](../discovery-reference/box/index.md) - сбор идентификаторов устройства: `hostname` и `MAC` адрес
-    * [**Конфиг** (`Config`)](../discovery-reference/box/config.md) - сбор конфигурации
-    * [(`Asset`)](../discovery-reference/box/asset.md) - сбор состава устройства: платы, шассы, SFP
-    * [(`VLAN`)](../discovery-reference/box/vlan.md) - сбор вланов
-    * [(`MAC`)](../discovery-reference/periodic/mac.md) - сбор MAC адресов. Собираются динамические (`D`) MAC адреса, подпадающие под критерии из раздела `MAC`
-    * [(`CPE Status`)](../discovery-reference/periodic/cpestatus.md)
+    * [**Профиль** (`Profile`)](../../discovery-reference/box/profile.md) - определение рабочего профиля (`SA Profile`) устройство. Ведётся на основе правил `SNMP` из раздела
+    * [**Версия** (`Version`)](../../discovery-reference/box/version.md) - сбор версии ПО и платформы с устройства
+    * [(`Caps`)](../../discovery-reference/box/caps.md) - сбор возможностей устройства (поддержка SNMP, функционала), информация доступна в разделе `Возможности`
+    * [**Интерфейс** (`Interface`)](../../discovery-reference/box/interface.md) - сбор сетевых интерфейсов устройства. 
+    * [(`ID`)](../../discovery-reference/box/index.md) - сбор идентификаторов устройства: `hostname` и `MAC` адрес
+    * [**Конфиг** (`Config`)](../../discovery-reference/box/config.md) - сбор конфигурации
+    * [(`Asset`)](../../discovery-reference/box/asset.md) - сбор состава устройства: платы, шассы, SFP
+    * [(`VLAN`)](../../discovery-reference/box/vlan.md) - сбор вланов
+    * [(`MAC`)](../../discovery-reference/periodic/mac.md) - сбор MAC адресов. Собираются динамические (`D`) MAC адреса, подпадающие под критерии из раздела `MAC`
+    * [(`CPE Status`)](../../discovery-reference/periodic/cpestatus.md)
     * **Аварии** (`Alarm`) - синхронизация с авариями на устройстве
-    * [**Метрики** (`Metrics`)](../discovery-reference/periodic/metrics.md) - сбор настроенных метрик
+    * [**Метрики** (`Metrics`)](../../discovery-reference/periodic/metrics.md) - сбор настроенных метрик
 * *Топология* (`Topology`) - состав собираемых методов построения связи (топологии)
-    * [**NRI**](../discovery-reference/box/nri.md)
-    * [**BFD**](../discovery-reference/box/bfd.md)
-    * [**CDP**](../discovery-reference/box/cdp.md)
-    * [**Huawei NDP**](../discovery-reference/box/huawei_ndp.md)
+    * [**NRI**](../../discovery-reference/box/nri.md)
+    * [**BFD**](../../discovery-reference/box/bfd.md)
+    * [**CDP**](../../discovery-reference/box/cdp.md)
+    * [**Huawei NDP**](../../discovery-reference/box/huawei_ndp.md)
     * **MikroTik NDP**
-    * [**FDP**](../discovery-reference/box/fdp.md)
-    * [**LLDP**](../discovery-reference/box/lldp.md)
-    * [**OAM**](../discovery-reference/box/oam.md)
-    * [**REP**](../discovery-reference/box/rep.md)
-    * [**STP**](../discovery-reference/box/stp.md)
-    * [**UDLD**](../discovery-reference/box/udld.md)
-    * [**LACP**](../discovery-reference/box/lacp.md)
+    * [**FDP**](../../discovery-reference/box/fdp.md)
+    * [**LLDP**](../../discovery-reference/box/lldp.md)
+    * [**OAM**](../../discovery-reference/box/oam.md)
+    * [**REP**](../../discovery-reference/box/rep.md)
+    * [**STP**](../../discovery-reference/box/stp.md)
+    * [**UDLD**](../../discovery-reference/box/udld.md)
+    * [**LACP**](../../discovery-reference/box/lacp.md)
     * **xMAC**
-    * [**ifDesc**](../discovery-reference/box/ifdesc.md)
+    * [**ifDesc**](../../discovery-reference/box/ifdesc.md)
     * **Cache Neighbor** - система сохраняет на заданный интервал соседей устройства. Пока не пройдёт интервал для проверки соседства будет использоваться сохранённая во время предыдущего опроса информация
 * *ifDesc Policy* - настройки для линковки по Дескрипшенам интерфейсов (`ifDesc`)
     * (`Symmetric Check`) - требовать симметричного (двухстороннего) подтверждения линка
@@ -138,7 +137,7 @@
         * `Ignore&Stop` - игнорировать и остановить опрос
         * `Raise Alarm` - поднять аварию (!Alarm Class)
         * `Raise Alarm&Stop` - поднять аварию и остановить опрос
-* [*IPAM (VPN)*](../discovery-reference/box/vrf.md) - Наполнение `VRF` в `IPAM`, активируется если отмечена одна из опций
+* [*IPAM (VPN)*](../../discovery-reference/box/vrf.md) - Наполнение `VRF` в `IPAM`, активируется если отмечена одна из опций
     * Интерфейс (`Interface`) - использовать `VRF` из опроса `Interface` (должен быть активирован)
     * MPLS - использовать `VRF` напрямую с устройства
     * ConfDB - использовать `VRF` из конфигурации устройства (должна быть поддержка (`ConfDB`))
@@ -154,13 +153,13 @@
     * ConfDB - использовать адреса (`Address`) из конфигурации устройства - должна быть поддержка (`ConfDB`)
 * *Clear links*
     * **On platform change** - удалять линки устройства при изменении платформы (`Platform`)
-* [SLA](../discovery-reference/box/sla.md) - собирать SLA пробы с устройства (необходима поддержка со стороны адаптера)
-* [CPE Status](../discovery-reference/periodic/cpestatus.md) - собирать оперативный статус CPE с контроллера
+* [SLA](../../discovery-reference/box/sla.md) - собирать SLA пробы с устройства (необходима поддержка со стороны адаптера)
+* [CPE Status](../../discovery-reference/periodic/cpestatus.md) - собирать оперативный статус CPE с контроллера
 * (`CPE`) - собирать устройства `CPE` с контроллера
 * *NRI* - Опросы по интеграции с внешней системой
-    * **Привязка портов** [Portmapper](../../../../dev/etl/index.md#Portmapper) - маппинг сетевых интерфейсов с портами внешней системы (необходима реализация адаптера)
+    * **Привязка портов** [Portmapper](../../dev/etl/index.md#Portmapper) - маппинг сетевых интерфейсов с портами внешней системы (необходима реализация адаптера)
     * **Привязка сервисов к портам** (`Service Binding`) - осуществлять привязку сервисов к интерфейсам
-* *Housekeeping* - активировать механизм [HK Check](../discovery-reference/box/hk.md)
+* *Housekeeping* - активировать механизм [HK Check](../../discovery-reference/box/hk.md)
 * *Discovery Alarm* - 
     * **Аварий при опросе** (`Box Alarm`)
         * Включить (`Enable`) - включить создание аварий по полному опросу
@@ -177,12 +176,12 @@
     * Всегда (`Always Run`)
 * **Интервал** (`Interval, sec`) - интервал запуска опроса
 * *Опросы* (`Discovery`) - состав опроса
-    * [Uptime](../discovery-reference/periodic/uptime.md)
-    * [Interface status](../discovery-reference/periodic/interfacestatus.md)
-    * [CPE status](../discovery-reference/periodic/cpestatus.md)
-    * [MAC](../discovery-reference/periodic/mac.md)
-    * [Alarms](../discovery-reference/periodic/alarms.md)
-    * [Metrics](../discovery-reference/periodic/metrics.md)
+    * [Uptime](../../discovery-reference/periodic/uptime.md)
+    * [Interface status](../../discovery-reference/periodic/interfacestatus.md)
+    * [CPE status](../../discovery-reference/periodic/cpestatus.md)
+    * [MAC](../../discovery-reference/periodic/mac.md)
+    * [Alarms](../../discovery-reference/periodic/alarms.md)
+    * [Metrics](../../discovery-reference/periodic/metrics.md)
 * *Discovery Alarm* - 
     * **Аварий при опросе** (`Box Alarm`)
         * Включить (`Enable`) - включить создание аварий по полному опросу
@@ -194,7 +193,7 @@
 
 Настройки сбора и обработки конфигурации оборудования
 
-![](images/mop_form_config_tab_open.png)
+![](mop_form_config_tab_open.png)
 
 > Описание (Механизм работы с конфигурацией)
 
@@ -235,7 +234,7 @@
 
 Таблица настроенных метрик. Назначенная метрика должна быть поддержана профилем (`SA Profile`)
 
-* [**Тип метрики** (`Metric Type`)](../../metrics/types/index.md) - собираемая метрика
+* [**Тип метрики** (`Metric Type`)](../../metrics-reference/index.md) - собираемая метрика
 * (`Box`) - собирать метрику во время полного опроса (`Box Discovery`)
 * (`Periodic`) - собирать метрику во время периодического опроса (`Periodic Discovery`)
 * (`Is Stored`) - сохранять метрику в базу
@@ -274,3 +273,44 @@
 ## MatchLabel
 
 Профили объекта создаёт служебную метку `noc::managedobjectprofile::<name>::=`
+
+## Уровни иерархии
+
+| Role                   | Level     |
+| ---------------------- | --------- |
+| **Client's Equipment** | **10-19** |
+| CPE                    | 15        |
+| **Access Level**       | **20-29** |
+| VPN Server             | 22        |
+| WiFi Access Point      | 22        |
+| Media Gateway          | 23        |
+| Access Switch          | 25        |
+| **Aggregation Level**  | **30-39** |
+| WiFi Controller        | 35        |
+| Aggregation Switch     | 38        |
+| **City Core**          | **40-49** |
+| L3 switch/router       | 42        |
+| BRAS                   | 44        |
+| MPLS PE                | 44        |
+| MPLS P                 | 46        |
+| ASBR                   | 48        |
+| **Regional Core**      | **50-59** |
+| L3 switch/router       | 52        |
+| MPLS PE                | 54        |
+| MPLS P                 | 56        |
+| ASBR                   | 58        |
+| **Macroregional Core** | **60-69** |
+| L3 switch/router       | 62        |
+| MPLS PE                | 64        |
+| MPLS P                 | 66        |
+| ASBR                   | 68        |
+| **National-wide Core** | **70-79** |
+| L3 switch/router       | 72        |
+| MPLS PE                | 74        |
+| MPLS P                 | 76        |
+| ASBR                   | 78        |
+| **World-wide Core**    | **70-79** |
+| L3 switch/router       | 82        |
+| MPLS PE                | 84        |
+| MPLS P                 | 86        |
+| ASBR                   | 88        |

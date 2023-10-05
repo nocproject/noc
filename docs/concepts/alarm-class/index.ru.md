@@ -55,7 +55,7 @@
 
 ## Описание работы
 
-Настройки класса аварии влияют на работу классификатора [correlator](../../../../services-reference/correlator.md), 
+Настройки класса аварии влияют на работу классификатора [correlator](../../services-reference/correlator.md), 
 
 
 

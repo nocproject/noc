@@ -58,6 +58,10 @@ LLDP
 !!! todo
      Describe
 
+
+MIB
+: Management information base
+
 NDP (Huawei)
 : Describe
 
