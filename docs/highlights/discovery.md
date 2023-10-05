@@ -33,3 +33,7 @@ Discovery process performs a lot of tasks:
 Discovery process maintains separate schedules for each managed object.
 Tasks are evenly separated upon the time, eliminating high spikes
 of network management traffic.
+
+## See Also
+
+* [Discovery Reference](../discovery-reference/index.md)

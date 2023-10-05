@@ -957,6 +957,7 @@ nav:
           Discovery: highlights/discovery.md
           Network Automation: highlights/network-automation.md
           Inventory: highlights/inventory.md
+          Configuration Management: highlights/configuration-management.md
           Fault Management: highlights/fault-management.md
           Performance Management: highlights/performance-management.md
           Service Activation: highlights/service-activation.md
