@@ -30,3 +30,8 @@ storages using FTP, SCP, S3.
 
 NOC integration API is widely used for modelling, data quality management (DQM),
 data reconciliation (DR), Service Quality Management (SQM).
+
+## See Also
+
+* [NBI API Reference](../nbi-api-reference/index.md)
+* [DataStream API Reference](../datastream-api-reference/index.md)
