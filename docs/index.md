@@ -9,35 +9,11 @@ hero:
     install_button: Getting Started
     source_button: Source Code
 highlights:
-  - title: Vendor-agnostic
-    description: >
-      Break free from vendor limitations. With support for 100+ vendors and ongoing expansion, 
-      experience true vendor-agnostic solutions for flexible network management
-    link: vendor-agnostic
-  - title: Open-source
-    description: >
-      Embrace the power of open source. NOC is distributed under the BSD License,
-      fostering collaboration within a vibrant and extensive community
-    link: open-source
-  - title: Microservices Architecture
-    description: >
-      Microservices architecture with flexible processing pipelines 
-      offers great amount of flexibility, customization and load balancing.
-    link: microservices
-  - title: Webscale
-    description: >
-      Scale as you go. Starting from simple single-node installation
-      and up to clusters controlling world’s largest networks with a million of objects.
-    link: webscale
-  - title: Big Data
-    description: >
-      Introduces Big Data analysis to the Network Management. 
-      Builtin analytics database and provided BI tools allows to
-    link: big-data
   - title: Discovery
     description: >
-      Sophisticated multi-protocol network topology discovery.
-      Configuration and resource usage discovery.
+      Advanced network topology discovery across multiple protocols, 
+      including configuration and resource usage. It ensures synchronization between 
+      your inventory and the network's real-time state, providing accurate insights and control.    
     link: discovery
   - title: Inventory
     description: >
@@ -46,6 +22,12 @@ highlights:
       logical resources (IP, VLAN, Phone Numbers) usage as well.
       IP address planning via IPAM
     link: inventory
+  - title: Configuration Management
+    description: >
+      Streamlines network configuration control. It automates backups, tracks changes, 
+      and ensures compliance. With versioning and rollback features, it simplifies updates, 
+      enhancing network reliability and security.
+    link: configuration-management
   - title: Fault Management
     description: >
       Root Cause Analysis, topology correlation, escalation.
@@ -75,6 +57,31 @@ highlights:
       ETL interface allows to import data from existing systems.
       DataStream API and NBI interfaces provide services to other system.
     link: integration
+  - title: Vendor-agnostic
+    description: >
+      Break free from vendor limitations. With support for 100+ vendors and ongoing expansion, 
+      experience true vendor-agnostic solutions for flexible network management
+    link: vendor-agnostic
+  - title: Open-source
+    description: >
+      Embrace the power of open source. NOC is distributed under the BSD License,
+      fostering collaboration within a vibrant and extensive community
+    link: open-source
+  - title: Microservices Architecture
+    description: >
+      Microservices architecture with flexible processing pipelines 
+      offers great amount of flexibility, customization and load balancing.
+    link: microservices
+  - title: Webscale
+    description: >
+      Scale as you go. Starting from simple single-node installation
+      and up to clusters controlling world’s largest networks with a million of objects.
+    link: webscale
+  - title: Big Data
+    description: >
+      Introduces Big Data analysis to the Network Management. 
+      Builtin analytics database and provided BI tools allows to
+    link: big-data    
 ---
 Welcome to the NOC! 
 

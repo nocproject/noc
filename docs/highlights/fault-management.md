@@ -18,3 +18,7 @@ Each stage processing by different set of [microservices](microservices.md),
 allowing to adjust amount of workers according your actual workload. Multi-stage
 processing allows to focus monitoring staff to fix only actual problems
 which causes service degradation.
+
+# See Also
+
+* [Fault Management](../fault-management/index.md)
