@@ -1,0 +1,12 @@
+---
+date: 2022-09-10
+authors: [dv]
+description: >
+    NOC 22.1.3 is released.
+categories:
+    - General
+---
+
+# NOC 22.1.3
+
+22.1.3 release contains [29](https://code.getnoc.com/noc/noc/merge_requests?scope=all&state=merged&milestone_title=22.1.3) bugfixes, optimisations and improvements.

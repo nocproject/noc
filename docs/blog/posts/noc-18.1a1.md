@@ -1,7 +1,12 @@
 ---
 date: 2018-09-12
+authors: [dv]
+description: >
+    NOC 18.1.a1 is released.
+categories:
+    - General
 ---
-In accordance to our [Release Policy](/blog/2018/09/12/new-release-policy/)
+In accordance to our [Release Policy](/release-policy/)
 we're starting generation of 18.1 releases.
 
 _microservices_ branch has been forked from main tree about 3 years ago
@@ -38,6 +43,6 @@ and 18.1 will be marked.
 
 The users of _microservices_ is urged to upgrage if they choose 18.1
 for stability. The users of elder releases are asked to join
-[Telegram Channel](/features/opensource/) and ask the [DevTeam](/devteam/)
+[Telegram Channel](/features/opensource/) and ask the DevTeam
 to help with migration.
 

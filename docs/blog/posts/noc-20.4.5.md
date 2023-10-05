@@ -1,0 +1,13 @@
+---
+date: 2021-11-24
+authors: [dv]
+description: >
+    NOC 20.4.5 is released.
+categories:
+    - General
+---
+In accordance to our [Release Policy](/release-policy/)
+we're proudly present release [20.4.5](https://code.getnoc.com/noc/noc/tags/20.4.5).
+
+20.4.5 release contains [39](https://code.getnoc.com/noc/noc/merge_requests?scope=all&state=merged&milestone_title=20.4.5)
+bugfixes, optimisations and improvements.
