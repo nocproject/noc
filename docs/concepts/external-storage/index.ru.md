@@ -24,8 +24,8 @@
 * Описание (`Description`) 
 * **URL** (`URL`) - 
 * **Тип** (`Type`) - назначение, где в системе может использоваться хранилище:
-    * `Config Upload` - используется для поиска конфигурации оборудования [Download Config](../../../background/configuration-management/index.md#Сбор_конфигурации)
-    * `Config Mirror` - используется для зеркалирования конфигурации оборудования [Config Mirror](../../../background/configuration-management/index.md#Обработка)
+    * `Config Upload` - используется для поиска конфигурации оборудования [Download Config](../../configuration-management/index.md#Сбор_конфигурации)
+    * `Config Mirror` - используется для зеркалирования конфигурации оборудования [Config Mirror](../../configuration-management/index.md#Обработка)
     * `Beef` - Хранение файлов тушёнки (`Beef`)
     * `Beef Test` - хранение файлов тестирование адаптеров
     * `Beef Test Config` - хранение 

@@ -22,7 +22,7 @@
 
 ![](tower-create-dc.png)
 
-## Скачать новые файлы плейбуков для установки [(Pools)](../../../concepts/pool/index.md)
+## Скачать новые файлы плейбуков для установки [(Pools)](../concepts/pool/index.md)
 
 1. `Environments` → `Pull`
 2. Дожидаемся уведомления `Pull complete`

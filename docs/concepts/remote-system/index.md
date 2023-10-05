@@ -10,7 +10,7 @@ In NOC, basic ETL functionality is implemented, allowing you to extract data fro
 * Authentication Profiles (`Auth profile`)
 * Services [Services](../service/index.md)
 * Subscribers [Subscribers](../subscriber/index.md)
-* Links - for establishing connections based on external system data [NRI](../discovery-reference/box/nri.md)
+* Links - for establishing connections based on external system data [NRI](../../discovery-reference/box/nri.md)
 * Resource Groups [Resource Group](../resource-group/index.md)
 
 Briefly, the mechanism works as follows:
