@@ -45,8 +45,8 @@ class NPkg(object):
         with open(self.config) as f:
             cfg = json.load(f)
         url = urlparse(cfg["url"])
-        cdn = urlparse(self.CDN)
-        if url.netloc != cdn.netloc:
+        if self.CDN:
+            cdn = urlparse(self.CDN)
             url = url._replace(scheme=cdn.scheme, netloc=cdn.netloc)
         self.url = urlunparse(url)
         self.required_versions = {}
