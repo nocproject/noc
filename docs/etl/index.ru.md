@@ -1,32 +1,25 @@
----
-tags:
-  - reference
-  - api
----
 # ETL
 
-## Описание механизма
-
 Получение инвентарной информации из внешней системы позволяет автоматизировать добавление оборудования и настройку НОКа. 
-Для этого в составе системы предусмотрена поддержка механизма `ETL`. Основная применяемая терминология:
+Для этого в составе системы предусмотрена поддержка механизма `ETL` (Extract-Transfer-Load). Основная применяемая терминология:
 
-* Внешняя система [Remote System](../../concepts/remote-system/index.md) - источник данных для работы ETL
+* Внешняя система [Remote System](../concepts/remote-system/index.md) - источник данных для работы ETL
 * `Extractor` - Адаптер *выгрузки*, модуль на `Python` отвечающий за извлечение информации из `Внешней системы`, преобразование её к необходимому для работы формату
 * `Loader` - адаптер *загрузки*. Создаёт сущности в НОКе и формирует файл привязки (`mapping file`)
 * `mappings` формирует привязку между ID системам (ID НОКа <> ID внешней системы)
 * `DataModel` (Модель данных) - описание состава и структуры данных для работы загрузчика
 * `Model` - модель данных НОКа, с которой работает загручзчик
 
-Для взаимодействия с `ETL` предусмотрена команда `./noc elt`, при её запуске по базовому пути (`/var/lib/noc/import/`) 
+Для взаимодействия с `ETL` предусмотрена команда `./noc etl`, при её запуске по базовому пути (`/var/lib/noc/import/`) 
 создаётся структура папок в составе:
 
 * `import.jsonl.gz` - файл с новой выгрузкой
 * `archive` - папка с файлами предыдущих выгрузок
 * `mappings.csv` - файл соответствия ID внешней системы <-> ID НОКа
-* `import.csv.rej.gz` - файл с записями ошибок выгрузки
+* `import.csv.rej.gz` - файл с записями ошибок выгрузки (отсев)
 
 ```
-/var/lib/noc/import/<RemoveSystemName>/
+/var/lib/noc/import/<RemoteSystemName>/
 ├── administrativedomain
 │   ├── archive
 │   ├── import.jsonl.gz
@@ -68,12 +61,13 @@ tags:
 
 <!-- prettier-ignore -->
 !!! info
-    Путь `/var/lib/noc/import` задаётся настройкой `path` -> `etl_import`
+
+    Путь `/var/lib/noc/import` задаётся настройкой [path.etl_import](../config-reference/path.md#etl_import)
 
 Кратко работа механизм выглядит следующим образом:
 
-1. Реализуется **адаптера выгрузки** (`extractor`). Его задача - получить данные из **внешней системы** и отдать в виде списка полей, определённых в `загрузчике`. Подробнее см главу `Загрузка`
-2. В интерфейсе настраивается [Внешняя система](../../concepts/remote-system/index.md) и выбираются реализованные `загрузчики`
+1. Реализуется **адаптер выгрузки** (`extractor`). Его задача - получить данные из **внешней системы** и отдать в виде списка полей, определённых в `загрузчике`. Подробнее см главу [Загрузка](#загрузчик-loader)
+2. В интерфейсе настраивается [Внешняя система](../concepts/remote-system/index.md) и выбираются реализованные `загрузчики`
 3. После настройки даётся команда `./noc etl extract <remote_system_name>`. Происходит извлечение информации из внешней системе (при помощи адаптера, написанного на шаге 1). Всё складывается в файлы `import.csv.gz` в директории `/var/lib/noc/import/<remote_system_name>/<loader_name>/import.csv.gz`
 4. Командой `./noc etl check <remote_system_name>` проверяем целостность выгрузки
 5. Командой `./noc etl diff <remote_system_name>` смотрим изменения относительно предыдущего файла выгрузки. В первым раз все объекты будут показаны как новые.
@@ -82,15 +76,13 @@ tags:
 После окончания файл `import.csv.gz` перемещается в папку `/var/lib/noc/import/<remote_system_name>/<loader_name>/archive/import_date.csv.gz` и файл `mappings.csv` дополняется связкой: `ID внешней системы` <-> `ID НОКа`. 
 Также поля объектов `Remote System`, `Remote ID` - заполняются выгрузкой.
 
-
 ## Поддерживаемые модели
 
 Для каждой из доступных сущностей системы описывается модель данных. В ней указывается поля и тип данных, доступные 
 для выгрузки. Применяется библиотека [PyDantic](https://pydantic-docs.helpmanual.io). Модель расположены в папке `<noc_base>/core/etl/models`. 
 Наследуются от базового класса `BaseModel`, для полей связи друг с другом используется тип `Reference`. Необязательные обозначаются как `Optional`:
 
-```python
-
+``` python
 class AdministrativeDomain(BaseModel):
     id: str
     name: str
@@ -98,9 +90,7 @@ class AdministrativeDomain(BaseModel):
     default_pool: Optional[str]
 
     _csv_fields = ["id", "name", "parent", "default_pool"]
-
 ```
-
 
 ## Адаптер выгрузки
 
@@ -133,8 +123,6 @@ class ZBAdministrativeDomainExtractor(BaseExtractor):
     name = "administrativedomain"
     model = AdministrativeDomain
     data = [["zb.root", u"Заббикс", None]]
-
-
 ```
 
 В начале описывается класс внешней системы - `ZBRemoteSystem`, он будет указан в ссылке на адаптер (`Handler`) настроек. 
@@ -152,7 +140,6 @@ class ZBAdministrativeDomainExtractor(BaseExtractor):
   * `MySQL` - организует взаимодействие с `MySQL` путём указания SQL запроса в аттрибуте `SQL`. Требует библиотеку `pymsql`
   * `FIAS`
 
-
 Выгрузка запускается командой `./noc etl extract REMOTE_SYSTEM_NAME <EXTRACTOR_NAME>`, где:
 
 * `REMOTE_SYSTEM_NAME` - имя внешней системы, указанное на предыдущем шаге
@@ -160,8 +147,7 @@ class ZBAdministrativeDomainExtractor(BaseExtractor):
 
 Данные укладываются в файл `import.csv` в папку, соответствующую имени модели системы
 При этой команде произойдёт подключение к внешней системе, забор информации с неё и формирование файлов `import.csv` 
-по пути: `etl_path/remote_system_name/loader_name/`
-
+по пути: `<etl_path>/<remote_system_name>/<loader_name>/`
 
 ### Расчёт изменений и проверка целостности данных
 
@@ -223,7 +209,6 @@ networksegmentprofile |        1 |        0 |        0
 managedobjectprofile |        2 |        0 |        0
 
 ```
-
 
 ## Загрузчик (Loader)
 
@@ -287,6 +272,7 @@ class ManagedObjectLoader(BaseLoader):
 
 <!-- prettier-ignore -->
 !!! warning
+
     Важно понимать, что изменения вычисляются относительно предыдущей загрузки (предыдущего состояния) из внешней системы. По этой причине, если внести изменения по полю в НОКе - загрузка эти изменения не откатит. Также, если потерять архивные файлы по последней выгузке, то все объекты будут пересозданы.
 
 
@@ -294,4 +280,3 @@ class ManagedObjectLoader(BaseLoader):
 
 Специальный адаптер, в котором описываются правила привязки портов во внешней системе к интерфейсам `ManagedObject` в НОК. 
 Используется в линковке по данным внешней системы [portmapper](../discovery-reference/box/nri.md)
-

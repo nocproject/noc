@@ -947,6 +947,7 @@ nav:
       - Fault Management: fault-management/index.md
       - Performance Management: performance-management/index.md
       - Peering Management: peering-management/index.md
+      - ETL: etl/index.md
       - NOC Products Highlights:
           Overview: highlights/index.md
           Vendor-Agnostic: highlights/vendor-agnostic.md
