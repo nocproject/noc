@@ -949,20 +949,22 @@ nav:
       - Peering Management: peering-management/index.md
       - ETL: etl/index.md
       - NOC Products Highlights:
-          Overview: highlights/index.md
-          Vendor-Agnostic: highlights/vendor-agnostic.md
-          Open-source: highlights/opensource.md
-          Microservices Architecture: highlights/microservices.md
-          Web-Scale: highlights/webscale.md
-          Big Data: highlights/big-data.md
-          Discovery: highlights/discovery.md
-          Network Automation: highlights/network-automation.md
-          Inventory: highlights/inventory.md
-          Configuration Management: highlights/configuration-management.md
-          Fault Management: highlights/fault-management.md
-          Performance Management: highlights/performance-management.md
-          Service Activation: highlights/service-activation.md
-          Integration: highlights/integration.md
+          - Overview: highlights/index.md
+          - Vendor-Agnostic: highlights/vendor-agnostic.md
+          - Open-source: highlights/opensource.md
+          - Microservices Architecture: highlights/microservices.md
+          - Web-Scale: highlights/webscale.md
+          - Big Data: highlights/big-data.md
+          - Discovery: highlights/discovery.md
+          - Network Automation: highlights/network-automation.md
+          - Inventory: highlights/inventory.md
+          - Configuration Management: highlights/configuration-management.md
+          - Fault Management: highlights/fault-management.md
+          - Performance Management: highlights/performance-management.md
+          - Service Activation: highlights/service-activation.md
+          - Integration: highlights/integration.md
+  - Blog:
+      - blog/index.md
   - Releases:
       - NOC Release and Tagging Policy: release-policy/index.md
       - NOC 23.1 Generation:
@@ -1145,15 +1147,16 @@ markdown_extensions:
           format: !!python/name:pymdownx.superfences.fence_code_format
 watch:
   - docs/
-  - collections/inv.connectiontypes/
+  - mkdocs.yml
 plugins:
   - search
   - macros:
       module_name: macros
       on_error_fail: true
-  # - gen-files:
-  #     scripts:
-  #       - scripts/docs/gen-connection-types-reference.py
+  - blog:
+      blog_dir: blog/
+      post_url_date_format: yyyy
+      post_url_format: "{date}-{slug}"
   - literate-nav:
       nav_file: __SUMMARY__
   - i18n:
