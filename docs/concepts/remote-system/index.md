@@ -15,7 +15,7 @@ In NOC, basic ETL functionality is implemented, allowing you to extract data fro
 
 Briefly, the mechanism works as follows:
 
-1. The extraction adapter [extractor](../../../../dev/etl/index.md) is implemented. Its task is to obtain data from the external system and provide it in the form of a list of fields defined in the `loader` [Loader](../../../../dev/etl/index.md).
+1. The extraction adapter [extractor](../../etl/index.md) is implemented. Its task is to obtain data from the external system and provide it in the form of a list of fields defined in the `loader` [Loader](../../etl/index.md).
 2. Configure the 'External System' and select the implemented 'loaders' in the interface.
 3. After configuration, execute the command `./noc etl extract <remote_system_name>`. This extracts information from the external system (using the adapter written in step 1). Everything is stored in the 'import.csv.gz' files in the '/var/lib/noc/import/<remote_system_name>/<loader_name>/import.csv.gz' directory.
 4. Use the command `./noc etl check <remote_system_name>` to check the integrity of the extraction.
@@ -36,7 +36,7 @@ Configuration starts in the 'Main' -> 'Setup' -> 'Remote Systems' menu. After cl
 
 * Name - the name of the external system. It will be used when working with the 'ETL' command. It is advisable to choose a short name without spaces.
 * Description - description (some text).
-* Handler - a reference to the [extraction adapter](../../../../dev/etl/index.md) as a Python import string.
+* Handler - a reference to the [extraction adapter](../../etl/index.md) as a Python import string.
   > Example: 'noc.custom.etl.extractors.zabbix.ZBRemoteSystem' assumes that the file is located in the [custom](../../../../dev/custom/index.md) folder at the path '<custom_folder>/etl/extractor/zabbix.py'.
 * Extractors/Loaders - a list of available models for loading. *Requires implementation in the adapter.*
 * Environment - adapter loading settings (passed to it during operation).

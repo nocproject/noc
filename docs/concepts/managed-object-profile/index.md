@@ -156,7 +156,7 @@ Settings for schedule and composition of discovery.
 * [CPE Status](../../discovery-reference/periodic/cpestatus.md) - collect operational CPE status from the controller.
 * (CPE) - collect `CPE` devices from the controller.
 * NRI - Integration queries with an external system.
-    * Port Mapping [Portmapper](../../dev/etl/index.md#Portmapper) - mapping network interfaces with ports in an external system (adapter implementation required).
+    * Port Mapping [Portmapper](../../etl/index.md#portmapper) - mapping network interfaces with ports in an external system (adapter implementation required).
     * Service Binding - bind services to interfaces.
 * Housekeeping - activate the [HK Check](../../discovery-reference/box/hk.md) mechanism.
 * Discovery Alarm
