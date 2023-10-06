@@ -35,7 +35,7 @@ filters on services and subscribers were also added.
 *Run Commands* interface was simplified. Left panel became hidden
 and working area was enlarged.
 List of objects can be modified directly from commands panel.
-Configurable command logging option was added to {{<doc service-mrt>}}mrt{{</doc>}}
+Configurable command logging option was added to [mrt](../../services-reference/mrt.md)
 service.
 
 ## Alarm acknowledgement
@@ -48,23 +48,23 @@ Our first priority is clean up and document API to be used
 by external systems to communicate with NOC.
 
 ### NBI
-A new {{<doc services-nbi>}}NBI Service{{</doc>}} has introduced. nbi service
+A new [NBI](../../services-reference/nbi.md) Service has introduced. nbi service
 is the host for Northbound Interface API, allowing to access NOC's data
 from upper-level system.
 
-{{<doc api-nbi-objectmetrics>}}objectmetrics API{{</doc>}} for
+[objectmetrics API](../../nbi-api-reference/objectmetrics.md) for
 requesting metrics has introduced
 
 ### DataStream
-{{<doc services-datastream>}}DataStream service{{</doc>}} got a lots of
+[DataStream service](../../services-reference/datastream.md) got a lots of
 improvements:
 
-* {{<doc api-datastream-alarm>}}alarm datastream{{</doc>}} for realtime alarm status streaming
-* {{<doc api-datastream-managedobject>}}managedobject datastream{{</doc>}} got *asset* part
+* [alarm datastream](../../datastream-api-reference/alarm.md) for realtime alarm status streaming
+* [managedobject datastream](../../datastream-api-reference/managedobject.md) got *asset* part
   containing hardware inventory data
 
 ### API Key ACL
-{{<doc reference-apikey>}}API Key{{</doc>}} got and additional ACL,
+[API Key](../../concepts/apikey/index.md) got and additional ACL,
 allowing to restrict source addresses for particular keys.
 
 ## Threshold Profiles
@@ -83,7 +83,7 @@ unnecessary flapping.
 ## Syslog archiving
 Starting from 19.1 NOC can be used as long-term syslog archive solution.
 ManagedObjectProfile got additional *Syslog Archive Policy* setting.
-When enabled, {{<doc service-syslogcollector>}}syslogcollector{{</doc>}}
+When enabled, [syslogcollector](../../services-reference/syslogcollector.md)
 service mirrors all received syslog messages to long-term analytic
 ClickHouse database. ClickHouse supports replication, enforces
 transparent compression and has very descent IOPS requirements,
@@ -168,8 +168,8 @@ We'll make decision to make or not to make it default cache backend
 after testing period. 
 
 ### SO_REUSEPORT & SO_FREEBIND for collectors
-{{<doc service-syslogcollector>}}syslogcollector{{</doc>}} and
-{{<doc service-trapcollector>}}trapcollector{{</doc>}} services
+[syslogcollector](../../services-reference/syslogcollector.md) and
+[trapcollector](../../services-reference/trapcollector.md) services
 supports `SO_REUSEPORT` and `SO_FREEBIND` options for listeners.
 
 `SO_REUSEPORT` allows to share single port by several collector'
@@ -204,7 +204,7 @@ several improvements to GridVCS subsystem.
 
 ## API improvements
 ### profile.py
-{{<doc profiles>}}SA profiles{{</doc>}} used to live in `__init__.py`
+[SA profiles](../../profiles-reference/index.md) used to live in `__init__.py`
 file. Our code style advises to keep `__init__.py` empty for various
 reason. Some features like profile loading from `custom` will not
 work with `__init__.py` anyway.
