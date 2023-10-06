@@ -41,10 +41,10 @@
 
 | Источник                                                       | Активный  | Протокол | Класс события                                                                                                                     | класс аварии                                                      |
 | -------------------------------------------------------------- | --------- | -------- | --------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------- |
-| [ping](../services-reference/ping.md)                          | {{ yes }} | ICMP     | -                                                                                                                                 | `NOC                                                              |  | Managed Object |  | Ping Failed` |
+| [ping](../services-reference/ping.md)                          | {{ yes }} | ICMP     | -                                                                                                                                 | `NOC  |  | Managed Object |  | Ping Failed`                       |
 | [trapcollector](../services-reference/trapcollector.md)        | {{ no }}  | SNMP     | By Rule                                                                                                                           | By Rule                                                           |
 | [syslogcollector](../services-reference/syslogcollector.md)    | {{ no }}  | Syslog   | By Rule                                                                                                                           | By Rule                                                           |
-| [Metric Threshold](../discovery-reference/periodic/metrics.md) | {{ yes }} | -        | [Threshold Profile](../concepts/threshold-profile/index.md)                                                                       | [Threshold Profile](../../../concepts/threshold-profile/index.md) |
+| [Metric Threshold](../discovery-reference/periodic/metrics.md) | {{ yes }} | -        | [Threshold Profile](../concepts/threshold-profile/index.md)                                                                       | [Threshold Profile](../concepts/threshold-profile/index.md)       |
 | [Config Validation](../discovery-reference/box/config.md)      | {{ yes }} | -        | [Config Validation Rules](../configuration-management/index.md#Создание%20политики%20валидации%20на%20основе%20запросов%20ConfDB) |
 | [Alarm Discovery](../discovery-reference/periodic/alarms.md)   | {{ yes }} | CLI      | By Rule                                                                                                                           | By Rule                                                           |
 | [Discovery](../discovery-reference/box/index.md)               | {{ yes }} | CLI      | -                                                                                                                                 | -                                                                 |
@@ -60,7 +60,7 @@
 
 ### Класс События
 
-Для работы с событием системе важно понимать его значение. Традиционно, для этого используется Класс События [Event Class](../../concepts/event-class/index.md). 
+Для работы с событием системе важно понимать его значение. Традиционно, для этого используется Класс События [Event Class](../concepts/event-class/index.md). 
 Также к классу события привязываются настройки касательно дальнейшей работы с событием. В системе предусмотрены 
 несколько специальных классов:
 
@@ -123,7 +123,7 @@
 
 Событие выглядит следующим образом:
 
-![](../concepts/event-classification-rule/images/event_class_rules_snmp_net_link_down_eltex.png)
+![](event_class_rules_snmp_net_link_down_eltex.png)
 
 * `Raw Variables` - переменные пришедшие из коллектора в поле `data`
 * `Resolved Variables` - переменные для которых нашёлся соответствующий [MIB](../glossary/index.md#mib) и добавленные классификатором. Например, переменная `profile` была добавлена классификатором (`classifier`) из данных устройства (`ManagedObject`)
@@ -131,7 +131,7 @@
 
 Рассмотрим правило, под которое попало данное событие (его можно увидеть на вкладке История `History`):
 
-![](../concepts/event-classification-rule/images/event_snmp_net_link_down_eltex.png)
+![](event_snmp_net_link_down_eltex.png)
 
 1. Источник (`source`) соответствует `SNMP Trap`. Фиксирует что правило написано только для событий пришедших по `SNMP`
 2. `profile` фиксирует что правило только для устройств с адаптером `Eltex.MES`
@@ -180,12 +180,12 @@
 
 #### Время жизни события (TTL)
 
-Механизм удаления событий спустя какое-то время. По прошествии времени, указанного в настройке `TTL` класса события [Event Class](../../concepts/event-class/index.md) 
+Механизм удаления событий спустя какое-то время. По прошествии времени, указанного в настройке `TTL` класса события [Event Class](../concepts/event-class/index.md) 
 событие будет удалено из системы. Если произошла передача события в коррелятор, то устаревание отменяется.
 
 #### Правила размещения (Disposition Rule)
 
-Дальнейшая судьба события определяется в настройках `Disposition Rule` класса события [Event Class](../../concepts/event-class/index.md). 
+Дальнейшая судьба события определяется в настройках `Disposition Rule` класса события [Event Class](../concepts/event-class/index.md). 
 Это своего рода таблица маршрутизации. После сопоставления события с классом начинается последовательный обход правил размещения 
 и при совпадении условия (`condition`) выполняется указанное действие.
 
@@ -247,10 +247,10 @@
 После обнаружения аварии на конкретном оборудовании, система вычисляет вес **Weight** аварии и в какой интервал базовых значений важности **Severity** попадает авария. 
 Вес рассчитывается по формуле, в которой учитывается влияние на связанных с устройством компонент через *весовые коэффициенты*: 
 
-* Устройство [ManagedObject](../concepts/managed-object/index.md). Весовой коэффициент выставляется в профиле объекта [Managed Object Profile](../../concepts/managed-object-profile/index.md#FM)
-* Интерфейсы устройства [Interface](../concepts/interface/index.md). Весовой коэффициент выставляется в профиле интерфейса [Interface Profile](../../concepts/interface-profile/index.md)
-* Сервисы связанные с устройством [Service](../concepts/service/index.md). Весовой коэффициент выставляется в профиле сервиса [Service Profile](../../concepts/service-profile/index.md)
-* Абоненты связанные с устройством [Subscribers](../concepts/subscriber/index.md). Весовой коэффициент выставляется в профиле абонента [Subscriber Profile](../../concepts/subscriber-profile/index.md)
+* Устройство [ManagedObject](../concepts/managed-object/index.md). Весовой коэффициент выставляется в профиле объекта [Managed Object Profile](../concepts/managed-object-profile/index.md#FM)
+* Интерфейсы устройства [Interface](../concepts/interface/index.md). Весовой коэффициент выставляется в профиле интерфейса [Interface Profile](../concepts/interface-profile/index.md)
+* Сервисы связанные с устройством [Service](../concepts/service/index.md). Весовой коэффициент выставляется в профиле сервиса [Service Profile](../concepts/service-profile/index.md)
+* Абоненты связанные с устройством [Subscribers](../concepts/subscriber/index.md). Весовой коэффициент выставляется в профиле абонента [Subscriber Profile](../concepts/subscriber-profile/index.md)
 
 <!-- prettier-ignore -->
 !!! info

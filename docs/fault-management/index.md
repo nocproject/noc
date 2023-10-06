@@ -37,7 +37,7 @@ Events enter the system through various means. Sources can be individual service
 
 | Source                                                         | Active    | Protocol | Event Class                                                                                                                      | Alarm Class                                                 |
 | -------------------------------------------------------------- | --------- | -------- | -------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------- |
-| [ping](../services-reference/ping.md)                          | {{ yes }} | ICMP     | -                                                                                                                                | `NOC                                                        | Managed Object | Ping Failed` |
+| [ping](../services-reference/ping.md)                          | {{ yes }} | ICMP     | -                                                                                                                                | `NOC | Managed Object | Ping Failed`                        |
 | [trapcollector](../services-reference/trapcollector.md)        | {{ no }}  | SNMP     | By Rule                                                                                                                          | By Rule                                                     |
 | [syslogcollector](../services-reference/syslogcollector.md)    | {{ no }}  | Syslog   | By Rule                                                                                                                          | By Rule                                                     |
 | [Metric Threshold](../discovery-reference/periodic/metrics.md) | {{ yes }} | -        | [Threshold Profile](../concepts/threshold-profile/index.md)                                                                      | [Threshold Profile](../concepts/threshold-profile/index.md) |
@@ -101,7 +101,7 @@ For example, let's take a look at a classification rule for an `SNMP Trap` of th
 
 The event looks like this:
 
-![SNMP Trap Event](../concepts/event-classification-rule/event_class_rules_snmp_net_link_down_eltex.png)
+![SNMP Trap Event](event_class_rules_snmp_net_link_down_eltex.png)
 
 - `Raw Variables` - variables received from the collector in the `data` field.
 - `Resolved Variables` - variables for which a corresponding [MIB](../glossary/index.md#mib) has been found and added by the classifier. For instance, the variable `profile` was added by the classifier from the device's data (`ManagedObject`).
@@ -109,7 +109,7 @@ The event looks like this:
 
 Let's examine the rule under which this event falls (you can find it on the `History` tab):
 
-![SNMP Trap Classification Rule](../concepts/event-classification-rule/event_snmp_net_link_down_eltex.png)
+![SNMP Trap Classification Rule](event_snmp_net_link_down_eltex.png)
 
 1. The `source` matches `SNMP Trap`, indicating that the rule is intended only for events received via `SNMP`.
 2. `profile` specifies that the rule is only for devices with the `Eltex.MES` adapter.

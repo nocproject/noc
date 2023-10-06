@@ -4,7 +4,7 @@ NBI основан на [Northbound Interface](https://en.wikipedia.org/wiki/Nor
 Это интерфейс для систем вернхнего уровня, желающих взаимодействовать с НОКом для выполнения собственных задач.
 
 НОК предоставляется простой HTTP REST API, используя JSON как транспортный формат. Авторизация выполняется 
-через ключи [API Keys](../../../concepts/apikey/index.md). 
+через ключи [API Keys](../concepts/apikey/index.md). 
 
 ## API
 

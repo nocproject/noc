@@ -8,9 +8,9 @@
 
 - `CACHE_PATH` (каталог для загрузки архивного, csv файлов и извлечения dbf файлов)
 - `OKTMO_URL` (url загрузки файла OKTMO)
-- `OKTMO_REGION` ([код](oktmo_region_codes.md) региона для OKTMO данных)
+- `OKTMO_REGION` ([код](oktmo-region-codes.md) региона для OKTMO данных)
 - `FIAS_URL` (url загрузки архива ФИАС)
-- `FIAS_REGION` ([код](fias_region_codes.md) региона для ФИАС данных)
+- `FIAS_REGION` ([код](fias-region-codes.md) региона для ФИАС данных)
 
 ### Handler для Remote System:
 

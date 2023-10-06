@@ -12,7 +12,7 @@
 * Профили аутентификации (`Auth profile`)
 * Сервисы [Services](../service/index.md)
 * Абоненты [Subscribers](../subscriber/index.md)
-* Линки (`Links`) - для построения связей по данным внешней системы [NRI](../discovery-reference/box/nri.md)
+* Линки (`Links`) - для построения связей по данным внешней системы [NRI](../../discovery-reference/box/nri.md)
 * Ресурсные группы [Resource Group](../resource-group/index.md)
 
 Кратко механизм выглядит так:

@@ -4,7 +4,7 @@
 Registered events are passed in unified way from various collectors
 to classifier service for further analysis.
 
-У каждого пула [Pool](../../../concepts/pool/index.md) отдельный поток
+У каждого пула [Pool](../concepts/pool/index.md) отдельный поток
 `events`. Например пул `DEFAULT` будет использоваться поток `events.DEFAULT`,
 когда пул `CORE` - поток `events.CORE`.
 
