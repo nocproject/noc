@@ -1,0 +1,14 @@
+---
+date: 2019-09-18
+authors: [dv]
+description: >
+    NOC 19.3.1 is released.
+categories:
+    - General
+---
+In accordance to our [Release Policy](/release-policy/)
+we're proudly present release [19.3.1](https://code.getnoc.com/noc/noc/tags/19.3).
+
+19.3.1 release contains 54 bugfixes, optimisations and improvements.
+Release is fully binary compatible with :ref:`NOC 19.3 <release-19.3>`.
+All users of :ref:`19.3 <release-19.3>` are urged to upgrade to 19.3.1.

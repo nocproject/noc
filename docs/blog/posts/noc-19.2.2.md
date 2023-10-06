@@ -1,0 +1,18 @@
+---
+date: 2019-09-18
+authors: [dv]
+description: >
+    NOC 19.2.2 is released.
+categories:
+    - General
+---
+In accordance to our [Release Policy](/release-policy/)
+we're continuing support of generation of 19.2 releases. 
+NOC [19.2.2](https://code.getnoc.com/noc/noc/tags/19.2.2)
+collects 25 bugfixes, optimization and improvements, while fully
+preserves 19.2 API. Release is fully binary compatible with :ref:`NOC 19.2 <release-19.2>`.
+All users of :ref:`NOC 19.2.1 <release-19.2.1>` are urged to upgrade to 19.2.2.
+
+# Migration
+Migration from 19.2 release is straightforward. Just deploy 
+`19.2.2` or `stable-19.2` tags from Tower.
