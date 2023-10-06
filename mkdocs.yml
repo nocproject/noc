@@ -1155,6 +1155,8 @@ plugins:
       on_error_fail: true
   - blog:
       blog_dir: blog/
+      post_url_date_format: yyyy
+      post_url_format: "{date}-{slug}"
   - literate-nav:
       nav_file: __SUMMARY__
   - i18n:
