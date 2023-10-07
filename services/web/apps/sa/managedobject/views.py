@@ -59,6 +59,7 @@ from noc.core.text import alnum_key
 from noc.core.middleware.tls import get_user
 from noc.fm.models.activealarm import ActiveAlarm
 from noc.fm.models.alarmclass import AlarmClass
+from noc.config import config
 
 JP_CLAUSE_PATTERN = """jsonb_path_exists(caps, '$[*] ? (@.capability == "{}") ? (@.value {} {})')"""
 
@@ -580,6 +581,9 @@ class ManagedObjectApplication(ExtModelApplication):
         if not o.has_access(request.user):
             return self.response_forbidden("Access denied")
         r = orjson.loads(request.body).get("names", [])
+        shard, d_slots = None, config.get_slot_limits(f"discovery-{o.pool.name}")
+        if d_slots:
+            shard = o.id % d_slots
         for name, jcls in self.DISCOVERY_JOBS:
             if name not in r:
                 continue
@@ -589,7 +593,7 @@ class ManagedObjectApplication(ExtModelApplication):
                 o.object_profile, f"enable_{name}_discovery", None
             ):
                 continue  # Disabled by profile
-            Job.submit("discovery", jcls, key=o.id, pool=o.pool.name)
+            Job.submit("discovery", jcls, key=o.id, pool=o.pool.name, shard=shard)
         return {"success": True}
 
     @view(
