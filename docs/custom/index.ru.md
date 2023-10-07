@@ -16,9 +16,9 @@
     * `extractors` - `ETL` адаптеры для внешних систем
     * `loader` - собственные загрузчики
     * `portmapper` - адаптеры привязки интерфейсов с внешними системами
-* `handlers` - директория с обработчиками [Handlers](../handlers/index.md)
+* `handlers` - директория с обработчиками [Handlers](../handlers-reference/index.md)
 * `sa` - взаимодействие с устройствами
-    * `profiles` - Профили SA [SA Profile](../sa/sa-profiles.md)
+    * `profiles` - Профили SA [SA Profile](../profiles-reference/index.md)
     * `interfaces` - Интерфейсы SA [SA Interface](../sa/sa-profiles.md#Интерфейсы-SA)
 * `services` - расширения сервисов системы
     * `card` - пользовательские карточки [Card](../card/index.md)

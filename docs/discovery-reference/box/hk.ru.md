@@ -13,4 +13,4 @@
 Необходимо активировать настройки в [Managed Object Profile вкладка Box](../../concepts/managed-object-profile/index.md#Box(Полный_опрос)):
 
 * `Housekeeping` - включить `hk` check
-* **Обработчик** (`handler`) - обработчик [Handler](../../../../dev/handlers/index.md)
+* **Обработчик** (`handler`) - обработчик [Handler](../../handlers-reference/index.md)

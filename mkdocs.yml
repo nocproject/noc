@@ -802,6 +802,10 @@ nav:
           - Config Filter: handlers-reference/config-filter.md
           - Config Diff Filter: handlers-reference/config-diff-filter.md
           - Window Function: handlers-reference/window-function.md
+          - Address Resolver: handlers-reference/address-resolver.md
+          - Interface Description: handlers-reference/ifacedescription.md
+          - Housekeeper: handlers-reference/housekeeper.md
+          - DS Filter: handlers-reference/ds-filter.md
       - Object Models:
           - Overview: object-models-reference/index.md
           - ObjectModel Tags: object-models-reference/tags.md
@@ -950,6 +954,7 @@ nav:
       - Custom: custom/index.md
       - Cards: card/index.md
       - ETL: etl/index.md
+      - Storm Protection: storm-protection/index.md
       - NOC Products Highlights:
           - Overview: highlights/index.md
           - Vendor-Agnostic: highlights/vendor-agnostic.md

@@ -15,9 +15,9 @@ The following extensions are supported for the system:
     * `extractors` - ETL adapters for external systems.
     * `loader` - Custom loaders.
     * `portmappers` - Adapters for mapping interfaces with external systems.
-* `handlers` - Directory with handlers [Handlers](../handlers/index.md).
+* `handlers` - Directory with handlers [Handlers](../handlers-reference/index.md).
 * `sa` - Interaction with devices.
-    * `profiles` - SA (Service Activation) profiles [SA Profile](../sa/sa-profiles.md).
+    * `profiles` - SA (Service Activation) profiles [SA Profile](../profiles-reference/index.md).
     * `interfaces` - SA interfaces [SA Interface](../sa/sa-profiles.md#SA-Interfaces).
 * `services` - System service extensions.
     * `card` - Custom cards [Card](../card/index.md).
