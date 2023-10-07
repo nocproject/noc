@@ -2,10 +2,10 @@
 - name: Add OEL Nginx repo
   yum_repository:
     name: nginx
-    description: CentOS Nginx repo
-    baseurl: http://nginx.org/packages/centos/{{ ansible_distribution_major_version }}/{{ ansible_architecture }}
+    description: OEL Nginx repo
+    baseurl: "{{ nginx_rpm_repo }}"
     gpgcheck: "True"
-    gpgkey: http://nginx.org/packages/keys/nginx_signing.key
+    gpgkey: "{{ nginx_rpm_gpgkey }}"
     enabled: "True"
   environment:
     http_proxy: "{{ http_proxy }}"
