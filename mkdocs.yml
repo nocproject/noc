@@ -947,6 +947,8 @@ nav:
       - Fault Management: fault-management/index.md
       - Performance Management: performance-management/index.md
       - Peering Management: peering-management/index.md
+      - Custom: custom/index.md
+      - Cards: card/index.md
       - ETL: etl/index.md
       - NOC Products Highlights:
           - Overview: highlights/index.md
