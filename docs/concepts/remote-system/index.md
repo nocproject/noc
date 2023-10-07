@@ -37,7 +37,7 @@ Configuration starts in the 'Main' -> 'Setup' -> 'Remote Systems' menu. After cl
 * Name - the name of the external system. It will be used when working with the 'ETL' command. It is advisable to choose a short name without spaces.
 * Description - description (some text).
 * Handler - a reference to the [extraction adapter](../../etl/index.md) as a Python import string.
-  > Example: 'noc.custom.etl.extractors.zabbix.ZBRemoteSystem' assumes that the file is located in the [custom](../../../../dev/custom/index.md) folder at the path '<custom_folder>/etl/extractor/zabbix.py'.
+  > Example: 'noc.custom.etl.extractors.zabbix.ZBRemoteSystem' assumes that the file is located in the [custom](../../custom/index.md) folder at the path '<custom_folder>/etl/extractor/zabbix.py'.
 * Extractors/Loaders - a list of available models for loading. *Requires implementation in the adapter.*
 * Environment - adapter loading settings (passed to it during operation).
 

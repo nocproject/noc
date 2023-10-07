@@ -40,7 +40,7 @@
 * Имя (`Name`) - имя внешней системы. Будет использоваться при работе с командой `ETL`. Желательно выбирать краткое и без пробелов.
 * Описание (`Description`) - описание (какой-нибудь текст)
 * Адаптер (`Handler`) - ссылка на [адаптер выгрузки](../../etl/index.md) в виде строчки импорта питона. 
-  > Н-р: `noc.custom.etl.extractors.zabbix.ZBRemoteSystem` рассчитывает, что файл лежит в [custom](../../../../dev/custom/index.md) по пути `<custom_folder>/etl/extractor/zabbix.py`
+  > Н-р: `noc.custom.etl.extractors.zabbix.ZBRemoteSystem` рассчитывает, что файл лежит в [custom](../../custom/index.md) по пути `<custom_folder>/etl/extractor/zabbix.py`
 * `Extractors/Loaders` - список доступных для моделей для загрузки. *Требует реализацию в адаптере*
 * `Environment` - настройки адаптера загрузки (передаются в него при работе)
 
