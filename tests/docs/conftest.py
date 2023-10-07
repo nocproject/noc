@@ -19,8 +19,12 @@ class ToC(object):
             self.add_item([], kv)
 
     def add_item(self, path, kv):
-        k = list(kv.keys())[0]
-        v = kv[k]
+        if isinstance(kv, str):
+            k = kv
+            v = kv
+        else:
+            k = list(kv.keys())[0]
+            v = kv[k]
         if isinstance(v, list):
             for lkv in v:
                 self.add_item(path + [k], lkv)
