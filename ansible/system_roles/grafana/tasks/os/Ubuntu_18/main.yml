@@ -8,7 +8,7 @@
 
 - name: Get Grafana Key from remote server
   get_url:
-    url: "https://packages.grafana.com/gpg.key"
+    url: "{{ grafana_deb_gpgkey }}"
     dest: "/tmp/grafana_apt_key.gpg"
   environment:
     https_proxy: "{{ http_proxy }}"
@@ -27,7 +27,7 @@
 
 - name: Add Grafana repo
   apt_repository:
-    repo: "deb https://packages.grafana.com/oss/deb stable main"
+    repo: "{{ grafana_deb_repo }}"
     state: present
     update_cache: "True"
   environment:

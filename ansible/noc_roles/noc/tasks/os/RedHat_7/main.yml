@@ -20,8 +20,8 @@
     state: present
     description: "Centos 7 sclo repo"
     enabled: "True"
-    baseurl: http://mirror.centos.org/centos/7/sclo/x86_64/rh/
-    gpgkey: https://www.centos.org/keys/RPM-GPG-KEY-CentOS-SIG-SCLo
+    baseurl: "{{ noc_sclo_yum_repo }}"
+    gpgkey: "{{ noc_sclo_yum_repo_gpgkey }}"
     gpgcheck: "True"
   environment:
     https_proxy: "{{ http_proxy }}"

@@ -21,3 +21,6 @@ clickhouse_password: noc
 clickhouse_ro_password: noc
 clickhouse_ro_grafana_password: noc
 clickhouse_user: noc
+
+clickhouse_yum_repo: "https://packages.clickhouse.com/rpm/stable/"
+clickhouse_deb_repo: "deb https://packages.clickhouse.com/deb stable main"
