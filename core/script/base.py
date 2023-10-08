@@ -479,27 +479,42 @@ class BaseScript(object, metaclass=BaseScriptMetaclass):
                     return f(self, **kwargs)
                 # Raise error
             raise self.NotSupportedError()
-        else:
-            # New SNMP/CLI API
-            return self.call_method(
-                cli_handler=self.execute_cli, snmp_handler=self.execute_snmp, **kwargs
-            )
+        # New SNMP/CLI API
+        return self.call_method(
+            cli_handler=self.execute_cli,
+            snmp_handler=self.execute_snmp,
+            http_handler=self.execute_http,
+            **kwargs,
+        )
 
-    def call_method(self, cli_handler=None, snmp_handler=None, fallback_handler=None, **kwargs):
+    def call_method(
+        self,
+        cli_handler=None,
+        snmp_handler=None,
+        http_handler=None,
+        fallback_handler=None,
+        **kwargs,
+    ):
         """
-        Call function depending on access_preference
-        :param cli_handler: String or callable to call on CLI access method
-        :param snmp_handler: String or callable to call on SNMP access method
-        :param fallback_handler: String or callable to call if no access method matched
-        :param kwargs:
-        :return:
+        Call function depending on access_preference.
+
+        Args:
+            cli_handler: String or callable to call on CLI access method
+            snmp_handler: String or callable to call on SNMP access method
+            http_handler: String or callable to call on HTTP access method
+            fallback_handler: String or callable to call if no access method matched
         """
+        # Select between CLI or HTTP basing on access schema
+        if "http_protocol" in self.credentials:
+            cli_or_http_handler = http_handler
+        else:
+            cli_or_http_handler = cli_handler
         # Select proper handler
         access_preference = self.get_access_preference() + "*"
         for m in access_preference:
             # Select proper handler
             if m == "C":
-                handler = cli_handler
+                handler = cli_or_http_handler
             elif m == "S":
                 if self.has_snmp() or self.name.endswith(".get_version"):
                     handler = snmp_handler
@@ -557,6 +572,12 @@ class BaseScript(object, metaclass=BaseScriptMetaclass):
         :return:
         """
         raise NotImplementedError("execute_snmp() is not implemented")
+
+    def execute_http(self, **kwargs):
+        """
+        Process script using HTTP
+        """
+        raise NotImplementedError("execute_http() is not implemented")
 
     def cleaned_config(self, config):
         """
