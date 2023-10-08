@@ -34,3 +34,9 @@ mongo_apt_id:
   "4.2": "E162F504A20CDF15827F718D4B7C549A058F8B6B"
   "4.4": "20691EEC35216C63CAF66CE1656408E390CFB1F5"
   "5.0": "F5679A222C647C87527C2F8CB00A0BD1E2C63C11"
+
+mongo_rpm_repo: "https://repo.mongodb.org/yum/redhat/{{ ansible_distribution_major_version }}/mongodb-org/{{ mongod_version }}/x86_64/"
+mongo_rpm_gpgkey: "https://www.mongodb.org/static/pgp/server-{{ mongod_version }}.asc"
+mongo_deb_repo: "deb http://repo.mongodb.org/apt/debian {{ ansible_distribution_release }}/mongodb-org/{{ mongod_version }} main"
+mongo_deb_ub_repo: "deb http://repo.mongodb.org/apt/ubuntu {{ ansible_distribution_release }}/mongodb-org/{{ mongod_version }} multiverse"
+mongo_deb_gpgkey: "https://www.mongodb.org/static/pgp/server-{{ mongod_version }}.asc"

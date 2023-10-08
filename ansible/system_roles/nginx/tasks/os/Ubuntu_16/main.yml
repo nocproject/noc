@@ -1,16 +1,16 @@
 ---
 - name: Add Nginx key Debian
   apt_key:
-    url: http://nginx.org/keys/nginx_signing.key
+    url: "{{ nginx_deb_gpgkey }}"
     state: present
   environment:
     http_proxy: "{{ http_proxy }}"
   tags:
     - repo
 
-- name: Add Debian Nginx repo
+- name: Add Ubuntu Nginx repo
   apt_repository:
-    repo: 'deb http://nginx.org/packages/ubuntu/ {{ ansible_distribution_release }} nginx'
+    repo: "{{ nginx_deb_ub_repo }}"
     state: present
     update_cache: "True"
   environment:
