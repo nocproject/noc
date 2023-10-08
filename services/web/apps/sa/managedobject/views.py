@@ -50,6 +50,7 @@ from noc.sa.models.action import Action
 from noc.core.scheduler.job import Job
 from noc.core.script.loader import loader as script_loader
 from noc.core.mongo.connection import get_db
+from noc.core.wf.interaction import Interaction
 from noc.core.translation import ugettext as _
 from noc.core.comp import smart_text, smart_bytes
 from noc.core.geocoder.loader import loader as geocoder_loader
@@ -59,6 +60,7 @@ from noc.core.text import alnum_key
 from noc.core.middleware.tls import get_user
 from noc.fm.models.activealarm import ActiveAlarm
 from noc.fm.models.alarmclass import AlarmClass
+from noc.config import config
 
 JP_CLAUSE_PATTERN = """jsonb_path_exists(caps, '$[*] ? (@.capability == "{}") ? (@.value {} {})')"""
 
@@ -530,6 +532,10 @@ class ManagedObjectApplication(ExtModelApplication):
             job = Job.get_job_data("discovery", jcls=jcls, key=o.id, pool=o.pool.name) or {}
             if name == "interval":
                 enable = getattr(o.object_profile, "enable_metrics")
+            elif name == "box" and Interaction.BoxDiscovery not in o.interactions:
+                enable = False
+            elif name == "periodic" and Interaction.BoxDiscovery not in o.interactions:
+                enable = False
             else:
                 enable = getattr(o.object_profile, f"enable_{name}_discovery")
             d = {
@@ -580,16 +586,23 @@ class ManagedObjectApplication(ExtModelApplication):
         if not o.has_access(request.user):
             return self.response_forbidden("Access denied")
         r = orjson.loads(request.body).get("names", [])
+        shard, d_slots = None, config.get_slot_limits(f"discovery-{o.pool.name}")
+        if d_slots:
+            shard = o.id % d_slots
         for name, jcls in self.DISCOVERY_JOBS:
             if name not in r:
                 continue
             if name == "interval" and not getattr(o.object_profile, "enable_metrics"):
                 continue
+            elif name == "box" and Interaction.BoxDiscovery not in o.interactions:
+                continue
+            elif name == "periodic" and Interaction.PeriodicDiscovery not in o.interactions:
+                continue
             elif name != "interval" and not getattr(
                 o.object_profile, f"enable_{name}_discovery", None
             ):
                 continue  # Disabled by profile
-            Job.submit("discovery", jcls, key=o.id, pool=o.pool.name)
+            Job.submit("discovery", jcls, key=o.id, pool=o.pool.name, shard=shard)
         return {"success": True}
 
     @view(
@@ -604,6 +617,10 @@ class ManagedObjectApplication(ExtModelApplication):
             if name not in r:
                 continue
             if name == "interval" and not getattr(o.object_profile, "enable_metrics"):
+                continue
+            elif name == "box" and Interaction.BoxDiscovery not in o.interactions:
+                continue
+            elif name == "periodic" and Interaction.PeriodicDiscovery not in o.interactions:
                 continue
             elif name != "interval" and not getattr(o.object_profile, f"enable_{name}_discovery"):
                 continue  # Disabled by profile
