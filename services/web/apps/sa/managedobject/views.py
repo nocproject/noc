@@ -598,7 +598,9 @@ class ManagedObjectApplication(ExtModelApplication):
                 continue
             elif name == "periodic" and Interaction.PeriodicDiscovery not in o.interactions:
                 continue
-            elif name != "interval" and not getattr(o.object_profile, f"enable_{name}_discovery", None):
+            elif name != "interval" and not getattr(
+                o.object_profile, f"enable_{name}_discovery", None
+            ):
                 continue  # Disabled by profile
             Job.submit("discovery", jcls, key=o.id, pool=o.pool.name, shard=shard)
         return {"success": True}
