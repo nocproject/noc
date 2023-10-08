@@ -498,6 +498,7 @@ class Config(BaseConfig):
         pm_templates = StringParameter(default="templates/ddash/")
         custom_path = StringParameter()
         mib_path = StringParameter(default="/var/lib/noc/mibs/")
+        cdn_url = StringParameter()
 
     class pg(ConfigSection):
         addresses = ServiceParameter(service="postgres", wait=True, near=True, full_result=False)
