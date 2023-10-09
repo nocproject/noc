@@ -49,7 +49,7 @@
 * `Аплинк`. Транковый порт в описании которого встречается слова `Uplink`, `UP`, `UPLINK`
 
 Для условий с `Портом доступа` и `Транковый портом` понадобятся условия по совпадению с вланами. Для этого необходимо создать [VC Filter](../vc-filter/index.md). 
-![](../vc-filter/images/vc-filter-any-vlan-form.png) 
+![](../vc-filter/vc-filter-any-vlan-form.png) 
 
 Для условия с Аплинков нам понадобится создать [Regex Label](../label/index.md#Regex Labels) `rx_iface_uplink` с заданным регулярным выражением `(Uplink|UP|UPLINK)` для `Interface Description`:
 ![](regex-label-create-form-iface-descr.png)
