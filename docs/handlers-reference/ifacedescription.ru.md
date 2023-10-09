@@ -2,7 +2,7 @@
 
 
 Интерфейс для взаимодействия с опросом линковки по описаниям (`Description`) интерфейсов. 
-Запускается в рамках опроса `ifdescr`, если выбран в настройках [ManagedObjectProfile](../../concepts/managed-object-profile/index.md) - настройка `ifdescr_handler`.
+Запускается в рамках опроса `ifdescr`, если выбран в настройках [ManagedObjectProfile](../concepts/managed-object-profile/index.md) - настройка `ifdescr_handler`.
 
 Interface Description применяется в ходе опроса [IfDescr](../discovery-reference/box/ifdesc.md).
 

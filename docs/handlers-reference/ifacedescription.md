@@ -1,6 +1,6 @@
 # Interface Description
 
-This interface is used for interacting with the polling of links based on interface descriptions (`Description`). It is launched as part of the `ifdescr` polling process if it is selected in the [ManagedObjectProfile](../../concepts/managed-object-profile/index.md) settings, under the `ifdescr_handler` option.
+This interface is used for interacting with the polling of links based on interface descriptions (`Description`). It is launched as part of the `ifdescr` polling process if it is selected in the [ManagedObjectProfile](../concepts/managed-object-profile/index.md) settings, under the `ifdescr_handler` option.
 
 Interface Description is applied during the [IfDescr](../discovery-reference/box/ifdesc.md) polling process.
 
