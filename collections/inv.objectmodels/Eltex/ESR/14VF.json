@@ -160,17 +160,31 @@
             "type__name": "Electrical | RJ45"
         }
     ],
-    "data": {
-        "asset": {
-            "part_no": ["ESR-14VF"]
+    "data": [
+        {
+            "attr": "part_no",
+            "interface": "asset",
+            "value": ["ESR-14VF"]
         },
-        "dimensions": {
-            "depth": 161,
-            "height": 44,
-            "width": 267
+        {
+            "attr": "depth",
+            "interface": "dimensions",
+            "value": 161
         },
-        "management": {
-            "managed": true
+        {
+            "attr": "height",
+            "interface": "dimensions",
+            "value": 44
+        },
+        {
+            "attr": "width",
+            "interface": "dimensions",
+            "value": 267
+        },
+        {
+            "attr": "managed",
+            "interface": "management",
+            "value": true
         }
-    }
+    ]
 }

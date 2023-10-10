@@ -190,20 +190,31 @@
             "type__name": "Electrical | USB"
         }
     ],
-    "data": {
-        "asset": {
-            "part_no": ["ESR-1700"]
+    "data": [
+        {
+            "attr": "part_no",
+            "interface": "asset",
+            "value": ["ESR-1700"]
         },
-        "dimensions": {
-            "depth": 490,
-            "height": 88,
-            "width": 440
+        {
+            "attr": "depth",
+            "interface": "dimensions",
+            "value": 490
         },
-        "management": {
-            "managed": true
+        {
+            "attr": "height",
+            "interface": "dimensions",
+            "value": 88
         },
-        "weight": {
-            "weight": 12.0
+        {
+            "attr": "width",
+            "interface": "dimensions",
+            "value": 440
+        },
+        {
+            "attr": "managed",
+            "interface": "management",
+            "value": true
         }
-    }
+    ]
 }

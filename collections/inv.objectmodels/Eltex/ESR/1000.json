@@ -399,22 +399,31 @@
             "type__name": "Electrical | USB"
         }
     ],
-    "data": {
-        "asset": {
-            "part_no": [
-                "ESR-1000"
-            ]
+    "data": [
+        {
+            "attr": "part_no",
+            "interface": "asset",
+            "value": ["ESR-1000"]
         },
-        "dimensions": {
-            "depth": 352,
-            "height": 44,
-            "width": 430
+        {
+            "attr": "depth",
+            "interface": "dimensions",
+            "value": 352
         },
-        "management": {
-            "managed": true
+        {
+            "attr": "height",
+            "interface": "dimensions",
+            "value": 44
         },
-        "weight": {
-            "weight": 3.6
+        {
+            "attr": "width",
+            "interface": "dimensions",
+            "value": 430
+        },
+        {
+            "attr": "managed",
+            "interface": "management",
+            "value": true
         }
-    }
+    ]
 }
