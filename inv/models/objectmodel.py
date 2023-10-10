@@ -18,9 +18,9 @@ from mongoengine.fields import (
     StringField,
     IntField,
     UUIDField,
-    DictField,
     ListField,
-    EmbeddedDocumentField,
+    DynamicField,
+    EmbeddedDocumentListField,
     ObjectIdField,
 )
 from mongoengine.errors import ValidationError
@@ -44,6 +44,18 @@ from .vendor import Vendor
 id_lock = Lock()
 
 rx_composite_pins_validate = re.compile(r"\d+\-\d+")
+
+
+class ModelAttr(EmbeddedDocument):
+    interface = StringField()
+    attr = StringField()
+    value = DynamicField()
+    slot = StringField()
+
+    def __str__(self):
+        if self.slot:
+            return "%s.%s@%s = %s" % (self.interface, self.attr, self.slot, self.value)
+        return "%s.%s = %s" % (self.interface, self.attr, self.value)
 
 
 class ObjectModelConnection(EmbeddedDocument):
@@ -172,13 +184,13 @@ class ObjectModel(Document):
     name = StringField(unique=True)
     uuid = UUIDField(binary=True)
     description = StringField()
-    vendor = PlainReferenceField(Vendor)
-    connection_rule = PlainReferenceField(ConnectionRule, required=False)
+    vendor: "Vendor" = PlainReferenceField(Vendor)
+    connection_rule: "ConnectionRule" = PlainReferenceField(ConnectionRule, required=False)
     # Connection rule context
     cr_context = StringField(required=False)
-    data = DictField()
-    connections = ListField(EmbeddedDocumentField(ObjectModelConnection))
-    sensors = ListField(EmbeddedDocumentField(ObjectModelSensor))
+    data: List["ModelAttr"] = EmbeddedDocumentListField(ModelAttr)
+    connections: List["ObjectModelConnection"] = EmbeddedDocumentListField(ObjectModelConnection)
+    sensors: List["ObjectModelSensor"] = EmbeddedDocumentListField(ObjectModelSensor)
     plugins = ListField(StringField(), required=False)
     # Labels
     labels = ListField(StringField())
@@ -201,9 +213,12 @@ class ObjectModel(Document):
     def get_by_name(cls, name) -> Optional["ObjectModel"]:
         return ObjectModel.objects.filter(name=name).first()
 
-    def get_data(self, interface: str, key: str):
-        v = self.data.get(interface, {})
-        return v.get(key)
+    def get_data(self, interface: str, key: str, slot: Optional[str] = None) -> Any:
+        for item in self.data:
+            if item.interface == interface and item.attr == key:
+                if not slot or item.slot == slot:
+                    return item.value
+        return None
 
     def on_save(self):
         # Update connection cache
@@ -367,15 +382,12 @@ class ObjectModel(Document):
         """
         Exclude model's part numbers from unknown models
         """
-        if "asset" in self.data:
-            part_no = self.data["asset"].get("part_no", []) + self.data["asset"].get(
-                "order_part_no", []
-            )
-            if part_no:
-                vendor = self.vendor
-                if isinstance(vendor, str):
-                    vendor = Vendor.get_by_id(vendor)
-                UnknownModel.clear_unknown(vendor.code, part_no)
+        part_no = self.get_data("asset", "part_no") or [] + self.get_data("asset", "order_part_no") or []
+        if part_no:
+            vendor = self.vendor
+            if isinstance(vendor, str):
+                vendor = Vendor.get_by_id(vendor)
+            UnknownModel.clear_unknown(vendor.code, part_no)
 
     def iter_effective_labels(self):
         return []
