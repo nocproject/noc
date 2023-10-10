@@ -65,9 +65,14 @@ class TargetItem(BaseModel):
 
 
 class QueryRequest(BaseModel):
-    panel_id: int = Field(..., alias="panelId")
+    # string when query on Explorer
+    panel_id: Union[int, str] = Field(..., alias="panelId")
     range: RangeSection
     range_raw: Optional[Dict[str, str]] = Field(None, alias="rangeRaw")
+    request_id: Optional[str] = Field(None, alias="requestId")
+    timezone: Optional[str] = None
+    # When query on Explorer
+    app: Optional[str] = None
     interval: str = "30s"
     interval_ms: int = Field(30_000, alias="intervalMs")
     max_datapoints: int = Field(500, alias="maxDataPoints")
