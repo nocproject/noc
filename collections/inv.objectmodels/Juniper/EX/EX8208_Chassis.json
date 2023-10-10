@@ -9,127 +9,133 @@
     "labels": ["noc::inv::chassis"],
     "connections": [
         {
+            "name": "fpm",
             "description": "Front Panel Display",
             "direction": "i",
             "gender": "f",
-            "name": "fpm",
             "type__name": "Juniper | MX | FPM"
         },
         {
+            "name": "cb0",
             "description": "SRE Slot 0",
             "direction": "i",
             "gender": "f",
-            "name": "cb0",
             "type__name": "Juniper | EX | 8208 SRE"
         },
         {
+            "name": "cb1",
             "description": "SRE Slot 1",
             "direction": "i",
             "gender": "f",
-            "name": "cb1",
             "type__name": "Juniper | EX | 8208 SRE"
         },
         {
+            "name": "cb2",
             "description": "SRE Slot 2",
             "direction": "i",
             "gender": "f",
-            "name": "cb2",
             "type__name": "Juniper | EX | 8208 SRE"
         },
         {
+            "name": "fpc0",
             "description": "Linecard 0",
             "direction": "i",
             "gender": "f",
-            "name": "fpc0",
             "type__name": "Juniper | EX | 8200 FPC"
         },
         {
+            "name": "fpc1",
             "description": "Linecard 1",
             "direction": "i",
             "gender": "f",
-            "name": "fpc1",
             "type__name": "Juniper | EX | 8200 FPC"
         },
         {
+            "name": "fpc2",
             "description": "Linecard 2",
             "direction": "i",
             "gender": "f",
-            "name": "fpc2",
             "type__name": "Juniper | EX | 8200 FPC"
         },
         {
+            "name": "fpc3",
             "description": "Linecard 3",
             "direction": "i",
             "gender": "f",
-            "name": "fpc3",
             "type__name": "Juniper | EX | 8200 FPC"
         },
         {
+            "name": "fpc4",
             "description": "Linecard 4",
             "direction": "i",
             "gender": "f",
-            "name": "fpc4",
             "type__name": "Juniper | EX | 8200 FPC"
         },
         {
+            "name": "fpc5",
             "description": "Linecard 5",
             "direction": "i",
             "gender": "f",
-            "name": "fpc5",
             "type__name": "Juniper | EX | 8200 FPC"
         },
         {
+            "name": "fpc6",
             "description": "Linecard 6",
             "direction": "i",
             "gender": "f",
-            "name": "fpc6",
             "type__name": "Juniper | EX | 8200 FPC"
         },
         {
+            "name": "fpc7",
             "description": "Linecard 7",
             "direction": "i",
             "gender": "f",
-            "name": "fpc7",
             "type__name": "Juniper | EX | 8200 FPC"
         },
         {
+            "name": "psu0",
             "description": "PSU 0",
             "direction": "i",
             "gender": "f",
-            "name": "psu0",
             "type__name": "Juniper | EX | 8200 PWR"
         },
         {
+            "name": "psu1",
             "description": "PSU 1",
             "direction": "i",
             "gender": "f",
-            "name": "psu1",
             "type__name": "Juniper | EX | 8200 PWR"
         },
         {
+            "name": "fan0",
             "description": "Fan Tray 0",
             "direction": "i",
             "gender": "f",
-            "name": "fan0",
             "type__name": "Juniper | EX | 8208 Fan"
         },
         {
+            "name": "fan1",
             "description": "Fan Tray 1",
             "direction": "i",
             "gender": "f",
-            "name": "fan1",
             "type__name": "Juniper | EX | 8208 Fan"
         }
     ],
-    "data": {
-        "asset": {
-            "order_part_no": ["EX8208"]
+    "data": [
+        {
+            "attr": "managed",
+            "interface": "management",
+            "value": true
         },
-        "management": {
-            "managed": true
+        {
+            "attr": "order_part_no",
+            "interface": "asset",
+            "value": ["EX8208"]
         },
-        "rackmount": {
-            "units": 14
+        {
+            "attr": "units",
+            "interface": "rackmount",
+            "value": 14
         }
-    }
+    ]
 }

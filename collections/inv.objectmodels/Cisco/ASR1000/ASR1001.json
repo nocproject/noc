@@ -8,64 +8,96 @@
     "cr_context": "CHASSIS",
     "connections": [
         {
+            "name": "psu0",
             "description": "PSU slot 0",
             "direction": "i",
             "gender": "f",
-            "name": "psu0",
             "type__name": "Cisco | ASR1000 | ASR1001 PSU"
         },
         {
+            "name": "psu1",
             "description": "PSU slot 1",
             "direction": "i",
             "gender": "f",
-            "name": "psu1",
             "type__name": "Cisco | ASR1000 | ASR1001 PSU"
         },
         {
+            "name": "sip0",
             "description": "SPA Interface Processor slot",
             "direction": "i",
             "gender": "f",
-            "name": "sip0",
             "type__name": "Cisco | ASR1000 | SIP"
         },
         {
+            "name": "r0",
             "description": "Route Processor slot",
             "direction": "i",
             "gender": "f",
-            "name": "r0",
             "type__name": "Cisco | ASR1000 | RP"
         },
         {
+            "name": "f0",
             "description": "Embedded Services Processor slot",
             "direction": "i",
             "gender": "f",
-            "name": "f0",
             "type__name": "Cisco | ASR1000 | ESP"
         }
     ],
-    "data": {
-        "airflow": {
-            "exhaust": "r",
-            "inlet": "f"
+    "data": [
+        {
+            "attr": "exhaust",
+            "interface": "airflow",
+            "value": "r"
         },
-        "asset": {
-            "part_no": ["ASR1001"],
-            "cpe_22": "cpe:/h:cisco:asr_1001:-",
-            "cpe_23": "cpe:2.3:h:cisco:asr_1001:-:*:*:*:*:*:*:*"
+        {
+            "attr": "inlet",
+            "interface": "airflow",
+            "value": "f"
         },
-        "dimensions": {
-            "depth": 461,
-            "height": 43,
-            "width": 439
+        {
+            "attr": "part_no",
+            "interface": "asset",
+            "value": ["ASR1001"]
         },
-        "management": {
-            "managed": true
+        {
+            "attr": "cpe_22",
+            "interface": "asset",
+            "value": "cpe:/h:cisco:asr_1001:-"
         },
-        "rackmount": {
-            "units": 1.0
+        {
+            "attr": "cpe_23",
+            "interface": "asset",
+            "value": "cpe:2.3:h:cisco:asr_1001:-:*:*:*:*:*:*:*"
         },
-        "weight": {
-            "weight": 11.35
+        {
+            "attr": "depth",
+            "interface": "dimensions",
+            "value": 461
+        },
+        {
+            "attr": "height",
+            "interface": "dimensions",
+            "value": 43
+        },
+        {
+            "attr": "width",
+            "interface": "dimensions",
+            "value": 439
+        },
+        {
+            "attr": "managed",
+            "interface": "management",
+            "value": true
+        },
+        {
+            "attr": "units",
+            "interface": "rackmount",
+            "value": 1.0
+        },
+        {
+            "attr": "weight",
+            "interface": "weight",
+            "value": 11.35
         }
-    }
+    ]
 }

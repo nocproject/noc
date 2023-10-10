@@ -6,7 +6,14 @@
     "description": "Quidway S5300-28X-LI-24S-AC,S5300-28X-LI-24S-AC,S5300-28X-LI-24S-AC(24 Gig SFP,4 of which are dual-purpose 10/100/1000 or SFP,4 10 Gig SFP+,AC 110/220V,front access)",
     "connection_rule__name": "Huawei | Quidway",
     "cr_context": "CHASSIS",
-    "labels": ["noc::inv::chassis", "noc::inv::sup", "noc::inv::psu", "noc::inv::fabric", "noc::inv::port", "noc::inv::fan"],
+    "labels": [
+        "noc::inv::chassis",
+        "noc::inv::sup",
+        "noc::inv::psu",
+        "noc::inv::fabric",
+        "noc::inv::port",
+        "noc::inv::fan"
+    ],
     "connections": [
         {
             "name": "power",
@@ -373,23 +380,41 @@
             "type__name": "Transceiver | SFP+"
         }
     ],
-    "data": {
-        "asset": {
-            "part_no": ["S5300-28X-LI-24S-AC"]
+    "data": [
+        {
+            "attr": "width",
+            "interface": "dimensions",
+            "value": 442
         },
-        "dimensions": {
-            "depth": 220,
-            "height": 45,
-            "width": 442
+        {
+            "attr": "depth",
+            "interface": "dimensions",
+            "value": 220
         },
-        "management": {
-            "managed": true
+        {
+            "attr": "height",
+            "interface": "dimensions",
+            "value": 45
         },
-        "power": {
-            "power": 63.0
+        {
+            "attr": "managed",
+            "interface": "management",
+            "value": true
         },
-        "rackmount": {
-            "units": 1.0
+        {
+            "attr": "units",
+            "interface": "rackmount",
+            "value": 1.0
+        },
+        {
+            "attr": "power",
+            "interface": "power",
+            "value": 63.0
+        },
+        {
+            "attr": "part_no",
+            "interface": "asset",
+            "value": ["S5300-28X-LI-24S-AC"]
         }
-    }
+    ]
 }

@@ -6,7 +6,14 @@
     "description": "Quidway S5320-36C-EI-28S-DC(28 Gig SFP,4 of which are dual-purpose 10/100/1000 or SFP,4 10 Gig SFP+,with 1 interface slot,with 150W DC power supply)",
     "connection_rule__name": "Huawei | Quidway",
     "cr_context": "CHASSIS",
-    "labels": ["noc::inv::chassis", "noc::inv::sup", "noc::inv::psu", "noc::inv::fabric", "noc::inv::port", "noc::inv::fan"],
+    "labels": [
+        "noc::inv::chassis",
+        "noc::inv::sup",
+        "noc::inv::psu",
+        "noc::inv::fabric",
+        "noc::inv::port",
+        "noc::inv::fan"
+    ],
     "connections": [
         {
             "name": "-48V",
@@ -427,26 +434,46 @@
             "type__name": "Transceiver | SFP+"
         }
     ],
-    "data": {
-        "asset": {
-            "part_no": ["S5320-36C-EI-28S-DC"]
+    "data": [
+        {
+            "attr": "managed",
+            "interface": "management",
+            "value": true
         },
-        "dimensions": {
-            "depth": 220,
-            "height": 45,
-            "width": 442
+        {
+            "attr": "width",
+            "interface": "dimensions",
+            "value": 442
         },
-        "management": {
-            "managed": true
+        {
+            "attr": "depth",
+            "interface": "dimensions",
+            "value": 220
         },
-        "power": {
-            "power": 63.0
+        {
+            "attr": "height",
+            "interface": "dimensions",
+            "value": 45
         },
-        "rackmount": {
-            "units": 1.0
+        {
+            "attr": "power",
+            "interface": "power",
+            "value": 63.0
         },
-        "stack": {
-            "stackable": true
+        {
+            "attr": "part_no",
+            "interface": "asset",
+            "value": ["S5320-36C-EI-28S-DC"]
+        },
+        {
+            "attr": "stackable",
+            "interface": "stack",
+            "value": true
+        },
+        {
+            "attr": "units",
+            "interface": "rackmount",
+            "value": 1.0
         }
-    }
+    ]
 }

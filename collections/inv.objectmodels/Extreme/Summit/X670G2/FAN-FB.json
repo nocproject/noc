@@ -8,17 +8,23 @@
     "labels": ["noc::inv::fan"],
     "connections": [
         {
+            "name": "in",
             "description": "",
             "direction": "o",
             "gender": "m",
-            "name": "in",
             "type__name": "Extreme | Summit | X670G2 | FAN"
         }
     ],
-    "data": {
-        "asset": {
-            "order_part_no": ["17111"],
-            "part_no": ["450300-00-03"]
+    "data": [
+        {
+            "attr": "part_no",
+            "interface": "asset",
+            "value": ["450300-00-03"]
+        },
+        {
+            "attr": "order_part_no",
+            "interface": "asset",
+            "value": ["17111"]
         }
-    }
+    ]
 }

@@ -8,92 +8,124 @@
     "cr_context": "CHASSIS",
     "connections": [
         {
+            "name": "psu0",
             "description": "PSU slot 0",
             "direction": "i",
             "gender": "f",
-            "name": "psu0",
             "type__name": "Cisco | ASR1000 | ASR1006 PSU"
         },
         {
+            "name": "psu1",
             "description": "PSU slot 1",
             "direction": "i",
             "gender": "f",
-            "name": "psu1",
             "type__name": "Cisco | ASR1000 | ASR1006 PSU"
         },
         {
+            "name": "sip0",
             "description": "SPA Interface Processor slot 0",
             "direction": "i",
             "gender": "f",
-            "name": "sip0",
             "type__name": "Cisco | ASR1000 | SIP"
         },
         {
+            "name": "sip1",
             "description": "SPA Interface Processor slot 1",
             "direction": "i",
             "gender": "f",
-            "name": "sip1",
             "type__name": "Cisco | ASR1000 | SIP"
         },
         {
+            "name": "sip2",
             "description": "SPA Interface Processor slot 2",
             "direction": "i",
             "gender": "f",
-            "name": "sip2",
             "type__name": "Cisco | ASR1000 | SIP"
         },
         {
+            "name": "f0",
             "description": "Embedded Services Processor slot 0",
             "direction": "i",
             "gender": "f",
-            "name": "f0",
             "type__name": "Cisco | ASR1000 | ESP"
         },
         {
+            "name": "f1",
             "description": "Embedded Services Processor slot 1",
             "direction": "i",
             "gender": "f",
-            "name": "f1",
             "type__name": "Cisco | ASR1000 | ESP"
         },
         {
+            "name": "r0",
             "description": "Route Processor slot 0",
             "direction": "i",
             "gender": "f",
-            "name": "r0",
             "type__name": "Cisco | ASR1000 | RP"
         },
         {
+            "name": "r1",
             "description": "Route Processor slot 1",
             "direction": "i",
             "gender": "f",
-            "name": "r1",
             "type__name": "Cisco | ASR1000 | RP"
         }
     ],
-    "data": {
-        "airflow": {
-            "exhaust": "r",
-            "inlet": "f"
+    "data": [
+        {
+            "attr": "exhaust",
+            "interface": "airflow",
+            "value": "r"
         },
-        "asset": {
-            "part_no": ["ASR1006"],
-            "cpe_22": "cpe:/h:cisco:asr_1006:-",
-            "cpe_23": "cpe:2.3:h:cisco:asr_1006:-:*:*:*:*:*:*:*"
+        {
+            "attr": "inlet",
+            "interface": "airflow",
+            "value": "f"
         },
-        "dimensions": {
-            "depth": 572,
-            "height": 265,
-            "width": 438
+        {
+            "attr": "part_no",
+            "interface": "asset",
+            "value": ["ASR1006"]
         },
-        "management": {
-            "managed": true
+        {
+            "attr": "cpe_22",
+            "interface": "asset",
+            "value": "cpe:/h:cisco:asr_1006:-"
         },
-        "rackmount": {
-            "units": 6.0
+        {
+            "attr": "cpe_23",
+            "interface": "asset",
+            "value": "cpe:2.3:h:cisco:asr_1006:-:*:*:*:*:*:*:*"
         },
-        "weight": {
-            "weight": 34.97
+        {
+            "attr": "depth",
+            "interface": "dimensions",
+            "value": 572
+        },
+        {
+            "attr": "height",
+            "interface": "dimensions",
+            "value": 265
+        },
+        {
+            "attr": "width",
+            "interface": "dimensions",
+            "value": 438
+        },
+        {
+            "attr": "managed",
+            "interface": "management",
+            "value": true
+        },
+        {
+            "attr": "units",
+            "interface": "rackmount",
+            "value": 6.0
+        },
+        {
+            "attr": "weight",
+            "interface": "weight",
+            "value": 34.97
         }
-    }
+    ]
 }

@@ -16,22 +16,41 @@
             "type__name": "Huawei | S12700E | CMU"
         }
     ],
-    "data": {
-        "asset": {
-            "order_part_no": ["03030NWB"],
-            "part_no": ["EH1D200CMU00"]
+    "data": [
+        {
+            "attr": "order_part_no",
+            "interface": "asset",
+            "value": ["03030NWB"]
         },
-        "dimensions": {
-            "depth": 412,
-            "height": 19,
-            "width": 112
+        {
+            "attr": "part_no",
+            "interface": "asset",
+            "value": ["EH1D200CMU00"]
         },
-        "power": {
-            "power": 1.0
+        {
+            "attr": "depth",
+            "interface": "dimensions",
+            "value": 412
         },
-        "weight": {
-            "weight": 0.2
+        {
+            "attr": "height",
+            "interface": "dimensions",
+            "value": 19
+        },
+        {
+            "attr": "width",
+            "interface": "dimensions",
+            "value": 112
+        },
+        {
+            "attr": "power",
+            "interface": "power",
+            "value": 1.0
+        },
+        {
+            "attr": "weight",
+            "interface": "weight",
+            "value": 0.2
         }
-    }
+    ]
 }
-

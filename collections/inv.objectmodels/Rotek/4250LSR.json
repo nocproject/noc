@@ -102,14 +102,18 @@
             "type__name": "Power | MSTB 2.5/2-ST-5.08"
         }
     ],
-    "data": {
-        "asset": {
-            "part_no": ["RT-4250LSR"]
+    "data": [
+        {
+            "attr": "part_no",
+            "interface": "asset",
+            "value": ["RT-4250LSR"]
         },
-        "management": {
-            "managed": true
+        {
+            "attr": "managed",
+            "interface": "management",
+            "value": true
         }
-    },
+    ],
     "sensors": [
         {
             "name": "in",

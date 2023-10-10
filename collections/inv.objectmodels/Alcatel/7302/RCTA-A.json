@@ -8,30 +8,32 @@
     "cr_context": "LINECARD",
     "connections": [
         {
+            "name": "in",
             "description": "Chassis connection",
             "direction": "o",
             "gender": "m",
-            "name": "in",
             "type__name": "Alcatel | 7302 | LINECARD"
         },
         {
+            "name": "Line0-24",
             "description": "Line 0-24",
             "direction": "s",
             "gender": "f",
-            "name": "Line0-24",
             "type__name": "Electrical | RJ21"
         },
         {
+            "name": "Line25-48",
             "description": "Line 25-48",
             "direction": "s",
             "gender": "f",
-            "name": "Line25-48",
             "type__name": "Electrical | RJ21"
         }
     ],
-    "data": {
-        "asset": {
-            "part_no": ["RCTA-A"]
+    "data": [
+        {
+            "attr": "part_no",
+            "interface": "asset",
+            "value": ["RCTA-A"]
         }
-    }
+    ]
 }

@@ -9,23 +9,25 @@
     "labels": ["noc::inv::lc", "noc::inv::port"],
     "connections": [
         {
+            "name": "in",
             "description": "Chassis connection",
             "direction": "o",
             "gender": "m",
-            "name": "in",
             "type__name": "Alcatel | 7302 | LINECARD"
         },
         {
+            "name": "line0-23",
             "description": null,
             "direction": "s",
             "gender": "f",
-            "name": "line0-23",
             "type__name": "Electrical | IDC-100P"
         }
     ],
-    "data": {
-        "asset": {
-            "part_no": ["NSLT-A"]
+    "data": [
+        {
+            "attr": "part_no",
+            "interface": "asset",
+            "value": ["NSLT-A"]
         }
-    }
+    ]
 }

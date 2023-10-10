@@ -399,22 +399,41 @@
             "type__name": "Electrical | RJ45"
         }
     ],
-    "data": {
-        "asset": {
-            "order_part_no": ["03033JNA"],
-            "part_no": ["LST7G48TX5E1"]
+    "data": [
+        {
+            "attr": "order_part_no",
+            "interface": "asset",
+            "value": ["03033JNA"]
         },
-        "dimensions": {
-            "depth": 430,
-            "height": 35,
-            "width": 397
+        {
+            "attr": "part_no",
+            "interface": "asset",
+            "value": ["LST7G48TX5E1"]
         },
-        "power": {
-            "power": 66.0
+        {
+            "attr": "depth",
+            "interface": "dimensions",
+            "value": 430
         },
-        "weight": {
-            "weight": 3.27
+        {
+            "attr": "height",
+            "interface": "dimensions",
+            "value": 35
+        },
+        {
+            "attr": "width",
+            "interface": "dimensions",
+            "value": 397
+        },
+        {
+            "attr": "power",
+            "interface": "power",
+            "value": 66.0
+        },
+        {
+            "attr": "weight",
+            "interface": "weight",
+            "value": 3.27
         }
-    }
+    ]
 }
-

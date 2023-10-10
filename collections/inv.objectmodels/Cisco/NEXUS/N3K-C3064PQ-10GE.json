@@ -8,50 +8,58 @@
     "cr_context": "CHASSIS",
     "connections": [
         {
+            "name": "psu1",
             "description": "PSU 1 Slot",
             "direction": "i",
             "gender": "f",
             "group": "0",
-            "name": "psu1",
             "type__name": "Cisco | Nexus 2k | 2200 PSU"
         },
         {
+            "name": "psu2",
             "description": "PSU 2 Slot",
             "direction": "i",
             "gender": "f",
             "group": "0",
-            "name": "psu2",
             "type__name": "Cisco | Nexus 2k | 2200 PSU"
         },
         {
+            "name": "fan1",
             "description": "FAN 1 Slot",
             "direction": "i",
             "gender": "f",
             "group": "0",
-            "name": "fan1",
             "type__name": "Cisco | Nexus 3k | 3064 FAN"
         },
         {
+            "name": "sup1",
             "description": "SUP 1 Slot",
             "direction": "i",
             "gender": "f",
             "group": "0",
-            "name": "sup1",
             "type__name": "Cisco | Nexus 3k | 3064 SUP"
         }
     ],
-    "data": {
-        "asset": {
-            "part_no": ["N3K-C3064PQ-10GE"]
+    "data": [
+        {
+            "attr": "part_no",
+            "interface": "asset",
+            "value": ["N3K-C3064PQ-10GE"]
         },
-        "management": {
-            "managed": true
+        {
+            "attr": "managed",
+            "interface": "management",
+            "value": true
         },
-        "rackmount": {
-            "units": 1.0
+        {
+            "attr": "units",
+            "interface": "rackmount",
+            "value": 1.0
         },
-        "stack": {
-            "stackable": true
+        {
+            "attr": "stackable",
+            "interface": "stack",
+            "value": true
         }
-    }
+    ]
 }

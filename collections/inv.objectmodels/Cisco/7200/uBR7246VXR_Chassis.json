@@ -8,50 +8,56 @@
     "cr_context": "CHASSIS",
     "connections": [
         {
+            "name": "sup",
             "description": "Supervisor slot",
             "direction": "i",
             "gender": "f",
-            "name": "sup",
             "type__name": "Cisco | 7200 | Supervisor"
         },
         {
+            "name": "linecard1",
             "description": "Linecard 1 slot",
             "direction": "i",
             "gender": "f",
-            "name": "linecard1",
             "type__name": "Cisco | 7200 | Linecard"
         },
         {
+            "name": "linecard2",
             "description": "Linecard 2 slot",
             "direction": "i",
             "gender": "f",
-            "name": "linecard2",
             "type__name": "Cisco | 7200 | Linecard"
         },
         {
+            "name": "pwr0",
             "description": "PSU0",
             "direction": "i",
             "gender": "f",
-            "name": "pwr0",
             "type__name": "Cisco | 7200 | PWR-7200"
         },
         {
+            "name": "pwr1",
             "description": "PSU1",
             "direction": "i",
             "gender": "f",
-            "name": "pwr1",
             "type__name": "Cisco | 7200 | PWR-7200"
         }
     ],
-    "data": {
-        "asset": {
-            "part_no": ["CISCOUBR7246VXR"]
+    "data": [
+        {
+            "attr": "managed",
+            "interface": "management",
+            "value": true
         },
-        "management": {
-            "managed": true
+        {
+            "attr": "part_no",
+            "interface": "asset",
+            "value": ["CISCOUBR7246VXR"]
         },
-        "rackmount": {
-            "units": 7
+        {
+            "attr": "units",
+            "interface": "rackmount",
+            "value": 7
         }
-    }
+    ]
 }

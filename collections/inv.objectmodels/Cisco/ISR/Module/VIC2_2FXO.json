@@ -7,33 +7,35 @@
     "cr_context": "DCS",
     "connections": [
         {
-            "description": "voice-port N/X/0 analog PBX",
-            "direction": "s",
-            "gender": "f",
             "name": "voice-port0",
-            "protocols": ["FXO"],
-            "type__name": "Electrical | RJ11"
-        },
-        {
             "description": "voice-port N/X/0 analog PBX",
             "direction": "s",
             "gender": "f",
-            "name": "voice-port1",
             "protocols": ["FXO"],
             "type__name": "Electrical | RJ11"
         },
         {
+            "name": "voice-port1",
+            "description": "voice-port N/X/0 analog PBX",
+            "direction": "s",
+            "gender": "f",
+            "protocols": ["FXO"],
+            "type__name": "Electrical | RJ11"
+        },
+        {
+            "name": "in",
             "description": "Voice Interface Card connector",
             "direction": "o",
             "gender": "m",
-            "name": "in",
             "protocols": ["VIC"],
             "type__name": "Cisco | ISR | DCS"
         }
     ],
-    "data": {
-        "asset": {
-            "part_no": ["VIC2-2FXO"]
+    "data": [
+        {
+            "attr": "part_no",
+            "interface": "asset",
+            "value": ["VIC2-2FXO"]
         }
-    }
+    ]
 }

@@ -9,48 +9,68 @@
     "labels": ["noc::inv::chassis"],
     "connections": [
         {
+            "name": "1",
             "description": "Linecard 1 slot",
             "direction": "i",
             "gender": "f",
-            "name": "1",
             "type__name": "Zyxel | MSAN | Linecard"
         },
         {
+            "name": "2",
             "description": "Linecard 2 slot",
             "direction": "i",
             "gender": "f",
-            "name": "2",
             "type__name": "Zyxel | MSAN | Linecard"
         },
         {
+            "name": "power",
             "description": "Power outlet",
             "direction": "s",
             "gender": "f",
-            "name": "power",
             "protocols": [">-36VDC", ">-57VDC"],
             "type__name": "Power | MSTB 2.5/4-ST-5.08"
         }
     ],
-    "data": {
-        "asset": {
-            "part_no": ["IES-1000"]
+    "data": [
+        {
+            "attr": "managed",
+            "interface": "management",
+            "value": true
         },
-        "dimensions": {
-            "depth": 320,
-            "height": 44,
-            "width": 440
+        {
+            "attr": "width",
+            "interface": "dimensions",
+            "value": 440
         },
-        "management": {
-            "managed": true
+        {
+            "attr": "depth",
+            "interface": "dimensions",
+            "value": 320
         },
-        "power": {
-            "power": 75.0
+        {
+            "attr": "height",
+            "interface": "dimensions",
+            "value": 44
         },
-        "rackmount": {
-            "units": 1.0
+        {
+            "attr": "power",
+            "interface": "power",
+            "value": 75.0
         },
-        "weight": {
-            "weight": 5.0
+        {
+            "attr": "weight",
+            "interface": "weight",
+            "value": 5.0
+        },
+        {
+            "attr": "part_no",
+            "interface": "asset",
+            "value": ["IES-1000"]
+        },
+        {
+            "attr": "units",
+            "interface": "rackmount",
+            "value": 1.0
         }
-    }
+    ]
 }

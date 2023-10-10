@@ -1,22 +1,24 @@
 {
-  "name": "Cisco | 6500 | WS-C6K-13SLT-FAN2",
-  "$collection": "inv.objectmodels",
-  "uuid": "7a66cbe6-260e-44e9-824d-3de42e9660f8",
-  "vendor__code": "CISCO",
-  "description": "High Speed Fan Module for Cisco 6513|7613",
-  "cr_context": "FAN",
-  "connections": [
-	{
-	  "description": "Fan connection",
-	  "direction": "o",
-	  "gender": "m",
-	  "name": "in",
-	  "type__name": "Cisco | 7600 | 7613 Fan"
-	}
-  ],
-  "data": {
-	"asset": {
-	  "part_no": ["WS-C6K-13SLT-FAN2"]
-	}
-  }
+    "name": "Cisco | 6500 | WS-C6K-13SLT-FAN2",
+    "$collection": "inv.objectmodels",
+    "uuid": "7a66cbe6-260e-44e9-824d-3de42e9660f8",
+    "vendor__code": "CISCO",
+    "description": "High Speed Fan Module for Cisco 6513|7613",
+    "cr_context": "FAN",
+    "connections": [
+        {
+            "name": "in",
+            "description": "Fan connection",
+            "direction": "o",
+            "gender": "m",
+            "type__name": "Cisco | 7600 | 7613 Fan"
+        }
+    ],
+    "data": [
+        {
+            "attr": "part_no",
+            "interface": "asset",
+            "value": ["WS-C6K-13SLT-FAN2"]
+        }
+    ]
 }

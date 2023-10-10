@@ -232,15 +232,21 @@
             "type__name": "Power | IEC 60320 C14"
         }
     ],
-    "data": {
-        "asset": {
-            "part_no": ["WS-C2960R+24PC-S"]
+    "data": [
+        {
+            "attr": "part_no",
+            "interface": "asset",
+            "value": ["WS-C2960R+24PC-S"]
         },
-        "management": {
-            "managed": true
+        {
+            "attr": "managed",
+            "interface": "management",
+            "value": true
         },
-        "rackmount": {
-            "units": 1.0
+        {
+            "attr": "units",
+            "interface": "rackmount",
+            "value": 1.0
         }
-    }
+    ]
 }

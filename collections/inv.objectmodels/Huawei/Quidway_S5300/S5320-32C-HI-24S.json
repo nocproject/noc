@@ -465,26 +465,46 @@
             "type__name": "Transceiver | SFP+"
         }
     ],
-    "data": {
-        "asset": {
-            "part_no": ["S5320-32C-HI-24S"]
+    "data": [
+        {
+            "attr": "managed",
+            "interface": "management",
+            "value": true
         },
-        "dimensions": {
-            "depth": 420,
-            "height": 45,
-            "width": 442
+        {
+            "attr": "width",
+            "interface": "dimensions",
+            "value": 442
         },
-        "management": {
-            "managed": true
+        {
+            "attr": "depth",
+            "interface": "dimensions",
+            "value": 420
         },
-        "power": {
-            "power": 152.0
+        {
+            "attr": "height",
+            "interface": "dimensions",
+            "value": 45
         },
-        "rackmount": {
-            "units": 1.0
+        {
+            "attr": "power",
+            "interface": "power",
+            "value": 152.0
         },
-        "stack": {
-            "stackable": true
+        {
+            "attr": "part_no",
+            "interface": "asset",
+            "value": ["S5320-32C-HI-24S"]
+        },
+        {
+            "attr": "stackable",
+            "interface": "stack",
+            "value": true
+        },
+        {
+            "attr": "units",
+            "interface": "rackmount",
+            "value": 1.0
         }
-    }
+    ]
 }

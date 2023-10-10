@@ -8,23 +8,25 @@
     "labels": ["noc::inv::psu"],
     "connections": [
         {
+            "name": "power",
             "description": "Power input",
             "direction": "s",
             "gender": "m",
-            "name": "power",
             "type__name": "Power | IEC 60320 C14"
         },
         {
+            "name": "in",
             "description": "",
             "direction": "o",
             "gender": "m",
-            "name": "in",
             "type__name": "Cisco | 3900 | PSU"
         }
     ],
-    "data": {
-        "asset": {
-            "part_no": ["PWR-3900-POE"]
+    "data": [
+        {
+            "attr": "part_no",
+            "interface": "asset",
+            "value": ["PWR-3900-POE"]
         }
-    }
+    ]
 }

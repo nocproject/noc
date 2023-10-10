@@ -7,16 +7,18 @@
     "cr_context": "PVDM",
     "connections": [
         {
+            "name": "in",
             "description": "PVDMIII DSP DIMM",
             "direction": "o",
             "gender": "m",
-            "name": "in",
             "type__name": "Cisco | ISR | PVDM3"
         }
     ],
-    "data": {
-        "asset": {
-            "part_no": ["PVDM3-64"]
+    "data": [
+        {
+            "attr": "part_no",
+            "interface": "asset",
+            "value": ["PVDM3-64"]
         }
-    }
+    ]
 }

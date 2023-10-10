@@ -7,16 +7,18 @@
     "cr_context": "XCVR",
     "connections": [
         {
+            "name": "cf",
             "description": "SFP Connector",
             "direction": "o",
             "gender": "m",
-            "name": "cf",
             "type__name": "Flash | CF"
         }
     ],
-    "data": {
-        "asset": {
-            "part_no": ["SFCF4096H1BO2TO-I-D1-543-ALU"]
+    "data": [
+        {
+            "attr": "part_no",
+            "interface": "asset",
+            "value": ["SFCF4096H1BO2TO-I-D1-543-ALU"]
         }
-    }
+    ]
 }

@@ -7,80 +7,82 @@
     "cr_context": "NM",
     "connections": [
         {
+            "name": "in",
             "description": "Chassis connection",
             "direction": "o",
             "gender": "m",
-            "name": "in",
             "type__name": "Cisco | ISR | NM"
         },
         {
-            "description": "Voice-port N/0",
-            "direction": "s",
-            "gender": "f",
             "name": "voice-port0",
+            "description": "Voice-port N/0",
+            "direction": "s",
+            "gender": "f",
             "protocols": ["FXS"],
             "type__name": "Electrical | RJ21"
         },
         {
-            "description": "Voice-port N/0",
-            "direction": "s",
-            "gender": "f",
             "name": "voice-port1",
+            "description": "Voice-port N/0",
+            "direction": "s",
+            "gender": "f",
             "protocols": ["FXS"],
             "type__name": "Electrical | RJ21"
         },
         {
-            "description": "Voice-port N/0",
-            "direction": "s",
-            "gender": "f",
             "name": "voice-port2",
+            "description": "Voice-port N/0",
+            "direction": "s",
+            "gender": "f",
             "protocols": ["FXS"],
             "type__name": "Electrical | RJ21"
         },
         {
-            "description": "Voice-port N/0",
-            "direction": "s",
-            "gender": "f",
             "name": "voice-port3",
+            "description": "Voice-port N/0",
+            "direction": "s",
+            "gender": "f",
             "protocols": ["FXS"],
             "type__name": "Electrical | RJ21"
         },
         {
-            "description": "Voice-port N/0",
-            "direction": "s",
-            "gender": "f",
             "name": "voice-port4",
+            "description": "Voice-port N/0",
+            "direction": "s",
+            "gender": "f",
             "protocols": ["FXS"],
             "type__name": "Electrical | RJ21"
         },
         {
-            "description": "Voice-port N/0",
-            "direction": "s",
-            "gender": "f",
             "name": "voice-port5",
+            "description": "Voice-port N/0",
+            "direction": "s",
+            "gender": "f",
             "protocols": ["FXS"],
             "type__name": "Electrical | RJ21"
         },
         {
-            "description": "Voice-port N/0",
-            "direction": "s",
-            "gender": "f",
             "name": "voice-port6",
+            "description": "Voice-port N/0",
+            "direction": "s",
+            "gender": "f",
             "protocols": ["FXS"],
             "type__name": "Electrical | RJ21"
         },
         {
+            "name": "voice-port7",
             "description": "Voice-port N/0",
             "direction": "s",
             "gender": "f",
-            "name": "voice-port7",
             "protocols": ["FXS"],
             "type__name": "Electrical | RJ21"
         }
     ],
-    "data": {
-        "asset": {
-            "part_no": ["EM-HDA-8FXS="]
+    "data": [
+        {
+            "attr": "part_no",
+            "interface": "asset",
+            "value": ["EM-HDA-8FXS="]
         }
-    }
+    ]
 }

@@ -9,62 +9,86 @@
     "labels": ["noc::inv::chassis"],
     "connections": [
         {
+            "name": "1",
             "description": "Linecard 1 slot",
             "direction": "i",
             "gender": "f",
-            "name": "1",
             "type__name": "Zyxel | MSAN | Linecard"
         },
         {
+            "name": "2",
             "description": "Linecard 2 slot",
             "direction": "i",
             "gender": "f",
-            "name": "2",
             "type__name": "Zyxel | MSAN | Linecard"
         },
         {
+            "name": "3",
             "description": "Linecard 3 slot",
             "direction": "i",
             "gender": "f",
-            "name": "3",
             "type__name": "Zyxel | MSAN | Linecard"
         },
         {
+            "name": "4",
             "description": "Linecard 4 slot",
             "direction": "i",
             "gender": "f",
-            "name": "4",
             "type__name": "Zyxel | MSAN | Linecard"
         },
         {
+            "name": "5",
             "description": "Linecard 5 slot",
             "direction": "i",
             "gender": "f",
-            "name": "5",
             "type__name": "Zyxel | MSAN | Linecard"
         }
     ],
-    "data": {
-        "asset": {
-            "part_no": ["IES-5005"]
+    "data": [
+        {
+            "attr": "managed",
+            "interface": "management",
+            "value": true
         },
-        "dimensions": {
-            "depth": 250,
-            "height": 152,
-            "width": 440
+        {
+            "attr": "width",
+            "interface": "dimensions",
+            "value": 440
         },
-        "management": {
-            "managed": true
+        {
+            "attr": "depth",
+            "interface": "dimensions",
+            "value": 250
         },
-        "power": {
-            "power": 540.0
+        {
+            "attr": "height",
+            "interface": "dimensions",
+            "value": 152
         },
-        "rackmount": {
-            "units": 4.0
+        {
+            "attr": "power",
+            "interface": "power",
+            "value": 540.0
         },
-        "weight": {
-            "is_recursive": true,
-            "weight": 7.0
+        {
+            "attr": "is_recursive",
+            "interface": "weight",
+            "value": true
+        },
+        {
+            "attr": "weight",
+            "interface": "weight",
+            "value": 7.0
+        },
+        {
+            "attr": "part_no",
+            "interface": "asset",
+            "value": ["IES-5005"]
+        },
+        {
+            "attr": "units",
+            "interface": "rackmount",
+            "value": 4.0
         }
-    }
+    ]
 }

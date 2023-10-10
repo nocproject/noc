@@ -8,25 +8,27 @@
     "labels": ["noc::inv::xcvr"],
     "connections": [
         {
+            "name": "in",
             "description": "SFP Connector",
             "direction": "o",
             "gender": "m",
-            "name": "in",
             "protocols": ["TransEth100M"],
             "type__name": "Transceiver | SFP"
         },
         {
+            "name": "rxtx",
             "description": "RxTx LC Port",
             "direction": "s",
             "gender": "f",
-            "name": "rxtx",
             "protocols": [">100BASELX10-1310", "<100BASELX10-1550"],
             "type__name": "Optical | SC"
         }
     ],
-    "data": {
-        "asset": {
-            "part_no": ["ML-09R"]
+    "data": [
+        {
+            "attr": "part_no",
+            "interface": "asset",
+            "value": ["ML-09R"]
         }
-    }
+    ]
 }

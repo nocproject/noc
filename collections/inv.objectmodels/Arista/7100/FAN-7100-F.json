@@ -7,16 +7,18 @@
     "labels": ["noc::inv::fan"],
     "connections": [
         {
+            "name": "in",
             "description": "Chassis connection",
             "direction": "o",
             "gender": "m",
-            "name": "in",
             "type__name": "Arista | 7100 | FAN"
         }
     ],
-    "data": {
-        "asset": {
-            "part_no": ["FAN-7100-F"]
+    "data": [
+        {
+            "attr": "part_no",
+            "interface": "asset",
+            "value": ["FAN-7100-F"]
         }
-    }
+    ]
 }

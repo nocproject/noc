@@ -8,16 +8,18 @@
     "labels": ["noc::inv::fan"],
     "connections": [
         {
+            "name": "in",
             "description": "Chassis connection",
             "direction": "o",
             "gender": "m",
-            "name": "in",
             "type__name": "Juniper | MX | MX480 Fan"
         }
     ],
-    "data": {
-        "asset": {
-            "order_part_no": ["FFANTRAY-MX480-HC-S"]
+    "data": [
+        {
+            "attr": "order_part_no",
+            "interface": "asset",
+            "value": ["FFANTRAY-MX480-HC-S"]
         }
-    }
+    ]
 }

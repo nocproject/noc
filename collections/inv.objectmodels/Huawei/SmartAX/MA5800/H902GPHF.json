@@ -143,14 +143,26 @@
             "type__name": "Huawei | SmartAX | MA5800 | SB"
         }
     ],
-    "data": {
-        "asset": {
-            "part_no": ["H902GPHF"]
+    "data": [
+        {
+            "attr": "part_no",
+            "interface": "asset",
+            "value": ["H902GPHF"]
         },
-        "dimensions": {
-            "depth": 257,
-            "height": 399,
-            "width": 23
+        {
+            "attr": "depth",
+            "interface": "dimensions",
+            "value": 257
+        },
+        {
+            "attr": "height",
+            "interface": "dimensions",
+            "value": 399
+        },
+        {
+            "attr": "width",
+            "interface": "dimensions",
+            "value": 23
         }
-    }
+    ]
 }

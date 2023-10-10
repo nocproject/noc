@@ -9,119 +9,139 @@
     "labels": ["noc::inv::chassis"],
     "connections": [
         {
+            "name": "fpm",
             "description": "Front Panel Display",
             "direction": "i",
             "gender": "f",
-            "name": "fpm",
             "type__name": "Juniper | MX | FPM"
         },
         {
+            "name": "fan0",
             "description": "Fan Slot #0",
             "direction": "i",
             "gender": "f",
-            "name": "fan0",
             "type__name": "Juniper | MX | MX480 Fan"
         },
         {
+            "name": "scb0",
             "description": "SCB Slot #0",
             "direction": "i",
             "gender": "f",
-            "name": "scb0",
             "type__name": "Juniper | MX | SCB"
         },
         {
+            "name": "scb1",
             "description": "SCB Slot #1",
             "direction": "i",
             "gender": "f",
-            "name": "scb1",
             "type__name": "Juniper | MX | SCB"
         },
         {
+            "name": "fpc0",
             "description": "FPC/DPC Slot #0",
             "direction": "i",
             "gender": "f",
-            "name": "fpc0",
             "type__name": "Juniper | MX | FPC"
         },
         {
+            "name": "fpc1",
             "description": "FPC/DPC Slot#1",
             "direction": "i",
             "gender": "f",
-            "name": "fpc1",
             "type__name": "Juniper | MX | FPC"
         },
         {
+            "name": "fpc2",
             "description": "FPC/DPC Slot #2",
             "direction": "i",
             "gender": "f",
-            "name": "fpc2",
             "type__name": "Juniper | MX | FPC"
         },
         {
+            "name": "fpc3",
             "description": "FPC/DPC Slot #3",
             "direction": "i",
             "gender": "f",
-            "name": "fpc3",
             "type__name": "Juniper | MX | FPC"
         },
         {
+            "name": "fpc4",
             "description": "FPC/DPC Slot #4",
             "direction": "i",
             "gender": "f",
-            "name": "fpc4",
             "type__name": "Juniper | MX | FPC"
         },
         {
+            "name": "fpc5",
             "description": "FPC/DPC Slot #5",
             "direction": "i",
             "gender": "f",
-            "name": "fpc5",
             "type__name": "Juniper | MX | FPC"
         },
         {
+            "name": "pem0",
             "description": "PEM Slot #0",
             "direction": "i",
             "gender": "f",
-            "name": "pem0",
             "type__name": "Juniper | MX | MX480 PEM"
         },
         {
+            "name": "pem1",
             "description": "PEM Slot #1",
             "direction": "i",
             "gender": "f",
-            "name": "pem1",
             "type__name": "Juniper | MX | MX480 PEM"
         },
         {
+            "name": "pem2",
             "description": "PEM Slot #2",
             "direction": "i",
             "gender": "f",
-            "name": "pem2",
             "type__name": "Juniper | MX | MX480 PEM"
         },
         {
+            "name": "pem3",
             "description": "PEM Slot #3",
             "direction": "i",
             "gender": "f",
-            "name": "pem3",
             "type__name": "Juniper | MX | MX480 PEM"
         }
     ],
-    "data": {
-        "airflow": {
-            "exhaust": "l",
-            "intake": "r"
+    "data": [
+        {
+            "attr": "exhaust",
+            "interface": "airflow",
+            "value": "l"
         },
-        "asset": {
-            "order_part_no": ["MX480"],
-            "cpe_22": "cpe:/h:juniper:mx480:-",
-            "cpe_23": "cpe:2.3:h:juniper:mx480:-:*:*:*:*:*:*:*"
+        {
+            "attr": "intake",
+            "interface": "airflow",
+            "value": "r"
         },
-        "management": {
-            "managed": true
+        {
+            "attr": "order_part_no",
+            "interface": "asset",
+            "value": ["MX480"]
         },
-        "rackmount": {
-            "units": 8
+        {
+            "attr": "cpe_22",
+            "interface": "asset",
+            "value": "cpe:/h:juniper:mx480:-"
+        },
+        {
+            "attr": "cpe_23",
+            "interface": "asset",
+            "value": "cpe:2.3:h:juniper:mx480:-:*:*:*:*:*:*:*"
+        },
+        {
+            "attr": "managed",
+            "interface": "management",
+            "value": true
+        },
+        {
+            "attr": "units",
+            "interface": "rackmount",
+            "value": 8
         }
-    }
+    ]
 }

@@ -7,13 +7,13 @@
     "labels": ["noc::inv::xcvr"],
     "connections": [
         {
+            "name": "in",
             "description": "QSFP+ Connector",
             "direction": "o",
             "gender": "m",
-            "name": "in",
             "protocols": ["TransEth40G"],
             "type__name": "Transceiver | QSFP+"
         }
     ],
-    "data": {}
+    "data": []
 }

@@ -7,16 +7,18 @@
     "cr_context": "PFC",
     "connections": [
         {
+            "name": "in",
             "description": "PFC Policy Feature Card",
             "direction": "o",
             "gender": "m",
-            "name": "in",
             "type__name": "Cisco | C6500ME | PFC"
         }
     ],
-    "data": {
-        "asset": {
-            "part_no": ["ME-C6524-PFC3C"]
+    "data": [
+        {
+            "attr": "part_no",
+            "interface": "asset",
+            "value": ["ME-C6524-PFC3C"]
         }
-    }
+    ]
 }

@@ -6,7 +6,14 @@
     "description": "Quidway S2326TP-EI-CX4Z126DM-S2326TP-EI Mainframe(24 10/100 BASE-T ports and 2 Combo GE(10/100/1000 BASE-T+100/1000 Base-X) ports and DC -48V",
     "connection_rule__name": "Huawei | Quidway",
     "cr_context": "CHASSIS",
-    "labels": ["noc::inv::chassis", "noc::inv::sup", "noc::inv::psu", "noc::inv::fabric", "noc::inv::port", "noc::inv::fan"],
+    "labels": [
+        "noc::inv::chassis",
+        "noc::inv::sup",
+        "noc::inv::psu",
+        "noc::inv::fabric",
+        "noc::inv::port",
+        "noc::inv::fan"
+    ],
     "connections": [
         {
             "name": "-48V",
@@ -281,26 +288,46 @@
             "type__name": "Transceiver | SFP"
         }
     ],
-    "data": {
-        "asset": {
-            "part_no": ["CX4Z126DM", "S2326TP-EI-DC"]
+    "data": [
+        {
+            "attr": "managed",
+            "interface": "management",
+            "value": true
         },
-        "dimensions": {
-            "depth": 220,
-            "height": 43,
-            "width": 442
+        {
+            "attr": "units",
+            "interface": "rackmount",
+            "value": 1.0
         },
-        "management": {
-            "managed": true
+        {
+            "attr": "weight",
+            "interface": "weight",
+            "value": 2.4
         },
-        "power": {
-            "power": 15.5
+        {
+            "attr": "power",
+            "interface": "power",
+            "value": 15.5
         },
-        "rackmount": {
-            "units": 1.0
+        {
+            "attr": "part_no",
+            "interface": "asset",
+            "value": ["CX4Z126DM", "S2326TP-EI-DC"]
         },
-        "weight": {
-            "weight": 2.4
+        {
+            "attr": "width",
+            "interface": "dimensions",
+            "value": 442
+        },
+        {
+            "attr": "depth",
+            "interface": "dimensions",
+            "value": 220
+        },
+        {
+            "attr": "height",
+            "interface": "dimensions",
+            "value": 43
         }
-    }
+    ]
 }

@@ -6,16 +6,18 @@
     "description": "256MB Compact Flash Disk for c7201",
     "connections": [
         {
+            "name": "in",
             "description": "Compact Flash Disk slot",
             "direction": "o",
             "gender": "m",
-            "name": "in",
             "type__name": "Flash | CF"
         }
     ],
-    "data": {
-        "asset": {
-            "part_no": ["MEM-7201-FLD256"]
+    "data": [
+        {
+            "attr": "part_no",
+            "interface": "asset",
+            "value": ["MEM-7201-FLD256"]
         }
-    }
+    ]
 }

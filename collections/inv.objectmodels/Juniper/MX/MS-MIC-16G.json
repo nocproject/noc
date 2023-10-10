@@ -8,17 +8,23 @@
     "cr_context": "MIC",
     "connections": [
         {
+            "name": "in",
             "description": "MPC connection",
             "direction": "o",
             "gender": "m",
-            "name": "in",
             "type__name": "Juniper | MX | MIC"
         }
     ],
-    "data": {
-        "asset": {
-            "order_part_no": ["MS-MIC-16G"],
-            "part_no": ["750-043688", "750-061622"]
+    "data": [
+        {
+            "attr": "order_part_no",
+            "interface": "asset",
+            "value": ["MS-MIC-16G"]
+        },
+        {
+            "attr": "part_no",
+            "interface": "asset",
+            "value": ["750-043688", "750-061622"]
         }
-    }
+    ]
 }

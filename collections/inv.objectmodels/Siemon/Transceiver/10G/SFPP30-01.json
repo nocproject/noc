@@ -8,33 +8,49 @@
     "labels": ["noc::inv::xcvr"],
     "connections": [
         {
-            "cross": "in2",
+            "name": "in1",
             "description": "Chassis connection",
+            "cross": "in2",
             "direction": "o",
             "gender": "m",
-            "name": "in1",
             "protocols": ["TransEth10G"],
             "type__name": "Transceiver | SFP+"
         },
         {
-            "cross": "in1",
+            "name": "in2",
             "description": "Chassis connection",
+            "cross": "in1",
             "direction": "o",
             "gender": "m",
-            "name": "in2",
             "protocols": ["TransEth10G"],
             "type__name": "Transceiver | SFP+"
         }
     ],
-    "data": {
-        "asset": {
-            "part_no": ["900074-10-02"]
+    "data": [
+        {
+            "attr": "part_no",
+            "interface": "asset",
+            "value": ["900074-10-02"]
         },
-        "twinax": {
-            "alias": "in",
-            "connection1": "in1",
-            "connection2": "in2",
-            "twinax": true
+        {
+            "attr": "alias",
+            "interface": "twinax",
+            "value": "in"
+        },
+        {
+            "attr": "connection1",
+            "interface": "twinax",
+            "value": "in1"
+        },
+        {
+            "attr": "twinax",
+            "interface": "twinax",
+            "value": true
+        },
+        {
+            "attr": "connection2",
+            "interface": "twinax",
+            "value": "in2"
         }
-    }
+    ]
 }

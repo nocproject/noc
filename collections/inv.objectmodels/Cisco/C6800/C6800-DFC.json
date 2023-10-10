@@ -7,16 +7,18 @@
     "cr_context": "DFC",
     "connections": [
         {
+            "name": "in",
             "description": "DFC slot",
             "direction": "o",
             "gender": "m",
-            "name": "in",
             "type__name": "Cisco | 7600 | DFC"
         }
     ],
-    "data": {
-        "asset": {
-            "part_no": ["C6800-DFC"]
+    "data": [
+        {
+            "attr": "part_no",
+            "interface": "asset",
+            "value": ["C6800-DFC"]
         }
-    }
+    ]
 }

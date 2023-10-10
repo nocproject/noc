@@ -8,23 +8,25 @@
     "labels": ["noc::inv::psu"],
     "connections": [
         {
+            "name": "in",
             "description": "",
             "direction": "o",
             "gender": "m",
-            "name": "in",
             "type__name": "Cisco | 2911 | PSU"
         },
         {
+            "name": "power",
             "description": "Power input",
             "direction": "s",
             "gender": "m",
-            "name": "power",
             "type__name": "Power | IEC 60320 C14"
         }
     ],
-    "data": {
-        "asset": {
-            "part_no": ["PWR-2911-AC"]
+    "data": [
+        {
+            "attr": "part_no",
+            "interface": "asset",
+            "value": ["PWR-2911-AC"]
         }
-    }
+    ]
 }

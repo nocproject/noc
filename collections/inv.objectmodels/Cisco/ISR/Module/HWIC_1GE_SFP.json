@@ -8,25 +8,27 @@
     "cr_context": "DCS",
     "connections": [
         {
+            "name": "in",
             "description": "HWIC Card connector",
             "direction": "o",
             "gender": "m",
-            "name": "in",
             "protocols": ["HWIC"],
             "type__name": "Cisco | ISR | DCS"
         },
         {
+            "name": "Gi0_sfp",
             "description": "GigabitEthernet X/0",
             "direction": "i",
             "gender": "f",
-            "name": "Gi0_sfp",
             "protocols": ["TransEth100M", "TransEth1G"],
             "type__name": "Transceiver | SFP"
         }
     ],
-    "data": {
-        "asset": {
-            "part_no": ["HWIC-1GE-SFP"]
+    "data": [
+        {
+            "attr": "part_no",
+            "interface": "asset",
+            "value": ["HWIC-1GE-SFP"]
         }
-    }
+    ]
 }

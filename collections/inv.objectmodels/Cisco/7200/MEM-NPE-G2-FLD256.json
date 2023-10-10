@@ -6,16 +6,18 @@
     "description": "256MB Compact Flash Disk for NPE-G2",
     "connections": [
         {
+            "name": "in",
             "description": "Compact Flash Disk slot",
             "direction": "o",
             "gender": "m",
-            "name": "in",
             "type__name": "Flash | CF"
         }
     ],
-    "data": {
-        "asset": {
-            "part_no": ["MEM-NPE-G2-FLD256", "MEM-NPE-G2-FLD256="]
+    "data": [
+        {
+            "attr": "part_no",
+            "interface": "asset",
+            "value": ["MEM-NPE-G2-FLD256", "MEM-NPE-G2-FLD256="]
         }
-    }
+    ]
 }
