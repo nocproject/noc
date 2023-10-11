@@ -9,97 +9,113 @@
     "labels": ["noc::inv::chassis"],
     "connections": [
         {
+            "name": "1",
             "description": "SIC slot #1",
             "direction": "i",
             "gender": "f",
-            "name": "1",
             "type__name": "Huawei | CX200-300 | SIC"
         },
         {
+            "name": "2",
             "description": "SIC slot #2",
             "direction": "i",
             "gender": "f",
-            "name": "2",
             "type__name": "Huawei | CX200-300 | SIC"
         },
         {
+            "name": "3",
             "description": "SIC slot #3",
             "direction": "i",
             "gender": "f",
-            "name": "3",
             "type__name": "Huawei | CX200-300 | SIC"
         },
         {
+            "name": "4",
             "description": "SIC slot #4",
             "direction": "i",
             "gender": "f",
-            "name": "4",
             "type__name": "Huawei | CX200-300 | SIC"
         },
         {
+            "name": "5",
             "description": "SIC slot #5",
             "direction": "i",
             "gender": "f",
-            "name": "5",
             "type__name": "Huawei | CX200-300 | SIC"
         },
         {
+            "name": "6",
             "description": "SIC slot #6",
             "direction": "i",
             "gender": "f",
-            "name": "6",
             "type__name": "Huawei | CX200-300 | SIC"
         },
         {
+            "name": "7",
             "description": "SCU slot #1",
             "direction": "i",
             "gender": "f",
-            "name": "7",
             "type__name": "Huawei | CX200-300 | SCU"
         },
         {
+            "name": "8",
             "description": "SCU slot #2",
             "direction": "i",
             "gender": "f",
-            "name": "8",
             "type__name": "Huawei | CX200-300 | SCU"
         },
         {
-            "description": "PWR slot #1",
-            "direction": "i",
-            "gender": "f",
             "name": "9",
-            "type__name": "Huawei | CX200-300 | CX300-PSU"
-        },
-        {
             "description": "PWR slot #1",
             "direction": "i",
             "gender": "f",
-            "name": "10",
             "type__name": "Huawei | CX200-300 | CX300-PSU"
         },
         {
+            "name": "10",
+            "description": "PWR slot #1",
+            "direction": "i",
+            "gender": "f",
+            "type__name": "Huawei | CX200-300 | CX300-PSU"
+        },
+        {
+            "name": "11",
             "description": "FAN slot #1",
             "direction": "i",
             "gender": "f",
-            "name": "11",
             "type__name": "Huawei | CX200-300 | CX300A-FAN"
         }
     ],
-    "data": {
-        "asset": {
-            "part_no": ["CX300A"]
+    "data": [
+        {
+            "attr": "part_no",
+            "interface": "asset",
+            "value": ["CX300A"]
         },
-        "dimensions": {
-            "depth": 264,
-            "height": 442,
-            "width": 225
+        {
+            "attr": "depth",
+            "interface": "dimensions",
+            "value": 264
         },
-        "management": {
-            "managed": true
+        {
+            "attr": "height",
+            "interface": "dimensions",
+            "value": 442
         },
-        "rackmount": {
-            "unit": "6"
+        {
+            "attr": "width",
+            "interface": "dimensions",
+            "value": 225
+        },
+        {
+            "attr": "managed",
+            "interface": "management",
+            "value": true
+        },
+        {
+            "attr": "unit",
+            "interface": "rackmount",
+            "value": "6"
         }
-    }
+    ]
 }

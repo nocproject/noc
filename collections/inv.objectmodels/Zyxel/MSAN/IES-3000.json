@@ -9,139 +9,163 @@
     "labels": ["noc::inv::chassis"],
     "connections": [
         {
+            "name": "1",
             "description": "Linecard 1 slot",
             "direction": "i",
             "gender": "f",
-            "name": "1",
             "type__name": "Zyxel | MSAN | Linecard"
         },
         {
+            "name": "2",
             "description": "Linecard 2 slot",
             "direction": "i",
             "gender": "f",
-            "name": "2",
             "type__name": "Zyxel | MSAN | Linecard"
         },
         {
+            "name": "3",
             "description": "Linecard 3 slot",
             "direction": "i",
             "gender": "f",
-            "name": "3",
             "type__name": "Zyxel | MSAN | Linecard"
         },
         {
+            "name": "4",
             "description": "Linecard 4 slot",
             "direction": "i",
             "gender": "f",
-            "name": "4",
             "type__name": "Zyxel | MSAN | Linecard"
         },
         {
+            "name": "5",
             "description": "Linecard 5 slot",
             "direction": "i",
             "gender": "f",
-            "name": "5",
             "type__name": "Zyxel | MSAN | Linecard"
         },
         {
+            "name": "6",
             "description": "Linecard 6 slot",
             "direction": "i",
             "gender": "f",
-            "name": "6",
             "type__name": "Zyxel | MSAN | Linecard"
         },
         {
+            "name": "7",
             "description": "Linecard 7 slot",
             "direction": "i",
             "gender": "f",
-            "name": "7",
             "type__name": "Zyxel | MSAN | Linecard"
         },
         {
+            "name": "8",
             "description": "Linecard 8 slot",
             "direction": "i",
             "gender": "f",
-            "name": "8",
             "type__name": "Zyxel | MSAN | Linecard"
         },
         {
+            "name": "9",
             "description": "Linecard 9 slot",
             "direction": "i",
             "gender": "f",
-            "name": "9",
             "type__name": "Zyxel | MSAN | Linecard"
         },
         {
+            "name": "10",
             "description": "Linecard 10 slot",
             "direction": "i",
             "gender": "f",
-            "name": "10",
             "type__name": "Zyxel | MSAN | Linecard"
         },
         {
+            "name": "11",
             "description": "Linecard 11 slot",
             "direction": "i",
             "gender": "f",
-            "name": "11",
             "type__name": "Zyxel | MSAN | Linecard"
         },
         {
+            "name": "12",
             "description": "Linecard 12 slot",
             "direction": "i",
             "gender": "f",
-            "name": "12",
             "type__name": "Zyxel | MSAN | Linecard"
         },
         {
+            "name": "13",
             "description": "Linecard 13 slot",
             "direction": "i",
             "gender": "f",
-            "name": "13",
             "type__name": "Zyxel | MSAN | Linecard"
         },
         {
+            "name": "14",
             "description": "Linecard 14 slot",
             "direction": "i",
             "gender": "f",
-            "name": "14",
             "type__name": "Zyxel | MSAN | Linecard"
         },
         {
+            "name": "15",
             "description": "Linecard 15 slot",
             "direction": "i",
             "gender": "f",
-            "name": "15",
             "type__name": "Zyxel | MSAN | Linecard"
         },
         {
+            "name": "16",
             "description": "Linecard 16 slot",
             "direction": "i",
             "gender": "f",
-            "name": "16",
             "type__name": "Zyxel | MSAN | Linecard"
         }
     ],
-    "data": {
-        "asset": {
-            "part_no": ["IES-3000"]
+    "data": [
+        {
+            "attr": "managed",
+            "interface": "management",
+            "value": true
         },
-        "dimensions": {
-            "depth": 268,
-            "height": 482,
-            "width": 442
+        {
+            "attr": "width",
+            "interface": "dimensions",
+            "value": 442
         },
-        "management": {
-            "managed": true
+        {
+            "attr": "depth",
+            "interface": "dimensions",
+            "value": 268
         },
-        "power": {
-            "power": 800.0
+        {
+            "attr": "height",
+            "interface": "dimensions",
+            "value": 482
         },
-        "rackmount": {
-            "units": 11.0
+        {
+            "attr": "power",
+            "interface": "power",
+            "value": 800.0
         },
-        "weight": {
-            "is_recursive": true,
-            "weight": 22.8
+        {
+            "attr": "is_recursive",
+            "interface": "weight",
+            "value": true
+        },
+        {
+            "attr": "weight",
+            "interface": "weight",
+            "value": 22.8
+        },
+        {
+            "attr": "part_no",
+            "interface": "asset",
+            "value": ["IES-3000"]
+        },
+        {
+            "attr": "units",
+            "interface": "rackmount",
+            "value": 11.0
         }
-    }
+    ]
 }

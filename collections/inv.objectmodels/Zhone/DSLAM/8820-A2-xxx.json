@@ -9,167 +9,191 @@
     "labels": ["noc::inv::chassis"],
     "connections": [
         {
+            "name": "card1",
             "description": "Linecard 1 slot",
             "direction": "i",
             "gender": "f",
-            "name": "card1",
             "type__name": "Zhone | GranDSLAM | card"
         },
         {
+            "name": "card2",
             "description": "Linecard 2 slot",
             "direction": "i",
             "gender": "f",
-            "name": "card2",
             "type__name": "Zhone | GranDSLAM | card"
         },
         {
+            "name": "card3",
             "description": "Linecard 3 slot",
             "direction": "i",
             "gender": "f",
-            "name": "card3",
             "type__name": "Zhone | GranDSLAM | card"
         },
         {
+            "name": "card4",
             "description": "Linecard 4 slot",
             "direction": "i",
             "gender": "f",
-            "name": "card4",
             "type__name": "Zhone | GranDSLAM | card"
         },
         {
+            "name": "card5",
             "description": "Linecard 5 slot",
             "direction": "i",
             "gender": "f",
-            "name": "card5",
             "type__name": "Zhone | GranDSLAM | card"
         },
         {
+            "name": "card6",
             "description": "Linecard 6 slot",
             "direction": "i",
             "gender": "f",
-            "name": "card6",
             "type__name": "Zhone | GranDSLAM | card"
         },
         {
+            "name": "card7",
             "description": "Linecard 7 slot",
             "direction": "i",
             "gender": "f",
-            "name": "card7",
             "type__name": "Zhone | GranDSLAM | card"
         },
         {
+            "name": "card8",
             "description": "Linecard 8 slot",
             "direction": "i",
             "gender": "f",
-            "name": "card8",
             "type__name": "Zhone | GranDSLAM | card"
         },
         {
+            "name": "card9",
             "description": "Linecard 9 slot",
             "direction": "i",
             "gender": "f",
-            "name": "card9",
             "type__name": "Zhone | GranDSLAM | card"
         },
         {
+            "name": "card10",
             "description": "Linecard 10 slot",
             "direction": "i",
             "gender": "f",
-            "name": "card10",
             "type__name": "Zhone | GranDSLAM | card"
         },
         {
+            "name": "card11",
             "description": "Linecard 11 slot",
             "direction": "i",
             "gender": "f",
-            "name": "card11",
             "type__name": "Zhone | GranDSLAM | card"
         },
         {
+            "name": "card12",
             "description": "Linecard 12 slot",
             "direction": "i",
             "gender": "f",
-            "name": "card12",
             "type__name": "Zhone | GranDSLAM | card"
         },
         {
+            "name": "card13",
             "description": "Linecard 13 slot",
             "direction": "i",
             "gender": "f",
-            "name": "card13",
             "type__name": "Zhone | GranDSLAM | card"
         },
         {
+            "name": "card14",
             "description": "Linecard 14 slot",
             "direction": "i",
             "gender": "f",
-            "name": "card14",
             "type__name": "Zhone | GranDSLAM | card"
         },
         {
+            "name": "card15",
             "description": "Linecard 15 slot",
             "direction": "i",
             "gender": "f",
-            "name": "card15",
             "type__name": "Zhone | GranDSLAM | card"
         },
         {
+            "name": "card16",
             "description": "Linecard 16 slot",
             "direction": "i",
             "gender": "f",
-            "name": "card16",
             "type__name": "Zhone | GranDSLAM | card"
         },
         {
+            "name": "card17",
             "description": "Linecard 17 slot",
             "direction": "i",
             "gender": "f",
-            "name": "card17",
             "type__name": "Zhone | GranDSLAM | card"
         },
         {
+            "name": "card18",
             "description": "Linecard 18 slot",
             "direction": "i",
             "gender": "f",
-            "name": "card18",
             "type__name": "Zhone | GranDSLAM | card"
         },
         {
+            "name": "card19",
             "description": "Linecard 19 slot",
             "direction": "i",
             "gender": "f",
-            "name": "card19",
             "type__name": "Zhone | GranDSLAM | card"
         },
         {
+            "name": "card20",
             "description": "Linecard 20 slot",
             "direction": "i",
             "gender": "f",
-            "name": "card20",
             "type__name": "Zhone | GranDSLAM | card"
         }
     ],
-    "data": {
-        "asset": {
-            "order_part_no": ["8820-A2-500", "8820-A2-530", "8820-A2-xxx"]
+    "data": [
+        {
+            "attr": "order_part_no",
+            "interface": "asset",
+            "value": ["8820-A2-500", "8820-A2-530", "8820-A2-xxx"]
         },
-        "dimensions": {
-            "depth": 304,
-            "height": 622,
-            "width": 436
+        {
+            "attr": "depth",
+            "interface": "dimensions",
+            "value": 304
         },
-        "management": {
-            "managed": true
+        {
+            "attr": "height",
+            "interface": "dimensions",
+            "value": 622
         },
-        "power": {
-            "power": 1300.0
+        {
+            "attr": "width",
+            "interface": "dimensions",
+            "value": 436
         },
-        "rackmount": {
-            "units": 14.0
+        {
+            "attr": "managed",
+            "interface": "management",
+            "value": true
         },
-        "weight": {
-            "is_recursive": true,
-            "weight": 22.3
+        {
+            "attr": "power",
+            "interface": "power",
+            "value": 1300.0
+        },
+        {
+            "attr": "units",
+            "interface": "rackmount",
+            "value": 14.0
+        },
+        {
+            "attr": "is_recursive",
+            "interface": "weight",
+            "value": true
+        },
+        {
+            "attr": "weight",
+            "interface": "weight",
+            "value": 22.3
         }
-    }
+    ]
 }

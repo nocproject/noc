@@ -7,16 +7,18 @@
     "cr_context": "CLK",
     "connections": [
         {
+            "name": "in",
             "description": "Chassis connection",
             "direction": "o",
             "gender": "m",
-            "name": "in",
             "type__name": "Cisco | 6500 | CLK"
         }
     ],
-    "data": {
-        "asset": {
-            "part_no": ["WS-C6000-CL", "WS-C6513-CL"]
+    "data": [
+        {
+            "attr": "part_no",
+            "interface": "asset",
+            "value": ["WS-C6000-CL", "WS-C6513-CL"]
         }
-    }
+    ]
 }

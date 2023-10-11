@@ -8,28 +8,48 @@
     "labels": ["noc::inv::psu"],
     "connections": [
         {
+            "name": "in",
             "description": "Chassis connector",
             "direction": "o",
             "gender": "m",
-            "name": "in",
             "type__name": "Huawei | S9300 | S9303 PEM"
         }
     ],
-    "data": {
-        "asset": {
-            "order_part_no": ["02316867"],
-            "part_no": ["LE02PSD16"]
+    "data": [
+        {
+            "attr": "power",
+            "interface": "power",
+            "value": 1600.0
         },
-        "dimensions": {
-            "depth": 393,
-            "height": 130,
-            "width": 41
+        {
+            "attr": "part_no",
+            "interface": "asset",
+            "value": ["LE02PSD16"]
         },
-        "power": {
-            "power": 1600.0
+        {
+            "attr": "order_part_no",
+            "interface": "asset",
+            "value": ["02316867"]
         },
-        "weight": {
-            "weight": 2.5
+        {
+            "attr": "weight",
+            "interface": "weight",
+            "value": 2.5
+        },
+        {
+            "attr": "width",
+            "interface": "dimensions",
+            "value": 41
+        },
+        {
+            "attr": "depth",
+            "interface": "dimensions",
+            "value": 393
+        },
+        {
+            "attr": "height",
+            "interface": "dimensions",
+            "value": 130
         }
-    }
+    ]
 }

@@ -7,33 +7,37 @@
     "plugins": ["-inventory", "conduits"],
     "connections": [
         {
+            "name": "ducts",
             "description": "Inter-manhole ducts",
             "direction": "s",
             "gender": "s",
-            "name": "ducts",
             "type__name": "Ducts"
         },
         {
+            "name": "conduits",
             "description": "Ducts conduits",
             "direction": "s",
             "gender": "s",
-            "name": "conduits",
             "type__name": "Conduits"
         },
         {
+            "name": "cables",
             "description": "Passing cables",
             "direction": "s",
             "gender": "s",
-            "name": "cables",
             "type__name": "Cables"
         }
     ],
-    "data": {
-        "container": {
-            "container": true
+    "data": [
+        {
+            "attr": "layer",
+            "interface": "geopoint",
+            "value": "manholes"
         },
-        "geopoint": {
-            "layer": "manholes"
+        {
+            "attr": "container",
+            "interface": "container",
+            "value": true
         }
-    }
+    ]
 }

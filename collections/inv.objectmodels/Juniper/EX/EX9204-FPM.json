@@ -7,16 +7,18 @@
     "cr_context": "FPC",
     "connections": [
         {
+            "name": "in",
             "description": "FPM connection",
             "direction": "o",
             "gender": "m",
-            "name": "in",
             "type__name": "Juniper | MX | FPM"
         }
     ],
-    "data": {
-        "asset": {
-            "part_no": ["760-064012"]
+    "data": [
+        {
+            "attr": "part_no",
+            "interface": "asset",
+            "value": ["760-064012"]
         }
-    }
+    ]
 }

@@ -21,9 +21,11 @@
             "type__name": "Cisco | SPA"
         }
     ],
-    "data": {
-        "asset": {
-            "part_no": ["ASR1001-SIP"]
+    "data": [
+        {
+            "attr": "part_no",
+            "interface": "asset",
+            "value": ["ASR1001-SIP"]
         }
-    }
+    ]
 }

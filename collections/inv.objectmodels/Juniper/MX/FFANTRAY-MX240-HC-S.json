@@ -9,17 +9,23 @@
     "labels": ["noc::inv::fan"],
     "connections": [
         {
+            "name": "in",
             "description": "Chassis connection",
             "direction": "o",
             "gender": "m",
-            "name": "in",
             "type__name": "Juniper | MX | MX240 Fan"
         }
     ],
-    "data": {
-        "asset": {
-            "order_part_no": ["FFANTRAY-MX240-HC-S"],
-            "part_no": ["711-059360", "710-030216"]
+    "data": [
+        {
+            "attr": "order_part_no",
+            "interface": "asset",
+            "value": ["FFANTRAY-MX240-HC-S"]
+        },
+        {
+            "attr": "part_no",
+            "interface": "asset",
+            "value": ["711-059360", "710-030216"]
         }
-    }
+    ]
 }

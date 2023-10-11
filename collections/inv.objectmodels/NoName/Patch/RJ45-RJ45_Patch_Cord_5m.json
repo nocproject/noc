@@ -6,23 +6,23 @@
     "description": "Patch-Cord Cable, 5 meter",
     "connections": [
         {
+            "name": "A1",
             "description": null,
             "direction": "s",
             "gender": "m",
-            "name": "A1",
             "type__name": "Electrical | RJ45"
         },
         {
+            "name": "A2",
             "description": null,
             "direction": "s",
             "gender": "m",
-            "name": "A2",
             "type__name": "Electrical | RJ45"
         }
     ],
-    "data": {
-        "length": {
-            "length": 5.0
-        }
-    }
+    "data": [{
+        "attr": "length",
+        "interface": "length",
+        "value": 5.0
+    }]
 }

@@ -7,25 +7,27 @@
     "cr_context": "DCS",
     "connections": [
         {
+            "name": "Se0",
             "description": "Serial0",
             "direction": "s",
             "gender": "f",
-            "name": "Se0",
             "protocols": ["T1"],
             "type__name": "Electrical | DB60"
         },
         {
+            "name": "in",
             "description": "Voice WAN Interface Card slot connector",
             "direction": "o",
             "gender": "m",
-            "name": "in",
             "protocols": ["HWIC"],
             "type__name": "Cisco | ISR | DCS"
         }
     ],
-    "data": {
-        "asset": {
-            "part_no": ["HWIC-1T"]
+    "data": [
+        {
+            "attr": "part_no",
+            "interface": "asset",
+            "value": ["HWIC-1T"]
         }
-    }
+    ]
 }

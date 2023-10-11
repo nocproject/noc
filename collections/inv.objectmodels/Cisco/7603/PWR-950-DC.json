@@ -8,23 +8,25 @@
     "labels": ["noc::inv::psu"],
     "connections": [
         {
+            "name": "in",
             "description": "PEM version 1",
             "direction": "o",
             "gender": "m",
-            "name": "in",
             "type__name": "Cisco | 7600 | 7603-PEM1"
         },
         {
+            "name": "in",
             "description": "Internal Power slot",
             "direction": "o",
             "gender": "m",
-            "name": "in",
             "type__name": "Cisco | 7603 | PSU"
         }
     ],
-    "data": {
-        "asset": {
-            "part_no": ["PWR-950-DC", "PWR-950-DC="]
+    "data": [
+        {
+            "attr": "part_no",
+            "interface": "asset",
+            "value": ["PWR-950-DC", "PWR-950-DC="]
         }
-    }
+    ]
 }

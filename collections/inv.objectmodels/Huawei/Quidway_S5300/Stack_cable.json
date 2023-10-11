@@ -6,25 +6,25 @@
     "description": "1m PCI-E 8x stack cable",
     "connections": [
         {
-            "cross": "1",
+            "name": "0",
             "description": "12G stacking connector",
+            "cross": "1",
             "direction": "s",
             "gender": "m",
-            "name": "0",
             "type__name": "Huawei | Quidway S5300 | Stack 12G"
         },
         {
-            "cross": "0",
+            "name": "1",
             "description": "12G stacking connector",
+            "cross": "0",
             "direction": "s",
             "gender": "m",
-            "name": "1",
             "type__name": "Huawei | Quidway S5300 | Stack 12G"
         }
     ],
-    "data": {
-        "length": {
-            "length": "1"
-        }
-    }
+    "data": [{
+        "attr": "length",
+        "interface": "length",
+        "value": "1"
+    }]
 }

@@ -8,33 +8,35 @@
     "cr_context": "DCS",
     "connections": [
         {
+            "name": "in",
             "description": "EHWIC Card connector",
             "direction": "o",
             "gender": "m",
-            "name": "in",
             "protocols": ["EHWIC"],
             "type__name": "Cisco | ISR | DCS"
         },
         {
+            "name": "G0",
             "description": "GigabitEthernet X/0",
             "direction": "s",
             "gender": "f",
-            "name": "G0",
             "protocols": ["10BASET", "100BASETX", "1000BASETX"],
             "type__name": "Electrical | RJ45"
         },
         {
+            "name": "Gi0_sfp",
             "description": "GigabitEthernet X/0",
             "direction": "i",
             "gender": "f",
-            "name": "Gi0_sfp",
             "protocols": ["TransEth100M", "TransEth1G"],
             "type__name": "Transceiver | SFP"
         }
     ],
-    "data": {
-        "asset": {
-            "part_no": ["EHWIC-1GE-SFP-CU"]
+    "data": [
+        {
+            "attr": "part_no",
+            "interface": "asset",
+            "value": ["EHWIC-1GE-SFP-CU"]
         }
-    }
+    ]
 }

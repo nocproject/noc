@@ -120,20 +120,36 @@
             "type__name": "Electrical | USB"
         }
     ],
-    "data": {
-        "asset": {
-            "part_no": ["ESR-100"]
+    "data": [
+        {
+            "attr": "part_no",
+            "interface": "asset",
+            "value": ["ESR-100"]
         },
-        "dimensions": {
-            "depth": 240,
-            "height": 44,
-            "width": 310
+        {
+            "attr": "depth",
+            "interface": "dimensions",
+            "value": 240
         },
-        "management": {
-            "managed": true
+        {
+            "attr": "height",
+            "interface": "dimensions",
+            "value": 44
         },
-        "weight": {
-            "weight": 2.5
+        {
+            "attr": "width",
+            "interface": "dimensions",
+            "value": 310
+        },
+        {
+            "attr": "managed",
+            "interface": "management",
+            "value": true
+        },
+        {
+            "attr": "weight",
+            "interface": "weight",
+            "value": 2.5
         }
-    }
+    ]
 }

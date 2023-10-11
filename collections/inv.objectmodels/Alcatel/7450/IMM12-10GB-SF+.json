@@ -8,23 +8,25 @@
     "labels": ["noc::inv::chassis", "noc::inv::fabric"],
     "connections": [
         {
+            "name": "in",
             "description": "Chassis connection",
             "direction": "o",
             "gender": "m",
-            "name": "in",
             "type__name": "Alcatel | 7450 | IO"
         },
         {
+            "name": "mda1",
             "description": "MDA slot 1 connection",
             "direction": "i",
             "gender": "f",
-            "name": "mda1",
             "type__name": "Alcatel | 7450 | MDA"
         }
     ],
-    "data": {
-        "asset": {
-            "part_no": ["3HE04743AAAB01"]
+    "data": [
+        {
+            "attr": "part_no",
+            "interface": "asset",
+            "value": ["3HE04743AAAB01"]
         }
-    }
+    ]
 }

@@ -8,16 +8,18 @@
     "labels": ["noc::inv::fan"],
     "connections": [
         {
+            "name": "in",
             "description": "Fan connection",
             "direction": "o",
             "gender": "m",
-            "name": "in",
             "type__name": "Cisco | 7600 | 7604 Fan"
         }
     ],
-    "data": {
-        "asset": {
-            "part_no": ["FAN-MOD-4HS"]
+    "data": [
+        {
+            "attr": "part_no",
+            "interface": "asset",
+            "value": ["FAN-MOD-4HS"]
         }
-    }
+    ]
 }

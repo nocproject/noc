@@ -7,33 +7,35 @@
     "cr_context": "DCS",
     "connections": [
         {
+            "name": "Se0",
             "description": "Serial N/X/0",
             "direction": "s",
             "gender": "f",
-            "name": "Se0",
             "protocols": ["G.703"],
             "type__name": "Electrical | RJ48"
         },
         {
+            "name": "Se1",
             "description": "Serial N/X/1",
             "direction": "s",
             "gender": "f",
-            "name": "Se1",
             "protocols": ["G.703"],
             "type__name": "Electrical | RJ48"
         },
         {
+            "name": "in",
             "description": "Voice WAN Interface Card slot connector",
             "direction": "o",
             "gender": "m",
-            "name": "in",
             "protocols": ["VWIC"],
             "type__name": "Cisco | ISR | DCS"
         }
     ],
-    "data": {
-        "asset": {
-            "part_no": ["VWIC-2MFT-E1", "VWIC-2MFT-E1="]
+    "data": [
+        {
+            "attr": "part_no",
+            "interface": "asset",
+            "value": ["VWIC-2MFT-E1", "VWIC-2MFT-E1="]
         }
-    }
+    ]
 }

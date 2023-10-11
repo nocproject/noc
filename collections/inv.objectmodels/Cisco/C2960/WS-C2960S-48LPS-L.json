@@ -456,9 +456,11 @@
             "type__name": "Power | IEC 60320 C14"
         }
     ],
-    "data": {
-        "asset": {
-            "part_no": ["WS-C2960S-48LPS-L"]
+    "data": [
+        {
+            "attr": "part_no",
+            "interface": "asset",
+            "value": ["WS-C2960S-48LPS-L"]
         }
-    }
+    ]
 }

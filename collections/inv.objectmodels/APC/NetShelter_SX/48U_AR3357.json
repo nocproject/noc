@@ -5,19 +5,41 @@
     "vendor__code": "APC",
     "description": "NetShelter SX 48U 750mm Wide x 1200mm Deep Enclosure",
     "connections": [],
-    "data": {
-        "asset": {
-            "part_no": ["AR3357"]
+    "data": [
+        {
+            "attr": "container",
+            "interface": "container",
+            "value": true
         },
-        "container": {
-            "container": true
+        {
+            "attr": "part_no",
+            "interface": "asset",
+            "value": ["AR3357"]
         },
-        "rack": {
-            "depth": 1200,
-            "front_door": "l",
-            "rear_door": "2",
-            "units": 48,
-            "width": 750
+        {
+            "attr": "rear_door",
+            "interface": "rack",
+            "value": "2"
+        },
+        {
+            "attr": "units",
+            "interface": "rack",
+            "value": 48
+        },
+        {
+            "attr": "depth",
+            "interface": "rack",
+            "value": 1200
+        },
+        {
+            "attr": "front_door",
+            "interface": "rack",
+            "value": "l"
+        },
+        {
+            "attr": "width",
+            "interface": "rack",
+            "value": 750
         }
-    }
+    ]
 }

@@ -8,173 +8,197 @@
     "cr_context": "CHASSIS",
     "connections": [
         {
+            "name": "clk1",
             "description": "CLK module slot 1",
             "direction": "i",
             "gender": "f",
-            "name": "clk1",
             "type__name": "Cisco | 6500 | CLK"
         },
         {
+            "name": "clk2",
             "description": "CLK module slot 2",
             "direction": "i",
             "gender": "f",
-            "name": "clk2",
             "type__name": "Cisco | 6500 | CLK"
         },
         {
+            "name": "vtt1",
             "description": "VTT module slot 1",
             "direction": "i",
             "gender": "f",
-            "name": "vtt1",
             "type__name": "Cisco | 6500 | VTT"
         },
         {
+            "name": "vtt2",
             "description": "VTT module slot 2",
             "direction": "i",
             "gender": "f",
-            "name": "vtt2",
             "type__name": "Cisco | 6500 | VTT"
         },
         {
+            "name": "vtt3",
             "description": "VTT module slot 3",
             "direction": "i",
             "gender": "f",
-            "name": "vtt3",
             "type__name": "Cisco | 6500 | VTT"
         },
         {
+            "name": "linecard1",
             "description": "Linecard 1/Supervisor slot 1",
             "direction": "i",
             "gender": "f",
             "internal_name": "sup1",
-            "name": "linecard1",
             "type__name": "Cisco | 7600 | Linecard/Supervisor"
         },
         {
+            "name": "linecard2",
             "description": "Linecard 2/Supervisor slot 2",
             "direction": "i",
             "gender": "f",
             "internal_name": "sup2",
-            "name": "linecard2",
             "type__name": "Cisco | 7600 | Linecard/Supervisor"
         },
         {
+            "name": "linecard3",
             "description": "Linecard slot 3",
             "direction": "i",
             "gender": "f",
-            "name": "linecard3",
             "type__name": "Cisco | 7600 | Fabric Linecard"
         },
         {
+            "name": "linecard4",
             "description": "Linecard slot 4",
             "direction": "i",
             "gender": "f",
-            "name": "linecard4",
             "type__name": "Cisco | 7600 | Fabric Linecard"
         },
         {
+            "name": "linecard5",
             "description": "Linecard slot 5",
             "direction": "i",
             "gender": "f",
-            "name": "linecard5",
             "type__name": "Cisco | 7600 | Fabric Linecard"
         },
         {
+            "name": "linecard6",
             "description": "Linecard slot 6",
             "direction": "i",
             "gender": "f",
-            "name": "linecard6",
             "type__name": "Cisco | 7600 | Fabric Linecard"
         },
         {
+            "name": "linecard7",
             "description": "Linecard 7/Supervisor slot 7",
             "direction": "i",
             "gender": "f",
             "internal_name": "sup7",
-            "name": "linecard7",
             "type__name": "Cisco | 7600 | Linecard/Supervisor"
         },
         {
+            "name": "linecard8",
             "description": "Linecard 8/Supervisor slot 8",
             "direction": "i",
             "gender": "f",
             "internal_name": "sup8",
-            "name": "linecard8",
             "type__name": "Cisco | 7600 | Linecard/Supervisor"
         },
         {
+            "name": "linecard9",
             "description": "Linecard slot 9",
             "direction": "i",
             "gender": "f",
-            "name": "linecard9",
             "type__name": "Cisco | 7600 | Fabric Linecard"
         },
         {
+            "name": "linecard10",
             "description": "Linecard slot 10",
             "direction": "i",
             "gender": "f",
-            "name": "linecard10",
             "type__name": "Cisco | 7600 | Fabric Linecard"
         },
         {
+            "name": "linecard11",
             "description": "Linecard slot 11",
             "direction": "i",
             "gender": "f",
-            "name": "linecard11",
             "type__name": "Cisco | 7600 | Fabric Linecard"
         },
         {
+            "name": "linecard12",
             "description": "Linecard slot 12",
             "direction": "i",
             "gender": "f",
-            "name": "linecard12",
             "type__name": "Cisco | 7600 | Fabric Linecard"
         },
         {
+            "name": "linecard13",
             "description": "Linecard slot 13",
             "direction": "i",
             "gender": "f",
-            "name": "linecard13",
             "type__name": "Cisco | 7600 | Fabric Linecard"
         },
         {
+            "name": "fan",
             "description": " Fan Tray",
             "direction": "i",
             "gender": "f",
-            "name": "fan",
             "type__name": "Cisco | 6500 | 6513-FAN-E"
         },
         {
+            "name": "psu1",
             "description": "Power Supply  slot 1",
             "direction": "i",
             "gender": "f",
-            "name": "psu1",
             "type__name": "Cisco | 6500 | PSU"
         },
         {
+            "name": "psu2",
             "description": "Power Supply slot 2",
             "direction": "i",
             "gender": "f",
-            "name": "psu2",
             "type__name": "Cisco | 6500 | PSU"
         }
     ],
-    "data": {
-        "asset": {
-            "part_no": ["WS-C6513-E", "WS-C6513-E="],
-            "cpe_22": "cpe:/h:cisco:catalyst_6513-e:-",
-            "cpe_23": "cpe:2.3:h:cisco:catalyst_6513-e:-:*:*:*:*:*:*:*"
+    "data": [
+        {
+            "attr": "part_no",
+            "interface": "asset",
+            "value": ["WS-C6513-E", "WS-C6513-E="]
         },
-        "dimensions": {
-            "depth": 460,
-            "height": 830,
-            "width": 440
+        {
+            "attr": "cpe_22",
+            "interface": "asset",
+            "value": "cpe:/h:cisco:catalyst_6513-e:-"
         },
-        "management": {
-            "managed": true
+        {
+            "attr": "cpe_23",
+            "interface": "asset",
+            "value": "cpe:2.3:h:cisco:catalyst_6513-e:-:*:*:*:*:*:*:*"
         },
-        "rackmount": {
-            "units": 19
+        {
+            "attr": "depth",
+            "interface": "dimensions",
+            "value": 460
+        },
+        {
+            "attr": "height",
+            "interface": "dimensions",
+            "value": 830
+        },
+        {
+            "attr": "width",
+            "interface": "dimensions",
+            "value": 440
+        },
+        {
+            "attr": "managed",
+            "interface": "management",
+            "value": true
+        },
+        {
+            "attr": "units",
+            "interface": "rackmount",
+            "value": 19
         }
-    }
+    ]
 }

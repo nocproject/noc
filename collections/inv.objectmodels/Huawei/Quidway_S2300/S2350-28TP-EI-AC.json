@@ -289,26 +289,46 @@
             "type__name": "Transceiver | SFP"
         }
     ],
-    "data": {
-        "asset": {
-            "part_no": ["S2350-28TP-EI-AC"]
+    "data": [
+        {
+            "attr": "managed",
+            "interface": "management",
+            "value": true
         },
-        "dimensions": {
-            "depth": 220,
-            "height": 43,
-            "width": 442
+        {
+            "attr": "units",
+            "interface": "rackmount",
+            "value": 1.0
         },
-        "management": {
-            "managed": true
+        {
+            "attr": "weight",
+            "interface": "weight",
+            "value": 5.0
         },
-        "power": {
-            "power": 15.7
+        {
+            "attr": "power",
+            "interface": "power",
+            "value": 15.7
         },
-        "rackmount": {
-            "units": 1.0
+        {
+            "attr": "part_no",
+            "interface": "asset",
+            "value": ["S2350-28TP-EI-AC"]
         },
-        "weight": {
-            "weight": 5.0
+        {
+            "attr": "width",
+            "interface": "dimensions",
+            "value": 442
+        },
+        {
+            "attr": "depth",
+            "interface": "dimensions",
+            "value": 220
+        },
+        {
+            "attr": "height",
+            "interface": "dimensions",
+            "value": 43
         }
-    }
+    ]
 }

@@ -8,27 +8,43 @@
     "labels": ["noc::inv::fan"],
     "connections": [
         {
+            "name": "in",
             "description": "Fan connection",
             "direction": "o",
             "gender": "m",
-            "name": "in",
             "type__name": "Huawei | SmartAX | MA5616 | FAN"
         }
     ],
-    "data": {
-        "asset": {
-            "part_no": ["H83E1FCBB"]
+    "data": [
+        {
+            "attr": "weight",
+            "interface": "weight",
+            "value": 0.5
         },
-        "dimensions": {
-            "depth": 220,
-            "height": 86,
-            "width": 29
+        {
+            "attr": "part_no",
+            "interface": "asset",
+            "value": ["H83E1FCBB"]
         },
-        "power": {
-            "power": 15.0
+        {
+            "attr": "power",
+            "interface": "power",
+            "value": 15.0
         },
-        "weight": {
-            "weight": 0.5
+        {
+            "attr": "width",
+            "interface": "dimensions",
+            "value": 29
+        },
+        {
+            "attr": "depth",
+            "interface": "dimensions",
+            "value": 220
+        },
+        {
+            "attr": "height",
+            "interface": "dimensions",
+            "value": 86
         }
-    }
+    ]
 }

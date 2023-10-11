@@ -8,51 +8,53 @@
     "cr_context": "LINECARD",
     "connections": [
         {
+            "name": "in",
             "description": "Chassis connection",
             "direction": "o",
             "gender": "m",
-            "name": "in",
             "type__name": "Cisco | 7100 | Linecard"
         },
         {
+            "name": "us0",
             "description": "Upstream 0",
             "direction": "s",
             "gender": "m",
-            "name": "us0",
             "type__name": "Electrical | F"
         },
         {
+            "name": "us1",
             "description": "Upstream 1",
             "direction": "s",
             "gender": "m",
-            "name": "us1",
             "type__name": "Electrical | F"
         },
         {
+            "name": "us2",
             "description": "Upstream 2",
             "direction": "s",
             "gender": "m",
-            "name": "us2",
             "type__name": "Electrical | F"
         },
         {
+            "name": "us3",
             "description": "Upstream 3",
             "direction": "s",
             "gender": "m",
-            "name": "us3",
             "type__name": "Electrical | F"
         },
         {
+            "name": "ds0",
             "description": "Downstream 0",
             "direction": "s",
             "gender": "m",
-            "name": "ds0",
             "type__name": "Electrical | F"
         }
     ],
-    "data": {
-        "asset": {
-            "part_no": ["UBR7114"]
+    "data": [
+        {
+            "attr": "part_no",
+            "interface": "asset",
+            "value": ["UBR7114"]
         }
-    }
+    ]
 }

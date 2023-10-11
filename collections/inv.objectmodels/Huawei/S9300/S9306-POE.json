@@ -9,139 +9,163 @@
     "labels": ["noc::inv::chassis"],
     "connections": [
         {
-            "description": null,
-            "direction": "i",
-            "gender": "f",
             "name": "1",
-            "type__name": "Huawei | S9300 | LPU"
-        },
-        {
             "description": null,
             "direction": "i",
             "gender": "f",
+            "type__name": "Huawei | S9300 | LPU"
+        },
+        {
             "name": "2",
-            "type__name": "Huawei | S9300 | LPU"
-        },
-        {
             "description": null,
             "direction": "i",
             "gender": "f",
+            "type__name": "Huawei | S9300 | LPU"
+        },
+        {
             "name": "3",
-            "type__name": "Huawei | S9300 | LPU"
-        },
-        {
             "description": null,
             "direction": "i",
             "gender": "f",
+            "type__name": "Huawei | S9300 | LPU"
+        },
+        {
             "name": "4",
-            "type__name": "Huawei | S9300 | LPU"
-        },
-        {
             "description": null,
             "direction": "i",
             "gender": "f",
+            "type__name": "Huawei | S9300 | LPU"
+        },
+        {
             "name": "5",
-            "type__name": "Huawei | S9300 | LPU"
-        },
-        {
             "description": null,
             "direction": "i",
             "gender": "f",
+            "type__name": "Huawei | S9300 | LPU"
+        },
+        {
             "name": "6",
+            "description": null,
+            "direction": "i",
+            "gender": "f",
             "type__name": "Huawei | S9300 | LPU"
         },
         {
-            "description": null,
-            "direction": "i",
-            "gender": "f",
             "name": "7",
-            "type__name": "Huawei | S9300 | SRU"
-        },
-        {
             "description": null,
             "direction": "i",
             "gender": "f",
+            "type__name": "Huawei | S9300 | SRU"
+        },
+        {
             "name": "8",
+            "description": null,
+            "direction": "i",
+            "gender": "f",
             "type__name": "Huawei | S9300 | SRU"
         },
         {
-            "description": null,
-            "direction": "i",
-            "gender": "f",
             "name": "9",
-            "type__name": "Huawei | S9300 | CMU"
-        },
-        {
             "description": null,
             "direction": "i",
             "gender": "f",
+            "type__name": "Huawei | S9300 | CMU"
+        },
+        {
             "name": "10",
+            "description": null,
+            "direction": "i",
+            "gender": "f",
             "type__name": "Huawei | S9300 | CMU"
         },
         {
-            "description": null,
-            "direction": "i",
-            "gender": "f",
             "name": "11",
-            "type__name": "Huawei | S9300 | S9300 FAN"
-        },
-        {
             "description": null,
             "direction": "i",
             "gender": "f",
+            "type__name": "Huawei | S9300 | S9300 FAN"
+        },
+        {
             "name": "12",
+            "description": null,
+            "direction": "i",
+            "gender": "f",
             "type__name": "Huawei | S9300 | S9300 FAN"
         },
         {
-            "description": null,
-            "direction": "i",
-            "gender": "f",
             "name": "13",
-            "type__name": "Huawei | S9300 | S9303 PEM"
-        },
-        {
             "description": null,
             "direction": "i",
             "gender": "f",
+            "type__name": "Huawei | S9300 | S9303 PEM"
+        },
+        {
             "name": "14",
-            "type__name": "Huawei | S9300 | S9303 PEM"
-        },
-        {
             "description": null,
             "direction": "i",
             "gender": "f",
+            "type__name": "Huawei | S9300 | S9303 PEM"
+        },
+        {
             "name": "15",
-            "type__name": "Huawei | S9300 | S9303 PEM"
-        },
-        {
             "description": null,
             "direction": "i",
             "gender": "f",
+            "type__name": "Huawei | S9300 | S9303 PEM"
+        },
+        {
             "name": "16",
+            "description": null,
+            "direction": "i",
+            "gender": "f",
             "type__name": "Huawei | S9300 | S9303 PEM"
         }
     ],
-    "data": {
-        "asset": {
-            "order_part_no": ["03020PBT"],
-            "part_no": ["LE02BAKI"]
+    "data": [
+        {
+            "attr": "managed",
+            "interface": "management",
+            "value": true
         },
-        "dimensions": {
-            "depth": 585,
-            "height": 442,
-            "width": 442
+        {
+            "attr": "width",
+            "interface": "dimensions",
+            "value": 442
         },
-        "management": {
-            "managed": true
+        {
+            "attr": "depth",
+            "interface": "dimensions",
+            "value": 585
         },
-        "power": {
-            "power": 2200.0
+        {
+            "attr": "height",
+            "interface": "dimensions",
+            "value": 442
         },
-        "rackmount": {
-            "units": 10.0
+        {
+            "attr": "power",
+            "interface": "power",
+            "value": 2200.0
         },
-        "weight": {
-            "weight": 62.0
+        {
+            "attr": "weight",
+            "interface": "weight",
+            "value": 62.0
+        },
+        {
+            "attr": "part_no",
+            "interface": "asset",
+            "value": ["LE02BAKI"]
+        },
+        {
+            "attr": "order_part_no",
+            "interface": "asset",
+            "value": ["03020PBT"]
+        },
+        {
+            "attr": "units",
+            "interface": "rackmount",
+            "value": 10.0
         }
-    }
+    ]
 }

@@ -5,28 +5,29 @@
     "vendor__code": "BAZIS",
     "description": "BZ-SFP-EPON-PX-20++ module (SFP WDM GEPON, Tx/Rx: 1490/1310nm, TX Power 5...8dB, RX Sensitivity -33dB, 20km, 38dB, SС)",
     "cr_context": "XCVR",
-    "tags": ["xcvr"],
     "connections": [
         {
+            "name": "in",
             "description": "SFP Connector",
             "direction": "o",
             "gender": "m",
-            "name": "in",
             "protocols": ["GPON"],
             "type__name": "Transceiver | SFP"
         },
         {
+            "name": "rxtx",
             "description": "RxTx GPON SC port",
             "direction": "s",
             "gender": "f",
-            "name": "rxtx",
             "protocols": [">GPON-1310", "<GPON-1490"],
             "type__name": "Optical | SC"
         }
     ],
-    "data": {
-        "asset": {
-            "part_no": ["BZ-SFP-EPON-PX-20++", "SFP-EPON-PX-20++"]
+    "data": [
+        {
+            "attr": "part_no",
+            "interface": "asset",
+            "value": ["BZ-SFP-EPON-PX-20++", "SFP-EPON-PX-20++"]
         }
-    }
+    ]
 }

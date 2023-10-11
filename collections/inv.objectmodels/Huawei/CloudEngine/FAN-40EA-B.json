@@ -6,16 +6,18 @@
     "description": "Huawei CloudEngine Fan Module FAN-40EA-B",
     "connections": [
         {
+            "name": "in",
             "description": "Fan Slot",
             "direction": "o",
             "gender": "m",
-            "name": "in",
             "type__name": "Huawei | CloudEngine | FAN"
         }
     ],
-    "data": {
-        "asset": {
-            "part_no": ["FAN-40EA-B"]
+    "data": [
+        {
+            "attr": "part_no",
+            "interface": "asset",
+            "value": ["FAN-40EA-B"]
         }
-    }
+    ]
 }

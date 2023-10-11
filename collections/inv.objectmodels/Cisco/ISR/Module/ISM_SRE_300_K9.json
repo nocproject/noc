@@ -7,16 +7,18 @@
     "cr_context": "ISM",
     "connections": [
         {
+            "name": "in",
             "description": "ISM Slot",
             "direction": "o",
             "gender": "m",
-            "name": "in",
             "type__name": "Cisco | 2900-3900 | ISM"
         }
     ],
-    "data": {
-        "asset": {
-            "part_no": ["ISM-SRE-300-K9"]
+    "data": [
+        {
+            "attr": "part_no",
+            "interface": "asset",
+            "value": ["ISM-SRE-300-K9"]
         }
-    }
+    ]
 }

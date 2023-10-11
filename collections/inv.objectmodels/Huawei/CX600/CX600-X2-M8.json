@@ -9,76 +9,100 @@
     "labels": ["noc::inv::chassis"],
     "connections": [
         {
+            "name": "9",
             "description": "NPU Slot #1",
             "direction": "i",
             "gender": "f",
-            "name": "9",
             "type__name": "Huawei | CX600-X1-X2 | NPU"
         },
         {
+            "name": "10",
             "description": "NPU Slot #2",
             "direction": "i",
             "gender": "f",
-            "name": "10",
             "type__name": "Huawei | CX600-X1-X2 | NPU"
         },
         {
+            "name": "11",
             "description": "MPU Slot #2",
             "direction": "i",
             "gender": "f",
-            "name": "11",
             "type__name": "Huawei | CX600-X1-X2 | MPU"
         },
         {
+            "name": "12",
             "description": "MPU Slot #1",
             "direction": "i",
             "gender": "f",
-            "name": "12",
             "type__name": "Huawei | CX600-X1-X2 | MPU"
         },
         {
+            "name": "13",
             "description": "PSU Slot #1",
             "direction": "i",
             "gender": "f",
-            "name": "13",
             "type__name": "Huawei | CX600-X1-X2 | CX600-X2-M8 PSU"
         },
         {
+            "name": "14",
             "description": "PSU Slot #2",
             "direction": "i",
             "gender": "f",
-            "name": "14",
             "type__name": "Huawei | CX600-X1-X2 | CX600-X2-M8 PSU"
         },
         {
+            "name": "15",
             "description": "FAN Slot",
             "direction": "i",
             "gender": "f",
-            "name": "15",
             "type__name": "Huawei | CX600-X1-X2 | CX600-X2-M8 FAN"
         }
     ],
-    "data": {
-        "asset": {
-            "order_part_no": ["02355502"],
-            "part_no": ["CX6B0BKP0271"]
+    "data": [
+        {
+            "attr": "managed",
+            "interface": "management",
+            "value": true
         },
-        "dimensions": {
-            "depth": 222,
-            "height": 442,
-            "width": 220
+        {
+            "attr": "width",
+            "interface": "dimensions",
+            "value": 220
         },
-        "management": {
-            "managed": true
+        {
+            "attr": "depth",
+            "interface": "dimensions",
+            "value": 222
         },
-        "power": {
-            "power": 550.0
+        {
+            "attr": "height",
+            "interface": "dimensions",
+            "value": 442
         },
-        "rackmount": {
-            "units": 5.0
+        {
+            "attr": "power",
+            "interface": "power",
+            "value": 550.0
         },
-        "weight": {
-            "weight": 22.0
+        {
+            "attr": "weight",
+            "interface": "weight",
+            "value": 22.0
+        },
+        {
+            "attr": "part_no",
+            "interface": "asset",
+            "value": ["CX6B0BKP0271"]
+        },
+        {
+            "attr": "order_part_no",
+            "interface": "asset",
+            "value": ["02355502"]
+        },
+        {
+            "attr": "units",
+            "interface": "rackmount",
+            "value": 5.0
         }
-    }
+    ]
 }

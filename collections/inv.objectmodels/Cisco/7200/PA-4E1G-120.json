@@ -8,48 +8,50 @@
     "cr_context": "LINECARD",
     "connections": [
         {
+            "name": "in",
             "description": "Chassis connection",
             "direction": "o",
             "gender": "m",
-            "name": "in",
             "type__name": "Cisco | 7200 | Linecard"
         },
         {
+            "name": "Se0",
             "description": "Serial0",
             "direction": "s",
             "gender": "f",
-            "name": "Se0",
             "protocols": ["G.703"],
             "type__name": "Electrical | DB15"
         },
         {
+            "name": "Se1",
             "description": "Serial1",
             "direction": "s",
             "gender": "f",
-            "name": "Se1",
             "protocols": ["G.703"],
             "type__name": "Electrical | DB15"
         },
         {
+            "name": "Se2",
             "description": "Serial2",
             "direction": "s",
             "gender": "f",
-            "name": "Se2",
             "protocols": ["G.703"],
             "type__name": "Electrical | DB15"
         },
         {
+            "name": "Se3",
             "description": "Serial3",
             "direction": "s",
             "gender": "f",
-            "name": "Se3",
             "protocols": ["G.703"],
             "type__name": "Electrical | DB15"
         }
     ],
-    "data": {
-        "asset": {
-            "part_no": ["PA-4E1G/120", "PA-4E1G/120="]
+    "data": [
+        {
+            "attr": "part_no",
+            "interface": "asset",
+            "value": ["PA-4E1G/120", "PA-4E1G/120="]
         }
-    }
+    ]
 }

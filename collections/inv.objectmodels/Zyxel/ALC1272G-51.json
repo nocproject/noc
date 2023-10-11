@@ -9,59 +9,75 @@
     "labels": ["noc::inv::lc", "noc::inv::port"],
     "connections": [
         {
+            "name": "in",
             "description": "Chassis connection",
             "direction": "o",
             "gender": "m",
-            "name": "in",
             "type__name": "Zyxel | MSAN | Linecard"
         },
         {
+            "name": "xDSL1",
             "description": "xDSL ports 1-24",
             "direction": "s",
             "gender": "f",
-            "name": "xDSL1",
             "protocols": ["ADSL2", "ADSL2+"],
             "type__name": "Electrical | Telco-50"
         },
         {
+            "name": "xDSL2",
             "description": "xDSL ports 25-48",
             "direction": "s",
             "gender": "f",
-            "name": "xDSL2",
             "protocols": ["ADSL2", "ADSL2+"],
             "type__name": "Electrical | Telco-50"
         },
         {
+            "name": "xDSL3",
             "description": "xDSL ports 49-72",
             "direction": "s",
             "gender": "f",
-            "name": "xDSL3",
             "protocols": ["ADSL2", "ADSL2+"],
             "type__name": "Electrical | Telco-50"
         },
         {
+            "name": "console",
             "description": "Console port",
             "direction": "s",
             "gender": "f",
-            "name": "console",
             "protocols": [">RS232"],
             "type__name": "Electrical | RJ9"
         }
     ],
-    "data": {
-        "asset": {
-            "part_no": ["ALC1272G-51"]
+    "data": [
+        {
+            "attr": "power",
+            "interface": "power",
+            "value": 69.0
         },
-        "dimensions": {
-            "depth": 240,
-            "height": 14,
-            "width": 390
+        {
+            "attr": "part_no",
+            "interface": "asset",
+            "value": ["ALC1272G-51"]
         },
-        "power": {
-            "power": 69.0
+        {
+            "attr": "weight",
+            "interface": "weight",
+            "value": 0.5
         },
-        "weight": {
-            "weight": 0.5
+        {
+            "attr": "width",
+            "interface": "dimensions",
+            "value": 390
+        },
+        {
+            "attr": "depth",
+            "interface": "dimensions",
+            "value": 240
+        },
+        {
+            "attr": "height",
+            "interface": "dimensions",
+            "value": 14
         }
-    }
+    ]
 }

@@ -9,81 +9,105 @@
     "labels": ["noc::inv::chassis"],
     "connections": [
         {
+            "name": "fan",
             "description": "Fan module slot",
             "direction": "i",
             "gender": "f",
-            "name": "fan",
             "type__name": "Cisco | 7600 | 7603 Fan"
         },
         {
+            "name": "PEM0",
             "description": "PEM slot 1",
             "direction": "i",
             "gender": "f",
             "group": "0",
-            "name": "PEM0",
             "type__name": "Cisco | 7600 | 7603-PEM1"
         },
         {
+            "name": "PEM1",
             "description": "PEM slot 2",
             "direction": "i",
             "gender": "f",
             "group": "0",
-            "name": "PEM1",
             "type__name": "Cisco | 7600 | 7603-PEM1"
         },
         {
+            "name": "clk1",
             "description": "CLK module slot 1",
             "direction": "i",
             "gender": "f",
-            "name": "clk1",
             "type__name": "Cisco | 7600 | CLK"
         },
         {
+            "name": "linecard1",
             "description": "Linecard slot 1/Supervisor slot 1",
             "direction": "i",
             "gender": "f",
             "internal_name": "sup1",
-            "name": "linecard1",
             "type__name": "Cisco | 7600 | Linecard/Supervisor"
         },
         {
+            "name": "linecard2",
             "description": "Linecard slot 2",
             "direction": "i",
             "gender": "f",
-            "name": "linecard2",
             "type__name": "Cisco | 7600 | Fabric Linecard"
         },
         {
+            "name": "psu1",
             "description": "Power Supply  slot 1",
             "direction": "i",
             "gender": "f",
-            "name": "psu1",
             "type__name": "Cisco | 7603 | PSU"
         },
         {
+            "name": "psu2",
             "description": "Power Supply slot 2",
             "direction": "i",
             "gender": "f",
-            "name": "psu2",
             "type__name": "Cisco | 7603 | PSU"
         }
     ],
-    "data": {
-        "asset": {
-            "part_no": ["WS-C6503-E", "WS-C6503-E="],
-            "cpe_22": "cpe:/h:cisco:catalyst_6503-e:-",
-            "cpe_23": "cpe:2.3:h:cisco:catalyst_6503-e:-:*:*:*:*:*:*:*"
+    "data": [
+        {
+            "attr": "part_no",
+            "interface": "asset",
+            "value": ["WS-C6503-E", "WS-C6503-E="]
         },
-        "dimensions": {
-            "depth": 552,
-            "height": 178,
-            "width": 441
+        {
+            "attr": "cpe_22",
+            "interface": "asset",
+            "value": "cpe:/h:cisco:catalyst_6503-e:-"
         },
-        "management": {
-            "managed": true
+        {
+            "attr": "cpe_23",
+            "interface": "asset",
+            "value": "cpe:2.3:h:cisco:catalyst_6503-e:-:*:*:*:*:*:*:*"
         },
-        "rackmount": {
-            "units": 4
+        {
+            "attr": "depth",
+            "interface": "dimensions",
+            "value": 552
+        },
+        {
+            "attr": "height",
+            "interface": "dimensions",
+            "value": 178
+        },
+        {
+            "attr": "width",
+            "interface": "dimensions",
+            "value": 441
+        },
+        {
+            "attr": "managed",
+            "interface": "management",
+            "value": true
+        },
+        {
+            "attr": "units",
+            "interface": "rackmount",
+            "value": 4
         }
-    }
+    ]
 }

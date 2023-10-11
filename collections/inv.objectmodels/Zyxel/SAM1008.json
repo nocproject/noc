@@ -9,96 +9,98 @@
     "labels": ["noc::inv::lc", "noc::inv::port"],
     "connections": [
         {
+            "name": "in",
             "description": "Chassis connection",
             "direction": "o",
             "gender": "m",
-            "name": "in",
             "type__name": "Zyxel | MSAN | Linecard"
         },
         {
+            "name": "SHDSL1",
             "description": "USER 1",
             "direction": "s",
             "gender": "f",
-            "name": "SHDSL1",
             "protocols": ["SHDSL"],
             "type__name": "Electrical | RJ11"
         },
         {
+            "name": "SHDSL2",
             "description": "USER 2",
             "direction": "s",
             "gender": "f",
-            "name": "SHDSL2",
             "protocols": ["SHDSL"],
             "type__name": "Electrical | RJ11"
         },
         {
+            "name": "SHDSL3",
             "description": "USER 3",
             "direction": "s",
             "gender": "f",
-            "name": "SHDSL3",
             "protocols": ["SHDSL"],
             "type__name": "Electrical | RJ11"
         },
         {
+            "name": "SHDSL4",
             "description": "USER 4",
             "direction": "s",
             "gender": "f",
-            "name": "SHDSL4",
             "protocols": ["SHDSL"],
             "type__name": "Electrical | RJ11"
         },
         {
+            "name": "SHDSL5",
             "description": "USER 5",
             "direction": "s",
             "gender": "f",
-            "name": "SHDSL5",
             "protocols": ["SHDSL"],
             "type__name": "Electrical | RJ11"
         },
         {
+            "name": "SHDSL6",
             "description": "USER 6",
             "direction": "s",
             "gender": "f",
-            "name": "SHDSL6",
             "protocols": ["SHDSL"],
             "type__name": "Electrical | RJ11"
         },
         {
+            "name": "SHDSL7",
             "description": "USER 7",
             "direction": "s",
             "gender": "f",
-            "name": "SHDSL7",
             "protocols": ["SHDSL"],
             "type__name": "Electrical | RJ11"
         },
         {
+            "name": "SHDSL8",
             "description": "USER 8",
             "direction": "s",
             "gender": "f",
-            "name": "SHDSL8",
             "protocols": ["SHDSL"],
             "type__name": "Electrical | RJ11"
         },
         {
+            "name": "console",
             "description": "Console port",
             "direction": "s",
             "gender": "f",
-            "name": "console",
             "protocols": [">RS232"],
             "type__name": "Electrical | RJ9"
         },
         {
+            "name": "1",
             "description": "Port 1 (Copper)",
             "direction": "s",
             "gender": "f",
-            "name": "1",
             "protocols": ["10BASET", "100BASETX"],
             "type__name": "Electrical | RJ45"
         }
     ],
-    "data": {
-        "asset": {
-            "part_no": ["SAM1008"]
+    "data": [
+        {
+            "attr": "part_no",
+            "interface": "asset",
+            "value": ["SAM1008"]
         }
-    }
+    ]
 }

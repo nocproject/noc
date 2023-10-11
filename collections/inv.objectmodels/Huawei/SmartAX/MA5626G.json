@@ -8,230 +8,242 @@
     "labels": ["noc::inv::chassis"],
     "connections": [
         {
+            "name": "power",
             "description": "Power outlet",
             "direction": "s",
             "gender": "m",
-            "name": "power",
             "protocols": [">220VAC", ">110VAC"],
             "type__name": "Power | IEC 60320 C14"
         },
         {
+            "name": "console",
             "description": "Management Console",
             "direction": "s",
             "gender": "f",
-            "name": "console",
             "protocols": [">RS232"],
             "type__name": "Electrical | RJ45"
         },
         {
+            "name": "gpon",
             "description": "Uplink port",
             "direction": "i",
             "gender": "f",
-            "name": "gpon",
             "protocols": ["EPON", "GPON"],
             "type__name": "Transceiver | SFP"
         },
         {
-            "description": null,
-            "direction": "s",
-            "gender": "f",
             "name": "1",
+            "description": null,
+            "direction": "s",
+            "gender": "f",
             "protocols": ["10BASET", "100BASETX"],
             "type__name": "Electrical | RJ45"
         },
         {
-            "description": null,
-            "direction": "s",
-            "gender": "f",
             "name": "2",
+            "description": null,
+            "direction": "s",
+            "gender": "f",
             "protocols": ["10BASET", "100BASETX"],
             "type__name": "Electrical | RJ45"
         },
         {
-            "description": null,
-            "direction": "s",
-            "gender": "f",
             "name": "3",
+            "description": null,
+            "direction": "s",
+            "gender": "f",
             "protocols": ["10BASET", "100BASETX"],
             "type__name": "Electrical | RJ45"
         },
         {
-            "description": null,
-            "direction": "s",
-            "gender": "f",
             "name": "4",
+            "description": null,
+            "direction": "s",
+            "gender": "f",
             "protocols": ["10BASET", "100BASETX"],
             "type__name": "Electrical | RJ45"
         },
         {
-            "description": null,
-            "direction": "s",
-            "gender": "f",
             "name": "5",
+            "description": null,
+            "direction": "s",
+            "gender": "f",
             "protocols": ["10BASET", "100BASETX"],
             "type__name": "Electrical | RJ45"
         },
         {
-            "description": null,
-            "direction": "s",
-            "gender": "f",
             "name": "6",
+            "description": null,
+            "direction": "s",
+            "gender": "f",
             "protocols": ["10BASET", "100BASETX"],
             "type__name": "Electrical | RJ45"
         },
         {
-            "description": null,
-            "direction": "s",
-            "gender": "f",
             "name": "7",
+            "description": null,
+            "direction": "s",
+            "gender": "f",
             "protocols": ["10BASET", "100BASETX"],
             "type__name": "Electrical | RJ45"
         },
         {
-            "description": null,
-            "direction": "s",
-            "gender": "f",
             "name": "8",
+            "description": null,
+            "direction": "s",
+            "gender": "f",
             "protocols": ["10BASET", "100BASETX"],
             "type__name": "Electrical | RJ45"
         },
         {
-            "description": null,
-            "direction": "s",
-            "gender": "f",
             "name": "9",
+            "description": null,
+            "direction": "s",
+            "gender": "f",
             "protocols": ["10BASET", "100BASETX"],
             "type__name": "Electrical | RJ45"
         },
         {
-            "description": null,
-            "direction": "s",
-            "gender": "f",
             "name": "10",
+            "description": null,
+            "direction": "s",
+            "gender": "f",
             "protocols": ["10BASET", "100BASETX"],
             "type__name": "Electrical | RJ45"
         },
         {
-            "description": null,
-            "direction": "s",
-            "gender": "f",
             "name": "11",
+            "description": null,
+            "direction": "s",
+            "gender": "f",
             "protocols": ["10BASET", "100BASETX"],
             "type__name": "Electrical | RJ45"
         },
         {
-            "description": null,
-            "direction": "s",
-            "gender": "f",
             "name": "12",
+            "description": null,
+            "direction": "s",
+            "gender": "f",
             "protocols": ["10BASET", "100BASETX"],
             "type__name": "Electrical | RJ45"
         },
         {
-            "description": null,
-            "direction": "s",
-            "gender": "f",
             "name": "13",
+            "description": null,
+            "direction": "s",
+            "gender": "f",
             "protocols": ["10BASET", "100BASETX"],
             "type__name": "Electrical | RJ45"
         },
         {
-            "description": null,
-            "direction": "s",
-            "gender": "f",
             "name": "14",
+            "description": null,
+            "direction": "s",
+            "gender": "f",
             "protocols": ["10BASET", "100BASETX"],
             "type__name": "Electrical | RJ45"
         },
         {
-            "description": null,
-            "direction": "s",
-            "gender": "f",
             "name": "15",
+            "description": null,
+            "direction": "s",
+            "gender": "f",
             "protocols": ["10BASET", "100BASETX"],
             "type__name": "Electrical | RJ45"
         },
         {
-            "description": null,
-            "direction": "s",
-            "gender": "f",
             "name": "16",
+            "description": null,
+            "direction": "s",
+            "gender": "f",
             "protocols": ["10BASET", "100BASETX"],
             "type__name": "Electrical | RJ45"
         },
         {
-            "description": null,
-            "direction": "s",
-            "gender": "f",
             "name": "17",
+            "description": null,
+            "direction": "s",
+            "gender": "f",
             "protocols": ["10BASET", "100BASETX"],
             "type__name": "Electrical | RJ45"
         },
         {
-            "description": null,
-            "direction": "s",
-            "gender": "f",
             "name": "18",
+            "description": null,
+            "direction": "s",
+            "gender": "f",
             "protocols": ["10BASET", "100BASETX"],
             "type__name": "Electrical | RJ45"
         },
         {
-            "description": null,
-            "direction": "s",
-            "gender": "f",
             "name": "19",
+            "description": null,
+            "direction": "s",
+            "gender": "f",
             "protocols": ["10BASET", "100BASETX"],
             "type__name": "Electrical | RJ45"
         },
         {
-            "description": null,
-            "direction": "s",
-            "gender": "f",
             "name": "20",
+            "description": null,
+            "direction": "s",
+            "gender": "f",
             "protocols": ["10BASET", "100BASETX"],
             "type__name": "Electrical | RJ45"
         },
         {
-            "description": null,
-            "direction": "s",
-            "gender": "f",
             "name": "21",
+            "description": null,
+            "direction": "s",
+            "gender": "f",
             "protocols": ["10BASET", "100BASETX"],
             "type__name": "Electrical | RJ45"
         },
         {
-            "description": null,
-            "direction": "s",
-            "gender": "f",
             "name": "22",
+            "description": null,
+            "direction": "s",
+            "gender": "f",
             "protocols": ["10BASET", "100BASETX"],
             "type__name": "Electrical | RJ45"
         },
         {
-            "description": null,
-            "direction": "s",
-            "gender": "f",
             "name": "23",
+            "description": null,
+            "direction": "s",
+            "gender": "f",
             "protocols": ["10BASET", "100BASETX"],
             "type__name": "Electrical | RJ45"
         },
         {
+            "name": "24",
             "description": null,
             "direction": "s",
             "gender": "f",
-            "name": "24",
             "protocols": ["10BASET", "100BASETX"],
             "type__name": "Electrical | RJ45"
         }
     ],
-    "data": {
-        "asset": {
-            "part_no": ["H82B25626"]
+    "data": [
+        {
+            "attr": "width",
+            "interface": "dimensions",
+            "value": 442
         },
-        "dimensions": {
-            "depth": 221,
-            "height": 44,
-            "width": 442
+        {
+            "attr": "depth",
+            "interface": "dimensions",
+            "value": 221
+        },
+        {
+            "attr": "height",
+            "interface": "dimensions",
+            "value": 44
+        },
+        {
+            "attr": "part_no",
+            "interface": "asset",
+            "value": ["H82B25626"]
         }
-    }
+    ]
 }

@@ -15,9 +15,11 @@
             "type__name": "Huawei | SmartAX | MA5800 | FAN"
         }
     ],
-    "data": {
-        "asset": {
-            "part_no": ["H90F1FMSA"]
+    "data": [
+        {
+            "attr": "part_no",
+            "interface": "asset",
+            "value": ["H90F1FMSA"]
         }
-    }
+    ]
 }

@@ -151,26 +151,46 @@
             "type__name": "Huawei | SmartAX | MA5801 | PWR"
         }
     ],
-    "data": {
-        "asset": {
-            "part_no": ["H90Z1BPCA"]
+    "data": [
+        {
+            "attr": "power",
+            "interface": "power",
+            "value": 90.0
         },
-        "dimensions": {
-            "depth": 220,
-            "height": 44,
-            "width": 442
+        {
+            "attr": "units",
+            "interface": "rackmount",
+            "value": 1.0
         },
-        "management": {
-            "managed": true
+        {
+            "attr": "managed",
+            "interface": "management",
+            "value": true
         },
-        "power": {
-            "power": 90.0
+        {
+            "attr": "weight",
+            "interface": "weight",
+            "value": 5.0
         },
-        "rackmount": {
-            "units": 1.0
+        {
+            "attr": "width",
+            "interface": "dimensions",
+            "value": 442
         },
-        "weight": {
-            "weight": 5.0
+        {
+            "attr": "depth",
+            "interface": "dimensions",
+            "value": 220
+        },
+        {
+            "attr": "height",
+            "interface": "dimensions",
+            "value": 44
+        },
+        {
+            "attr": "part_no",
+            "interface": "asset",
+            "value": ["H90Z1BPCA"]
         }
-    }
+    ]
 }

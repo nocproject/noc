@@ -9,43 +9,49 @@
     "labels": ["noc::inv::chassis"],
     "connections": [
         {
-            "description": "Backplane connector",
-            "direction": "i",
-            "gender": "m",
             "name": "card1",
-            "type__name": "Brocade | JetCore | Backplane Connector"
-        },
-        {
             "description": "Backplane connector",
             "direction": "i",
             "gender": "m",
+            "type__name": "Brocade | JetCore | Backplane Connector"
+        },
+        {
             "name": "card2",
-            "type__name": "Brocade | JetCore | Backplane Connector"
-        },
-        {
             "description": "Backplane connector",
             "direction": "i",
             "gender": "m",
+            "type__name": "Brocade | JetCore | Backplane Connector"
+        },
+        {
             "name": "card3",
-            "type__name": "Brocade | JetCore | Backplane Connector"
-        },
-        {
             "description": "Backplane connector",
             "direction": "i",
             "gender": "m",
+            "type__name": "Brocade | JetCore | Backplane Connector"
+        },
+        {
             "name": "card4",
+            "description": "Backplane connector",
+            "direction": "i",
+            "gender": "m",
             "type__name": "Brocade | JetCore | Backplane Connector"
         }
     ],
-    "data": {
-        "asset": {
-            "part_no": ["FastIron 400 Router", "BigIron 4000 Router"]
+    "data": [
+        {
+            "attr": "managed",
+            "interface": "management",
+            "value": true
         },
-        "management": {
-            "managed": true
+        {
+            "attr": "part_no",
+            "interface": "asset",
+            "value": ["FastIron 400 Router", "BigIron 4000 Router"]
         },
-        "rackmount": {
-            "units": 5
+        {
+            "attr": "units",
+            "interface": "rackmount",
+            "value": 5
         }
-    }
+    ]
 }

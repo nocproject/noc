@@ -5,19 +5,41 @@
     "vendor__code": "NONAME",
     "description": "19\" 424 1000mm depth shelf",
     "connections": [],
-    "data": {
-        "asset": {
-            "part_no": ["noname"]
+    "data": [
+        {
+            "attr": "container",
+            "interface": "container",
+            "value": true
         },
-        "container": {
-            "container": true
+        {
+            "attr": "part_no",
+            "interface": "asset",
+            "value": ["noname"]
         },
-        "rack": {
-            "depth": 1000,
-            "front_door": "l",
-            "rear_door": "l",
-            "units": 44,
-            "width": 600
+        {
+            "attr": "rear_door",
+            "interface": "rack",
+            "value": "l"
+        },
+        {
+            "attr": "units",
+            "interface": "rack",
+            "value": 44
+        },
+        {
+            "attr": "depth",
+            "interface": "rack",
+            "value": 1000
+        },
+        {
+            "attr": "front_door",
+            "interface": "rack",
+            "value": "l"
+        },
+        {
+            "attr": "width",
+            "interface": "rack",
+            "value": 600
         }
-    }
+    ]
 }

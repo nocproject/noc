@@ -7,17 +7,23 @@
     "cr_context": "FPC",
     "connections": [
         {
+            "name": "in",
             "description": "FPM connection",
             "direction": "o",
             "gender": "m",
-            "name": "in",
             "type__name": "Juniper | MX | FPM"
         }
     ],
-    "data": {
-        "asset": {
-            "order_part_no": ["CRAFT-MX240-S"],
-            "part_no": ["760-021392"]
+    "data": [
+        {
+            "attr": "order_part_no",
+            "interface": "asset",
+            "value": ["CRAFT-MX240-S"]
+        },
+        {
+            "attr": "part_no",
+            "interface": "asset",
+            "value": ["760-021392"]
         }
-    }
+    ]
 }

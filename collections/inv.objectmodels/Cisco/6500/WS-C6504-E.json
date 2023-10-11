@@ -5,84 +5,108 @@
     "vendor__code": "CISCO",
     "description": "Cisco Systems Cisco 6500 4-slot Chassis System",
     "connection_rule__name": "Cisco | 6500-E",
-	"cr_context": "CHASSIS",
+    "cr_context": "CHASSIS",
     "labels": ["noc::inv::chassis"],
     "connections": [
-		{
-			"description": "Fan module slot",
-	  		"direction": "i",
-	  		"gender": "f",
-	  		"name": "fan",
-	  		"type__name": "Cisco | 7600 | 7604 Fan"
-		},
-		{
-	  		"description": "CLK module slot 1",
-	  		"direction": "i",
-	  		"gender": "f",
-	  		"name": "clk1",
-	  		"type__name": "Cisco | 7600 | CLK"
-		},
-		{
-	  		"description": "Linecard slot 1/Supervisor slot 1",
-	  		"direction": "i",
-	  		"gender": "f",
-	  		"internal_name": "sup1",
-	  		"name": "linecard1",
-	 		"type__name": "Cisco | 7600 | Linecard/Supervisor"
-		},
-		{
-			"description": "Linecard slot 2/Supervisor slot 2",
-	  		"direction": "i",
-	  		"gender": "f",
-	  		"internal_name": "sup2",
-	  		"name": "linecard2",
-	  		"type__name": "Cisco | 7600 | Linecard/Supervisor"
-		},
-		{
-	  		"description": "Linecard slot 3",
-	  		"direction": "i",
-	  		"gender": "f",
-	  		"name": "linecard3",
-	  		"type__name": "Cisco | 7600 | Fabric Linecard"
-		},
-		{
-	  		"description": "Linecard slot 4",
-	  		"direction": "i",
-	  		"gender": "f",
-	  		"name": "linecard4",
-	  		"type__name": "Cisco | 7600 | Fabric Linecard"
-		},
-		{
-	  		"description": "Power Supply  slot 1",
-	  		"direction": "i",
-	  		"gender": "f",
-	  		"name": "psu1",
-	  		"type__name": "Cisco | 7604 | PSU"
-		},
-		{
-	  		"description": "Power Supply slot 2",
-	  		"direction": "i",
-	  		"gender": "f",
-	  		"name": "psu2",
-	  		"type__name": "Cisco | 7604 | PSU"
-		}
-  	],
-  	"data": {
-		"asset": {
-	  		"part_no": ["WS-C6504-E"],
-			"cpe_22": "cpe:/h:cisco:catalyst_6504-e:-",
-			"cpe_23": "cpe:2.3:h:cisco:catalyst_6504-e:-:*:*:*:*:*:*:*"
-		},
-		"dimensions": {
-			"depth": 552,
-	  		"height": 222,
-	  		"width": 445
-		},
-		"management": {
-			"managed": true
-		},
-		"rackmount": {
-			"units": 5
-		}
-  	}
+        {
+            "name": "fan",
+            "description": "Fan module slot",
+            "direction": "i",
+            "gender": "f",
+            "type__name": "Cisco | 7600 | 7604 Fan"
+        },
+        {
+            "name": "clk1",
+            "description": "CLK module slot 1",
+            "direction": "i",
+            "gender": "f",
+            "type__name": "Cisco | 7600 | CLK"
+        },
+        {
+            "name": "linecard1",
+            "description": "Linecard slot 1/Supervisor slot 1",
+            "direction": "i",
+            "gender": "f",
+            "internal_name": "sup1",
+            "type__name": "Cisco | 7600 | Linecard/Supervisor"
+        },
+        {
+            "name": "linecard2",
+            "description": "Linecard slot 2/Supervisor slot 2",
+            "direction": "i",
+            "gender": "f",
+            "internal_name": "sup2",
+            "type__name": "Cisco | 7600 | Linecard/Supervisor"
+        },
+        {
+            "name": "linecard3",
+            "description": "Linecard slot 3",
+            "direction": "i",
+            "gender": "f",
+            "type__name": "Cisco | 7600 | Fabric Linecard"
+        },
+        {
+            "name": "linecard4",
+            "description": "Linecard slot 4",
+            "direction": "i",
+            "gender": "f",
+            "type__name": "Cisco | 7600 | Fabric Linecard"
+        },
+        {
+            "name": "psu1",
+            "description": "Power Supply  slot 1",
+            "direction": "i",
+            "gender": "f",
+            "type__name": "Cisco | 7604 | PSU"
+        },
+        {
+            "name": "psu2",
+            "description": "Power Supply slot 2",
+            "direction": "i",
+            "gender": "f",
+            "type__name": "Cisco | 7604 | PSU"
+        }
+    ],
+    "data": [
+        {
+            "attr": "part_no",
+            "interface": "asset",
+            "value": ["WS-C6504-E"]
+        },
+        {
+            "attr": "cpe_22",
+            "interface": "asset",
+            "value": "cpe:/h:cisco:catalyst_6504-e:-"
+        },
+        {
+            "attr": "cpe_23",
+            "interface": "asset",
+            "value": "cpe:2.3:h:cisco:catalyst_6504-e:-:*:*:*:*:*:*:*"
+        },
+        {
+            "attr": "depth",
+            "interface": "dimensions",
+            "value": 552
+        },
+        {
+            "attr": "height",
+            "interface": "dimensions",
+            "value": 222
+        },
+        {
+            "attr": "width",
+            "interface": "dimensions",
+            "value": 445
+        },
+        {
+            "attr": "managed",
+            "interface": "management",
+            "value": true
+        },
+        {
+            "attr": "units",
+            "interface": "rackmount",
+            "value": 5
+        }
+    ]
 }

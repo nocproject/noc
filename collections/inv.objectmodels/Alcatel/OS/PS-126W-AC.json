@@ -7,29 +7,35 @@
     "labels": ["noc::inv::psu"],
     "connections": [
         {
+            "name": "In power",
             "description": "Input power",
             "direction": "s",
             "gender": "m",
-            "name": "In power",
             "type__name": "Power | IEC 60320 C14"
         },
         {
+            "name": "Out power",
             "description": "Output powet",
             "direction": "s",
             "gender": "f",
-            "name": "Out power",
             "type__name": "Electrical | DB25"
         }
     ],
-    "data": {
-        "airflow": {
-            "inlet": "r"
+    "data": [
+        {
+            "attr": "inlet",
+            "interface": "airflow",
+            "value": "r"
         },
-        "asset": {
-            "order_part_no": ["PS-126W-AC"]
+        {
+            "attr": "order_part_no",
+            "interface": "asset",
+            "value": ["PS-126W-AC"]
         },
-        "power": {
-            "power": 126.0
+        {
+            "attr": "power",
+            "interface": "power",
+            "value": 126.0
         }
-    }
+    ]
 }

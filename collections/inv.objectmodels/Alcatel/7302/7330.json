@@ -9,113 +9,119 @@
     "labels": ["noc::inv::chassis"],
     "connections": [
         {
-            "description": "Linecard slot",
-            "direction": "i",
-            "gender": "f",
             "name": "linecard1",
-            "type__name": "Alcatel | 7302 | LINECARD"
-        },
-        {
             "description": "Linecard slot",
             "direction": "i",
             "gender": "f",
+            "type__name": "Alcatel | 7302 | LINECARD"
+        },
+        {
             "name": "linecard2",
-            "type__name": "Alcatel | 7302 | LINECARD"
-        },
-        {
             "description": "Linecard slot",
             "direction": "i",
             "gender": "f",
+            "type__name": "Alcatel | 7302 | LINECARD"
+        },
+        {
             "name": "linecard3",
-            "type__name": "Alcatel | 7302 | LINECARD"
-        },
-        {
             "description": "Linecard slot",
             "direction": "i",
             "gender": "f",
+            "type__name": "Alcatel | 7302 | LINECARD"
+        },
+        {
             "name": "linecard4",
-            "type__name": "Alcatel | 7302 | LINECARD"
-        },
-        {
             "description": "Linecard slot",
             "direction": "i",
             "gender": "f",
+            "type__name": "Alcatel | 7302 | LINECARD"
+        },
+        {
             "name": "linecard5",
-            "type__name": "Alcatel | 7302 | LINECARD"
-        },
-        {
             "description": "Linecard slot",
             "direction": "i",
             "gender": "f",
+            "type__name": "Alcatel | 7302 | LINECARD"
+        },
+        {
             "name": "linecard6",
-            "type__name": "Alcatel | 7302 | LINECARD"
-        },
-        {
             "description": "Linecard slot",
             "direction": "i",
             "gender": "f",
+            "type__name": "Alcatel | 7302 | LINECARD"
+        },
+        {
             "name": "linecard7",
-            "type__name": "Alcatel | 7302 | LINECARD"
-        },
-        {
             "description": "Linecard slot",
             "direction": "i",
             "gender": "f",
+            "type__name": "Alcatel | 7302 | LINECARD"
+        },
+        {
             "name": "linecard8",
-            "type__name": "Alcatel | 7302 | LINECARD"
-        },
-        {
             "description": "Linecard slot",
             "direction": "i",
             "gender": "f",
+            "type__name": "Alcatel | 7302 | LINECARD"
+        },
+        {
             "name": "linecard9",
-            "type__name": "Alcatel | 7302 | LINECARD"
-        },
-        {
             "description": "Linecard slot",
             "direction": "i",
             "gender": "f",
+            "type__name": "Alcatel | 7302 | LINECARD"
+        },
+        {
             "name": "linecard10",
-            "type__name": "Alcatel | 7302 | LINECARD"
-        },
-        {
             "description": "Linecard slot",
             "direction": "i",
             "gender": "f",
+            "type__name": "Alcatel | 7302 | LINECARD"
+        },
+        {
             "name": "linecard11",
-            "type__name": "Alcatel | 7302 | LINECARD"
-        },
-        {
             "description": "Linecard slot",
             "direction": "i",
             "gender": "f",
+            "type__name": "Alcatel | 7302 | LINECARD"
+        },
+        {
             "name": "linecard12",
-            "type__name": "Alcatel | 7302 | LINECARD"
-        },
-        {
             "description": "Linecard slot",
             "direction": "i",
             "gender": "f",
+            "type__name": "Alcatel | 7302 | LINECARD"
+        },
+        {
             "name": "linecard13",
-            "type__name": "Alcatel | 7302 | LINECARD"
-        },
-        {
             "description": "Linecard slot",
             "direction": "i",
             "gender": "f",
+            "type__name": "Alcatel | 7302 | LINECARD"
+        },
+        {
             "name": "linecard14",
+            "description": "Linecard slot",
+            "direction": "i",
+            "gender": "f",
             "type__name": "Alcatel | 7302 | LINECARD"
         }
     ],
-    "data": {
-        "asset": {
-            "part_no": ["7330", "7330FD", "7330XD"]
+    "data": [
+        {
+            "attr": "part_no",
+            "interface": "asset",
+            "value": ["7330", "7330FD", "7330XD"]
         },
-        "management": {
-            "managed": true
+        {
+            "attr": "managed",
+            "interface": "management",
+            "value": true
         },
-        "rackmount": {
-            "units": 14
+        {
+            "attr": "units",
+            "interface": "rackmount",
+            "value": 14
         }
-    }
+    ]
 }

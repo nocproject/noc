@@ -7,16 +7,18 @@
     "cr_context": "FAN-E",
     "connections": [
         {
+            "name": "in",
             "description": "",
             "direction": "o",
             "gender": "m",
-            "name": "in",
             "type__name": "Cisco | 6500 | FAN-E"
         }
     ],
-    "data": {
-        "asset": {
-            "part_no": ["WS-C6513-E-FAN"]
+    "data": [
+        {
+            "attr": "part_no",
+            "interface": "asset",
+            "value": ["WS-C6513-E-FAN"]
         }
-    }
+    ]
 }

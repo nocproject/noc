@@ -64,22 +64,41 @@
             "type__name": "Electrical | RJ45"
         }
     ],
-    "data": {
-        "asset": {
-            "order_part_no": ["03033EME"],
-            "part_no": ["LST7MPUE0000"]
+    "data": [
+        {
+            "attr": "order_part_no",
+            "interface": "asset",
+            "value": ["03033EME"]
         },
-        "dimensions": {
-            "depth": 430,
-            "height": 35,
-            "width": 397
+        {
+            "attr": "part_no",
+            "interface": "asset",
+            "value": ["LST7MPUE0000"]
         },
-        "power": {
-            "power": 48.0
+        {
+            "attr": "depth",
+            "interface": "dimensions",
+            "value": 430
         },
-        "weight": {
-            "weight": 2.75
+        {
+            "attr": "height",
+            "interface": "dimensions",
+            "value": 35
+        },
+        {
+            "attr": "width",
+            "interface": "dimensions",
+            "value": 397
+        },
+        {
+            "attr": "power",
+            "interface": "power",
+            "value": 48.0
+        },
+        {
+            "attr": "weight",
+            "interface": "weight",
+            "value": 2.75
         }
-    }
+    ]
 }
-

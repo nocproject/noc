@@ -144,20 +144,36 @@
             "type__name": "Huawei | SmartAX | MA560xT | SB"
         }
     ],
-    "data": {
-        "asset": {
-            "part_no": ["H806GPFD"]
+    "data": [
+        {
+            "attr": "part_no",
+            "interface": "asset",
+            "value": ["H806GPFD"]
         },
-        "dimensions": {
-            "depth": 237,
-            "height": 396,
-            "width": 23
+        {
+            "attr": "depth",
+            "interface": "dimensions",
+            "value": 237
         },
-        "power": {
-            "power": 73.0
+        {
+            "attr": "height",
+            "interface": "dimensions",
+            "value": 396
         },
-        "weight": {
-            "weight": 3.0
+        {
+            "attr": "width",
+            "interface": "dimensions",
+            "value": 23
+        },
+        {
+            "attr": "power",
+            "interface": "power",
+            "value": 73.0
+        },
+        {
+            "attr": "weight",
+            "interface": "weight",
+            "value": 3.0
         }
-    }
+    ]
 }

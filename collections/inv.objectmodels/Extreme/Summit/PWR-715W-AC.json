@@ -8,24 +8,30 @@
     "labels": ["noc::inv::psu"],
     "connections": [
         {
+            "name": "in",
             "description": "",
             "direction": "o",
             "gender": "m",
-            "name": "in",
             "type__name": "Extreme | Summit | X460G2/X450G2 | PSU"
         },
         {
+            "name": "power",
             "description": "Power input",
             "direction": "s",
             "gender": "m",
-            "name": "power",
             "type__name": "Power | IEC 60320 C14"
         }
     ],
-    "data": {
-        "asset": {
-            "order_part_no": ["10951"],
-            "part_no": ["800592-00-05", "800592-00-07"]
+    "data": [
+        {
+            "attr": "part_no",
+            "interface": "asset",
+            "value": ["800592-00-05", "800592-00-07"]
+        },
+        {
+            "attr": "order_part_no",
+            "interface": "asset",
+            "value": ["10951"]
         }
-    }
+    ]
 }

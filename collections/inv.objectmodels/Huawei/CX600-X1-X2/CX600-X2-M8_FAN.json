@@ -8,28 +8,48 @@
     "labels": ["noc::inv::fan"],
     "connections": [
         {
+            "name": "in",
             "description": "Chassis connector",
             "direction": "o",
             "gender": "m",
-            "name": "in",
             "type__name": "Huawei | CX600-X1-X2 | CX600-X2-M8 FAN"
         }
     ],
-    "data": {
-        "asset": {
-            "order_part_no": ["02310MPJ"],
-            "part_no": ["CX6M002FBX71"]
+    "data": [
+        {
+            "attr": "order_part_no",
+            "interface": "asset",
+            "value": ["02310MPJ"]
         },
-        "dimensions": {
-            "depth": 226,
-            "height": 219,
-            "width": 50
+        {
+            "attr": "part_no",
+            "interface": "asset",
+            "value": ["CX6M002FBX71"]
         },
-        "power": {
-            "power": 177.0
+        {
+            "attr": "depth",
+            "interface": "dimensions",
+            "value": 226
         },
-        "weight": {
-            "weight": 1.7
+        {
+            "attr": "height",
+            "interface": "dimensions",
+            "value": 219
+        },
+        {
+            "attr": "width",
+            "interface": "dimensions",
+            "value": 50
+        },
+        {
+            "attr": "power",
+            "interface": "power",
+            "value": 177.0
+        },
+        {
+            "attr": "weight",
+            "interface": "weight",
+            "value": 1.7
         }
-    }
+    ]
 }

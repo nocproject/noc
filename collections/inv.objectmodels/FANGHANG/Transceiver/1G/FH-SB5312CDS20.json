@@ -8,25 +8,27 @@
     "labels": ["noc::inv::xcvr"],
     "connections": [
         {
+            "name": "rxtx",
             "description": "RxTx SC Port",
             "direction": "i",
             "gender": "f",
-            "name": "rxtx",
             "protocols": [">1000BASELX-1550", "<1000BASELX-1310"],
             "type__name": "Optical | SC"
         },
         {
+            "name": "in",
             "description": "SFP Connector",
             "direction": "o",
             "gender": "m",
-            "name": "in",
             "protocols": ["TransEth1G"],
             "type__name": "Transceiver | SFP"
         }
     ],
-    "data": {
-        "asset": {
-            "part_no": ["FH-SB5312CDS20"]
+    "data": [
+        {
+            "attr": "part_no",
+            "interface": "asset",
+            "value": ["FH-SB5312CDS20"]
         }
-    }
+    ]
 }

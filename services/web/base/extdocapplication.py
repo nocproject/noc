@@ -19,6 +19,7 @@ from mongoengine.fields import (
     EmbeddedDocumentField,
     ReferenceField,
     BinaryField,
+    DynamicField,
     GeoPointField,
     EmbeddedDocumentListField,
 )
@@ -359,7 +360,7 @@ class ExtDocApplication(ExtApplication):
                         self.format_label(ll)
                         for ll in Label.objects.filter(name__in=v).order_by("display_order")
                     ]
-                elif isinstance(f, ListField):
+                elif isinstance(f, (ListField, EmbeddedDocumentListField)):
                     if hasattr(f, "field") and isinstance(f.field, EmbeddedDocumentField):
                         v = [self.instance_to_dict(vv, nocustom=True) for vv in v]
                     elif hasattr(f, "field") and isinstance(f.field, ReferenceField):
@@ -373,6 +374,8 @@ class ExtDocApplication(ExtApplication):
                         v = v.strftime("%Y-%m-%d")
                     else:
                         v = None
+                elif isinstance(f, DynamicField) and isinstance(v, list):
+                    v = [str(x) for x in v]
                 elif not isinstance(v, (bool, dict, int, str)):
                     if hasattr(v, "id"):
                         v = v.id
