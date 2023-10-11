@@ -9,16 +9,18 @@
     "labels": ["noc::inv::lc", "noc::inv::sup"],
     "connections": [
         {
+            "name": "in",
             "description": "mgmt connector",
             "direction": "o",
             "gender": "f",
-            "name": "in",
             "type__name": "Brocade | FastIron SuperX | Mgmt Connector"
         }
     ],
-    "data": {
-        "asset": {
-            "part_no": ["SX-FIZMRXL6"]
+    "data": [
+        {
+            "attr": "part_no",
+            "interface": "asset",
+            "value": ["SX-FIZMRXL6"]
         }
-    }
+    ]
 }

@@ -8,27 +8,31 @@
     "labels": ["noc::inv::psu"],
     "connections": [
         {
+            "name": "power",
             "description": "Power input",
             "direction": "s",
             "gender": "m",
-            "name": "power",
             "protocols": [">220VAC"],
             "type__name": "Power | IEC 60320 C14"
         },
         {
+            "name": "in",
             "description": "Internal Power slot",
             "direction": "o",
             "gender": "m",
-            "name": "in",
             "type__name": "Eltex | MES | PSU"
         }
     ],
-    "data": {
-        "asset": {
-            "order_part_no": ["PM150", "PM160", "PM160-220/12"]
+    "data": [
+        {
+            "attr": "order_part_no",
+            "interface": "asset",
+            "value": ["PM150", "PM160", "PM160-220/12"]
         },
-        "weight": {
-            "weight": 0.5
+        {
+            "attr": "weight",
+            "interface": "weight",
+            "value": 0.5
         }
-    }
+    ]
 }

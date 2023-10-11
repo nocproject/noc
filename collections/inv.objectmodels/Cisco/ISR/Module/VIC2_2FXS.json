@@ -7,33 +7,35 @@
     "cr_context": "DCS",
     "connections": [
         {
+            "name": "voice-port0",
             "description": "voice-port N/X/0 telephone",
             "direction": "s",
             "gender": "f",
-            "name": "voice-port0",
             "protocols": ["FXS"],
             "type__name": "Electrical | RJ11"
         },
         {
+            "name": "voice-port1",
             "description": "voice-port N/X/1 telephone",
             "direction": "s",
             "gender": "f",
-            "name": "voice-port1",
             "protocols": ["FXS"],
             "type__name": "Electrical | RJ11"
         },
         {
+            "name": "in",
             "description": "Voice Interface Card connector slot",
             "direction": "o",
             "gender": "m",
-            "name": "in",
             "protocols": ["VIC"],
             "type__name": "Cisco | ISR | DCS"
         }
     ],
-    "data": {
-        "asset": {
-            "part_no": ["VIC2-2FXS", "VIC2-2FXS="]
+    "data": [
+        {
+            "attr": "part_no",
+            "interface": "asset",
+            "value": ["VIC2-2FXS", "VIC2-2FXS="]
         }
-    }
+    ]
 }

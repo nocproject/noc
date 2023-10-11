@@ -5,28 +5,29 @@
     "vendor__code": "A-GEAR",
     "description": "SFP GEPON PX20 1490 nm",
     "cr_context": "XCVR",
-    "tags": ["xcvr"],
     "connections": [
         {
+            "name": "in",
             "description": "SFP Connector",
             "direction": "o",
             "gender": "m",
-            "name": "in",
             "protocols": ["GPON"],
             "type__name": "Transceiver | SFP"
         },
         {
+            "name": "rxtx",
             "description": "RxTx GPON SC port",
             "direction": "s",
             "gender": "f",
-            "name": "rxtx",
             "protocols": [">GPON-1310", "<GPON-1490"],
             "type__name": "Optical | SC"
         }
     ],
-    "data": {
-        "asset": {
-            "part_no": ["SFPGEPONOLT1490"]
+    "data": [
+        {
+            "attr": "part_no",
+            "interface": "asset",
+            "value": ["SFPGEPONOLT1490"]
         }
-    }
+    ]
 }

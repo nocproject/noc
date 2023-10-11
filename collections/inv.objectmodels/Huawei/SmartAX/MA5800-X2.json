@@ -51,24 +51,46 @@
             "type__name": "Huawei | SmartAX | MA5800 | CCU"
         }
     ],
-    "data": {
-        "asset": {
-            "part_no": ["H901BPSB"]
+    "data": [
+        {
+            "attr": "part_no",
+            "interface": "asset",
+            "value": ["H901BPSB"]
         },
-        "dimensions": {
-            "depth": 268,
-            "height": 88,
-            "width": 442
+        {
+            "attr": "depth",
+            "interface": "dimensions",
+            "value": 268
         },
-        "management": {
-            "managed": true
+        {
+            "attr": "height",
+            "interface": "dimensions",
+            "value": 88
         },
-        "rackmount": {
-            "units": 2.0
+        {
+            "attr": "width",
+            "interface": "dimensions",
+            "value": 442
         },
-        "weight": {
-            "is_recursive": true,
-            "weight": 9.4
+        {
+            "attr": "managed",
+            "interface": "management",
+            "value": true
+        },
+        {
+            "attr": "units",
+            "interface": "rackmount",
+            "value": 2.0
+        },
+        {
+            "attr": "is_recursive",
+            "interface": "weight",
+            "value": true
+        },
+        {
+            "attr": "weight",
+            "interface": "weight",
+            "value": 9.4
         }
-    }
+    ]
 }

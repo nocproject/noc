@@ -6,41 +6,57 @@
     "description": "Interface card with 2 PCI-E 12G stacking ports",
     "connections": [
         {
+            "name": "in",
             "description": "Rear slot",
             "direction": "o",
             "gender": "m",
-            "name": "in",
             "type__name": "Huawei | Quidway S5700 | Rear slot"
         },
         {
+            "name": "Stack 1",
             "description": "Stacking interface 1",
             "direction": "s",
             "gender": "f",
-            "name": "Stack 1",
             "type__name": "Huawei | Quidway S5700 | Stack 12G"
         },
         {
+            "name": "Stack 2",
             "description": "Stacking interface 2",
             "direction": "s",
             "gender": "f",
-            "name": "Stack 2",
             "type__name": "Huawei | Quidway S5700 | Stack 12G"
         }
     ],
-    "data": {
-        "asset": {
-            "part_no": ["LS5DSTACK200"]
+    "data": [
+        {
+            "attr": "part_no",
+            "interface": "asset",
+            "value": ["LS5DSTACK200"]
         },
-        "dimensions": {
-            "depth": "69",
-            "height": "22",
-            "width": "200"
+        {
+            "attr": "depth",
+            "interface": "dimensions",
+            "value": "69"
         },
-        "power": {
-            "power": "0.5"
+        {
+            "attr": "height",
+            "interface": "dimensions",
+            "value": "22"
         },
-        "weight": {
-            "weight": "0.2"
+        {
+            "attr": "width",
+            "interface": "dimensions",
+            "value": "200"
+        },
+        {
+            "attr": "power",
+            "interface": "power",
+            "value": "0.5"
+        },
+        {
+            "attr": "weight",
+            "interface": "weight",
+            "value": "0.2"
         }
-    }
+    ]
 }

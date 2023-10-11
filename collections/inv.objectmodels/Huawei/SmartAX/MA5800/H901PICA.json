@@ -1,7 +1,7 @@
 {
-    "name": "Huawei | SmartAX | MA5801 | H901PICA",
+    "name": "Huawei | SmartAX | MA5800 | H921PICA",
     "$collection": "inv.objectmodels",
-    "uuid": "2544e790-297d-437d-807f-719ac72a9d20",
+    "uuid": "b1ce38fd-7350-4392-9b8c-b47f42b3af3e",
     "vendor__code": "HUAWEI",
     "description": "Double DC power Board",
     "cr_context": "PWR",
@@ -31,9 +31,26 @@
             "type__name": "Huawei | SmartAX | MA5801 | PWR"
         }
     ],
-    "data": {
-        "asset": {
-            "part_no": ["H921PICA"]
+    "data": [
+        {
+            "attr": "height",
+            "interface": "dimensions",
+            "value": 40
+        },
+        {
+            "attr": "depth",
+            "interface": "dimensions",
+            "value": 218
+        },
+        {
+            "attr": "width",
+            "interface": "dimensions",
+            "value": 69
+        },
+        {
+            "attr": "part_no",
+            "interface": "asset",
+            "value": ["H921PICA"]
         }
-    }
+    ]
 }

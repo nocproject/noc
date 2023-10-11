@@ -7,24 +7,26 @@
     "cr_context": "NM",
     "connections": [
         {
+            "name": "in",
             "description": "Network Module Connector",
             "direction": "o",
             "gender": "m",
-            "name": "in",
             "type__name": "Cisco | ISR | NM"
         },
         {
+            "name": "Gi0",
             "description": "GigabitEthernet 0 port",
             "direction": "s",
             "gender": "f",
-            "name": "Gi0",
             "protocols": ["10BASET", "100BASETX", "1000BASET"],
             "type__name": "Electrical | RJ45"
         }
     ],
-    "data": {
-        "asset": {
-            "part_no": ["NME-RVPN-SEC1-G2"]
+    "data": [
+        {
+            "attr": "part_no",
+            "interface": "asset",
+            "value": ["NME-RVPN-SEC1-G2"]
         }
-    }
+    ]
 }

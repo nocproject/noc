@@ -8,28 +8,48 @@
     "labels": ["noc::inv::psu"],
     "connections": [
         {
+            "name": "in",
             "description": "Chassis connector",
             "direction": "o",
             "gender": "m",
-            "name": "in",
             "type__name": "Huawei | CX600-X1-X2 | CX600-X2-M8 PSU"
         }
     ],
-    "data": {
-        "asset": {
-            "order_part_no": ["03030QAS"],
-            "part_no": ["CR51PSUC0"]
+    "data": [
+        {
+            "attr": "power",
+            "interface": "power",
+            "value": 1200.0
         },
-        "dimensions": {
-            "depth": 226,
-            "height": 20,
-            "width": 194
+        {
+            "attr": "part_no",
+            "interface": "asset",
+            "value": ["CR51PSUC0"]
         },
-        "power": {
-            "power": 1200.0
+        {
+            "attr": "order_part_no",
+            "interface": "asset",
+            "value": ["03030QAS"]
         },
-        "weight": {
-            "weight": 1.0
+        {
+            "attr": "weight",
+            "interface": "weight",
+            "value": 1.0
+        },
+        {
+            "attr": "width",
+            "interface": "dimensions",
+            "value": 194
+        },
+        {
+            "attr": "depth",
+            "interface": "dimensions",
+            "value": 226
+        },
+        {
+            "attr": "height",
+            "interface": "dimensions",
+            "value": 20
         }
-    }
+    ]
 }

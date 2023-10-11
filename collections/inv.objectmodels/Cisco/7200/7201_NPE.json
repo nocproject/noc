@@ -7,16 +7,18 @@
     "cr_context": "SUP",
     "connections": [
         {
+            "name": "in",
             "description": "NPE slot",
             "direction": "o",
             "gender": "m",
-            "name": "in",
             "type__name": "Cisco | 7200 | Supervisor"
         }
     ],
-    "data": {
-        "asset": {
-            "part_no": ["C7201"]
+    "data": [
+        {
+            "attr": "part_no",
+            "interface": "asset",
+            "value": ["C7201"]
         }
-    }
+    ]
 }

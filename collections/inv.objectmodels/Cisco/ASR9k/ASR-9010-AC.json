@@ -8,181 +8,201 @@
     "cr_context": "CHASSIS",
     "connections": [
         {
+            "name": "RSP0",
             "description": "RSP 1 slot",
             "direction": "i",
             "gender": "f",
             "group": "0",
-            "name": "RSP0",
             "type__name": "Cisco | ASR9k | RSP"
         },
         {
+            "name": "RSP1",
             "description": "RSP 2 slot",
             "direction": "i",
             "gender": "f",
             "group": "0",
-            "name": "RSP1",
             "type__name": "Cisco | ASR9k | RSP"
         },
         {
-            "description": "Linecard slot",
-            "direction": "i",
-            "gender": "f",
-            "group": "0",
             "name": "LC0",
-            "type__name": "Cisco | ASR9k | Linecard"
-        },
-        {
             "description": "Linecard slot",
             "direction": "i",
             "gender": "f",
             "group": "0",
+            "type__name": "Cisco | ASR9k | Linecard"
+        },
+        {
             "name": "LC1",
-            "type__name": "Cisco | ASR9k | Linecard"
-        },
-        {
             "description": "Linecard slot",
             "direction": "i",
             "gender": "f",
             "group": "0",
+            "type__name": "Cisco | ASR9k | Linecard"
+        },
+        {
             "name": "LC2",
-            "type__name": "Cisco | ASR9k | Linecard"
-        },
-        {
             "description": "Linecard slot",
             "direction": "i",
             "gender": "f",
             "group": "0",
+            "type__name": "Cisco | ASR9k | Linecard"
+        },
+        {
             "name": "LC3",
-            "type__name": "Cisco | ASR9k | Linecard"
-        },
-        {
             "description": "Linecard slot",
             "direction": "i",
             "gender": "f",
             "group": "0",
+            "type__name": "Cisco | ASR9k | Linecard"
+        },
+        {
             "name": "LC4",
-            "type__name": "Cisco | ASR9k | Linecard"
-        },
-        {
             "description": "Linecard slot",
             "direction": "i",
             "gender": "f",
             "group": "0",
+            "type__name": "Cisco | ASR9k | Linecard"
+        },
+        {
             "name": "LC5",
-            "type__name": "Cisco | ASR9k | Linecard"
-        },
-        {
             "description": "Linecard slot",
             "direction": "i",
             "gender": "f",
             "group": "0",
+            "type__name": "Cisco | ASR9k | Linecard"
+        },
+        {
             "name": "LC6",
-            "type__name": "Cisco | ASR9k | Linecard"
-        },
-        {
             "description": "Linecard slot",
             "direction": "i",
             "gender": "f",
             "group": "0",
+            "type__name": "Cisco | ASR9k | Linecard"
+        },
+        {
             "name": "LC7",
-            "type__name": "Cisco | ASR9k | Linecard"
-        },
-        {
             "description": "Linecard slot",
             "direction": "i",
             "gender": "f",
             "group": "0",
+            "type__name": "Cisco | ASR9k | Linecard"
+        },
+        {
             "name": "LC8",
-            "type__name": "Cisco | ASR9k | Linecard"
-        },
-        {
             "description": "Linecard slot",
             "direction": "i",
             "gender": "f",
             "group": "0",
-            "name": "LC9",
             "type__name": "Cisco | ASR9k | Linecard"
         },
         {
-            "description": "PEM slot",
+            "name": "LC9",
+            "description": "Linecard slot",
             "direction": "i",
             "gender": "f",
             "group": "0",
+            "type__name": "Cisco | ASR9k | Linecard"
+        },
+        {
             "name": "PEM0",
-            "type__name": "Cisco | ASR9010 | PEM-V1"
-        },
-        {
             "description": "PEM slot",
             "direction": "i",
             "gender": "f",
             "group": "0",
+            "type__name": "Cisco | ASR9010 | PEM-V1"
+        },
+        {
             "name": "PEM1",
-            "type__name": "Cisco | ASR9010 | PEM-V1"
-        },
-        {
             "description": "PEM slot",
             "direction": "i",
             "gender": "f",
             "group": "0",
+            "type__name": "Cisco | ASR9010 | PEM-V1"
+        },
+        {
             "name": "PEM2",
-            "type__name": "Cisco | ASR9010 | PEM-V1"
-        },
-        {
             "description": "PEM slot",
             "direction": "i",
             "gender": "f",
             "group": "0",
+            "type__name": "Cisco | ASR9010 | PEM-V1"
+        },
+        {
             "name": "PEM3",
-            "type__name": "Cisco | ASR9010 | PEM-V1"
-        },
-        {
             "description": "PEM slot",
             "direction": "i",
             "gender": "f",
             "group": "0",
+            "type__name": "Cisco | ASR9010 | PEM-V1"
+        },
+        {
             "name": "PEM4",
-            "type__name": "Cisco | ASR9010 | PEM-V1"
-        },
-        {
             "description": "PEM slot",
             "direction": "i",
             "gender": "f",
             "group": "0",
-            "name": "PEM5",
             "type__name": "Cisco | ASR9010 | PEM-V1"
         },
         {
+            "name": "PEM5",
+            "description": "PEM slot",
+            "direction": "i",
+            "gender": "f",
+            "group": "0",
+            "type__name": "Cisco | ASR9010 | PEM-V1"
+        },
+        {
+            "name": "fan0",
             "description": "FAN slot",
             "direction": "i",
             "gender": "f",
             "group": "0",
-            "name": "fan0",
             "type__name": "Cisco | ASR9010 | FAN"
         },
         {
+            "name": "fan1",
             "description": "FAN slot",
             "direction": "i",
             "gender": "f",
             "group": "0",
-            "name": "fan1",
             "type__name": "Cisco | ASR9010 | FAN"
         }
     ],
-    "data": {
-        "airflow": {
-            "exhaust": "r",
-            "intake": "f"
+    "data": [
+        {
+            "attr": "exhaust",
+            "interface": "airflow",
+            "value": "r"
         },
-        "asset": {
-            "part_no": ["ASR-9010-AC"],
-            "cpe_22": "cpe:/h:cisco:asr_9010:-",
-            "cpe_23": "cpe:2.3:h:cisco:asr_9010:-:*:*:*:*:*:*:*"
+        {
+            "attr": "intake",
+            "interface": "airflow",
+            "value": "f"
         },
-        "management": {
-            "managed": true
+        {
+            "attr": "part_no",
+            "interface": "asset",
+            "value": ["ASR-9010-AC"]
         },
-        "rackmount": {
-            "units": 21.0
+        {
+            "attr": "cpe_22",
+            "interface": "asset",
+            "value": "cpe:/h:cisco:asr_9010:-"
+        },
+        {
+            "attr": "cpe_23",
+            "interface": "asset",
+            "value": "cpe:2.3:h:cisco:asr_9010:-:*:*:*:*:*:*:*"
+        },
+        {
+            "attr": "managed",
+            "interface": "management",
+            "value": true
+        },
+        {
+            "attr": "units",
+            "interface": "rackmount",
+            "value": 21.0
         }
-    }
+    ]
 }

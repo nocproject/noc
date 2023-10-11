@@ -9,16 +9,18 @@
     "labels": ["noc::inv::lc", "noc::inv::fabric"],
     "connections": [
         {
+            "name": "in",
             "description": "SFM connector",
             "direction": "o",
             "gender": "f",
-            "name": "in",
             "type__name": "Brocade | BigIron RX | SFM Connector"
         }
     ],
-    "data": {
-        "asset": {
-            "part_no": ["35523-200B", "31523-200B", "35523-201B", "35523-201E"]
+    "data": [
+        {
+            "attr": "part_no",
+            "interface": "asset",
+            "value": ["35523-200B", "31523-200B", "35523-201B", "35523-201E"]
         }
-    }
+    ]
 }

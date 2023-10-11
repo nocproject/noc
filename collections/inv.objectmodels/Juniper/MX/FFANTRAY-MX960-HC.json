@@ -8,17 +8,23 @@
     "labels": ["noc::inv::fan"],
     "connections": [
         {
+            "name": "in",
             "description": "Chassis connection",
             "direction": "o",
             "gender": "m",
-            "name": "in",
             "type__name": "Juniper | MX | MX960 Fan"
         }
     ],
-    "data": {
-        "asset": {
-            "order_part_no": ["FFANTRAY-MX960-HC", "FFANTRAY-MX960-HC-S"],
-            "part_no": ["740-031521", "740-057995"]
+    "data": [
+        {
+            "attr": "part_no",
+            "interface": "asset",
+            "value": ["740-031521", "740-057995"]
+        },
+        {
+            "attr": "order_part_no",
+            "interface": "asset",
+            "value": ["FFANTRAY-MX960-HC", "FFANTRAY-MX960-HC-S"]
         }
-    }
+    ]
 }

@@ -8,16 +8,18 @@
     "labels": ["noc::inv::dsp"],
     "connections": [
         {
+            "name": "in",
             "description": "Voice Board connector",
             "direction": "o",
             "gender": "m",
-            "name": "in",
             "type__name": "Huawei | SmartAX | MA5616 | VDB"
         }
     ],
-    "data": {
-        "asset": {
-            "part_no": ["H836ASDC"]
+    "data": [
+        {
+            "attr": "part_no",
+            "interface": "asset",
+            "value": ["H836ASDC"]
         }
-    }
+    ]
 }

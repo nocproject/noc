@@ -8,25 +8,27 @@
     "labels": ["noc::inv::xcvr"],
     "connections": [
         {
+            "name": "in",
             "description": "SFP Connector",
             "direction": "o",
             "gender": "m",
-            "name": "in",
             "protocols": ["GPON"],
             "type__name": "Transceiver | SFP"
         },
         {
+            "name": "rxtx",
             "description": "RxTx GPON SC port",
             "direction": "s",
             "gender": "f",
-            "name": "rxtx",
             "protocols": [">GPON-1310", "<GPON-1490"],
             "type__name": "Optical | SC"
         }
     ],
-    "data": {
-        "asset": {
-            "part_no": ["LTE3680M-BC+"]
+    "data": [
+        {
+            "attr": "part_no",
+            "interface": "asset",
+            "value": ["LTE3680M-BC+"]
         }
-    }
+    ]
 }

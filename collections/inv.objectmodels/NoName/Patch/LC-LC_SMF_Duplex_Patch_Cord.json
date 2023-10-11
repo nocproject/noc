@@ -6,43 +6,41 @@
     "description": "2-fiber LC-LC SMF Patch",
     "connections": [
         {
-            "cross": "3",
-            "description": "side 1 1st connector",
-            "direction": "s",
-            "gender": "m",
             "name": "1",
-            "type__name": "Optical | LC",
-            "protocols": [">1000BASEX"]
-        },
-        {
-            "cross": "4",
-            "description": "side 1 2nd connector",
+            "description": "side 1 1st connector",
+            "cross": "3",
             "direction": "s",
             "gender": "m",
+            "protocols": [">1000BASEX"],
+            "type__name": "Optical | LC"
+        },
+        {
             "name": "2",
-            "type__name": "Optical | LC",
-            "protocols": [">1000BASEX"]
-        },
-        {
-            "cross": "1",
-            "description": "side 2 1st connector",
+            "description": "side 1 2nd connector",
+            "cross": "4",
             "direction": "s",
             "gender": "m",
+            "protocols": [">1000BASEX"],
+            "type__name": "Optical | LC"
+        },
+        {
             "name": "3",
-            "type__name": "Optical | LC",
-            "protocols": ["<1000BASEX"]
-        },
-        {
-            "cross": "2",
-            "description": "side 2 2nd connector",
+            "description": "side 2 1st connector",
+            "cross": "1",
             "direction": "s",
             "gender": "m",
+            "protocols": ["<1000BASEX"],
+            "type__name": "Optical | LC"
+        },
+        {
             "name": "4",
-            "type__name": "Optical | LC",
-            "protocols": ["<1000BASEX"]
+            "description": "side 2 2nd connector",
+            "cross": "2",
+            "direction": "s",
+            "gender": "m",
+            "protocols": ["<1000BASEX"],
+            "type__name": "Optical | LC"
         }
     ],
-    "data": {
-        "length": {}
-    }
+    "data": []
 }

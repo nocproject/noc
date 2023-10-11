@@ -8,23 +8,25 @@
     "cr_context": "LINECARD",
     "connections": [
         {
+            "name": "in",
             "description": "Chassis connection",
             "direction": "o",
             "gender": "m",
-            "name": "in",
             "type__name": "Cisco | 7200 | Linecard"
         },
         {
+            "name": "port1",
             "description": "Port1",
             "direction": "s",
             "gender": "f",
-            "name": "port1",
             "type__name": "Optical | LC"
         }
     ],
-    "data": {
-        "asset": {
-            "part_no": ["PA-A6-OC3SMI=", "PA-A6-OC3SMI"]
+    "data": [
+        {
+            "attr": "part_no",
+            "interface": "asset",
+            "value": ["PA-A6-OC3SMI=", "PA-A6-OC3SMI"]
         }
-    }
+    ]
 }

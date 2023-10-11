@@ -7,49 +7,51 @@
     "cr_context": "DCS",
     "connections": [
         {
+            "name": "in",
             "description": "HWIC Card connector",
             "direction": "o",
             "gender": "m",
-            "name": "in",
             "protocols": ["EHWIC"],
             "type__name": "Cisco | ISR | DCS"
         },
         {
+            "name": "Gi0",
             "description": "GigabitEthernet X/0",
             "direction": "s",
             "gender": "f",
-            "name": "Gi0",
             "protocols": ["10BASET", "100BASETX", "1000BASET"],
             "type__name": "Electrical | RJ45"
         },
         {
+            "name": "Gi1",
             "description": "GigabitEthernet X/1",
             "direction": "s",
             "gender": "f",
-            "name": "Gi1",
             "protocols": ["10BASET", "100BASETX", "1000BASET"],
             "type__name": "Electrical | RJ45"
         },
         {
+            "name": "Gi2",
             "description": "GigabitEthernet X/2",
             "direction": "s",
             "gender": "f",
-            "name": "Gi2",
             "protocols": ["10BASET", "100BASETX", "1000BASET"],
             "type__name": "Electrical | RJ45"
         },
         {
+            "name": "Gi3",
             "description": "GigabitEthernet X/3",
             "direction": "s",
             "gender": "f",
-            "name": "Gi3",
             "protocols": ["10BASET", "100BASETX", "1000BASET"],
             "type__name": "Electrical | RJ45"
         }
     ],
-    "data": {
-        "asset": {
-            "part_no": ["EHWIC-4ESG"]
+    "data": [
+        {
+            "attr": "part_no",
+            "interface": "asset",
+            "value": ["EHWIC-4ESG"]
         }
-    }
+    ]
 }

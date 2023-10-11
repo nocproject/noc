@@ -7,16 +7,18 @@
     "cr_context": "FAN",
     "connections": [
         {
+            "name": "in",
             "description": "",
             "direction": "o",
             "gender": "m",
-            "name": "in",
             "type__name": "Extreme | Summit | X650 | FAN"
         }
     ],
-    "data": {
-        "asset": {
-            "part_no": ["450237-00-08"]
+    "data": [
+        {
+            "attr": "part_no",
+            "interface": "asset",
+            "value": ["450237-00-08"]
         }
-    }
+    ]
 }

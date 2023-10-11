@@ -184,20 +184,36 @@
             "type__name": "Electrical | RJ45"
         }
     ],
-    "data": {
-        "asset": {
-            "part_no": ["ESR-21"]
+    "data": [
+        {
+            "attr": "part_no",
+            "interface": "asset",
+            "value": ["ESR-21"]
         },
-        "dimensions": {
-            "depth": 225,
-            "height": 44,
-            "width": 430
+        {
+            "attr": "depth",
+            "interface": "dimensions",
+            "value": 225
         },
-        "management": {
-            "managed": true
+        {
+            "attr": "height",
+            "interface": "dimensions",
+            "value": 44
         },
-        "weight": {
-            "weight": 3.15
+        {
+            "attr": "width",
+            "interface": "dimensions",
+            "value": 430
+        },
+        {
+            "attr": "managed",
+            "interface": "management",
+            "value": true
+        },
+        {
+            "attr": "weight",
+            "interface": "weight",
+            "value": 3.15
         }
-    }
+    ]
 }

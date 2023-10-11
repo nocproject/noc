@@ -9,16 +9,18 @@
     "labels": ["noc::inv::lc", "noc::inv::sup"],
     "connections": [
         {
+            "name": "in",
             "description": "mgmt connector",
             "direction": "o",
             "gender": "f",
-            "name": "in",
             "type__name": "Brocade | BigIron RX | Mgmt Connector"
         }
     ],
-    "data": {
-        "asset": {
-            "part_no": ["35524-001C", "35524-001A"]
+    "data": [
+        {
+            "attr": "part_no",
+            "interface": "asset",
+            "value": ["35524-001C", "35524-001A"]
         }
-    }
+    ]
 }

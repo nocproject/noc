@@ -9,91 +9,93 @@
     "labels": ["noc::inv::chassis"],
     "connections": [
         {
+            "name": "iom1",
             "description": "IO slot 1",
             "direction": "i",
             "gender": "f",
             "internal_name": "imm1",
-            "name": "iom1",
             "type__name": "Alcatel | 7450 | IO"
         },
         {
+            "name": "iom2",
             "description": "IO slot 2",
             "direction": "i",
             "gender": "f",
             "internal_name": "imm2",
-            "name": "iom2",
             "type__name": "Alcatel | 7450 | IO"
         },
         {
+            "name": "iom2",
             "description": "IO slot 2",
             "direction": "i",
             "gender": "f",
             "internal_name": "imm2",
-            "name": "iom2",
             "type__name": "Alcatel | 7450 | IO"
         },
         {
+            "name": "iom3",
             "description": "IO slot 3",
             "direction": "i",
             "gender": "f",
             "internal_name": "imm3",
-            "name": "iom3",
             "type__name": "Alcatel | 7450 | IO"
         },
         {
+            "name": "iom4",
             "description": "IO slot 4",
             "direction": "i",
             "gender": "f",
             "internal_name": "imm4",
-            "name": "iom4",
             "type__name": "Alcatel | 7450 | IO"
         },
         {
+            "name": "cfmA",
             "description": "CFM slot A",
             "direction": "i",
             "gender": "f",
-            "name": "cfmA",
             "type__name": "Alcatel | 7450 | CFM"
         },
         {
+            "name": "cfmB",
             "description": "CFM slot B",
             "direction": "i",
             "gender": "f",
-            "name": "cfmB",
             "type__name": "Alcatel | 7450 | CFM"
         },
         {
+            "name": "fan1",
             "description": "Fan slot 1",
             "direction": "i",
             "gender": "f",
-            "name": "fan1",
             "type__name": "Alcatel | 7450 | FAN"
         },
         {
+            "name": "fan2",
             "description": "Fan slot 2",
             "direction": "i",
             "gender": "f",
-            "name": "fan2",
             "type__name": "Alcatel | 7450 | FAN"
         },
         {
+            "name": "psu1",
             "description": "Power Supply slot 1",
             "direction": "i",
             "gender": "f",
-            "name": "psu1",
             "type__name": "Alcatel | 7450 | PSU"
         },
         {
+            "name": "psu2",
             "description": "Power Supply slot 2",
             "direction": "i",
             "gender": "f",
-            "name": "psu2",
             "type__name": "Alcatel | 7450 | PSU"
         }
     ],
-    "data": {
-        "asset": {
-            "part_no": ["3HE00186AAAB02"]
+    "data": [
+        {
+            "attr": "part_no",
+            "interface": "asset",
+            "value": ["3HE00186AAAB02"]
         }
-    }
+    ]
 }

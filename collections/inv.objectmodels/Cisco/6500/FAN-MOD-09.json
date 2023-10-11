@@ -1,22 +1,24 @@
 {
-  "name": "Cisco | 6500 | FAN-MOD-09",
-  "$collection": "inv.objectmodels",
-  "uuid": "121375de-b5f5-43ec-9d1a-5d1560fb2444",
-  "vendor__code": "CISCO",
-  "description": "Cisco Catalyst 6509-NEB-A high-speed fan tray for Cisco 6509|7609",
-  "cr_context": "FAN",
-  "connections": [
-	{
-	  "description": "Fan connection",
-	  "direction": "o",
-	  "gender": "m",
-	  "name": "in",
-	  "type__name": "Cisco | 7600 | 7609 Fan"
-	}
-  ],
-  "data": {
-	"asset": {
-	  "part_no": ["FAN-MOD-09"]
-	}
-  }
+    "name": "Cisco | 6500 | FAN-MOD-09",
+    "$collection": "inv.objectmodels",
+    "uuid": "121375de-b5f5-43ec-9d1a-5d1560fb2444",
+    "vendor__code": "CISCO",
+    "description": "Cisco Catalyst 6509-NEB-A high-speed fan tray for Cisco 6509|7609",
+    "cr_context": "FAN",
+    "connections": [
+        {
+            "name": "in",
+            "description": "Fan connection",
+            "direction": "o",
+            "gender": "m",
+            "type__name": "Cisco | 7600 | 7609 Fan"
+        }
+    ],
+    "data": [
+        {
+            "attr": "part_no",
+            "interface": "asset",
+            "value": ["FAN-MOD-09"]
+        }
+    ]
 }

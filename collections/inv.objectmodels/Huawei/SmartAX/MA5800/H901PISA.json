@@ -31,9 +31,11 @@
             "type__name": "Huawei | SmartAX | MA5800 | PWR"
         }
     ],
-    "data": {
-        "asset": {
-            "part_no": ["H901PISA"]
+    "data": [
+        {
+            "attr": "part_no",
+            "interface": "asset",
+            "value": ["H901PISA"]
         }
-    }
+    ]
 }

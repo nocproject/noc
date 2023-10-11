@@ -7,17 +7,23 @@
     "cr_context": "FPC",
     "connections": [
         {
+            "name": "in",
             "description": "DPC connection",
             "direction": "o",
             "gender": "m",
-            "name": "in",
             "type__name": "Juniper | MX | FPC"
         }
     ],
-    "data": {
-        "asset": {
-            "order_part_no": ["MS-DPC"],
-            "part_no": ["750-024064"]
+    "data": [
+        {
+            "attr": "part_no",
+            "interface": "asset",
+            "value": ["750-024064"]
+        },
+        {
+            "attr": "order_part_no",
+            "interface": "asset",
+            "value": ["MS-DPC"]
         }
-    }
+    ]
 }

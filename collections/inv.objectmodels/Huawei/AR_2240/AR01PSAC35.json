@@ -7,23 +7,25 @@
     "cr_context": "POWER",
     "connections": [
         {
+            "name": "power",
             "description": "Power input",
             "direction": "s",
             "gender": "m",
-            "name": "power",
             "type__name": "Power | IEC 60320 C14"
         },
         {
+            "name": "in",
             "description": "Chassis connection",
             "direction": "o",
             "gender": "m",
-            "name": "in",
             "type__name": "Huawei | AR 2240 | POWER"
         }
     ],
-    "data": {
-        "asset": {
-            "part_no": ["AR01PSAC35"]
+    "data": [
+        {
+            "attr": "part_no",
+            "interface": "asset",
+            "value": ["AR01PSAC35"]
         }
-    }
+    ]
 }

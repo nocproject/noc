@@ -7,16 +7,18 @@
     "cr_context": "PSU",
     "connections": [
         {
+            "name": "in",
             "description": null,
             "direction": "o",
             "gender": "m",
-            "name": "in",
             "type__name": "Cisco | 4500X | PSU"
         }
     ],
-    "data": {
-        "asset": {
-            "part_no": ["C4KX-PWR-750AC-F"]
+    "data": [
+        {
+            "attr": "part_no",
+            "interface": "asset",
+            "value": ["C4KX-PWR-750AC-F"]
         }
-    }
+    ]
 }

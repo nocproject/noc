@@ -7,24 +7,30 @@
     "cr_context": "SCB",
     "connections": [
         {
+            "name": "re",
             "description": "Routing Engine slot",
             "direction": "i",
             "gender": "f",
-            "name": "re",
             "type__name": "Juniper | MX | RE"
         },
         {
+            "name": "in",
             "description": "Chassis connection",
             "direction": "o",
             "gender": "m",
-            "name": "in",
             "type__name": "Juniper | MX | SCB"
         }
     ],
-    "data": {
-        "asset": {
-            "order_part_no": ["SCBE2-MX-S"],
-            "part_no": ["750-062572"]
+    "data": [
+        {
+            "attr": "part_no",
+            "interface": "asset",
+            "value": ["750-062572"]
+        },
+        {
+            "attr": "order_part_no",
+            "interface": "asset",
+            "value": ["SCBE2-MX-S"]
         }
-    }
+    ]
 }

@@ -321,30 +321,56 @@
             "type__name": "Transceiver | SFP"
         }
     ],
-    "data": {
-        "asset": {
-            "order_part_no": ["QSW-8200-28F-DC-DC"]
+    "data": [
+        {
+            "attr": "order_part_no",
+            "interface": "asset",
+            "value": ["QSW-8200-28F-DC-DC"]
         },
-        "dimensions": {
-            "depth": 220,
-            "height": 44,
-            "width": 440
+        {
+            "attr": "depth",
+            "interface": "dimensions",
+            "value": 220
         },
-        "management": {
-            "managed": true
+        {
+            "attr": "height",
+            "interface": "dimensions",
+            "value": 44
         },
-        "power": {
-            "power": 32.0
+        {
+            "attr": "width",
+            "interface": "dimensions",
+            "value": 440
         },
-        "rackmount": {
-            "units": 1.0
+        {
+            "attr": "managed",
+            "interface": "management",
+            "value": true
         },
-        "stack": {
-            "stackable": true
+        {
+            "attr": "power",
+            "interface": "power",
+            "value": 32.0
         },
-        "weight": {
-            "is_recursive": true,
-            "weight": 2.9
+        {
+            "attr": "units",
+            "interface": "rackmount",
+            "value": 1.0
+        },
+        {
+            "attr": "stackable",
+            "interface": "stack",
+            "value": true
+        },
+        {
+            "attr": "is_recursive",
+            "interface": "weight",
+            "value": true
+        },
+        {
+            "attr": "weight",
+            "interface": "weight",
+            "value": 2.9
         }
-    }
+    ]
 }

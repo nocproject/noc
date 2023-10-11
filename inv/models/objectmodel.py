@@ -18,9 +18,9 @@ from mongoengine.fields import (
     StringField,
     IntField,
     UUIDField,
-    DictField,
     ListField,
-    EmbeddedDocumentField,
+    DynamicField,
+    EmbeddedDocumentListField,
     ObjectIdField,
 )
 from mongoengine.errors import ValidationError
@@ -44,6 +44,29 @@ from .vendor import Vendor
 id_lock = Lock()
 
 rx_composite_pins_validate = re.compile(r"\d+\-\d+")
+
+
+class ModelAttr(EmbeddedDocument):
+    interface = StringField()
+    attr = StringField()
+    value = DynamicField()
+    slot = StringField()
+
+    def __str__(self):
+        if self.slot:
+            return "%s.%s@%s = %s" % (self.interface, self.attr, self.slot, self.value)
+        return "%s.%s = %s" % (self.interface, self.attr, self.value)
+
+    @property
+    def json_data(self) -> Dict[str, Any]:
+        r = {
+            "interface": self.interface,
+            "attr": self.attr,
+            "value": self.value,
+        }
+        if self.slot:
+            r["slot"] = self.slot
+        return r
 
 
 class ObjectModelConnection(EmbeddedDocument):
@@ -160,8 +183,8 @@ class ObjectModel(Document):
         "strict": False,
         "auto_create_index": False,
         "indexes": [
-            ("vendor", "data.asset.part_no"),
-            ("vendor", "data.asset.order_part_no"),
+            ("vendor", "data.interface", "data.attr", "data.value"),
+            ("data.interface", "data.attr", "data.value"),
             "labels",
         ],
         "json_collection": "inv.objectmodels",
@@ -172,13 +195,13 @@ class ObjectModel(Document):
     name = StringField(unique=True)
     uuid = UUIDField(binary=True)
     description = StringField()
-    vendor = PlainReferenceField(Vendor)
-    connection_rule = PlainReferenceField(ConnectionRule, required=False)
+    vendor: "Vendor" = PlainReferenceField(Vendor)
+    connection_rule: "ConnectionRule" = PlainReferenceField(ConnectionRule, required=False)
     # Connection rule context
     cr_context = StringField(required=False)
-    data = DictField()
-    connections = ListField(EmbeddedDocumentField(ObjectModelConnection))
-    sensors = ListField(EmbeddedDocumentField(ObjectModelSensor))
+    data: List["ModelAttr"] = EmbeddedDocumentListField(ModelAttr)
+    connections: List["ObjectModelConnection"] = EmbeddedDocumentListField(ObjectModelConnection)
+    sensors: List["ObjectModelSensor"] = EmbeddedDocumentListField(ObjectModelSensor)
     plugins = ListField(StringField(), required=False)
     # Labels
     labels = ListField(StringField())
@@ -201,9 +224,12 @@ class ObjectModel(Document):
     def get_by_name(cls, name) -> Optional["ObjectModel"]:
         return ObjectModel.objects.filter(name=name).first()
 
-    def get_data(self, interface: str, key: str):
-        v = self.data.get(interface, {})
-        return v.get(key)
+    def get_data(self, interface: str, key: str, slot: Optional[str] = None) -> Any:
+        for item in self.data:
+            if item.interface == interface and item.attr == key:
+                if not slot or item.slot == slot:
+                    return item.value
+        return None
 
     def on_save(self):
         # Update connection cache
@@ -301,19 +327,33 @@ class ObjectModel(Document):
             if m:
                 return m
         # Check for asset_part_no
-        m = ObjectModel.objects.filter(vendor=vendor.id, data__asset__part_no=part_no).first()
+        m = ObjectModel.objects.filter(
+            vendor=vendor.id,
+            data__match={"interface": "asset", "attr": "part_no", "value": part_no},
+        ).first()
         if m:
             return m
-        m = ObjectModel.objects.filter(vendor=vendor.id, data__asset__order_part_no=part_no).first()
+        m = ObjectModel.objects.filter(
+            vendor=vendor.id,
+            data__match={"interface": "asset", "attr": "order_part_no", "value": part_no},
+        ).first()
         if m:
             return m
         # Not found
         # Fallback and search by unique part no
-        oml = list(ObjectModel.objects.filter(data__asset__part_no=part_no))
+        oml = list(
+            ObjectModel.objects.filter(
+                data__match={"interface": "asset", "attr": "part_no", "value": part_no}
+            )
+        )
         if len(oml) == 1:
             # Unique match found
             return oml[0]
-        oml = list(ObjectModel.objects.filter(data__asset__order_part_no=part_no))
+        oml = list(
+            ObjectModel.objects.filter(
+                data__match={"interface": "asset", "attr": "order_part_no", "value": part_no}
+            )
+        )
         if len(oml) == 1:
             # Unique match found
             return oml[0]
@@ -328,7 +368,7 @@ class ObjectModel(Document):
             "uuid": self.uuid,
             "description": self.description,
             "vendor__code": self.vendor.code[0],
-            "data": self.data,
+            "data": [c.json_data for c in self.data],
             "connections": [c.json_data for c in self.connections],
         }
         if self.sensors:
@@ -367,15 +407,14 @@ class ObjectModel(Document):
         """
         Exclude model's part numbers from unknown models
         """
-        if "asset" in self.data:
-            part_no = self.data["asset"].get("part_no", []) + self.data["asset"].get(
-                "order_part_no", []
-            )
-            if part_no:
-                vendor = self.vendor
-                if isinstance(vendor, str):
-                    vendor = Vendor.get_by_id(vendor)
-                UnknownModel.clear_unknown(vendor.code, part_no)
+        part_no = (self.get_data("asset", "part_no") or []) + (
+            self.get_data("asset", "order_part_no") or []
+        )
+        if part_no:
+            vendor = self.vendor
+            if isinstance(vendor, str):
+                vendor = Vendor.get_by_id(vendor)
+            UnknownModel.clear_unknown(vendor.code, part_no)
 
     def iter_effective_labels(self):
         return []

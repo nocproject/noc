@@ -383,24 +383,46 @@
             "type__name": "Transceiver | SFP+"
         }
     ],
-    "data": {
-        "asset": {
-            "order_part_no": ["02355337"],
-            "part_no": ["S5300-28X-LI-24S-DC"]
+    "data": [
+        {
+            "attr": "width",
+            "interface": "dimensions",
+            "value": 442
         },
-        "dimensions": {
-            "depth": 220,
-            "height": 45,
-            "width": 442
+        {
+            "attr": "depth",
+            "interface": "dimensions",
+            "value": 220
         },
-        "management": {
-            "managed": true
+        {
+            "attr": "height",
+            "interface": "dimensions",
+            "value": 45
         },
-        "power": {
-            "power": 63.0
+        {
+            "attr": "managed",
+            "interface": "management",
+            "value": true
         },
-        "rackmount": {
-            "units": 1.0
+        {
+            "attr": "units",
+            "interface": "rackmount",
+            "value": 1.0
+        },
+        {
+            "attr": "power",
+            "interface": "power",
+            "value": 63.0
+        },
+        {
+            "attr": "part_no",
+            "interface": "asset",
+            "value": ["S5300-28X-LI-24S-DC"]
+        },
+        {
+            "attr": "order_part_no",
+            "interface": "asset",
+            "value": ["02355337"]
         }
-    }
+    ]
 }

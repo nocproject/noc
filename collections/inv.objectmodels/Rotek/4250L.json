@@ -102,14 +102,18 @@
             "type__name": "Power | MSTB 2.5/2-ST-5.08"
         }
     ],
-    "data": {
-        "asset": {
-            "part_no": ["4250L", "RT-4250L", "RT-PWR-220-U", "RT-Pwr-220-U"]
+    "data": [
+        {
+            "attr": "part_no",
+            "interface": "asset",
+            "value": ["4250L", "RT-4250L", "RT-PWR-220-U", "RT-Pwr-220-U"]
         },
-        "management": {
-            "managed": true
+        {
+            "attr": "managed",
+            "interface": "management",
+            "value": true
         }
-    },
+    ],
     "sensors": [
         {
             "name": "in",

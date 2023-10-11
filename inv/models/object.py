@@ -338,13 +338,12 @@ class Object(Document):
             r += [item]
             seen.add(k)
         # Model attributes
-        for i in self.model.data:
-            for a in self.model.data[i]:
-                k = (i, a, "")
-                if k in seen:
-                    continue
-                r += [ObjectAttr(interface=i, attr=a, scope="", value=self.model.data[i][a])]
-                seen.add(k)
+        for item in self.model.data:
+            k = (item.interface, item.attr, "")
+            if k in seen:
+                continue
+            r += [ObjectAttr(interface=item.interface, attr=item.attr, scope="", value=item.value)]
+            seen.add(k)
         # Sort according to interface
         sorting_keys: Dict[str, str] = {}
         for ni, i in enumerate(sorted(set(x[0] for x in seen))):

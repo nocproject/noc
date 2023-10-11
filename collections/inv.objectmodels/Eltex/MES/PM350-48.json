@@ -8,28 +8,36 @@
     "labels": ["noc::inv::psu"],
     "connections": [
         {
+            "name": "in",
             "description": "internal Power slot",
             "direction": "o",
             "gender": "m",
-            "name": "in",
             "type__name": "Eltex | MES | PSU"
         },
         {
+            "name": "-48V",
             "description": "-48V",
             "direction": "s",
             "gender": "f",
-            "name": "-48V",
             "protocols": [">-48VDC"],
             "type__name": "Power | MSTB 2.5/3-ST-5.08"
         }
     ],
-    "data": {
-        "asset": {
-            "part_no": ["PM350-48/12"]
+    "data": [
+        {
+            "attr": "part_no",
+            "interface": "asset",
+            "value": ["PM350-48/12"]
         },
-        "weight": {
-            "is_recursive": true,
-            "weight": 0.4
+        {
+            "attr": "is_recursive",
+            "interface": "weight",
+            "value": true
+        },
+        {
+            "attr": "weight",
+            "interface": "weight",
+            "value": 0.4
         }
-    }
+    ]
 }

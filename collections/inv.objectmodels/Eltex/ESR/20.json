@@ -101,17 +101,31 @@
             "type__name": "Electrical | RJ45"
         }
     ],
-    "data": {
-        "asset": {
-            "part_no": ["ESR-20"]
+    "data": [
+        {
+            "attr": "part_no",
+            "interface": "asset",
+            "value": ["ESR-20"]
         },
-        "dimensions": {
-            "depth": 212,
-            "height": 44,
-            "width": 277
+        {
+            "attr": "depth",
+            "interface": "dimensions",
+            "value": 212
         },
-        "management": {
-            "managed": true
+        {
+            "attr": "height",
+            "interface": "dimensions",
+            "value": 44
+        },
+        {
+            "attr": "width",
+            "interface": "dimensions",
+            "value": 277
+        },
+        {
+            "attr": "managed",
+            "interface": "management",
+            "value": true
         }
-    }
+    ]
 }

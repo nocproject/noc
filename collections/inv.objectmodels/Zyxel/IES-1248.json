@@ -9,119 +9,143 @@
     "labels": ["noc::inv::chassis"],
     "connections": [
         {
+            "name": "LINE1",
             "description": "USER 1-24",
             "direction": "s",
             "gender": "f",
-            "name": "LINE1",
             "protocols": ["ADSL", "ADSL2+"],
             "type__name": "Electrical | Telco-50"
         },
         {
+            "name": "LINE2",
             "description": "USER 25-48",
             "direction": "s",
             "gender": "f",
-            "name": "LINE2",
             "protocols": ["ADSL", "ADSL2+"],
             "type__name": "Electrical | Telco-50"
         },
         {
+            "name": "PSTN1",
             "description": "PSTN 1-24",
             "direction": "s",
             "gender": "f",
-            "name": "PSTN1",
             "protocols": ["PSTN"],
             "type__name": "Electrical | Telco-50"
         },
         {
+            "name": "PSTN2",
             "description": "PSTN 25-48",
             "direction": "s",
             "gender": "f",
-            "name": "PSTN2",
             "protocols": ["PSTN"],
             "type__name": "Electrical | Telco-50"
         },
         {
+            "name": "console",
             "description": "Console port",
             "direction": "s",
             "gender": "f",
-            "name": "console",
             "protocols": [">RS232"],
             "type__name": "Electrical | RJ11"
         },
         {
+            "name": "alarm",
             "description": "Alarm port",
             "direction": "s",
             "gender": "f",
-            "name": "alarm",
             "protocols": [">DryContact"],
             "type__name": "Electrical | DB9"
         },
         {
+            "name": "1",
             "description": "Port 1 (Copper)",
             "direction": "s",
             "gender": "f",
             "group": "1",
-            "name": "1",
             "protocols": ["100BASETX", "1000BASET"],
             "type__name": "Electrical | RJ45"
         },
         {
+            "name": "sfp1",
             "description": "Port 1 (SFP)",
             "direction": "i",
             "gender": "f",
             "group": "1",
-            "name": "sfp1",
             "protocols": ["TransEth1G"],
             "type__name": "Transceiver | SFP"
         },
         {
+            "name": "2",
             "description": "Port 2 (Copper)",
             "direction": "s",
             "gender": "f",
             "group": "2",
-            "name": "2",
             "protocols": ["100BASETX", "1000BASET"],
             "type__name": "Electrical | RJ45"
         },
         {
+            "name": "sfp2",
             "description": "Port 2 (SFP)",
             "direction": "i",
             "gender": "f",
             "group": "2",
-            "name": "sfp2",
             "protocols": ["TransEth1G"],
             "type__name": "Transceiver | SFP"
         },
         {
+            "name": "power",
             "description": "Power inlet",
             "direction": "s",
             "gender": "f",
-            "name": "power",
             "protocols": [">-48VDC", ">-60VDC"],
             "type__name": "Power | MSTB 2.5/4-ST-5.08"
         }
     ],
-    "data": {
-        "asset": {
-            "part_no": ["IES-1248"]
+    "data": [
+        {
+            "attr": "managed",
+            "interface": "management",
+            "value": true
         },
-        "dimensions": {
-            "depth": 251,
-            "height": 66,
-            "width": 440
+        {
+            "attr": "width",
+            "interface": "dimensions",
+            "value": 440
         },
-        "management": {
-            "managed": true
+        {
+            "attr": "depth",
+            "interface": "dimensions",
+            "value": 251
         },
-        "power": {
-            "power": 120.0
+        {
+            "attr": "height",
+            "interface": "dimensions",
+            "value": 66
         },
-        "rackmount": {
-            "units": 1.5
+        {
+            "attr": "power",
+            "interface": "power",
+            "value": 120.0
         },
-        "weight": {
-            "is_recursive": true,
-            "weight": 5.2
+        {
+            "attr": "is_recursive",
+            "interface": "weight",
+            "value": true
+        },
+        {
+            "attr": "weight",
+            "interface": "weight",
+            "value": 5.2
+        },
+        {
+            "attr": "part_no",
+            "interface": "asset",
+            "value": ["IES-1248"]
+        },
+        {
+            "attr": "units",
+            "interface": "rackmount",
+            "value": 1.5
         }
-    }
+    ]
 }

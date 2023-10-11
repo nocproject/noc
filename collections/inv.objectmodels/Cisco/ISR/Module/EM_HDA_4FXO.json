@@ -7,48 +7,50 @@
     "cr_context": "NM",
     "connections": [
         {
+            "name": "in",
             "description": "Chassis connection",
             "direction": "o",
             "gender": "m",
-            "name": "in",
             "type__name": "Cisco | ISR | NM"
         },
         {
+            "name": "voice-port0",
             "description": "voice-portN/0 Analog PBX",
             "direction": "s",
             "gender": "m",
-            "name": "voice-port0",
             "protocols": ["FXO"],
             "type__name": "Electrical | RJ21"
         },
         {
+            "name": "voice-port1",
             "description": "voice-portN/1 Analog PBX",
             "direction": "s",
             "gender": "m",
-            "name": "voice-port1",
             "protocols": ["FXO"],
             "type__name": "Electrical | RJ21"
         },
         {
+            "name": "voice-port2",
             "description": "voice-portN/2 Analog PBX",
             "direction": "s",
             "gender": "m",
-            "name": "voice-port2",
             "protocols": ["FXO"],
             "type__name": "Electrical | RJ21"
         },
         {
+            "name": "voice-port3",
             "description": "voice-portN/3 Analog PBX",
             "direction": "s",
             "gender": "m",
-            "name": "voice-port3",
             "protocols": ["FXO"],
             "type__name": "Electrical | RJ21"
         }
     ],
-    "data": {
-        "asset": {
-            "part_no": ["EM-HDA-4FXO="]
+    "data": [
+        {
+            "attr": "part_no",
+            "interface": "asset",
+            "value": ["EM-HDA-4FXO="]
         }
-    }
+    ]
 }

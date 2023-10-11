@@ -9,75 +9,95 @@
     "labels": ["noc::inv::chassis"],
     "connections": [
         {
-            "description": "SRPU Slot#1",
-            "direction": "i",
-            "gender": "f",
             "name": "0",
-            "type__name": "Huawei | S8500 | SRPU"
-        },
-        {
             "description": "SRPU Slot#1",
             "direction": "i",
             "gender": "f",
-            "name": "1",
             "type__name": "Huawei | S8500 | SRPU"
         },
         {
+            "name": "1",
+            "description": "SRPU Slot#1",
+            "direction": "i",
+            "gender": "f",
+            "type__name": "Huawei | S8500 | SRPU"
+        },
+        {
+            "name": "2",
             "description": "LSB Slot#1",
             "direction": "i",
             "gender": "f",
-            "name": "2",
             "type__name": "Huawei | S8500 | LSB"
         },
         {
+            "name": "3",
             "description": "LSB Slot#2",
             "direction": "i",
             "gender": "f",
-            "name": "3",
             "type__name": "Huawei | S8500 | LSB"
         },
         {
+            "name": "4",
             "description": "LSB Slot#3",
             "direction": "i",
             "gender": "f",
-            "name": "4",
             "type__name": "Huawei | S8500 | LSB"
         },
         {
+            "name": "5",
             "description": "LSB Slot#4",
             "direction": "i",
             "gender": "f",
-            "name": "5",
             "type__name": "Huawei | S8500 | LSB"
         },
         {
+            "name": "6",
             "description": "LSB Slot#5",
             "direction": "i",
             "gender": "f",
-            "name": "6",
             "type__name": "Huawei | S8500 | LSB"
         }
     ],
-    "data": {
-        "asset": {
-            "part_no": ["LS-8502-AC-OVS", "S8508"]
+    "data": [
+        {
+            "attr": "managed",
+            "interface": "management",
+            "value": true
         },
-        "dimensions": {
-            "depth": 450,
-            "height": 619,
-            "width": 436
+        {
+            "attr": "width",
+            "interface": "dimensions",
+            "value": 436
         },
-        "management": {
-            "managed": true
+        {
+            "attr": "depth",
+            "interface": "dimensions",
+            "value": 450
         },
-        "power": {
-            "power": 2000.0
+        {
+            "attr": "height",
+            "interface": "dimensions",
+            "value": 619
         },
-        "rackmount": {
-            "units": 10.0
+        {
+            "attr": "power",
+            "interface": "power",
+            "value": 2000.0
         },
-        "weight": {
-            "weight": 80.0
+        {
+            "attr": "weight",
+            "interface": "weight",
+            "value": 80.0
+        },
+        {
+            "attr": "part_no",
+            "interface": "asset",
+            "value": ["LS-8502-AC-OVS", "S8508"]
+        },
+        {
+            "attr": "units",
+            "interface": "rackmount",
+            "value": 10.0
         }
-    }
+    ]
 }

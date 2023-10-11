@@ -8,31 +8,37 @@
     "labels": ["noc::inv::lc", "noc::inv::fabric"],
     "connections": [
         {
+            "name": "in",
             "description": "Chassis connection",
             "direction": "o",
             "gender": "m",
-            "name": "in",
             "type__name": "Juniper | EX | 4500 VC/I"
         },
         {
+            "name": "vcp-0",
             "description": "VCP-0",
             "direction": "i",
             "gender": "f",
-            "name": "vcp-0",
             "type__name": "Juniper | EX | VCP"
         },
         {
+            "name": "vcp-1",
             "description": "VCP-1",
             "direction": "i",
             "gender": "f",
-            "name": "vcp-1",
             "type__name": "Juniper | EX | VCP"
         }
     ],
-    "data": {
-        "asset": {
-            "order_part_no": ["EX4500-VC1-128G"],
-            "part_no": ["711-031050"]
+    "data": [
+        {
+            "attr": "part_no",
+            "interface": "asset",
+            "value": ["711-031050"]
+        },
+        {
+            "attr": "order_part_no",
+            "interface": "asset",
+            "value": ["EX4500-VC1-128G"]
         }
-    }
+    ]
 }

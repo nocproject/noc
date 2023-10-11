@@ -8,23 +8,25 @@
     "cr_context": "SM",
     "connections": [
         {
+            "name": "in",
             "description": "Service Module Chassis Connector",
             "direction": "o",
             "gender": "m",
-            "name": "in",
             "type__name": "Cisco | ISR | SM"
         },
         {
+            "name": "nm1",
             "description": "Network Module Slot 0",
             "direction": "i",
             "gender": "f",
-            "name": "nm1",
             "type__name": "Cisco | ISR | NM"
         }
     ],
-    "data": {
-        "asset": {
-            "part_no": ["SM-NM-ADPTR"]
+    "data": [
+        {
+            "attr": "part_no",
+            "interface": "asset",
+            "value": ["SM-NM-ADPTR"]
         }
-    }
+    ]
 }

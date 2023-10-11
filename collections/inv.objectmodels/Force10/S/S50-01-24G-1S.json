@@ -7,23 +7,25 @@
     "labels": ["noc::inv::lc", "noc::inv::port"],
     "connections": [
         {
+            "name": "in",
             "description": "Chassis connection",
             "direction": "i",
             "gender": "m",
-            "name": "in",
             "type__name": "Force10 | S | Module"
         },
         {
+            "name": "port0",
             "description": "Stack port 0",
             "direction": "s",
             "gender": "f",
-            "name": "port0",
             "type__name": "Force10 | S | Stacking 24G"
         }
     ],
-    "data": {
-        "asset": {
-            "part_no": ["S50-01-24G-1S"]
+    "data": [
+        {
+            "attr": "part_no",
+            "interface": "asset",
+            "value": ["S50-01-24G-1S"]
         }
-    }
+    ]
 }

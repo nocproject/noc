@@ -7,16 +7,18 @@
     "cr_context": "DFC",
     "connections": [
         {
+            "name": "in",
             "description": "",
             "direction": "o",
             "gender": "m",
-            "name": "in",
             "type__name": "Cisco | 7600 | DFC"
         }
     ],
-    "data": {
-        "asset": {
-            "part_no": ["7600-ES+3C"]
+    "data": [
+        {
+            "attr": "part_no",
+            "interface": "asset",
+            "value": ["7600-ES+3C"]
         }
-    }
+    ]
 }

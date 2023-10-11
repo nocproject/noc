@@ -9,55 +9,79 @@
     "labels": ["noc::inv::chassis"],
     "connections": [
         {
+            "name": "card1",
             "description": "Linecard 1 slot",
             "direction": "i",
             "gender": "f",
-            "name": "card1",
             "type__name": "Zhone | GranDSLAM | card"
         },
         {
+            "name": "card2",
             "description": "Linecard 2 slot",
             "direction": "i",
             "gender": "f",
-            "name": "card2",
             "type__name": "Zhone | GranDSLAM | card"
         },
         {
+            "name": "card3",
             "description": "Linecard 3 slot",
             "direction": "i",
             "gender": "f",
-            "name": "card3",
             "type__name": "Zhone | GranDSLAM | card"
         },
         {
+            "name": "card19",
             "description": "Linecard 19 slot",
             "direction": "i",
             "gender": "f",
-            "name": "card19",
             "type__name": "Zhone | GranDSLAM | card"
         }
     ],
-    "data": {
-        "asset": {
-            "order_part_no": ["8620-A1-402", "8620-A1-530"]
+    "data": [
+        {
+            "attr": "order_part_no",
+            "interface": "asset",
+            "value": ["8620-A1-402", "8620-A1-530"]
         },
-        "dimensions": {
-            "depth": 304,
-            "height": 132,
-            "width": 436
+        {
+            "attr": "depth",
+            "interface": "dimensions",
+            "value": 304
         },
-        "management": {
-            "managed": true
+        {
+            "attr": "height",
+            "interface": "dimensions",
+            "value": 132
         },
-        "power": {
-            "power": 850.0
+        {
+            "attr": "width",
+            "interface": "dimensions",
+            "value": 436
         },
-        "rackmount": {
-            "units": 3.0
+        {
+            "attr": "managed",
+            "interface": "management",
+            "value": true
         },
-        "weight": {
-            "is_recursive": true,
-            "weight": 25.0
+        {
+            "attr": "power",
+            "interface": "power",
+            "value": 850.0
+        },
+        {
+            "attr": "units",
+            "interface": "rackmount",
+            "value": 3.0
+        },
+        {
+            "attr": "is_recursive",
+            "interface": "weight",
+            "value": true
+        },
+        {
+            "attr": "weight",
+            "interface": "weight",
+            "value": 25.0
         }
-    }
+    ]
 }

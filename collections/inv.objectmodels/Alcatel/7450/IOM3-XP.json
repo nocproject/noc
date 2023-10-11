@@ -4,34 +4,36 @@
     "uuid": "ba875cf8-7e91-4cc8-a6f1-1f939ca72db7",
     "vendor__code": "ALU",
     "description": "Alcatel 7450 Input/Output Module (IOM)",
-    "labels": ["noc::inv::chassis", "noc::inv::fabric"],
     "cr_context": "IOM",
+    "labels": ["noc::inv::chassis", "noc::inv::fabric"],
     "connections": [
         {
+            "name": "in",
             "description": "Chassis connection",
             "direction": "o",
             "gender": "m",
-            "name": "in",
             "type__name": "Alcatel | 7450 | IO"
         },
         {
+            "name": "mda1",
             "description": "MDA slot 1 connection",
             "direction": "i",
             "gender": "f",
-            "name": "mda1",
             "type__name": "Alcatel | 7450 | MDA"
         },
         {
+            "name": "mda2",
             "description": "MDA slot 2 connection",
             "direction": "i",
             "gender": "f",
-            "name": "mda2",
             "type__name": "Alcatel | 7450 | MDA"
         }
     ],
-    "data": {
-        "asset": {
-            "part_no": ["3HE03619AAAJ01"]
+    "data": [
+        {
+            "attr": "part_no",
+            "interface": "asset",
+            "value": ["3HE03619AAAJ01"]
         }
-    }
+    ]
 }

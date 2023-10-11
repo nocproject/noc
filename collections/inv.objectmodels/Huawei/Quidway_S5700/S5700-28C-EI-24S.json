@@ -6,7 +6,13 @@
     "description": "L3 switch with 20 ports 100/1000Base-X (SFP), 4 combo ports 10/100/1000Base-T/SFP, 2 extension slots",
     "connection_rule__name": "Huawei | Quidway",
     "cr_context": "CHASSIS",
-    "labels": ["noc::inv::chassis", "noc::inv::sup", "noc::inv::fabric", "noc::inv::port", "noc::inv::fan"],
+    "labels": [
+        "noc::inv::chassis",
+        "noc::inv::sup",
+        "noc::inv::fabric",
+        "noc::inv::port",
+        "noc::inv::fan"
+    ],
     "connections": [
         {
             "name": "1",
@@ -348,23 +354,41 @@
             "type__name": "Transceiver | SFP"
         }
     ],
-    "data": {
-        "asset": {
-            "part_no": ["ES5Z328CM0"]
+    "data": [
+        {
+            "attr": "part_no",
+            "interface": "asset",
+            "value": ["ES5Z328CM0"]
         },
-        "dimensions": {
-            "depth": 220,
-            "height": 43,
-            "width": 442
+        {
+            "attr": "depth",
+            "interface": "dimensions",
+            "value": 220
         },
-        "management": {
-            "managed": true
+        {
+            "attr": "height",
+            "interface": "dimensions",
+            "value": 43
         },
-        "power": {
-            "power": 60.0
+        {
+            "attr": "width",
+            "interface": "dimensions",
+            "value": 442
         },
-        "rackmount": {
-            "units": 1.0
+        {
+            "attr": "managed",
+            "interface": "management",
+            "value": true
+        },
+        {
+            "attr": "power",
+            "interface": "power",
+            "value": 60.0
+        },
+        {
+            "attr": "units",
+            "interface": "rackmount",
+            "value": 1.0
         }
-    }
+    ]
 }

@@ -7,35 +7,41 @@
     "labels": ["noc::inv::psu"],
     "connections": [
         {
+            "name": "-48V",
             "description": "-48V",
             "direction": "s",
             "gender": "f",
             "group": "0",
-            "name": "-48V",
             "protocols": [">-48VDC"],
             "type__name": "Power | TB Barrier Screw 2 Pin"
         },
         {
+            "name": "RTN",
             "description": "RTN (+)",
             "direction": "s",
             "gender": "f",
             "group": "0",
-            "name": "RTN",
             "protocols": [">-48VDC"],
             "type__name": "Power | TB Barrier Screw 2 Pin"
         },
         {
+            "name": "in",
             "description": "PSU slot",
             "direction": "o",
             "gender": "m",
-            "name": "in",
             "type__name": "Huawei | Quidway S5300 | PSU"
         }
     ],
-    "data": {
-        "asset": {
-            "order_part_no": ["02316784"],
-            "part_no": ["CX7M1PWD", "LS5M100PWD00"]
+    "data": [
+        {
+            "attr": "part_no",
+            "interface": "asset",
+            "value": ["CX7M1PWD", "LS5M100PWD00"]
+        },
+        {
+            "attr": "order_part_no",
+            "interface": "asset",
+            "value": ["02316784"]
         }
-    }
+    ]
 }

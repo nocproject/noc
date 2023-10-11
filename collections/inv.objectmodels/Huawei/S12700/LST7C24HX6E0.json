@@ -207,19 +207,36 @@
             "type__name": "Transceiver | QSFP+"
         }
     ],
-    "data": {
-        "asset": {
-            "order_part_no": ["03033FGU"],
-            "part_no": ["LST7C24HX6E0"]
+    "data": [
+        {
+            "attr": "order_part_no",
+            "interface": "asset",
+            "value": ["03033FGU"]
         },
-        "dimensions": {
-            "depth": 430,
-            "height": 35,
-            "width": 397
+        {
+            "attr": "part_no",
+            "interface": "asset",
+            "value": ["LST7C24HX6E0"]
         },
-        "power": {
-            "power": 486.0
+        {
+            "attr": "depth",
+            "interface": "dimensions",
+            "value": 430
+        },
+        {
+            "attr": "height",
+            "interface": "dimensions",
+            "value": 35
+        },
+        {
+            "attr": "width",
+            "interface": "dimensions",
+            "value": 397
+        },
+        {
+            "attr": "power",
+            "interface": "power",
+            "value": 486.0
         }
-    }
+    ]
 }
-

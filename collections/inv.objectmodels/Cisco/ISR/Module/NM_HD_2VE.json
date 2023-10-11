@@ -7,32 +7,34 @@
     "cr_context": "NM",
     "connections": [
         {
+            "name": "in",
             "description": "Chassis connection",
             "direction": "o",
             "gender": "m",
-            "name": "in",
             "type__name": "Cisco | ISR | NM"
         },
         {
+            "name": "dcs0",
             "description": "Daughter Card Slot0",
             "direction": "i",
             "gender": "f",
-            "name": "dcs0",
             "protocols": ["VIC"],
             "type__name": "Cisco | ISR | DCS"
         },
         {
+            "name": "dcs1",
             "description": "Daughter Card Slot1",
             "direction": "i",
             "gender": "f",
-            "name": "dcs1",
             "protocols": ["VIC"],
             "type__name": "Cisco | ISR | DCS"
         }
     ],
-    "data": {
-        "asset": {
-            "part_no": ["NM-HD-2VE", "NM-HD-2VE="]
+    "data": [
+        {
+            "attr": "part_no",
+            "interface": "asset",
+            "value": ["NM-HD-2VE", "NM-HD-2VE="]
         }
-    }
+    ]
 }

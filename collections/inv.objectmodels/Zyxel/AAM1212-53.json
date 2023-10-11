@@ -9,41 +9,43 @@
     "labels": ["noc::inv::lc", "noc::inv::port"],
     "connections": [
         {
+            "name": "LINE",
             "description": "USER 1-12 PSTN 1-12",
             "direction": "s",
             "gender": "f",
-            "name": "LINE",
             "protocols": ["ADSL", "ADSL2+"],
             "type__name": "Electrical | Telco-50"
         },
         {
+            "name": "console",
             "description": "Console port",
             "direction": "s",
             "gender": "f",
-            "name": "console",
             "protocols": [">RS232"],
             "type__name": "Electrical | RJ9"
         },
         {
+            "name": "1",
             "description": "Port 1 (Copper)",
             "direction": "s",
             "gender": "f",
-            "name": "1",
             "protocols": ["10BASET", "100BASETX"],
             "type__name": "Electrical | RJ45"
         },
         {
+            "name": "2",
             "description": "Port 2 (Copper)",
             "direction": "s",
             "gender": "f",
-            "name": "2",
             "protocols": ["10BASET", "100BASETX"],
             "type__name": "Electrical | RJ45"
         }
     ],
-    "data": {
-        "asset": {
-            "part_no": ["AAM1212-53"]
+    "data": [
+        {
+            "attr": "part_no",
+            "interface": "asset",
+            "value": ["AAM1212-53"]
         }
-    }
+    ]
 }

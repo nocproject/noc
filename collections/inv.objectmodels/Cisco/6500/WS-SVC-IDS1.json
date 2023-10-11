@@ -7,16 +7,18 @@
     "cr_context": "LINECARD",
     "connections": [
         {
+            "name": "in",
             "description": "Chassis connection",
             "direction": "o",
             "gender": "m",
-            "name": "in",
             "type__name": "Cisco | 7600 | Fabric Linecard"
         }
     ],
-    "data": {
-        "asset": {
-            "part_no": ["WS-SVC-IDSUPG"]
+    "data": [
+        {
+            "attr": "part_no",
+            "interface": "asset",
+            "value": ["WS-SVC-IDSUPG"]
         }
-    }
+    ]
 }

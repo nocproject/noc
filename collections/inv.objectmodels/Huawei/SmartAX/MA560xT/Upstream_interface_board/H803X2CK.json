@@ -32,17 +32,31 @@
             "type__name": "Transceiver | SFP+"
         }
     ],
-    "data": {
-        "asset": {
-            "part_no": ["H803X2CK"]
+    "data": [
+        {
+            "attr": "part_no",
+            "interface": "asset",
+            "value": ["H803X2CK"]
         },
-        "dimensions": {
-            "depth": 237,
-            "height": 187,
-            "width": 25
+        {
+            "attr": "depth",
+            "interface": "dimensions",
+            "value": 237
         },
-        "weight": {
-            "weight": 2.0
+        {
+            "attr": "height",
+            "interface": "dimensions",
+            "value": 187
+        },
+        {
+            "attr": "width",
+            "interface": "dimensions",
+            "value": 25
+        },
+        {
+            "attr": "weight",
+            "interface": "weight",
+            "value": 2.0
         }
-    }
+    ]
 }

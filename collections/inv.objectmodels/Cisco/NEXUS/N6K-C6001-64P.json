@@ -8,68 +8,84 @@
     "cr_context": "CHASSIS",
     "connections": [
         {
+            "name": "psu1",
             "description": "PSU 1 Slot",
             "direction": "i",
             "gender": "f",
             "group": "0",
-            "name": "psu1",
             "type__name": "Cisco | Nexus 5k | 5596 PSU"
         },
         {
+            "name": "psu2",
             "description": "PSU 2 Slot",
             "direction": "i",
             "gender": "f",
             "group": "0",
-            "name": "psu2",
             "type__name": "Cisco | Nexus 5k | 5596 PSU"
         },
         {
+            "name": "fan1",
             "description": "FAN 1 Slot",
             "direction": "i",
             "gender": "f",
             "group": "0",
-            "name": "fan1",
             "type__name": "Cisco | Nexus 6k | 6001 FAN"
         },
         {
+            "name": "fan2",
             "description": "FAN 2 Slot",
             "direction": "i",
             "gender": "f",
             "group": "0",
-            "name": "fan2",
             "type__name": "Cisco | Nexus 6k | 6001 FAN"
         },
         {
+            "name": "fan3",
             "description": "FAN 3 Slot",
             "direction": "i",
             "gender": "f",
             "group": "0",
-            "name": "fan3",
             "type__name": "Cisco | Nexus 6k | 6001 FAN"
         },
         {
+            "name": "sup1",
             "description": "SUP 1 Slot",
             "direction": "i",
             "gender": "f",
             "group": "0",
-            "name": "sup1",
             "type__name": "Cisco | Nexus 6k | 6001 SUP"
         }
     ],
-    "data": {
-        "asset": {
-            "part_no": ["N6K-C6001-64P"],
-            "cpe_22": "cpe:/h:cisco:nexus_6001:-",
-            "cpe_23": "cpe:2.3:h:cisco:nexus_6001:-:*:*:*:*:*:*:*"
+    "data": [
+        {
+            "attr": "part_no",
+            "interface": "asset",
+            "value": ["N6K-C6001-64P"]
         },
-        "management": {
-            "managed": true
+        {
+            "attr": "cpe_22",
+            "interface": "asset",
+            "value": "cpe:/h:cisco:nexus_6001:-"
         },
-        "rackmount": {
-            "units": 1.0
+        {
+            "attr": "cpe_23",
+            "interface": "asset",
+            "value": "cpe:2.3:h:cisco:nexus_6001:-:*:*:*:*:*:*:*"
         },
-        "stack": {
-            "stackable": true
+        {
+            "attr": "managed",
+            "interface": "management",
+            "value": true
+        },
+        {
+            "attr": "units",
+            "interface": "rackmount",
+            "value": 1.0
+        },
+        {
+            "attr": "stackable",
+            "interface": "stack",
+            "value": true
         }
-    }
+    ]
 }
