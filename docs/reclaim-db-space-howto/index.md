@@ -214,11 +214,11 @@ db.runCommand({ compact: "ds_alarm", force:true })
 * `noc.events.active`
 * `ds_*` - if data is updated frequently.
 
-# PostgreSQL
+## PostgreSQL
 
 There is no need to delete archived items externally. It may be advisable to monitor the database logs.
 
-# ClickHouse
+## ClickHouse
 
 The mechanism for cleaning archived data is implemented based on the TTL (Time To Live) configuration in the 'Main/Setup/CH Policies' interface.
 
