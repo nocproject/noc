@@ -359,7 +359,7 @@ class ExtDocApplication(ExtApplication):
                         self.format_label(ll)
                         for ll in Label.objects.filter(name__in=v).order_by("display_order")
                     ]
-                elif isinstance(f, ListField):
+                elif isinstance(f, (ListField, EmbeddedDocumentListField)):
                     if hasattr(f, "field") and isinstance(f.field, EmbeddedDocumentField):
                         v = [self.instance_to_dict(vv, nocustom=True) for vv in v]
                     elif hasattr(f, "field") and isinstance(f.field, ReferenceField):

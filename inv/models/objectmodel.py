@@ -183,8 +183,8 @@ class ObjectModel(Document):
         "strict": False,
         "auto_create_index": False,
         "indexes": [
-            ("vendor", "data.asset.part_no"),
-            ("vendor", "data.asset.order_part_no"),
+            ("vendor", "data.interface", "data.attr", "data.value"),
+            ("data.interface", "data.attr", "data.value"),
             "labels",
         ],
         "json_collection": "inv.objectmodels",
@@ -327,19 +327,33 @@ class ObjectModel(Document):
             if m:
                 return m
         # Check for asset_part_no
-        m = ObjectModel.objects.filter(vendor=vendor.id, data__asset__part_no=part_no).first()
+        m = ObjectModel.objects.filter(
+            vendor=vendor.id,
+            data__match={"interface": "asset", "attr": "part_no", "value": part_no},
+        ).first()
         if m:
             return m
-        m = ObjectModel.objects.filter(vendor=vendor.id, data__asset__order_part_no=part_no).first()
+        m = ObjectModel.objects.filter(
+            vendor=vendor.id,
+            data__match={"interface": "asset", "attr": "order_part_no", "value": part_no},
+        ).first()
         if m:
             return m
         # Not found
         # Fallback and search by unique part no
-        oml = list(ObjectModel.objects.filter(data__asset__part_no=part_no))
+        oml = list(
+            ObjectModel.objects.filter(
+                data__match={"interface": "asset", "attr": "part_no", "value": part_no}
+            )
+        )
         if len(oml) == 1:
             # Unique match found
             return oml[0]
-        oml = list(ObjectModel.objects.filter(data__asset__order_part_no=part_no))
+        oml = list(
+            ObjectModel.objects.filter(
+                data__match={"interface": "asset", "attr": "order_part_no", "value": part_no}
+            )
+        )
         if len(oml) == 1:
             # Unique match found
             return oml[0]

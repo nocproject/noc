@@ -1,9 +1,12 @@
 # ---------------------------------------------------------------------
 # inv.objectmodel application
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2020 The NOC Project
+# Copyright (C) 2007-2023 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
+
+# Third-party modules
+from mongoengine.queryset import Q
 
 # NOC modules
 from noc.services.web.base.extdocapplication import ExtDocApplication, view
@@ -28,10 +31,19 @@ class ObjectModelApplication(ExtDocApplication):
     query_fields = [
         "name__icontains",
         "description__icontains",
-        "data__asset__part_no",
-        "data__asset__order_part_no",
         "uuid",
     ]
+
+    def get_Q(self, request, query):
+        q = super().get_Q(request, query)
+        q |= Q(
+            data__match={
+                "interface": "asset",
+                "attr__in": ["part_no", "order_part_no"],
+                "value": query,
+            }
+        )
+        return q
 
     def clean(self, data):
         if "data" in data:
