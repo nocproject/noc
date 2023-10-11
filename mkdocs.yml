@@ -1,7 +1,7 @@
 site_name: NOC
 site_description: NOC, the open-source network management system
 site_author: The NOC Project
-site_url: https://docs.getnoc.com/
+site_url: https://getnoc.com/
 repo_url: https://code.getnoc.com/noc/noc/
 repo_name: Gitlab
 edit_uri: -/edit/master/docs/

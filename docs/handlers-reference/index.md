@@ -28,7 +28,7 @@ h = get_handler(<handler_path>)
 h()
 ```
 
-# Dumping Variables
+## Dumping Variables
 
 This handler prints the provided arguments.
 
