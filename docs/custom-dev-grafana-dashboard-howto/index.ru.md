@@ -83,7 +83,7 @@ GROUP BY t ORDER BY t
 Используется плагин [simpod-json](https://grafana.com/grafana/plugins/simpod-json-datasource/) 
 и сервис [GrafanaDS](../services-reference/grafanads.md). 
 Набор данных ограничен доступными через `API` сервиса [GrafanaDS](../services-reference/grafanads.md), 
-но может быть расширен путём добавления новых `target` через [custom](../../dev/custom/index.md).
+но может быть расширен путём добавления новых `target` через [custom](../custom/index.md).
 
 1. При добавлении панели необходимо выбрать `Datasource` - **NOC-MO-SOURCE**
 2. В выпадающем списке выбираем интересующую метрику (*доступна одна метрика на запрос*)

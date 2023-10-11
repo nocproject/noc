@@ -18,7 +18,7 @@ The following extensions are supported for the system:
 * `handlers` - Directory with handlers [Handlers](../handlers-reference/index.md).
 * `sa` - Interaction with devices.
     * `profiles` - SA (Service Activation) profiles [SA Profile](../profiles-reference/index.md).
-    * `interfaces` - SA interfaces [SA Interface](../sa/sa-profiles.md#SA-Interfaces).
+    * `interfaces` - SA interfaces [SA Interface](../concepts/sa-profile/index.md#SA-Interfaces).
 * `services` - System service extensions.
     * `card` - Custom cards [Card](../card/index.md).
     * `web` - Custom web applications [Web](../web/index.md).

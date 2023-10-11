@@ -16,7 +16,7 @@ Housekeeper применяется в конце опроса [Discovery](../dis
 
 ### Назначение профиля объекта 
 
-Устройствам с [Capabilities](../../caps-reference/index.md) `"BRAS | IPoE"` назначается профиль объекта `bras`.
+Устройствам с [Capabilities](../caps-reference/index.md) `"BRAS | IPoE"` назначается профиль объекта `bras`.
 
 ```python
     from noc.sa.models.managedobjectprofile import ManagedObjectProfile

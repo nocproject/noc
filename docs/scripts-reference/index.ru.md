@@ -1,26 +1,27 @@
-# Scripts
-
-## Описание 
+# Scripts Reference
 
 Реализация интерфейсов и работы с оборудованием осуществляется в файлах скриптов. 
 В них, путём наследования класса :py:class:`noc.core.script.base.BaseScript` реализуется логика работы с оборудованием и нормализация полученных данных для передачи в NOC.
 
-
 ## Список скриптов
 
-| Название скрипта                                  | Интерфейс               | Generic | Назначение                                                |
-| ------------------------------------------------- | ----------------------- | ------- | --------------------------------------------------------- |
-| [get_version](get_version.md)                     | `IGetVersion`           | x       | Сбор версии и платформы устройства                        |
-| [get_capabiliries](get_capabilities.md)           | `get_capabilities`      | v       | Сбор поддержки оборудованием функционала (протоколонов )  |
-| [get_config](get_config.md)                       | `IGetConfig`            | x       | Сбор конфигурации                                         |
-| [get_interfaces](get_interfaces.md)               | `IGetInterfaces`        | v       | Запрашивает список интерфейсов с оборудования.            |
-| [get_inventory](get_inventory.md)                 | `IGetInventory`         | v       | Для сбора состава оборудования                            |
-| [get_chassis_id](get_chassis_id.md)               | `IGetChassisid`         | v       | Заправшивает `MAC` адрес устройства (шасси)               |
-| [get_fqdn](get_fqdn.md)                           | `IGetFqdn`              | v       | Запрашивает `hostname` устройства                         |
-| [get_mac_address_table](get_mac_address_table.md) | `IGetMACAddressTable`   | v       | Собирает таблицу `MAC` адресов устройства                 |
-| [get_arp](get_arp.md)                             | `IGetArp`               | v       | Собирает таблицу `ARP` устройства                         |
-| `get_<method>_neighnbors`                         | `IGet<method>Neighbors` | v       | Заправшивает таблицу соседей устройства указанного метода |
-
+| Название скрипта                                        | Интерфейс                | Generic   | Назначение                                               |
+| ------------------------------------------------------- | ------------------------ | --------- | -------------------------------------------------------- |
+| [get_version](get_version.md)                           | `IGetVersion`            | {{ no }}  | Сбор версии и платформы устройства                       |
+| [get_capabiliries](get_capabilities.md)                 | `IGetCapabilities`       | {{ yes }} | Сбор поддержки оборудованием функционала (протоколонов ) |
+| [get_config](get_config.md)                             | `IGetConfig`             | {{ no }}  | Сбор конфигурации                                        |
+| [get_interfaces](get_interfaces.md)                     | `IGetInterfaces`         | {{ yes }} | Запрашивает список интерфейсов с оборудования.           |
+| [get_inventory](get_inventory.md)                       | `IGetInventory`          | {{ yes }} | Для сбора состава оборудования                           |
+| [get_chassis_id](get_chassis_id.md)                     | `IGetChassisid`          | {{ yes }} | Заправшивает `MAC` адрес устройства (шасси)              |
+| [get_fqdn](get_fqdn.md)                                 | `IGetFqdn`               | {{ yes }} | Запрашивает `hostname` устройства                        |
+| [get_mac_address_table](get_mac_address_table.md)       | `IGetMACAddressTable`    | {{ yes }} | Собирает таблицу `MAC` адресов устройства                |
+| [get_arp](get_arp.md)                                   | `IGetArp`                | {{ yes }} | Собирает таблицу `ARP` устройства                        |
+| [get_cdp_neighbors](get_cdp_neighbors.md)               | `IGetCDPNeighbors`       | {{ yes }} | Заправшивает таблицу соседей протокола CDP               |
+| [get_fdp_neighbors](get_fdp_neighbors.md)               | `IGetFDPNeighbors`       | {{ yes }} | Заправшивает таблицу соседей протокола FDP               |
+| [get_huawei_ndp_neighbors](get_huawei_ndp_neighbors.md) | `IGetHuaweiNDPNeighbors` | {{ yes }} | Заправшивает таблицу соседей протокола Huawei NDP        |
+| [get_lacp_neighbors](get_lacp_neighbors.md)             | `IGetLACPNeighbors`      | {{ yes }} | Заправшивает таблицу соседей протокола LACP              |
+| [get_lldp_neighbors](get_lldp_neighbors.md)             | `IGetLLDPNeighbors`      | {{ yes }} | Заправшивает таблицу соседей протокола LLDP              |
+| [get_udld_neighbors](get_udld_neighbors.md)             | `IGetUDLDNeighbors`      | {{ yes }} | Заправшивает таблицу соседей протокола UDLD              |
 
 ## Структура скрипта
 
@@ -179,7 +180,7 @@ class Script(BaseScript):
 для этого параметр `use_basic` выставляется в `True`. Более сложные схемы реализуюся через механизм `Middleware`. 
 Это промежуточный обработчик, которому передаётся запрос перед отправкой что позволяет модифицировать его данные или заголовок. 
 Встроенные обработчики находятся в модуле `noc.core.script.http.middleware.*`, для их применения достаточно указать имя в настройке `http_request_middleware`. 
-Для работы его работы  `Middleware` в [профиле SA](../sa-profiles.md) доступны настройки:
+Для работы его работы  `Middleware` в [профиле SA](../concepts/sa-profile/index.md) доступны настройки:
 
 * `enable_http_session` - авторизовать один раз за сессию
 * `http_request_middleware` - список `Middleware`

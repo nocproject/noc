@@ -19,7 +19,7 @@
 * `handlers` - директория с обработчиками [Handlers](../handlers-reference/index.md)
 * `sa` - взаимодействие с устройствами
     * `profiles` - Профили SA [SA Profile](../profiles-reference/index.md)
-    * `interfaces` - Интерфейсы SA [SA Interface](../sa/sa-profiles.md#Интерфейсы-SA)
+    * `interfaces` - Интерфейсы SA [SA Interface](../profiles-reference/index.md#Интерфейсы-SA)
 * `services` - расширения сервисов системы
     * `card` - пользовательские карточки [Card](../card/index.md)
     * `web` - пользовательские веб приложения [Web](../web/index.md)

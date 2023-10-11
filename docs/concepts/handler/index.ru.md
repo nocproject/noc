@@ -41,7 +41,7 @@ noc.custom.config.filters.MyFilter3
 
 ## Custom
 
-Собственные (`Custom`) обработчики присоединяются к `noc` через репозиторий [Custom](../../../../dev/custom/index.md) 
+Собственные (`Custom`) обработчики присоединяются к `noc` через репозиторий [Custom](../../custom/index.md) 
 Собственные обработчики начинаются с префикса `noc.custom`. 
 Например: `noc.custom.handlers.config.filters.MyFilter` ссылкается на функцию `MyFilter` из файла:
 

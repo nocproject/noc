@@ -9,7 +9,7 @@
 * Определять причины аварии по топологии
 * Производить поиск пути по топологии
 * Строить отчёты на основании данных по топологии
-* Предоставлять топологическую информацию через `API` - [Datastream](../../dev/api/datastream/managedobject.md)
+* Предоставлять топологическую информацию через `API` - [Datastream](../datastream-api-reference/managedobject.md)
 
 
 L2 топология (`L2 Topology`) строится между интерфейсами [Interface](../concepts/interface/index.md) устройства [ManagedObject](../concepts/managed-object/index.md). 
@@ -191,21 +191,21 @@ flowchart TD
 * Возможность (`Capabilities`) необходимая для запуска опроса
 
 
-| Метод                                                   | Протокол   | Скрипт                                                                 | Caps            |
-| ------------------------------------------------------- | ---------- | ---------------------------------------------------------------------- | --------------- |
-| [CDP](../discovery-reference/box/cdp.md)                | CDP        | [get_cdp_neighbors](../scripts-reference/get_cdp_neighbors.md)         | `Network  CDP`  |
-| [REP](../discovery-reference/box/rep.md)                | REP        | [get_rep_topology](../scripts-reference/get_rep_topology.md)           | `Network  REP`  |
-| [LLDP](../discovery-reference/box/lldp.md)              | LLDP       | [get_lldp_neighbors](../scripts-reference/get_lldp_neighbors.md)       | `Network  LLDP` |
-| [STP](../discovery-reference/box/stp.md)                | STP        | [get_spanning_tree](../scripts-reference/get_spanning_tree.md)         | `Network  STP`  |
-| [UDLD](../discovery-reference/box/udld.md)              | UDLD       | [get_udld_neighbors](../scripts-reference/get_udld_neighbors.md)       | `Network  UDLD` |
-| [OAM](../discovery-reference/box/oam.md)                | OAM        | [get_oam_status](../scripts-reference/get_oam_status.md)               | `Network  OAM`  |
-| [BFD](../discovery-reference/box/bfd.md)                | BFD        | [get_bfd_sessions](../scripts-reference/get_bfd_sessions.md)      | `Network  BFD`  |
-| [FDP](../discovery-reference/box/fdp.md)                | FDP        | [get_fdp_neighbors](../scripts-reference/get_fdp_neighbors.md)    | `Network  FDP`  |
+| Метод                                                         | Протокол   | Скрипт                                                                       | Caps            |
+| ------------------------------------------------------------- | ---------- | ---------------------------------------------------------------------------- | --------------- |
+| [CDP](../discovery-reference/box/cdp.md)                      | CDP        | [get_cdp_neighbors](../scripts-reference/get_cdp_neighbors.md)               | `Network  CDP`  |
+| [REP](../discovery-reference/box/rep.md)                      | REP        | [get_rep_topology](../scripts-reference/get_rep_topology.md)                 | `Network  REP`  |
+| [LLDP](../discovery-reference/box/lldp.md)                    | LLDP       | [get_lldp_neighbors](../scripts-reference/get_lldp_neighbors.md)             | `Network  LLDP` |
+| [STP](../discovery-reference/box/stp.md)                      | STP        | [get_spanning_tree](../scripts-reference/get_spanning_tree.md)               | `Network  STP`  |
+| [UDLD](../discovery-reference/box/udld.md)                    | UDLD       | [get_udld_neighbors](../scripts-reference/get_udld_neighbors.md)             | `Network  UDLD` |
+| [OAM](../discovery-reference/box/oam.md)                      | OAM        | [get_oam_status](../scripts-reference/get_oam_status.md)                     | `Network  OAM`  |
+| [BFD](../discovery-reference/box/bfd.md)                      | BFD        | [get_bfd_sessions](../scripts-reference/get_bfd_sessions.md)                 | `Network  BFD`  |
+| [FDP](../discovery-reference/box/fdp.md)                      | FDP        | [get_fdp_neighbors](../scripts-reference/get_fdp_neighbors.md)               | `Network  FDP`  |
 | [Huawei NDP (NTDP)](../discovery-reference/box/huawei_ndp.md) | Huawei NDP | [get_huawei_ndp_neighbors](../scripts-reference/get_huawei_ndp_neighbors.md) | `Network  FDP`  |
-| [LACP](../discovery-reference/box/lacp.md)              | LACP       | [get_lacp_neighbors](../scripts-reference/get_lacp_neighbors.md)  | `Network  LACP` |
-| [NRI](../discovery-reference/box/nri.md)                | -          | -                                                                      | -               |
-| [ifDesc](../discovery-reference/box/ifdesc.md)          | -          | -                                                                      | -               |
-| [xMAC](../discovery-reference/box/xmac.md)              | -          | [get_mac_address_table](../scripts-reference/get_mac_address_table.md) | -               |
+| [LACP](../discovery-reference/box/lacp.md)                    | LACP       | [get_lacp_neighbors](../scripts-reference/get_lacp_neighbors.md)             | `Network  LACP` |
+| [NRI](../discovery-reference/box/nri.md)                      | -          | -                                                                            | -               |
+| [ifDesc](../discovery-reference/box/ifdesc.md)                | -          | -                                                                            | -               |
+| [xMAC](../discovery-reference/box/xmac.md)                    | -          | [get_mac_address_table](../scripts-reference/get_mac_address_table.md)       | -               |
 
 [Segment](../discovery-reference/segment/mac.md) - отдельный метод построения связей на основе таблицы MAC адресов (`FDB`). 
 В отличие от перечисленных в таблице он строит связи между устройствами одного сегмента и работает по расписанию сегмента.
