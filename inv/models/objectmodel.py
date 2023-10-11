@@ -57,6 +57,17 @@ class ModelAttr(EmbeddedDocument):
             return "%s.%s@%s = %s" % (self.interface, self.attr, self.slot, self.value)
         return "%s.%s = %s" % (self.interface, self.attr, self.value)
 
+    @property
+    def json_data(self) -> Dict[str, Any]:
+        r = {
+            "interface": self.interface,
+            "attr": self.attr,
+            "value": self.value,
+        }
+        if self.slot:
+            r["slot"] = self.slot
+        return r
+
 
 class ObjectModelConnection(EmbeddedDocument):
     meta = {"strict": False, "auto_create_index": False}
@@ -343,7 +354,7 @@ class ObjectModel(Document):
             "uuid": self.uuid,
             "description": self.description,
             "vendor__code": self.vendor.code[0],
-            "data": self.data,
+            "data": [c.json_data for c in self.data],
             "connections": [c.json_data for c in self.connections],
         }
         if self.sensors:
@@ -382,7 +393,9 @@ class ObjectModel(Document):
         """
         Exclude model's part numbers from unknown models
         """
-        part_no = self.get_data("asset", "part_no") or [] + self.get_data("asset", "order_part_no") or []
+        part_no = (self.get_data("asset", "part_no") or []) + (
+            self.get_data("asset", "order_part_no") or []
+        )
         if part_no:
             vendor = self.vendor
             if isinstance(vendor, str):
