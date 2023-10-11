@@ -3,7 +3,7 @@
 # ---------------------------------------------------------------------
 # Copyright (C) 2007-2023, The NOC Project
 # ---------------------------------------------------------------------
-mkdocs-material==9.4.4
+mkdocs-material==9.4.5
 mkdocstrings[python]==0.22.0
 mkdocs-macros-plugin==1.0.4
 #mkdocs-static-i18n==1.0.6
