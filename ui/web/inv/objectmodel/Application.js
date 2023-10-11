@@ -17,7 +17,7 @@ Ext.define("NOC.inv.objectmodel.Application", {
         "NOC.inv.connectiontype.LookupField",
         "NOC.inv.connectionrule.LookupField",
         "NOC.pm.measurementunits.LookupField",
-        "Ext.ux.form.ModelDataField",
+        "NOC.inv.modelinterface.LookupField",
         "Ext.ux.form.GridField"
     ],
     model: "NOC.inv.objectmodel.Model",
@@ -159,11 +159,44 @@ Ext.define("NOC.inv.objectmodel.Application", {
                         "enable_objectmodel": true
                     },
                 },
+                // {
+                //     name: "data",
+                //     xtype: "modeldatafield",
+                //     fieldLabel: __("Model Data"),
+                //     labelAlign: "top"
+                // },
                 {
                     name: "data",
-                    xtype: "modeldatafield",
-                    fieldLabel: __("Model Data"),
-                    labelAlign: "top"
+                    fieldLabel: __("Data"),
+                    xtype: "gridfield",
+                    allowBlank: true,
+                    columns: [
+                        {
+                            text: __("Interface"),
+                            dataIndex: "interface",
+                            editor: {
+                                xtype: "inv.modelinterface.LookupField",
+                                forceSelection: true,
+                                valueField: "label"
+                            }
+                        },
+                        {
+                            text: __("Key"),
+                            dataIndex: "attr",
+                            editor: "textfield"
+                        },
+                        {
+                            text: __("Value"),
+                            dataIndex: "value",
+                            editor: "textfield"
+                        },
+                        {
+                            text: __("Slot"),
+                            dataIndex: "slot",
+                            editor: "textfield"
+                        }
+
+                    ]
                 },
                 {
                     name: "connections",

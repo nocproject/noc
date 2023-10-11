@@ -19,6 +19,7 @@ from mongoengine.fields import (
     EmbeddedDocumentField,
     ReferenceField,
     BinaryField,
+    DynamicField,
     GeoPointField,
     EmbeddedDocumentListField,
 )
@@ -373,6 +374,8 @@ class ExtDocApplication(ExtApplication):
                         v = v.strftime("%Y-%m-%d")
                     else:
                         v = None
+                elif isinstance(f, DynamicField) and isinstance(v, list):
+                    v = [str(x) for x in v]
                 elif not isinstance(v, (bool, dict, int, str)):
                     if hasattr(v, "id"):
                         v = v.id
