@@ -60,9 +60,9 @@ According to the convention, the profile's name is constructed from the manufact
 The profile itself consists of:
 
 * `profile.py` - A class that implements equipment operation settings, inherited from `noc.core.profile.base.BaseProfile`.
-* A set of [scripts](scripts/index.md) that implement one of the available *SA Interfaces* (`SA Interface`).
+* A set of [scripts](../../scripts-reference/index.md) that implement one of the available *SA Interfaces* (`SA Interface`).
 * `snmp_metrics/` - A folder with a list of `SNMP OID`s for scripts.
-* `confdb/` - A folder with configuration parsers for [ConfDB](../confdb-reference/index.md).
+* `confdb/` - A folder with configuration parsers for [ConfDB](../../confdb-reference/index.md).
 * `middleware/` - A folder for handling `HTTP` requests to the equipment.
 
 <!-- prettier-ignore -->
@@ -115,7 +115,7 @@ To transmit results, SA interfaces are used.
 
 A `SA Interface` is a special entity in NOC designed to facilitate interaction between components.
 
-SA interfaces are located in the `sa/interfaces` directory. They are available for specifying in profile scripts. There is also the possibility to define custom interfaces through [Custom](../custom/index.md).
+SA interfaces are located in the `sa/interfaces` directory. They are available for specifying in profile scripts. There is also the possibility to define custom interfaces through [Custom](../../custom/index.md).
 
 In a *SA Interface*, the structure of data transmitted and returned by a script is described. The transmitted data includes script parameters, and the returned data includes the results of the script's execution. It specifies:
 

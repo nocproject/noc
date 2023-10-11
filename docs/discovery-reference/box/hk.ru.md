@@ -5,7 +5,7 @@
     Describe *hk* check
 
 Позволяет проделать разнообразные операции по итогам прошедшего опроса. 
-В конце опроса запускается обработчик [Handler](../../../../dev/handlers/index.md) с интерфейсом [Allow Housekeeper](../../../../dev/handlers/housekeeper.md). 
+В конце опроса запускается обработчик [Handler](../../handlers-reference/index.md) с интерфейсом [Allow Housekeeper](../../handlers-reference/housekeeper.md). 
 В него передаётся `Discovery check`, доступны любые методы из него.
  
 ## Требования
