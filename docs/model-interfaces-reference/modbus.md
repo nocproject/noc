@@ -1,7 +1,3 @@
----
-uuid: 4067ca6c-d8a7-43af-b22a-6232fde21576
----
-
 # modbus model interface
 
 [Modbus](https://en.wikipedia.org/wiki/Modbus) endpoint configuration.

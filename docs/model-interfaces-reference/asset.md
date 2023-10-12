@@ -1,7 +1,3 @@
----
-e8e9a35f-d051-4b11-8e0b-0d14dcbdffb1
----
-
 # asset Model Interface
 
 Inventory references, asset and serial numbers
