@@ -817,8 +817,8 @@ nav:
           - container: model-interfaces-reference/container.md
           - cpu: model-interfaces-reference/cpu.md
           - dimensions: model-interfaces-reference/dimensions.md
-          - hwlimits: model-interfaces-reference/hwlimits.md
           - geopoint: model-interfaces-reference/geopoint.md
+          - hwlimits: model-interfaces-reference/hwlimits.md
           - length: model-interfaces-reference/length.md
           - management: model-interfaces-reference/management.md
           - modbus: model-interfaces-reference/modbus.md

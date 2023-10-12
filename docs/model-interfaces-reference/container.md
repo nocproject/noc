@@ -1,7 +1,3 @@
----
-0aef5942-e41a-4acf-ab3e-5bc406aaee08
----
-
 # container Model Interface
 
 Denotes *Container* as an object capable of holding another object,
@@ -19,10 +15,10 @@ field. Following rules are applied:
 
 ## Variables
 
-| Name          | Type        | Description                     | Required         | Constant         | Default |
-| ------------- | ----------- | ------------------------------- | ---------------- | ---------------- | ------- |
-| container     | Boolean     | Object is container             | {{ yes }} | {{ yes }} |         |
-|               |             | (Can hold another objects)      |                  |                  |         |
+| Name      | Type    | Description                | Required  | Constant  | Default |
+| --------- | ------- | -------------------------- | --------- | --------- | ------- |
+| container | Boolean | Object is container        | {{ yes }} | {{ yes }} |         |
+|           |         | (Can hold another objects) |           |           |         |
 
 ## Examples
 

@@ -1,16 +1,12 @@
----
-62b945a4-ebf6-4174-94a7-c77e327d16d4
----
-
 # splitter Model Interface
 
 Split optical/electrical input power to outputs with given gain
 
 ## Variables
 
-| Name   | Type   | Description                                                       | Required         | Constant   | Default   |
-| ------ | ------ | ----------------------------------------------------------------- | ---------------- | ---------------- | --------- |
-| split  | str    | Input power division, as comma-separated list of output_Name=gain | {{ yes }} | {{ yes }}       |           |
+| Name  | Type | Description                                                       | Required  | Constant  | Default |
+| ----- | ---- | ----------------------------------------------------------------- | --------- | --------- | ------- |
+| split | str  | Input power division, as comma-separated list of output_Name=gain | {{ yes }} | {{ yes }} |         |
 
 ## Examples
 
