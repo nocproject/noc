@@ -16,6 +16,7 @@ import minify_html
 
 DOCS = Path("build", "docs")
 MB = float(1 << 20)
+INDEX_HTML = DOCS / "index.html"
 
 
 def total_size() -> int:
@@ -29,13 +30,34 @@ def total_size() -> int:
     return size
 
 
+def preprocess_index_html(data: str) -> str:
+    """
+    Clean up index.html
+    """
+    return data.replace("<h1>Home</h1>", "")
+
+
+def preprocess(path: Path, data: str) -> str:
+    """
+    Preprocess raw HTML and return the result.
+
+    Args:
+        path: File path
+        data: File contents
+    """
+    if path == INDEX_HTML:
+        return preprocess_index_html(data)
+    return data
+
+
 def minify(path: Path) -> None:
     """
     Minify single file
     """
     # Read
     with open(path) as fp:
-        r = minify_html.minify(fp.read())
+        r = preprocess(path, fp.read())
+        r = minify_html.minify(r)
     # Write
     tmp = path.with_suffix(".tmp")
     with open(tmp, "w") as fp:

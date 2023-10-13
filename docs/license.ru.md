@@ -2,7 +2,7 @@
 hide:
     - navigation
 ---
-Copyright (c) 2007-2023, The NOC Project (http://nocproject.org)
+Copyright (c) 2007-2023, The NOC Project (http://getnoc.com/)
 Все права сохранены
 
 Разрешается повторное распространение и использование как в виде исходного кода,
