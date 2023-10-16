@@ -14,3 +14,4 @@ class Profile(BaseProfile):
     name = "Audiocodes.Mediant2000"
 
     pattern_more = [(rb"^ -- More --", b"\n")]
+    http_request_middleware = ["digestauth"]
