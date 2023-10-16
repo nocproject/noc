@@ -2,7 +2,7 @@
 # Vendor: Audiocodes
 # OS:     Mediant2000
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2011 The NOC Project
+# Copyright (C) 2007-2023 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
