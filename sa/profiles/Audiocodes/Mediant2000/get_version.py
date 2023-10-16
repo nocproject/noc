@@ -23,6 +23,11 @@ class Script(BaseScript):
     )
     rx_html_ver = re.compile(r"Version ID:\s+(?P<version>\S+)", re.MULTILINE | re.DOTALL)
 
+    def execute(self):
+        if "http_protocol" in self.credentials:
+            return self.execute_http()
+        return self.execute_cli()
+
     def execute_cli(self):
         v = self.cli("show info")
         match = self.rx_ver.search(v)

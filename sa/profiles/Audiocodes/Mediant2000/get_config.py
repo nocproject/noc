@@ -12,7 +12,12 @@ class Script(BaseScript):
     name = "Audiocodes.Mediant2000.get_config"
     interface = IGetConfig
 
-    def execute_cli(self, **kwargs):
+    def execute(self, **kwargs):
+        if "http_protocol" in self.credentials:
+            return self.execute_http()
+        return self.execute_cli()
+
+    def execute_cli(self):
         self.cli("conf")
         config = self.cli("cf get")
         return self.cleaned_config(config)
