@@ -513,9 +513,7 @@ nav:
           - SNMPTrap: mx-messages-reference/snmptrap.md
           - Syslog: mx-messages-reference/syslog.md
           - Managed Object Version Changed: mx-messages-reference/version_changed.md
-      - Technologies:
-          - Group: technologies-reference/group.md
-          - "Network | CGNAT Termination": technologies-reference/Network/cgnat-termination.md
+      - Technologies: technologies-reference/index.md
       - Services:
           - activator: services-reference/activator.md
           - bi: services-reference/bi.md
@@ -1116,6 +1114,7 @@ theme:
     # - navigation.path
     - navigation.prune
     # - navigation.instant
+    - navigation.footer
   palette:
     # Light mode
     - media: "(prefers-color-scheme: light)"
