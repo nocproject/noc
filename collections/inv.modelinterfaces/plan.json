@@ -20,7 +20,7 @@
         {
             "name": "bearing",
             "type": "float",
-            "description": "Rotation angle, in degrees",
+            "description": "Rotation angle, in degrees, counterclockwise horizontally",
             "required": false,
             "is_const": false
         }

@@ -5,12 +5,15 @@ Limits can be set both on the chassis and for individual modules. Since the comb
 
 ## Variables
 
-| Name          | Type | Description                              | Required | Constant  | Default |
-| ------------- | ---- | ---------------------------------------- | -------- | --------- | ------- |
-| macs          | Int  | Limit for MAC addresses                  | {{ no }} | {{ yes }} |         |
-| queues        | Int  | Limit for QoS queues                     | {{ no }} | {{ yes }} |         |
-| ipv4_prefixes | Int  | Limit for IPv4 prefixes on routing-table | {{ no }} | {{ yes }} |         |
-| ipv6_prefixes | Int  | Limit for IPv6 prefixes on routing-table | {{ no }} | {{ yes }} |         |
+<!-- table start -->
+| Name | Type | Description | Required | Constant |
+| --- | --- | --- | --- | --- |
+| `macs` | int | Limit for MAC addresses | {{ no }} | {{ yes }} |
+| `queues` | int | Limit for QoS queues | {{ no }} | {{ yes }} |
+| `ipv4_prefixes` | int | Limit for IPv4 prefixes | {{ no }} | {{ yes }} |
+| `ipv6_prefixes` | int | Limit for IPv6 prefixes | {{ no }} | {{ yes }} |
+
+<!-- table end -->
 
 ## Examples
 

@@ -4,14 +4,17 @@
 
 ## Variables
 
-| Name       | Type | Description               | Required  | Constant |  Default |
-| ---------- | ---- | ------------------------- | --------- | -------- | -------: |
-| `type`     | str  | Modbus Type               | {{ yes }} | {{ no }} | {{ no }} |
-| `slave_id` | int  | Modbus Slave Id           | {{ yes }} | {{ no }} | {{ no }} |
-| `speed`    | int  | Serial bus speed (baud/s) | {{ no }}  | {{ no }} |     9600 |
-| `bits`     | int  | Serial bus baud size      | {{ no }}  | {{ no }} |        8 |
-| `parity`   | bool | Serial bus parity bit     | {{ no }}  | {{ no }} |    False |
-| `stop`     | int  | Serial bus stop bits      | {{ no }}  | {{ no }} |        1 |
+<!-- table start -->
+| Name | Type | Description | Required | Constant |
+| --- | --- | --- | --- | --- |
+| `type` | str | Modbus type: RTU, ASCII or TCP | {{ yes }} | {{ yes }} |
+| `slave_id` | int | Modbus slave id | {{ yes }} | {{ no }} |
+| `speed` | int | Bus speed, baud/s | {{ no }} | {{ no }} |
+| `bits` | int | Bus baud size | {{ no }} | {{ no }} |
+| `parity` | bool | Bus parity | {{ no }} | {{ no }} |
+| `stop` | int | Bus stop bits | {{ no }} | {{ no }} |
+
+<!-- table end -->
 
 ## Examples
 

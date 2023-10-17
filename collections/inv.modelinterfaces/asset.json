@@ -7,42 +7,42 @@
         {
             "name": "part_no",
             "type": "strlist",
-            "description": "Part numbers",
+            "description": "Internal vendor's part numbers, as shown by diagnostic commands",
             "required": true,
             "is_const": true
         },
         {
             "name": "order_part_no",
             "type": "strlist",
-            "description": "Ordering part numbers",
+            "description": "Vendor's FRU, as shown in catalogues and price lists",
             "required": false,
             "is_const": true
         },
         {
             "name": "serial",
             "type": "str",
-            "description": "Serial Number",
+            "description": "Item's serial number",
             "required": false,
             "is_const": false
         },
         {
             "name": "asset_no",
             "type": "str",
-            "description": "Asset number",
+            "description": "Item's asset number, used for an asset tracking in accounting system",
             "required": false,
             "is_const": false
         },
         {
             "name": "revision",
             "type": "str",
-            "description": "Revision id",
+            "description": "Item's hardware revision",
             "required": false,
             "is_const": false
         },
         {
             "name": "mfg_date",
             "type": "str",
-            "description": "Manufacturing Date",
+            "description": "Manufacturing date in YYYY-MM-DD format",
             "required": false,
             "is_const": false
         },
@@ -63,21 +63,21 @@
         {
             "name": "serial_mask",
             "type": "str",
-            "description": "Regex for validate Serial Number",
+            "description": "Regular expression to check serial number",
             "required": false,
             "is_const": true
         },
         {
             "name": "min_serial_size",
             "type": "int",
-            "description": "Min len for Serial Number",
+            "description": "Minimal valid serial number size",
             "required": false,
             "is_const": true
         },
         {
             "name": "max_serial_size",
             "type": "int",
-            "description": "Max len for Serial Number",
+            "description": "Maximal valid serial number size",
             "required": false,
             "is_const": true
         }

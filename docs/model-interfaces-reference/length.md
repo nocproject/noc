@@ -4,11 +4,12 @@ Cable length
 
 ## Variables
 
-| Name   | type  | Description            | Required  | Constant | Default |
-| ------ | ----- | ---------------------- | --------- | -------- | ------- |
-| length | float | Cable length in meters | {{ yes }} | {{ no }} |         |
+<!-- table start -->
+| Name | Type | Description | Required | Constant |
+| --- | --- | --- | --- | --- |
+| `length` | float | Cable length in meters | {{ yes }} | {{ no }} |
 
-
+<!-- table end -->
 
 ## Examples
 

@@ -4,9 +4,12 @@ Point of present
 
 ## Variables
 
-| Name  | Type | Description | Required  | Constant  | Default |
-| ----- | ---- | ----------- | --------- | --------- | ------- |
-| level | int  | PoP level   | {{ yes }} | {{ yes }} |         |
+<!-- table start -->
+| Name | Type | Description | Required | Constant |
+| --- | --- | --- | --- | --- |
+| `level` | int | PoP level | {{ yes }} | {{ yes }} |
+
+<!-- table end -->
 
 Levels of PoP:
 
