@@ -59,7 +59,8 @@ class AssetCheck(DiscoveryCheck):
                 Union[Object, str],
                 Dict[str, Union[int, str]],
                 Optional[str],
-                List[Dict[str, str]],
+                List[ObjectAttr],
+                List[ObjectAttr],
             ]
         ] = []  # [(type, object, context, serial, data)]
         self.sensors: Dict[
@@ -76,7 +77,7 @@ class AssetCheck(DiscoveryCheck):
         self.stack_member: Dict["Object", str] = {}  # object -> stack member numbers
         self.managed: Set[str] = set()  # Object ids
         self.unk_model: Dict[str, ObjectModel] = {}  # name -> model
-        self.lost_and_found = self.object.get_lost_and_found()
+        self.lost_and_found = self.get_lost_and_found(self.object)
 
     def handler(self):
         self.logger.info("Checking assets")
@@ -85,6 +86,8 @@ class AssetCheck(DiscoveryCheck):
         # Submit objects
         for o in result:
             self.logger.info("Submit %s", str_dict(o))
+            # Split data to Constant and ObjectData
+            o_data, c_data = self.clean_sa_data(o.get("data"))
             self.submit(
                 o_type=o["type"],
                 number=o.get("number"),
@@ -96,7 +99,8 @@ class AssetCheck(DiscoveryCheck):
                 mfg_date=o.get("mfg_date"),
                 description=o.get("description"),
                 sensors=o.get("sensors"),
-                data=self.clean_data(o.get("data")),
+                data=o_data,
+                m_data=c_data,
             )
         # Assign stack members
         self.submit_stack_members()
@@ -122,6 +126,7 @@ class AssetCheck(DiscoveryCheck):
         description: Optional[str] = None,
         sensors: List[Dict[str, Any]] = None,
         data: List[ObjectAttr] = None,
+        m_data: List[ObjectAttr] = None,
     ):
         # Check the vendor and the serial are sane
         # OEM transceivers return binary trash often
@@ -152,7 +157,7 @@ class AssetCheck(DiscoveryCheck):
         if is_unknown_xcvr:
             self.logger.info("%s S/N %s should be resolved later", part_no[0], serial)
             self.prepare_context(o_type, number)
-            self.objects += [("XCVR", part_no[0], self.ctx.copy(), serial, data)]
+            self.objects += [("XCVR", part_no[0], self.ctx.copy(), serial, data, m_data)]
             return
         # Cache description
         if description:
@@ -215,16 +220,18 @@ class AssetCheck(DiscoveryCheck):
         if not o:
             # Create new object
             self.logger.info("Creating new object. model='%s', serial='%s'", m.name, serial)
-            data = [ObjectAttr(scope="", interface="asset", attr="serial", value=serial)]
+            o_data = [ObjectAttr(scope="", interface="asset", attr="serial", value=serial)]
             if revision:
-                data += [ObjectAttr(scope="", interface="asset", attr="revision", value=revision)]
+                o_data += [ObjectAttr(scope="", interface="asset", attr="revision", value=revision)]
             if mfg_date:
-                data += [ObjectAttr(scope="", interface="asset", attr="mfg_date", value=mfg_date)]
+                o_data += [ObjectAttr(scope="", interface="asset", attr="mfg_date", value=mfg_date)]
+            if m_data:
+                o_data += m_data
             if self.object.container:
                 container = self.object.container.id
             else:
                 container = self.lost_and_found
-            o = Object(model=m, data=data, container=container)
+            o = Object(model=m, data=o_data, container=container)
             o.save()
             o.log(
                 "Created by asset_discovery",
@@ -288,7 +295,7 @@ class AssetCheck(DiscoveryCheck):
             self.update_name(o)
             if o.id in self.managed:
                 self.managed.remove(o.id)
-        self.objects += [(o_type, o, self.ctx.copy(), serial, data)]
+        self.objects += [(o_type, o, self.ctx.copy(), serial, data, m_data)]
         # Collect sensors
         if sensors:
             for s in sensors:
@@ -298,13 +305,15 @@ class AssetCheck(DiscoveryCheck):
             self.stack_member[o] = number
         self.sync_data(o, data)
 
-    def clean_data(self, data: List[Dict[str, str]]) -> List[ObjectAttr]:
+    def clean_sa_data(
+        self, data: List[Dict[str, str]]
+    ) -> Tuple[List[ObjectAttr], List[ObjectAttr]]:
         """
         Cleanup data from script
         """
-        r = []
+        o_data, c_data = [], []
         if not data:
-            return []
+            return [], []
         for d in data:
             interface, attr = d["interface"], d["attr"]
             try:
@@ -312,16 +321,22 @@ class AssetCheck(DiscoveryCheck):
             except ModelDataError as e:
                 self.logger.error("[%s|%s] Error on data: %s", interface, attr, e)
                 continue
-            if attr.is_const:
-                self.logger.warning("[%s|%s] Cannot set read-only value", interface, attr)
-                continue
             try:
                 value = attr._clean(d["value"])
             except ValueError:
-                self.logger.warning("[%s|%s] Value is not ", interface, attr, d["value"])
+                self.logger.warning(
+                    "[%s|%s] Error when convert value: %s", interface, attr, d["value"]
+                )
                 continue
-            r += [ObjectAttr(scope="discovery", interface=interface, attr=attr, value=value)]
-        return r
+            if attr.is_const:
+                c_data += [
+                    ObjectAttr(scope="discovery", interface=interface, attr=attr.name, value=value)
+                ]
+            else:
+                o_data += [
+                    ObjectAttr(scope="discovery", interface=interface, attr=attr.name, value=value)
+                ]
+        return o_data, c_data
 
     def sync_data(self, obj: Object, data: List[ObjectAttr]):
         """
@@ -332,6 +347,9 @@ class AssetCheck(DiscoveryCheck):
         for d in obj.data:
             if d.interface in self._builtin_interfaces or d.scope != "discovery":
                 continue
+            attr = ModelInterface.get_interface_attr(d.interface, d.attr)
+            if attr.is_const:
+                continue
             o_data[d.interface, d.attr] = d.value
         # Create and Update
         for d in data:
@@ -339,8 +357,8 @@ class AssetCheck(DiscoveryCheck):
             if value and value == d.value:
                 # Same value
                 continue
-            self.object.set_data(d.interface, d.attr, d.value, "discovery")
-            self.object.log(
+            obj.set_data(d.interface, d.attr, d.value, "discovery")
+            obj.log(
                 f"Object data {d.interface}|{d.attr} changed: {value} -> {d.value}",
                 system="DISCOVERY",
                 managed_object=self.object,
@@ -348,8 +366,8 @@ class AssetCheck(DiscoveryCheck):
             )
             changed = True
         for interface, attr in o_data:
-            self.object.reset_data(interface, attr, scope="discovery")
-            self.object.log(
+            obj.reset_data(interface, attr, scope="discovery")
+            obj.log(
                 f"Object data {interface}|{attr} reset",
                 system="DISCOVERY",
                 managed_object=self.object,
@@ -358,7 +376,7 @@ class AssetCheck(DiscoveryCheck):
             changed = True
         # Reset data
         if changed:
-            self.object.save()
+            obj.save()
 
     def prepare_context(self, o_type: str, number: Optional[str]):
         self.set_context("N", number)
@@ -388,7 +406,7 @@ class AssetCheck(DiscoveryCheck):
         # Search backwards
         if not fwd:
             for j in range(i - 1, -1, -1):
-                o_type, obj, ctx, _, _ = self.objects[j]
+                o_type, obj, ctx, _, _, _ = self.objects[j]
                 if scope in ctx and ctx[scope] == value:
                     if target_type == o_type:
                         yield o_type, obj, ctx
@@ -397,7 +415,7 @@ class AssetCheck(DiscoveryCheck):
         # Search forward
         if fwd:
             for j in range(i + 1, len(self.objects)):
-                o_type, obj, ctx, _, _ = self.objects[j]
+                o_type, obj, ctx, _, _, _ = self.objects[j]
                 if scope in ctx and ctx[scope] == value:
                     if target_type == o_type:
                         yield o_type, obj, ctx
@@ -418,7 +436,7 @@ class AssetCheck(DiscoveryCheck):
         if not self.rule:
             return
         for i, o in enumerate(self.objects):
-            type, object, context, serial, data = o
+            type, object, context, serial, data, m_data = o
             self.logger.info("Trying to connect #%d. %s (%s)", i, type, str_dict(context))
             if type not in self.rule:
                 continue
@@ -446,10 +464,11 @@ class AssetCheck(DiscoveryCheck):
                         m_c = self.expand_context(r.match_connection, context)
                         if isinstance(object, str):
                             # Resolving unknown object
-                            o = self.resolve_object(object, m_c, t_object, t_c, serial, data)
+                            o = self.resolve_object(object, m_c, t_object, t_c, serial, m_data)
                             if not o:
                                 continue
                             object = o
+                            self.sync_data(object, data)
                         if not object.has_connection(m_c):
                             continue
                         # Connect
@@ -809,7 +828,7 @@ class AssetCheck(DiscoveryCheck):
         t_object: Object,
         t_c: str,
         serial: str,
-        data: Optional[Dict[str, str]],
+        data: List[ObjectAttr],
     ) -> Optional["Object"]:
         """
         Resolve object type
@@ -865,7 +884,7 @@ class AssetCheck(DiscoveryCheck):
             container = self.lost_and_found
         o = Object(
             model=model,
-            data=[ObjectAttr(scope="", interface="asset", attr="serial", value=serial)],
+            data=[ObjectAttr(scope="", interface="asset", attr="serial", value=serial)] + data,
             container=container,
         )
         o.save()
@@ -900,6 +919,17 @@ class AssetCheck(DiscoveryCheck):
                 self.logger.debug("Mapping %s %s %s to %s", vendor, part_no, serial, mm.model.name)
                 return mm.model
         return None
+
+    def get_lost_and_found(self, object):
+        lfm = ObjectModel.objects.filter(name="Lost&Found").first()
+        if not lfm:
+            self.logger.error("Lost&Found model not found")
+            return None
+        lf = Object.objects.filter(model=lfm.id).first()
+        if not lf:
+            self.logger.error("Lost&Found not found")
+            return None
+        return lf.id
 
     def generate_serial(self, model: ObjectModel, number: Optional[str]) -> str:
         """
