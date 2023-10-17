@@ -20,6 +20,7 @@ import cachetools
 # NOC modules
 from noc.services.discovery.jobs.base import DiscoveryCheck
 from noc.main.models.label import Label
+from noc.inv.models.modelinterface import ModelInterface, ModelDataError
 from noc.inv.models.objectmodel import ObjectModel, ConnectionRule
 from noc.inv.models.object import Object, ObjectAttr
 from noc.inv.models.vendor import Vendor
@@ -30,7 +31,7 @@ from noc.inv.models.sensor import Sensor
 from noc.inv.models.sensorprofile import SensorProfile
 from noc.pm.models.measurementunits import MeasurementUnits, DEFAULT_UNITS_NAME
 from noc.core.text import str_dict
-from noc.core.comp import smart_bytes, smart_text
+from noc.core.comp import smart_bytes
 
 
 class AssetCheck(DiscoveryCheck):
@@ -43,6 +44,7 @@ class AssetCheck(DiscoveryCheck):
 
     _serial_masks = {}
     _serial_masks_lock = Lock()
+    _builtin_interfaces = {"asset", "stack", "management"}
 
     fatal_errors = {}
 
@@ -52,8 +54,14 @@ class AssetCheck(DiscoveryCheck):
         self.pn_description: Dict[str, str] = {}  # part_no -> Description
         self.vendors: Dict[str, Vendor] = {}  # code -> Vendor instance
         self.objects: List[
-            Tuple[str, Union[Object, str], Dict[str, Union[int, str]], Optional[str]]
-        ] = []  # [(type, object, context, serial)]
+            Tuple[
+                str,
+                Union[Object, str],
+                Dict[str, Union[int, str]],
+                Optional[str],
+                List[Dict[str, str]],
+            ]
+        ] = []  # [(type, object, context, serial, data)]
         self.sensors: Dict[
             Tuple[Optional[Object], str] : Dict[str, Any]
         ] = {}  # object, sensor -> sensor data
@@ -68,7 +76,7 @@ class AssetCheck(DiscoveryCheck):
         self.stack_member: Dict["Object", str] = {}  # object -> stack member numbers
         self.managed: Set[str] = set()  # Object ids
         self.unk_model: Dict[str, ObjectModel] = {}  # name -> model
-        self.lost_and_found = self.get_lost_and_found(self.object)
+        self.lost_and_found = self.object.get_lost_and_found()
 
     def handler(self):
         self.logger.info("Checking assets")
@@ -78,7 +86,7 @@ class AssetCheck(DiscoveryCheck):
         for o in result:
             self.logger.info("Submit %s", str_dict(o))
             self.submit(
-                type=o["type"],
+                o_type=o["type"],
                 number=o.get("number"),
                 builtin=o["builtin"],
                 vendor=o.get("vendor"),
@@ -88,6 +96,7 @@ class AssetCheck(DiscoveryCheck):
                 mfg_date=o.get("mfg_date"),
                 description=o.get("description"),
                 sensors=o.get("sensors"),
+                data=self.clean_data(o.get("data")),
             )
         # Assign stack members
         self.submit_stack_members()
@@ -102,7 +111,7 @@ class AssetCheck(DiscoveryCheck):
 
     def submit(
         self,
-        type: str,
+        o_type: str,
         part_no: List[str],
         number: Optional[str] = None,
         builtin: bool = False,
@@ -112,6 +121,7 @@ class AssetCheck(DiscoveryCheck):
         mfg_date: Optional[str] = None,
         description: Optional[str] = None,
         sensors: List[Dict[str, Any]] = None,
+        data: List[ObjectAttr] = None,
     ):
         # Check the vendor and the serial are sane
         # OEM transceivers return binary trash often
@@ -120,29 +130,29 @@ class AssetCheck(DiscoveryCheck):
             try:
                 vendor.encode("utf-8")
             except UnicodeDecodeError:
-                self.logger.info("Trash submited as vendor id: %s", vendor.encode("hex"))
+                self.logger.info("Trash submitted as vendor id: %s", vendor.encode("hex"))
                 return
         if serial:
             # Possible dead code
             try:
                 serial.encode("utf-8")
             except UnicodeDecodeError:
-                self.logger.info("Trash submited as serial: %s", serial.encode("hex"))
+                self.logger.info("Trash submitted as serial: %s", serial.encode("hex"))
                 return
         #
         is_unknown_xcvr = not builtin and part_no[0].startswith("Unknown | Transceiver | ")
-        if not type and is_unknown_xcvr:
-            type = "XCVR"
+        if not o_type and is_unknown_xcvr:
+            o_type = "XCVR"
         # Skip builtin modules
         if builtin:
             # Adjust context anyway
-            self.prepare_context(type, number)
+            self.prepare_context(o_type, number)
             return  # Builtin must aways have type set
         #
         if is_unknown_xcvr:
             self.logger.info("%s S/N %s should be resolved later", part_no[0], serial)
-            self.prepare_context(type, number)
-            self.objects += [("XCVR", part_no[0], self.ctx.copy(), serial)]
+            self.prepare_context(o_type, number)
+            self.objects += [("XCVR", part_no[0], self.ctx.copy(), serial, data)]
             return
         # Cache description
         if description:
@@ -177,11 +187,11 @@ class AssetCheck(DiscoveryCheck):
         # Sanitize serial number against the model
         serial = self.clean_serial(m, number, serial)
         #
-        if m.cr_context and type != m.cr_context:
+        if m.cr_context and o_type != m.cr_context:
             # Override type with object mode's one
             self.logger.info("Model changes type to '%s'", m.cr_context)
-            type = m.cr_context
-        if not type:
+            o_type = m.cr_context
+        if not o_type:
             self.logger.info(
                 "Cannot resolve type for: vendor=%s, part_no=%s (%s). " "Skipping",
                 vnd.name,
@@ -189,13 +199,13 @@ class AssetCheck(DiscoveryCheck):
                 part_no,
             )
             return
-        self.prepare_context(type, number)
+        self.prepare_context(o_type, number)
         # Get connection rule
         if not self.rule and m.connection_rule:
             self.set_rule(m.connection_rule)
             # Set initial context
-            if type in self.rule_context:
-                scope = self.rule_context[type][0]
+            if o_type in self.rule_context:
+                scope = self.rule_context[o_type][0]
                 if scope:
                     self.set_context(scope, number)
         # Find existing object or create new
@@ -278,7 +288,7 @@ class AssetCheck(DiscoveryCheck):
             self.update_name(o)
             if o.id in self.managed:
                 self.managed.remove(o.id)
-        self.objects += [(type, o, self.ctx.copy(), serial)]
+        self.objects += [(o_type, o, self.ctx.copy(), serial, data)]
         # Collect sensors
         if sensors:
             for s in sensors:
@@ -286,23 +296,86 @@ class AssetCheck(DiscoveryCheck):
         # Collect stack members
         if number and o.get_data("stack", "stackable"):
             self.stack_member[o] = number
+        self.sync_data(o, data)
 
-    def prepare_context(self, type: str, number: Optional[str]):
+    def clean_data(self, data: List[Dict[str, str]]) -> List[ObjectAttr]:
+        """
+        Cleanup data from script
+        """
+        r = []
+        if not data:
+            return []
+        for d in data:
+            interface, attr = d["interface"], d["attr"]
+            try:
+                attr = ModelInterface.get_interface_attr(interface, attr)
+            except ModelDataError as e:
+                self.logger.error("[%s|%s] Error on data: %s", interface, attr, e)
+                continue
+            if attr.is_const:
+                self.logger.warning("[%s|%s] Cannot set read-only value", interface, attr)
+                continue
+            try:
+                value = attr._clean(d["value"])
+            except ValueError:
+                self.logger.warning("[%s|%s] Value is not ", interface, attr, d["value"])
+                continue
+            r += [ObjectAttr(scope="discovery", interface=interface, attr=attr, value=value)]
+        return r
+
+    def sync_data(self, obj: Object, data: List[ObjectAttr]):
+        """
+        Sync script data with object
+        """
+        o_data = {}
+        changed = False
+        for d in obj.data:
+            if d.interface in self._builtin_interfaces or d.scope != "discovery":
+                continue
+            o_data[d.interface, d.attr] = d.value
+        # Create and Update
+        for d in data:
+            value = o_data.pop((d.interface, d.attr), None)
+            if value and value == d.value:
+                # Same value
+                continue
+            self.object.set_data(d.interface, d.attr, d.value, "discovery")
+            self.object.log(
+                f"Object data {d.interface}|{d.attr} changed: {value} -> {d.value}",
+                system="DISCOVERY",
+                managed_object=self.object,
+                op="CHANGE",
+            )
+            changed = True
+        for interface, attr in o_data:
+            self.object.reset_data(interface, attr, scope="discovery")
+            self.object.log(
+                f"Object data {interface}|{attr} reset",
+                system="DISCOVERY",
+                managed_object=self.object,
+                op="CHANGE",
+            )
+            changed = True
+        # Reset data
+        if changed:
+            self.object.save()
+
+    def prepare_context(self, o_type: str, number: Optional[str]):
         self.set_context("N", number)
-        if type and type in self.rule_context:
-            scope, reset_scopes = self.rule_context[type]
+        if o_type and o_type in self.rule_context:
+            scope, reset_scopes = self.rule_context[o_type]
             if scope:
                 self.set_context(scope, number)
             if reset_scopes:
                 self.reset_context(reset_scopes)
 
-    def update_name(self, object: Object):
-        n = self.get_name(object, self.object)
-        if n and n != object.name:
-            object.name = n
+    def update_name(self, obj: Object):
+        n = self.get_name(obj, self.object)
+        if n and n != obj.name:
+            obj.name = n
             self.logger.info("Changing name to '%s'", n)
-            object.save()
-            object.log(
+            obj.save()
+            obj.log(
                 "Change name to '%s'" % n,
                 system="DISCOVERY",
                 managed_object=self.object,
@@ -315,19 +388,19 @@ class AssetCheck(DiscoveryCheck):
         # Search backwards
         if not fwd:
             for j in range(i - 1, -1, -1):
-                type, object, ctx, _ = self.objects[j]
+                o_type, obj, ctx, _, _ = self.objects[j]
                 if scope in ctx and ctx[scope] == value:
-                    if target_type == type:
-                        yield type, object, ctx
+                    if target_type == o_type:
+                        yield o_type, obj, ctx
                 else:
                     break
         # Search forward
         if fwd:
             for j in range(i + 1, len(self.objects)):
-                type, object, ctx, _ = self.objects[j]
+                o_type, obj, ctx, _, _ = self.objects[j]
                 if scope in ctx and ctx[scope] == value:
-                    if target_type == type:
-                        yield type, object, ctx
+                    if target_type == o_type:
+                        yield o_type, obj, ctx
                 else:
                     return
 
@@ -345,7 +418,7 @@ class AssetCheck(DiscoveryCheck):
         if not self.rule:
             return
         for i, o in enumerate(self.objects):
-            type, object, context, serial = o
+            type, object, context, serial, data = o
             self.logger.info("Trying to connect #%d. %s (%s)", i, type, str_dict(context))
             if type not in self.rule:
                 continue
@@ -373,7 +446,7 @@ class AssetCheck(DiscoveryCheck):
                         m_c = self.expand_context(r.match_connection, context)
                         if isinstance(object, str):
                             # Resolving unknown object
-                            o = self.resolve_object(object, m_c, t_object, t_c, serial)
+                            o = self.resolve_object(object, m_c, t_object, t_c, serial, data)
                             if not o:
                                 continue
                             object = o
@@ -730,7 +803,13 @@ class AssetCheck(DiscoveryCheck):
                 )
 
     def resolve_object(
-        self, name: str, m_c: str, t_object: Object, t_c: str, serial: str
+        self,
+        name: str,
+        m_c: str,
+        t_object: Object,
+        t_c: str,
+        serial: str,
+        data: Optional[Dict[str, str]],
     ) -> Optional["Object"]:
         """
         Resolve object type
@@ -822,17 +901,6 @@ class AssetCheck(DiscoveryCheck):
                 return mm.model
         return None
 
-    def get_lost_and_found(self, object):
-        lfm = ObjectModel.objects.filter(name="Lost&Found").first()
-        if not lfm:
-            self.logger.error("Lost&Found model not found")
-            return None
-        lf = Object.objects.filter(model=lfm.id).first()
-        if not lf:
-            self.logger.error("Lost&Found not found")
-            return None
-        return lf.id
-
     def generate_serial(self, model: ObjectModel, number: Optional[str]) -> str:
         """
         Generate virtual serial number
@@ -841,7 +909,7 @@ class AssetCheck(DiscoveryCheck):
         for k in sorted(x for x in self.ctx if not x.startswith("N")):
             seed += [k, str(self.ctx[k])]
         h = hashlib.sha256(smart_bytes(":".join(seed)))
-        return "NOC%s" % smart_text(base64.b32encode(h.digest())[:7])
+        return f"NOC{base64.b32encode(h.digest())[:7].decode('utf-8')}"
 
     @staticmethod
     def get_name(obj: Object, managed_object: Optional[Any] = None) -> str:
