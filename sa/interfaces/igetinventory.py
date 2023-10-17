@@ -83,6 +83,20 @@ class IGetInventory(BaseInterface):
                 },
                 required=False,
             ),
-        }
+            # Optional data
+            "data": DictListParameter(
+                attrs={
+                    # Model Interface name
+                    "interface": StringParameter(required=True),
+                    # Attribute
+                    "attr": StringParameter(required=True),
+                    # Value
+                    "value": StringParameter(required=True),
+                    # Slot name (if data for slot)
+                    "slot": StringParameter(required=False),
+                },
+                required=False,
+            ),
+        },
     )
     preview = "NOC.sa.managedobject.scripts.ShowInventory"

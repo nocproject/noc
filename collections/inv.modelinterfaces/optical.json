@@ -54,11 +54,60 @@
             "is_const": true
         },
         {
+            "name": "min_tx_osnr",
+            "type": "float",
+            "description": "Minimum transmit OSNR, dB/0.1 nm",
+            "required": false,
+            "is_const": true
+        },
+        {
+            "name": "max_tx_osnr",
+            "type": "float",
+            "description": "Maximum transmit OSNR, dB/0.1 nm",
+            "required": false,
+            "is_const": true
+        },
+        {
+            "name": "min_rx_osnr",
+            "type": "float",
+            "description": "Minimum receive OSNR, dB/0.1 nm",
+            "required": false,
+            "is_const": true
+        },
+        {
+            "name": "max_rx_osnr",
+            "type": "float",
+            "description": "Maximum receive OSNR, dB/0.1 nm",
+            "required": false,
+            "is_const": true
+        },
+        {
             "name": "bidi",
             "type": "bool",
             "description": "True if singlefiber, WDM. Otherwise False",
             "required": true,
             "is_const": true
+        },
+        {
+            "name": "xwdm",
+            "type": "bool",
+            "description": "True if C/D WDM. Otherwise False",
+            "required": true,
+            "is_const": true
+        },
+        {
+            "name": "distance_max",
+            "type": "int",
+            "description": "Max link length, m",
+            "required": false,
+            "is_const": false
+        },
+        {
+            "name": "bit_rate",
+            "type": "int",
+            "description": "Nominal bit rate, Mb/s",
+            "required": false,
+            "is_const": false
         }
     ]
 }
