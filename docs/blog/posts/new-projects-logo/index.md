@@ -6,7 +6,9 @@ description: >
 categories:
     - General
 ---
-![NOC Release Policy](logo_64x64_deep_azure.png)
+# New Project's Logo
+
+![NOC Logo](logo_64x64_deep_azure.png)
 
 We're proudly announce new [NOC](https://getnoc.com) logo.
 
