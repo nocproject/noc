@@ -6,6 +6,8 @@ description: >
 categories:
     - General
 ---
+# Welcome to the New Site
+
 [NOC development team](/devteam/) proudly presents new project's site.
 New site location is https://getnoc.com/. Site is built by
 excellent [Hugo](https://gohugo.io) site generator and based

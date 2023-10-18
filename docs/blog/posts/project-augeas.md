@@ -18,6 +18,7 @@ which were not consistent with each other and had excessively complex structures
 Worse, a large part of the documentation was still hosted on the old Confluence system.
 As a result, it was hard for users to get the required information, and hard for
 developers to keep documentation in tune.
+<!-- more -->
 
 ## What We Are Doing
 
@@ -33,7 +34,7 @@ developers to keep documentation in tune.
 
 Our goal with "Project Augeas" is to provide a smoother, more organized, and unified documentation experience.
 
-!!! note title="Trivia"
+!!! note "Trivia"
 
     In Greek mythology, Augeas was a king of Elis. He is known for his stables, 
     which housed the single greatest number of cattle in the country and had never been cleaned, 

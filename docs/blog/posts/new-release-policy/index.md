@@ -8,6 +8,8 @@ description: >
 categories:
     - General
 ---
+# New Release Policy
+
 In order to finalize 3 years of microservices development and
 to switch from rolling release to more common release practice
 we introduce a new release policy.
