@@ -15,10 +15,12 @@ field. Following rules are applied:
 
 ## Variables
 
-| Name      | Type    | Description                | Required  | Constant  | Default |
-| --------- | ------- | -------------------------- | --------- | --------- | ------- |
-| container | Boolean | Object is container        | {{ yes }} | {{ yes }} |         |
-|           |         | (Can hold another objects) |           |           |         |
+<!-- table start -->
+| Name | Type | Description | Required | Constant |
+| --- | --- | --- | --- | --- |
+| `container` | bool | Object is container (can hold another objects) | {{ yes }} | {{ yes }} |
+
+<!-- table end -->
 
 ## Examples
 

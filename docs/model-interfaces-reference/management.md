@@ -6,10 +6,13 @@ One MO can be associated with several inventory objects(virtual chassis, switche
 
 ## Variables
 
-| Name           | Type | Description                             | Required | Constant  | Default |
-| -------------- | ---- | --------------------------------------- | -------- | --------- | ------- |
-| managed        | bool | Object can be bind to the ManagedObject | {{ no }} | {{ yes }} |         |
-| managed_object | int  | Managed Object id                       | {{ no }} | {{ no }}  |         |
+<!-- table start -->
+| Name | Type | Description | Required | Constant |
+| --- | --- | --- | --- | --- |
+| `managed` | bool | Object can be bind to the ManagedObject | {{ no }} | {{ yes }} |
+| `managed_object` | int | Managed Object id | {{ no }} | {{ no }} |
+
+<!-- table end -->
 
 ## Examples
 

@@ -4,9 +4,12 @@ Split optical/electrical input power to outputs with given gain
 
 ## Variables
 
-| Name  | Type | Description                                                       | Required  | Constant  | Default |
-| ----- | ---- | ----------------------------------------------------------------- | --------- | --------- | ------- |
-| split | str  | Input power division, as comma-separated list of output_Name=gain | {{ yes }} | {{ yes }} |         |
+<!-- table start -->
+| Name | Type | Description | Required | Constant |
+| --- | --- | --- | --- | --- |
+| `split` | str | Input power division, as comma-separated list of output_name=gain | {{ yes }} | {{ yes }} |
+
+<!-- table end -->
 
 ## Examples
 

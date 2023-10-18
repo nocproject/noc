@@ -5,8 +5,11 @@ Plan position.
 
 ## Variables
 
-| Name    | Type  | Description                                               | Required  | Constant | Default |
-| ------- | ----- | --------------------------------------------------------- | --------- | -------- | ------- |
-| x       | float | x coordinate, in local units                              | {{ yes }} | {{ no }} |         |
-| y       | float | y coordinate, in local units                              | {{ yes }} | {{ no }} |         |
-| bearing | float | Rotation angle, in degrees, counterclockwise horizontally | {{ no }}  | {{ no }} | 0.0     |
+<!-- table start -->
+| Name | Type | Description | Required | Constant |
+| --- | --- | --- | --- | --- |
+| `x` | float | x coordinate, in local units | {{ yes }} | {{ no }} |
+| `y` | float | y coordinate, in local units | {{ yes }} | {{ no }} |
+| `bearing` | float | Rotation angle, in degrees, counterclockwise horizontally | {{ no }} | {{ no }} |
+
+<!-- table end -->

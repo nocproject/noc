@@ -4,11 +4,14 @@ A measurement of equipment in a particular direction, especially its height, len
 
 ## Variables
 
-| Name   | Type | Description  | Required  | Constant  | Default |
-| ------ | ---- | ------------ | --------- | --------- | ------- |
-| width  | Int  | width in mm  | {{ yes }} | {{ yes }} |         |
-| depth  | Int  | depth in mm  | {{ yes }} | {{ yes }} |         |
-| height | Int  | height in mm | {{ yes }} | {{ yes }} |         |
+<!-- table start -->
+| Name | Type | Description | Required | Constant |
+| --- | --- | --- | --- | --- |
+| `depth` | int | Object's depth in mm | {{ yes }} | {{ yes }} |
+| `height` | int | Object's height in mm | {{ yes }} | {{ yes }} |
+| `width` | int | Object's width in mm | {{ yes }} | {{ yes }} |
+
+<!-- table end -->
 
 ## Examples
 

@@ -10,6 +10,8 @@ and how they find application in various scenarios.
 
 | Model Interface             | Description                                                                    |
 | --------------------------- | ------------------------------------------------------------------------------ |
+| [address]()                 | External GIS system bindings                                                   |
+| [agent]()                   | NOC Agent's bindings                                                           |
 | [airflow](airflow.md)       | Airflow direction for cooling                                                  |
 | [asset](asset.md)           | Inventory reference, asset, and serial numbers                                 |
 | [contacts](contacts.md)     | Administrative, billing and technical contacts for container (PoP, Room, Rack) |
