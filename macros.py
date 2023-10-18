@@ -142,6 +142,8 @@ def define_env(env):
                 continue
             if fn.startswith("."):
                 continue
+            if fn.startswith("index."):
+                continue
             r += [fn[:-3]]
         if not r:
             msg = f"Invalid vendor: {vendor}"

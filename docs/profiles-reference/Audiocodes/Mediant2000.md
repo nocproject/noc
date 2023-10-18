@@ -1,14 +1,11 @@
----
-uuid: c780cd65-ddee-48e3-96b2-ecba4be585c0
----
-
-
 # Audiocodes.Mediant2000
 
+`Audiocodes.Mediant2000` profile supports a family
+of the AudioCodes Mediant2000 media gateways.
 
-<!-- prettier-ignore -->
-!!! todo
-    Describe *Audiocodes.Mediant2000* profile
+The profile supports the CLI (Telnet, SSH) and
+HTTP HTTP access schemes.
+
 
 ## Supported Scripts
 
