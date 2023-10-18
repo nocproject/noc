@@ -1,5 +1,5 @@
 # ---------------------------------------------------------------------
-# Polus.Horizon.get_config
+# IRE-Polus.Horizon.get_config
 # ---------------------------------------------------------------------
 # Copyright (C) 2007-2023 The NOC Project
 # See LICENSE for details
@@ -11,7 +11,7 @@ from noc.sa.interfaces.igetconfig import IGetConfig
 
 
 class Script(BaseScript):
-    name = "Polus.Horizon.get_config"
+    name = "IRE-Polus.Horizon.get_config"
     cache = True
     interface = IGetConfig
 
