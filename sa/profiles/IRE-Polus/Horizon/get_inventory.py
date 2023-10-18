@@ -13,6 +13,7 @@ from typing import Dict
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetinventory import IGetInventory
+from .profile import Param
 
 
 @dataclass
@@ -38,6 +39,39 @@ class Script(BaseScript):
             r[match.group("pname")] = match.group("pvalue").strip()
         return r
 
+    def parse_components(self, params: Dict[str, Param]):
+        r = {}
+        for _, p in params.items():
+            if p.component in r:
+                continue
+            if (
+                p.component_type in {"FAN", "PEM"}
+                and params[(p.component, "State")].value != "Отсутствует"
+            ):
+                r[p.component] = {
+                    "type": p.component_type,
+                    "number": p.component[-1],
+                    "vendor": "IRE-Polus",
+                    "part_no": params[(p.component, "PtNumber")].value,
+                    "serial_no": params[(p.component, "SrNumber")].value,
+                }
+                if (p.component, "HwNumber") in params:
+                    rev = params[(p.component, "HwNumber")].value
+                    r[p.component]["revision"] = rev.split()[-1]
+            elif (
+                p.component
+                and p.component.endswith("SFP")
+                and params[(p.component, "State")].value == "Ok"
+            ):
+                r[p.component] = {
+                    "type": "XCVR",
+                    "number": p.component[-5],
+                    "vendor": params[(p.component, "Vendor")].value,
+                    "part_no": params[(p.component, "PtNumber")].value,
+                    "serial_no": params[(p.component, "SrNumber")].value,
+                }
+        return list(r.values())
+
     def execute_http(self, **kwargs):
         r = []
         c = self.http.get("/api/crates", json=True)
@@ -51,7 +85,7 @@ class Script(BaseScript):
             {
                 "type": "CHASSIS",
                 "number": "1",
-                "vendor": "IPG",
+                "vendor": "IRE-Polus",
                 "part_no": c["chassis"],
                 "serial_no": c_params["SrNumber"].value,
             }
@@ -72,36 +106,45 @@ class Script(BaseScript):
             )
         print(devices)
         # /api/devices/params?crateId=1&slotNumber=3
-        cards = []
         for slot, d in devices.items():
-            p = self.http.get(
+            params = self.http.get(
                 f"/api/devices/params?crateId={d.crate_id}&slotNumber={slot}&fields=name,value,description",
                 json=True,
             )
-            p = self.profile.parse_params(p["params"])
-            if d.d_class == "":
-                # cu card
-                ...
+            params: Dict[str, Param] = self.profile.parse_params(params["params"])
+            # if params["pId"].value == "ADM-10-SFP/SFP+-H8":
+            #    print(params)
+            r += [
+                {
+                    "type": "LINECARD",
+                    "number": slot,
+                    "vendor": "IRE-Polus",
+                    "part_no": params["pId"].value,
+                    "serial_no": params["SrNumber"].value,
+                    "revision": params["HwNumber"].value,
+                }
+            ]
+            r += self.parse_components(params)
         return r
 
     def execute(self, **kwargs):
         return self.execute_http(**kwargs)
 
-    def execute_cli(self):
-        r = [{"type": "CHASSIS", "number": "1", "vendor": "Polus", "part_no": "K8"}]
-        v = self.cli("show devices")
-        for match in self.rx_devices.finditer(v):
-            slot = match.group("slot")
-            v = self.cli(f"show params {slot}")
-            o = self.parse_table(v)
-            r += [
-                {
-                    "type": "LINECARD",
-                    "vendor": "Polus",
-                    "number": slot,
-                    "part_no": match.group("name"),
-                    "serial": o["SrNumber"],
-                    "revision": o["HwNumber"],
-                }
-            ]
-        return r
+    # def execute_cli(self):
+    #     r = [{"type": "CHASSIS", "number": "1", "vendor": "Polus", "part_no": "K8"}]
+    #     v = self.cli("show devices")
+    #     for match in self.rx_devices.finditer(v):
+    #         slot = match.group("slot")
+    #         v = self.cli(f"show params {slot}")
+    #         o = self.parse_table(v)
+    #         r += [
+    #             {
+    #                 "type": "LINECARD",
+    #                 "vendor": "IRE-Polus",
+    #                 "number": slot,
+    #                 "part_no": match.group("name"),
+    #                 "serial": o["SrNumber"],
+    #                 "revision": o["HwNumber"],
+    #             }
+    #         ]
+    #     return r

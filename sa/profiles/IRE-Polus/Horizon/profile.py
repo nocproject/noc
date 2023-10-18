@@ -36,7 +36,8 @@ class Profile(BaseProfile):
     rogue_chars = [b"\r", b"\\x1b", re.compile(rb"\[\d+;\d+m")]
 
     rx_param = re.compile(
-        r"(?P<component>(FAN|ptOUT|Port|PEM|Case|Flash|MCU|OSC|Ch\d+|[CH]\d+|ptAmp|Amp)\d*)?(?P<pname>\S+)"
+        r"(?P<component>(FAN|ptOUT|Port|PEM|Case|Flash|MCU|OSC|"
+        r"Ch\d+|[CH]\d+|ptAmp|Amp|(?:Cl|Ln)_\d+_SFP)\d*)?(?P<pname>\S+)"
     )
 
     @staticmethod
@@ -71,12 +72,13 @@ class Profile(BaseProfile):
                 continue
             m = cls.rx_param.match(p["name"])
             component, ct, name = m.groups()
+            name = name.strip("_")
             key = p["name"]
             if component:
                 key = (component, name)
             r[key] = Param(
                 **{
-                    "value": p["value"],
+                    "value": p["value"].strip(),
                     "name": name,
                     "component": component,
                     "component_type": ct,

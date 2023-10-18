@@ -36,7 +36,7 @@ class Script(BaseScript):
         )
         r = self.profile.parse_params(v["params"])
         return {
-            "vendor": "Polus",
+            "vendor": "IRE-Polus",
             "platform": platform,
             "version": r["SwNumber"].value,
             "attributes": {"Serial Number": r["SrNumber"].value, "HW version": r["HwNumber"].value},
@@ -50,7 +50,7 @@ class Script(BaseScript):
         for match in self.rx_table.finditer(v):
             r[match.group("pname")] = match.group("pvalue").strip()
         return {
-            "vendor": "Polus",
+            "vendor": "IRE-Polus",
             "platform": r["pId"],
             "version": r["SwNumber"],
             "attributes": {
