@@ -17,6 +17,7 @@ import minify_html
 DOCS = Path("build", "docs")
 MB = float(1 << 20)
 INDEX_HTML = DOCS / "index.html"
+INDEX_HTML_RU = DOCS / "ru" / "index.html"
 
 
 def total_size() -> int:
@@ -30,7 +31,7 @@ def total_size() -> int:
     return size
 
 
-def preprocess_index_html(data: str) -> str:
+def remove_duplicated_h1(data: str) -> str:
     """
     Clean up index.html
     """
@@ -45,8 +46,8 @@ def preprocess(path: Path, data: str) -> str:
         path: File path
         data: File contents
     """
-    if path == INDEX_HTML:
-        return preprocess_index_html(data)
+    if path in (INDEX_HTML, INDEX_HTML_RU):
+        data = remove_duplicated_h1(data)
     return data
 
 
@@ -74,6 +75,14 @@ def compress() -> None:
         pool.map(minify, DOCS.rglob("*.html"))
 
 
+def clean_summary():
+    """
+    Remove __SUMMARY__ files
+    """
+    for path in DOCS.rglob("__SUMMARY__"):
+        os.unlink(path)
+
+
 def main() -> None:
     """
     Main function.
@@ -82,6 +91,7 @@ def main() -> None:
     size_before = total_size()
     print(f"Docs size: {float(size_before)/MB:.2f}Mb")
     compress()
+    clean_summary()
     size_after = total_size()
     ratio = float(size_before) / float(size_after)
     print(f"Compressed result: {float(size_after)/MB:.2f}Mb (Ratio: {ratio:.2f})")
