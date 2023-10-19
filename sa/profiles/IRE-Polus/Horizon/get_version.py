@@ -42,7 +42,7 @@ class Script(BaseScript):
             "attributes": {"Serial Number": r["SrNumber"].value, "HW version": r["HwNumber"].value},
         }
 
-    def execute(self):
+    def execute_cli(self):
         if self.credentials.get("http_protocol") == "https":
             return self.execute_http()
         v = self.cli("show params cu")

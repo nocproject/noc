@@ -151,7 +151,7 @@ class Script(BaseScript):
             r += self.parse_components(params)
         return r
 
-    def execute(self, **kwargs):
+    def execute_cli(self, **kwargs):
         return self.execute_http(**kwargs)
 
     # def execute_cli(self):
