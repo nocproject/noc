@@ -52,7 +52,7 @@
             "description": "Клиентский порт 1 для установки модулей QSFP28",
             "direction": "i",
             "gender": "f",
-            "protocols": ["100GE", "OTU4"],
+            "protocols": ["TransEth10G"],
             "type__name": "Transceiver | QSFP+"
         },
         {
@@ -60,7 +60,7 @@
             "description": "Клиентский порт 2 для установки модулей QSFP28",
             "direction": "i",
             "gender": "f",
-            "protocols": ["100GE", "OTU4"],
+            "protocols": ["TransEth10G"],
             "type__name": "Transceiver | QSFP+"
         },
         {
@@ -68,7 +68,7 @@
             "description": "Клиентский порт 3 для установки модулей QSFP28",
             "direction": "i",
             "gender": "f",
-            "protocols": ["100GE", "OTU4"],
+            "protocols": ["TransEth10G"],
             "type__name": "Transceiver | QSFP+"
         },
         {
@@ -76,7 +76,7 @@
             "description": "Клиентский порт 4 для установки модулей QSFP28",
             "direction": "i",
             "gender": "f",
-            "protocols": ["100GE", "OTU4"],
+            "protocols": ["TransEth10G"],
             "type__name": "Transceiver | QSFP+"
         },
         {
@@ -84,7 +84,7 @@
             "description": "Клиентский порт 5 для установки модулей QSFP28",
             "direction": "i",
             "gender": "f",
-            "protocols": ["100GE", "OTU4"],
+            "protocols": ["TransEth10G"],
             "type__name": "Transceiver | QSFP+"
         },
         {
@@ -92,7 +92,7 @@
             "description": "Клиентский порт 6 для установки модулей QSFP28",
             "direction": "i",
             "gender": "f",
-            "protocols": ["100GE", "OTU4"],
+            "protocols": ["TransEth10G"],
             "type__name": "Transceiver | QSFP+"
         },
         {
@@ -100,7 +100,7 @@
             "description": "Клиентский порт 7 для установки модулей QSFP28",
             "direction": "i",
             "gender": "f",
-            "protocols": ["100GE", "OTU4"],
+            "protocols": ["TransEth10G"],
             "type__name": "Transceiver | QSFP+"
         },
         {
@@ -108,7 +108,7 @@
             "description": "Клиентский порт 8 для установки модулей QSFP28",
             "direction": "i",
             "gender": "f",
-            "protocols": ["100GE", "OTU4"],
+            "protocols": ["TransEth10G"],
             "type__name": "Transceiver | QSFP+"
         },
         {
@@ -116,7 +116,7 @@
             "description": "Клиентский порт 9 для установки модулей QSFP28",
             "direction": "i",
             "gender": "f",
-            "protocols": ["100GE", "OTU4"],
+            "protocols": ["TransEth10G"],
             "type__name": "Transceiver | QSFP+"
         },
         {
@@ -124,7 +124,7 @@
             "description": "Клиентский порт 10 для установки модулей QSFP28",
             "direction": "i",
             "gender": "f",
-            "protocols": ["100GE", "OTU4"],
+            "protocols": ["TransEth10G"],
             "type__name": "Transceiver | QSFP+"
         },
         {
@@ -132,7 +132,7 @@
             "description": "Клиентский порт 11 для установки модулей QSFP28",
             "direction": "i",
             "gender": "f",
-            "protocols": ["100GE", "OTU4"],
+            "protocols": ["TransEth10G"],
             "type__name": "Transceiver | QSFP+"
         },
         {
@@ -140,7 +140,7 @@
             "description": "Клиентский порт 12 для установки модулей QSFP28",
             "direction": "i",
             "gender": "f",
-            "protocols": ["100GE", "OTU4"],
+            "protocols": ["TransEth10G"],
             "type__name": "Transceiver | QSFP+"
         }
     ],
