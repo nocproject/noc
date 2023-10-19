@@ -126,6 +126,8 @@ class Script(BaseScript):
             adapter, num = None, d.slot_name
             if "." in num:
                 adapter, num = num.split(".")
+            elif num.startswith("CU"):
+                num = num[-1]
             if adapter and adapter not in adapters:
                 # H8 -> H4 card adapter
                 r += [
