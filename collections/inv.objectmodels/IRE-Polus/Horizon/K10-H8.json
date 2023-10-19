@@ -1,0 +1,187 @@
+{
+    "name": "IRE-Polus | Horizon | K10-H8",
+    "$collection": "inv.objectmodels",
+    "uuid": "25446598-a52c-4901-b6ec-91e4b1bb5d33",
+    "vendor__code": "IRE-POLUS",
+    "description": "Крейт K10-H8 предназначен для размещения до 12-ти полнослотовых или 24-х полуслотовых карт (с использованием адаптера для полуслотовых карт HS-H8) платформы IPG Horizon и двух блоков управления (CU1, CU2), обеспечения слотовых карт электрическим питанием (2 блока ввода питания PEM1, PEM2) и принудительным охлаждением (3 блока вентиляторов FB1, FB2, FB3 и воздушный фильтр – Air Filter). Крейт также осуществляет передачу команд управления и мониторинга от активного блока управления к установленным в слоты картам",
+    "connection_rule__name": "IRE-Polus | Horizon",
+    "cr_context": "CHASSIS",
+    "labels": ["noc::inv::chassis"],
+    "connections": [
+        {
+            "name": "1",
+            "description": "H8 Card board",
+            "direction": "i",
+            "gender": "f",
+            "type__name": "IRE-Polus | Horizon | H8 Card"
+        },
+        {
+            "name": "2",
+            "description": "H8 Card board",
+            "direction": "i",
+            "gender": "f",
+            "type__name": "IRE-Polus | Horizon | H8 Card"
+        },
+        {
+            "name": "3",
+            "description": "H8 Card board",
+            "direction": "i",
+            "gender": "f",
+            "type__name": "IRE-Polus | Horizon | H8 Card"
+        },
+        {
+            "name": "4",
+            "description": "H8 Card board",
+            "direction": "i",
+            "gender": "f",
+            "type__name": "IRE-Polus | Horizon | H8 Card"
+        },
+        {
+            "name": "5",
+            "description": "H8 Card board",
+            "direction": "i",
+            "gender": "f",
+            "type__name": "IRE-Polus | Horizon | H8 Card"
+        },
+        {
+            "name": "6",
+            "description": "H8 Card board",
+            "direction": "i",
+            "gender": "f",
+            "type__name": "IRE-Polus | Horizon | H8 Card"
+        },
+        {
+            "name": "7",
+            "description": "H8 Card board",
+            "direction": "i",
+            "gender": "f",
+            "type__name": "IRE-Polus | Horizon | H8 Card"
+        },
+        {
+            "name": "8",
+            "description": "H8 Card board",
+            "direction": "i",
+            "gender": "f",
+            "type__name": "IRE-Polus | Horizon | H8 Card"
+        },
+        {
+            "name": "9",
+            "description": "H8 Card board",
+            "direction": "i",
+            "gender": "f",
+            "type__name": "IRE-Polus | Horizon | H8 Card"
+        },
+        {
+            "name": "10",
+            "description": "H8 Card board",
+            "direction": "i",
+            "gender": "f",
+            "type__name": "IRE-Polus | Horizon | H8 Card"
+        },
+        {
+            "name": "11",
+            "description": "H8 Card board",
+            "direction": "i",
+            "gender": "f",
+            "type__name": "IRE-Polus | Horizon | H8 Card"
+        },
+        {
+            "name": "12",
+            "description": "H8 Card board",
+            "direction": "i",
+            "gender": "f",
+            "type__name": "IRE-Polus | Horizon | H8 Card"
+        },
+        {
+            "name": "cu1",
+            "description": "Control board",
+            "direction": "i",
+            "gender": "f",
+            "type__name": "IRE-Polus | Horizon | CU"
+        },
+        {
+            "name": "cu2",
+            "description": "Control board",
+            "direction": "i",
+            "gender": "f",
+            "type__name": "IRE-Polus | Horizon | CU"
+        },
+        {
+            "name": "fb1",
+            "description": "Fan tray 1",
+            "direction": "i",
+            "gender": "f",
+            "type__name": "IRE-Polus | Horizon | FAN"
+        },
+        {
+            "name": "fb2",
+            "description": "Fan tray 2",
+            "direction": "i",
+            "gender": "f",
+            "type__name": "IRE-Polus | Horizon | FAN"
+        },
+        {
+            "name": "fb3",
+            "description": "Fan tray 3",
+            "direction": "i",
+            "gender": "f",
+            "type__name": "IRE-Polus | Horizon | FAN"
+        },
+        {
+            "name": "pem1",
+            "description": "Power interface board",
+            "direction": "i",
+            "gender": "f",
+            "type__name": "IRE-Polus | Horizon | PEM"
+        },
+        {
+            "name": "pem2",
+            "description": "Power interface board",
+            "direction": "i",
+            "gender": "f",
+            "type__name": "IRE-Polus | Horizon | PEM"
+        }
+    ],
+    "data": [
+        {
+            "attr": "managed",
+            "interface": "management",
+            "value": true
+        },
+        {
+            "attr": "units",
+            "interface": "rackmount",
+            "value": 10.0
+        },
+        {
+            "attr": "power",
+            "interface": "power",
+            "value": 3000.0
+        },
+        {
+            "attr": "weight",
+            "interface": "weight",
+            "value": 18.5
+        },
+        {
+            "attr": "part_no",
+            "interface": "asset",
+            "value": ["K10-H8"]
+        },
+        {
+            "attr": "width",
+            "interface": "dimensions",
+            "value": 482
+        },
+        {
+            "attr": "depth",
+            "interface": "dimensions",
+            "value": 335
+        },
+        {
+            "attr": "height",
+            "interface": "dimensions",
+            "value": 444
+        }
+    ]
+}

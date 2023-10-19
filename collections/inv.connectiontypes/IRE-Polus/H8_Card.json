@@ -1,0 +1,8 @@
+{
+    "name": "IRE-Polus | Horizon | H8 Card",
+    "$collection": "inv.connectiontypes",
+    "uuid": "4aa9afdc-7420-4dde-9727-2c3de1c3a8f4",
+    "description": "K4-H8 and K10-H8 Card connection",
+    "c_group": [],
+    "genders": "mf"
+}
