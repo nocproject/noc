@@ -17,27 +17,29 @@ CDP
 CLI {: #cli }
 : Command Line Interface
 
-ClickHouse
-: See :doc:`/reference/clickhouse`.
+[Clickhouse](https://clickhouse.com) 
+: Columnar analytic database used by NOC to store metrics and analytic data.
 
-Consul
-: See :doc:`/reference/consul`.
+[Consul](https://www.consul.io/)
+: Distributed concensus database used by NOC to synchronize cluster state.
 
 CPE
 : Customer-Premises Equipment. Associated equipment located
 at subscriber's premises used to provide service
 
-box discovery
-: todo
+Box discovery
+: A group of discovery checks to collect relatively rarely changed information.
+See [box discovery reference](../discovery-reference/box/index.md) for details.
 
-periodic discovery
-: Describe periodic discovery
+Periodic discovery
+: A group of discovery checks to collect relatively rapidly changed information.
+See [periodic discovery reference](../discovery-reference/periodic/index.md) for details.
 
 DC {: #dc }
 : [Direct Current](https://en.wikipedia.org/wiki/Direct_current)
 
 discovery
-: See :doc:`/reference/discovery`.
+: A process of checking network's state and keeping the database up-to-date.
 
 FRU {: #fru }
 : Field Replaceable Unit. Vendor's identification
@@ -57,7 +59,6 @@ LLDP
 <!-- prettier-ignore -->
 !!! todo
      Describe
-
 
 MIB
 : Management information base
@@ -120,7 +121,7 @@ PoE {: #poe }
 : [Power over Ethernet](https://en.wikipedia.org/wiki/Power_over_Ethernet)
 
 pool
-: See :doc:`/reference/pool`.
+: See [Pool section](../concepts/pool/index.md) for details
 
 PoP
 : Point of Presence.
@@ -141,11 +142,8 @@ RS-232 {: #rs-232 }
 RS-485 {: #rs-485 }
 : [RS-485 serial communications standard](https://en.wikipedia.org/wiki/RS-485)
 
-selector
-: See :doc:`/reference/selector`.
-
 service
-: See :doc:`/reference/service`.
+: See [Service section](../concepts/index.md) for details.
 
 SSH
 : [Secure Shell](https://en.wikipedia.org/wiki/SSH_(Secure_Shell)). Encrypted [CLI](#cli) protocol
