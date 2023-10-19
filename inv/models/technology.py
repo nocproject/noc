@@ -25,7 +25,7 @@ id_lock = threading.Lock()
 
 
 @bi_sync
-@on_delete_check(check=[("inv.ResourceGroup", "technology")])
+@on_delete_check(check=[("inv.ResourceGroup", "technology"), ("inv.Protocol", "technology")])
 class Technology(Document):
     """
     Technology
