@@ -284,7 +284,9 @@ class InvApplication(ExtApplication):
         lcs: List[Dict[str, Any]] = []
         cable: Optional[ObjectModel] = None
         # Getting cable
-        cables = ObjectModel.objects.filter(data__length__length__gte=0)
+        cables = ObjectModel.objects.filter(
+            data__match={"interface": "length", "attr": "length", "value__gte": 0},
+        )
         if cable_filter:
             cable = ObjectModel.get_by_name(cable_filter)
         for c in lo.model.connections:
@@ -298,7 +300,7 @@ class InvApplication(ExtApplication):
             elif ro and right_filter:
                 rc = ro.model.get_model_connection(right_filter)
                 if not rc:
-                    raise
+                    raise ValueError("Right filter is not set")
                 valid, disable_reason = lo.model.check_connection(c, rc)
             elif ro:
                 valid = bool(
@@ -338,7 +340,7 @@ class InvApplication(ExtApplication):
                 elif left_filter:
                     lc = lo.model.get_model_connection(left_filter)
                     if not lc:
-                        raise
+                        raise ValueError("Left filter is not set")
                     valid, disable_reason = lo.model.check_connection(c, lc)
                 else:
                     valid = bool(

@@ -27,7 +27,6 @@ logger = logging.getLogger(__name__)
 
 
 class ObjectContainerTopology(TopologyBase):
-
     name = "objectcontainer"
     header = "Object Container Map"
     POP_MODEL = "PoP | Access"
@@ -56,7 +55,9 @@ class ObjectContainerTopology(TopologyBase):
             parent = None
         if not cls.CONTAINER_MODELS:
             cls.CONTAINER_MODELS = list(
-                ObjectModel.objects.filter(data__container__container=True).values_list("id")
+                ObjectModel.objects.filter(
+                    data__match={"interface": "container", "attr": "container", "value": True},
+                ).values_list("id")
             )
         data = Object.objects.filter(container=parent, model__in=cls.CONTAINER_MODELS).order_by(
             "name"
