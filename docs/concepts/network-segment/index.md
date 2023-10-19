@@ -419,7 +419,7 @@ S1 and S2 respectively.
 _VLAN Translation Rules_ are defined at _VLAN border_ segments as a list
 of rules. Each rule contains following fields:
 
-- filter: :doc:`/reference/vc-filter`
+- filter: [VC Filter](../vc-filter/index.md)
 - rule: king of operation
 - parent_vlan: reference to VLAN from parent segment
 

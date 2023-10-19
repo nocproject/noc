@@ -900,7 +900,6 @@ nav:
           - Overview: operational-alerts-reference/index.md
           - ConsulServicesCountDecrease: operational-alerts-reference/consul-services-count-decrease.md
       - Supported Standards: supported-standards/index.md
-      - Glossary: glossary/index.md
   - How-to:
       - Overview: sections-overview/howto.md
       - Deploy NOC: deploy-noc-howto/index.md
@@ -1055,6 +1054,7 @@ nav:
           - NOC 0.1.7: releases/0_1_7.md
           - NOC 0.1.8: releases/0_1_8.md
           - NOC 0.1.9: releases/0_1_9.md
+  - Glossary: glossary/index.md
   - License: license.md
 # Russian translations
 # nav:
