@@ -19,7 +19,9 @@ class CrossingPlugin(InvPlugin):
     js = "NOC.inv.inv.plugins.crossing.CrossingPanel"
 
     def get_data(self, request, o):
-        cables_model = ObjectModel.objects.filter(data__length__length__gte=0)
+        cables_model = ObjectModel.objects.filter(
+            data__match={"interface": "length", "attr": "length", "value__gte": 0},
+        )
         oc_ids = chain.from_iterable(
             ObjectConnection.objects.filter(
                 __raw__={"connection": {"$elemMatch": {"object": {"$in": o.get_nested_ids()}}}}
