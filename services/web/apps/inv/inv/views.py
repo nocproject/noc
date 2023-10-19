@@ -80,7 +80,16 @@ class InvApplication(ExtApplication):
                 cmodels = [
                     d["_id"]
                     for d in ObjectModel._get_collection().find(
-                        {"data.container.container": True}, {"_id": 1}
+                        {
+                            "data": {
+                                "$elemMatch": {
+                                    "interface": "container",
+                                    "attr": "container",
+                                    "value": True,
+                                }
+                            }
+                        },
+                        {"_id": 1},
                     )
                 ]
                 children: List[Tuple[str, "Object"]] = [
