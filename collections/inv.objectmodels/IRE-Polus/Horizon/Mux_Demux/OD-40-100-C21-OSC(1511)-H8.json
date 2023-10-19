@@ -1,0 +1,368 @@
+{
+    "name": "IRE-Polus | Horizon | OD-40-100-C21-OSC(1511)-H8",
+    "$collection": "inv.objectmodels",
+    "uuid": "3eb083ad-031f-4d86-bb3a-f52d57168a8c",
+    "vendor__code": "IRE-POLUS",
+    "description": "Карта OD-40 предназначена для выведения из  одного  спектрально-уплотненного оптического сигнала отдельных DWDM каналов на выделенных длинах волн в соответствии с МСЭ-Т G.692, РД 45.286-2002 (ITU сетка частот).",
+    "cr_context": "LINECARD",
+    "labels": ["noc::inv::lc"],
+    "connections": [
+        {
+            "name": "in",
+            "description": "Chassis connection",
+            "direction": "o",
+            "gender": "m",
+            "type__name": "IRE-Polus | Horizon | H8 Card"
+        },
+        {
+            "name": "LINE_IN",
+            "description": "Вход со стороны оптической линии",
+            "direction": "s",
+            "gender": "f",
+            "type__name": "Optical | LC"
+        },
+        {
+            "name": "P1",
+            "description": "Выход на предусилитель",
+            "direction": "s",
+            "gender": "f",
+            "type__name": "Optical | LC"
+        },
+        {
+            "name": "P2",
+            "description": "Вход с предусилителя",
+            "direction": "s",
+            "gender": "f",
+            "type__name": "Optical | LC"
+        },
+        {
+            "name": "OSC_OUT",
+            "description": "Выход служебного канала OSC",
+            "direction": "s",
+            "gender": "f",
+            "type__name": "Optical | LC"
+        },
+        {
+            "name": "C21",
+            "description": "Выход канала C21",
+            "direction": "s",
+            "gender": "f",
+            "type__name": "Optical | LC"
+        },
+        {
+            "name": "C22",
+            "description": "Выход канала C22",
+            "direction": "s",
+            "gender": "f",
+            "type__name": "Optical | LC"
+        },
+        {
+            "name": "C23",
+            "description": "Выход канала C23",
+            "direction": "s",
+            "gender": "f",
+            "type__name": "Optical | LC"
+        },
+        {
+            "name": "C24",
+            "description": "Выход канала C24",
+            "direction": "s",
+            "gender": "f",
+            "type__name": "Optical | LC"
+        },
+        {
+            "name": "C25",
+            "description": "Выход канала C25",
+            "direction": "s",
+            "gender": "f",
+            "type__name": "Optical | LC"
+        },
+        {
+            "name": "C26",
+            "description": "Выход канала C26",
+            "direction": "s",
+            "gender": "f",
+            "type__name": "Optical | LC"
+        },
+        {
+            "name": "C27",
+            "description": "Выход канала C27",
+            "direction": "s",
+            "gender": "f",
+            "type__name": "Optical | LC"
+        },
+        {
+            "name": "C28",
+            "description": "Выход канала C28",
+            "direction": "s",
+            "gender": "f",
+            "type__name": "Optical | LC"
+        },
+        {
+            "name": "C29",
+            "description": "Выход канала C29",
+            "direction": "s",
+            "gender": "f",
+            "type__name": "Optical | LC"
+        },
+        {
+            "name": "C30",
+            "description": "Выход канала C30",
+            "direction": "s",
+            "gender": "f",
+            "type__name": "Optical | LC"
+        },
+        {
+            "name": "C31",
+            "description": "Выход канала C31",
+            "direction": "s",
+            "gender": "f",
+            "type__name": "Optical | LC"
+        },
+        {
+            "name": "C32",
+            "description": "Выход канала C32",
+            "direction": "s",
+            "gender": "f",
+            "type__name": "Optical | LC"
+        },
+        {
+            "name": "C33",
+            "description": "Выход канала C33",
+            "direction": "s",
+            "gender": "f",
+            "type__name": "Optical | LC"
+        },
+        {
+            "name": "C34",
+            "description": "Выход канала C34",
+            "direction": "s",
+            "gender": "f",
+            "type__name": "Optical | LC"
+        },
+        {
+            "name": "C35",
+            "description": "Выход канала C35",
+            "direction": "s",
+            "gender": "f",
+            "type__name": "Optical | LC"
+        },
+        {
+            "name": "C36",
+            "description": "Выход канала C36",
+            "direction": "s",
+            "gender": "f",
+            "type__name": "Optical | LC"
+        },
+        {
+            "name": "C37",
+            "description": "Выход канала C37",
+            "direction": "s",
+            "gender": "f",
+            "type__name": "Optical | LC"
+        },
+        {
+            "name": "C38",
+            "description": "Выход канала C38",
+            "direction": "s",
+            "gender": "f",
+            "type__name": "Optical | LC"
+        },
+        {
+            "name": "C39",
+            "description": "Выход канала C39",
+            "direction": "s",
+            "gender": "f",
+            "type__name": "Optical | LC"
+        },
+        {
+            "name": "C40",
+            "description": "Выход канала C40",
+            "direction": "s",
+            "gender": "f",
+            "type__name": "Optical | LC"
+        },
+        {
+            "name": "C41",
+            "description": "Выход канала C41",
+            "direction": "s",
+            "gender": "f",
+            "type__name": "Optical | LC"
+        },
+        {
+            "name": "C42",
+            "description": "Выход канала C42",
+            "direction": "s",
+            "gender": "f",
+            "type__name": "Optical | LC"
+        },
+        {
+            "name": "C43",
+            "description": "Выход канала C43",
+            "direction": "s",
+            "gender": "f",
+            "type__name": "Optical | LC"
+        },
+        {
+            "name": "C44",
+            "description": "Выход канала C44",
+            "direction": "s",
+            "gender": "f",
+            "type__name": "Optical | LC"
+        },
+        {
+            "name": "C45",
+            "description": "Выход канала C45",
+            "direction": "s",
+            "gender": "f",
+            "type__name": "Optical | LC"
+        },
+        {
+            "name": "C46",
+            "description": "Выход канала C46",
+            "direction": "s",
+            "gender": "f",
+            "type__name": "Optical | LC"
+        },
+        {
+            "name": "C47",
+            "description": "Выход канала C47",
+            "direction": "s",
+            "gender": "f",
+            "type__name": "Optical | LC"
+        },
+        {
+            "name": "C48",
+            "description": "Выход канала C48",
+            "direction": "s",
+            "gender": "f",
+            "type__name": "Optical | LC"
+        },
+        {
+            "name": "C49",
+            "description": "Выход канала C49",
+            "direction": "s",
+            "gender": "f",
+            "type__name": "Optical | LC"
+        },
+        {
+            "name": "C50",
+            "description": "Выход канала C50",
+            "direction": "s",
+            "gender": "f",
+            "type__name": "Optical | LC"
+        },
+        {
+            "name": "C51",
+            "description": "Выход канала C51",
+            "direction": "s",
+            "gender": "f",
+            "type__name": "Optical | LC"
+        },
+        {
+            "name": "C52",
+            "description": "Выход канала C52",
+            "direction": "s",
+            "gender": "f",
+            "type__name": "Optical | LC"
+        },
+        {
+            "name": "C53",
+            "description": "Выход канала C53",
+            "direction": "s",
+            "gender": "f",
+            "type__name": "Optical | LC"
+        },
+        {
+            "name": "C54",
+            "description": "Выход канала C54",
+            "direction": "s",
+            "gender": "f",
+            "type__name": "Optical | LC"
+        },
+        {
+            "name": "C55",
+            "description": "Выход канала C55",
+            "direction": "s",
+            "gender": "f",
+            "type__name": "Optical | LC"
+        },
+        {
+            "name": "C56",
+            "description": "Выход канала C56",
+            "direction": "s",
+            "gender": "f",
+            "type__name": "Optical | LC"
+        },
+        {
+            "name": "C57",
+            "description": "Выход канала C57",
+            "direction": "s",
+            "gender": "f",
+            "type__name": "Optical | LC"
+        },
+        {
+            "name": "C58",
+            "description": "Выход канала C58",
+            "direction": "s",
+            "gender": "f",
+            "type__name": "Optical | LC"
+        },
+        {
+            "name": "C59",
+            "description": "Выход канала C59",
+            "direction": "s",
+            "gender": "f",
+            "type__name": "Optical | LC"
+        },
+        {
+            "name": "C60",
+            "description": "Выход канала C60",
+            "direction": "s",
+            "gender": "f",
+            "type__name": "Optical | LC"
+        }
+    ],
+    "data": [
+        {
+            "attr": "power",
+            "interface": "power",
+            "value": 210.0
+        },
+        {
+            "attr": "width",
+            "interface": "dimensions",
+            "value": 351
+        },
+        {
+            "attr": "depth",
+            "interface": "dimensions",
+            "value": 292
+        },
+        {
+            "attr": "height",
+            "interface": "dimensions",
+            "value": 30
+        },
+        {
+            "attr": "weight",
+            "interface": "weight",
+            "value": 3.7
+        },
+        {
+            "attr": "part_no",
+            "interface": "asset",
+            "value": ["OD-40-100-C21-OSC(1511)-H8"]
+        },
+        {
+            "attr": "min_rx_tx_frequency",
+            "interface": "dwdm",
+            "value": 192.1
+        },
+        {
+            "attr": "max_rx_tx_frequency",
+            "interface": "dwdm",
+            "value": 196.05
+        }
+    ]
+}
