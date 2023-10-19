@@ -14,6 +14,7 @@ Ext.define("NOC.inv.protocol.Application", {
         "NOC.inv.protocol.Model",
         "NOC.inv.techology.LookupField",
         "NOC.inv.modelinterface.LookupField",
+        "NOC.main.ref.protocoldiscriminatorsource.LookupField",
         "Ext.ux.form.GridField"
     ],
     model: "NOC.inv.platform.Model",
@@ -133,6 +134,44 @@ Ext.define("NOC.inv.protocol.Application", {
                         {
                             text: __("Key"),
                             dataIndex: "attr",
+                            editor: "textfield"
+                        },
+                        {
+                            text: __("Value"),
+                            dataIndex: "value",
+                            editor: "textfield"
+                        }
+
+                    ]
+                },
+                {
+                    name: "discriminator_source",
+                    xtype: "main.ref.protocoldiscriminatorsource.LookupField",
+                    fieldLabel: __("Discriminator Source"),
+                    allowBlank: true
+                },
+                {
+                    name: "discriminator_interface",
+                    xtype: "inv.modelinterface.LookupField",
+                    fieldLabel: __("Discriminator Interface"),
+                    allowBlank: false
+                },
+                {
+                    name: "discriminator_attr",
+                    xtype: "textfield",
+                    fieldLabel: __("Discriminator Attribute"),
+                    allowBlank: false,
+                    uiStyle: "medium"
+                },
+                {
+                    name: "discriminators",
+                    fieldLabel: __("Discriminators"),
+                    xtype: "gridfield",
+                    allowBlank: true,
+                    columns: [
+                        {
+                            text: __("Code"),
+                            dataIndex: "code",
                             editor: "textfield"
                         },
                         {

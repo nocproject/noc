@@ -46,12 +46,28 @@ Ext.define("NOC.inv.protocol.Model", {
             defaultValue: "BD"
         },
         {
+            name: "discriminator_source",
+            type: "string"
+        },
+        {
             name: "is_builtin",
             type: "boolean",
             persist: false
         },
         {
             name: "data",
+            type: "auto"
+        },
+        {
+            name: "discriminator_interface",
+            type: "string"
+        },
+        {
+            name: "discriminator_attr",
+            type: "string"
+        },
+        {
+            name: "discriminators",
             type: "auto"
         }
     ]
