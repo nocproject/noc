@@ -28,7 +28,7 @@ class Profile(BaseProfile):
     name = "IRE-Polus.Horizon"
 
     http_request_middleware = [
-        "noc.sa.profiles.Polus.Horizon.middleware.horizonauth.HorizonAuthMiddeware",
+        "noc.sa.profiles.IRE-Polus.Horizon.middleware.horizonauth.HorizonAuthMiddeware",
     ]
 
     pattern_prompt = rb"(.+):>"

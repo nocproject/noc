@@ -10,6 +10,9 @@ import re
 from dataclasses import dataclass
 from typing import Dict
 
+# Third-party modules
+import orjson
+
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetinventory import IGetInventory
@@ -53,7 +56,7 @@ class Script(BaseScript):
                     "number": p.component[-1],
                     "vendor": "IRE-Polus",
                     "part_no": params[(p.component, "PtNumber")].value,
-                    "serial_no": params[(p.component, "SrNumber")].value,
+                    "serial": params[(p.component, "SrNumber")].value,
                 }
                 if (p.component, "HwNumber") in params:
                     rev = params[(p.component, "HwNumber")].value
@@ -68,7 +71,7 @@ class Script(BaseScript):
                     "number": p.component[-5],
                     "vendor": params[(p.component, "Vendor")].value,
                     "part_no": params[(p.component, "PtNumber")].value,
-                    "serial_no": params[(p.component, "SrNumber")].value,
+                    "serial": params[(p.component, "SrNumber")].value,
                 }
         return list(r.values())
 
@@ -87,7 +90,7 @@ class Script(BaseScript):
                 "number": "1",
                 "vendor": "IRE-Polus",
                 "part_no": c["chassis"],
-                "serial_no": c_params["SrNumber"].value,
+                "serial": c_params["SrNumber"].value,
             }
         ]
         # slots = self.http.get("/api/slots")
@@ -104,8 +107,14 @@ class Script(BaseScript):
                     "d_class": item["class"],
                 }
             )
-        print(devices)
+        self.logger.debug(
+            "Devices: %s",
+            orjson.dumps(devices, option=orjson.OPT_INDENT_2 | orjson.OPT_NON_STR_KEYS).decode(
+                "utf-8"
+            ),
+        )
         # /api/devices/params?crateId=1&slotNumber=3
+        adapters = {}
         for slot, d in devices.items():
             params = self.http.get(
                 f"/api/devices/params?crateId={d.crate_id}&slotNumber={slot}&fields=name,value,description",
@@ -114,13 +123,26 @@ class Script(BaseScript):
             params: Dict[str, Param] = self.profile.parse_params(params["params"])
             # if params["pId"].value == "ADM-10-SFP/SFP+-H8":
             #    print(params)
+            adapter, num = None, d.slot_name
+            if "." in num:
+                adapter, num = num.split(".")
+            if adapter and adapter not in adapters:
+                # H8 -> H4 card adapter
+                r += [
+                    {
+                        "type": "LINECARD",
+                        "number": adapter,
+                        "vendor": "IRE-Polus",
+                        "part_no": "HS-H8",
+                    }
+                ]
             r += [
                 {
                     "type": "LINECARD",
-                    "number": slot,
+                    "number": num,
                     "vendor": "IRE-Polus",
                     "part_no": params["pId"].value,
-                    "serial_no": params["SrNumber"].value,
+                    "serial": params["SrNumber"].value,
                     "revision": params["HwNumber"].value,
                 }
             ]
