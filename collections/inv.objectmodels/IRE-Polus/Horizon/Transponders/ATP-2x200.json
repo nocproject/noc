@@ -68,6 +68,7 @@
             "description": "Выходы для канала служебной связи",
             "direction": "s",
             "gender": "f",
+            "protocols": ["100BASETX", "1000BASETX"],
             "type__name": "Electrical | RJ45"
         },
         {
@@ -75,6 +76,7 @@
             "description": "Выходы для канала служебной связи",
             "direction": "s",
             "gender": "f",
+            "protocols": ["100BASETX", "1000BASETX"],
             "type__name": "Electrical | RJ45"
         }
     ],
