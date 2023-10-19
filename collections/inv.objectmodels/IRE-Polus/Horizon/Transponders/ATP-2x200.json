@@ -28,7 +28,7 @@
             "description": "Линейный порт 1",
             "direction": "i",
             "gender": "f",
-            "protocols": ["OTU4", "OTUC2", "CFP2-DCO"],
+            "protocols": ["TransEth100G"],
             "type__name": "Transceiver | CFP2"
         },
         {
@@ -52,7 +52,7 @@
             "description": "Линейный порт 1",
             "direction": "i",
             "gender": "f",
-            "protocols": ["OTU4", "OTUC2", "CFP2-DCO"],
+            "protocols": ["TransEth100G"],
             "type__name": "Transceiver | CFP2"
         },
         {

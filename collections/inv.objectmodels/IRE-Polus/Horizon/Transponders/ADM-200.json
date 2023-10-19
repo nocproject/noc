@@ -19,7 +19,7 @@
             "description": "Line port 1",
             "direction": "i",
             "gender": "f",
-            "protocols": ["ODU2"],
+            "protocols": ["TransEth100G"],
             "type__name": "Transceiver | CFP2"
         },
         {
@@ -27,7 +27,7 @@
             "description": "Line port 2",
             "direction": "i",
             "gender": "f",
-            "protocols": ["ODU2"],
+            "protocols": ["TransEth100G"],
             "type__name": "Transceiver | CFP2"
         },
         {
