@@ -35,9 +35,11 @@ from noc.core.text import quote_safe_path
 from noc.core.model.decorator import on_delete_check
 from noc.core.bi.decorator import bi_sync
 from noc.inv.models.technology import Technology
-from noc.core.protocoldiscriminators.base import BaseDiscriminatorSource
+from noc.core.protodcsources.base import BaseDiscriminatorSource
 
 id_lock = Lock()
+
+PROTOCOL_DIRECTION_CODES = {">", "<", "*"}
 
 
 @dataclass(frozen=True)
@@ -55,23 +57,37 @@ class ProtocolVariant(object):
         if not self.discriminator and self.direction == "*":
             return self.protocol.code
         elif not self.discriminator:
-            return f"{self.protocol.code}::{self.direction}"
-        else:
-            return f"{self.protocol.code}::{self.discriminator}::{self.direction}"
+            return f"{self.direction}::{self.protocol.code}"
+        return f"{self.direction}::{self.protocol.code}::{self.discriminator}"
 
     @classmethod
     def get_by_code(cls, code: str) -> "ProtocolVariant":
-        p_code, *x = code.split("::")
+        """
+        Generate Protocol Variant by code
+        LLDP -> LLDP
+        >LLDP > LLDP, >
+        >::LLDP > LLDP, >
+        :param code:
+        :return:
+        """
+        d_code, *x = code.split("::")
+        vd_code = None  # Variant Discriminator Code
+        if not x:
+            p_code = d_code
+        elif len(x) == 1:
+            p_code = x[0]
+        elif len(x) == 2:
+            p_code, vd_code = x
+        else:
+            raise ValueError("Unknown variant format: %s" % code)
+
+        if p_code[0] in PROTOCOL_DIRECTION_CODES:
+            # Old format
+            d_code, p_code = p_code[0], p_code[1:]
         protocol = Protocol.get_by_code(p_code)
         if not protocol:
-            raise ValueError(f"Unknown protocol code: {p_code}")
-        if not x:
-            return ProtocolVariant(protocol)
-        elif len(x) == 1:
-            return ProtocolVariant(protocol, x[0])
-        elif len(x) > 2:
-            raise ValueError(f"Unknown variant format: {code}")
-        return ProtocolVariant(protocol, x[1], x[0])
+            raise ValueError("Unknown protocol code: %s" % p_code)
+        return ProtocolVariant(protocol, d_code, vd_code)
 
 
 class ProtocolAttr(EmbeddedDocument):
@@ -130,7 +146,7 @@ class Protocol(Document):
     data: List["ProtocolAttr"] = EmbeddedDocumentListField(ProtocolAttr)
     connection_schema = StringField(
         choices=[
-            ("UNI", "Unidirectional"),
+            ("U", "Unidirectional"),
             ("BO", "Bidirectional over One Connection"),
             ("BD", "Bidirectional over Differ Connection"),
         ],
@@ -216,12 +232,16 @@ class Protocol(Document):
         """
         return ProtocolVariant.get_by_code(code)
 
+    @property
+    def allow_different_connection(self) -> bool:
+        return self.connection_schema != "BO"
+
     def iter_protocol_variants(self) -> Iterable[ProtocolVariant]:
         """
         @todo combinations
         """
         yield ProtocolVariant(self)
-        if self.connection_schema != "BO":
+        if self.allow_different_connection != "BO":
             yield ProtocolVariant(self, ">")
             yield ProtocolVariant(self, "<")
         if not self.discriminator_source:

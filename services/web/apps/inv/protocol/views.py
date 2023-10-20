@@ -15,12 +15,12 @@ from noc.inv.models.modelinterface import ModelInterface
 from noc.core.translation import ugettext as _
 
 
-class PlatformApplication(ExtDocApplication):
+class ProtocolApplication(ExtDocApplication):
     """
-    Platform application
+    Protocol application
     """
 
-    title = "Platform"
+    title = _("Protocol")
     menu = [_("Setup"), _("Protocols")]
     model = Protocol
     query_fields = ["code__icontains", "name__icontains", "description__icontains"]

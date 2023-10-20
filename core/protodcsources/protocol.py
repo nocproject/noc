@@ -9,8 +9,7 @@
 from typing import List, Iterable
 
 # NOC modules
-from .base import BaseDiscriminatorSource
-from noc.inv.models.protocol import ProtocolAttr
+from .base import BaseDiscriminatorSource, DiscriminatorDataItem
 
 
 class ProtocolDiscriminatorSource(BaseDiscriminatorSource):
@@ -36,7 +35,7 @@ class ProtocolDiscriminatorSource(BaseDiscriminatorSource):
                 return True
         return False
 
-    def get_data(self, code: str) -> List[ProtocolAttr]:
+    def get_data(self, code: str) -> List[DiscriminatorDataItem]:
         """
         Get Discriminator Data by code
         """
@@ -44,7 +43,7 @@ class ProtocolDiscriminatorSource(BaseDiscriminatorSource):
             if d.code == code:
                 return d.data
 
-    def get_code(self, data: List[ProtocolAttr]) -> str:
+    def get_code(self, data: List[DiscriminatorDataItem]) -> str:
         """
         Get Discriminator Code by data
         """

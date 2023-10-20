@@ -6,24 +6,24 @@
 # ----------------------------------------------------------------------
 
 # Python modules
+from abc import ABC, abstractmethod
 from dataclasses import dataclass
 from typing import List, Iterable
-from noc.inv.models.protocol import Protocol, ProtocolAttr
 
 
 @dataclass(frozen=True)
-class ProtocolDataItem(object):
+class DiscriminatorDataItem(object):
     interface: str
     attr: str
     value: str
 
 
-class BaseDiscriminatorSource(object):
+class BaseDiscriminatorSource(ABC):
     """DataSource and fields description"""
 
     name: str
 
-    def __init__(self, protocol: "Protocol", data: List[ProtocolAttr] = None):
+    def __init__(self, protocol, data: List[DiscriminatorDataItem] = None):
         self.protocol = protocol
         self.data = data
 
@@ -39,13 +39,15 @@ class BaseDiscriminatorSource(object):
         """
         ...
 
-    def get_data(self, code: str) -> List[ProtocolAttr]:
+    @abstractmethod
+    def get_data(self, code: str) -> List[DiscriminatorDataItem]:
         """
         Get Discriminator Data by code
         """
         ...
 
-    def get_code(self, data: List[ProtocolAttr]) -> str:
+    @abstractmethod
+    def get_code(self, data: List[DiscriminatorDataItem]) -> str:
         """
         Get Discriminator Code by data
         """
