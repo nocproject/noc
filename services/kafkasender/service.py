@@ -13,7 +13,12 @@ from typing import Optional
 
 # Third-party modules
 from aiokafka import AIOKafkaProducer
-from aiokafka.errors import KafkaError, KafkaConnectionError
+from aiokafka.errors import (
+    KafkaError,
+    KafkaConnectionError,
+    KafkaTimeoutError,
+    RequestTimedOutError,
+)
 from kafka.errors import NodeNotReadyError
 
 # NOC modules
@@ -86,15 +91,18 @@ class KafkaSenderService(FastAPIService):
             await producer.send(topic, data, key=key, partition=partition)
             metrics["messages_sent_ok", ("topic", topic)] += 1
             metrics["bytes_sent", ("topic", topic)] += len(data)
-        except KafkaError as e:
-            metrics["messages_sent_error", ("topic", topic)] += 1
-            self.logger.error("Failed to send to topic %s: %s", topic, e)
-        except AttributeError as e:
+        except (RequestTimedOutError, AttributeError) as e:
             # Internal error
             metrics["messages_sent_error", ("topic", topic)] += 1
             self.logger.error("Fatal error when send message: %s", e)
             await self.producer.stop()
             self.producer = None
+        except KafkaTimeoutError:
+            metrics["messages_kafka_timeout_error", ("topic", topic)] += 1
+            self.logger.error("Produce timeout... maybe we want to resend data again?")
+        except KafkaError as e:
+            metrics["messages_sent_error", ("topic", topic)] += 1
+            self.logger.error("Failed to send to topic %s: %s", topic, e)
 
     async def get_producer(self) -> AIOKafkaProducer:
         """
