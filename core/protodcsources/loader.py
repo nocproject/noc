@@ -13,7 +13,7 @@ from .base import BaseDiscriminatorSource
 class BaseProtocolDiscriminatorLoader(BaseLoader):
     name = "discriminatorsource"
     base_cls = BaseDiscriminatorSource
-    base_path = ("core", "protocoldiscriminators")
+    base_path = ("core", "protodcsources")
     ignored_names = {"base", "loader"}
 
 

@@ -52,6 +52,12 @@ class ProtocolVariant(object):
     def __str__(self) -> str:
         return self.code
 
+    def __eq__(self, other) -> bool:
+        r = self.protocol.id == other.protocol.id and self.direction == other.direction
+        if not self.discriminator:
+            return r
+        return r and self.discriminator == other.discriminator
+
     @property
     def code(self) -> str:
         if not self.discriminator and self.direction == "*":
@@ -253,7 +259,7 @@ class Protocol(Document):
     def get_discriminator_source(
         self, data: Optional[List[ProtocolAttr]] = None
     ) -> Optional[BaseDiscriminatorSource]:
-        from noc.core.protocoldiscriminators.loader import loader
+        from noc.core.protodcsources.loader import loader
 
         ds = loader[self.discriminator_source]
         return ds(self, data)

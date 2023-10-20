@@ -27,7 +27,7 @@ from noc.core.topology.types import ShapeOverlayPosition, ShapeOverlayForm
 from noc.core.topology.loader import loader as topo_loader
 from noc.core.mx import MESSAGE_TYPES, MESSAGE_HEADERS
 from noc.core.datasources.loader import loader as ds_loader
-from noc.core.protocoldiscriminators.loader import loader as pds_loader
+from noc.core.protodcsources.loader import loader as pds_loader
 from noc.main.reportsources.loader import loader as rds_loader
 from noc.models import iter_model_id
 from noc import settings
