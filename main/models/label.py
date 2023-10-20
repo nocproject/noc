@@ -429,7 +429,9 @@ class Label(Document):
     @classmethod
     def _reset_caches(cls, name):
         try:
-            del cls._name_cache[name,]  # Tuple
+            del cls._name_cache[
+                name,
+            ]  # Tuple
         except KeyError:
             pass
 
