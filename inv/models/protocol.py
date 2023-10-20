@@ -36,7 +36,6 @@ from noc.core.model.decorator import on_delete_check
 from noc.core.bi.decorator import bi_sync
 from noc.inv.models.technology import Technology
 from noc.core.protocoldiscriminators.base import BaseDiscriminatorSource
-from noc.core.protocoldiscriminators.loader import loader
 
 id_lock = Lock()
 
@@ -234,5 +233,7 @@ class Protocol(Document):
     def get_discriminator_source(
         self, data: Optional[List[ProtocolAttr]] = None
     ) -> Optional[BaseDiscriminatorSource]:
+        from noc.core.protocoldiscriminators.loader import loader
+
         ds = loader[self.discriminator_source]
         return ds(self, data)

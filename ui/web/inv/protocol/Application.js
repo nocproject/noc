@@ -12,23 +12,23 @@ Ext.define("NOC.inv.protocol.Application", {
         "NOC.core.JSONPreview",
         "NOC.core.label.LabelField",
         "NOC.inv.protocol.Model",
-        "NOC.inv.techology.LookupField",
+        "NOC.inv.technology.LookupField",
         "NOC.inv.modelinterface.LookupField",
         "NOC.main.ref.protocoldiscriminatorsource.LookupField",
         "Ext.ux.form.GridField"
     ],
-    model: "NOC.inv.platform.Model",
+    model: "NOC.inv.protocol.Model",
     search: true,
 
     initComponent: function () {
         var me = this;
 
-        me.cardButton = Ext.create("Ext.button.Button", {
-            text: __("Card"),
-            glyph: NOC.glyph.eye,
-            scope: me,
-            handler: me.onCard
-        });
+        // me.cardButton = Ext.create("Ext.button.Button", {
+        //     text: __("Card"),
+        //     glyph: NOC.glyph.eye,
+        //     scope: me,
+        //     handler: me.onCard
+        // });
 
         me.jsonPanel = Ext.create("NOC.core.JSONPreview", {
             app: me,
@@ -86,7 +86,7 @@ Ext.define("NOC.inv.protocol.Application", {
                 },
                 {
                     name: "code",
-                    xtype: "code",
+                    xtype: "textfield",
                     fieldLabel: __("Code"),
                     allowBlank: false
                 },
@@ -154,13 +154,13 @@ Ext.define("NOC.inv.protocol.Application", {
                     name: "discriminator_interface",
                     xtype: "inv.modelinterface.LookupField",
                     fieldLabel: __("Discriminator Interface"),
-                    allowBlank: false
+                    allowBlank: true
                 },
                 {
                     name: "discriminator_attr",
                     xtype: "textfield",
                     fieldLabel: __("Discriminator Attribute"),
-                    allowBlank: false,
+                    allowBlank: true,
                     uiStyle: "medium"
                 },
                 {
@@ -185,7 +185,6 @@ Ext.define("NOC.inv.protocol.Application", {
             ],
 
             formToolbar: [
-                 me.cardButton,
                 {
                     text: __("JSON"),
                     glyph: NOC.glyph.file,
