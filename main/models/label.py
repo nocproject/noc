@@ -23,6 +23,7 @@ from mongoengine.queryset.visitor import Q as m_Q
 from mongoengine.fields import (
     StringField,
     IntField,
+    UUIDField,
     BooleanField,
     ReferenceField,
     ListField,
@@ -169,6 +170,7 @@ class Label(Document):
     }
 
     name = StringField(unique=True)
+    uuid = UUIDField(binary=True)
     description = StringField()
     bg_color1 = IntField(default=0x000000)
     fg_color1 = IntField(default=0xFFFFFF)
