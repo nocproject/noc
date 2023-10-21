@@ -69,7 +69,6 @@ class ProtocolApplication(ExtDocApplication):
     @view(url="^lookup_tree/", method=["GET"], access=True)
     def api_protocols_lookup_tree(self, request):
         r = {}
-        level = 1
         protocol_filter = {}
         query = request.GET.get("__query")
         if query:
