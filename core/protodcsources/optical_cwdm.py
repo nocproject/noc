@@ -6,10 +6,32 @@
 # ----------------------------------------------------------------------
 
 # Python modules
+import enum
 from typing import List, Iterable
 
 # NOC modules
 from .base import BaseDiscriminatorSource, DiscriminatorDataItem
+
+
+class CWDMChannel(enum.Enum):
+    C27 = 1270  # Grey, 235.87
+    C29 = 1290  # Grey, 232.22
+    C31 = 1310  # Grey, 228.67
+    C33 = 1330  # Violet
+    C35 = 1350  # Blue
+    C37 = 1370  # Green
+    C39 = 1390  # Yellow
+    C41 = 1410  # Orange
+    C43 = 1430  # Red
+    C45 = 1450  # Brown
+    C47 = 1470  # Grey
+    C49 = 1490  # Violet
+    C51 = 1510  # Blue
+    C53 = 1530  # Green
+    C55 = 1550  # Yellow
+    C57 = 1570  # Orange
+    C59 = 1590  # Red
+    C61 = 1610  # Brown
 
 
 class ProtocolDiscriminatorSource(BaseDiscriminatorSource):
@@ -17,41 +39,37 @@ class ProtocolDiscriminatorSource(BaseDiscriminatorSource):
     Check ManagedObject profile by rules
     """
 
-    name = "protocol"
-
-    codes = {}
+    name = "optical_cwdm"
 
     def __iter__(self) -> Iterable[str]:
         """
         Iterate over Discriminator code
         """
-        for d in self.protocol.discriminators:
-            yield d.code
+        for c in CWDMChannel:
+            yield str(c.value)
 
     def __contains__(self, item) -> bool:
         """
         Check discriminator code exists
         """
-        self.load_data()
-        return item in self.codes
+        try:
+            CWDMChannel(item)
+        except ValueError:
+            return False
+        return True
 
     def get_data(self, code: str) -> List[DiscriminatorDataItem]:
         """
         Get Discriminator Data by code
         """
-        self.load_data()
-        return self.codes.get(code) or []
+        return [DiscriminatorDataItem("optical", "tx_wavelength", int(code) + 1)]
 
     def get_code(self, data: List[DiscriminatorDataItem]) -> str:
         """
         Get Discriminator Code by data
         """
-        for d in self.protocol.discriminators:
-            if d.data == data[0]:
-                return d.code
-
-    def load_data(self):
-        if self.codes:
-            return
-        for d in self.protocol.discriminators:
-            self.codes[d.code] = d.data
+        for d in data:
+            if d.interface == "optical" and d.attr == "tx_wavelength":
+                c = CWDMChannel(d.value)
+                return str(c.value)
+        raise ValueError("Not found code for data")

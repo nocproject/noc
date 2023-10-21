@@ -22,11 +22,11 @@ from mongoengine.fields import (
     EmbeddedDocumentListField,
     UUIDField,
     DynamicField,
-    BooleanField,
     ListField,
     ReferenceField,
 )
-from mongoengine.errors import ValidationError
+
+# from mongoengine.errors import ValidationError
 
 # NOC modules
 from noc.core.mongo.fields import PlainReferenceField
@@ -90,6 +90,10 @@ class ProtocolVariant(object):
         if p_code[0] in PROTOCOL_DIRECTION_CODES:
             # Old format
             d_code, p_code = p_code[0], p_code[1:]
+            if "-" in p_code:
+                p_code, vd_code = p_code.rsplit("-", 1)
+        else:
+            d_code = "*"
         protocol = Protocol.get_by_code(p_code)
         if not protocol:
             raise ValueError("Unknown protocol code: %s" % p_code)
@@ -160,7 +164,7 @@ class Protocol(Document):
     )
     discriminator_source = StringField(default=None)
     discriminators: List[DiscriminatorAttr] = EmbeddedDocumentListField(DiscriminatorAttr)
-    # transport_protocols = ListField(ReferenceField("self", reverse_delete_rule=NULLIFY))
+    transport_protocols = ListField(ReferenceField("self", reverse_delete_rule=NULLIFY))
     # For
     # use_helper
     # helper = StringField()
@@ -193,7 +197,9 @@ class Protocol(Document):
     @classmethod
     def _reset_caches(cls, id):
         try:
-            del cls._id_cache[str(id),]  # Tuple
+            del cls._id_cache[
+                str(id),
+            ]  # Tuple
         except KeyError:
             pass
 
@@ -255,6 +261,7 @@ class Protocol(Document):
         ds = self.get_discriminator_source()
         for code in ds:
             yield ProtocolVariant(self, "<", code)
+            yield ProtocolVariant(self, ">", code)
 
     def get_discriminator_source(
         self, data: Optional[List[ProtocolAttr]] = None

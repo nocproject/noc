@@ -46,6 +46,12 @@ id_lock = Lock()
 rx_composite_pins_validate = re.compile(r"\d+\-\d+")
 
 
+class ProtocolVariantItem(EmbeddedDocument):
+    protocol = StringField()
+    direction = StringField(default="*")
+    discriminator = StringField(required=False)
+
+
 class ModelAttr(EmbeddedDocument):
     interface = StringField()
     attr = StringField()

@@ -110,7 +110,7 @@ Ext.define("NOC.inv.protocol.Application", {
                     labelWidth: 200,
                     defaultValue: "BD",
                     store: [
-                        ["UNI", __("Unidirectional")],
+                        ["U", __("Unidirectional")],
                         ["BO", __("Bidirectional over One Connection")],
                         ["BD", __("Bidirectional over Differ Connection")]
                     ],

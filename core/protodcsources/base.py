@@ -8,14 +8,14 @@
 # Python modules
 from abc import ABC, abstractmethod
 from dataclasses import dataclass
-from typing import List, Iterable
+from typing import List, Iterable, Any
 
 
 @dataclass(frozen=True)
 class DiscriminatorDataItem(object):
     interface: str
     attr: str
-    value: str
+    value: Any
 
 
 class BaseDiscriminatorSource(ABC):

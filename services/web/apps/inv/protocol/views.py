@@ -40,7 +40,8 @@ class ProtocolApplication(ExtDocApplication):
         (r["discriminator_interface"], r["discriminator_attr"]), r[
             "discriminators"
         ] = discriminators.popitem()
-        mi = ModelInterface.get_by_id(r["discriminator_interface"])
+        mi = ModelInterface.get_by_name(r["discriminator_interface"])
+        r["discriminator_interface"] = str(mi.id)
         r["discriminator_interface__label"] = mi.name
         return r
 
@@ -58,7 +59,7 @@ class ProtocolApplication(ExtDocApplication):
             value = attr._clean(d["value"])
             data["discriminators"] += [
                 {
-                    "data": [{"interface": interface, "attr": attr.name, "value": value}],
+                    "data": [{"interface": mi.name, "attr": attr.name, "value": value}],
                     "code": d["code"],
                 }
             ]
