@@ -11,7 +11,6 @@ from uuid import UUID
 # Third-party modules
 import bson
 from bson.int64 import Int64
-from bson.binary import Binary
 from pymongo import UpdateOne
 
 # NOC modules
