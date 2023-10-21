@@ -1,0 +1,9 @@
+{
+    "name": "Modulator-Demodulator",
+    "$collection": "inv.technologies",
+    "uuid": "f405cc3d-cbe8-4e43-8c58-2bd7266fb8d5",
+    "description": "A modulator-demodulator or modem is a computer hardware device that converts data from a digital format into a format suitable for an analog transmission medium such as telephone or radio",
+    "single_service": false,
+    "single_client": false,
+    "allow_children": false
+}

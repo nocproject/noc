@@ -1,0 +1,10 @@
+{
+    "name": "VDSL",
+    "code": "VDSL",
+    "$collection": "inv.protocols",
+    "uuid": "2f9cb049-2771-42ea-93b5-79b3810a73d5",
+    "description": "Very high-speed digital subscriber line (VDSL)[1] and very high-speed digital subscriber line 2 (VDSL2)[2] are digital subscriber line (DSL) technologies providing data transmission faster than the earlier standards of asymmetric digital subscriber line (ADSL) G.992.1, G.992.3 (ADSL2) and G.992.5 (ADSL2+)",
+    "data": [],
+    "connection_schema": "BD",
+    "technology__name": "XDSL"
+}

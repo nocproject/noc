@@ -1,0 +1,10 @@
+{
+    "name": "PVDM2",
+    "code": "PVDM2",
+    "$collection": "inv.protocols",
+    "uuid": "fbd72cdd-3f9f-412d-9d35-e92b5c4303b2",
+    "description": null,
+    "data": [],
+    "connection_schema": "BD",
+    "technology__name": "Cisco | Interface Card"
+}

@@ -1,0 +1,10 @@
+{
+    "name": "-48 VDC",
+    "code": "-48VDC",
+    "$collection": "inv.protocols",
+    "uuid": "50c68d89-1f54-47e0-ad60-b3569c3a0f89",
+    "description": "-48 VDC",
+    "data": [],
+    "connection_schema": "U",
+    "technology__name": "Energetics"
+}

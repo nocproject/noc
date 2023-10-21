@@ -1,0 +1,10 @@
+{
+    "name": "10GBASE-ZR",
+    "code": "10GBASEZR",
+    "$collection": "inv.protocols",
+    "uuid": "d95ad065-7d4f-401e-ac4a-e9f73c85f4d9",
+    "description": "Several manufacturers have introduced 80 km (50 mi) range under the name 10GBASE-ZR. This 80 km PHY is not specified within the IEEE 802.3ae standard and manufacturers have created their own specifications based upon the 80 km PHY described in the OC-192/STM-64 SDH/SONET specifications",
+    "data": [],
+    "connection_schema": "BD",
+    "technology__name": "Ethernet"
+}

@@ -1,0 +1,10 @@
+{
+    "name": "GPON",
+    "code": "GPON",
+    "$collection": "inv.protocols",
+    "uuid": "7fb161b9-f697-45eb-ba98-d6af4b841fcd",
+    "description": null,
+    "data": [],
+    "connection_schema": "BD",
+    "technology__name": "XPON"
+}

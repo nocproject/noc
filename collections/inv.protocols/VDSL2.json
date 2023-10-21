@@ -1,0 +1,10 @@
+{
+    "name": "VDSL2",
+    "code": "VDSL2",
+    "$collection": "inv.protocols",
+    "uuid": "7fdb06b9-8bb6-4887-962b-cbc5efd52469",
+    "description": "VDSL2 is an enhancement to VDSL designed to support the wide deployment of triple play services such as voice, video, data and high-definition television (HDTV) VDSL2 is intended to enable operators and carriers to gradually, flexibly, and cost-efficiently upgrade existing xDSL infrastructure",
+    "data": [],
+    "connection_schema": "BD",
+    "technology__name": "XDSL"
+}

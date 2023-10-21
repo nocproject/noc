@@ -1,0 +1,10 @@
+{
+    "name": "EPON",
+    "code": "EPON",
+    "$collection": "inv.protocols",
+    "uuid": "c7c44caa-cbf6-439b-ba8d-886da4a5211a",
+    "description": null,
+    "data": [],
+    "connection_schema": "BD",
+    "technology__name": "XPON"
+}

@@ -1,0 +1,10 @@
+{
+    "name": "TransEth25G",
+    "code": "TransEth25G",
+    "$collection": "inv.protocols",
+    "uuid": "30d14c21-abce-43ca-819d-d6716b5e73bd",
+    "description": "Interface for device transievers module",
+    "data": [],
+    "connection_schema": "BO",
+    "technology__name": "Trasceiver"
+}

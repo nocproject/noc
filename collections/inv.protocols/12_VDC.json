@@ -1,0 +1,10 @@
+{
+    "name": "12 VDC",
+    "code": "12VDC",
+    "$collection": "inv.protocols",
+    "uuid": "df96db00-c480-47c4-9bc3-5f9b1e07c3ee",
+    "description": null,
+    "data": [],
+    "connection_schema": "U",
+    "technology__name": "Energetics"
+}

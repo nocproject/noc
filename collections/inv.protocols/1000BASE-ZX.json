@@ -1,0 +1,10 @@
+{
+    "name": "1000BASE-ZX",
+    "code": "1000BASEZX",
+    "$collection": "inv.protocols",
+    "uuid": "0bba5b21-24fb-45af-959c-7adca5daa2c2",
+    "description": "1000BASE-ZX is a non-standard but multi-vendor[32] term to refer to Gigabit Ethernet transmission using 1,550 nm wavelength to achieve distances of at least 70 kilometres (43 miles) over single-mode fiber.",
+    "data": [],
+    "connection_schema": "BD",
+    "technology__name": "Ethernet"
+}

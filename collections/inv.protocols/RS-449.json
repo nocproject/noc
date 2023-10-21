@@ -1,0 +1,10 @@
+{
+    "name": "RS-449",
+    "code": "RS449",
+    "$collection": "inv.protocols",
+    "uuid": "2fc1fe43-0b4d-468c-988d-9d3f359c6691",
+    "description": "The RS-449 specification, also known as EIA-449 or TIA-449, defines the functional and mechanical characteristics of the interface between data terminal equipment, typically a computer, and data communications equipment, typically a modem or terminal server. The full title of the standard is EIA-449 General Purpose 37-Position and 9-Position Interface for Data Terminal Equipment and Data Circuit-Terminating Equipment Employing Serial Binary Data Interchange.",
+    "data": [],
+    "connection_schema": "BD",
+    "technology__name": "Serial"
+}

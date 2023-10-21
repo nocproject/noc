@@ -1,0 +1,10 @@
+{
+    "name": "E1",
+    "code": "E1",
+    "$collection": "inv.protocols",
+    "uuid": "5caf6c61-5014-4e74-9431-d11f1a77ff88",
+    "description": "The E-carrier is a member of the series of carrier systems developed for digital transmission of many simultaneous telephone calls by time-division multiplexing.",
+    "data": [],
+    "connection_schema": "BO",
+    "technology__name": "Serial"
+}

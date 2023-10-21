@@ -1,0 +1,10 @@
+{
+    "name": "T1",
+    "code": "T1",
+    "$collection": "inv.protocols",
+    "uuid": "6b56b195-f06e-4a43-9bf3-8a4bfb0f7797",
+    "description": "The first version, the Transmission System 1 (T1), was introduced in 1962 in the Bell System, and could transmit up to 24 telephone calls simultaneously over a single transmission line of copper wire. Subsequent specifications carried multiples of the basic T1 (1.544 Mbit/s) data rates, such as T2 (6.312 Mbit/s) with 96 channels, T3 (44.736 Mbit/s) with 672 channels, and others.",
+    "data": [],
+    "connection_schema": "BO",
+    "technology__name": "Serial"
+}
