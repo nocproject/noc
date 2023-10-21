@@ -20,7 +20,6 @@
             "description": "TL1 monitoring port",
             "direction": "s",
             "gender": "f",
-            "protocols": [">TL1"],
             "type__name": "Electrical | RJ45"
         },
         {
@@ -28,7 +27,16 @@
             "description": "100M Base-T maintenance network port",
             "direction": "s",
             "gender": "f",
-            "protocols": ["10BASET", "100BASETX"],
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "10BASET"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "100BASETX"
+                }
+            ],
             "type__name": "Electrical | RJ45"
         },
         {
@@ -36,7 +44,10 @@
             "description": "RS-232 serial port,RS-485 monitoring serial port",
             "direction": "s",
             "gender": "f",
-            "protocols": [">RS232"],
+            "protocols": [{
+                "direction": ">",
+                "protocol__code": "RS232"
+            }],
             "type__name": "Electrical | RJ45"
         },
         {

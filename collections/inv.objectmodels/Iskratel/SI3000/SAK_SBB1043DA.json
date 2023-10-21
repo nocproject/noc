@@ -12,7 +12,10 @@
             "description": "Console port",
             "direction": "s",
             "gender": "f",
-            "protocols": [">RS232"],
+            "protocols": [{
+                "direction": ">",
+                "protocol__code": "RS232"
+            }],
             "type__name": "Electrical | RJ45"
         },
         {
@@ -27,7 +30,10 @@
             "description": "32-channel POTS",
             "direction": "s",
             "gender": "f",
-            "protocols": ["POTS"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "PSTN"
+            }],
             "type__name": "Electrical | CENC-64"
         },
         {
@@ -35,7 +41,10 @@
             "description": "32-channel POTS ",
             "direction": "s",
             "gender": "f",
-            "protocols": ["POTS"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "PSTN"
+            }],
             "type__name": "Electrical | CENC-64"
         }
     ],

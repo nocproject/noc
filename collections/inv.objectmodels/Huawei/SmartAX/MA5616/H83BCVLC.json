@@ -19,7 +19,16 @@
             "description": "32 channels of  POTS+VDSL2",
             "direction": "s",
             "gender": "f",
-            "protocols": ["VDSL2", "PSTN"],
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "VDSL2"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "PSTN"
+                }
+            ],
             "type__name": "Huawei | Electrical | Champ 64-pin"
         }
     ],

@@ -19,7 +19,10 @@
             "description": "24-channel ADSL",
             "direction": "s",
             "gender": "f",
-            "protocols": ["ADSL", "АDSL2", "АDSL2+"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "ADSL"
+            }],
             "type__name": "Electrical | CENC-64"
         },
         {
@@ -27,7 +30,10 @@
             "description": "24-channel ADSL",
             "direction": "s",
             "gender": "f",
-            "protocols": ["ADSL", "АDSL2", "АDSL2+"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "ADSL"
+            }],
             "type__name": "Electrical | CENC-64"
         }
     ],

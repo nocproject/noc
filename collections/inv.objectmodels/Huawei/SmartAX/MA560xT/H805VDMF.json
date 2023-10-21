@@ -20,7 +20,10 @@
             "description": "VDSL 0-23",
             "direction": "s",
             "gender": "f",
-            "protocols": ["VDSL2"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "VDSL2"
+            }],
             "type__name": "Huawei | Electrical | Champ 64-pin"
         },
         {
@@ -28,7 +31,10 @@
             "description": "VDSL 24-47",
             "direction": "s",
             "gender": "f",
-            "protocols": ["VDSL2"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "VDSL2"
+            }],
             "type__name": "Huawei | Electrical | Champ 64-pin"
         }
     ],

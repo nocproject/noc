@@ -1,5 +1,5 @@
 {
-    "name": "Huawei | CX&NE | P40-2x10GBase LAN/WAN-XFP -A",
+    "name": "Huawei | CX&NE | P40-2x10GBase LAN/WAN-XFP-A",
     "$collection": "inv.objectmodels",
     "uuid": "fc5e2dff-8612-461f-8958-8a4d0d96ae86",
     "vendor__code": "HUAWEI",
@@ -21,7 +21,10 @@
             "direction": "i",
             "gender": "f",
             "internal_name": "Port_0",
-            "protocols": ["TransEth10G"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "TransEth10G"
+            }],
             "type__name": "Transceiver | XFP"
         },
         {
@@ -30,7 +33,10 @@
             "direction": "i",
             "gender": "f",
             "internal_name": "Port_1",
-            "protocols": ["TransEth10G"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "TransEth10G"
+            }],
             "type__name": "Transceiver | XFP"
         }
     ],

@@ -92,7 +92,7 @@ class Migration(BaseMigration):
         if not p_code:
             return
         elif p_code not in self.protocol_code_map:
-            print("Unknown protocol: %s/%s" % (code, p_code))
+            # print("Unknown protocol: %s/%s" % (code, p_code))
             return
         protocol = self.protocol_code_map[p_code]
         return {"protocol": protocol, "direction": d_code, "discriminator": vd_code}
@@ -122,9 +122,9 @@ class Migration(BaseMigration):
                 new_connections += [c]
             bulk += [UpdateOne({"_id": doc["_id"]}, {"$set": {"connections": new_connections}})]
             if len(bulk) >= self.MAX_BULK_SIZE:
-                # coll.bulk_write(bulk)
+                coll.bulk_write(bulk)
                 # print(bulk[:3])
                 bulk = []
         # Write rest of data
-        # if bulk:
-        #    coll.bulk_write(bulk)
+        if bulk:
+            coll.bulk_write(bulk)

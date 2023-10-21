@@ -1,5 +1,5 @@
 {
-    "name": "Huawei | SmartAX | Universal interface board | H801CITD",
+    "name": "Huawei | SmartAX | MA560xT | Universal interface board | H801CITD",
     "$collection": "inv.objectmodels",
     "uuid": "31d0e5c3-8a54-43c7-8a71-018d8a56056b",
     "vendor__code": "HUAWEI",
@@ -18,7 +18,10 @@
             "description": "BITS/TOD In port",
             "direction": "s",
             "gender": "f",
-            "protocols": ["G.703"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "G703"
+            }],
             "type__name": "Electrical | RJ45"
         },
         {
@@ -26,7 +29,10 @@
             "description": "BITS/TOD In port",
             "direction": "s",
             "gender": "f",
-            "protocols": ["G.703"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "G703"
+            }],
             "type__name": "Electrical | RJ45"
         },
         {
@@ -34,7 +40,10 @@
             "description": "BITS/TOD Out port",
             "direction": "s",
             "gender": "f",
-            "protocols": ["G.703"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "G703"
+            }],
             "type__name": "Electrical | RJ45"
         },
         {
@@ -42,7 +51,20 @@
             "description": "ETH port",
             "direction": "s",
             "gender": "f",
-            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "10BASET"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "100BASETX"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "1000BASETX"
+                }
+            ],
             "type__name": "Electrical | RJ45"
         },
         {
@@ -50,7 +72,10 @@
             "description": "COM port",
             "direction": "s",
             "gender": "f",
-            "protocols": [">RS232"],
+            "protocols": [{
+                "direction": ">",
+                "protocol__code": "RS232"
+            }],
             "type__name": "Electrical | RJ45"
         },
         {
@@ -58,7 +83,10 @@
             "description": "DIgital alarm  interface (upper)",
             "direction": "s",
             "gender": "f",
-            "protocols": [">DryContact"],
+            "protocols": [{
+                "direction": ">",
+                "protocol__code": "DryContact"
+            }],
             "type__name": "Electrical | RJ45"
         },
         {
@@ -66,7 +94,10 @@
             "description": "DIgital alarm  interface (lower)",
             "direction": "s",
             "gender": "f",
-            "protocols": [">DryContact"],
+            "protocols": [{
+                "direction": ">",
+                "protocol__code": "DryContact"
+            }],
             "type__name": "Electrical | RJ45"
         }
     ],

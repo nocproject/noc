@@ -12,7 +12,10 @@
             "description": "SFP Connector",
             "direction": "o",
             "gender": "m",
-            "protocols": ["TransEth100M"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "TransEth100M"
+            }],
             "type__name": "Transceiver | SFP"
         },
         {
@@ -20,7 +23,18 @@
             "description": "RX Port",
             "direction": "s",
             "gender": "f",
-            "protocols": ["<100BASELX-1310", ">100BASELX-1550"],
+            "protocols": [
+                {
+                    "direction": "<",
+                    "discriminator": "1310",
+                    "protocol__code": "100BASELX10"
+                },
+                {
+                    "direction": ">",
+                    "discriminator": "1550",
+                    "protocol__code": "100BASELX10"
+                }
+            ],
             "type__name": "Optical | LC"
         }
     ],

@@ -11,7 +11,10 @@
             "description": "Voice WAN Interface Card slot connector",
             "direction": "o",
             "gender": "m",
-            "protocols": ["VWIC"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "CISCOVWIC"
+            }],
             "type__name": "Cisco | ISR | DCS"
         },
         {
@@ -19,7 +22,10 @@
             "description": "Serial N/X/0",
             "direction": "s",
             "gender": "f",
-            "protocols": ["G.703"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "G703"
+            }],
             "type__name": "Electrical | RJ48"
         }
     ],

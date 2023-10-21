@@ -11,7 +11,7 @@ from mongoengine.queryset import Q
 # NOC modules
 from noc.services.web.base.extdocapplication import ExtDocApplication, view
 from noc.main.models.doccategory import DocCategory
-from noc.inv.models.objectmodel import ObjectModel
+from noc.inv.models.objectmodel import ObjectModel, ProtocolVariantItem
 from noc.inv.models.modelinterface import ModelInterface
 from noc.sa.interfaces.base import ListOfParameter, DocumentParameter
 from noc.core.prettyjson import to_json
@@ -44,6 +44,11 @@ class ObjectModelApplication(ExtDocApplication):
             }
         )
         return q
+
+    def instance_to_dict(self, o, fields=None, nocustom=False):
+        if isinstance(o, ProtocolVariantItem):
+            return str(o)
+        return super().instance_to_dict(o, fields, nocustom=nocustom)
 
     def clean(self, data):
         if "data" in data:

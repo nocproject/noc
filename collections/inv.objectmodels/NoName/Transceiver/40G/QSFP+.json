@@ -11,7 +11,10 @@
             "description": "QSFP+ Connector",
             "direction": "o",
             "gender": "m",
-            "protocols": ["TransEth40G"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "TransEth40G"
+            }],
             "type__name": "Transceiver | QSFP+"
         }
     ],

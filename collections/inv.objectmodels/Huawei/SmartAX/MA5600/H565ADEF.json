@@ -28,7 +28,10 @@
             "description": "Provides a 32-channel xDSL service port",
             "direction": "s",
             "gender": "f",
-            "protocols": ["ADSL2+"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "ADSL2+"
+            }],
             "type__name": "Huawei | Electrical | Delander 64-pin"
         },
         {
@@ -36,7 +39,10 @@
             "description": "Provides a 32-channel xDSL service port",
             "direction": "s",
             "gender": "f",
-            "protocols": ["ADSL2+"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "ADSL2+"
+            }],
             "type__name": "Huawei | Electrical | Delander 64-pin"
         }
     ],

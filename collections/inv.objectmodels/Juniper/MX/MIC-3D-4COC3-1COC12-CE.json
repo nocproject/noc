@@ -18,7 +18,6 @@
             "description": "Port 0",
             "direction": "i",
             "gender": "f",
-            "protocols": ["OC3/STM1"],
             "type__name": "Transceiver | SFP"
         },
         {
@@ -26,7 +25,6 @@
             "description": "Port 1",
             "direction": "i",
             "gender": "f",
-            "protocols": ["OC3/STM1"],
             "type__name": "Transceiver | SFP"
         },
         {
@@ -34,7 +32,6 @@
             "description": "Port 2",
             "direction": "i",
             "gender": "f",
-            "protocols": ["OC3/STM1"],
             "type__name": "Transceiver | SFP"
         },
         {
@@ -42,7 +39,6 @@
             "description": "Port 3",
             "direction": "i",
             "gender": "f",
-            "protocols": ["OC3/STM1"],
             "type__name": "Transceiver | SFP"
         }
     ],

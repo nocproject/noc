@@ -12,7 +12,6 @@
             "description": "SFP Connector",
             "direction": "o",
             "gender": "m",
-            "protocols": ["OC3/STM1"],
             "type__name": "Transceiver | SFP"
         },
         {
@@ -20,7 +19,6 @@
             "description": "RX Port",
             "direction": "s",
             "gender": "f",
-            "protocols": [">OC3-1310"],
             "type__name": "Optical | LC"
         },
         {
@@ -28,7 +26,6 @@
             "description": "TX Port",
             "direction": "s",
             "gender": "f",
-            "protocols": ["<OC3-1310"],
             "type__name": "Optical | LC"
         }
     ],

@@ -19,7 +19,10 @@
             "description": "Port 0/0",
             "direction": "i",
             "gender": "f",
-            "protocols": ["TransEth10G"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "TransEth10G"
+            }],
             "type__name": "Transceiver | SFP+"
         },
         {
@@ -27,7 +30,10 @@
             "description": "Port 0/1",
             "direction": "i",
             "gender": "f",
-            "protocols": ["TransEth10G"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "TransEth10G"
+            }],
             "type__name": "Transceiver | SFP+"
         },
         {
@@ -35,7 +41,10 @@
             "description": "Port 0/2",
             "direction": "i",
             "gender": "f",
-            "protocols": ["TransEth10G"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "TransEth10G"
+            }],
             "type__name": "Transceiver | SFP+"
         },
         {
@@ -43,7 +52,10 @@
             "description": "Port 0/3",
             "direction": "i",
             "gender": "f",
-            "protocols": ["TransEth10G"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "TransEth10G"
+            }],
             "type__name": "Transceiver | SFP+"
         },
         {
@@ -51,7 +63,10 @@
             "description": "Port 1/0",
             "direction": "i",
             "gender": "f",
-            "protocols": ["TransEth100G"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "TransEth100G"
+            }],
             "type__name": "Transceiver | CFP | Juniper"
         },
         {
@@ -59,7 +74,10 @@
             "description": "Port 2/0",
             "direction": "i",
             "gender": "f",
-            "protocols": ["TransEth10G"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "TransEth10G"
+            }],
             "type__name": "Transceiver | SFP+"
         },
         {
@@ -67,7 +85,10 @@
             "description": "Port 2/1",
             "direction": "i",
             "gender": "f",
-            "protocols": ["TransEth10G"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "TransEth10G"
+            }],
             "type__name": "Transceiver | SFP+"
         },
         {
@@ -75,7 +96,10 @@
             "description": "Port 2/2",
             "direction": "i",
             "gender": "f",
-            "protocols": ["TransEth10G"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "TransEth10G"
+            }],
             "type__name": "Transceiver | SFP+"
         },
         {
@@ -83,7 +107,10 @@
             "description": "Port 2/3",
             "direction": "i",
             "gender": "f",
-            "protocols": ["TransEth10G"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "TransEth10G"
+            }],
             "type__name": "Transceiver | SFP+"
         },
         {
@@ -91,7 +118,10 @@
             "description": "Port 3/0",
             "direction": "i",
             "gender": "f",
-            "protocols": ["TransEth100G"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "TransEth100G"
+            }],
             "type__name": "Transceiver | CFP | Juniper"
         }
     ],

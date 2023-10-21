@@ -12,7 +12,10 @@
             "description": "XFP Connector",
             "direction": "o",
             "gender": "m",
-            "protocols": ["TransEth10G"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "TransEth10G"
+            }],
             "type__name": "Transceiver | XFP"
         },
         {
@@ -20,7 +23,13 @@
             "description": "RX Port",
             "direction": "s",
             "gender": "f",
-            "protocols": [">10GBASELR-1310"],
+            "protocols": [
+                {
+                    "direction": ">",
+                    "discriminator": "1310",
+                    "protocol__code": "10GBASELR"
+                }
+            ],
             "type__name": "Optical | LC"
         },
         {
@@ -28,7 +37,13 @@
             "description": "TX Port",
             "direction": "s",
             "gender": "f",
-            "protocols": ["<10GBASELR-1310"],
+            "protocols": [
+                {
+                    "direction": "<",
+                    "discriminator": "1310",
+                    "protocol__code": "10GBASELR"
+                }
+            ],
             "type__name": "Optical | LC"
         }
     ],

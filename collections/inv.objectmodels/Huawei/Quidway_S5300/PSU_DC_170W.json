@@ -12,7 +12,10 @@
             "direction": "s",
             "gender": "m",
             "group": "0",
-            "protocols": [">48VDC"],
+            "protocols": [{
+                "direction": ">",
+                "protocol__code": "-48VDC"
+            }],
             "type__name": "Power | Dual M6 Terminal Studs"
         },
         {
@@ -21,7 +24,10 @@
             "direction": "s",
             "gender": "m",
             "group": "0",
-            "protocols": [">48VDC"],
+            "protocols": [{
+                "direction": ">",
+                "protocol__code": "-48VDC"
+            }],
             "type__name": "Power | Dual M6 Terminal Studs"
         },
         {

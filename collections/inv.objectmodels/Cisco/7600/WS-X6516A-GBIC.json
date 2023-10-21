@@ -18,7 +18,10 @@
             "description": "GigabitEthernet 0/1",
             "direction": "i",
             "gender": "f",
-            "protocols": ["TransEth1G"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "TransEth1G"
+            }],
             "type__name": "Transceiver | GBIC"
         },
         {
@@ -26,7 +29,10 @@
             "description": "GigabitEthernet 0/2",
             "direction": "i",
             "gender": "f",
-            "protocols": ["TransEth1G"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "TransEth1G"
+            }],
             "type__name": "Transceiver | GBIC"
         },
         {
@@ -34,7 +40,10 @@
             "description": "GigabitEthernet 0/3",
             "direction": "i",
             "gender": "f",
-            "protocols": ["TransEth1G"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "TransEth1G"
+            }],
             "type__name": "Transceiver | GBIC"
         },
         {
@@ -42,7 +51,10 @@
             "description": "GigabitEthernet 0/4",
             "direction": "i",
             "gender": "f",
-            "protocols": ["TransEth1G"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "TransEth1G"
+            }],
             "type__name": "Transceiver | GBIC"
         },
         {
@@ -50,7 +62,10 @@
             "description": "GigabitEthernet 0/5",
             "direction": "i",
             "gender": "f",
-            "protocols": ["TransEth1G"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "TransEth1G"
+            }],
             "type__name": "Transceiver | GBIC"
         },
         {
@@ -58,7 +73,10 @@
             "description": "GigabitEthernet 0/6",
             "direction": "i",
             "gender": "f",
-            "protocols": ["TransEth1G"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "TransEth1G"
+            }],
             "type__name": "Transceiver | GBIC"
         },
         {
@@ -66,7 +84,10 @@
             "description": "GigabitEthernet 0/7",
             "direction": "i",
             "gender": "f",
-            "protocols": ["TransEth1G"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "TransEth1G"
+            }],
             "type__name": "Transceiver | GBIC"
         },
         {
@@ -74,7 +95,10 @@
             "description": "GigabitEthernet 0/8",
             "direction": "i",
             "gender": "f",
-            "protocols": ["TransEth1G"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "TransEth1G"
+            }],
             "type__name": "Transceiver | GBIC"
         },
         {
@@ -82,7 +106,10 @@
             "description": "GigabitEthernet 0/9",
             "direction": "i",
             "gender": "f",
-            "protocols": ["TransEth1G"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "TransEth1G"
+            }],
             "type__name": "Transceiver | GBIC"
         },
         {
@@ -90,7 +117,10 @@
             "description": "GigabitEthernet 0/10",
             "direction": "i",
             "gender": "f",
-            "protocols": ["TransEth1G"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "TransEth1G"
+            }],
             "type__name": "Transceiver | GBIC"
         },
         {
@@ -98,7 +128,10 @@
             "description": "GigabitEthernet 0/11",
             "direction": "i",
             "gender": "f",
-            "protocols": ["TransEth1G"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "TransEth1G"
+            }],
             "type__name": "Transceiver | GBIC"
         },
         {
@@ -106,7 +139,10 @@
             "description": "GigabitEthernet 0/12",
             "direction": "i",
             "gender": "f",
-            "protocols": ["TransEth1G"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "TransEth1G"
+            }],
             "type__name": "Transceiver | GBIC"
         },
         {
@@ -114,7 +150,10 @@
             "description": "GigabitEthernet 0/13",
             "direction": "i",
             "gender": "f",
-            "protocols": ["TransEth1G"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "TransEth1G"
+            }],
             "type__name": "Transceiver | GBIC"
         },
         {
@@ -122,7 +161,10 @@
             "description": "GigabitEthernet 0/14",
             "direction": "i",
             "gender": "f",
-            "protocols": ["TransEth1G"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "TransEth1G"
+            }],
             "type__name": "Transceiver | GBIC"
         },
         {
@@ -130,7 +172,10 @@
             "description": "GigabitEthernet 0/15",
             "direction": "i",
             "gender": "f",
-            "protocols": ["TransEth1G"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "TransEth1G"
+            }],
             "type__name": "Transceiver | GBIC"
         },
         {
@@ -138,7 +183,10 @@
             "description": "GigabitEthernet 0/16",
             "direction": "i",
             "gender": "f",
-            "protocols": ["TransEth1G"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "TransEth1G"
+            }],
             "type__name": "Transceiver | GBIC"
         }
     ],

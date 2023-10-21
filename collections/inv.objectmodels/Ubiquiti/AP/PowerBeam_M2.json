@@ -11,7 +11,20 @@
             "description": "Uplink port",
             "direction": "s",
             "gender": "f",
-            "protocols": ["10BASET", "100BASETX", ">POE"],
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "10BASET"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "100BASETX"
+                },
+                {
+                    "direction": ">",
+                    "protocol__code": "POE"
+                }
+            ],
             "type__name": "Electrical | RJ45"
         }
     ],

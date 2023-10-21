@@ -13,7 +13,16 @@
             "description": "USER 1-24",
             "direction": "s",
             "gender": "f",
-            "protocols": ["ADSL", "ADSL2+"],
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "ADSL"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "ADSL2+"
+                }
+            ],
             "type__name": "Electrical | Telco-50"
         },
         {
@@ -21,7 +30,10 @@
             "description": "PSTN 1-24",
             "direction": "s",
             "gender": "f",
-            "protocols": ["PSTN"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "PSTN"
+            }],
             "type__name": "Electrical | Telco-50"
         },
         {
@@ -29,7 +41,10 @@
             "description": "Alarm I/O",
             "direction": "s",
             "gender": "m",
-            "protocols": [">DryContact"],
+            "protocols": [{
+                "direction": ">",
+                "protocol__code": "DryContact"
+            }],
             "type__name": "Electrical | MSTB 2,5/13-ST-5,08"
         },
         {
@@ -37,7 +52,10 @@
             "description": "Console port",
             "direction": "s",
             "gender": "f",
-            "protocols": [">RS232"],
+            "protocols": [{
+                "direction": ">",
+                "protocol__code": "RS232"
+            }],
             "type__name": "Electrical | RJ45"
         },
         {
@@ -45,7 +63,16 @@
             "description": "M-Eth",
             "direction": "s",
             "gender": "f",
-            "protocols": ["10BASET", "100BASETX"],
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "10BASET"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "100BASETX"
+                }
+            ],
             "type__name": "Electrical | RJ45"
         },
         {
@@ -54,7 +81,16 @@
             "direction": "s",
             "gender": "f",
             "group": "1",
-            "protocols": ["100BASETX", "1000BASET"],
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "100BASETX"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "1000BASET"
+                }
+            ],
             "type__name": "Electrical | RJ45"
         },
         {
@@ -63,7 +99,16 @@
             "direction": "s",
             "gender": "f",
             "group": "2",
-            "protocols": ["100BASETX", "1000BASET"],
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "100BASETX"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "1000BASET"
+                }
+            ],
             "type__name": "Electrical | RJ45"
         },
         {
@@ -71,7 +116,6 @@
             "description": "Power inlet",
             "direction": "s",
             "gender": "f",
-            "protocols": [">-42VDC", ">-56VDC"],
             "type__name": "Power | MSTB 2.5/4-ST-5.08"
         }
     ],

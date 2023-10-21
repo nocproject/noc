@@ -1,0 +1,524 @@
+{
+    "name": "Juniper | EX | ACX1000",
+    "$collection": "inv.objectmodels",
+    "uuid": "9c9da6b5-27a5-436a-b54b-ec15a0d9ddfc",
+    "vendor__code": "JUNIPER",
+    "description": "8-port T1/E1, 8-port 10/100/1000BaseT and 4 GbE combination fiber/copper ports",
+    "connection_rule__name": "Juniper | ACX",
+    "cr_context": "CHASSIS",
+    "labels": [
+        "noc::inv::chassis",
+        "noc::inv::sup",
+        "noc::inv::psu",
+        "noc::inv::fabric",
+        "noc::inv::port",
+        "noc::inv::fan"
+    ],
+    "connections": [
+        {
+            "name": "console",
+            "description": "Console port",
+            "direction": "s",
+            "gender": "f",
+            "group": "0",
+            "protocols": [{
+                "direction": ">",
+                "protocol__code": "RS232"
+            }],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "name": "ethernet",
+            "description": "Management ethernet port",
+            "direction": "s",
+            "gender": "f",
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "10BASET"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "100BASETX"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "1000BASETX"
+                }
+            ],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "name": "0/0",
+            "description": "e1-0/0/0 port",
+            "direction": "s",
+            "gender": "f",
+            "group": "0",
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "G703"
+            }],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "name": "0/1",
+            "description": "e1-0/0/1 port",
+            "direction": "s",
+            "gender": "f",
+            "group": "0",
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "G703"
+            }],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "name": "0/2",
+            "description": "e1-0/0/2 port",
+            "direction": "s",
+            "gender": "f",
+            "group": "0",
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "G703"
+            }],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "name": "0/3",
+            "description": "e1-0/0/3 port",
+            "direction": "s",
+            "gender": "f",
+            "group": "0",
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "G703"
+            }],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "name": "0/4",
+            "description": "e1-0/0/4 port",
+            "direction": "s",
+            "gender": "f",
+            "group": "0",
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "G703"
+            }],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "name": "0/5",
+            "description": "e1-0/0/5 port",
+            "direction": "s",
+            "gender": "f",
+            "group": "0",
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "G703"
+            }],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "name": "0/6",
+            "description": "e1-0/0/6 port",
+            "direction": "s",
+            "gender": "f",
+            "group": "0",
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "G703"
+            }],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "name": "0/7",
+            "description": "e1-0/0/7 port",
+            "direction": "s",
+            "gender": "f",
+            "group": "0",
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "G703"
+            }],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "name": "1/0",
+            "description": "ge-0/1/0 port",
+            "direction": "s",
+            "gender": "f",
+            "group": "0",
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "10BASET"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "100BASETX"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "1000BASETX"
+                }
+            ],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "name": "1/1",
+            "description": "ge-0/1/1 port",
+            "direction": "s",
+            "gender": "f",
+            "group": "0",
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "10BASET"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "100BASETX"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "1000BASETX"
+                }
+            ],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "name": "1/2",
+            "description": "ge-0/1/2 port",
+            "direction": "s",
+            "gender": "f",
+            "group": "0",
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "10BASET"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "100BASETX"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "1000BASETX"
+                }
+            ],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "name": "1/3",
+            "description": "ge-0/1/3 port",
+            "direction": "s",
+            "gender": "f",
+            "group": "0",
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "10BASET"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "100BASETX"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "1000BASETX"
+                }
+            ],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "name": "1/4",
+            "description": "ge-0/1/4 port",
+            "direction": "s",
+            "gender": "f",
+            "group": "0",
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "10BASET"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "100BASETX"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "1000BASETX"
+                }
+            ],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "name": "1/5",
+            "description": "ge-0/1/5 port",
+            "direction": "s",
+            "gender": "f",
+            "group": "0",
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "10BASET"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "100BASETX"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "1000BASETX"
+                }
+            ],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "name": "1/6",
+            "description": "ge-0/1/6 port",
+            "direction": "s",
+            "gender": "f",
+            "group": "0",
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "10BASET"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "100BASETX"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "1000BASETX"
+                }
+            ],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "name": "1/7",
+            "description": "ge-0/1/7 port",
+            "direction": "s",
+            "gender": "f",
+            "group": "0",
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "10BASET"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "100BASETX"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "1000BASETX"
+                }
+            ],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "name": "2/0",
+            "description": "ge-0/2/0 port",
+            "direction": "s",
+            "gender": "f",
+            "group": "0",
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "10BASET"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "100BASETX"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "1000BASETX"
+                }
+            ],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "name": "2/0",
+            "description": "ge-0/2/0 SFP",
+            "direction": "i",
+            "gender": "f",
+            "group": "0",
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "TransEth1G"
+            }],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "name": "2/1",
+            "description": "ge-0/2/1 port",
+            "direction": "s",
+            "gender": "f",
+            "group": "1",
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "10BASET"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "100BASETX"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "1000BASETX"
+                }
+            ],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "name": "2/1",
+            "description": "ge-0/2/1 SFP",
+            "direction": "i",
+            "gender": "f",
+            "group": "1",
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "TransEth1G"
+            }],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "name": "2/2",
+            "description": "ge-0/2/2 port",
+            "direction": "s",
+            "gender": "f",
+            "group": "2",
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "10BASET"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "100BASETX"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "1000BASETX"
+                }
+            ],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "name": "2/2",
+            "description": "ge-0/2/2 SFP",
+            "direction": "i",
+            "gender": "f",
+            "group": "2",
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "TransEth1G"
+            }],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "name": "2/3",
+            "description": "ge-0/2/3 port",
+            "direction": "s",
+            "gender": "f",
+            "group": "3",
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "10BASET"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "100BASETX"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "1000BASETX"
+                }
+            ],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "name": "2/3",
+            "description": "ge-0/2/3 SFP",
+            "direction": "i",
+            "gender": "f",
+            "group": "3",
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "TransEth1G"
+            }],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "name": "-48V",
+            "description": "-48V",
+            "direction": "s",
+            "gender": "m",
+            "protocols": [{
+                "direction": ">",
+                "protocol__code": "-48VDC"
+            }],
+            "type__name": "Power | Dual M6 Terminal Studs"
+        },
+        {
+            "name": "RTN",
+            "description": "RTN (+)",
+            "direction": "s",
+            "gender": "m",
+            "protocols": [{
+                "direction": ">",
+                "protocol__code": "-48VDC"
+            }],
+            "type__name": "Power | Dual M6 Terminal Studs"
+        }
+    ],
+    "data": [
+        {
+            "attr": "width",
+            "interface": "dimensions",
+            "value": 445
+        },
+        {
+            "attr": "depth",
+            "interface": "dimensions",
+            "value": 240
+        },
+        {
+            "attr": "height",
+            "interface": "dimensions",
+            "value": 44.5
+        },
+        {
+            "attr": "part_no",
+            "interface": "asset",
+            "value": ["650-037056", "ACX1000"]
+        },
+        {
+            "attr": "order_part_no",
+            "interface": "asset",
+            "value": ["ACX1000-DC"]
+        },
+        {
+            "attr": "managed",
+            "interface": "management",
+            "value": true
+        },
+        {
+            "attr": "stackable",
+            "interface": "stack",
+            "value": true
+        },
+        {
+            "attr": "units",
+            "interface": "rackmount",
+            "value": 1
+        }
+    ]
+}

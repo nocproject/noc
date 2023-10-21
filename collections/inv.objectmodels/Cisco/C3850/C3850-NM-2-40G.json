@@ -11,7 +11,10 @@
             "description": "FortyGigabitEthernet0/0/1",
             "direction": "i",
             "gender": "f",
-            "protocols": ["TransEth40G"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "TransEth40G"
+            }],
             "type__name": "Transceiver | QSFP+"
         },
         {
@@ -19,7 +22,10 @@
             "description": "FortyGigabitEthernet0/0/2",
             "direction": "i",
             "gender": "f",
-            "protocols": ["TransEth40G"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "TransEth40G"
+            }],
             "type__name": "Transceiver | QSFP+"
         },
         {

@@ -53,7 +53,7 @@ class ModelAttr(EmbeddedDocument):
     value = DynamicField()
     slot = StringField()
 
-    def __str__(self):
+    def __str__(self) -> str:
         if self.slot:
             return "%s.%s@%s = %s" % (self.interface, self.attr, self.slot, self.value)
         return "%s.%s = %s" % (self.interface, self.attr, self.value)
@@ -77,7 +77,9 @@ class ProtocolVariantItem(EmbeddedDocument):
     direction = StringField(choices=[">", "<", "*"], default="*")
 
     def __str__(self):
-        if not self.discriminator:
+        if not self.discriminator and self.direction == "*":
+            return self.protocol.code
+        elif not self.discriminator:
             return f"{self.direction}::{self.protocol.code}"
         return f"{self.direction}::{self.protocol.code}::{self.discriminator}"
 
@@ -430,6 +432,7 @@ class ObjectModel(Document):
 
     def get_json_path(self) -> str:
         p = [quote_safe_path(n.strip()) for n in self.name.split("|")]
+        print(p)
         return os.path.join(*p) + ".json"
 
     def clear_unknown_models(self):

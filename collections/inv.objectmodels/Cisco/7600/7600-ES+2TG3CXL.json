@@ -11,7 +11,10 @@
             "description": "TeX/1 XFP port",
             "direction": "i",
             "gender": "f",
-            "protocols": ["TransEth10G"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "TransEth10G"
+            }],
             "type__name": "Transceiver | XFP | Cisco"
         },
         {
@@ -19,7 +22,10 @@
             "description": "TeX/2 XFP port",
             "direction": "i",
             "gender": "f",
-            "protocols": ["TransEth10G"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "TransEth10G"
+            }],
             "type__name": "Transceiver | XFP | Cisco"
         },
         {

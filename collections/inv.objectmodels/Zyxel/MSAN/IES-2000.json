@@ -55,7 +55,10 @@
             "description": "Power outlet",
             "direction": "s",
             "gender": "f",
-            "protocols": [">-36VDC", ">-57VDC"],
+            "protocols": [{
+                "direction": ">",
+                "protocol__code": "-48VDC"
+            }],
             "type__name": "Power | MSTB 2.5/4-ST-5.08"
         }
     ],

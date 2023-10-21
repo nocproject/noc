@@ -20,7 +20,10 @@
             "description": "ADSL2+ 0-31",
             "direction": "s",
             "gender": "f",
-            "protocols": ["ADSL2+"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "ADSL2+"
+            }],
             "type__name": "Huawei | Electrical | Champ 64-pin"
         },
         {
@@ -28,7 +31,10 @@
             "description": "ADSL2+ 31-63",
             "direction": "s",
             "gender": "f",
-            "protocols": ["ADSL2+"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "ADSL2+"
+            }],
             "type__name": "Huawei | Electrical | Champ 64-pin"
         }
     ],

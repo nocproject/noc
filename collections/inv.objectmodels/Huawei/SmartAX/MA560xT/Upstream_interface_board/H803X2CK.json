@@ -1,5 +1,5 @@
 {
-    "name": "Huawei | SmartAX | Upstream Interface Board | H803X2CK",
+    "name": "Huawei | SmartAX | MA560xT | Upstream Interface Board | H803X2CK",
     "$collection": "inv.objectmodels",
     "uuid": "f2726028-4b7e-4f29-939c-30252a634aed",
     "vendor__code": "HUAWEI",
@@ -20,7 +20,16 @@
             "description": null,
             "direction": "i",
             "gender": "f",
-            "protocols": ["TransEth1G", "TransEth10G"],
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth1G"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth10G"
+                }
+            ],
             "type__name": "Transceiver | SFP+"
         },
         {
@@ -28,7 +37,16 @@
             "description": null,
             "direction": "i",
             "gender": "f",
-            "protocols": ["TransEth1G", "TransEth10G"],
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth1G"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth10G"
+                }
+            ],
             "type__name": "Transceiver | SFP+"
         }
     ],
