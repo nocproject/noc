@@ -9,8 +9,19 @@
 import pytest
 
 # NOC modules
-from noc.inv.models.objectmodel import ObjectModel
 from noc.inv.models.protocol import ProtocolVariant, Protocol
+from .utils import CollectionTestHelper
+
+helper = CollectionTestHelper(Protocol)
+
+
+def teardown_module(module=None):
+    """
+    Reset all helper caches when leaving module
+    :param module:
+    :return:
+    """
+    helper.teardown()
 
 
 @pytest.mark.parametrize(
