@@ -197,7 +197,7 @@ CONNECTION_CHECKLIST = {
         "directions": ["i", "o"],
         "protocols": ["TransEth400G", "TransEth800G"],
     },
-    "Transceiver | XFP": {"directions": ["i", "o"], "protocols": ["TransEth10G", "OC192/STM64"]},
+    "Transceiver | XFP": {"directions": ["i", "o"], "protocols": ["TransEth10G"]},
     "Transceiver | XFP | Cisco": {
         "directions": ["i", "o"],
         "protocols": ["TransEth10G"],
