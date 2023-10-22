@@ -45,6 +45,10 @@
             "description": "IEEE1588 port",
             "direction": "s",
             "gender": "f",
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "IEEE1588"
+            }],
             "type__name": "Electrical | RJ45"
         },
         {
