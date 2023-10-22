@@ -47,6 +47,7 @@ class ProtocolVariant(object):
     """
     Add __contains__ for connection check
     """
+
     protocol: "Protocol"
     direction: str = "*"
     discriminator: Optional[str] = None
@@ -69,7 +70,7 @@ class ProtocolVariant(object):
         if not self.discriminator and self.direction == "*":
             return self.protocol.code
         elif not self.discriminator:
-            return f"{self.direction}::{self.protocol.code}"
+            return f"{self.direction}{self.protocol.code}"
         return f"{self.direction}::{self.protocol.code}::{self.discriminator}"
 
     @classmethod
@@ -82,25 +83,23 @@ class ProtocolVariant(object):
         :param code:
         :return:
         """
-        d_code, *x = code.split("::")
-        vd_code = None  # Variant Discriminator Code
-        if not x:
-            p_code = d_code
-        elif len(x) == 1:
-            p_code = x[0]
-        elif len(x) == 2:
-            p_code, vd_code = x
+        # d_code, *x = code.split("::")
+        # vd_code = None  # Variant Discriminator Code
+        if code[0] in PROTOCOL_DIRECTION_CODES:
+            d_code, p_code = code[0], code[1:]
         else:
+            d_code, p_code = "*", code
+        p_code, *vd_code = p_code.strip("::").split("::")
+        # Detect Protocol Code
+        if len(vd_code) > 1:
             raise ValueError("Unknown variant format: %s" % code)
-
-        if p_code[0] in PROTOCOL_DIRECTION_CODES:
-            # Old format
-            d_code, p_code = p_code[0], p_code[1:]
-            if "-" in p_code:
-                p_code, vd_code = p_code.rsplit("-", 1)
-        else:
-            d_code = "*"
+        elif vd_code:
+            vd_code = vd_code[0]
         protocol = Protocol.get_by_code(p_code)
+        if not protocol and "-" in p_code:
+            # Old format
+            p_code, vd_code = p_code.rsplit("-", 1)
+            protocol = Protocol.get_by_code(p_code)
         if not protocol:
             raise ValueError("Unknown protocol code: %s" % p_code)
         return ProtocolVariant(protocol, d_code, vd_code)

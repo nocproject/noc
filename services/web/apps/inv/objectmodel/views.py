@@ -13,6 +13,7 @@ from noc.services.web.base.extdocapplication import ExtDocApplication, view
 from noc.main.models.doccategory import DocCategory
 from noc.inv.models.objectmodel import ObjectModel, ProtocolVariantItem
 from noc.inv.models.modelinterface import ModelInterface
+from noc.inv.models.protocol import ProtocolVariant
 from noc.sa.interfaces.base import ListOfParameter, DocumentParameter
 from noc.core.prettyjson import to_json
 from noc.core.translation import ugettext as _
@@ -57,6 +58,18 @@ class ObjectModelApplication(ExtDocApplication):
             data["plugins"] = [x.strip() for x in data["plugins"].split(",") if x.strip()]
         else:
             data["plugins"] = None
+        if "connections" not in data:
+            return super().clean(data)
+        for c in data["connections"]:
+            if "protocols" not in c:
+                continue
+            protocols = []
+            for p in c.get("protocols") or []:
+                p = ProtocolVariant.get_by_code(p)
+                protocols += [{"protocol": p.protocol.id, "direction": p.direction}]
+                if p.discriminator:
+                    protocols[-1]["discriminator"] = p.discriminator
+            c["protocols"] = protocols
         return super().clean(data)
 
     def cleaned_query(self, q):

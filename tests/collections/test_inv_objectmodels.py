@@ -113,7 +113,7 @@ CONNECTION_CHECKLIST = {
             "E&M",  # Telephony E&M over PBX
             "IEEE1588",
             "TL1",
-            "ADSL"
+            "ADSL",
         ],
     },
     "Electrical | SFF-8470": {"directions": "s", "protocols": ["10GBASECX4"]},
