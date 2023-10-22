@@ -44,6 +44,9 @@ PROTOCOL_DIRECTION_CODES = {">", "<", "*"}
 
 @dataclass(frozen=True)
 class ProtocolVariant(object):
+    """
+    Add __contains__ for connection check
+    """
     protocol: "Protocol"
     direction: str = "*"
     discriminator: Optional[str] = None
@@ -57,6 +60,9 @@ class ProtocolVariant(object):
         if not self.discriminator:
             return r
         return r and self.discriminator == other.discriminator
+
+    def __hash__(self):
+        return hash(self.code)
 
     @property
     def code(self) -> str:

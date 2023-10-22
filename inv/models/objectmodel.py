@@ -77,6 +77,13 @@ class ProtocolVariantItem(EmbeddedDocument):
     direction = StringField(choices=[">", "<", "*"], default="*")
 
     def __str__(self):
+        return self.code
+
+    def __hash__(self):
+        return hash(self.code)
+
+    @property
+    def code(self) -> str:
         if not self.discriminator and self.direction == "*":
             return self.protocol.code
         elif not self.discriminator:
