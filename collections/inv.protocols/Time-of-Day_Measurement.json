@@ -6,5 +6,5 @@
     "description": "Time-of-day (TOD) traffic signal control is based on the principle where multiple TOD signal timing plans (STPs) are scheduled to operate during the day. TOD plans are characterized by a unique cycle length that is highly correlated with traffic volumes",
     "data": [],
     "connection_schema": "U",
-    "technology__name": "Serial"
+    "technology__name": "Time Syncrinization"
 }

@@ -20,6 +20,12 @@
             "description": "TL1 monitoring port",
             "direction": "s",
             "gender": "f",
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "TL1"
+                }
+            ],
             "type__name": "Electrical | RJ45"
         },
         {

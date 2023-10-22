@@ -111,6 +111,8 @@ CONNECTION_CHECKLIST = {
             "G703",
             "ToD",
             "E&M",  # Telephony E&M over PBX
+            "IEEE1588",
+            "TL1"
         ],
     },
     "Electrical | SFF-8470": {"directions": "s", "protocols": ["10GBASECX4"]},

@@ -23,6 +23,10 @@
             "description": "Atm0",
             "direction": "s",
             "gender": "f",
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "ADSL"
+            }],
             "type__name": "Electrical | RJ45"
         },
         {

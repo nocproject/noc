@@ -12,6 +12,10 @@
             "description": "SFP Connector",
             "direction": "o",
             "gender": "m",
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "TransEth1G"
+            }],
             "type__name": "Transceiver | SFP"
         },
         {
