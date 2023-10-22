@@ -10,6 +10,7 @@ import pytest
 
 # NOC modules
 from noc.inv.models.objectmodel import ObjectModel
+from noc.inv.models.protocol import ProtocolVariant
 from .utils import CollectionTestHelper
 
 helper = CollectionTestHelper(ObjectModel)
@@ -64,7 +65,7 @@ def check_direction(c, directions):
 
 def check_protocols(c, protocols):
     __tracebackhide__ = True
-    if not any(True for p in c.protocols if p in protocols):
+    if not any(True for p in c.protocols if ProtocolVariant.get_by_code(p) in protocols):
         pytest.fail(
             "%s: Must have at least one of protocols %s"
             % (c.name, ", ".join("'%s'" % x for x in protocols))
