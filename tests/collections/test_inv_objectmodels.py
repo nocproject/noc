@@ -65,7 +65,7 @@ def check_direction(c, directions):
 
 def check_protocols(c, protocols):
     __tracebackhide__ = True
-    if not any(True for p in c.protocols if ProtocolVariant.get_by_code(p) in protocols):
+    if not any(True for p in c.protocols if p in protocols):
         pytest.fail(
             "%s: Must have at least one of protocols %s"
             % (c.name, ", ".join("'%s'" % x for x in protocols))
@@ -81,9 +81,10 @@ def test_connection_checklist(model):
             with pytest.assume:
                 check_direction(c, checklist["directions"])
         if "protocols" in checklist and not model.get_data("length", "length"):
+            p_checks = [ProtocolVariant.get_by_code(p) for p in checklist["protocols"]]
             # Empty protocols on Ware
             with pytest.assume:
-                check_protocols(c, checklist["protocols"])
+                check_protocols(c, p_checks)
 
 
 # dict must have one or more keys:
