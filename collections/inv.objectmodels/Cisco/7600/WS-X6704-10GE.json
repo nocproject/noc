@@ -25,7 +25,10 @@
             "description": "TeX/1 XENPAK port",
             "direction": "i",
             "gender": "f",
-            "protocols": ["TransEth10G"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "TransEth10G"
+            }],
             "type__name": "Transceiver | XENPAK | Cisco"
         },
         {
@@ -33,7 +36,10 @@
             "description": "TeX/2 XENPAK port",
             "direction": "i",
             "gender": "f",
-            "protocols": ["TransEth10G"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "TransEth10G"
+            }],
             "type__name": "Transceiver | XENPAK | Cisco"
         },
         {
@@ -41,7 +47,10 @@
             "description": "TeX/3 XENPAK port",
             "direction": "i",
             "gender": "f",
-            "protocols": ["TransEth10G"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "TransEth10G"
+            }],
             "type__name": "Transceiver | XENPAK | Cisco"
         },
         {
@@ -49,7 +58,10 @@
             "description": "TeX/4 XENPAK port",
             "direction": "i",
             "gender": "f",
-            "protocols": ["TransEth10G"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "TransEth10G"
+            }],
             "type__name": "Transceiver | XENPAK | Cisco"
         }
     ],

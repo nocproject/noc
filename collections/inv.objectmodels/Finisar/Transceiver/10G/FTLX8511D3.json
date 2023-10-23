@@ -12,7 +12,10 @@
             "description": "TX",
             "direction": "s",
             "gender": "f",
-            "protocols": ["<10GBASESR"],
+            "protocols": [{
+                "direction": "<",
+                "protocol__code": "10GBASESR"
+            }],
             "type__name": "Optical | LC"
         },
         {
@@ -20,7 +23,10 @@
             "description": "RX",
             "direction": "s",
             "gender": "f",
-            "protocols": [">10GBASESR"],
+            "protocols": [{
+                "direction": ">",
+                "protocol__code": "10GBASESR"
+            }],
             "type__name": "Optical | LC"
         },
         {
@@ -28,7 +34,10 @@
             "description": "Chassis connection",
             "direction": "o",
             "gender": "m",
-            "protocols": ["TransEth10G"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "TransEth10G"
+            }],
             "type__name": "Transceiver | XFP"
         }
     ],

@@ -33,7 +33,16 @@
             "description": "FastEthernet 0/0 port",
             "direction": "s",
             "gender": "f",
-            "protocols": ["10BASET", "100BASETX"],
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "10BASET"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "100BASETX"
+                }
+            ],
             "type__name": "Electrical | RJ45"
         },
         {
@@ -41,7 +50,16 @@
             "description": "FastEthernet 0/1 port",
             "direction": "s",
             "gender": "f",
-            "protocols": ["10BASET", "100BASETX"],
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "10BASET"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "100BASETX"
+                }
+            ],
             "type__name": "Electrical | RJ45"
         },
         {
@@ -49,7 +67,10 @@
             "description": "Console port",
             "direction": "s",
             "gender": "f",
-            "protocols": [">RS232"],
+            "protocols": [{
+                "direction": ">",
+                "protocol__code": "RS232"
+            }],
             "type__name": "Electrical | RJ45"
         },
         {
@@ -57,7 +78,16 @@
             "description": "Aux port",
             "direction": "s",
             "gender": "f",
-            "protocols": [">RS232", "<RS232"],
+            "protocols": [
+                {
+                    "direction": ">",
+                    "protocol__code": "RS232"
+                },
+                {
+                    "direction": "<",
+                    "protocol__code": "RS232"
+                }
+            ],
             "type__name": "Electrical | RJ45"
         }
     ],

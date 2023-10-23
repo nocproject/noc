@@ -18,7 +18,10 @@
             "description": "Management Console",
             "direction": "s",
             "gender": "f",
-            "protocols": [">RS232"],
+            "protocols": [{
+                "direction": ">",
+                "protocol__code": "RS232"
+            }],
             "type__name": "Electrical | RJ45"
         },
         {
@@ -27,7 +30,16 @@
             "direction": "s",
             "gender": "f",
             "group": "0",
-            "protocols": ["<USB10", "<USB11"],
+            "protocols": [
+                {
+                    "direction": "<",
+                    "protocol__code": "USB10"
+                },
+                {
+                    "direction": "<",
+                    "protocol__code": "USB11"
+                }
+            ],
             "type__name": "Electrical | USB"
         },
         {
@@ -36,7 +48,16 @@
             "direction": "s",
             "gender": "f",
             "group": "0",
-            "protocols": ["<USB10", "<USB11"],
+            "protocols": [
+                {
+                    "direction": "<",
+                    "protocol__code": "USB10"
+                },
+                {
+                    "direction": "<",
+                    "protocol__code": "USB11"
+                }
+            ],
             "type__name": "Electrical | USB"
         },
         {
@@ -44,7 +65,20 @@
             "description": "GigabitEthernet 6/0/0 interface",
             "direction": "s",
             "gender": "f",
-            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "10BASET"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "100BASETX"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "1000BASETX"
+                }
+            ],
             "type__name": "Electrical | RJ45"
         },
         {
@@ -52,7 +86,20 @@
             "description": "GigabitEthernet 6/0/1 interface",
             "direction": "s",
             "gender": "f",
-            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "10BASET"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "100BASETX"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "1000BASETX"
+                }
+            ],
             "type__name": "Electrical | RJ45"
         }
     ],

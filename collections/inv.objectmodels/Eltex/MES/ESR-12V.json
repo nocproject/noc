@@ -20,7 +20,10 @@
             "description": "Power input",
             "direction": "s",
             "gender": "m",
-            "protocols": [">220VAC"],
+            "protocols": [{
+                "direction": ">",
+                "protocol__code": "220VAC"
+            }],
             "type__name": "Power | IEC 60320 C14"
         },
         {
@@ -28,7 +31,20 @@
             "description": "USB Port",
             "direction": "i",
             "gender": "f",
-            "protocols": [">USB10", ">USB11", ">USB20"],
+            "protocols": [
+                {
+                    "direction": ">",
+                    "protocol__code": "USB10"
+                },
+                {
+                    "direction": ">",
+                    "protocol__code": "USB11"
+                },
+                {
+                    "direction": ">",
+                    "protocol__code": "USB20"
+                }
+            ],
             "type__name": "Electrical | USB"
         },
         {
@@ -36,7 +52,20 @@
             "description": "USB Port",
             "direction": "i",
             "gender": "f",
-            "protocols": [">USB10", ">USB11", ">USB20"],
+            "protocols": [
+                {
+                    "direction": ">",
+                    "protocol__code": "USB10"
+                },
+                {
+                    "direction": ">",
+                    "protocol__code": "USB11"
+                },
+                {
+                    "direction": ">",
+                    "protocol__code": "USB20"
+                }
+            ],
             "type__name": "Electrical | USB"
         },
         {
@@ -45,7 +74,10 @@
             "direction": "s",
             "gender": "f",
             "group": "0",
-            "protocols": [">RS232"],
+            "protocols": [{
+                "direction": ">",
+                "protocol__code": "RS232"
+            }],
             "type__name": "Electrical | DB9"
         },
         {
@@ -53,7 +85,10 @@
             "description": "voice-port 1 telephone",
             "direction": "s",
             "gender": "f",
-            "protocols": ["FXS"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "FXS"
+            }],
             "type__name": "Electrical | RJ11"
         },
         {
@@ -61,7 +96,10 @@
             "description": "voice-port 2 telephone",
             "direction": "s",
             "gender": "f",
-            "protocols": ["FXS"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "FXS"
+            }],
             "type__name": "Electrical | RJ11"
         },
         {
@@ -69,7 +107,10 @@
             "description": "voice-port 3 telephone",
             "direction": "s",
             "gender": "f",
-            "protocols": ["FXS"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "FXS"
+            }],
             "type__name": "Electrical | RJ11"
         },
         {
@@ -77,7 +118,10 @@
             "description": "voice-port fxo telephone",
             "direction": "s",
             "gender": "f",
-            "protocols": ["FXO"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "FXO"
+            }],
             "type__name": "Electrical | RJ11"
         },
         {
@@ -86,7 +130,20 @@
             "direction": "s",
             "gender": "f",
             "group": "0",
-            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "10BASET"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "100BASETX"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "1000BASETX"
+                }
+            ],
             "type__name": "Electrical | RJ45"
         },
         {
@@ -95,7 +152,20 @@
             "direction": "s",
             "gender": "f",
             "group": "0",
-            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "10BASET"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "100BASETX"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "1000BASETX"
+                }
+            ],
             "type__name": "Electrical | RJ45"
         },
         {
@@ -104,7 +174,20 @@
             "direction": "s",
             "gender": "f",
             "group": "0",
-            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "10BASET"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "100BASETX"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "1000BASETX"
+                }
+            ],
             "type__name": "Electrical | RJ45"
         },
         {
@@ -113,7 +196,20 @@
             "direction": "s",
             "gender": "f",
             "group": "0",
-            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "10BASET"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "100BASETX"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "1000BASETX"
+                }
+            ],
             "type__name": "Electrical | RJ45"
         },
         {
@@ -122,7 +218,20 @@
             "direction": "s",
             "gender": "f",
             "group": "0",
-            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "10BASET"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "100BASETX"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "1000BASETX"
+                }
+            ],
             "type__name": "Electrical | RJ45"
         },
         {
@@ -131,7 +240,20 @@
             "direction": "s",
             "gender": "f",
             "group": "0",
-            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "10BASET"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "100BASETX"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "1000BASETX"
+                }
+            ],
             "type__name": "Electrical | RJ45"
         },
         {
@@ -140,7 +262,20 @@
             "direction": "s",
             "gender": "f",
             "group": "0",
-            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "10BASET"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "100BASETX"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "1000BASETX"
+                }
+            ],
             "type__name": "Electrical | RJ45"
         },
         {
@@ -149,7 +284,20 @@
             "direction": "s",
             "gender": "f",
             "group": "0",
-            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "10BASET"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "100BASETX"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "1000BASETX"
+                }
+            ],
             "type__name": "Electrical | RJ45"
         }
     ],

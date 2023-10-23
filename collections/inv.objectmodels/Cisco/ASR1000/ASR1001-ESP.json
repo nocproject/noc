@@ -1,5 +1,5 @@
 {
-    "name": "Cisco | ASR1000 | ASR1001 ESP",
+    "name": "Cisco | ASR1000 | ASR1001-ESP",
     "$collection": "inv.objectmodels",
     "uuid": "1ee36f3f-1b45-4f4f-90db-9f84335f0b60",
     "vendor__code": "CISCO",

@@ -19,7 +19,10 @@
             "description": "Delander 64-pin",
             "direction": "s",
             "gender": "f",
-            "protocols": ["PSTN"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "PSTN"
+            }],
             "type__name": "Huawei | Electrical | Delander 64-pin"
         },
         {
@@ -27,7 +30,10 @@
             "description": "Delander 64-pin",
             "direction": "s",
             "gender": "f",
-            "protocols": ["PSTN"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "PSTN"
+            }],
             "type__name": "Huawei | Electrical | Delander 64-pin"
         },
         {
@@ -35,7 +41,10 @@
             "description": "Delander 64-pin",
             "direction": "s",
             "gender": "f",
-            "protocols": ["ADSL2+"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "ADSL2+"
+            }],
             "type__name": "Huawei | Electrical | Delander 64-pin"
         },
         {
@@ -43,7 +52,10 @@
             "description": "Delander 64-pin",
             "direction": "s",
             "gender": "f",
-            "protocols": ["ADSL2+"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "ADSL2+"
+            }],
             "type__name": "Huawei | Electrical | Delander 64-pin"
         }
     ],

@@ -26,7 +26,10 @@
             "description": "",
             "direction": "i",
             "gender": "f",
-            "protocols": ["TransEth10G"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "TransEth10G"
+            }],
             "type__name": "Transceiver | XFP"
         },
         {
@@ -34,7 +37,10 @@
             "description": "",
             "direction": "i",
             "gender": "f",
-            "protocols": ["TransEth10G"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "TransEth10G"
+            }],
             "type__name": "Transceiver | XFP"
         },
         {
@@ -42,7 +48,10 @@
             "description": "",
             "direction": "i",
             "gender": "f",
-            "protocols": ["TransEth10G"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "TransEth10G"
+            }],
             "type__name": "Transceiver | XFP"
         },
         {
@@ -50,7 +59,10 @@
             "description": "",
             "direction": "i",
             "gender": "f",
-            "protocols": ["TransEth10G"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "TransEth10G"
+            }],
             "type__name": "Transceiver | XFP"
         },
         {
@@ -72,7 +84,16 @@
             "description": "Management",
             "direction": "s",
             "gender": "f",
-            "protocols": ["10BASET", "100BASETX"],
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "10BASET"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "100BASETX"
+                }
+            ],
             "type__name": "Electrical | RJ45"
         },
         {
@@ -80,7 +101,10 @@
             "description": "Console port",
             "direction": "s",
             "gender": "f",
-            "protocols": [">RS232"],
+            "protocols": [{
+                "direction": ">",
+                "protocol__code": "RS232"
+            }],
             "type__name": "Electrical | RJ45"
         },
         {
@@ -88,7 +112,16 @@
             "description": "AUX serial port",
             "direction": "s",
             "gender": "f",
-            "protocols": [">RS232", "<RS232"],
+            "protocols": [
+                {
+                    "direction": ">",
+                    "protocol__code": "RS232"
+                },
+                {
+                    "direction": "<",
+                    "protocol__code": "RS232"
+                }
+            ],
             "type__name": "Electrical | RJ45"
         },
         {
@@ -96,7 +129,10 @@
             "description": "USB Port",
             "direction": "i",
             "gender": "f",
-            "protocols": [">USB1"],
+            "protocols": [{
+                "direction": ">",
+                "protocol__code": "USB10"
+            }],
             "type__name": "Electrical | USB"
         },
         {

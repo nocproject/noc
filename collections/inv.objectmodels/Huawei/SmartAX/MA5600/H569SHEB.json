@@ -19,7 +19,6 @@
             "description": "32-channel SHDSL.BIS port",
             "direction": "s",
             "gender": "f",
-            "protocols": ["SHDSL.BIS"],
             "type__name": "Huawei | Electrical | Delander 64-pin"
         }
     ],

@@ -508,7 +508,10 @@ class ExtDocApplication(ExtApplication):
             attrs = self.clean(self.deserialize(request.body))
         except ValueError as e:
             self.logger.info("Bad request: %r (%s)", request.body, e)
-            return self.response(str(e), status=self.BAD_REQUEST)
+            return self.render_json(
+                {"status": False, "message": str(e), "traceback": str(e)},
+                status=self.BAD_REQUEST,
+            )
         qs = self.queryset(request).filter(**{self.pk: id})
         if self.exclude_fields:
             qs = qs.exclude(*self.exclude_fields)

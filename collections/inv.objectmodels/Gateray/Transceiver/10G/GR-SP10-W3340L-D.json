@@ -12,7 +12,10 @@
             "description": "SFP Connector",
             "direction": "o",
             "gender": "m",
-            "protocols": ["TransEth10G"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "TransEth10G"
+            }],
             "type__name": "Transceiver | SFP+"
         },
         {
@@ -20,7 +23,18 @@
             "description": "RxTx SC Port",
             "direction": "s",
             "gender": "f",
-            "protocols": [">10GBASEER-1270", "<10GBASEER-1330"],
+            "protocols": [
+                {
+                    "direction": ">",
+                    "discriminator": "1270",
+                    "protocol__code": "10GBASEER"
+                },
+                {
+                    "direction": "<",
+                    "discriminator": "1330",
+                    "protocol__code": "10GBASEER"
+                }
+            ],
             "type__name": "Optical | SC"
         }
     ],

@@ -12,7 +12,10 @@
             "description": "GBE1_rx",
             "direction": "s",
             "gender": "f",
-            "protocols": [">1000BASESX"],
+            "protocols": [{
+                "direction": ">",
+                "protocol__code": "1000BASESX"
+            }],
             "type__name": "Optical | SC"
         },
         {
@@ -20,7 +23,10 @@
             "description": "GBE1_tx",
             "direction": "s",
             "gender": "f",
-            "protocols": ["<1000BASESX"],
+            "protocols": [{
+                "direction": "<",
+                "protocol__code": "1000BASESX"
+            }],
             "type__name": "Optical | SC"
         },
         {
@@ -28,7 +34,10 @@
             "description": "GBE2_rx",
             "direction": "s",
             "gender": "f",
-            "protocols": [">1000BASESX"],
+            "protocols": [{
+                "direction": ">",
+                "protocol__code": "1000BASESX"
+            }],
             "type__name": "Optical | SC"
         },
         {
@@ -36,7 +45,10 @@
             "description": "GBE2_tx",
             "direction": "s",
             "gender": "f",
-            "protocols": ["<1000BASESX"],
+            "protocols": [{
+                "direction": "<",
+                "protocol__code": "1000BASESX"
+            }],
             "type__name": "Optical | SC"
         },
         {
@@ -44,7 +56,16 @@
             "description": "Console connector",
             "direction": "s",
             "gender": "f",
-            "protocols": [">RS232", "<RS232"],
+            "protocols": [
+                {
+                    "direction": ">",
+                    "protocol__code": "RS232"
+                },
+                {
+                    "direction": "<",
+                    "protocol__code": "RS232"
+                }
+            ],
             "type__name": "Electrical | RJ45"
         },
         {
@@ -52,7 +73,16 @@
             "description": "Aux connector",
             "direction": "s",
             "gender": "f",
-            "protocols": [">RS232", "<RS232"],
+            "protocols": [
+                {
+                    "direction": ">",
+                    "protocol__code": "RS232"
+                },
+                {
+                    "direction": "<",
+                    "protocol__code": "RS232"
+                }
+            ],
             "type__name": "Electrical | RJ45"
         },
         {
@@ -60,7 +90,20 @@
             "description": "Mng1 connector",
             "direction": "s",
             "gender": "f",
-            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "10BASET"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "100BASETX"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "1000BASETX"
+                }
+            ],
             "type__name": "Electrical | RJ45"
         },
         {
@@ -68,7 +111,20 @@
             "description": "Mng2 connector",
             "direction": "s",
             "gender": "f",
-            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "10BASET"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "100BASETX"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "1000BASETX"
+                }
+            ],
             "type__name": "Electrical | RJ45"
         }
     ],

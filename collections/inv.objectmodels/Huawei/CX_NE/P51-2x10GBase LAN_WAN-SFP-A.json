@@ -1,5 +1,5 @@
 {
-    "name": "Huawei | CX&NE | P51-2x10GBase LAN/WAN-SFP+ -A",
+    "name": "Huawei | CX&NE | P51-2x10GBase LAN/WAN-SFP+-A",
     "$collection": "inv.objectmodels",
     "uuid": "b0bfbc62-fbdf-4c1e-9bf0-b8e4c442d8e4",
     "vendor__code": "HUAWEI",
@@ -21,7 +21,10 @@
             "direction": "i",
             "gender": "f",
             "internal_name": "Port_0",
-            "protocols": ["TransEth10G"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "TransEth10G"
+            }],
             "type__name": "Transceiver | SFP+"
         },
         {
@@ -30,7 +33,10 @@
             "direction": "i",
             "gender": "f",
             "internal_name": "Port_1",
-            "protocols": ["TransEth10G"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "TransEth10G"
+            }],
             "type__name": "Transceiver | SFP+"
         }
     ],

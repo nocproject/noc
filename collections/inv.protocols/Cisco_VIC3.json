@@ -1,0 +1,10 @@
+{
+    "name": "Cisco VIC3",
+    "code": "CISCOVIC3",
+    "$collection": "inv.protocols",
+    "uuid": "274eca84-8dce-4848-bd5a-c7f86acd7f0f",
+    "description": "Cisco Voice Interface Card revision 3",
+    "data": [],
+    "connection_schema": "BO",
+    "technology__name": "Cisco | Interface Card"
+}

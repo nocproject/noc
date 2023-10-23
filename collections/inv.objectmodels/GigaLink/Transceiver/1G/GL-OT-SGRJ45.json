@@ -11,7 +11,10 @@
             "description": "SFP Connector",
             "direction": "o",
             "gender": "m",
-            "protocols": ["TransEth1G"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "TransEth1G"
+            }],
             "type__name": "Transceiver | SFP"
         },
         {
@@ -19,7 +22,10 @@
             "description": "TX Port",
             "direction": "s",
             "gender": "f",
-            "protocols": ["1000BASETX"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "1000BASETX"
+            }],
             "type__name": "Electrical | RJ45"
         }
     ],

@@ -1,0 +1,42 @@
+{
+    "name": "100BASE-FX",
+    "code": "100BASEFX",
+    "$collection": "inv.protocols",
+    "uuid": "262f2ccc-961c-4d36-8a86-1584e5152321",
+    "description": "100BASE-FX is a version of Fast Ethernet over optical fiber. 100BASE-FX is still used for existing installation of multimode fiber where more speed is not required, like industrial automation plants.",
+    "data": [],
+    "connection_schema": "BD",
+    "discriminators": [
+        {
+            "code": "1310",
+            "data": [
+                {
+                    "attr": "tx_wavelength",
+                    "interface": "optical",
+                    "value": 1310
+                }
+            ]
+        },
+        {
+            "code": "1490",
+            "data": [
+                {
+                    "attr": "tx_wavelength",
+                    "interface": "optical",
+                    "value": 1490
+                }
+            ]
+        },
+        {
+            "code": "1550",
+            "data": [
+                {
+                    "attr": "tx_wavelength",
+                    "interface": "optical",
+                    "value": 1550
+                }
+            ]
+        }
+    ],
+    "technology__name": "Ethernet"
+}

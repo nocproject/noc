@@ -12,7 +12,10 @@
             "description": "GBIC Connector",
             "direction": "o",
             "gender": "m",
-            "protocols": ["TransEth1G"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "TransEth1G"
+            }],
             "type__name": "Transceiver | GBIC | Cisco"
         },
         {
@@ -20,7 +23,10 @@
             "description": "RX Port",
             "direction": "s",
             "gender": "f",
-            "protocols": [">1000BASESX"],
+            "protocols": [{
+                "direction": ">",
+                "protocol__code": "1000BASESX"
+            }],
             "type__name": "Optical | SC"
         },
         {
@@ -28,7 +34,10 @@
             "description": "TX Port",
             "direction": "s",
             "gender": "f",
-            "protocols": ["<1000BASESX"],
+            "protocols": [{
+                "direction": "<",
+                "protocol__code": "1000BASESX"
+            }],
             "type__name": "Optical | SC"
         }
     ],

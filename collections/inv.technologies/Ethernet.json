@@ -1,0 +1,8 @@
+{
+    "name": "Ethernet",
+    "$collection": "inv.technologies",
+    "uuid": "533cdc92-b6f7-4769-9ffd-253693aa28b2",
+    "single_service": false,
+    "single_client": false,
+    "allow_children": false
+}

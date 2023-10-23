@@ -1,0 +1,50 @@
+{
+    "name": "Cisco | ISR | Module | VWIC-2MFT-E1-DI",
+    "$collection": "inv.objectmodels",
+    "uuid": "c4cf4cb9-6f68-43f6-90fe-a9bec614638c",
+    "vendor__code": "CISCO",
+    "description": "2-Port RJ-48 Multiflex Trunk - E1 with drop and insert Voice/WAN Interface Card",
+    "cr_context": "DCS",
+    "connections": [
+        {
+            "name": "Se0",
+            "description": "Serial N/X/0",
+            "direction": "s",
+            "gender": "f",
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "G703"
+            }],
+            "type__name": "Electrical | RJ48"
+        },
+        {
+            "name": "Se1",
+            "description": "Serial N/X/1",
+            "direction": "s",
+            "gender": "f",
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "G703"
+            }],
+            "type__name": "Electrical | RJ48"
+        },
+        {
+            "name": "in",
+            "description": "Voice WAN Interface Card connector",
+            "direction": "o",
+            "gender": "m",
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "CISCOVWIC"
+            }],
+            "type__name": "Cisco | ISR | DCS"
+        }
+    ],
+    "data": [
+        {
+            "attr": "part_no",
+            "interface": "asset",
+            "value": ["VWIC-2MFT-E1-DI="]
+        }
+    ]
+}

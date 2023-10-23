@@ -11,7 +11,24 @@
             "description": "Main port",
             "direction": "s",
             "gender": "f",
-            "protocols": ["10BASET", "100BASETX", "1000BASETX", ">POE"],
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "10BASET"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "100BASETX"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "1000BASETX"
+                },
+                {
+                    "direction": ">",
+                    "protocol__code": "POE"
+                }
+            ],
             "type__name": "Electrical | RJ45"
         },
         {
@@ -19,7 +36,20 @@
             "description": "Secondary port",
             "direction": "s",
             "gender": "f",
-            "protocols": ["10BASET", "100BASETX", "<POE"],
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "10BASET"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "100BASETX"
+                },
+                {
+                    "direction": "<",
+                    "protocol__code": "POE"
+                }
+            ],
             "type__name": "Electrical | RJ45"
         },
         {
@@ -27,7 +57,10 @@
             "description": "MIMO 2x2 5GHz",
             "direction": "s",
             "gender": "f",
-            "protocols": ["802.11abgn"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "802.11a"
+            }],
             "type__name": "Radio | RF | RP SMA"
         },
         {
@@ -35,7 +68,10 @@
             "description": "MIMO 2x2 5GHz",
             "direction": "s",
             "gender": "f",
-            "protocols": ["802.11abgn"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "802.11a"
+            }],
             "type__name": "Radio | RF | RP SMA"
         },
         {
@@ -43,7 +79,6 @@
             "description": "GPS",
             "direction": "s",
             "gender": "f",
-            "protocols": ["GPS"],
             "type__name": "Radio | RF | SMA"
         }
     ],

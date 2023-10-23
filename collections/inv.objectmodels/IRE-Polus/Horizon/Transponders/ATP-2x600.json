@@ -1,5 +1,5 @@
 {
-    "name": "IRE-Polus | Horizon | ATP-2x600",
+    "name": "IRE-Polus | Horizon | Transponders | ATP-2x600",
     "$collection": "inv.objectmodels",
     "uuid": "4ea89a48-d828-45b3-abeb-44551584f18f",
     "vendor__code": "IRE-POLUS",
@@ -20,7 +20,6 @@
             "description": "Line 1 TX Port",
             "direction": "s",
             "gender": "f",
-            "protocols": ["<OTUC1", "<OTUC2", "<OTUC3", "<OTUC4", "<OTUC5", "<OTUC6"],
             "type__name": "Optical | LC"
         },
         {
@@ -28,7 +27,6 @@
             "description": "Line 1 RX Port",
             "direction": "s",
             "gender": "f",
-            "protocols": [">OTUC1", ">OTUC2", ">OTUC3", ">OTUC4", ">OTUC5", ">OTUC6"],
             "type__name": "Optical | LC"
         },
         {
@@ -36,7 +34,6 @@
             "description": "Line 2 TX Port",
             "direction": "s",
             "gender": "f",
-            "protocols": ["<OTUC1", "<OTUC2", "<OTUC3", "<OTUC4", "<OTUC5", "<OTUC6"],
             "type__name": "Optical | LC"
         },
         {
@@ -44,7 +41,6 @@
             "description": "Line 2 RX Port",
             "direction": "s",
             "gender": "f",
-            "protocols": [">OTUC1", ">OTUC2", ">OTUC3", ">OTUC4", ">OTUC5", ">OTUC6"],
             "type__name": "Optical | LC"
         },
         {
@@ -52,7 +48,10 @@
             "description": "Клиентский порт 1 для установки модулей QSFP28",
             "direction": "i",
             "gender": "f",
-            "protocols": ["TransEth10G"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "TransEth10G"
+            }],
             "type__name": "Transceiver | QSFP+"
         },
         {
@@ -60,7 +59,10 @@
             "description": "Клиентский порт 2 для установки модулей QSFP28",
             "direction": "i",
             "gender": "f",
-            "protocols": ["TransEth10G"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "TransEth10G"
+            }],
             "type__name": "Transceiver | QSFP+"
         },
         {
@@ -68,7 +70,10 @@
             "description": "Клиентский порт 3 для установки модулей QSFP28",
             "direction": "i",
             "gender": "f",
-            "protocols": ["TransEth10G"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "TransEth10G"
+            }],
             "type__name": "Transceiver | QSFP+"
         },
         {
@@ -76,7 +81,10 @@
             "description": "Клиентский порт 4 для установки модулей QSFP28",
             "direction": "i",
             "gender": "f",
-            "protocols": ["TransEth10G"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "TransEth10G"
+            }],
             "type__name": "Transceiver | QSFP+"
         },
         {
@@ -84,7 +92,10 @@
             "description": "Клиентский порт 5 для установки модулей QSFP28",
             "direction": "i",
             "gender": "f",
-            "protocols": ["TransEth10G"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "TransEth10G"
+            }],
             "type__name": "Transceiver | QSFP+"
         },
         {
@@ -92,7 +103,10 @@
             "description": "Клиентский порт 6 для установки модулей QSFP28",
             "direction": "i",
             "gender": "f",
-            "protocols": ["TransEth10G"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "TransEth10G"
+            }],
             "type__name": "Transceiver | QSFP+"
         },
         {
@@ -100,7 +114,10 @@
             "description": "Клиентский порт 7 для установки модулей QSFP28",
             "direction": "i",
             "gender": "f",
-            "protocols": ["TransEth10G"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "TransEth10G"
+            }],
             "type__name": "Transceiver | QSFP+"
         },
         {
@@ -108,7 +125,10 @@
             "description": "Клиентский порт 8 для установки модулей QSFP28",
             "direction": "i",
             "gender": "f",
-            "protocols": ["TransEth10G"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "TransEth10G"
+            }],
             "type__name": "Transceiver | QSFP+"
         },
         {
@@ -116,7 +136,10 @@
             "description": "Клиентский порт 9 для установки модулей QSFP28",
             "direction": "i",
             "gender": "f",
-            "protocols": ["TransEth10G"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "TransEth10G"
+            }],
             "type__name": "Transceiver | QSFP+"
         },
         {
@@ -124,7 +147,10 @@
             "description": "Клиентский порт 10 для установки модулей QSFP28",
             "direction": "i",
             "gender": "f",
-            "protocols": ["TransEth10G"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "TransEth10G"
+            }],
             "type__name": "Transceiver | QSFP+"
         },
         {
@@ -132,7 +158,10 @@
             "description": "Клиентский порт 11 для установки модулей QSFP28",
             "direction": "i",
             "gender": "f",
-            "protocols": ["TransEth10G"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "TransEth10G"
+            }],
             "type__name": "Transceiver | QSFP+"
         },
         {
@@ -140,7 +169,10 @@
             "description": "Клиентский порт 12 для установки модулей QSFP28",
             "direction": "i",
             "gender": "f",
-            "protocols": ["TransEth10G"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "TransEth10G"
+            }],
             "type__name": "Transceiver | QSFP+"
         }
     ],

@@ -1,0 +1,9 @@
+{
+    "name": "Management",
+    "$collection": "inv.technologies",
+    "uuid": "d8854fef-e3df-424f-af2d-4b4533c9c043",
+    "description": "Device management",
+    "single_service": false,
+    "single_client": false,
+    "allow_children": false
+}

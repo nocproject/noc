@@ -1,0 +1,50 @@
+{
+    "name": "Cisco | ISR | Module | VWIC3-2MFT-T1/E1",
+    "$collection": "inv.objectmodels",
+    "uuid": "9ca9a839-4132-4be5-aae8-5670975382fc",
+    "vendor__code": "CISCO",
+    "description": "2-Port T1/E1 Multiflex Trunk Voice/WAN Interface Card",
+    "cr_context": "DCS",
+    "connections": [
+        {
+            "name": "Se0",
+            "description": "Serial N/X/0",
+            "direction": "s",
+            "gender": "f",
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "G703"
+            }],
+            "type__name": "Electrical | RJ48"
+        },
+        {
+            "name": "Se1",
+            "description": "Serial N/X/1",
+            "direction": "s",
+            "gender": "f",
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "G703"
+            }],
+            "type__name": "Electrical | RJ48"
+        },
+        {
+            "name": "in",
+            "description": "Voice WAN Interface Card slot connector",
+            "direction": "o",
+            "gender": "m",
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "CISCOVWIC3"
+            }],
+            "type__name": "Cisco | ISR | DCS"
+        }
+    ],
+    "data": [
+        {
+            "attr": "part_no",
+            "interface": "asset",
+            "value": ["VWIC3-2MFT-T1/E1"]
+        }
+    ]
+}

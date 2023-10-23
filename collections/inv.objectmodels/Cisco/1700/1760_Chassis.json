@@ -13,7 +13,16 @@
             "direction": "s",
             "gender": "f",
             "group": "0",
-            "protocols": ["10BASET", "100BASETX"],
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "10BASET"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "100BASETX"
+                }
+            ],
             "type__name": "Electrical | RJ45"
         },
         {
@@ -21,7 +30,10 @@
             "description": "DaughterCard Slot 0",
             "direction": "i",
             "gender": "f",
-            "protocols": ["WIC"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "CISCOWIC"
+            }],
             "type__name": "Cisco | ISR | DCS"
         },
         {
@@ -29,7 +41,10 @@
             "description": "DaughterCard Slot 1",
             "direction": "i",
             "gender": "f",
-            "protocols": ["WIC"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "CISCOWIC"
+            }],
             "type__name": "Cisco | ISR | DCS"
         },
         {
@@ -37,7 +52,10 @@
             "description": "DaughterCard Slot 2",
             "direction": "i",
             "gender": "f",
-            "protocols": ["VIC"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "CISCOVIC"
+            }],
             "type__name": "Cisco | ISR | DCS"
         },
         {
@@ -45,7 +63,10 @@
             "description": "DaughterCard Slot 3",
             "direction": "i",
             "gender": "f",
-            "protocols": ["VIC"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "CISCOVIC"
+            }],
             "type__name": "Cisco | ISR | DCS"
         },
         {
@@ -53,7 +74,6 @@
             "description": "PVDM (DSP) Slots 0",
             "direction": "i",
             "gender": "f",
-            "protocols": ["PVDM"],
             "type__name": "Cisco | ISR | PVDM2"
         },
         {
@@ -61,7 +81,6 @@
             "description": "PVDM (DSP) Slots 1",
             "direction": "i",
             "gender": "f",
-            "protocols": ["PVDM"],
             "type__name": "Cisco | ISR | PVDM2"
         },
         {
@@ -69,7 +88,10 @@
             "description": "Console port",
             "direction": "s",
             "gender": "f",
-            "protocols": [">RS232"],
+            "protocols": [{
+                "direction": ">",
+                "protocol__code": "RS232"
+            }],
             "type__name": "Electrical | RJ45"
         },
         {
@@ -77,7 +99,16 @@
             "description": "Aux port",
             "direction": "s",
             "gender": "f",
-            "protocols": [">RS232", "<RS232"],
+            "protocols": [
+                {
+                    "direction": ">",
+                    "protocol__code": "RS232"
+                },
+                {
+                    "direction": "<",
+                    "protocol__code": "RS232"
+                }
+            ],
             "type__name": "Electrical | RJ45"
         },
         {
@@ -85,7 +116,16 @@
             "description": "Inline power",
             "direction": "s",
             "gender": "m",
-            "protocols": [">220VAC", ">110VAC"],
+            "protocols": [
+                {
+                    "direction": ">",
+                    "protocol__code": "220VAC"
+                },
+                {
+                    "direction": ">",
+                    "protocol__code": "110VAC"
+                }
+            ],
             "type__name": "Power | IEC 60320 C14"
         }
     ],

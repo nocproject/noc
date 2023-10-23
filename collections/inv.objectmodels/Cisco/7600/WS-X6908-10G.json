@@ -25,7 +25,10 @@
             "description": "TenGigabitEthernet X/1",
             "direction": "i",
             "gender": "f",
-            "protocols": ["TransEth10G"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "TransEth10G"
+            }],
             "type__name": "Transceiver | X2 | Cisco"
         },
         {
@@ -33,7 +36,10 @@
             "description": "TenGigabitEthernet X/2",
             "direction": "i",
             "gender": "f",
-            "protocols": ["TransEth10G"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "TransEth10G"
+            }],
             "type__name": "Transceiver | X2 | Cisco"
         },
         {
@@ -41,7 +47,10 @@
             "description": "TenGigabitEthernet X/3",
             "direction": "i",
             "gender": "f",
-            "protocols": ["TransEth10G"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "TransEth10G"
+            }],
             "type__name": "Transceiver | X2 | Cisco"
         },
         {
@@ -49,7 +58,10 @@
             "description": "TenGigabitEthernet X/4",
             "direction": "i",
             "gender": "f",
-            "protocols": ["TransEth10G"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "TransEth10G"
+            }],
             "type__name": "Transceiver | X2 | Cisco"
         },
         {
@@ -57,7 +69,10 @@
             "description": "TenGigabitEthernet X/5",
             "direction": "i",
             "gender": "f",
-            "protocols": ["TransEth10G"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "TransEth10G"
+            }],
             "type__name": "Transceiver | X2 | Cisco"
         },
         {
@@ -65,7 +80,10 @@
             "description": "TenGigabitEthernet X/6",
             "direction": "i",
             "gender": "f",
-            "protocols": ["TransEth10G"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "TransEth10G"
+            }],
             "type__name": "Transceiver | X2 | Cisco"
         },
         {
@@ -73,7 +91,10 @@
             "description": "TenGigabitEthernet X/7",
             "direction": "i",
             "gender": "f",
-            "protocols": ["TransEth10G"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "TransEth10G"
+            }],
             "type__name": "Transceiver | X2 | Cisco"
         },
         {
@@ -81,7 +102,10 @@
             "description": "TenGigabitEthernet X/8",
             "direction": "i",
             "gender": "f",
-            "protocols": ["TransEth10G"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "TransEth10G"
+            }],
             "type__name": "Transceiver | X2 | Cisco"
         }
     ],

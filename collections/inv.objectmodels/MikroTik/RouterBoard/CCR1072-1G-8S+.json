@@ -12,7 +12,20 @@
             "description": "ether1",
             "direction": "s",
             "gender": "f",
-            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "10BASET"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "100BASETX"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "1000BASETX"
+                }
+            ],
             "type__name": "Electrical | RJ45"
         },
         {
@@ -21,7 +34,16 @@
             "direction": "i",
             "gender": "f",
             "internal_name": "sfpsfp-sfpplus1",
-            "protocols": ["TransEth1G", "TransEth10G"],
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth1G"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth10G"
+                }
+            ],
             "type__name": "Transceiver | SFP+"
         },
         {
@@ -30,7 +52,16 @@
             "direction": "i",
             "gender": "f",
             "internal_name": "sfpsfp-sfpplus2",
-            "protocols": ["TransEth1G", "TransEth10G"],
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth1G"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth10G"
+                }
+            ],
             "type__name": "Transceiver | SFP+"
         },
         {
@@ -39,7 +70,16 @@
             "direction": "i",
             "gender": "f",
             "internal_name": "sfpsfp-sfpplus3",
-            "protocols": ["TransEth1G", "TransEth10G"],
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth1G"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth10G"
+                }
+            ],
             "type__name": "Transceiver | SFP+"
         },
         {
@@ -48,7 +88,16 @@
             "direction": "i",
             "gender": "f",
             "internal_name": "sfpsfp-sfpplus4",
-            "protocols": ["TransEth1G", "TransEth10G"],
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth1G"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth10G"
+                }
+            ],
             "type__name": "Transceiver | SFP+"
         },
         {
@@ -57,7 +106,16 @@
             "direction": "i",
             "gender": "f",
             "internal_name": "sfpsfp-sfpplus5",
-            "protocols": ["TransEth1G", "TransEth10G"],
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth1G"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth10G"
+                }
+            ],
             "type__name": "Transceiver | SFP+"
         },
         {
@@ -66,7 +124,16 @@
             "direction": "i",
             "gender": "f",
             "internal_name": "sfpsfp-sfpplus6",
-            "protocols": ["TransEth1G", "TransEth10G"],
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth1G"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth10G"
+                }
+            ],
             "type__name": "Transceiver | SFP+"
         },
         {
@@ -75,7 +142,16 @@
             "direction": "i",
             "gender": "f",
             "internal_name": "sfpsfp-sfpplus7",
-            "protocols": ["TransEth1G", "TransEth10G"],
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth1G"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth10G"
+                }
+            ],
             "type__name": "Transceiver | SFP+"
         },
         {
@@ -84,7 +160,16 @@
             "direction": "i",
             "gender": "f",
             "internal_name": "sfpsfp-sfpplus8",
-            "protocols": ["TransEth1G", "TransEth10G"],
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth1G"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth10G"
+                }
+            ],
             "type__name": "Transceiver | SFP+"
         },
         {
@@ -92,7 +177,10 @@
             "description": "Console port",
             "direction": "s",
             "gender": "f",
-            "protocols": [">RS232"],
+            "protocols": [{
+                "direction": ">",
+                "protocol__code": "RS232"
+            }],
             "type__name": "Electrical | RJ45"
         },
         {
@@ -100,7 +188,16 @@
             "description": "USB type A",
             "direction": "s",
             "gender": "f",
-            "protocols": ["<USB10", "<USB11"],
+            "protocols": [
+                {
+                    "direction": "<",
+                    "protocol__code": "USB10"
+                },
+                {
+                    "direction": "<",
+                    "protocol__code": "USB11"
+                }
+            ],
             "type__name": "Electrical | USB"
         },
         {
@@ -108,7 +205,16 @@
             "description": "USB type AB",
             "direction": "s",
             "gender": "f",
-            "protocols": ["<USB10", "<USB11"],
+            "protocols": [
+                {
+                    "direction": "<",
+                    "protocol__code": "USB10"
+                },
+                {
+                    "direction": "<",
+                    "protocol__code": "USB11"
+                }
+            ],
             "type__name": "Electrical | USB"
         },
         {
@@ -116,7 +222,10 @@
             "description": "Power inlet",
             "direction": "s",
             "gender": "f",
-            "protocols": [">220VAC"],
+            "protocols": [{
+                "direction": ">",
+                "protocol__code": "220VAC"
+            }],
             "type__name": "Power | IEC 60130-10"
         },
         {
@@ -124,7 +233,10 @@
             "description": "Power inlet",
             "direction": "s",
             "gender": "f",
-            "protocols": [">220VAC"],
+            "protocols": [{
+                "direction": ">",
+                "protocol__code": "220VAC"
+            }],
             "type__name": "Power | IEC 60130-10"
         }
     ],

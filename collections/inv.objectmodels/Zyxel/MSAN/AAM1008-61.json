@@ -1,0 +1,230 @@
+{
+    "name": "Zyxel | MSAN | AAM1008-61",
+    "$collection": "inv.objectmodels",
+    "uuid": "3058bfff-3778-43b0-adaf-de774d52844f",
+    "vendor__code": "ZYXEL",
+    "description": "8-port Annex A ADSL line card (over POTS) with splitters built-in",
+    "connection_rule__name": "Generic | Switch SFP",
+    "cr_context": "LINECARD",
+    "labels": ["noc::inv::lc", "noc::inv::port"],
+    "connections": [
+        {
+            "name": "in",
+            "description": "Chassis connection",
+            "direction": "o",
+            "gender": "m",
+            "type__name": "Zyxel | MSAN | Linecard"
+        },
+        {
+            "name": "LINE1",
+            "description": "USER 1",
+            "direction": "s",
+            "gender": "f",
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "ADSL"
+            }],
+            "type__name": "Electrical | RJ11"
+        },
+        {
+            "name": "LINE2",
+            "description": "USER 2",
+            "direction": "s",
+            "gender": "f",
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "ADSL"
+            }],
+            "type__name": "Electrical | RJ11"
+        },
+        {
+            "name": "LINE3",
+            "description": "USER 3",
+            "direction": "s",
+            "gender": "f",
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "ADSL"
+            }],
+            "type__name": "Electrical | RJ11"
+        },
+        {
+            "name": "LINE4",
+            "description": "USER 4",
+            "direction": "s",
+            "gender": "f",
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "ADSL"
+            }],
+            "type__name": "Electrical | RJ11"
+        },
+        {
+            "name": "LINE5",
+            "description": "USER 5",
+            "direction": "s",
+            "gender": "f",
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "ADSL"
+            }],
+            "type__name": "Electrical | RJ11"
+        },
+        {
+            "name": "LINE6",
+            "description": "USER 6",
+            "direction": "s",
+            "gender": "f",
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "ADSL"
+            }],
+            "type__name": "Electrical | RJ11"
+        },
+        {
+            "name": "LINE7",
+            "description": "USER 7",
+            "direction": "s",
+            "gender": "f",
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "ADSL"
+            }],
+            "type__name": "Electrical | RJ11"
+        },
+        {
+            "name": "LINE8",
+            "description": "USER 8",
+            "direction": "s",
+            "gender": "f",
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "ADSL"
+            }],
+            "type__name": "Electrical | RJ11"
+        },
+        {
+            "name": "PSTN1",
+            "description": "PSTN 1",
+            "direction": "s",
+            "gender": "f",
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "PSTN"
+            }],
+            "type__name": "Electrical | RJ11"
+        },
+        {
+            "name": "PSTN2",
+            "description": "PSTN 2",
+            "direction": "s",
+            "gender": "f",
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "PSTN"
+            }],
+            "type__name": "Electrical | RJ11"
+        },
+        {
+            "name": "PSTN3",
+            "description": "PSTN 3",
+            "direction": "s",
+            "gender": "f",
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "PSTN"
+            }],
+            "type__name": "Electrical | RJ11"
+        },
+        {
+            "name": "PSTN4",
+            "description": "PSTN 4",
+            "direction": "s",
+            "gender": "f",
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "PSTN"
+            }],
+            "type__name": "Electrical | RJ11"
+        },
+        {
+            "name": "PSTN5",
+            "description": "PSTN 5",
+            "direction": "s",
+            "gender": "f",
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "PSTN"
+            }],
+            "type__name": "Electrical | RJ11"
+        },
+        {
+            "name": "PSTN6",
+            "description": "PSTN 6",
+            "direction": "s",
+            "gender": "f",
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "PSTN"
+            }],
+            "type__name": "Electrical | RJ11"
+        },
+        {
+            "name": "PSTN7",
+            "description": "PSTN 7",
+            "direction": "s",
+            "gender": "f",
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "PSTN"
+            }],
+            "type__name": "Electrical | RJ11"
+        },
+        {
+            "name": "PSTN8",
+            "description": "PSTN 8",
+            "direction": "s",
+            "gender": "f",
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "PSTN"
+            }],
+            "type__name": "Electrical | RJ11"
+        },
+        {
+            "name": "console",
+            "description": "Console port",
+            "direction": "s",
+            "gender": "f",
+            "protocols": [{
+                "direction": ">",
+                "protocol__code": "RS232"
+            }],
+            "type__name": "Electrical | RJ9"
+        },
+        {
+            "name": "1",
+            "description": "Port 1 (Copper)",
+            "direction": "s",
+            "gender": "f",
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "10BASET"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "100BASETX"
+                }
+            ],
+            "type__name": "Electrical | RJ45"
+        }
+    ],
+    "data": [
+        {
+            "attr": "part_no",
+            "interface": "asset",
+            "value": ["AAM1008-61"]
+        }
+    ]
+}

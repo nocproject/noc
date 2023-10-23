@@ -12,7 +12,6 @@
             "description": "USER 1-24",
             "direction": "s",
             "gender": "f",
-            "protocols": ["ReachDSL"],
             "type__name": "Electrical | Telco-50"
         },
         {

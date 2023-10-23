@@ -1,0 +1,10 @@
+{
+    "name": "10GBASE-SR",
+    "code": "10GBASESR",
+    "$collection": "inv.protocols",
+    "uuid": "6bb1846b-d9e8-4d1e-bec2-3e8604c8337d",
+    "description": "10GBASE-SR (\"short range\") is a port type for multi-mode fiber and uses 850 nm lasers.[28] Its Physical Coding Sublayer (PCS) is 64b/66b and is defined in IEEE 802.3 Clause 49 and its Physical Medium Dependent (PMD) sublayer in Clause 52.",
+    "data": [],
+    "connection_schema": "BD",
+    "technology__name": "Ethernet"
+}

@@ -12,7 +12,24 @@
             "description": "Uplink port",
             "direction": "s",
             "gender": "f",
-            "protocols": ["10BASET", "100BASETX", "1000BASETX", ">POE"],
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "10BASET"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "100BASETX"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "1000BASETX"
+                },
+                {
+                    "direction": ">",
+                    "protocol__code": "POE"
+                }
+            ],
             "type__name": "Electrical | RJ45"
         },
         {
@@ -20,7 +37,10 @@
             "description": "Console port",
             "direction": "s",
             "gender": "f",
-            "protocols": [">RS232"],
+            "protocols": [{
+                "direction": ">",
+                "protocol__code": "RS232"
+            }],
             "type__name": "Electrical | RJ45"
         },
         {
@@ -28,7 +48,10 @@
             "description": "Power",
             "direction": "s",
             "gender": "f",
-            "protocols": ["<12VDC"],
+            "protocols": [{
+                "direction": "<",
+                "protocol__code": "12VDC"
+            }],
             "type__name": "Power | CEE 7/4 Type F"
         },
         {
@@ -36,7 +59,10 @@
             "description": "2.4G intrernal antenna interface",
             "direction": "s",
             "gender": "f",
-            "protocols": ["802.11abgn"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "802.11a"
+            }],
             "type__name": "Radio | RF | N"
         },
         {
@@ -44,7 +70,10 @@
             "description": "5G intrernal antenna interface",
             "direction": "s",
             "gender": "f",
-            "protocols": ["802.11abgn"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "802.11a"
+            }],
             "type__name": "Radio | RF | N"
         }
     ],

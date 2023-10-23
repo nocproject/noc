@@ -1,0 +1,9 @@
+{
+    "name": "Time Syncrinization",
+    "$collection": "inv.technologies",
+    "uuid": "efc7fccd-aa98-4844-912e-ba87ccd410a9",
+    "description": "Syncronization technology",
+    "single_service": false,
+    "single_client": false,
+    "allow_children": false
+}

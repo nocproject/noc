@@ -19,7 +19,10 @@
             "direction": "s",
             "gender": "f",
             "group": "dc_jack",
-            "protocols": [">-48VDC"],
+            "protocols": [{
+                "direction": ">",
+                "protocol__code": "-48VDC"
+            }],
             "type__name": "Power | M4 Pin"
         },
         {
@@ -28,7 +31,10 @@
             "direction": "s",
             "gender": "f",
             "group": "dc_jack",
-            "protocols": [">-48VDC"],
+            "protocols": [{
+                "direction": ">",
+                "protocol__code": "-48VDC"
+            }],
             "type__name": "Power | M4 Pin"
         }
     ],

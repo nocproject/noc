@@ -19,7 +19,16 @@
             "description": "0-23 channels of POTS+VDSL2",
             "direction": "s",
             "gender": "f",
-            "protocols": ["PSTN", "VDSL2"],
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "PSTN"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "VDSL2"
+                }
+            ],
             "type__name": "Huawei | Electrical | Champ 64-pin"
         },
         {
@@ -27,7 +36,16 @@
             "description": "24-47 channels of POTS+VDSL2",
             "direction": "s",
             "gender": "f",
-            "protocols": ["PSTN", "VDSL2"],
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "PSTN"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "VDSL2"
+                }
+            ],
             "type__name": "Huawei | Electrical | Champ 64-pin"
         }
     ],

@@ -1,0 +1,113 @@
+{
+    "name": "Zyxel | MSAN | ALC1272G-51",
+    "$collection": "inv.objectmodels",
+    "uuid": "74da45c7-9074-4590-8c98-d8b78f6bb728",
+    "vendor__code": "ZYXEL",
+    "description": "Hot swappable 72-port ADSL2/ADSL2+ Annex A line card",
+    "connection_rule__name": "Zyxel | MSAN",
+    "cr_context": "LINECARD",
+    "labels": ["noc::inv::lc", "noc::inv::port"],
+    "connections": [
+        {
+            "name": "in",
+            "description": "Chassis connection",
+            "direction": "o",
+            "gender": "m",
+            "type__name": "Zyxel | MSAN | Linecard"
+        },
+        {
+            "name": "xDSL1",
+            "description": "xDSL ports 1-24",
+            "direction": "s",
+            "gender": "f",
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "ADSL2"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "ADSL2+"
+                }
+            ],
+            "type__name": "Electrical | Telco-50"
+        },
+        {
+            "name": "xDSL2",
+            "description": "xDSL ports 25-48",
+            "direction": "s",
+            "gender": "f",
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "ADSL2"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "ADSL2+"
+                }
+            ],
+            "type__name": "Electrical | Telco-50"
+        },
+        {
+            "name": "xDSL3",
+            "description": "xDSL ports 49-72",
+            "direction": "s",
+            "gender": "f",
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "ADSL2"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "ADSL2+"
+                }
+            ],
+            "type__name": "Electrical | Telco-50"
+        },
+        {
+            "name": "console",
+            "description": "Console port",
+            "direction": "s",
+            "gender": "f",
+            "protocols": [{
+                "direction": ">",
+                "protocol__code": "RS232"
+            }],
+            "type__name": "Electrical | RJ9"
+        }
+    ],
+    "data": [
+        {
+            "attr": "power",
+            "interface": "power",
+            "value": 69.0
+        },
+        {
+            "attr": "part_no",
+            "interface": "asset",
+            "value": ["ALC1272G-51"]
+        },
+        {
+            "attr": "weight",
+            "interface": "weight",
+            "value": 0.5
+        },
+        {
+            "attr": "width",
+            "interface": "dimensions",
+            "value": 390
+        },
+        {
+            "attr": "depth",
+            "interface": "dimensions",
+            "value": 240
+        },
+        {
+            "attr": "height",
+            "interface": "dimensions",
+            "value": 14
+        }
+    ]
+}

@@ -12,7 +12,10 @@
             "description": "RF Board 71-76Ghz TDD",
             "direction": "s",
             "gender": "f",
-            "protocols": ["802.11abgn"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "802.11a"
+            }],
             "type__name": "Radio | RF | N"
         },
         {
@@ -21,7 +24,24 @@
             "direction": "s",
             "gender": "f",
             "group": "1",
-            "protocols": ["10BASET", "100BASETX", "1000BASETX", ">POE"],
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "10BASET"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "100BASETX"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "1000BASETX"
+                },
+                {
+                    "direction": ">",
+                    "protocol__code": "POE"
+                }
+            ],
             "type__name": "Electrical | RJ45"
         },
         {
@@ -30,7 +50,16 @@
             "direction": "i",
             "gender": "f",
             "group": "1",
-            "protocols": ["TransEth100M", "TransEth1G"],
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth100M"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth1G"
+                }
+            ],
             "type__name": "Transceiver | SFP"
         },
         {
@@ -39,7 +68,20 @@
             "direction": "s",
             "gender": "f",
             "group": "2",
-            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "10BASET"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "100BASETX"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "1000BASETX"
+                }
+            ],
             "type__name": "Electrical | RJ45"
         },
         {
@@ -48,7 +90,16 @@
             "direction": "i",
             "gender": "f",
             "group": "2",
-            "protocols": ["TransEth100M", "TransEth1G"],
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth100M"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth1G"
+                }
+            ],
             "type__name": "Transceiver | SFP"
         },
         {
@@ -63,7 +114,10 @@
             "description": "DC input Positive contact",
             "direction": "i",
             "gender": "m",
-            "protocols": [">-48VDC"],
+            "protocols": [{
+                "direction": ">",
+                "protocol__code": "-48VDC"
+            }],
             "type__name": "Power | MSTB 2.5/3-G-5.08"
         },
         {
@@ -71,7 +125,10 @@
             "description": "DC input Negative contact",
             "direction": "i",
             "gender": "m",
-            "protocols": [">-48VDC"],
+            "protocols": [{
+                "direction": ">",
+                "protocol__code": "-48VDC"
+            }],
             "type__name": "Power | MSTB 2.5/3-G-5.08"
         }
     ],

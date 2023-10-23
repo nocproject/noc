@@ -26,7 +26,10 @@
             "description": "DC power inlet",
             "direction": "s",
             "gender": "m",
-            "protocols": [">-48VDC"],
+            "protocols": [{
+                "direction": ">",
+                "protocol__code": "-48VDC"
+            }],
             "type__name": "Power | MSTB 2.5/2-G-5.08"
         }
     ],

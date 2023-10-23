@@ -1,0 +1,10 @@
+{
+    "name": "1000BASE‑LX10",
+    "code": "1000BASELX10",
+    "$collection": "inv.protocols",
+    "uuid": "4ce353b6-af15-455f-939c-30d051590129",
+    "description": "1000BASE-LX10 was standardized six years after the initial gigabit fiber versions as part of the Ethernet in the First Mile task group. It is practically identical to 1000BASE-LX, but achieves longer distances up to 10 km over a pair of single-mode fiber due to higher quality optics",
+    "data": [],
+    "connection_schema": "BO",
+    "technology__name": "Ethernet"
+}

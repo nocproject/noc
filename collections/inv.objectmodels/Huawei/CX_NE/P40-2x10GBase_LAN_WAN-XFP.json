@@ -1,0 +1,80 @@
+{
+    "name": "Huawei | CX&NE | P40-2x10GBase LAN/WAN-XFP",
+    "$collection": "inv.objectmodels",
+    "uuid": "1ffa2b98-357b-4adf-97ab-d90e0baa3d94",
+    "vendor__code": "HUAWEI",
+    "description": "CX600,CR52L2XXN0,2-Port 10GBase LAN/WAN-XFP Flexible Card(P40)",
+    "connection_rule__name": "Huawei | CX",
+    "cr_context": "FPIC",
+    "labels": ["noc::inv::lc", "noc::inv::port"],
+    "connections": [
+        {
+            "name": "in",
+            "description": "Chassis connector",
+            "direction": "o",
+            "gender": "m",
+            "type__name": "Huawei | CX&NE | FPIC"
+        },
+        {
+            "name": "0",
+            "description": null,
+            "direction": "i",
+            "gender": "f",
+            "internal_name": "Port_0",
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "TransEth10G"
+            }],
+            "type__name": "Transceiver | XFP"
+        },
+        {
+            "name": "1",
+            "description": null,
+            "direction": "i",
+            "gender": "f",
+            "internal_name": "Port_1",
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "TransEth10G"
+            }],
+            "type__name": "Transceiver | XFP"
+        }
+    ],
+    "data": [
+        {
+            "attr": "order_part_no",
+            "interface": "asset",
+            "value": ["03036752"]
+        },
+        {
+            "attr": "part_no",
+            "interface": "asset",
+            "value": ["CR52L2XXN0"]
+        },
+        {
+            "attr": "depth",
+            "interface": "dimensions",
+            "value": 145
+        },
+        {
+            "attr": "height",
+            "interface": "dimensions",
+            "value": 40
+        },
+        {
+            "attr": "width",
+            "interface": "dimensions",
+            "value": 180
+        },
+        {
+            "attr": "power",
+            "interface": "power",
+            "value": 12.0
+        },
+        {
+            "attr": "weight",
+            "interface": "weight",
+            "value": 0.6
+        }
+    ]
+}

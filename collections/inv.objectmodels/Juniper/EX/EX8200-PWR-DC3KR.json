@@ -11,7 +11,10 @@
             "description": "-48V",
             "direction": "s",
             "gender": "m",
-            "protocols": [">48DC"],
+            "protocols": [{
+                "direction": ">",
+                "protocol__code": "-48VDC"
+            }],
             "type__name": "Power | Dual M6 Terminal Studs"
         },
         {
@@ -19,7 +22,10 @@
             "description": "RTN (+)",
             "direction": "s",
             "gender": "m",
-            "protocols": [">48DC"],
+            "protocols": [{
+                "direction": ">",
+                "protocol__code": "-48VDC"
+            }],
             "type__name": "Power | Dual M6 Terminal Studs"
         },
         {

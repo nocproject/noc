@@ -1,0 +1,213 @@
+{
+    "name": "Ttronics | КУБ-Нано/48",
+    "$collection": "inv.objectmodels",
+    "uuid": "d5b8f664-bed4-41f4-abcb-c800cc778a3a",
+    "vendor__code": "TTRONICS",
+    "description": "Прибор  «КУБ-Нано  48»  (далее  –  прибор)  предназначен  для  контроля  и  мониторинга  различных  объектов  через  сеть  передачи  данных  Ethernet  10  Mbps.  Прибор  оснащен  специальным  входом  для  датчика \nтемпературы  и  4-мя  универсальными  портами,  к  которым  могут  быть  подключены  различные  типы совместимых  датчиков.",
+    "cr_context": "CHASSIS",
+    "connections": [
+        {
+            "name": "eth0",
+            "description": null,
+            "direction": "s",
+            "gender": "f",
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "10BASET"
+            }],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "name": "1",
+            "description": "Датчик температуры +3.3(out)",
+            "direction": "s",
+            "gender": "f",
+            "type__name": "Power | MSTB 2.5/16-ST-5.08"
+        },
+        {
+            "name": "2",
+            "description": "Датчик температуры",
+            "direction": "s",
+            "gender": "f",
+            "type__name": "Power | MSTB 2.5/16-ST-5.08"
+        },
+        {
+            "name": "3",
+            "description": "Датчик температуры GND",
+            "direction": "s",
+            "gender": "f",
+            "type__name": "Power | MSTB 2.5/16-ST-5.08"
+        },
+        {
+            "name": "4(DI (+5V))",
+            "description": "DI (+5V)",
+            "direction": "s",
+            "gender": "f",
+            "type__name": "Power | MSTB 2.5/16-ST-5.08"
+        },
+        {
+            "name": "5",
+            "description": "GND",
+            "direction": "s",
+            "gender": "f",
+            "type__name": "Power | MSTB 2.5/16-ST-5.08"
+        },
+        {
+            "name": "6",
+            "description": "Универсальные порт 1",
+            "direction": "s",
+            "gender": "f",
+            "type__name": "Power | MSTB 2.5/16-ST-5.08"
+        },
+        {
+            "name": "7",
+            "description": "GND",
+            "direction": "s",
+            "gender": "f",
+            "type__name": "Power | MSTB 2.5/16-ST-5.08"
+        },
+        {
+            "name": "8",
+            "description": "Универсальные порт 2",
+            "direction": "s",
+            "gender": "f",
+            "type__name": "Power | MSTB 2.5/16-ST-5.08"
+        },
+        {
+            "name": "9",
+            "description": "GND",
+            "direction": "s",
+            "gender": "f",
+            "type__name": "Power | MSTB 2.5/16-ST-5.08"
+        },
+        {
+            "name": "10",
+            "description": "Универсальные порт 3",
+            "direction": "s",
+            "gender": "f",
+            "type__name": "Power | MSTB 2.5/16-ST-5.08"
+        },
+        {
+            "name": "11",
+            "description": "GND",
+            "direction": "s",
+            "gender": "f",
+            "type__name": "Power | MSTB 2.5/16-ST-5.08"
+        },
+        {
+            "name": "12",
+            "description": "Универсальные порт 4",
+            "direction": "s",
+            "gender": "f",
+            "type__name": "Power | MSTB 2.5/16-ST-5.08"
+        },
+        {
+            "name": "13",
+            "description": "GND",
+            "direction": "s",
+            "gender": "f",
+            "type__name": "Power | MSTB 2.5/16-ST-5.08"
+        },
+        {
+            "name": "14",
+            "description": "B(RS485)",
+            "direction": "s",
+            "gender": "f",
+            "protocols": [
+                {
+                    "direction": "<",
+                    "discriminator": "B",
+                    "protocol__code": "RS485"
+                }
+            ],
+            "type__name": "Power | MSTB 2.5/16-ST-5.08"
+        },
+        {
+            "name": "15",
+            "description": "B(RS485)",
+            "direction": "s",
+            "gender": "f",
+            "protocols": [
+                {
+                    "direction": "<",
+                    "discriminator": "A",
+                    "protocol__code": "RS485"
+                }
+            ],
+            "type__name": "Power | MSTB 2.5/16-ST-5.08"
+        },
+        {
+            "name": "16",
+            "description": "GND",
+            "direction": "s",
+            "gender": "f",
+            "type__name": "Power | MSTB 2.5/16-ST-5.08"
+        },
+        {
+            "name": "+U",
+            "description": "+U пит",
+            "direction": "s",
+            "gender": "f",
+            "type__name": "Power | MSTB 2.5/3-ST-5.08"
+        },
+        {
+            "name": "GND",
+            "description": "GND",
+            "direction": "s",
+            "gender": "f",
+            "type__name": "Power | MSTB 2.5/3-ST-5.08"
+        },
+        {
+            "name": "rs232",
+            "description": null,
+            "direction": "s",
+            "gender": "f",
+            "protocols": [{
+                "direction": "<",
+                "protocol__code": "RS232"
+            }],
+            "type__name": "Electrical | RJ11"
+        }
+    ],
+    "data": [
+        {
+            "attr": "part_no",
+            "interface": "asset",
+            "value": ["KUB-NANO/48", "КУБ-Нано/48"]
+        },
+        {
+            "attr": "depth",
+            "interface": "dimensions",
+            "value": 26
+        },
+        {
+            "attr": "height",
+            "interface": "dimensions",
+            "value": 80
+        },
+        {
+            "attr": "width",
+            "interface": "dimensions",
+            "value": 80
+        },
+        {
+            "attr": "managed",
+            "interface": "management",
+            "value": true
+        }
+    ],
+    "sensors": [
+        {
+            "name": "temp",
+            "description": "Значение температуры с внутреннего датчика",
+            "snmp_oid": "1.3.6.1.4.1.51315.1.1.0",
+            "units__code": "C"
+        },
+        {
+            "name": "supply",
+            "description": "Напряжение питания устройства",
+            "snmp_oid": "1.3.6.1.4.1.51315.1.14.0",
+            "units__code": "VAC"
+        }
+    ]
+}

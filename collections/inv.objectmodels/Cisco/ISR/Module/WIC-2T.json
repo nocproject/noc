@@ -1,0 +1,56 @@
+{
+    "name": "Cisco | ISR | Module | WIC-2T",
+    "$collection": "inv.objectmodels",
+    "uuid": "e330dc06-8aac-43db-9555-f5857d1d9cec",
+    "vendor__code": "CISCO",
+    "description": "2 Port Serial WAN Interface Card",
+    "cr_context": "DCS",
+    "connections": [
+        {
+            "name": "in",
+            "description": "Voice WAN Interface Card connector",
+            "direction": "o",
+            "gender": "m",
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "CISCOVWIC"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "CISCOWIC"
+                }
+            ],
+            "type__name": "Cisco | ISR | DCS"
+        },
+        {
+            "name": "Se0",
+            "description": "Serial0",
+            "direction": "s",
+            "gender": "f",
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "T1"
+            }],
+            "type__name": "Electrical | SmartSerial"
+        },
+        {
+            "name": "Se1",
+            "description": "Serial1",
+            "direction": "s",
+            "gender": "f",
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "T1"
+            }],
+            "type__name": "Electrical | SmartSerial"
+        }
+    ],
+    "data": [
+        {
+            "attr": "part_no",
+            "interface": "asset",
+            "value": ["WIC-2T", "WIC-2T="]
+        }
+    ]
+}

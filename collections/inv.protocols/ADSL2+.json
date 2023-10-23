@@ -1,0 +1,10 @@
+{
+    "name": "ADSL2+",
+    "code": "ADSL2+",
+    "$collection": "inv.protocols",
+    "uuid": "f4cd2b85-e6c8-4ffa-beb3-e4a9ccb51108",
+    "description": "G.992.5 (also referred to as ADSL2+, G.dmt.bis+, and G.adslplus)[1] is an ITU-T standard for asymmetric digital subscriber line (ADSL) broadband Internet access. The standard has a maximum theoretical downstream sync speed of 24 megabits per second (Mbit/s). Utilizing G.992.5 Annex M upstream sync speeds of 3.3 Mbit/s can be achieved.",
+    "data": [],
+    "connection_schema": "BO",
+    "technology__name": "XDSL"
+}

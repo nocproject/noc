@@ -12,7 +12,10 @@
             "description": "SFP+ Connector",
             "direction": "o",
             "gender": "m",
-            "protocols": ["TransEth10G"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "TransEth10G"
+            }],
             "type__name": "Transceiver | SFP+"
         },
         {
@@ -20,7 +23,10 @@
             "description": "RX Port",
             "direction": "s",
             "gender": "f",
-            "protocols": [">10GBASESR"],
+            "protocols": [{
+                "direction": ">",
+                "protocol__code": "10GBASESR"
+            }],
             "type__name": "Optical | LC"
         },
         {
@@ -28,7 +34,10 @@
             "description": "TX Port",
             "direction": "s",
             "gender": "f",
-            "protocols": ["<10GBASESR"],
+            "protocols": [{
+                "direction": "<",
+                "protocol__code": "10GBASESR"
+            }],
             "type__name": "Optical | LC"
         }
     ],

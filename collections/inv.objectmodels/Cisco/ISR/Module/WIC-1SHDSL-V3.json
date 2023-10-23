@@ -11,7 +11,10 @@
             "description": "WAN Interface Card connector",
             "direction": "o",
             "gender": "m",
-            "protocols": ["VWIC"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "CISCOVWIC"
+            }],
             "type__name": "Cisco | ISR | DCS"
         },
         {
@@ -19,7 +22,10 @@
             "description": "SHDSL ports",
             "direction": "s",
             "gender": "f",
-            "protocols": ["SHDSL"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "SHDSL"
+            }],
             "type__name": "Electrical | RJ11"
         }
     ],

@@ -1,0 +1,45 @@
+{
+    "name": "Cisco | ISR | Module | HWIC-1FE",
+    "$collection": "inv.objectmodels",
+    "uuid": "30f0951f-4308-49da-a1ab-c067c8a5f3d8",
+    "vendor__code": "CISCO",
+    "description": "1-Port Fast Ethernet Layer 3 High-Speed WAN interface cards (HWICs)",
+    "cr_context": "DCS",
+    "connections": [
+        {
+            "name": "in",
+            "description": "HWIC Card connector",
+            "direction": "o",
+            "gender": "m",
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "CISCOHWIC"
+            }],
+            "type__name": "Cisco | ISR | DCS"
+        },
+        {
+            "name": "Fa0",
+            "description": "FastEthernet X/0",
+            "direction": "s",
+            "gender": "f",
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "10BASET"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "100BASETX"
+                }
+            ],
+            "type__name": "Electrical | RJ45"
+        }
+    ],
+    "data": [
+        {
+            "attr": "part_no",
+            "interface": "asset",
+            "value": ["HWIC-1FE"]
+        }
+    ]
+}

@@ -12,7 +12,10 @@
             "cross": "in2",
             "direction": "o",
             "gender": "m",
-            "protocols": ["TransEth100G"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "TransEth100G"
+            }],
             "type__name": "Transceiver | QSFP+"
         },
         {
@@ -21,7 +24,10 @@
             "cross": "in1",
             "direction": "o",
             "gender": "m",
-            "protocols": ["TransEth100G"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "TransEth100G"
+            }],
             "type__name": "Transceiver | QSFP+"
         }
     ],

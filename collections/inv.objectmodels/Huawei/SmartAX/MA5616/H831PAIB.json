@@ -19,7 +19,16 @@
             "description": "Power outlet",
             "direction": "s",
             "gender": "m",
-            "protocols": [">220VAC", ">110VAC"],
+            "protocols": [
+                {
+                    "direction": ">",
+                    "protocol__code": "220VAC"
+                },
+                {
+                    "direction": ">",
+                    "protocol__code": "110VAC"
+                }
+            ],
             "type__name": "Power | IEC 60320 C14"
         },
         {
@@ -27,7 +36,10 @@
             "description": "(lead-acid battery or Felithium battery) input for power backup",
             "direction": "s",
             "gender": "f",
-            "protocols": [">-48VDC"],
+            "protocols": [{
+                "direction": ">",
+                "protocol__code": "-48VDC"
+            }],
             "type__name": "Power | TB Barrier Screw 2 Pin"
         },
         {
@@ -35,7 +47,10 @@
             "description": "(lead-acid battery or Felithium battery) input for power backup",
             "direction": "s",
             "gender": "f",
-            "protocols": [">-48VDC"],
+            "protocols": [{
+                "direction": ">",
+                "protocol__code": "-48VDC"
+            }],
             "type__name": "Power | TB Barrier Screw 2 Pin"
         },
         {

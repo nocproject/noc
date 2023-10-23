@@ -12,7 +12,10 @@
             "description": "SFP Connector",
             "direction": "o",
             "gender": "m",
-            "protocols": ["TransEth1G"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "TransEth1G"
+            }],
             "type__name": "Transceiver | SFP"
         },
         {
@@ -20,7 +23,6 @@
             "description": "TX Port",
             "direction": "s",
             "gender": "f",
-            "protocols": [">1000BASEX"],
             "type__name": "Optical | LC"
         },
         {
@@ -28,7 +30,6 @@
             "description": "RX Port",
             "direction": "s",
             "gender": "f",
-            "protocols": ["<1000BASEX"],
             "type__name": "Optical | LC"
         }
     ],

@@ -1,0 +1,10 @@
+{
+    "name": "1000BASE‑CWDM",
+    "code": "1000BASECWDM",
+    "$collection": "inv.protocols",
+    "uuid": "dba5444e-5f52-4568-b31b-971625dcb192",
+    "description": "1000BASE-CWDM is a non-standard but industry accepted term[23][24] to refer to Gigabit Ethernet transmission. It is very similar to 1000BASE-LX10 but achieves longer distances up 40–120 km, and up to 18 parallel channels over a pair of single-mode fibers due to higher quality optics than LX10 and use of CWDM, running on 1270-1610 nm wavelength lasers.",
+    "data": [],
+    "connection_schema": "BD",
+    "technology__name": "Ethernet"
+}

@@ -1,0 +1,10 @@
+{
+    "name": "Cisco HWIC",
+    "code": "CISCOHWIC",
+    "$collection": "inv.protocols",
+    "uuid": "f9e89ae2-ba88-4156-bee0-aa18dea80786",
+    "description": "Cisco High Speed WAN Interface Card.",
+    "data": [],
+    "connection_schema": "BO",
+    "technology__name": "Cisco | Interface Card"
+}

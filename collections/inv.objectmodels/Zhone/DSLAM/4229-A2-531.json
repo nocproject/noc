@@ -13,7 +13,16 @@
             "description": "USER 1-24",
             "direction": "s",
             "gender": "f",
-            "protocols": ["ADSL", "ADSL+"],
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "ADSL"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "ADSL2+"
+                }
+            ],
             "type__name": "Electrical | Telco-50"
         },
         {
@@ -21,7 +30,10 @@
             "description": "PSTN 1-24",
             "direction": "s",
             "gender": "f",
-            "protocols": ["PSTN"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "PSTN"
+            }],
             "type__name": "Electrical | Telco-50"
         },
         {
@@ -29,7 +41,10 @@
             "description": "Console port",
             "direction": "s",
             "gender": "f",
-            "protocols": [">RS232"],
+            "protocols": [{
+                "direction": ">",
+                "protocol__code": "RS232"
+            }],
             "type__name": "Electrical | DB9"
         },
         {
@@ -37,7 +52,10 @@
             "description": "Alarm port",
             "direction": "s",
             "gender": "f",
-            "protocols": [">DryContact"],
+            "protocols": [{
+                "direction": ">",
+                "protocol__code": "DryContact"
+            }],
             "type__name": "Electrical | MSTB 2.5/5-ST-5.08"
         },
         {
@@ -45,7 +63,16 @@
             "description": "Port 1 (Copper)",
             "direction": "s",
             "gender": "f",
-            "protocols": ["10BASET", "100BASETX"],
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "10BASET"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "100BASETX"
+                }
+            ],
             "type__name": "Electrical | RJ45"
         },
         {
@@ -53,7 +80,16 @@
             "description": "Port 2 (Copper)",
             "direction": "s",
             "gender": "f",
-            "protocols": ["10BASET", "100BASETX"],
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "10BASET"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "100BASETX"
+                }
+            ],
             "type__name": "Electrical | RJ45"
         },
         {
@@ -62,7 +98,16 @@
             "direction": "s",
             "gender": "f",
             "group": "3",
-            "protocols": ["100BASETX", "1000BASET"],
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "100BASETX"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "1000BASET"
+                }
+            ],
             "type__name": "Electrical | RJ45"
         },
         {
@@ -71,7 +116,10 @@
             "direction": "i",
             "gender": "f",
             "group": "3",
-            "protocols": ["TransEth1G"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "TransEth1G"
+            }],
             "type__name": "Transceiver | SFP"
         },
         {
@@ -79,7 +127,10 @@
             "description": "Power inlet",
             "direction": "s",
             "gender": "f",
-            "protocols": [">-48VDC", ">-60VDC"],
+            "protocols": [{
+                "direction": ">",
+                "protocol__code": "-48VDC"
+            }],
             "type__name": "Power | MSTB 2.5/4-ST-5.08"
         }
     ],

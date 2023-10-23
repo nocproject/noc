@@ -1,0 +1,10 @@
+{
+    "name": "USB 2.0",
+    "code": "USB20",
+    "$collection": "inv.protocols",
+    "uuid": "b3c8b5bb-bc83-4738-a6bc-794f76960b31",
+    "description": "USB 1.1",
+    "data": [],
+    "connection_schema": "BO",
+    "technology__name": "USB"
+}

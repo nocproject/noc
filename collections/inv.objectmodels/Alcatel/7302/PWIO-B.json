@@ -19,7 +19,10 @@
             "description": "Craft port",
             "direction": "s",
             "gender": "f",
-            "protocols": [">RS232"],
+            "protocols": [{
+                "direction": ">",
+                "protocol__code": "RS232"
+            }],
             "type__name": "Electrical | DB9"
         },
         {
@@ -34,7 +37,10 @@
             "description": "Up Stream port",
             "direction": "s",
             "gender": "f",
-            "protocols": ["100BASETX"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "100BASETX"
+            }],
             "type__name": "Electrical | RJ45"
         },
         {
@@ -42,7 +48,10 @@
             "description": "Down Stream port",
             "direction": "s",
             "gender": "f",
-            "protocols": ["100BASETX"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "100BASETX"
+            }],
             "type__name": "Electrical | RJ45"
         },
         {
@@ -50,7 +59,10 @@
             "description": "BATRET A",
             "direction": "i",
             "gender": "f",
-            "protocols": [">-48VDC"],
+            "protocols": [{
+                "direction": ">",
+                "protocol__code": "-48VDC"
+            }],
             "type__name": "Power | TB Barrier Screw 4 Pin"
         },
         {
@@ -58,7 +70,10 @@
             "description": "-48V BAT A",
             "direction": "i",
             "gender": "f",
-            "protocols": [">-48VDC"],
+            "protocols": [{
+                "direction": ">",
+                "protocol__code": "-48VDC"
+            }],
             "type__name": "Power | TB Barrier Screw 4 Pin"
         },
         {
@@ -66,7 +81,10 @@
             "description": "BATRET B",
             "direction": "i",
             "gender": "f",
-            "protocols": [">-48VDC"],
+            "protocols": [{
+                "direction": ">",
+                "protocol__code": "-48VDC"
+            }],
             "type__name": "Power | TB Barrier Screw 4 Pin"
         },
         {
@@ -74,7 +92,10 @@
             "description": "-48V BAT B",
             "direction": "i",
             "gender": "f",
-            "protocols": [">-48VDC"],
+            "protocols": [{
+                "direction": ">",
+                "protocol__code": "-48VDC"
+            }],
             "type__name": "Power | TB Barrier Screw 4 Pin"
         }
     ],

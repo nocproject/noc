@@ -11,7 +11,10 @@
             "description": "SFP Connector",
             "direction": "o",
             "gender": "m",
-            "protocols": ["TransEth1G"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "TransEth1G"
+            }],
             "type__name": "Transceiver | SFP"
         },
         {
@@ -19,7 +22,6 @@
             "description": "RxTx SC SFP",
             "direction": "s",
             "gender": "f",
-            "protocols": [">1000BASEER-1550", "<1000BASEER-1310"],
             "type__name": "Optical | SC"
         }
     ],

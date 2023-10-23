@@ -10,7 +10,13 @@
             "description": "RS-485 A",
             "direction": "s",
             "gender": "f",
-            "protocols": [">RS485-A"],
+            "protocols": [
+                {
+                    "direction": ">",
+                    "discriminator": "A",
+                    "protocol__code": "RS485"
+                }
+            ],
             "type__name": "Power | TB Barrier Screw 3 Pin"
         },
         {
@@ -18,7 +24,16 @@
             "description": "PWR-",
             "direction": "s",
             "gender": "f",
-            "protocols": [">+24VDC", ">220VAC"],
+            "protocols": [
+                {
+                    "direction": ">",
+                    "protocol__code": "+24VDC"
+                },
+                {
+                    "direction": ">",
+                    "protocol__code": "220VAC"
+                }
+            ],
             "type__name": "Power | TB Barrier Screw 3 Pin"
         },
         {
@@ -33,7 +48,13 @@
             "description": "RS-485 B",
             "direction": "s",
             "gender": "f",
-            "protocols": [">RS485-B"],
+            "protocols": [
+                {
+                    "direction": ">",
+                    "discriminator": "B",
+                    "protocol__code": "RS485"
+                }
+            ],
             "type__name": "Power | TB Barrier Screw 3 Pin"
         },
         {
@@ -41,7 +62,16 @@
             "description": "PWR+",
             "direction": "s",
             "gender": "f",
-            "protocols": [">+24VDC", ">220VAC"],
+            "protocols": [
+                {
+                    "direction": ">",
+                    "protocol__code": "+24VDC"
+                },
+                {
+                    "direction": ">",
+                    "protocol__code": "220VAC"
+                }
+            ],
             "type__name": "Power | TB Barrier Screw 3 Pin"
         },
         {

@@ -20,7 +20,10 @@
             "description": "phone port",
             "direction": "s",
             "gender": "f",
-            "protocols": ["PSTN"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "PSTN"
+            }],
             "type__name": "Electrical | RJ11"
         },
         {
@@ -28,7 +31,10 @@
             "description": "phone port",
             "direction": "s",
             "gender": "f",
-            "protocols": ["PSTN"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "PSTN"
+            }],
             "type__name": "Electrical | RJ11"
         },
         {
@@ -36,7 +42,10 @@
             "description": "phone port",
             "direction": "s",
             "gender": "f",
-            "protocols": ["PSTN"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "PSTN"
+            }],
             "type__name": "Electrical | RJ11"
         },
         {
@@ -44,7 +53,10 @@
             "description": "phone port",
             "direction": "s",
             "gender": "f",
-            "protocols": ["PSTN"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "PSTN"
+            }],
             "type__name": "Electrical | RJ11"
         },
         {
@@ -52,7 +64,16 @@
             "description": "wan port",
             "direction": "i",
             "gender": "f",
-            "protocols": ["TransEth100M", "TransEth1G"],
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth100M"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth1G"
+                }
+            ],
             "type__name": "Transceiver | SFP"
         },
         {
@@ -60,7 +81,20 @@
             "description": "lan port",
             "direction": "s",
             "gender": "f",
-            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "10BASET"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "100BASETX"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "1000BASETX"
+                }
+            ],
             "type__name": "Electrical | RJ45"
         },
         {
@@ -68,7 +102,20 @@
             "description": "lan port",
             "direction": "s",
             "gender": "f",
-            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "10BASET"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "100BASETX"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "1000BASETX"
+                }
+            ],
             "type__name": "Electrical | RJ45"
         },
         {
@@ -76,7 +123,20 @@
             "description": "lan port",
             "direction": "s",
             "gender": "f",
-            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "10BASET"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "100BASETX"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "1000BASETX"
+                }
+            ],
             "type__name": "Electrical | RJ45"
         },
         {
@@ -84,7 +144,20 @@
             "description": "lan port",
             "direction": "s",
             "gender": "f",
-            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "10BASET"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "100BASETX"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "1000BASETX"
+                }
+            ],
             "type__name": "Electrical | RJ45"
         },
         {
@@ -92,7 +165,10 @@
             "description": "2.4G antenna interface 1",
             "direction": "s",
             "gender": "f",
-            "protocols": ["802.11abgn"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "802.11a"
+            }],
             "type__name": "Radio | RF | N"
         },
         {
@@ -100,7 +176,10 @@
             "description": "2.4G antenna interface 2",
             "direction": "s",
             "gender": "f",
-            "protocols": ["802.11abgn"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "802.11a"
+            }],
             "type__name": "Radio | RF | N"
         },
         {
@@ -108,7 +187,20 @@
             "description": "usb port",
             "direction": "s",
             "gender": "f",
-            "protocols": [">USB10", ">USB11", ">USB20"],
+            "protocols": [
+                {
+                    "direction": ">",
+                    "protocol__code": "USB10"
+                },
+                {
+                    "direction": ">",
+                    "protocol__code": "USB11"
+                },
+                {
+                    "direction": ">",
+                    "protocol__code": "USB20"
+                }
+            ],
             "type__name": "Electrical | USB"
         }
     ],

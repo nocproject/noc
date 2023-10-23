@@ -1,0 +1,10 @@
+{
+    "name": "V.42",
+    "code": "V42",
+    "$collection": "inv.protocols",
+    "uuid": "0c1ba724-373c-4fff-a87e-688b917a7fb5",
+    "description": "V.42 software is designed for optimum asynchronous-to-synchronous conversion as well as error detection and retransmission of damaged data.",
+    "data": [],
+    "connection_schema": "BD",
+    "technology__name": "Modulator-Demodulator"
+}
