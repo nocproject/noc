@@ -20,7 +20,10 @@
             "description": "ADSL ports",
             "direction": "s",
             "gender": "f",
-            "protocols": ["ADSL"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "ADSL"
+            }],
             "type__name": "Electrical | Telco-50"
         }
     ],

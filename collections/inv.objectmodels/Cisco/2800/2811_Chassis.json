@@ -20,7 +20,6 @@
             "description": "NME 1",
             "direction": "i",
             "gender": "f",
-            "protocols": ["NM"],
             "type__name": "Cisco | ISR | NM"
         },
         {

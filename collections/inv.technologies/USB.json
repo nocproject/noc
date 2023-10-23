@@ -1,0 +1,8 @@
+{
+    "name": "USB",
+    "$collection": "inv.technologies",
+    "uuid": "05aa3539-fed0-4253-b2fa-c6670264f1b8",
+    "single_service": false,
+    "single_client": false,
+    "allow_children": false
+}

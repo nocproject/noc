@@ -12,7 +12,16 @@
             "description": "Power inlet",
             "direction": "s",
             "gender": "m",
-            "protocols": [">220VAC", ">110VAC"],
+            "protocols": [
+                {
+                    "direction": ">",
+                    "protocol__code": "220VAC"
+                },
+                {
+                    "direction": ">",
+                    "protocol__code": "110VAC"
+                }
+            ],
             "type__name": "Power | IEC 60320 C20"
         },
         {

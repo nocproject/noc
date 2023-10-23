@@ -20,7 +20,10 @@
             "description": "SHDSL ports",
             "direction": "s",
             "gender": "f",
-            "protocols": ["SHDSL"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "SHDSL"
+            }],
             "type__name": "Electrical | Telco-50"
         }
     ],

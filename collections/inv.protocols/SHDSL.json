@@ -1,0 +1,10 @@
+{
+    "name": "SHDSL",
+    "code": "SHDSL",
+    "$collection": "inv.protocols",
+    "uuid": "9a723e51-9b36-4957-8c7f-a980a970f1ce",
+    "description": "Single-pair high-speed digital subscriber line (SHDSL) is a form of symmetric digital subscriber line (SDSL), a data communications technology for equal transmit and receive (i.e. symmetric) data rate over copper telephone lines, faster than a conventional voiceband modem can provide",
+    "data": [],
+    "connection_schema": "BD",
+    "technology__name": "XDSL"
+}

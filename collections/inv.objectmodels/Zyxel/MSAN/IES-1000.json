@@ -1,0 +1,79 @@
+{
+    "name": "Zyxel | MSAN | IES-1000",
+    "$collection": "inv.objectmodels",
+    "uuid": "edbea52b-2835-45d9-9637-d5fab382ef52",
+    "vendor__code": "ZYXEL",
+    "description": "IES-1000 enclosure with two slide-in slots for DSL modules",
+    "connection_rule__name": "Zyxel | MSAN",
+    "cr_context": "CHASSIS",
+    "labels": ["noc::inv::chassis"],
+    "connections": [
+        {
+            "name": "1",
+            "description": "Linecard 1 slot",
+            "direction": "i",
+            "gender": "f",
+            "type__name": "Zyxel | MSAN | Linecard"
+        },
+        {
+            "name": "2",
+            "description": "Linecard 2 slot",
+            "direction": "i",
+            "gender": "f",
+            "type__name": "Zyxel | MSAN | Linecard"
+        },
+        {
+            "name": "power",
+            "description": "Power outlet",
+            "direction": "s",
+            "gender": "f",
+            "protocols": [{
+                "direction": ">",
+                "protocol__code": "-48VDC"
+            }],
+            "type__name": "Power | MSTB 2.5/4-ST-5.08"
+        }
+    ],
+    "data": [
+        {
+            "attr": "managed",
+            "interface": "management",
+            "value": true
+        },
+        {
+            "attr": "width",
+            "interface": "dimensions",
+            "value": 440
+        },
+        {
+            "attr": "depth",
+            "interface": "dimensions",
+            "value": 320
+        },
+        {
+            "attr": "height",
+            "interface": "dimensions",
+            "value": 44
+        },
+        {
+            "attr": "power",
+            "interface": "power",
+            "value": 75.0
+        },
+        {
+            "attr": "weight",
+            "interface": "weight",
+            "value": 5.0
+        },
+        {
+            "attr": "part_no",
+            "interface": "asset",
+            "value": ["IES-1000"]
+        },
+        {
+            "attr": "units",
+            "interface": "rackmount",
+            "value": 1.0
+        }
+    ]
+}

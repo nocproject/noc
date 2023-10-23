@@ -1,0 +1,10 @@
+{
+    "name": "Cisco EHWIC",
+    "code": "CISCOEHWIC",
+    "$collection": "inv.protocols",
+    "uuid": "cd222103-f58d-49eb-a059-704cc8fba59b",
+    "description": "Enhanced High-Speed WAN Interface Card",
+    "data": [],
+    "connection_schema": "BO",
+    "technology__name": "Cisco | Interface Card"
+}

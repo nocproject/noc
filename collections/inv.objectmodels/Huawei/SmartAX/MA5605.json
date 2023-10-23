@@ -13,7 +13,10 @@
             "description": "DC Power",
             "direction": "s",
             "gender": "f",
-            "protocols": ["48V DC"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "-48VDC"
+            }],
             "type__name": "Electrical | MRJ21"
         },
         {

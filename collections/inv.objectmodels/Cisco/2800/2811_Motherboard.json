@@ -27,7 +27,16 @@
             "direction": "s",
             "gender": "f",
             "group": "0",
-            "protocols": ["10BASET", "100BASETX"],
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "10BASET"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "100BASETX"
+                }
+            ],
             "type__name": "Electrical | RJ45"
         },
         {
@@ -36,7 +45,16 @@
             "direction": "s",
             "gender": "f",
             "group": "0",
-            "protocols": ["10BASET", "100BASETX"],
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "10BASET"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "100BASETX"
+                }
+            ],
             "type__name": "Electrical | RJ45"
         },
         {
@@ -44,7 +62,20 @@
             "description": "DaughterCard Slot 0",
             "direction": "i",
             "gender": "f",
-            "protocols": ["<HWIC", "<WIC", "<VIC"],
+            "protocols": [
+                {
+                    "direction": "<",
+                    "protocol__code": "CISCOHWIC"
+                },
+                {
+                    "direction": "<",
+                    "protocol__code": "CISCOWIC"
+                },
+                {
+                    "direction": "<",
+                    "protocol__code": "CISCOVIC"
+                }
+            ],
             "type__name": "Cisco | ISR | DCS"
         },
         {
@@ -52,7 +83,20 @@
             "description": "DaughterCard Slot 1",
             "direction": "i",
             "gender": "f",
-            "protocols": ["<HWIC", "<WIC", "<VIC"],
+            "protocols": [
+                {
+                    "direction": "<",
+                    "protocol__code": "CISCOHWIC"
+                },
+                {
+                    "direction": "<",
+                    "protocol__code": "CISCOWIC"
+                },
+                {
+                    "direction": "<",
+                    "protocol__code": "CISCOVIC"
+                }
+            ],
             "type__name": "Cisco | ISR | DCS"
         },
         {
@@ -60,7 +104,20 @@
             "description": "DaughterCard Slot 2",
             "direction": "i",
             "gender": "f",
-            "protocols": ["<HWIC", "<WIC", "<VIC"],
+            "protocols": [
+                {
+                    "direction": "<",
+                    "protocol__code": "CISCOHWIC"
+                },
+                {
+                    "direction": "<",
+                    "protocol__code": "CISCOWIC"
+                },
+                {
+                    "direction": "<",
+                    "protocol__code": "CISCOVIC"
+                }
+            ],
             "type__name": "Cisco | ISR | DCS"
         },
         {
@@ -68,7 +125,20 @@
             "description": "DaughterCard Slot 3",
             "direction": "i",
             "gender": "f",
-            "protocols": ["<HWIC", "<WIC", "<VIC"],
+            "protocols": [
+                {
+                    "direction": "<",
+                    "protocol__code": "CISCOHWIC"
+                },
+                {
+                    "direction": "<",
+                    "protocol__code": "CISCOWIC"
+                },
+                {
+                    "direction": "<",
+                    "protocol__code": "CISCOVIC"
+                }
+            ],
             "type__name": "Cisco | ISR | DCS"
         },
         {
@@ -76,7 +146,10 @@
             "description": "PVDM (DSP) Slots 0",
             "direction": "i",
             "gender": "f",
-            "protocols": ["<PVDM2"],
+            "protocols": [{
+                "direction": "<",
+                "protocol__code": "PVDM2"
+            }],
             "type__name": "Cisco | ISR | PVDM2"
         },
         {
@@ -84,7 +157,10 @@
             "description": "PVDM (DSP) Slots 1",
             "direction": "i",
             "gender": "f",
-            "protocols": ["<PVDM2"],
+            "protocols": [{
+                "direction": "<",
+                "protocol__code": "PVDM2"
+            }],
             "type__name": "Cisco | ISR | PVDM2"
         },
         {
@@ -106,7 +182,10 @@
             "description": "Console port",
             "direction": "s",
             "gender": "f",
-            "protocols": [">RS232"],
+            "protocols": [{
+                "direction": ">",
+                "protocol__code": "RS232"
+            }],
             "type__name": "Electrical | RJ45"
         },
         {
@@ -114,7 +193,16 @@
             "description": "Aux port",
             "direction": "s",
             "gender": "f",
-            "protocols": [">RS232", "<RS232"],
+            "protocols": [
+                {
+                    "direction": ">",
+                    "protocol__code": "RS232"
+                },
+                {
+                    "direction": "<",
+                    "protocol__code": "RS232"
+                }
+            ],
             "type__name": "Electrical | RJ45"
         },
         {
@@ -122,7 +210,16 @@
             "description": "USB port",
             "direction": "s",
             "gender": "f",
-            "protocols": ["USB10", "USB11"],
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "USB10"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "USB11"
+                }
+            ],
             "type__name": "Electrical | USB"
         },
         {
@@ -130,7 +227,16 @@
             "description": "USB port",
             "direction": "s",
             "gender": "f",
-            "protocols": ["USB10", "USB11"],
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "USB10"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "USB11"
+                }
+            ],
             "type__name": "Electrical | USB"
         }
     ],

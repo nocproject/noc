@@ -12,7 +12,10 @@
             "description": "Ground Connection",
             "direction": "i",
             "gender": "m",
-            "protocols": [">-48VDC"],
+            "protocols": [{
+                "direction": ">",
+                "protocol__code": "-48VDC"
+            }],
             "type__name": "Power | Dual M6 Terminal Studs"
         },
         {
@@ -20,7 +23,10 @@
             "description": "DC input Positive contact",
             "direction": "i",
             "gender": "m",
-            "protocols": [">-48VDC"],
+            "protocols": [{
+                "direction": ">",
+                "protocol__code": "-48VDC"
+            }],
             "type__name": "Power | Dual M6 Terminal Studs"
         },
         {
@@ -28,7 +34,10 @@
             "description": "DC input Negative contact",
             "direction": "i",
             "gender": "m",
-            "protocols": [">-48VDC"],
+            "protocols": [{
+                "direction": ">",
+                "protocol__code": "-48VDC"
+            }],
             "type__name": "Power | Dual M6 Terminal Studs"
         },
         {

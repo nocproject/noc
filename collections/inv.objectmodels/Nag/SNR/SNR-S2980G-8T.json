@@ -12,7 +12,16 @@
             "description": "Power outlet",
             "direction": "s",
             "gender": "m",
-            "protocols": [">220VAC", ">110VAC"],
+            "protocols": [
+                {
+                    "direction": ">",
+                    "protocol__code": "220VAC"
+                },
+                {
+                    "direction": ">",
+                    "protocol__code": "110VAC"
+                }
+            ],
             "type__name": "Power | IEC 60320 C14"
         },
         {
@@ -20,7 +29,10 @@
             "description": "Console port",
             "direction": "s",
             "gender": "f",
-            "protocols": [">RS232"],
+            "protocols": [{
+                "direction": ">",
+                "protocol__code": "RS232"
+            }],
             "type__name": "Electrical | RJ45"
         },
         {
@@ -28,7 +40,20 @@
             "description": "Ethernet1/1 port",
             "direction": "s",
             "gender": "f",
-            "protocols": ["10BASET", "100BASET", "1000BASET"],
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "10BASET"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "100BASETX"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "1000BASET"
+                }
+            ],
             "type__name": "Electrical | RJ45"
         },
         {
@@ -36,7 +61,20 @@
             "description": "Ethernet1/2 port",
             "direction": "s",
             "gender": "f",
-            "protocols": ["10BASET", "100BASET", "1000BASET"],
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "10BASET"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "100BASETX"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "1000BASET"
+                }
+            ],
             "type__name": "Electrical | RJ45"
         },
         {
@@ -44,7 +82,20 @@
             "description": "Ethernet1/3 port",
             "direction": "s",
             "gender": "f",
-            "protocols": ["10BASET", "100BASET", "1000BASET"],
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "10BASET"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "100BASETX"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "1000BASET"
+                }
+            ],
             "type__name": "Electrical | RJ45"
         },
         {
@@ -52,7 +103,20 @@
             "description": "Ethernet1/4 port",
             "direction": "s",
             "gender": "f",
-            "protocols": ["10BASET", "100BASET", "1000BASET"],
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "10BASET"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "100BASETX"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "1000BASET"
+                }
+            ],
             "type__name": "Electrical | RJ45"
         },
         {
@@ -60,7 +124,20 @@
             "description": "Ethernet1/5 port",
             "direction": "s",
             "gender": "f",
-            "protocols": ["10BASET", "100BASET", "1000BASET"],
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "10BASET"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "100BASETX"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "1000BASET"
+                }
+            ],
             "type__name": "Electrical | RJ45"
         },
         {
@@ -68,7 +145,20 @@
             "description": "Ethernet1/6 port",
             "direction": "s",
             "gender": "f",
-            "protocols": ["10BASET", "100BASET", "1000BASET"],
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "10BASET"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "100BASETX"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "1000BASET"
+                }
+            ],
             "type__name": "Electrical | RJ45"
         },
         {
@@ -76,7 +166,20 @@
             "description": "Ethernet1/7 port",
             "direction": "s",
             "gender": "f",
-            "protocols": ["10BASET", "100BASET", "1000BASET"],
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "10BASET"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "100BASETX"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "1000BASET"
+                }
+            ],
             "type__name": "Electrical | RJ45"
         },
         {
@@ -84,7 +187,20 @@
             "description": "Ethernet1/8 port",
             "direction": "s",
             "gender": "f",
-            "protocols": ["10BASET", "100BASET", "1000BASET"],
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "10BASET"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "100BASETX"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "1000BASET"
+                }
+            ],
             "type__name": "Electrical | RJ45"
         },
         {
@@ -92,7 +208,24 @@
             "description": "Ethernet1/9 port",
             "direction": "s",
             "gender": "s",
-            "protocols": ["100BASET", "1000BASET", "TransEth100M", "TransEth1G"],
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "100BASETX"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "1000BASET"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth100M"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth1G"
+                }
+            ],
             "type__name": "Combined"
         },
         {
@@ -100,7 +233,16 @@
             "description": "Ethernet1/9 port",
             "direction": "s",
             "gender": "f",
-            "protocols": ["100BASET", "1000BASET"],
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "100BASETX"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "1000BASET"
+                }
+            ],
             "type__name": "Electrical | RJ45"
         },
         {
@@ -109,7 +251,16 @@
             "direction": "i",
             "gender": "f",
             "internal_name": "sfp9",
-            "protocols": ["TransEth100M", "TransEth1G"],
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth100M"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth1G"
+                }
+            ],
             "type__name": "Transceiver | SFP"
         },
         {
@@ -117,7 +268,24 @@
             "description": "Ethernet1/10 port",
             "direction": "s",
             "gender": "s",
-            "protocols": ["100BASET", "1000BASET", "TransEth100M", "TransEth1G"],
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "100BASETX"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "1000BASET"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth100M"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth1G"
+                }
+            ],
             "type__name": "Combined"
         },
         {
@@ -125,7 +293,16 @@
             "description": "Ethernet1/10 port",
             "direction": "s",
             "gender": "f",
-            "protocols": ["100BASET", "1000BASET"],
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "100BASETX"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "1000BASET"
+                }
+            ],
             "type__name": "Electrical | RJ45"
         },
         {
@@ -134,7 +311,16 @@
             "direction": "i",
             "gender": "f",
             "internal_name": "sfp10",
-            "protocols": ["TransEth100M", "TransEth1G"],
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth100M"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth1G"
+                }
+            ],
             "type__name": "Transceiver | SFP"
         }
     ],

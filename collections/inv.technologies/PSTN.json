@@ -1,0 +1,9 @@
+{
+    "name": "PSTN",
+    "$collection": "inv.technologies",
+    "uuid": "8e987de1-e2a0-4393-9d98-37b0f5cb55f1",
+    "description": "The public switched telephone network (PSTN) is the aggregate of the world's telephone networks that are operated by national, regional, or local telephony operators.",
+    "single_service": false,
+    "single_client": false,
+    "allow_children": false
+}

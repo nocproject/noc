@@ -39,7 +39,10 @@
             "description": "GigabitEthernet X/1 Gbic port",
             "direction": "i",
             "gender": "f",
-            "protocols": ["TransEth1G"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "TransEth1G"
+            }],
             "type__name": "Transceiver | GBIC"
         },
         {
@@ -47,7 +50,10 @@
             "description": "GigabitEthernet X/2 Gbic port",
             "direction": "i",
             "gender": "f",
-            "protocols": ["TransEth1G"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "TransEth1G"
+            }],
             "type__name": "Transceiver | GBIC"
         },
         {
@@ -55,7 +61,10 @@
             "description": "Management console",
             "direction": "s",
             "gender": "f",
-            "protocols": [">RS232"],
+            "protocols": [{
+                "direction": ">",
+                "protocol__code": "RS232"
+            }],
             "type__name": "Electrical | RJ45"
         }
     ],

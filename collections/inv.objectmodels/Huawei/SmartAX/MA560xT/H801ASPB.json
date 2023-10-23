@@ -20,7 +20,10 @@
             "description": "PSTN 0-31",
             "direction": "s",
             "gender": "f",
-            "protocols": ["PSTN"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "PSTN"
+            }],
             "type__name": "Huawei | Electrical | Champ 64-pin"
         },
         {
@@ -28,7 +31,10 @@
             "description": "PSTN 32-63",
             "direction": "s",
             "gender": "f",
-            "protocols": ["PSTN"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "PSTN"
+            }],
             "type__name": "Huawei | Electrical | Champ 64-pin"
         }
     ],

@@ -11,7 +11,10 @@
             "description": "TeX/0 port",
             "direction": "i",
             "gender": "f",
-            "protocols": ["TransEth10G"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "TransEth10G"
+            }],
             "type__name": "Transceiver | XFP | Cisco"
         },
         {
@@ -19,7 +22,10 @@
             "description": "TeX/1 port",
             "direction": "i",
             "gender": "f",
-            "protocols": ["TransEth10G"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "TransEth10G"
+            }],
             "type__name": "Transceiver | XFP | Cisco"
         },
         {
@@ -27,7 +33,10 @@
             "description": "TeX/2 port",
             "direction": "i",
             "gender": "f",
-            "protocols": ["TransEth10G"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "TransEth10G"
+            }],
             "type__name": "Transceiver | XFP | Cisco"
         },
         {
@@ -35,7 +44,10 @@
             "description": "TeX/3 port",
             "direction": "i",
             "gender": "f",
-            "protocols": ["TransEth10G"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "TransEth10G"
+            }],
             "type__name": "Transceiver | XFP | Cisco"
         },
         {
@@ -43,7 +55,10 @@
             "description": "TeX/4 port",
             "direction": "i",
             "gender": "f",
-            "protocols": ["TransEth10G"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "TransEth10G"
+            }],
             "type__name": "Transceiver | XFP | Cisco"
         },
         {
@@ -51,7 +66,10 @@
             "description": "TeX/5 port",
             "direction": "i",
             "gender": "f",
-            "protocols": ["TransEth10G"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "TransEth10G"
+            }],
             "type__name": "Transceiver | XFP | Cisco"
         },
         {
@@ -59,7 +77,10 @@
             "description": "TeX/6 port",
             "direction": "i",
             "gender": "f",
-            "protocols": ["TransEth10G"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "TransEth10G"
+            }],
             "type__name": "Transceiver | XFP | Cisco"
         },
         {
@@ -67,7 +88,10 @@
             "description": "TeX/7 port",
             "direction": "i",
             "gender": "f",
-            "protocols": ["TransEth10G"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "TransEth10G"
+            }],
             "type__name": "Transceiver | XFP | Cisco"
         },
         {

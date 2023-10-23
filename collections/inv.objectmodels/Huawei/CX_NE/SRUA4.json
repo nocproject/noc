@@ -20,7 +20,10 @@
             "description": "The USB interface functions are uN/Available and reserved.",
             "direction": "s",
             "gender": "f",
-            "protocols": ["USB2.0"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "USB20"
+            }],
             "type__name": "Electrical | USB"
         },
         {
@@ -28,7 +31,10 @@
             "description": "The USB interface functions are uN/Available and reserved.",
             "direction": "s",
             "gender": "f",
-            "protocols": ["USB2.0"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "USB20"
+            }],
             "type__name": "Electrical | USB"
         },
         {
@@ -37,7 +43,10 @@
             "direction": "i",
             "gender": "f",
             "internal_name": "Port_0",
-            "protocols": ["TransEth1G"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "TransEth1G"
+            }],
             "type__name": "Transceiver | SFP"
         },
         {
@@ -46,7 +55,10 @@
             "direction": "i",
             "gender": "f",
             "internal_name": "Port_1",
-            "protocols": ["TransEth1G"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "TransEth1G"
+            }],
             "type__name": "Transceiver | SFP"
         },
         {
@@ -54,7 +66,20 @@
             "description": "Management port",
             "direction": "s",
             "gender": "f",
-            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "10BASET"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "100BASETX"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "1000BASETX"
+                }
+            ],
             "type__name": "Electrical | RJ45"
         },
         {
@@ -62,7 +87,10 @@
             "description": "Console for on-site system configuration",
             "direction": "s",
             "gender": "f",
-            "protocols": [">RS232"],
+            "protocols": [{
+                "direction": ">",
+                "protocol__code": "RS232"
+            }],
             "type__name": "Electrical | RJ45"
         },
         {
@@ -70,7 +98,16 @@
             "description": "The AUX interface is reserved for further expansion.",
             "direction": "s",
             "gender": "f",
-            "protocols": ["<RS232", ">RS232"],
+            "protocols": [
+                {
+                    "direction": "<",
+                    "protocol__code": "RS232"
+                },
+                {
+                    "direction": ">",
+                    "protocol__code": "RS232"
+                }
+            ],
             "type__name": "Electrical | RJ45"
         },
         {
@@ -78,7 +115,10 @@
             "description": "Used to input or output 2-Mbit/s clock signals, 2-MHz clock signals, 1pps+ASCII time signals, or two channels of DCLS time signals.",
             "direction": "s",
             "gender": "f",
-            "protocols": [">RS232"],
+            "protocols": [{
+                "direction": ">",
+                "protocol__code": "RS232"
+            }],
             "type__name": "Electrical | RJ45"
         },
         {
@@ -86,7 +126,10 @@
             "description": "Used to input or output 2-Mbit/s clock signals, 2-MHz clock signals, 1pps+ASCII time signals, or two channels of DCLS time signals.",
             "direction": "s",
             "gender": "f",
-            "protocols": [">RS232"],
+            "protocols": [{
+                "direction": ">",
+                "protocol__code": "RS232"
+            }],
             "type__name": "Electrical | RJ45"
         },
         {
@@ -94,7 +137,10 @@
             "description": "Used to input or output 2-Mbit/s clock signals, 2-MHz clock signals, or 1 PPS signals.",
             "direction": "s",
             "gender": "f",
-            "protocols": [">RS232"],
+            "protocols": [{
+                "direction": ">",
+                "protocol__code": "RS232"
+            }],
             "type__name": "Radio | RF | RP SMB"
         },
         {
@@ -102,7 +148,10 @@
             "description": "Used to input or output 2-Mbit/s clock signals, 2-MHz clock signals, or RS-232 signals.",
             "direction": "s",
             "gender": "f",
-            "protocols": [">RS232"],
+            "protocols": [{
+                "direction": ">",
+                "protocol__code": "RS232"
+            }],
             "type__name": "Radio | RF | RP SMB"
         }
     ],

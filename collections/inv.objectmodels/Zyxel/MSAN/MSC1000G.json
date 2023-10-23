@@ -1,0 +1,176 @@
+{
+    "name": "Zyxel | MSAN | MSC1000G",
+    "$collection": "inv.objectmodels",
+    "uuid": "a4e7ba7c-c068-41e0-b1e5-a68312c86993",
+    "vendor__code": "ZYXEL",
+    "description": "management switch card Two 1000M interface modules (SFP + copper) ,  Two 1000Base SX/LX/EX/ZX (mini-GBIC, SFP)",
+    "connection_rule__name": "Zyxel | MSAN",
+    "cr_context": "LINECARD",
+    "labels": ["noc::inv::lc", "noc::inv::sup", "noc::inv::port"],
+    "connections": [
+        {
+            "name": "in",
+            "description": "Chassis connection",
+            "direction": "o",
+            "gender": "m",
+            "type__name": "Zyxel | MSAN | Linecard"
+        },
+        {
+            "name": "alarm",
+            "description": "external alarm IO port",
+            "direction": "s",
+            "gender": "f",
+            "type__name": "Electrical | DB15"
+        },
+        {
+            "name": "sfp1",
+            "description": "Port 1 (SFP)",
+            "direction": "i",
+            "gender": "f",
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "TransEth1G"
+            }],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "name": "sfp2",
+            "description": "Port 2 (SFP)",
+            "direction": "i",
+            "gender": "f",
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "TransEth1G"
+            }],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "name": "3",
+            "description": "Port 3 (Copper)",
+            "direction": "s",
+            "gender": "f",
+            "group": "3",
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "10BASET"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "100BASETX"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "1000BASETX"
+                }
+            ],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "name": "sfp3",
+            "description": "Port 3 (SFP)",
+            "direction": "i",
+            "gender": "f",
+            "group": "3",
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "TransEth1G"
+            }],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "name": "4",
+            "description": "Port 4 (Copper)",
+            "direction": "s",
+            "gender": "f",
+            "group": "4",
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "10BASET"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "100BASETX"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "1000BASETX"
+                }
+            ],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "name": "sfp4",
+            "description": "Port 4 (SFP)",
+            "direction": "i",
+            "gender": "f",
+            "group": "4",
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "TransEth1G"
+            }],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "name": "mgmt",
+            "description": "mgmt port",
+            "direction": "s",
+            "gender": "f",
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "10BASET"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "100BASETX"
+                }
+            ],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "name": "console",
+            "description": "console port",
+            "direction": "s",
+            "gender": "f",
+            "protocols": [{
+                "direction": ">",
+                "protocol__code": "RS232"
+            }],
+            "type__name": "Electrical | DB9"
+        }
+    ],
+    "data": [
+        {
+            "attr": "power",
+            "interface": "power",
+            "value": 30.0
+        },
+        {
+            "attr": "part_no",
+            "interface": "asset",
+            "value": ["MSC1000G"]
+        },
+        {
+            "attr": "weight",
+            "interface": "weight",
+            "value": 0.8
+        },
+        {
+            "attr": "width",
+            "interface": "dimensions",
+            "value": 267
+        },
+        {
+            "attr": "depth",
+            "interface": "dimensions",
+            "value": 240
+        },
+        {
+            "attr": "height",
+            "interface": "dimensions",
+            "value": 37
+        }
+    ]
+}

@@ -18,7 +18,10 @@
             "description": "port 1",
             "direction": "i",
             "gender": "f",
-            "protocols": ["TransEth1G"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "TransEth1G"
+            }],
             "type__name": "Transceiver | GBIC"
         },
         {
@@ -26,7 +29,10 @@
             "description": "port 2",
             "direction": "i",
             "gender": "f",
-            "protocols": ["TransEth1G"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "TransEth1G"
+            }],
             "type__name": "Transceiver | GBIC"
         }
     ],

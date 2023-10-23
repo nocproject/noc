@@ -11,7 +11,32 @@
             "description": "Line 0 port",
             "direction": "s",
             "gender": "f",
-            "protocols": ["V34bis", "V42", "V42bis", "V44", "V90", "V92"],
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "V34"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "V42"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "V42bis"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "V44"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "V90"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "V92"
+                }
+            ],
             "type__name": "Electrical | RJ11"
         },
         {
@@ -19,7 +44,32 @@
             "description": "Line 1 port",
             "direction": "s",
             "gender": "f",
-            "protocols": ["V34bis", "V42", "V42bis", "V44", "V90", "V92"],
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "V34"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "V42"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "V42bis"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "V44"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "V90"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "V92"
+                }
+            ],
             "type__name": "Electrical | RJ11"
         },
         {
@@ -27,7 +77,10 @@
             "description": "WAN Interface Card connector",
             "direction": "o",
             "gender": "m",
-            "protocols": ["WIC"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "CISCOWIC"
+            }],
             "type__name": "Cisco | ISR | DCS"
         }
     ],

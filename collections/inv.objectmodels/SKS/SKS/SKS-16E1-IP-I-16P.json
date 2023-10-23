@@ -20,7 +20,20 @@
             "description": "f0/1",
             "direction": "s",
             "gender": "f",
-            "protocols": ["10BASET", "100BASETX", "<POE"],
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "10BASET"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "100BASETX"
+                },
+                {
+                    "direction": "<",
+                    "protocol__code": "POE"
+                }
+            ],
             "type__name": "Electrical | RJ45"
         },
         {
@@ -28,7 +41,20 @@
             "description": "f0/2",
             "direction": "s",
             "gender": "f",
-            "protocols": ["10BASET", "100BASETX", "<POE"],
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "10BASET"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "100BASETX"
+                },
+                {
+                    "direction": "<",
+                    "protocol__code": "POE"
+                }
+            ],
             "type__name": "Electrical | RJ45"
         },
         {
@@ -36,7 +62,20 @@
             "description": "f0/3",
             "direction": "s",
             "gender": "f",
-            "protocols": ["10BASET", "100BASETX", "<POE"],
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "10BASET"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "100BASETX"
+                },
+                {
+                    "direction": "<",
+                    "protocol__code": "POE"
+                }
+            ],
             "type__name": "Electrical | RJ45"
         },
         {
@@ -44,7 +83,20 @@
             "description": "f0/4",
             "direction": "s",
             "gender": "f",
-            "protocols": ["10BASET", "100BASETX", "<POE"],
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "10BASET"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "100BASETX"
+                },
+                {
+                    "direction": "<",
+                    "protocol__code": "POE"
+                }
+            ],
             "type__name": "Electrical | RJ45"
         },
         {
@@ -52,7 +104,20 @@
             "description": "f0/5",
             "direction": "s",
             "gender": "f",
-            "protocols": ["10BASET", "100BASETX", "<POE"],
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "10BASET"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "100BASETX"
+                },
+                {
+                    "direction": "<",
+                    "protocol__code": "POE"
+                }
+            ],
             "type__name": "Electrical | RJ45"
         },
         {
@@ -60,7 +125,20 @@
             "description": "f0/6",
             "direction": "s",
             "gender": "f",
-            "protocols": ["10BASET", "100BASETX", "<POE"],
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "10BASET"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "100BASETX"
+                },
+                {
+                    "direction": "<",
+                    "protocol__code": "POE"
+                }
+            ],
             "type__name": "Electrical | RJ45"
         },
         {
@@ -68,7 +146,20 @@
             "description": "f0/7",
             "direction": "s",
             "gender": "f",
-            "protocols": ["10BASET", "100BASETX", "<POE"],
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "10BASET"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "100BASETX"
+                },
+                {
+                    "direction": "<",
+                    "protocol__code": "POE"
+                }
+            ],
             "type__name": "Electrical | RJ45"
         },
         {
@@ -76,7 +167,20 @@
             "description": "f0/8",
             "direction": "s",
             "gender": "f",
-            "protocols": ["10BASET", "100BASETX", "<POE"],
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "10BASET"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "100BASETX"
+                },
+                {
+                    "direction": "<",
+                    "protocol__code": "POE"
+                }
+            ],
             "type__name": "Electrical | RJ45"
         },
         {
@@ -84,7 +188,20 @@
             "description": "f0/9",
             "direction": "s",
             "gender": "f",
-            "protocols": ["10BASET", "100BASETX", "<POE"],
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "10BASET"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "100BASETX"
+                },
+                {
+                    "direction": "<",
+                    "protocol__code": "POE"
+                }
+            ],
             "type__name": "Electrical | RJ45"
         },
         {
@@ -92,7 +209,20 @@
             "description": "f0/10",
             "direction": "s",
             "gender": "f",
-            "protocols": ["10BASET", "100BASETX", "<POE"],
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "10BASET"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "100BASETX"
+                },
+                {
+                    "direction": "<",
+                    "protocol__code": "POE"
+                }
+            ],
             "type__name": "Electrical | RJ45"
         },
         {
@@ -100,7 +230,20 @@
             "description": "f0/11",
             "direction": "s",
             "gender": "f",
-            "protocols": ["10BASET", "100BASETX", "<POE"],
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "10BASET"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "100BASETX"
+                },
+                {
+                    "direction": "<",
+                    "protocol__code": "POE"
+                }
+            ],
             "type__name": "Electrical | RJ45"
         },
         {
@@ -108,7 +251,20 @@
             "description": "f0/12",
             "direction": "s",
             "gender": "f",
-            "protocols": ["10BASET", "100BASETX", "<POE"],
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "10BASET"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "100BASETX"
+                },
+                {
+                    "direction": "<",
+                    "protocol__code": "POE"
+                }
+            ],
             "type__name": "Electrical | RJ45"
         },
         {
@@ -116,7 +272,20 @@
             "description": "f0/13",
             "direction": "s",
             "gender": "f",
-            "protocols": ["10BASET", "100BASETX", "<POE"],
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "10BASET"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "100BASETX"
+                },
+                {
+                    "direction": "<",
+                    "protocol__code": "POE"
+                }
+            ],
             "type__name": "Electrical | RJ45"
         },
         {
@@ -124,7 +293,20 @@
             "description": "f0/14",
             "direction": "s",
             "gender": "f",
-            "protocols": ["10BASET", "100BASETX", "<POE"],
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "10BASET"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "100BASETX"
+                },
+                {
+                    "direction": "<",
+                    "protocol__code": "POE"
+                }
+            ],
             "type__name": "Electrical | RJ45"
         },
         {
@@ -132,7 +314,20 @@
             "description": "f0/15",
             "direction": "s",
             "gender": "f",
-            "protocols": ["10BASET", "100BASETX", "<POE"],
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "10BASET"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "100BASETX"
+                },
+                {
+                    "direction": "<",
+                    "protocol__code": "POE"
+                }
+            ],
             "type__name": "Electrical | RJ45"
         },
         {
@@ -140,7 +335,20 @@
             "description": "f0/16",
             "direction": "s",
             "gender": "f",
-            "protocols": ["10BASET", "100BASETX", "<POE"],
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "10BASET"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "100BASETX"
+                },
+                {
+                    "direction": "<",
+                    "protocol__code": "POE"
+                }
+            ],
             "type__name": "Electrical | RJ45"
         },
         {
@@ -149,7 +357,20 @@
             "direction": "s",
             "gender": "f",
             "group": "17",
-            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "10BASET"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "100BASETX"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "1000BASETX"
+                }
+            ],
             "type__name": "Electrical | RJ45"
         },
         {
@@ -158,7 +379,16 @@
             "direction": "i",
             "gender": "f",
             "group": "17",
-            "protocols": ["TransEth100M", "TransEth1G"],
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth100M"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth1G"
+                }
+            ],
             "type__name": "Transceiver | SFP"
         },
         {
@@ -167,7 +397,20 @@
             "direction": "s",
             "gender": "f",
             "group": "18",
-            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "10BASET"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "100BASETX"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "1000BASETX"
+                }
+            ],
             "type__name": "Electrical | RJ45"
         },
         {
@@ -176,7 +419,16 @@
             "direction": "i",
             "gender": "f",
             "group": "18",
-            "protocols": ["TransEth100M", "TransEth1G"],
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth100M"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth1G"
+                }
+            ],
             "type__name": "Transceiver | SFP"
         },
         {
@@ -184,7 +436,10 @@
             "description": "Console port",
             "direction": "s",
             "gender": "f",
-            "protocols": [">RS232"],
+            "protocols": [{
+                "direction": ">",
+                "protocol__code": "RS232"
+            }],
             "type__name": "Electrical | RJ45"
         },
         {
@@ -192,7 +447,16 @@
             "description": "Power outlet",
             "direction": "s",
             "gender": "m",
-            "protocols": [">220VAC", ">110VAC"],
+            "protocols": [
+                {
+                    "direction": ">",
+                    "protocol__code": "220VAC"
+                },
+                {
+                    "direction": ">",
+                    "protocol__code": "110VAC"
+                }
+            ],
             "type__name": "Power | IEC 60320 C14"
         }
     ],

@@ -13,7 +13,10 @@
             "description": "gpon 1",
             "direction": "i",
             "gender": "f",
-            "protocols": ["GPON"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "GPON"
+            }],
             "type__name": "Transceiver | SFP"
         },
         {
@@ -21,7 +24,10 @@
             "description": "gpon 2",
             "direction": "i",
             "gender": "f",
-            "protocols": ["GPON"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "GPON"
+            }],
             "type__name": "Transceiver | SFP"
         },
         {
@@ -29,7 +35,10 @@
             "description": "gpon 3",
             "direction": "i",
             "gender": "f",
-            "protocols": ["GPON"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "GPON"
+            }],
             "type__name": "Transceiver | SFP"
         },
         {
@@ -37,7 +46,10 @@
             "description": "gpon 4",
             "direction": "i",
             "gender": "f",
-            "protocols": ["GPON"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "GPON"
+            }],
             "type__name": "Transceiver | SFP"
         },
         {
@@ -45,7 +57,10 @@
             "description": "gpon 5",
             "direction": "i",
             "gender": "f",
-            "protocols": ["GPON"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "GPON"
+            }],
             "type__name": "Transceiver | SFP"
         },
         {
@@ -53,7 +68,10 @@
             "description": "gpon 6",
             "direction": "i",
             "gender": "f",
-            "protocols": ["GPON"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "GPON"
+            }],
             "type__name": "Transceiver | SFP"
         },
         {
@@ -61,7 +79,10 @@
             "description": "gpon 7",
             "direction": "i",
             "gender": "f",
-            "protocols": ["GPON"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "GPON"
+            }],
             "type__name": "Transceiver | SFP"
         },
         {
@@ -69,7 +90,10 @@
             "description": "gpon 8",
             "direction": "i",
             "gender": "f",
-            "protocols": ["GPON"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "GPON"
+            }],
             "type__name": "Transceiver | SFP"
         },
         {

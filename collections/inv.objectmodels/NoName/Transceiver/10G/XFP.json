@@ -12,7 +12,10 @@
             "description": "XFP Connector",
             "direction": "o",
             "gender": "m",
-            "protocols": ["TransEth10G"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "TransEth10G"
+            }],
             "type__name": "Transceiver | XFP"
         },
         {

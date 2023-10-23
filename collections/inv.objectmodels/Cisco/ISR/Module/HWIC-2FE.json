@@ -1,0 +1,62 @@
+{
+    "name": "Cisco | ISR | Module | HWIC-2FE",
+    "$collection": "inv.objectmodels",
+    "uuid": "98e9dc89-7049-443b-a311-46df35e10ab2",
+    "vendor__code": "CISCO",
+    "description": "2-Port Fast Ethernet Layer 3 High-Speed WAN interface cards (HWICs)",
+    "cr_context": "DCS",
+    "connections": [
+        {
+            "name": "Fa0",
+            "description": "FastEthernet X/0",
+            "direction": "s",
+            "gender": "f",
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "10BASET"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "100BASETX"
+                }
+            ],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "name": "Fa1",
+            "description": "FastEthernet X/1",
+            "direction": "s",
+            "gender": "f",
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "10BASET"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "100BASETX"
+                }
+            ],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "name": "in",
+            "description": "HWIC Card connector",
+            "direction": "o",
+            "gender": "m",
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "CISCOHWIC"
+            }],
+            "type__name": "Cisco | ISR | DCS"
+        }
+    ],
+    "data": [
+        {
+            "attr": "part_no",
+            "interface": "asset",
+            "value": ["HWIC-2FE"]
+        }
+    ]
+}

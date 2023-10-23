@@ -20,7 +20,16 @@
             "description": "Power outlet",
             "direction": "s",
             "gender": "m",
-            "protocols": [">220VAC", ">110VAC"],
+            "protocols": [
+                {
+                    "direction": ">",
+                    "protocol__code": "220VAC"
+                },
+                {
+                    "direction": ">",
+                    "protocol__code": "110VAC"
+                }
+            ],
             "type__name": "Power | IEC 60320 C14"
         },
         {
@@ -28,7 +37,10 @@
             "description": "Console port",
             "direction": "s",
             "gender": "f",
-            "protocols": [">RS232"],
+            "protocols": [{
+                "direction": ">",
+                "protocol__code": "RS232"
+            }],
             "type__name": "Electrical | RJ45"
         },
         {
@@ -36,7 +48,24 @@
             "description": "gigabitethernet 1/0/1 port",
             "direction": "s",
             "gender": "f",
-            "protocols": ["10BASET", "100BASETX", "1000BASETX", "<POE"],
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "10BASET"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "100BASETX"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "1000BASETX"
+                },
+                {
+                    "direction": "<",
+                    "protocol__code": "POE"
+                }
+            ],
             "type__name": "Electrical | RJ45"
         },
         {
@@ -44,7 +73,24 @@
             "description": "gigabitethernet 1/0/2 port",
             "direction": "s",
             "gender": "f",
-            "protocols": ["10BASET", "100BASETX", "1000BASETX", "<POE"],
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "10BASET"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "100BASETX"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "1000BASETX"
+                },
+                {
+                    "direction": "<",
+                    "protocol__code": "POE"
+                }
+            ],
             "type__name": "Electrical | RJ45"
         },
         {
@@ -52,7 +98,24 @@
             "description": "gigabitethernet 1/0/3 port",
             "direction": "s",
             "gender": "f",
-            "protocols": ["10BASET", "100BASETX", "1000BASETX", "<POE"],
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "10BASET"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "100BASETX"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "1000BASETX"
+                },
+                {
+                    "direction": "<",
+                    "protocol__code": "POE"
+                }
+            ],
             "type__name": "Electrical | RJ45"
         },
         {
@@ -60,7 +123,24 @@
             "description": "gigabitethernet 1/0/4 port",
             "direction": "s",
             "gender": "f",
-            "protocols": ["10BASET", "100BASETX", "1000BASETX", "<POE"],
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "10BASET"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "100BASETX"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "1000BASETX"
+                },
+                {
+                    "direction": "<",
+                    "protocol__code": "POE"
+                }
+            ],
             "type__name": "Electrical | RJ45"
         },
         {
@@ -68,7 +148,24 @@
             "description": "gigabitethernet 1/0/5 port",
             "direction": "s",
             "gender": "f",
-            "protocols": ["10BASET", "100BASETX", "1000BASETX", "<POE"],
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "10BASET"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "100BASETX"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "1000BASETX"
+                },
+                {
+                    "direction": "<",
+                    "protocol__code": "POE"
+                }
+            ],
             "type__name": "Electrical | RJ45"
         },
         {
@@ -76,7 +173,24 @@
             "description": "gigabitethernet 1/0/6 port",
             "direction": "s",
             "gender": "f",
-            "protocols": ["10BASET", "100BASETX", "1000BASETX", "<POE"],
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "10BASET"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "100BASETX"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "1000BASETX"
+                },
+                {
+                    "direction": "<",
+                    "protocol__code": "POE"
+                }
+            ],
             "type__name": "Electrical | RJ45"
         },
         {
@@ -84,7 +198,24 @@
             "description": "gigabitethernet 1/0/7 port",
             "direction": "s",
             "gender": "f",
-            "protocols": ["10BASET", "100BASETX", "1000BASETX", "<POE"],
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "10BASET"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "100BASETX"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "1000BASETX"
+                },
+                {
+                    "direction": "<",
+                    "protocol__code": "POE"
+                }
+            ],
             "type__name": "Electrical | RJ45"
         },
         {
@@ -92,7 +223,24 @@
             "description": "gigabitethernet 1/0/8 port",
             "direction": "s",
             "gender": "f",
-            "protocols": ["10BASET", "100BASETX", "1000BASETX", "<POE"],
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "10BASET"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "100BASETX"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "1000BASETX"
+                },
+                {
+                    "direction": "<",
+                    "protocol__code": "POE"
+                }
+            ],
             "type__name": "Electrical | RJ45"
         },
         {
@@ -100,7 +248,20 @@
             "description": "gigabitethernet 1/0/9 port",
             "direction": "s",
             "gender": "f",
-            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "10BASET"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "100BASETX"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "1000BASETX"
+                }
+            ],
             "type__name": "Electrical | RJ45"
         },
         {
@@ -108,7 +269,20 @@
             "description": "gigabitethernet 1/0/10 port",
             "direction": "s",
             "gender": "f",
-            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "10BASET"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "100BASETX"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "1000BASETX"
+                }
+            ],
             "type__name": "Electrical | RJ45"
         },
         {
@@ -116,7 +290,10 @@
             "description": "gigabitethernet 1/0/11 port",
             "direction": "i",
             "gender": "f",
-            "protocols": ["TransEth1G"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "TransEth1G"
+            }],
             "type__name": "Transceiver | SFP"
         },
         {
@@ -124,7 +301,10 @@
             "description": "gigabitethernet 1/0/12 port",
             "direction": "i",
             "gender": "f",
-            "protocols": ["TransEth1G"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "TransEth1G"
+            }],
             "type__name": "Transceiver | SFP"
         }
     ],

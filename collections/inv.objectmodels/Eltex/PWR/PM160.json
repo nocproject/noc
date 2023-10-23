@@ -1,0 +1,41 @@
+{
+    "name": "Eltex | PWR | PM160-220/12",
+    "$collection": "inv.objectmodels",
+    "uuid": "4dabf021-076a-4188-b0d4-ce78a6dd0d89",
+    "vendor__code": "ELTEX",
+    "description": "PM160-220/12 (220V AC, 160W) Power Supply",
+    "cr_context": "PSU",
+    "labels": ["noc::inv::psu"],
+    "connections": [
+        {
+            "name": "power",
+            "description": "Power input",
+            "direction": "s",
+            "gender": "m",
+            "protocols": [{
+                "direction": ">",
+                "protocol__code": "220VAC"
+            }],
+            "type__name": "Power | IEC 60320 C14"
+        },
+        {
+            "name": "in",
+            "description": "Internal Power slot",
+            "direction": "o",
+            "gender": "m",
+            "type__name": "Eltex | MES | PSU"
+        }
+    ],
+    "data": [
+        {
+            "attr": "order_part_no",
+            "interface": "asset",
+            "value": ["PM150", "PM160", "PM160-220/12"]
+        },
+        {
+            "attr": "weight",
+            "interface": "weight",
+            "value": 0.5
+        }
+    ]
+}

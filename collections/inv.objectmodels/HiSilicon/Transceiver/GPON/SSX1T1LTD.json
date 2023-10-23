@@ -12,7 +12,10 @@
             "description": "SFP Connector",
             "direction": "o",
             "gender": "m",
-            "protocols": ["GPON"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "GPON"
+            }],
             "type__name": "Transceiver | SFP"
         },
         {
@@ -20,7 +23,18 @@
             "description": "RxTx GPON SC port",
             "direction": "s",
             "gender": "f",
-            "protocols": [">GPON-1260_1360", "<GPON-1490"],
+            "protocols": [
+                {
+                    "direction": ">",
+                    "discriminator": "1260_1360",
+                    "protocol__code": "GPON"
+                },
+                {
+                    "direction": "<",
+                    "discriminator": "1490",
+                    "protocol__code": "GPON"
+                }
+            ],
             "type__name": "Optical | SC"
         }
     ],

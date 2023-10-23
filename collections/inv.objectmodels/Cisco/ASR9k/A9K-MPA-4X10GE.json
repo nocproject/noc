@@ -12,7 +12,10 @@
             "direction": "i",
             "gender": "f",
             "group": "0",
-            "protocols": ["TransEth10G"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "TransEth10G"
+            }],
             "type__name": "Transceiver | XFP | Cisco"
         },
         {
@@ -21,7 +24,10 @@
             "direction": "i",
             "gender": "f",
             "group": "0",
-            "protocols": ["TransEth10G"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "TransEth10G"
+            }],
             "type__name": "Transceiver | XFP | Cisco"
         },
         {
@@ -30,7 +36,10 @@
             "direction": "i",
             "gender": "f",
             "group": "0",
-            "protocols": ["TransEth10G"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "TransEth10G"
+            }],
             "type__name": "Transceiver | XFP | Cisco"
         },
         {
@@ -39,7 +48,10 @@
             "direction": "i",
             "gender": "f",
             "group": "0",
-            "protocols": ["TransEth10G"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "TransEth10G"
+            }],
             "type__name": "Transceiver | XFP | Cisco"
         },
         {

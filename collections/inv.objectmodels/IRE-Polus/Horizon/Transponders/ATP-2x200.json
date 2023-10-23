@@ -1,5 +1,5 @@
 {
-    "name": "IRE-Polus | Horizon | ATP-2x200",
+    "name": "IRE-Polus | Horizon | Transponders | ATP-2x200",
     "$collection": "inv.objectmodels",
     "uuid": "1b1a0816-2dcb-4b4d-b333-9a655ed560c8",
     "vendor__code": "IRE-POLUS",
@@ -20,7 +20,10 @@
             "description": "Посадочное место под клиентский QSFP28 модуль 1",
             "direction": "i",
             "gender": "f",
-            "protocols": ["TransEth10G"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "TransEth10G"
+            }],
             "type__name": "Transceiver | QSFP+"
         },
         {
@@ -28,7 +31,10 @@
             "description": "Линейный порт 1",
             "direction": "i",
             "gender": "f",
-            "protocols": ["TransEth100G"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "TransEth100G"
+            }],
             "type__name": "Transceiver | CFP2"
         },
         {
@@ -36,7 +42,10 @@
             "description": "Посадочное место под клиентский QSFP28 модуль 1",
             "direction": "i",
             "gender": "f",
-            "protocols": ["TransEth10G"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "TransEth10G"
+            }],
             "type__name": "Transceiver | QSFP+"
         },
         {
@@ -44,7 +53,10 @@
             "description": "Посадочное место под клиентский QSFP28 модуль 1",
             "direction": "i",
             "gender": "f",
-            "protocols": ["TransEth10G"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "TransEth10G"
+            }],
             "type__name": "Transceiver | QSFP+"
         },
         {
@@ -52,7 +64,10 @@
             "description": "Линейный порт 1",
             "direction": "i",
             "gender": "f",
-            "protocols": ["TransEth100G"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "TransEth100G"
+            }],
             "type__name": "Transceiver | CFP2"
         },
         {
@@ -60,7 +75,10 @@
             "description": "Посадочное место под клиентский QSFP28 модуль 1",
             "direction": "i",
             "gender": "f",
-            "protocols": ["TransEth10G"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "TransEth10G"
+            }],
             "type__name": "Transceiver | QSFP+"
         },
         {
@@ -68,7 +86,16 @@
             "description": "Выходы для канала служебной связи",
             "direction": "s",
             "gender": "f",
-            "protocols": ["100BASETX", "1000BASETX"],
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "100BASETX"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "1000BASETX"
+                }
+            ],
             "type__name": "Electrical | RJ45"
         },
         {
@@ -76,7 +103,16 @@
             "description": "Выходы для канала служебной связи",
             "direction": "s",
             "gender": "f",
-            "protocols": ["100BASETX", "1000BASETX"],
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "100BASETX"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "1000BASETX"
+                }
+            ],
             "type__name": "Electrical | RJ45"
         }
     ],

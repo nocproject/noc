@@ -1,5 +1,5 @@
 {
-    "name": "Huawei | SmartAX | Upstream Interface Board | H801X2CS",
+    "name": "Huawei | SmartAX | MA560xT | Upstream Interface Board | H801X2CS",
     "$collection": "inv.objectmodels",
     "uuid": "11c5b1b7-e524-4334-a3e8-4f75af310e23",
     "vendor__code": "HUAWEI",
@@ -19,7 +19,10 @@
             "description": "Upstream or cascading optical port",
             "direction": "i",
             "gender": "f",
-            "protocols": ["TransEth10G"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "TransEth10G"
+            }],
             "type__name": "Transceiver | SFP+"
         },
         {
@@ -27,7 +30,10 @@
             "description": "Upstream or cascading optical port",
             "direction": "i",
             "gender": "f",
-            "protocols": ["TransEth10G"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "TransEth10G"
+            }],
             "type__name": "Transceiver | SFP+"
         }
     ],

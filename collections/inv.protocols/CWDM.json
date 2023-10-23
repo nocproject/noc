@@ -1,0 +1,10 @@
+{
+    "name": "CWDM",
+    "code": "CWDM",
+    "$collection": "inv.protocols",
+    "uuid": "c539386d-0973-44ea-ba83-0a114733b058",
+    "description": null,
+    "data": [],
+    "connection_schema": "BD",
+    "technology__name": "WDM"
+}

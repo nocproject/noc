@@ -11,7 +11,10 @@
             "description": "USB Port #0",
             "direction": "i",
             "gender": "f",
-            "protocols": [">USB1"],
+            "protocols": [{
+                "direction": ">",
+                "protocol__code": "USB10"
+            }],
             "type__name": "Electrical | USB"
         },
         {
@@ -19,7 +22,10 @@
             "description": "USB Port #1",
             "direction": "i",
             "gender": "f",
-            "protocols": [">USB1"],
+            "protocols": [{
+                "direction": ">",
+                "protocol__code": "USB10"
+            }],
             "type__name": "Electrical | USB"
         },
         {
@@ -27,7 +33,16 @@
             "description": "AUX serial port",
             "direction": "s",
             "gender": "f",
-            "protocols": [">RS232", "<RS232"],
+            "protocols": [
+                {
+                    "direction": ">",
+                    "protocol__code": "RS232"
+                },
+                {
+                    "direction": "<",
+                    "protocol__code": "RS232"
+                }
+            ],
             "type__name": "Electrical | RJ45"
         },
         {
@@ -35,7 +50,10 @@
             "description": "RJ45 Console port",
             "direction": "s",
             "gender": "f",
-            "protocols": [">RS232"],
+            "protocols": [{
+                "direction": ">",
+                "protocol__code": "RS232"
+            }],
             "type__name": "Electrical | RJ45"
         },
         {
@@ -43,7 +61,16 @@
             "description": "Ethernet port",
             "direction": "s",
             "gender": "f",
-            "protocols": ["10BASET", "100BASETX"],
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "10BASET"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "100BASETX"
+                }
+            ],
             "type__name": "Electrical | RJ45"
         },
         {

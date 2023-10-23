@@ -11,7 +11,10 @@
             "description": null,
             "direction": "s",
             "gender": "f",
-            "protocols": ["10BASET"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "10BASET"
+            }],
             "type__name": "Electrical | RJ45"
         },
         {
@@ -110,7 +113,13 @@
             "description": "B(RS485)",
             "direction": "s",
             "gender": "f",
-            "protocols": ["<RS-485-B"],
+            "protocols": [
+                {
+                    "direction": "<",
+                    "discriminator": "B",
+                    "protocol__code": "RS485"
+                }
+            ],
             "type__name": "Power | MSTB 2.5/16-ST-5.08"
         },
         {
@@ -118,7 +127,13 @@
             "description": "B(RS485)",
             "direction": "s",
             "gender": "f",
-            "protocols": ["<RS-485-A"],
+            "protocols": [
+                {
+                    "direction": "<",
+                    "discriminator": "A",
+                    "protocol__code": "RS485"
+                }
+            ],
             "type__name": "Power | MSTB 2.5/16-ST-5.08"
         },
         {
@@ -126,7 +141,6 @@
             "description": "GND",
             "direction": "s",
             "gender": "f",
-            "protocols": ["RS"],
             "type__name": "Power | MSTB 2.5/16-ST-5.08"
         },
         {
@@ -148,7 +162,10 @@
             "description": null,
             "direction": "s",
             "gender": "f",
-            "protocols": ["<RS-232"],
+            "protocols": [{
+                "direction": "<",
+                "protocol__code": "RS232"
+            }],
             "type__name": "Electrical | RJ11"
         }
     ],

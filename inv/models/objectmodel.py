@@ -40,6 +40,7 @@ from .connectiontype import ConnectionType
 from .connectionrule import ConnectionRule
 from .unknownmodel import UnknownModel
 from .vendor import Vendor
+from .protocol import Protocol
 
 id_lock = Lock()
 
@@ -52,7 +53,7 @@ class ModelAttr(EmbeddedDocument):
     value = DynamicField()
     slot = StringField()
 
-    def __str__(self):
+    def __str__(self) -> str:
         if self.slot:
             return "%s.%s@%s = %s" % (self.interface, self.attr, self.slot, self.value)
         return "%s.%s = %s" % (self.interface, self.attr, self.value)
@@ -69,6 +70,43 @@ class ModelAttr(EmbeddedDocument):
         return r
 
 
+class ProtocolVariantItem(EmbeddedDocument):
+    meta = {"strict": False, "auto_create_index": False}
+    protocol: "Protocol" = PlainReferenceField(Protocol, required=True)
+    discriminator = StringField(required=False)
+    direction = StringField(choices=[">", "<", "*"], default="*")
+
+    def __str__(self):
+        return self.code
+
+    def __hash__(self):
+        return hash(self.code)
+
+    @property
+    def code(self) -> str:
+        if not self.discriminator and self.direction == "*":
+            return self.protocol.code
+        elif not self.discriminator:
+            return f"{self.direction}::{self.protocol.code}"
+        return f"{self.direction}::{self.protocol.code}::{self.discriminator}"
+
+    @property
+    def json_data(self) -> Dict[str, Any]:
+        r = {
+            "protocol__code": self.protocol.code,
+            "direction": self.direction,
+        }
+        if self.discriminator:
+            r["discriminator"] = self.discriminator
+        return r
+
+    def __eq__(self, other):
+        r = self.protocol.id == other.protocol.id and self.direction == other.direction
+        if not self.discriminator:
+            return r
+        return r and self.discriminator == other.discriminator
+
+
 class ObjectModelConnection(EmbeddedDocument):
     meta = {"strict": False, "auto_create_index": False}
     name = StringField()
@@ -79,7 +117,7 @@ class ObjectModelConnection(EmbeddedDocument):
     combo = StringField(required=False)
     group = StringField(required=False)
     cross = StringField(required=False)
-    protocols = ListField(StringField(), required=False)
+    protocols = EmbeddedDocumentListField(ProtocolVariantItem)
     internal_name = StringField(required=False)
     composite = StringField(required=False)
     composite_pins = StringField(required=False)
@@ -119,7 +157,7 @@ class ObjectModelConnection(EmbeddedDocument):
         if self.cross:
             r["cross"] = self.cross
         if self.protocols:
-            r["protocols"] = self.protocols
+            r["protocols"] = [pv.json_data for pv in self.protocols]
         if self.internal_name:
             r["internal_name"] = self.internal_name
         if self.composite:
@@ -401,6 +439,7 @@ class ObjectModel(Document):
 
     def get_json_path(self) -> str:
         p = [quote_safe_path(n.strip()) for n in self.name.split("|")]
+        print(p)
         return os.path.join(*p) + ".json"
 
     def clear_unknown_models(self):

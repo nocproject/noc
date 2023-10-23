@@ -1,0 +1,46 @@
+{
+    "name": "Eltex | PWR | PM100-48/12",
+    "$collection": "inv.objectmodels",
+    "uuid": "2a9f6e23-15b0-4c9a-b62e-218d2c1dd018",
+    "vendor__code": "ELTEX",
+    "description": "PM100-48/12 (48V DC, 100W) Power Supply",
+    "cr_context": "PSU",
+    "labels": ["noc::inv::psu"],
+    "connections": [
+        {
+            "name": "in",
+            "description": "internal Power slot",
+            "direction": "o",
+            "gender": "m",
+            "type__name": "Eltex | MES | PSU"
+        },
+        {
+            "name": "-48V",
+            "description": "-48V",
+            "direction": "s",
+            "gender": "f",
+            "protocols": [{
+                "direction": ">",
+                "protocol__code": "-48VDC"
+            }],
+            "type__name": "Power | MSTB 2.5/3-ST-5.08"
+        }
+    ],
+    "data": [
+        {
+            "attr": "part_no",
+            "interface": "asset",
+            "value": ["PM100-48/12"]
+        },
+        {
+            "attr": "is_recursive",
+            "interface": "weight",
+            "value": true
+        },
+        {
+            "attr": "weight",
+            "interface": "weight",
+            "value": 0.4
+        }
+    ]
+}

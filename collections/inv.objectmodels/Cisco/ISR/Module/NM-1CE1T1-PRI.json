@@ -18,7 +18,10 @@
             "description": "CTRL 0",
             "direction": "s",
             "gender": "f",
-            "protocols": ["G703"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "G703"
+            }],
             "type__name": "Electrical | RJ48"
         },
         {
@@ -26,7 +29,6 @@
             "description": "RX mon port",
             "direction": "s",
             "gender": "f",
-            "protocols": ["MON"],
             "type__name": "Electrical | 2.5mm-jack"
         },
         {
@@ -34,7 +36,6 @@
             "description": "TX mon port",
             "direction": "s",
             "gender": "f",
-            "protocols": ["MON"],
             "type__name": "Electrical | 2.5mm-jack"
         }
     ],

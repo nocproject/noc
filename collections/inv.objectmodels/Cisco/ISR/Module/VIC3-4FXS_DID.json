@@ -11,7 +11,10 @@
             "description": "voice-port N/X/0 telephone",
             "direction": "s",
             "gender": "f",
-            "protocols": ["FXS"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "FXS"
+            }],
             "type__name": "Electrical | RJ11"
         },
         {
@@ -19,7 +22,10 @@
             "description": "voice-port N/X/1 telephone",
             "direction": "s",
             "gender": "f",
-            "protocols": ["FXS"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "FXS"
+            }],
             "type__name": "Electrical | RJ11"
         },
         {
@@ -27,7 +33,10 @@
             "description": "voice-port N/X/2 telephone",
             "direction": "s",
             "gender": "f",
-            "protocols": ["FXS"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "FXS"
+            }],
             "type__name": "Electrical | RJ11"
         },
         {
@@ -35,7 +44,10 @@
             "description": "voice-port N/X/3 telephone",
             "direction": "s",
             "gender": "f",
-            "protocols": ["FXS"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "FXS"
+            }],
             "type__name": "Electrical | RJ11"
         },
         {
@@ -43,7 +55,10 @@
             "description": "Voice Interface Card connector slot",
             "direction": "o",
             "gender": "m",
-            "protocols": ["VIC"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "CISCOVIC"
+            }],
             "type__name": "Cisco | ISR | DCS"
         }
     ],

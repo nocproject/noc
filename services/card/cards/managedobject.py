@@ -584,7 +584,7 @@ class ManagedObjectCard(BaseCard):
                         "name": n.name,
                         "serial": "",
                         "description": n.description,
-                        "model": ", ".join(n.protocols),
+                        "model": ", ".join(str(p) for p in n.protocols),
                     }
                 ]
         return r

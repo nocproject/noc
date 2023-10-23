@@ -1,5 +1,5 @@
 {
-    "name": "Cisco | C4900 | C4900M",
+    "name": "Cisco | C4900 | WS-C4900M",
     "$collection": "inv.objectmodels",
     "uuid": "340cd488-5dbe-4433-a572-bbefdf5ffb11",
     "vendor__code": "CISCO",
@@ -34,7 +34,16 @@
             "description": "USB port",
             "direction": "s",
             "gender": "f",
-            "protocols": ["USB10", "USB11"],
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "USB10"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "USB11"
+                }
+            ],
             "type__name": "Electrical | USB"
         },
         {
@@ -42,7 +51,16 @@
             "description": "USB port",
             "direction": "s",
             "gender": "f",
-            "protocols": ["USB10", "USB11"],
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "USB10"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "USB11"
+                }
+            ],
             "type__name": "Electrical | USB-type-B"
         },
         {
@@ -50,7 +68,10 @@
             "description": "Console port",
             "direction": "s",
             "gender": "f",
-            "protocols": [">RS232"],
+            "protocols": [{
+                "direction": ">",
+                "protocol__code": "RS232"
+            }],
             "type__name": "Electrical | RJ45"
         },
         {
@@ -58,7 +79,20 @@
             "description": "Management port",
             "direction": "s",
             "gender": "f",
-            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "10BASET"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "100BASETX"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "1000BASETX"
+                }
+            ],
             "type__name": "Electrical | RJ45"
         },
         {

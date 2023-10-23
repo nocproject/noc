@@ -12,7 +12,18 @@
             "description": "RxTx SC Port",
             "direction": "i",
             "gender": "f",
-            "protocols": [">1000BASELX-1270", "<1000BASELX-1330"],
+            "protocols": [
+                {
+                    "direction": ">",
+                    "discriminator": "1270",
+                    "protocol__code": "1000BASELX"
+                },
+                {
+                    "direction": "<",
+                    "discriminator": "1330",
+                    "protocol__code": "1000BASELX"
+                }
+            ],
             "type__name": "Optical | LC"
         },
         {
@@ -20,7 +31,10 @@
             "description": "SFP Connector",
             "direction": "o",
             "gender": "m",
-            "protocols": ["TransEth10G"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "TransEth10G"
+            }],
             "type__name": "Transceiver | SFP+"
         }
     ],

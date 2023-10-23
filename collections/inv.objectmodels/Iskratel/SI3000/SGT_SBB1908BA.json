@@ -19,7 +19,16 @@
             "description": "32-channel VDSL2 ",
             "direction": "s",
             "gender": "f",
-            "protocols": ["VDSL", "ADSL2+"],
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "VDSL"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "ADSL2+"
+                }
+            ],
             "type__name": "Electrical | CENC-64"
         },
         {
@@ -27,7 +36,16 @@
             "description": "32-channel VDSL2 ",
             "direction": "s",
             "gender": "f",
-            "protocols": ["VDSL", "ADSL2+"],
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "VDSL"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "ADSL2+"
+                }
+            ],
             "type__name": "Electrical | CENC-64"
         }
     ],

@@ -1,0 +1,10 @@
+{
+    "name": "Cisco WIC",
+    "code": "CISCOWIC",
+    "$collection": "inv.protocols",
+    "uuid": "f47b06aa-e4ae-46d6-b15f-835d54d67413",
+    "description": "Cisco WAN Interface Card.",
+    "data": [],
+    "connection_schema": "BO",
+    "technology__name": "Cisco | Interface Card"
+}

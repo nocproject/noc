@@ -12,7 +12,24 @@
             "description": "Uplink port",
             "direction": "s",
             "gender": "f",
-            "protocols": ["10BASET", "100BASETX", "1000BASETX", ">POE"],
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "10BASET"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "100BASETX"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "1000BASETX"
+                },
+                {
+                    "direction": ">",
+                    "protocol__code": "POE"
+                }
+            ],
             "type__name": "Electrical | RJ45"
         },
         {
@@ -20,7 +37,10 @@
             "description": "2.4G antenna interface 1",
             "direction": "s",
             "gender": "f",
-            "protocols": ["802.11abgn"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "802.11a"
+            }],
             "type__name": "Radio | RF | N"
         },
         {
@@ -28,7 +48,10 @@
             "description": "2.4G antenna interface 2",
             "direction": "s",
             "gender": "f",
-            "protocols": ["802.11abgn"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "802.11a"
+            }],
             "type__name": "Radio | RF | N"
         }
     ],

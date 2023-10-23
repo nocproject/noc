@@ -34,7 +34,10 @@
             "description": "USB flash memory port",
             "direction": "s",
             "gender": "f",
-            "protocols": ["<USB20"],
+            "protocols": [{
+                "direction": "<",
+                "protocol__code": "USB20"
+            }],
             "type__name": "Electrical | USB"
         },
         {
@@ -42,7 +45,10 @@
             "description": "IEEE1588 port",
             "direction": "s",
             "gender": "f",
-            "protocols": ["IEEE1588"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "IEEE1588"
+            }],
             "type__name": "Electrical | RJ45"
         },
         {
@@ -50,7 +56,10 @@
             "description": "ToD port",
             "direction": "s",
             "gender": "f",
-            "protocols": ["ToD"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "ToD"
+            }],
             "type__name": "Electrical | RJ45"
         },
         {
@@ -58,7 +67,10 @@
             "description": "SYNC 0 port",
             "direction": "s",
             "gender": "f",
-            "protocols": ["G.703"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "G703"
+            }],
             "type__name": "Electrical | RJ45"
         },
         {
@@ -66,7 +78,10 @@
             "description": "SYNC 1 port",
             "direction": "s",
             "gender": "f",
-            "protocols": ["G.703"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "G703"
+            }],
             "type__name": "Electrical | RJ45"
         },
         {
@@ -74,7 +89,10 @@
             "description": "Console port",
             "direction": "s",
             "gender": "f",
-            "protocols": [">RS232"],
+            "protocols": [{
+                "direction": ">",
+                "protocol__code": "RS232"
+            }],
             "type__name": "Electrical | RJ45"
         },
         {
@@ -82,7 +100,10 @@
             "description": "AUX port",
             "direction": "s",
             "gender": "f",
-            "protocols": [">RS232"],
+            "protocols": [{
+                "direction": ">",
+                "protocol__code": "RS232"
+            }],
             "type__name": "Electrical | RJ45"
         },
         {
@@ -90,7 +111,16 @@
             "description": "Management LAN 0 port",
             "direction": "s",
             "gender": "f",
-            "protocols": ["10BASET", "100BASETX"],
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "10BASET"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "100BASETX"
+                }
+            ],
             "type__name": "Electrical | RJ45"
         },
         {
@@ -98,7 +128,16 @@
             "description": "Management LAN 1 port",
             "direction": "s",
             "gender": "f",
-            "protocols": ["10BASET", "100BASETX"],
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "10BASET"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "100BASETX"
+                }
+            ],
             "type__name": "Electrical | RJ45"
         },
         {
@@ -106,7 +145,16 @@
             "description": "EOBC 0 SFP+ port for nv cluster connection",
             "direction": "i",
             "gender": "f",
-            "protocols": ["TransEth1G", "TransEth10G"],
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth1G"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth10G"
+                }
+            ],
             "type__name": "Transceiver | SFP"
         },
         {
@@ -114,7 +162,16 @@
             "description": "EOBC 1 SFP+ port for nv cluster connection",
             "direction": "i",
             "gender": "f",
-            "protocols": ["TransEth1G", "TransEth10G"],
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth1G"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth10G"
+                }
+            ],
             "type__name": "Transceiver | SFP"
         },
         {

@@ -18,7 +18,10 @@
             "description": "Port 0",
             "direction": "i",
             "gender": "f",
-            "protocols": ["TransEth40G"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "TransEth40G"
+            }],
             "type__name": "Transceiver | QSFP+"
         },
         {
@@ -26,7 +29,10 @@
             "description": "Port 1",
             "direction": "i",
             "gender": "f",
-            "protocols": ["TransEth40G"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "TransEth40G"
+            }],
             "type__name": "Transceiver | QSFP+"
         }
     ],

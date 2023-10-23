@@ -1,0 +1,10 @@
+{
+    "name": "V.42bis",
+    "code": "V42bis",
+    "$collection": "inv.protocols",
+    "uuid": "38c2f74b-23f3-4c2b-aa16-7112f2c4d417",
+    "description": "V.42bis, also an adaptive data compression standard, is based on the Lempel Ziv dynamic dictionary approach, and may go to \"transparent mode,\" in which data is transmitted uncompressed.",
+    "data": [],
+    "connection_schema": "BD",
+    "technology__name": "Modulator-Demodulator"
+}

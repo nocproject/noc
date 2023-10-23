@@ -20,7 +20,20 @@
             "description": "xDSL ports 1-24",
             "direction": "s",
             "gender": "f",
-            "protocols": ["ADSL", "ADSL2", "ADSL2+"],
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "ADSL"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "ADSL2"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "ADSL2+"
+                }
+            ],
             "type__name": "Electrical | Telco-50"
         },
         {
@@ -28,7 +41,20 @@
             "description": "xDSL ports 25-48",
             "direction": "s",
             "gender": "f",
-            "protocols": ["ADSL", "ADSL2", "ADSL2+"],
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "ADSL"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "ADSL2"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "ADSL2+"
+                }
+            ],
             "type__name": "Electrical | Telco-50"
         },
         {
@@ -36,7 +62,10 @@
             "description": "Console port",
             "direction": "s",
             "gender": "f",
-            "protocols": [">RS232"],
+            "protocols": [{
+                "direction": ">",
+                "protocol__code": "RS232"
+            }],
             "type__name": "Electrical | RJ9"
         }
     ],

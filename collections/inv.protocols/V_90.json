@@ -1,0 +1,10 @@
+{
+    "name": "V.90",
+    "code": "V90",
+    "$collection": "inv.protocols",
+    "uuid": "c806d09d-f9e8-4832-892f-e58a34c60a0a",
+    "description": "V.90 is an ITU-T recommendation for a modem, allowing 56 kbit/s digital download and 33.6 kbit/s analog upload. It replaced two vendor standards (K56flex and X2) and was designed to allow modems from both prior standards to be flash upgraded to support it.",
+    "data": [],
+    "connection_schema": "BD",
+    "technology__name": "Modulator-Demodulator"
+}

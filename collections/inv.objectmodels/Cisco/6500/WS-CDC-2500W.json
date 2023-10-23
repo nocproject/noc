@@ -12,7 +12,10 @@
             "description": "DC 1 input Negative contact",
             "direction": "i",
             "gender": "f",
-            "protocols": [">-48VDC"],
+            "protocols": [{
+                "direction": ">",
+                "protocol__code": "-48VDC"
+            }],
             "type__name": "Power | TB Barrier Screw 3 Pin"
         },
         {
@@ -20,7 +23,10 @@
             "description": "DC 1 input Positive contact",
             "direction": "i",
             "gender": "f",
-            "protocols": [">-48VDC"],
+            "protocols": [{
+                "direction": ">",
+                "protocol__code": "-48VDC"
+            }],
             "type__name": "Power | TB Barrier Screw 3 Pin"
         },
         {

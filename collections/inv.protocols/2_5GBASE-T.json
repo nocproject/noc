@@ -1,0 +1,10 @@
+{
+    "name": "2.5GBASE-T",
+    "code": "2.5GBASET",
+    "$collection": "inv.protocols",
+    "uuid": "0bc48a68-bb38-4521-b620-59c6f1e0f66b",
+    "description": "2.5GBASE-T, 2.5Gbit/s",
+    "data": [],
+    "connection_schema": "BO",
+    "technology__name": "Ethernet"
+}

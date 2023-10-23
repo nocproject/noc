@@ -19,7 +19,10 @@
             "description": "controller E1 X/0/1",
             "direction": "s",
             "gender": "f",
-            "protocols": ["G.703"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "G703"
+            }],
             "type__name": "Electrical | RJ45"
         },
         {
@@ -27,7 +30,10 @@
             "description": "controller E1 X/0/2",
             "direction": "s",
             "gender": "f",
-            "protocols": ["G.703"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "G703"
+            }],
             "type__name": "Electrical | RJ45"
         },
         {
@@ -35,7 +41,10 @@
             "description": "controller E1 X/0/3",
             "direction": "s",
             "gender": "f",
-            "protocols": ["G.703"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "G703"
+            }],
             "type__name": "Electrical | RJ45"
         },
         {
@@ -43,7 +52,10 @@
             "description": "controller E1 X/0/4",
             "direction": "s",
             "gender": "f",
-            "protocols": ["G.703"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "G703"
+            }],
             "type__name": "Electrical | RJ45"
         },
         {
@@ -51,7 +63,10 @@
             "description": "controller E1 X/0/5",
             "direction": "s",
             "gender": "f",
-            "protocols": ["G.703"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "G703"
+            }],
             "type__name": "Electrical | RJ45"
         },
         {
@@ -59,7 +74,10 @@
             "description": "controller E1 X/0/6",
             "direction": "s",
             "gender": "f",
-            "protocols": ["G.703"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "G703"
+            }],
             "type__name": "Electrical | RJ45"
         },
         {
@@ -67,7 +85,10 @@
             "description": "controller E1 X/0/7",
             "direction": "s",
             "gender": "f",
-            "protocols": ["G.703"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "G703"
+            }],
             "type__name": "Electrical | RJ45"
         },
         {
@@ -75,7 +96,10 @@
             "description": "controller E1 X/0/8",
             "direction": "s",
             "gender": "f",
-            "protocols": ["G.703"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "G703"
+            }],
             "type__name": "Electrical | RJ45"
         }
     ],

@@ -1,0 +1,10 @@
+{
+    "name": "1000BASE-SX",
+    "code": "1000BASESX",
+    "$collection": "inv.protocols",
+    "uuid": "8f3d86cf-3a51-485b-9cda-a403e1d975e8",
+    "description": "1000BASE-SX is an optical fiber Gigabit Ethernet standard for operation over multi-mode fiber using a 770 to 860 nanometer, near infrared (NIR) light wavelength.",
+    "data": [],
+    "connection_schema": "BD",
+    "technology__name": "Ethernet"
+}

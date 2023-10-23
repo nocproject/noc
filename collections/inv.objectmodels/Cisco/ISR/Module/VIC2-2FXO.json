@@ -1,0 +1,50 @@
+{
+    "name": "Cisco | ISR | Module | VIC2-2FXO",
+    "$collection": "inv.objectmodels",
+    "uuid": "1f1540fe-e072-4781-8967-1fd870d6e24a",
+    "vendor__code": "CISCO",
+    "description": "2nd generation two port FXO voice interface daughtercard",
+    "cr_context": "DCS",
+    "connections": [
+        {
+            "name": "voice-port0",
+            "description": "voice-port N/X/0 analog PBX",
+            "direction": "s",
+            "gender": "f",
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "FXO"
+            }],
+            "type__name": "Electrical | RJ11"
+        },
+        {
+            "name": "voice-port1",
+            "description": "voice-port N/X/0 analog PBX",
+            "direction": "s",
+            "gender": "f",
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "FXO"
+            }],
+            "type__name": "Electrical | RJ11"
+        },
+        {
+            "name": "in",
+            "description": "Voice Interface Card connector",
+            "direction": "o",
+            "gender": "m",
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "CISCOVIC"
+            }],
+            "type__name": "Cisco | ISR | DCS"
+        }
+    ],
+    "data": [
+        {
+            "attr": "part_no",
+            "interface": "asset",
+            "value": ["VIC2-2FXO"]
+        }
+    ]
+}
