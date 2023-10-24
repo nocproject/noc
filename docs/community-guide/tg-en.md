@@ -3,10 +3,10 @@
 Intended for an English-speaking audience. The following topics are available:
 
 * [News](https://t.me/noc_en/17): Low traffic topic for the project's news and notifications.
-* [Support](https://t.me/noc_en/3): Giving and seeking for help about NOC's features, capabilities, and best practices.
+* [Help](https://t.me/noc_en/3): Giving and seeking for help about NOC's features, capabilities, and best practices.
 * [Developers](https://t.me/noc_en/5): A topic for developers who participate and want to participate in the NOC's development.
 * [Docs](https://t.me/noc_en/6): A topic for content creators and specialists who wish to work on to improve the NOC's documentation.
-* [Talks](https://t.me/noc_en/7): Informal topic for talks around the NOC, networks, and communications.
+* [Discussions](https://t.me/noc_en/7): Discussions about the NOC, networks, and telecommunications that don't belong in the categories mentioned above.
 
 ## The Group Rules
 
