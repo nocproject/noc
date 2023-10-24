@@ -37,5 +37,5 @@ class UnknownModelApplication(ExtDocApplication):
         for object in objects:
             self.logger.debug("Delete '%s'", object)
             object.delete()
-            
+
         return _("Cleaned")
