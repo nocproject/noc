@@ -1,5 +1,4 @@
-Installation
-----
+# Installation
 
 1. Disable SELINUX. See distro docs.
 
@@ -47,7 +46,7 @@ Username: admin
 Password: admin
 ```
 
-# Limitations
+## Limitations
 
 * Only single node. No way to scale `noc` daemons to multihost.
 * Databases are outside container in `./var/<composerprefix>-...` . 
@@ -55,8 +54,8 @@ Password: admin
 * Need 30G+ free space on block device
 * SSD block device is highly recommended. It starts more than 2 minutes.
 
-Contributing
-----
+## Contributing
+
 Contributions, issues and feature requests are welcome!
 
 Feel free to check 
@@ -67,6 +66,5 @@ Feel free to check Docker specific with tag `docker`
 
 Contact us:
 ----
-* Telegram group:  https://t.me/nocproject
-* Official site: https://getnoc.com
-
+* Official Site: https://getnoc.com/
+* Community Guide: https://getnoc.com/community-guide/
