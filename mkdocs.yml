@@ -13,6 +13,10 @@ nav:
   - Guides:
       - Overview: sections-overview/guides.md
       - Quickstart: quickstart-guide/index.md
+      - Community Guide:
+          - Overview: community-guide/index.md
+          - English Group: community-guide/tg-en.md
+          - Russian Group: community-guide/tg-ru.md
       - Docs Contributing Guide: docs-contributing-guide/index.md
       - Docs Translation Guide: docs-translation-guide/index.md
       - Docs Style Guide:
@@ -282,6 +286,7 @@ nav:
               - IBM.NOS: profiles-reference/IBM/NOS.md
           - IRE-Polus:
               - Overview: profiles-reference/IRE-Polus/index.md
+              - IRE-Polus.Horizon: profiles-reference/IRE-Polus/Horizon.md
               - IRE-Polus.Taros: profiles-reference/IRE-Polus/Taros.md
           - InfiNet:
               - Overview: profiles-reference/InfiNet/index.md
@@ -935,7 +940,7 @@ nav:
       - NOC Products Highlights:
           - Overview: highlights/index.md
           - Vendor-Agnostic: highlights/vendor-agnostic.md
-          - Open-source: highlights/opensource.md
+          - Open-Source: highlights/open-source.md
           - Microservices Architecture: highlights/microservices.md
           - Web-Scale: highlights/webscale.md
           - Big Data: highlights/big-data.md

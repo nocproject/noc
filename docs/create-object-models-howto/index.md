@@ -385,7 +385,7 @@ Looking at the situation from the supervisor's perspective, it can be seen that 
 
 Testing is also available from the command line.
 
-```shell title="Пример вывода скрипта"
+```shell title="Output Example"
 /opt/noc$ ./noc verify-model
 Cisco | ASR901 | A901-6CZ-FT-D errors:
     TOD: RJ45 must have at least one protocol

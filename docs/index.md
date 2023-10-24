@@ -102,11 +102,7 @@ Documentation is organized into into four major parts:
 
 ## Community
 
-Getting involved in the NOC community is a great way to build relationships 
-with other talented and like minded engineers, increase awareness
-for the interesting work that you are doing, and sharpen your skills.
-Join [Telegram channel](https://t.me/nocproject)
-and project’s [Gitlab](https://code.getnoc.com/noc/noc/) tracker.
+Getting involved in the NOC community offers you a direct path to establish connections with other skilled and like-minded engineers. It's an opportunity to raise awareness about the fascinating work you're engaged in and hone your skills. Discover more about how you can participate in our community by referring to our [Community Guide](community-guide/index.md).
 
 ## License
 NOC is open-source software and licensed under the terms of [BSD 3-clause License](license.md).
