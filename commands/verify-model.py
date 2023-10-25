@@ -9,6 +9,7 @@
 from noc.core.management.base import BaseCommand
 from noc.core.mongo.connection import connect
 from noc.inv.models.objectmodel import ObjectModel, ModelConnectionsCache
+from noc.inv.models.protocol import ProtocolVariant
 
 
 class Command(BaseCommand):
@@ -79,12 +80,12 @@ class Command(BaseCommand):
     def check_protocols(self, c, protocols):
         if c.protocols:
             for p in protocols:
-                if p in c.protocols:
+                if ProtocolVariant.get_by_code(p) in c.protocols:
                     return
         self.e(
             c,
             'Has "%s", but must have one of protocols: %s'
-            % (", ".join(c.protocols), ", ".join(protocols)),
+            % (", ".join(str(p) for p in c.protocols), ", ".join(str(p) for p in protocols)),
         )
 
     def check_direction(self, c, directions):
@@ -108,7 +109,7 @@ class Command(BaseCommand):
                 "2.5GBASET",
                 "5GBASET",
                 "10GBASET",
-                "G.703",
+                "G703",
                 ">RS232",
                 ">RS485",
                 ">DryContact",
@@ -137,9 +138,15 @@ class Command(BaseCommand):
                     "<100BASEFX-1550",
                 ],
             )
-        elif any("100BASELX" in s for s in c.protocols):
+        elif any("100BASELX10" in s for s in c.protocols):
             self.check_protocols(
-                c, [">100BASELX-1310", "<100BASELX-1310", ">100BASELX-1550", "<100BASELX-1550"]
+                c,
+                [
+                    ">100BASELX10-1310",
+                    "<100BASELX10-1310",
+                    ">100BASELX10-1550",
+                    "<100BASELX10-1550",
+                ],
             )
         elif any("1000BASEZX" in s for s in c.protocols):
             self.check_protocols(
@@ -190,8 +197,8 @@ class Command(BaseCommand):
                     "<10GBASEER-1550",
                     ">10GBASEZR-1550",
                     "<10GBASEZR-1550",
-                    ">10GBASEUSR",
-                    "<10GBASEUSR",
+                    ">10GBASESR",
+                    "<10GBASESR",
                     ">10GBASESR-850",
                     "<10GBASESR-850",
                 ],
@@ -206,12 +213,10 @@ class Command(BaseCommand):
                     "<100BASEFX-1490",
                     ">100BASEFX-1550",
                     "<100BASEFX-1550",
-                    ">100BASELX-1310",
-                    "<100BASELX-1310",
-                    ">100BASELX-1550",
-                    "<100BASELX-1550",
-                    ">1000BASEX",
-                    "<1000BASEX",
+                    ">100BASELX10-1310",
+                    "<100BASELX10-1310",
+                    ">100BASELX10-1550",
+                    "<100BASELX10-1550",
                     ">1000BASESX",
                     "<1000BASESX",
                     ">1000BASELX-850",
@@ -265,8 +270,8 @@ class Command(BaseCommand):
                     "<10GBASEER-1550",
                     ">10GBASEZR-1550",
                     "<10GBASEZR-1550",
-                    ">10GBASEUSR",
-                    "<10GBASEUSR",
+                    ">10GBASESR",
+                    "<10GBASESR",
                 ],
             )
 
