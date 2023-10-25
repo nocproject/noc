@@ -32,5 +32,10 @@ class UnknownModelApplication(ExtDocApplication):
         validate={"ids": ListOfParameter(element=DocumentParameter(UnknownModel), convert=True)},
     )
     def api_action_run_discovery(self, request, ids):
-        UnknownModel.objects.filter(id__in=[x.id for x in ids])
+        objects = UnknownModel.objects.filter(id__in=[x.id for x in ids])
+        self.logger.debug("Group action on '%s'", objects)
+        for o in objects:
+            self.logger.debug("Delete '%s'", o)
+            o.delete()
+
         return _("Cleaned")
