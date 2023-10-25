@@ -1,12 +1,15 @@
-# Official NOC English Telegram Group
+# Official NOC English Telegram
 
-Intended for an English-speaking audience. The following topics are available:
+Intended for an English-speaking audience. 
+Click link to join the group: [https://t.me/noc_en](https://t.me/noc_en).
 
-* [News](https://t.me/noc_en/17): Low traffic topic for the project's news and notifications.
-* [Help](https://t.me/noc_en/3): Giving and seeking for help about NOC's features, capabilities, and best practices.
-* [Developers](https://t.me/noc_en/5): A topic for developers who participate and want to participate in the NOC's development.
-* [Docs](https://t.me/noc_en/6): A topic for content creators and specialists who wish to work on to improve the NOC's documentation.
-* [Discussions](https://t.me/noc_en/7): Discussions about the NOC, networks, and telecommunications that don't belong in the categories mentioned above.
+The following topics are available:
+
+* :simple-telegram: [News:](https://t.me/noc_en/17) Low traffic topic for the project's news and notifications.
+* :simple-telegram: [Help:](https://t.me/noc_en/3) Giving and seeking for help about NOC's features, capabilities, and best practices.
+* :simple-telegram: [Developers:](https://t.me/noc_en/5) A topic for developers who participate and want to participate in the NOC's development.
+* :simple-telegram: [Docs:](https://t.me/noc_en/6) A topic for content creators and specialists who wish to work on to improve the NOC's documentation.
+* :simple-telegram: [Discussions:](https://t.me/noc_en/7) Discussions about the NOC, networks, and telecommunications that don't belong in the categories mentioned above.
 
 ## The Group Rules
 
