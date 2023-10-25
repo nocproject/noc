@@ -41,7 +41,6 @@ from noc.sa.interfaces.base import (
 )
 from noc.core.validators import is_int
 from noc.models import is_document
-from noc.main.models.tag import Tag
 from noc.core.stencil import stencil_registry
 from noc.core.debug import error_report
 from noc.aaa.models.permission import Permission
@@ -691,16 +690,6 @@ class ExtModelApplication(ExtApplication):
             o = self.queryset(request).get(**{self.pk: int(id)})
         except self.model.DoesNotExist:
             return HttpResponse("", status=self.NOT_FOUND)
-        # Tags
-        if hasattr(o, "tags") and attrs.get("tags"):
-            old_tags = set(o.tags) if o.tags else set()
-            new_tags = set(attrs["tags"]) if attrs["tags"] else set()
-            for t in old_tags - new_tags:
-                self.logger.info("Unregister Tag: %s" % t)
-                Tag.unregister_tag(t, repr(self.model))
-            for t in new_tags - old_tags:
-                self.logger.info("Register Tag: %s" % t)
-                Tag.register_tag(t, repr(self.model))
         # Update attributes
         for k, v in attrs.items():
             if (

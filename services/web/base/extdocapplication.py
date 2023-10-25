@@ -49,7 +49,6 @@ from noc.aaa.models.permission import Permission
 from noc.aaa.models.modelprotectionprofile import ModelProtectionProfile
 from noc.core.middleware.tls import get_user
 from noc.main.models.doccategory import DocCategory
-from noc.main.models.tag import Tag
 from noc.main.models.label import Label
 from noc.core.collection.base import Collection
 from noc.core.comp import smart_text
@@ -520,15 +519,6 @@ class ExtDocApplication(ExtApplication):
             return HttpResponse("", status=self.NOT_FOUND)
         if self.has_uuid and not attrs.get("uuid") and not o.uuid:
             attrs["uuid"] = uuid.uuid4()
-        if hasattr(o, "tags") and attrs.get("tags"):
-            old_tags = set(o.tags) if o.tags else set()
-            new_tags = set(attrs["tags"]) if attrs["tags"] else set()
-            for t in old_tags - new_tags:
-                self.logger.info("Unregister Tag: %s" % t)
-                Tag.unregister_tag(t, repr(self.model))
-            for t in new_tags - old_tags:
-                self.logger.info("Register Tag: %s" % t)
-                Tag.register_tag(t, repr(self.model))
         # @todo: Check for duplicates
         for k in attrs:
             if not self.has_field_editable(k):
