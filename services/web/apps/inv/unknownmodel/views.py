@@ -34,8 +34,8 @@ class UnknownModelApplication(ExtDocApplication):
     def api_action_run_discovery(self, request, ids):
         objects = UnknownModel.objects.filter(id__in=[x.id for x in ids])
         self.logger.debug("Group action on '%s'", objects)
-        for object in objects:
-            self.logger.debug("Delete '%s'", object)
-            object.delete()
+        for o in objects:
+            self.logger.debug("Delete '%s'", o)
+            o.delete()
 
         return _("Cleaned")
