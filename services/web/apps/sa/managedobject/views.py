@@ -882,7 +882,7 @@ class ManagedObjectApplication(ExtModelApplication):
                         "leaf": True,
                         "serial": None,
                         "description": n.description,
-                        "model": ", ".join(n.protocols),
+                        "model": ", ".join(str(p) for p in n.protocols),
                         "interface": if_map.get(n.name) or "",
                     }
                 ]
