@@ -31,6 +31,7 @@ from noc.inv.models.discoveryid import DiscoveryID
 from noc.project.models.project import Project
 from noc.core.validators import is_objectid
 from noc.core.wf.diagnostic import DiagnosticState, SNMP_DIAG, CLI_DIAG, PROFILE_DIAG
+from noc.services.web.base.reportdatasources.report_discoveryresult import ReportDiscoveryResult
 
 caps_dtype_map = {
     "bool": FieldType.BOOL,
@@ -161,6 +162,11 @@ class ManagedObjectDS(BaseDataSource):
                 type=FieldType.UINT,
                 is_caps=True,
             ),
+            FieldInfo(
+                name="discovery_problem",
+                description="Discovery problems",
+                is_virtual=True,
+            ),
             # Oper fields
             FieldInfo(
                 name="avail",
@@ -240,6 +246,13 @@ class ManagedObjectDS(BaseDataSource):
                 is_vector=True,
             )
             for level in range(1, get_adm_path_level() + 1)
+        ]
+        + [
+            FieldInfo(
+                name=f"dp.{field_name}",
+                is_vector=True,
+            )
+            for field_name in ReportDiscoveryResult.ATTRS
         ]
     )
 
@@ -390,6 +403,8 @@ class ManagedObjectDS(BaseDataSource):
                     output_field=BooleanField(),
                 )
                 q_fields.append(f.name)
+            elif f.name == "discovery_problem":
+                continue
             elif not fields or f.name in fields or f.name == "id":
                 q_fields.append(f_query_name)
         if q_caps and "caps" not in q_fields:
@@ -420,6 +435,13 @@ class ManagedObjectDS(BaseDataSource):
             }
         if not fields or "adm_path" in fields:
             adm_paths = cls.load_adm_path()
+        if not fields or "discovery_problem" in fields:
+            mo_ids = [v["id"] for v in mos.values("id")]
+            discovery_result = ReportDiscoveryResult(mo_ids)
+            discovery_result.safe_output = True
+            discovery_result.unknown_value = ([""] * len(discovery_result.ATTRS),)
+            dp_columns = discovery_result.ATTRS
+            dp = iter(discovery_result)
         for num, mo in enumerate(mos.values(*q_fields).iterator(), start=1):
             yield num, "id", mo["id"]
             yield num, "managed_object_id", mo["id"]
@@ -499,3 +521,7 @@ class ManagedObjectDS(BaseDataSource):
                 yield num, "adm_path_1", adm_name
                 yield num, "adm_path_2", adm_paths[adm_name][0] if adm_name in adm_paths else ""
                 yield num, "adm_path_3", adm_paths[adm_name][1] if adm_name in adm_paths else ""
+            if not fields or "discovery_problem" in fields:
+                row = next(dp)[0]
+                for i, col in enumerate(dp_columns):
+                    yield num, f"dp.{col}", row[i]
