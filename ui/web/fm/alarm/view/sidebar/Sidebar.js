@@ -4,9 +4,9 @@
 // Copyright (C) 2007-2018 The NOC Project
 // See LICENSE for details
 //---------------------------------------------------------------------
-console.debug("Defining NOC.fm.alarm.view.grids.Sidebar");
+console.debug("Defining NOC.fm.alarm.view.sidebar.Sidebar");
 
-Ext.define("NOC.fm.alarm.view.grids.Sidebar", {
+Ext.define("NOC.fm.alarm.view.sidebar.Sidebar", {
     extend: "Ext.form.Panel",
     alias: "widget.fm.alarm.sidebar",
     controller: "fm.alarm.sidebar",
@@ -14,16 +14,17 @@ Ext.define("NOC.fm.alarm.view.grids.Sidebar", {
         type: "fm.alarm.sidebar"
     },
     requires: [
+        "NOC.fm.alarm.view.sidebar.Basket",
         "NOC.core.combotree.ComboTree",
         "NOC.core.ComboBox",
         "NOC.core.tagfield.Tagfield",
-        "NOC.fm.alarm.view.grids.SidebarModel",
-        "NOC.fm.alarm.view.grids.SidebarController",
-        "NOC.fm.alarm.view.grids.ProfileFilter",
-        "NOC.fm.alarm.view.grids.DisplayFilter",
+        "NOC.fm.alarm.view.sidebar.SidebarModel",
+        "NOC.fm.alarm.view.sidebar.SidebarController",
+        "NOC.fm.alarm.view.filter.ProfileFilter",
+        "NOC.fm.alarm.view.filter.DisplayFilter",
         "Ext.ux.form.SearchField"
     ],
-    reference: "fm-alarm-filter",
+    reference: "fmAlarmFilter",
     bind: {
         title: "{alarmsTotal}"
     },
@@ -262,12 +263,15 @@ Ext.define("NOC.fm.alarm.view.grids.Sidebar", {
             },
             items: [
                 {
-                    xtype: "core.combo",
-                    restUrl: "/sa/managedobject/lookup/",
-                    fieldLabel: __("Object"),
-                    name: "managed_object",
+                    xtype: "fm.basket",
+                    name: "basket",
                     bind: {
-                        selection: "{activeFilter.managed_object}"
+                        selection: "{activeFilter.basket}"
+                    },
+                    listeners: {
+                        fmAlarmUpdateBasket: "onUpdateBasket",
+                        fmAlarmUpdateOpenBasket: "onUpdateOpenBasket",
+                        fmAlarmNewBasket: "onNewBasket"
                     }
                 },
                 {
@@ -371,7 +375,7 @@ Ext.define("NOC.fm.alarm.view.grids.Sidebar", {
         {
             title: __("Display filters"),
             collapsed: false,
-            reference: "fm-alarm-display-filters",
+            reference: "fmAlarmDisplayFilters",
             items: [
                 {
                     xtype: "fm.alarm.display"
@@ -381,7 +385,7 @@ Ext.define("NOC.fm.alarm.view.grids.Sidebar", {
         {
             title: __("Show recently closed"),
             collapsed: true,
-            reference: "fm-alarm-recent-switcher",
+            reference: "fmAlarmRecent-switcher",
             items: [
                 {
                     xtype: "combo",

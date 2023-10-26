@@ -15,7 +15,7 @@ Ext.define("NOC.fm.alarm.view.grids.Active", {
         type: "fm.alarm.sidebar"
     },
     requires: [
-        "NOC.fm.alarm.view.grids.SidebarModel",
+        "NOC.fm.alarm.view.sidebar.SidebarModel",
         "NOC.fm.alarm.view.grids.Grid"
     ],
     selModel: {

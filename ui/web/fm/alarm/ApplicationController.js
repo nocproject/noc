@@ -16,7 +16,7 @@ Ext.define("NOC.fm.alarm.ApplicationController", {
         alarm_group: "show",
         ephemeral: 0,
         wait_tt: 0,
-        managed_object: "",
+        basket: "",
         segment: "",
         administrative_domain: "",
         resource_group: "",
@@ -53,7 +53,7 @@ Ext.define("NOC.fm.alarm.ApplicationController", {
                 if(queryStr && queryStr !== "__format=ext&status=A&alarm_group=show&maintenance=hide&collapse=1&ephemeral=0&cleared_after=0") {
                     this.deserialize(queryStr, viewModel);
                 } else {  // restore from local store
-                    var filter = window.localStorage.getItem("fm-alarm-filter");
+                    var filter = window.localStorage.getItem("fmAlarmFilter");
                     if(filter) {
                         this.deserialize(filter, viewModel);
                     }
@@ -77,8 +77,8 @@ Ext.define("NOC.fm.alarm.ApplicationController", {
         var hasProfiles, duration;
         viewModel.set("activeFilter", Ext.clone(this.activeFiltersInitValues));
         viewModel.set("recentFilter", Ext.clone(this.recentFiltersInitValues));
-        hasProfiles = this.readLocalStore("fm-alarm-has-profiles");
-        duration = this.readLocalStore("fm-alarm-duration");
+        hasProfiles = this.readLocalStore("fmAlarmHasProfiles");
+        duration = this.readLocalStore("fmAlarmDuration");
         if(hasProfiles) {
             viewModel.set("displayFilter.hasProfiles", hasProfiles);
         }
@@ -92,8 +92,8 @@ Ext.define("NOC.fm.alarm.ApplicationController", {
         this.displayBinding.destroy();
     },
     onChangeActiveFilters: function(data) {
-        var listsView = this.getView().lookupReference("fm-alarm-list"),
-            grid = listsView.lookupReference("fm-alarm-active"),
+        var listsView = this.getView().lookupReference("fmAlarmList"),
+            grid = listsView.lookupReference("fmAlarmActive"),
             store = grid.getStore(),
             filter = this.serialize(data);
         grid.mask(__("Loading..."));
@@ -108,9 +108,9 @@ Ext.define("NOC.fm.alarm.ApplicationController", {
         this.updateHash(false);
     },
     onChangeRecentParams: function(data) {
-        var listsView = this.getView().lookupReference("fm-alarm-list"),
+        var listsView = this.getView().lookupReference("fmAlarmList"),
             filter = this.getViewModel().get("recentFilter"),
-            panel = listsView.lookupReference("fm-alarm-recent"),
+            panel = listsView.lookupReference("fmAlarmRecent"),
             store = panel.getStore();
         // don't change, http params is string compare with int,  1 == "1"
         panel.setHidden(data == 0);
@@ -126,16 +126,16 @@ Ext.define("NOC.fm.alarm.ApplicationController", {
     },
     onChangeDisplayFilters: function(data) {
         if(data.hasOwnProperty("hasProfiles") && !Ext.Object.isEmpty(data.hasProfiles)) {
-            window.localStorage.setItem("fm-alarm-has-profiles", JSON.stringify(data.hasProfiles));
+            window.localStorage.setItem("fmAlarmHasProfiles", JSON.stringify(data.hasProfiles));
         } else {
             this.getViewModel().set("displayFilter.hasProfiles",
-                this.getView().down("[itemId=fm-alarm-multi-panel]").getInitValues());
+                this.getView().down("[itemId=fmAlarmMultiPanel]").getInitValues());
         }
         if(data.hasOwnProperty("duration") && !Ext.Object.isEmpty(data.duration)) {
-            window.localStorage.setItem("fm-alarm-duration", JSON.stringify(data.duration));
+            window.localStorage.setItem("fmAlarmDuration", JSON.stringify(data.duration));
         } else {
             this.getViewModel().set("displayFilter.duration",
-                this.getView().down("[itemId=fm-alarm-duration-filter]").getInitValues());
+                this.getView().down("[itemId=fmAlarmDuration-filter]").getInitValues());
         }
         this.reloadActiveGrid();
     },
@@ -144,7 +144,7 @@ Ext.define("NOC.fm.alarm.ApplicationController", {
     },
     onCloseForm: function(record) {
         this.reloadActiveGrid();
-        this.getViewModel().set("activeItem", "fm-alarm-list");
+        this.getViewModel().set("activeItem", "fmAlarmList");
         this.updateHash(true);
     },
     onResetFilter: function() {
@@ -165,14 +165,22 @@ Ext.define("NOC.fm.alarm.ApplicationController", {
             restoreCombo = function(name) {
                 var me = this;
                 if(params.hasOwnProperty(name)) {
-                    var store = me.getView().down("[name=" + name + "]").getStore();
-                    store.load({
-                        params: {id: params[name]}, callback: function(records) {
-                            if(records && records.length > 0) {
-                                viewModel.set("activeFilter." + name, records[0]);
+                    var store = me.getView().down("[name=" + name + "]").getStore(),
+                        record = store.findRecord('id', params[name]);
+                    // delay
+                    if(record) {
+                        Ext.Function.defer(function() {
+                            viewModel.set("activeFilter." + name, record);
+                        }, 1);
+                    } else {
+                        store.load({
+                            params: {id: params[name]}, callback: function(records) {
+                                if(records && records.length > 0) {
+                                    viewModel.set("activeFilter." + name, records[0]);
+                                }
                             }
-                        }
-                    });
+                        });
+                    }
                     delete params[name];
                 }
             },
@@ -240,7 +248,7 @@ Ext.define("NOC.fm.alarm.ApplicationController", {
         });
         // restore field which use selection binding
         Ext.each([
-            "managed_object",
+            "basket",
             "resource_group",
             "segment"
         ], restoreCombo, this);
@@ -251,9 +259,9 @@ Ext.define("NOC.fm.alarm.ApplicationController", {
         ], restoreTagField, this);
         // don't change, http params is string compare with int, 0 == "0"
         if(params.hasOwnProperty("cleared_after") && params.cleared_after != 0) {
-            listsView = this.getView().lookupReference("fm-alarm-list");
+            listsView = this.getView().lookupReference("fmAlarmList");
             cleared_after = params["cleared_after"];
-            listsView.lookupReference("fm-alarm-sidebar").down("[reference=fm-alarm-recent-switcher]").setExpanded(true);
+            listsView.lookupReference("fmAlarmSidebar").down("[reference=fmAlarmRecent-switcher]").setExpanded(true);
         } else {
             cleared_after = 0;
         }
@@ -311,7 +319,7 @@ Ext.define("NOC.fm.alarm.ApplicationController", {
             // tree
             {key: "segment", valueField: "id"},
             // combo
-            {key: "managed_object", valueField: "id"},
+            {key: "basket", valueField: "id"},
             {key: "resource_group", valueField: "id"},
             // tag field
             {key: "alarm_class", valueField: "id"},
@@ -341,7 +349,7 @@ Ext.define("NOC.fm.alarm.ApplicationController", {
                     cleared_after: this.getViewModel().get("recentFilter.cleared_after")
                 });
             this.setHash(queryStr);
-            window.localStorage.setItem("fm-alarm-filter", Ext.Object.toQueryString(queryStr, true));
+            window.localStorage.setItem("fmAlarmFilter", Ext.Object.toQueryString(queryStr, true));
         }
     },
     setUrl: function(id) {
@@ -366,13 +374,13 @@ Ext.define("NOC.fm.alarm.ApplicationController", {
         return !!(tokens.length > 1 && isId(tokens[1]));
     },
     openForm: function(id) {
-        this.getViewModel().set("activeItem", "fm-alarm-form");
+        this.getViewModel().set("activeItem", "fmAlarmForm");
         if(id) {
             this.setUrl(id);
         } else { // restore from url
             id = Ext.History.getHash().split(/[/?]/)[1];
         }
-        this.getView().down("[reference=fm-alarm-form-tab-panel]").setActiveTab(0);
+        this.getView().down("[reference=fmAlarmForm-tab-panel]").setActiveTab(0);
         this.getAlarmDetail(id);
     },
     getAlarmDetail: function(alarmId) {
@@ -393,7 +401,7 @@ Ext.define("NOC.fm.alarm.ApplicationController", {
         return JSON.parse(data);
     },
     reloadActiveGrid: function() {
-        var panel = this.getView().down("[reference=fm-alarm-active]"),
+        var panel = this.getView().down("[reference=fmAlarmActive]"),
             activeStore = panel.getStore();
 
         panel.mask(__("Loading..."));
@@ -404,8 +412,8 @@ Ext.define("NOC.fm.alarm.ApplicationController", {
         });
     },
     activeSelectionFiltered: function(filter) {
-        var alarmListModel = this.lookup("fm-alarm-list").getViewModel(),
-            grid = this.getView().down("[reference=fm-alarm-active]");
+        var alarmListModel = this.lookup("fmAlarmList").getViewModel(),
+            grid = this.getView().down("[reference=fmAlarmActive]");
 
         if(grid.getSelection().length > 0) {
             this.selectionFilter(grid.getSelection(), filter);
@@ -427,7 +435,7 @@ Ext.define("NOC.fm.alarm.ApplicationController", {
             success: function(response) {
                 var selectionSummary, summary, selection,
                     selectionFiltered = Ext.decode(response.responseText),
-                    alarmListModel = this.lookup("fm-alarm-list").getViewModel(),
+                    alarmListModel = this.lookup("fmAlarmList").getViewModel(),
                     selected = alarmListModel.get("total.selectionFiltered");
 
                 if(selectionFiltered.length) {

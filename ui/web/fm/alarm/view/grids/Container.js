@@ -14,14 +14,15 @@ Ext.define("NOC.fm.alarm.view.grids.Container", {
         type: "fm.alarm.container"
     },
     requires: [
+        "NOC.fm.alarm.view.form.Basket",
         "NOC.fm.alarm.view.grids.ContainerModel",
         "NOC.fm.alarm.view.grids.ContainerController",
         "NOC.fm.alarm.view.grids.Active",
         "NOC.fm.alarm.view.grids.Recent",
-        "NOC.fm.alarm.view.grids.Sidebar"
+        "NOC.fm.alarm.view.sidebar.Sidebar"
     ],
     layout: 'border',
-    reference: "fm-alarm-list",
+    reference: "fmAlarmList",
     tbar: [
         {
             glyph: NOC.glyph.download,
@@ -64,12 +65,13 @@ Ext.define("NOC.fm.alarm.view.grids.Container", {
         }],
     items: [
         {
+            reference: "fmAlarmListContainer",
             layout: "border",
             region: "center",
             items: [
                 {
                     xtype: "fm.alarm.recent",
-                    reference: "fm-alarm-recent",
+                    reference: "fmAlarmRecent",
                     region: "north",
                     height: "25%",
                     hidden: true,
@@ -80,7 +82,7 @@ Ext.define("NOC.fm.alarm.view.grids.Container", {
                 },
                 {
                     xtype: "fm.grid.active",
-                    reference: "fm-alarm-active",
+                    reference: "fmAlarmActive",
                     region: "center",
                     listeners: {
                         fmAlarmReload: "onReload",
@@ -92,13 +94,25 @@ Ext.define("NOC.fm.alarm.view.grids.Container", {
             ]
         },
         {
+            reference: "fmAlarmBasket",
+            region: "center",
+            xtype: "fm.alarm.basket",
+            hidden: true,
+            listeners: {
+                fmAlarmBasketClose: "onBasketClose",
+            }
+        },
+        {
             xtype: "fm.alarm.sidebar",
-            reference: "fm-alarm-sidebar",
+            reference: "fmAlarmSidebar",
             region: "east",
             width: "20%",
             split: true,
             listeners: {
-                fmAlarmSidebarResetSelection: "onActiveResetSelection"
+                fmAlarmSidebarResetSelection: "onActiveResetSelection",
+                fmAlarmSidebarUpdateBasket: "onUpdateBasket",
+                fmAlarmSidebarUpdateOpenBasket: "onUpdateOpenBasket",
+                fmAlarmSidebarNewBasket: "onNewBasket"
             }
         }
     ]

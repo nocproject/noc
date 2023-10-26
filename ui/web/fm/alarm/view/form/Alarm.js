@@ -18,7 +18,7 @@ Ext.define("NOC.fm.alarm.view.form.Alarm", {
         "NOC.fm.alarm.view.form.AlarmController"
     ],
     layout: "border",
-    reference: "fm-alarm-form",
+    reference: "fmAlarmForm",
     items: [
         {
             xtype: "panel",
@@ -39,7 +39,7 @@ Ext.define("NOC.fm.alarm.view.form.Alarm", {
         },
         {
             xtype: "tabpanel",
-            reference: "fm-alarm-form-tab-panel",
+            reference: "fmAlarmForm-tab-panel",
             region: "center",
             items: [
                 {
@@ -70,7 +70,7 @@ Ext.define("NOC.fm.alarm.view.form.Alarm", {
                 },
                 {
                     xtype: "grid",
-                    reference: "fm-alarm-log",
+                    reference: "fmAlarmLog",
                     title: __("Log"),
                     scrollable: true,
                     bind: {
@@ -123,7 +123,7 @@ Ext.define("NOC.fm.alarm.view.form.Alarm", {
                 },
                 {
                     xtype: "grid",
-                    reference: "fm-alarm-events",
+                    reference: "fmAlarmEvents",
                     title: __("Events"),
                     scrollable: true,
                     bind: {
@@ -205,7 +205,7 @@ Ext.define("NOC.fm.alarm.view.form.Alarm", {
                 },
                 {
                     xtype: "grid",
-                    reference: "fm-alarm-groups",
+                    reference: "fmAlarmGroups",
                     title: __("Groups"),
                     scrollable: true,
                     bind: {

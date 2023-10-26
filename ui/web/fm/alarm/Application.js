@@ -9,7 +9,7 @@ console.debug("Defining NOC.fm.alarm.Application");
 Ext.define("NOC.fm.alarm.Application", {
     extend: "NOC.core.Application",
     layout: "card",
-    itemId: "fm-alarm",
+    itemId: "fmAlarm",
     controller: "fm.alarm",
     viewModel: {
         type: "fm.alarm"
@@ -21,13 +21,13 @@ Ext.define("NOC.fm.alarm.Application", {
         "NOC.fm.alarm.ApplicationModel",
         "NOC.fm.alarm.ApplicationController"
     ],
-    reference: "fm-alarm",
+    reference: "fmAlarm",
     bind: {
         activeItem: "{activeItem}"
     },
     items: [
         {
-            itemId: "fm-alarm-list",
+            itemId: "fmAlarmList",
             xtype: "fm.alarm.container",
             listeners: {
                 fmAlarmSelectItem: "onOpenForm",
@@ -35,7 +35,7 @@ Ext.define("NOC.fm.alarm.Application", {
             }
         },
         {
-            itemId: "fm-alarm-form",
+            itemId: "fmAlarmForm",
             xtype: "fm.alarm.form",
             listeners: {
                 fmAlarmCloseForm: "onCloseForm",

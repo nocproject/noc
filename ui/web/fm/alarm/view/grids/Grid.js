@@ -45,9 +45,9 @@ Ext.define("NOC.fm.alarm.view.grids.Grid", {
             width: 60,
             renderer: function(v, _, record) {
                 var STATUS_MAP = {
-                        A: "Active",
-                        C: "Archived"
-                    },
+                    A: "Active",
+                    C: "Archived"
+                },
                     value = NOC.render.Choices(STATUS_MAP)(v);
                 if(record.get("isInMaintenance")) value = '<span title="' + __('Under maintaintance') + '">' +
                     '<i class="fa fa-wrench" aria-hidden="true"></i>&nbsp;' + value + '</span>';
@@ -199,7 +199,7 @@ Ext.define("NOC.fm.alarm.view.grids.Grid", {
                                                         icon: Ext.Msg.ERROR
                                                     });
                                                 }
-                                                view.up("[itemId=fm-alarm]").getController().reloadActiveGrid();
+                                                view.up("[itemId=fmAlarm]").getController().reloadActiveGrid();
                                             },
                                             failure: function() {
                                                 NOC.error(msg);
@@ -216,7 +216,7 @@ Ext.define("NOC.fm.alarm.view.grids.Grid", {
                     },
                     isDisabled: function(view, rowIndex, colIndex, item, record) {
                         var isActive = record.get("status") === "A" || false;
-                        return !(view.up("[itemId=fm-alarm]").permissions["acknowledge"] && isActive);
+                        return !(view.up("[itemId=fmAlarm]").permissions["acknowledge"] && isActive);
                     }
                 },
                 {
@@ -276,7 +276,7 @@ Ext.define("NOC.fm.alarm.view.grids.Grid", {
                             display_order: item.display_order
                         }
                     });
-                    summary = this.up("[reference=fm-alarm-list]").getController().generateSummaryHtml(data, filter);
+                    summary = this.up("[reference=fmAlarmList]").getController().generateSummaryHtml(data, filter);
                 }
                 r.push(summary);
                 if(tt) {

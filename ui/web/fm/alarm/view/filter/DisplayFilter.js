@@ -4,16 +4,16 @@
 // Copyright (C) 2007-2018 The NOC Project
 // See LICENSE for details
 //---------------------------------------------------------------------
-console.debug("Defining NOC.fm.alarm.view.grids.DisplayFilter");
+console.debug("Defining NOC.fm.alarm.view.filter.DisplayFilter");
 
-Ext.define("NOC.fm.alarm.view.grids.DisplayFilter", {
+Ext.define("NOC.fm.alarm.view.filter.DisplayFilter", {
     extend: "Ext.container.Container",
     alias: "widget.fm.alarm.display",
     controller: "fm.alarm.display",
     requires: [
-        "NOC.fm.alarm.view.grids.DisplayFilterController",
-        "NOC.fm.alarm.view.grids.MultiPanel",
-        "NOC.fm.alarm.view.grids.DurationFilter"
+        "NOC.fm.alarm.view.filter.DisplayFilterController",
+        "NOC.fm.alarm.view.filter.MultiPanel",
+        "NOC.fm.alarm.view.filter.DurationFilter"
     ],
     border: false,
     defaults: {

@@ -58,7 +58,7 @@ Ext.define("NOC.fm.alarm.view.grids.GridViewTable", {
         itemcontextmenu: function(view, record, node, index, event) {
             if(!this.contextMenu) {
                 this.contextMenu = Ext.create("Ext.menu.Menu", {
-                    itemId: "fm-alarm-contextmenu",
+                    itemId: "fmAlarmContextmenu",
                     items: [
                         {
                             text: __("Refresh"),
@@ -116,7 +116,7 @@ Ext.define("NOC.fm.alarm.view.grids.GridViewTable", {
     },
     //
     onContextMenuFilter: function(record, item) {
-        var value = {}, vm = this.up("[itemId=fm-alarm]").getViewModel();
+        var value = {}, vm = this.up("[itemId=fmAlarm]").getViewModel();
         // ToDo remove after implement ahead mode (with selection binding) in comboTree
         // if(item.reference !== "segment") {
         value[item.reference] = Ext.create("Ext.data.Model", {
@@ -130,18 +130,18 @@ Ext.define("NOC.fm.alarm.view.grids.GridViewTable", {
     },
     //
     tooltip: function(record) {
-    var tooltipFromData = "<span class='noc-alarm-tooltip-flat'>" + __("no comments") + "</span>";
+        var tooltipFromData = "<span class='noc-alarm-tooltip-flat'>" + __("no comments") + "</span>";
 
-    if(record.get("logs").length) {
-        tooltipFromData = "<table><thead><tr><th>" + __("Date") + "</th><th>" + __("User") + "</th><th>" + __("Message") + "</th></tr></thead><tbody>";
-        for(var j = 0; j < record.get("logs").length; j++) {
-            var r = record.get("logs")[j];
-            tooltipFromData += "<tr><td>" + Ext.util.Format.date(r.timestamp, "d.m.Y H:i")
-                + "</td><td>" + r.user + "</td><td style='white-space: pre-line;'>" + Ext.String.htmlEncode(r.message) + "</td></tr>";
+        if(record.get("logs").length) {
+            tooltipFromData = "<table><thead><tr><th>" + __("Date") + "</th><th>" + __("User") + "</th><th>" + __("Message") + "</th></tr></thead><tbody>";
+            for(var j = 0; j < record.get("logs").length; j++) {
+                var r = record.get("logs")[j];
+                tooltipFromData += "<tr><td>" + Ext.util.Format.date(r.timestamp, "d.m.Y H:i")
+                    + "</td><td>" + r.user + "</td><td style='white-space: pre-line;'>" + Ext.String.htmlEncode(r.message) + "</td></tr>";
+            }
+            tooltipFromData += "</tbody></table>";
         }
-        tooltipFromData += "</tbody></table>";
+        return tooltipFromData;
     }
-    return tooltipFromData;
-}
 
 });

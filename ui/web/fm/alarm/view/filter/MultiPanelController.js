@@ -4,19 +4,19 @@
 // Copyright (C) 2007-2018 The NOC Project
 // See LICENSE for details
 //---------------------------------------------------------------------
-console.debug("Defining NOC.fm.alarm.view.grids.MultiPanelController");
-Ext.define("NOC.fm.alarm.view.grids.MultiPanelController", {
+console.debug("Defining NOC.fm.alarm.view.filter.MultiPanelController");
+Ext.define("NOC.fm.alarm.view.filter.MultiPanelController", {
     extend: "Ext.app.ViewController",
     alias: "controller.fm.alarm.multipanel",
     onDataChanged: function(store) {
         var mapping = function(record) {
-                return {
-                    id: record.id,
-                    label: record.get("label"),
-                    type: record.get("type"),
-                    icon: record.get("icon")
-                };
-            },
+            return {
+                id: record.id,
+                label: record.get("label"),
+                type: record.get("type"),
+                icon: record.get("icon")
+            };
+        },
             getIcons = function(record) {
                 if(record.icon) {
                     return "<i class='" + record.icon + "' aria-hidden='true' title='" + record.label + "'></i>&nbsp;";

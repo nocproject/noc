@@ -64,6 +64,10 @@ Ext.define("NOC.fm.alarm.model.Filter", {
         {
             name: "timestamp__lte",
             type: "date"
+        },
+        {
+            name: "basket",
+            type: "string"
         }
     ]
 });

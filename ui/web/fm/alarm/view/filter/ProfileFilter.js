@@ -4,15 +4,15 @@
 // Copyright (C) 2007-2018 The NOC Project
 // See LICENSE for details
 //---------------------------------------------------------------------
-console.debug("Defining NOC.fm.alarm.view.grids.ProfileFilter");
+console.debug("Defining NOC.fm.alarm.view.filter.ProfileFilter");
 
-Ext.define("NOC.fm.alarm.view.grids.ProfileFilter", {
+Ext.define("NOC.fm.alarm.view.filter.ProfileFilter", {
     extend: "Ext.form.FieldContainer",
     alias: "widget.fm.alarm.filter.profile",
     controller: "fm.alarm.profile.filter",
-    itemId: "fm-alarm-filter-profile",
+    itemId: "fmAlarmFilter-profile",
     requires: [
-        "NOC.fm.alarm.view.grids.ProfileFilterController",
+        "NOC.fm.alarm.view.filter.ProfileFilterController",
         "NOC.fm.alarm.store.Profile"
     ],
     conditionWidth: 55,
@@ -117,7 +117,7 @@ Ext.define("NOC.fm.alarm.view.grids.ProfileFilter", {
                     iconCls: "x-fa fa-times-circle",
                     handler: function(view, rowIndex, colIndex, item, e, record) {
                         var store = view.getStore(),
-                            component = view.up("[itemId=fm-alarm-filter-profile]");
+                            component = view.up("[itemId=fmAlarmFilter-profile]");
                         store.remove(record);
                         if(store.getCount() < 1) {
                             var initValue = Ext.clone(component.getInitValues());
@@ -126,7 +126,7 @@ Ext.define("NOC.fm.alarm.view.grids.ProfileFilter", {
                         component.getController().onDataUpdated(store);
                     },
                     isDisabled: function(view, rowIndex, colIndex, item, record) {
-                        var controller = view.up("[itemId=fm-alarm-filter-profile]").getController();
+                        var controller = view.up("[itemId=fmAlarmFilter-profile]").getController();
                         return !controller.isRowValid(record.data);
                     }
                 }]

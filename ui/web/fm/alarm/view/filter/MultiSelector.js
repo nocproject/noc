@@ -4,14 +4,14 @@
 // Copyright (C) 2007-2018 The NOC Project
 // See LICENSE for details
 //---------------------------------------------------------------------
-console.debug("Defining NOC.fm.alarm.view.grids.MultiSelector");
+console.debug("Defining NOC.fm.alarm.view.filter.MultiSelector");
 
-Ext.define("NOC.fm.alarm.view.grids.MultiSelector", {
+Ext.define("NOC.fm.alarm.view.filter.MultiSelector", {
     extend: "Ext.view.MultiSelector",
     alias: "widget.fm.alarm.multiselector",
     requires: [
         "Ext.view.MultiSelector",
-        "NOC.fm.alarm.view.grids.MultiPanelController"
+        "NOC.fm.alarm.view.filter.MultiPanelController"
     ],
     config: {
         value: null
@@ -228,12 +228,12 @@ Ext.define("NOC.fm.alarm.view.grids.MultiSelector", {
         }
         var store = this.getViewModel().getStore("multiStore"),
             records = data.array.map(function(record) {
-                    var value = {};
-                    value.id = record.id;
-                    value.type = record.type;
-                    value[this.fieldName] = record.label;
-                    return Ext.create("Ext.data.Model", value);
-                }, this
+                var value = {};
+                value.id = record.id;
+                value.type = record.type;
+                value[this.fieldName] = record.label;
+                return Ext.create("Ext.data.Model", value);
+            }, this
             );
         store.loadRecords(records);
         this.getViewModel().set("array", data.array);

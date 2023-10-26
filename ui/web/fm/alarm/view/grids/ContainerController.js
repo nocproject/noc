@@ -33,8 +33,8 @@ Ext.define("NOC.fm.alarm.view.grids.ContainerController", {
     },
     onStoreSelectionChange: function(grid) {
         var selection = Ext.Array.flatten(Ext.Array.map(grid.getSelection(), function(item) {
-                return item.get("total_subscribers").concat(item.get("total_services"))
-            })),
+            return item.get("total_subscribers").concat(item.get("total_services"))
+        })),
             selectionSummary = Ext.Array.reduce(selection, function(prev, item) {
                 if(prev.hasOwnProperty(item.profile)) {
                     prev[item.profile] += item.summary
@@ -44,7 +44,7 @@ Ext.define("NOC.fm.alarm.view.grids.ContainerController", {
                 return prev;
             }, {}),
             selected = this.getViewModel().get("total.selected");
-        this.getView().up('[reference=fm-alarm]').getController().activeSelectionFiltered();
+        this.getView().up("[reference=fmAlarm]").getController().activeSelectionFiltered();
         this.getViewModel().set("total.objects", Ext.Array.reduce(grid.getSelection(), function(prev, item) {
             return prev + item.get("total_objects");
         }, 0));
@@ -57,11 +57,11 @@ Ext.define("NOC.fm.alarm.view.grids.ContainerController", {
     //
     generateSummaryHtml: function(records, filter, force) {
         var isEmpty = function(array) {
-                if(!array) {
-                    return true;
-                }
-                return array.length === 0;
-            },
+            if(!array) {
+                return true;
+            }
+            return array.length === 0;
+        },
             isEqual = function(item1, item2) {
                 return item1.id === item2.id;
             },
@@ -149,7 +149,7 @@ Ext.define("NOC.fm.alarm.view.grids.ContainerController", {
         return "";
     },
     addGroupComment: function() {
-        var grid = this.lookupReference("fm-alarm-active"),
+        var grid = this.lookupReference("fmAlarmActive"),
             ids = grid.getSelection().map(function(alarm) {
                 return alarm.id
             }),
@@ -167,7 +167,7 @@ Ext.define("NOC.fm.alarm.view.grids.ContainerController", {
                                 msg: text
                             },
                             success: function() {
-                                view.up("[itemId=fm-alarm]").getController().reloadActiveGrid();
+                                view.up("[itemId=fmAlarm]").getController().reloadActiveGrid();
                                 NOC.info(__("Success"));
                             },
                             failure: function() {
@@ -181,7 +181,7 @@ Ext.define("NOC.fm.alarm.view.grids.ContainerController", {
         msg.setWidth(500);
     },
     addGroupEscalate: function() {
-        var grid = this.lookupReference("fm-alarm-active"),
+        var grid = this.lookupReference("fmAlarmActive"),
             ids = grid.getSelection().map(function(alarm) {
                 return alarm.id
             });
@@ -195,9 +195,9 @@ Ext.define("NOC.fm.alarm.view.grids.ContainerController", {
             success: function(response) {
                 var data = Ext.decode(response.responseText);
                 if(data.status) {
-                    NOC.info(_('Escalated'));
+                    NOC.info(_("Escalated"));
                 } else {
-                    NOC.error(__("Escalate failed : ") + (data.hasOwnProperty('error') ? data.error : 'unknowns error!'));
+                    NOC.error(__("Escalate failed : ") + (data.hasOwnProperty("error") ? data.error : "unknowns error!"));
                 }
             },
             failure: function() {
@@ -206,47 +206,223 @@ Ext.define("NOC.fm.alarm.view.grids.ContainerController", {
         });
     },
     onActiveResetSelection: function() {
-        this.lookupReference("fm-alarm-active").setSelection(null);
+        this.lookupReference("fmAlarmActive").setSelection(null);
     },
     createMaintenance: function() {
-        var selection = this.lookupReference("fm-alarm-active").getSelection(),
-            objects = selection.map(function (alarm) {
+        var selection = this.lookupReference("fmAlarmActive").getSelection(),
+            objects = selection.map(function(alarm) {
                 return {
                     object: alarm.get("managed_object"),
                     object__label: alarm.get("managed_object__label")
                 }
             }),
             args = {
-            direct_objects: objects,
-            subject: __('created from alarms list at ') + Ext.Date.format(new Date(), 'd.m.Y H:i P'),
-            contacts: NOC.email ? NOC.email : NOC.username,
-            start_date: Ext.Date.format(new Date(), 'd.m.Y'),
-            start_time: Ext.Date.format(new Date(), 'H:i'),
-            stop_time: '12:00',
-            suppress_alarms: true
-        };
+                direct_objects: objects,
+                subject: __("created from alarms list at ") + Ext.Date.format(new Date(), "d.m.Y H:i P"),
+                contacts: NOC.email ? NOC.email : NOC.username,
+                start_date: Ext.Date.format(new Date(), "d.m.Y"),
+                start_time: Ext.Date.format(new Date(), "H:i"),
+                stop_time: "12:00",
+                suppress_alarms: true
+            };
         Ext.create("NOC.maintenance.maintenancetype.LookupField")
-        .getStore()
-        .load({
-            params: {__query: 'РНР'},
-            callback: function (records) {
-                if (records.length > 0) {
-                    Ext.apply(args, {
-                        type: records[0].id
-                    })
+            .getStore()
+            .load({
+                params: {__query: "РНР"},
+                callback: function(records) {
+                    if(records.length > 0) {
+                        Ext.apply(args, {
+                            type: records[0].id
+                        })
+                    }
+                    NOC.launch("maintenance.maintenance", "new", {
+                        args: args
+                    });
                 }
-                NOC.launch("maintenance.maintenance", "new", {
-                    args: args
-                });
-            }
-        });
-        },
-        openAlarmDetailReport: function() {
-        var selection = this.lookupReference("fm-alarm-active").getSelection(),
+            });
+    },
+    openAlarmDetailReport: function() {
+        var selection = this.lookupReference("fmAlarmActive").getSelection(),
             ids = selection.map(function(alarm) {
                 return alarm.id
             });
         NOC.launch("fm.reportalarmdetail", "new", {ids: ids});
 
     },
+    onNewBasket: function(container) {
+        this.openBasket("new", container);
+    },
+    onUpdateBasket: function(container, record) {
+        this.openBasket("update", container, record);
+    },
+    onUpdateOpenBasket: function(container, record) {
+        this.openBasket("data-update", container, record);
+    },
+    openBasket: function(action, container, record) {
+        var me = this,
+            title = "NEW",
+            form = container.up().down("[itemId=fmAlarmBasketForm]");
+
+        form.removeAll();
+        form.add(
+            {
+                xtype: "textfield",
+                fieldLabel: __("Name"),
+                anchor: "100%",
+                value: Ext.isEmpty(record) ? __("Basket at ") + Ext.Date.format(new Date(), "d.m.Y H:i P") : record.get("label"),
+            }
+        );
+        switch(action) {
+            case "new": {
+                form.add(me.createCondition({managed_object: null, address: null, ip: null}, 0));
+                this.setFormTitle(__("New") + " " + __("Basket"), {id: "NEW"});
+                this.toggleBasket(container);
+                break;
+            }
+            case "data-update": {
+                if(Ext.isEmpty(record)) { // click on x
+                    this.setFormTitle(__("New") + " " + __("Basket"), {id: "NEW"});
+                    form.add(me.createCondition({managed_object: null, address: null, ip: null}, 0));
+                } else {
+                    title = record.get("label");
+                    Ext.each(record.get("conditions"), function(condition, index) {
+                        form.add(me.createCondition(condition, index));
+                    });
+                    me.updateBasketGrid(form, record.get("conditions")[0].managed_object);
+                    this.setFormTitle(__("Edit") + " " + __("Basket"), {id: record.get("id")});
+                }
+                break;
+            }
+            case "update": {
+                title = record.get("label");
+                Ext.each(record.get("conditions"), function(condition, index) {
+                    form.add(me.createCondition(condition, index));
+                });
+                me.updateBasketGrid(form, record.get("conditions")[0].managed_object);
+                this.setFormTitle(__("Edit") + " " + __("Basket"), {id: record.get("id")});
+                this.toggleBasket(container);
+                break;
+            }
+        }
+    },
+    onBasketClose: function(container) {
+        this.toggleBasket(container);
+    },
+    toggleBasket: function(component) {
+        var alarmList = component.up("[reference=fmAlarmList]"),
+            container = alarmList.lookupReference("fmAlarmListContainer"),
+            form = alarmList.lookupReference("fmAlarmBasket");
+        if(container.isHidden()) {
+            container.show();
+            form.hide();
+        } else {
+            container.hide();
+            form.show();
+        }
+    },
+    createCondition: function(condition, index) {
+        var me = this;
+        return {
+            xtype: "fieldset",
+            layout: "anchor",
+            title: __("Condition") + " " + (index + 1),
+            itemId: "condition" + index,
+            defaults: {
+                anchor: "100%",
+            },
+            border: true,
+            collapsible: true,
+            items: [
+                {
+                    xtype: "container",
+                    layout: "hbox",
+                    defaults: {
+                        xtype: "textfield",
+                        allowBlank: true,
+                        labelAlign: "top",
+                        margin: "0 10",
+                        flex: 1,
+                        listeners: {
+                            change: {
+                                buffer: 500, // Задержка в миллисекундах
+                                fn: function(field, newValue, oldValue) {
+                                    if(newValue.length >= 3) { // Минимальное количество символов
+                                        me.updateBasketGrid(field, newValue);
+                                        console.log("Сработало событие после ввода символа:", index, field.name, newValue);
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    items: [
+                        {
+                            name: "name",
+                            fieldLabel: "Managed Object",
+                            value: condition.managed_object
+                        },
+                        {
+                            name: "address",
+                            fieldLabel: "Address",
+                            value: condition.address
+                        },
+                        {
+                            name: "ip",
+                            fieldLabel: "IP",
+                            value: condition.ip
+                        }
+                    ],
+                },
+                {
+                    xtype: "container",
+                    layout: {
+                        type: "hbox",
+                        pack: "end"
+                    },
+                    margin: "0 0 10 0",
+                    defaults: {
+                        margin: "10 10 0 0"
+                    },
+                    items: [
+                        {
+                            xtype: "button",
+                            text: __("Add"),
+                            handler: function(button) {
+                                var form = button.up("[itemId=fmAlarmBasketForm]"),
+                                    index = Math.max(...Ext.Array.map(
+                                        Ext.Array.filter(form.getRefItems(), function(fieldSet) {return Ext.String.startsWith(fieldSet.itemId, "condition");}),
+                                        function(fieldSet) {return parseInt(fieldSet.getItemId().replace("condition", ""));}
+                                    )) + 1;
+                                form.add(me.createCondition({managed_object: null, address: null, ip: null}, index));
+                            }
+                        },
+                        {
+                            xtype: "button",
+                            text: __("Remove"),
+                            handler: function(button) {
+                                button.up("[itemId=fmAlarmBasketForm]").remove(button.up("[itemId=condition" + index + "]"));
+                            }
+                        }
+                    ],
+                }
+            ],
+        }
+    },
+    setFormTitle: function(tpl, data) {
+        var t = "<b>" + Ext.String.format(tpl, __("Basket")) + "</b>",
+            formTitle = this.view.down("[itemId=formTitle]"),
+            itemId = data.id;
+        if(itemId !== "NEW" && itemId !== "CLONE") {
+            itemId = "<b>ID:</b>" + itemId;
+        } else {
+            itemId = "<b>" + itemId + "</b>";
+        }
+        t += "<span style='float:right'>" + itemId + "</span>";
+        formTitle.update(t);
+    },
+    updateBasketGrid: function(container, value) {
+        var store = container.up("[reference=fmAlarmBasket]").down("[itemId=fmAlarmBasketGrid]").getStore();
+
+        store.getProxy().setExtraParam("__query", value);
+        store.load();
+    }
 });

@@ -4,8 +4,8 @@
 // Copyright (C) 2007-2018 The NOC Project
 // See LICENSE for details
 //---------------------------------------------------------------------
-console.debug("Defining NOC.fm.alarm.view.grids.DurationFilterRowController");
-Ext.define("NOC.fm.alarm.view.grids.DurationFilterRowController", {
+console.debug("Defining NOC.fm.alarm.view.filter.DurationFilterRowController");
+Ext.define("NOC.fm.alarm.view.filter.DurationFilterRowController", {
     extend: "Ext.app.ViewController",
     alias: "controller.fm.alarm.filter.duration.row",
     // valuesBinding: undefined,

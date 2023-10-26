@@ -13,7 +13,7 @@ Ext.define("NOC.fm.alarm.view.grids.Recent", {
     stateId: 'fm.grid.recentGrid',
     requires: [
         "NOC.fm.alarm.store.Alarm",
-        "NOC.fm.alarm.view.grids.SidebarModel",
+        "NOC.fm.alarm.view.sidebar.SidebarModel",
         "NOC.fm.alarm.view.grids.Grid"
     ],
     emptyText: __("No recently closed alarms"),

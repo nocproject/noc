@@ -4,9 +4,9 @@
 // Copyright (C) 2007-2018 The NOC Project
 // See LICENSE for details
 //---------------------------------------------------------------------
-console.debug("Defining NOC.fm.alarm.view.grids.SidebarController");
+console.debug("Defining NOC.fm.alarm.view.sidebar.SidebarController");
 
-Ext.define("NOC.fm.alarm.view.grids.SidebarController", {
+Ext.define("NOC.fm.alarm.view.sidebar.SidebarController", {
     extend: "Ext.app.ViewController",
     alias: "controller.fm.alarm.sidebar",
     pollingTaskId: undefined,
@@ -49,8 +49,8 @@ Ext.define("NOC.fm.alarm.view.grids.SidebarController", {
     },
     //
     pollingTask: function() {
-        var app = this.getView().up("[itemId=fm-alarm]"),
-            gridsContainer = this.getView().up("[itemId=fm-alarm-list]");
+        var app = this.getView().up("[itemId=fmAlarm]"),
+            gridsContainer = this.getView().up("[itemId=fmAlarmList]");
         // lib visibilityJS
         if(!Visibility.hidden()) { // check is user has switched to another tab or minimized browser window
             // Check for new alarms and play sound
@@ -65,9 +65,9 @@ Ext.define("NOC.fm.alarm.view.grids.SidebarController", {
             }
             // Poll only if polling is not locked
             if(this.isNotLocked(gridsContainer)) {
-                gridsContainer.down("[reference=fm-alarm-active]").getStore().reload();
+                gridsContainer.down("[reference=fmAlarmActive]").getStore().reload();
                 if(this.isRecentActive()) {
-                    gridsContainer.down("[reference=fm-alarm-recent]").getStore().reload();
+                    gridsContainer.down("[reference=fmAlarmRecent]").getStore().reload();
                 }
             }
         }
@@ -76,7 +76,7 @@ Ext.define("NOC.fm.alarm.view.grids.SidebarController", {
         return this.getViewModel().get("recentFilter.cleared_after") > 0
     },
     isNotLocked: function(container) {
-        var viewTable = container.down("[reference=fm-alarm-active]").getView(),
+        var viewTable = container.down("[reference=fmAlarmActive]").getView(),
             buttonPressed = this.getViewModel().get("autoReload"),
             isNotScrolling = viewTable.getScrollable().getPosition().y === 0,
             contextMenuHidden = viewTable.isHidden();
@@ -104,7 +104,16 @@ Ext.define("NOC.fm.alarm.view.grids.SidebarController", {
         }
         this.lastCheckTS = ts;
     },
-    onResetStatuses: function(){
+    onResetStatuses: function() {
         this.fireViewEvent("fmAlarmSidebarResetSelection");
+    },
+    onUpdateBasket: function(field) {
+        this.fireViewEvent("fmAlarmSidebarUpdateBasket", field.getSelectedRecord());
+    },
+    onUpdateOpenBasket: function(field) {
+        this.fireViewEvent("fmAlarmSidebarUpdateOpenBasket", field.getSelectedRecord());
+    },
+    onNewBasket: function() {
+        this.fireViewEvent("fmAlarmSidebarNewBasket");
     }
 });

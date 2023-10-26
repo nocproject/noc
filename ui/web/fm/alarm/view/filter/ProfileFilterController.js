@@ -4,8 +4,8 @@
 // Copyright (C) 2007-2018 The NOC Project
 // See LICENSE for details
 //---------------------------------------------------------------------
-console.debug("Defining NOC.fm.alarm.view.grids.ProfileFilterController");
-Ext.define("NOC.fm.alarm.view.grids.ProfileFilterController", {
+console.debug("Defining NOC.fm.alarm.view.filter.ProfileFilterController");
+Ext.define("NOC.fm.alarm.view.filter.ProfileFilterController", {
     extend: "Ext.app.ViewController",
     alias: "controller.fm.alarm.profile.filter",
     onDataUpdated: function(store) {

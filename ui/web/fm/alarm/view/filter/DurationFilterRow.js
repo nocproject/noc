@@ -4,14 +4,14 @@
 // Copyright (C) 2007-2018 The NOC Project
 // See LICENSE for details
 //---------------------------------------------------------------------
-console.debug("Defining NOC.fm.alarm.view.grids.DurationFilterRow");
+console.debug("Defining NOC.fm.alarm.view.filter.DurationFilterRow");
 
-Ext.define("NOC.fm.alarm.view.grids.DurationFilterRow", {
+Ext.define("NOC.fm.alarm.view.filter.DurationFilterRow", {
     extend: "Ext.container.Container",
     alias: "widget.fm.alarm.filter.duration.row",
     controller: "fm.alarm.filter.duration.row",
     requires: [
-        "NOC.fm.alarm.view.grids.DurationFilterRowController"
+        "NOC.fm.alarm.view.filter.DurationFilterRowController"
     ],
     viewModel: {
         data: {

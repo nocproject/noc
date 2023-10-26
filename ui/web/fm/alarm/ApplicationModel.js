@@ -14,6 +14,6 @@ Ext.define("NOC.fm.alarm.ApplicationModel", {
         recentFilter: {},
         displayFilter: {},
         selected: {},
-        activeItem: "fm-alarm-list"
+        activeItem: "fmAlarmList"
     }
 });

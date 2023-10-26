@@ -4,16 +4,16 @@
 // Copyright (C) 2007-2018 The NOC Project
 // See LICENSE for details
 //---------------------------------------------------------------------
-console.debug("Defining NOC.fm.alarm.view.grids.SidebarModel");
+console.debug("Defining NOC.fm.alarm.view.sidebar.SidebarModel");
 
-Ext.define("NOC.fm.alarm.view.grids.SidebarModel", {
+Ext.define("NOC.fm.alarm.view.sidebar.SidebarModel", {
     extend: "Ext.app.ViewModel",
     alias: "viewmodel.fm.alarm.sidebar",
 
     data: {
         volume: false,
         autoReload: false,
-        loadingStore:true
+        loadingStore: true
     },
     formulas: {
         volumeIcon: function(get) {

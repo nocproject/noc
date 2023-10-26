@@ -4,16 +4,16 @@
 // Copyright (C) 2007-2018 The NOC Project
 // See LICENSE for details
 //---------------------------------------------------------------------
-console.debug("Defining NOC.fm.alarm.view.grids.MultiPanel");
+console.debug("Defining NOC.fm.alarm.view.filter.MultiPanel");
 
-Ext.define("NOC.fm.alarm.view.grids.MultiPanel", {
+Ext.define("NOC.fm.alarm.view.filter.MultiPanel", {
     extend: "Ext.panel.Panel",
-    itemId: "fm-alarm-multi-panel",
+    itemId: "fmAlarmMultiPanel",
     alias: "widget.fm.alarm.multipanel",
     controller: "fm.alarm.multipanel",
     requires: [
         "Ext.view.MultiSelectorSearch",
-        "NOC.fm.alarm.view.grids.MultiPanelController",
+        "NOC.fm.alarm.view.filter.MultiPanelController",
         "NOC.fm.alarm.store.Profile"
     ],
     viewModel: {
@@ -215,13 +215,13 @@ Ext.define("NOC.fm.alarm.view.grids.MultiPanel", {
         }
         var store = this.getViewModel().getStore("multiStore"),
             records = data.array.map(function(record) {
-                    var value = {};
-                    value.id = record.id;
-                    value.type = record.type;
-                    value.icon = record.icon;
-                    value[this.fieldName] = record.label;
-                    return Ext.create("Ext.data.Model", value);
-                }, this
+                var value = {};
+                value.id = record.id;
+                value.type = record.type;
+                value.icon = record.icon;
+                value[this.fieldName] = record.label;
+                return Ext.create("Ext.data.Model", value);
+            }, this
             );
         store.loadRecords(records);
         this.getViewModel().set("array", data.array);

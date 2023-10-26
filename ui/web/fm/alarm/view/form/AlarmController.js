@@ -21,7 +21,7 @@ Ext.define("NOC.fm.alarm.view.form.AlarmController", {
         this.selectedBinding.destroy();
     },
     onChangeSelected: function(data) {
-        var tabPanel = this.getView().down("[reference=fm-alarm-form-tab-panel]");
+        var tabPanel = this.getView().down("[reference=fmAlarmForm-tab-panel]");
         // Remove plugins
         if(this.plugins.length) {
             Ext.each(this.plugins, function(p) {
@@ -34,7 +34,7 @@ Ext.define("NOC.fm.alarm.view.form.AlarmController", {
             Ext.each(data.plugins, function(v) {
                 var cls = v[0],
                     config = {
-                        app: this.getView().up("[itemId=fm-alarm]"),
+                        app: this.getView().up("[itemId=fmAlarm]"),
                         data: data
                     },
                     p;
@@ -216,7 +216,7 @@ Ext.define("NOC.fm.alarm.view.form.AlarmController", {
             },
             success: function() {
                 var me = this,
-                    store = me.getView().lookupReference("fm-alarm-log").getStore(),
+                    store = me.getView().lookupReference("fmAlarmLog").getStore(),
                     status = me.getViewModel().get("selected.status");
                 store.add({
                     timestamp: new Date(),
