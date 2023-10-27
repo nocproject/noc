@@ -1,7 +1,7 @@
 # ---------------------------------------------------------------------
 # ManagedObject card handler
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2022 The NOC Project
+# Copyright (C) 2007-2023 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -32,7 +32,7 @@ from noc.core.text import alnum_key, list_to_ranges
 from noc.maintenance.models.maintenance import Maintenance
 from noc.pm.models.thresholdprofile import ThresholdProfile
 from noc.sa.models.useraccess import UserAccess
-from noc.core.pm.utils import get_interface_metrics, get_objects_metrics
+from noc.core.pm.utils import get_interface_metrics, get_objects_metrics, get_dict_interface_metrics
 from noc.pm.models.metrictype import MetricType
 from noc.pm.models.metricscope import MetricScope
 from noc.core.perf import metrics
@@ -218,8 +218,9 @@ class ManagedObjectCard(BaseCard):
 
         mo = ManagedObject.objects.filter(id=self.object.id)
         mo = mo[0]
-
-        ifaces_metrics, last_ts = get_interface_metrics(mo)
+        meric_map = get_dict_interface_metrics(mo).get(mo)
+        meric_map_revert = {v: k for k, v in meric_map.get("map").items()}
+        ifaces_metrics, last_ts = get_interface_metrics(mo, meric_map)
         ifaces_metrics = ifaces_metrics[mo]
 
         objects_metrics, last_time = get_objects_metrics(mo)
@@ -287,10 +288,8 @@ class ManagedObjectCard(BaseCard):
         for i in Interface.objects.filter(managed_object=self.object.id, type="physical"):
             load_in = "-"
             load_out = "-"
-            errors_in = "-"
-            errors_out = "-"
             iface_metrics = ifaces_metrics.get(str(i.name))
-
+            interface_metrics = {}
             if iface_metrics:
                 for key, value in iface_metrics.items():
                     metric_type = metric_type_name.get(key) or metric_type_field.get(key)
@@ -306,10 +305,10 @@ class ManagedObjectCard(BaseCard):
                             if value
                             else "-"
                         )
-                    if key == "Interface | Errors | In":
-                        errors_in = value if value else "-"
-                    if key == "Interface | Errors | Out":
-                        errors_out = value if value else "-"
+                    try:
+                        interface_metrics[meric_map_revert[key]] = value if value else "-"
+                    except KeyError:
+                        pass
             interfaces += [
                 {
                     "id": i.id,
@@ -320,8 +319,6 @@ class ManagedObjectCard(BaseCard):
                     "full_duplex": i.full_duplex,
                     "load_in": load_in,
                     "load_out": load_out,
-                    "errors_in": errors_in,
-                    "errors_out": errors_out,
                     "speed": max([i.in_speed or 0, i.out_speed or 0]) / 1000,
                     "untagged_vlan": None,
                     "tagged_vlan": None,
@@ -329,6 +326,7 @@ class ManagedObjectCard(BaseCard):
                     "service": i.service,
                     "service_summary": service_summary.get("interface").get(i.id, {}),
                     "description": i.description,
+                    "metrics": interface_metrics,
                 }
             ]
             if sensors_metrics:
