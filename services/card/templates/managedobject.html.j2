@@ -468,15 +468,15 @@
                                 {% endif %}
                             </td>
                             <td{% if not i["full_duplex"]%} class="danger"{% endif %}>
-                                {% if i["errors_in"] %}
-                                    <span class="small">{{ i["errors_in"] }}</span>
+                                {% if i["metrics"]["errors_in"] %}
+                                    <span class="small">{{ i["metrics"]["errors_in"] }}</span>
                                 {% else %}
                                     -
                                 {% endif %}
                             </td>
                             <td{% if not i["full_duplex"]%} class="danger"{% endif %}>
-                                {% if i["errors_out"] %}
-                                    <span class="small">{{ i["errors_out"] }}</span>
+                                {% if i["metrics"]["errors_out"] %}
+                                    <span class="small">{{ i["metrics"]["errors_out"] }}</span>
                                 {% else %}
                                     -
                                 {% endif %}

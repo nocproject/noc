@@ -1,7 +1,7 @@
 # ----------------------------------------------------------------------
 # PM Utils
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2020 The NOC Project
+# Copyright (C) 2007-2023 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -143,6 +143,8 @@ def get_interface_metrics(
                 "errors_out": "Interface | Errors | Out",
             },
         }
+    if not meric_map["map"]:
+        return defaultdict(dict), {}
     if not isinstance(managed_objects, Iterable):
         managed_objects = [managed_objects]
     bi_map: Dict[str, "ManagedObject"] = {
@@ -197,5 +199,64 @@ def get_interface_metrics(
     return metric_map, last_ts
 
 
-#
+def get_dict_interface_metrics(
+    managed_objects: Union[Iterable["ManagedObject"], "ManagedObject"]
+) -> Dict[str, Dict[str, Union[str, Dict[str, str]]]]:
+    """
+    Get field_name and name from metric_type for interface.
+    :param managed_objects:
+    :return:
+    meric_map = {
+            "mo_name":{
+                "table_name": "interface",
+                "map": {
+                    "load_in": "Interface | Load | In",
+                    "load_out": "Interface | Load | Out",
+                    "errors_in": "Interface | Errors | In",
+                    "errors_out": "Interface | Errors | Out",
+                }
+            }
+        }
+    """
+    # Avoid circular references
+    meric_map = {}
+    if not isinstance(managed_objects, Iterable):
+        managed_objects = [managed_objects]
+
+    for mo in managed_objects:
+        meric_map[mo] = {"table_name": "interface", "map": _get_dict_interface_metrics(mo)}
+    return meric_map
+
+
+def _get_dict_interface_metrics(
+    managed_object: ["ManagedObject"],
+) -> Dict[str, Union[str, Dict[str, str]]]:
+    """
+    :return:
+    {
+                "load_in": "Interface | Load | In",
+                "load_out": "Interface | Load | Out",
+                "errors_in": "Interface | Errors | In",
+                "errors_out": "Interface | Errors | Out",
+            }
+    """
+    # Avoid circular references
+    from noc.inv.models.interface import Interface
+    from noc.inv.models.interfaceprofile import InterfaceProfile
+
+    i_profile = set()
+    f_n = {}
+    for i in Interface.objects.filter(managed_object=managed_object.id, type="physical"):
+        i_profile.add(i.profile.id)
+    if i_profile:
+        metrics_type = set()
+        for ip in InterfaceProfile.objects.filter(id__in=i_profile):
+            for metric in ip.metrics:
+                metrics_type.add(metric.metric_type)
+        for mt in metrics_type:
+            f_n[mt.field_name] = mt.name
+    return f_n
+
+
+# Avoid circular references
 from noc.sa.models.managedobject import ManagedObject
