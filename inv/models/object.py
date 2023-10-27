@@ -864,7 +864,7 @@ class Object(Document):
         """
         connections = {name: ro for name, ro, _ in self.iter_inner_connections()}
         for c in self.model.connections:
-            if c.type.is_matched_scope(scope, c.protocols):
+            if c.type.is_matched_scope(scope, [p.protocol.code for p in c.protocols]):
                 # Yield connection
                 yield PathItem(object=self, connection=c),
             elif c.name in connections:
