@@ -90,9 +90,11 @@ class ToolsAppplication(Application):
             return self.response_forbidden(_("Permission denied"))
         out = StringIO()
         writer = csv.writer(out)
-        writer.writerow(["address", "fqdn", "mac", "description", "tt", "tags"])
+        writer.writerow(["address", "name", "fqdn", "mac", "description", "tt", "tags"])
         for a in prefix.nested_address_set.order_by("address"):
-            writer.writerow([a.address, a.fqdn, a.mac, to_utf8(a.description), a.tt, a.labels])
+            writer.writerow(
+                [a.address, a.name, a.fqdn, a.mac, to_utf8(a.description), a.tt, a.labels]
+            )
         return self.render_response(out.getvalue(), content_type="text/csv")
 
     class AXFRForm(NOCForm):
