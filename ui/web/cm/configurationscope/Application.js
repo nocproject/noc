@@ -61,11 +61,10 @@ Ext.define("NOC.cm.configurationscope.Application", {
                     allowBlank: true
                 },
                 {
-                    text: __('ModelID'),
-                    dataIndex: 'model_id',
-                    renderer: NOC.render.Lookup('model_id'),
-                    editor: 'main.ref.modelid.LookupField',
-                    width: 150
+                    name: "model_id",
+                    xtype: "main.ref.modelid.LookupField",
+                    fieldLabel: __("Helper ModelID"),
+                    allowBlank: true
                 }
             ],
 

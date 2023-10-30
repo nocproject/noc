@@ -71,9 +71,8 @@ Ext.define("NOC.cm.configurationparam.Application", {
                         {
                             dataIndex: "scope",
                             text: __("Name"),
-                            editor: "textfield",
                             editor: "cm.configurationscope.LookupField",
-                            renderer: NOC.render.Lookup("scope")
+                            renderer: NOC.render.Lookup("scope"),
                             width: 150
                         },
                         {
@@ -155,6 +154,26 @@ Ext.define("NOC.cm.configurationparam.Application", {
                             text: __("Attribute"),
                             dataIndex: "model_attr",
                             editor: "textfield"
+                        }
+                    ]
+                },
+                {
+                    name: "choices",
+                    xtype: "gridfield",
+                    fieldLabel: __("Parameter Choices"),
+                    labelAlign: "top",
+                    columns: [
+                        {
+                            dataIndex: "name",
+                            text: __("name"),
+                            editor: "textfield",
+                            width: 200
+                        },
+                        {
+                            dataIndex: "value",
+                            text: __("Value"),
+                            editor: "textfield",
+                            width: 200
                         }
                     ]
                 }

@@ -28,6 +28,11 @@ Ext.define("NOC.cm.configurationscope.Model", {
             type: "string"
         },
         {
+            name: "model_id__label",
+            type: "string",
+            persist: false
+        },
+        {
             name: "helper",
             type: "string"
         },

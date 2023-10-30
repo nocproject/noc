@@ -64,16 +64,16 @@ class ScopeItem(EmbeddedDocument):
 
 class ConfigurationParamChoiceItem(EmbeddedDocument):
     meta = {"strict": False}
-    id = StringField()
     name = StringField()
+    value = StringField()
 
     def __str__(self):
         return self.name
 
     def to_json(self):
         return {
-            "id": self.id,
             "name": self.name,
+            "value": self.value,
         }
 
 
