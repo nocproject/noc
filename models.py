@@ -265,6 +265,8 @@ _MODELS = {
     "cm.InterfaceValidationPolicy": "noc.cm.models.interfacevalidationpolicy.InterfaceValidationPolicy",
     "cm.ObjectNotify": "noc.cm.models.objectnotify.ObjectNotify",
     "cm.ObjectValidationPolicy": "noc.cm.models.objectvalidationpolicy.ObjectValidationPolicy",
+    "cm.ConfigurationScope": "noc.cm.models.configurationscope.ConfigurationScope",
+    "cm.ConfigurationParam": "noc.cm.models.configurationparam.ConfigurationParam",
     # ip models
     "ip.Address": "noc.ip.models.address.Address",
     "ip.AddressProfile": "noc.ip.models.addressprofile.AddressProfile",
@@ -384,6 +386,8 @@ COLLECTIONS = [
     "bi.DashboardLayout",
     "bi.Dashboard",
     "cm.ConfDBQuery",
+    "cm.ConfigurationScope",
+    "cm.ConfigurationParam",
     "main.Report",
 ]
 
