@@ -16,6 +16,7 @@ from noc.ip.models.prefix import Prefix
 from noc.peer.models.asn import AS
 from noc.core.translation import ugettext as _
 from noc.core.comp import smart_text
+from noc.vc.models.vlan import VLAN
 
 
 class ReportFilterApplication(SimpleReport):
@@ -41,12 +42,13 @@ class ReportFilterApplication(SimpleReport):
 
     def get_data(self, request, **kwargs):
         def get_row(p):
+            vlan = VLAN.get_by_id(p.vlan.id) if p.vlan else None
             r = [
                 p.vrf.name,
                 p.prefix,
                 p.state.name,
                 smart_text(p.asn),
-                smart_text(p.vc) if p.vc else "",
+                vlan.name if vlan else "",
             ]
             for f in cf:
                 v = getattr(p, f.name)
@@ -62,7 +64,7 @@ class ReportFilterApplication(SimpleReport):
                     q[k + "__icontains"] = v
                 else:
                     q[k] = v
-        columns = ["VRF", "Prefix", "State", "AS", "VC"]
+        columns = ["VRF", "Prefix", "State", "AS", "VLAN"]
         cf = CustomField.table_fields("ip_prefix")
         for f in cf:
             if f.type == "bool":
