@@ -26,6 +26,7 @@ from noc.core.mongo.fields import PlainReferenceField
 from noc.core.ip import IP
 from noc.core.prettyjson import to_json
 from noc.core.text import quote_safe_path
+from noc.core.model.decorator import on_delete_check
 from noc.sa.interfaces.base import StringParameter, IntParameter, BooleanParameter
 from noc.pm.models.metrictype import MetricType
 from .configurationscope import ConfigurationScope
@@ -77,6 +78,7 @@ class ConfigurationParamChoiceItem(EmbeddedDocument):
         }
 
 
+@on_delete_check(check=[("inv.Object", "cfg_data__param")])
 class ParamSchemaItem(EmbeddedDocument):
     meta = {"strict": False}
     key = StringField(
@@ -111,7 +113,7 @@ class ConfigurationParam(Document):
     }
 
     name = StringField(unique=True)
-    code = StringField(unique=True)
+    code = StringField(unique=True, required=True)
     description = StringField()
     uuid = UUIDField(binary=True)
     scopes: List["ScopeItem"] = EmbeddedDocumentListField(ScopeItem)
@@ -175,10 +177,16 @@ class ConfigurationParam(Document):
                 "$collection",
                 "uuid",
                 "description",
-                "source",
-                "params",
+                "scopes",
+                "type",
+                "choices",
             ],
         )
+
+    def get_schema(self):
+        """
+        Getting param schema
+        """
 
     def get_parameter(self):
         return TYPE_MAP[self.type]

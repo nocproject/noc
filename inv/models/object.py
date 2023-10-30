@@ -23,6 +23,7 @@ from mongoengine.fields import (
     EmbeddedDocumentField,
     DynamicField,
     ReferenceField,
+    BooleanField,
 )
 from mongoengine import signals
 import cachetools
@@ -43,6 +44,7 @@ from noc.main.models.label import Label
 from noc.core.comp import smart_text
 from noc.config import config
 from noc.pm.models.agent import Agent
+from noc.cm.models.configurationparam import ConfigurationParam
 from .objectmodel import ObjectModel
 from .modelinterface import ModelInterface
 from .objectlog import ObjectLog
@@ -74,6 +76,19 @@ class ObjectAttr(EmbeddedDocument):
         if self.scope:
             return "%s.%s@%s = %s" % (self.interface, self.attr, self.scope, self.value)
         return "%s.%s = %s" % (self.interface, self.attr, self.value)
+
+
+class ObjectConfigurationData(EmbeddedDocument):
+    param: "ConfigurationParam" = PlainReferenceField(ConfigurationParam)
+    value = DynamicField()
+    is_dirty = BooleanField(default=False)
+    # Scope Code
+    scope = StringField(required=False)
+
+    def __str__(self):
+        if self.scope:
+            return f"{self.param.code}@{self.scope} = {self.value}"
+        return f"{self.param.code} = {self.value}"
 
 
 @Label.model
@@ -109,14 +124,16 @@ class Object(Document):
 
     name = StringField()
     model = PlainReferenceField(ObjectModel)
-    data = ListField(EmbeddedDocumentField(ObjectAttr))
-    container = PlainReferenceField("self", required=False)
+    data: List["ObjectAttr"] = ListField(EmbeddedDocumentField(ObjectAttr))
+    container: Optional["Object"] = PlainReferenceField("self", required=False)
     comment = GridVCSField("object_comment")
+    # Configuration Param
+    cfg_data: List["ObjectConfigurationData"] = ListField(EmbeddedDocumentField(ObjectConfigurationData))
     # Map
-    layer = PlainReferenceField(Layer)
+    layer: Optional["Layer"] = PlainReferenceField(Layer)
     point = PointField(auto_index=True)
     # Additional connection data
-    connections = ListField(EmbeddedDocumentField(ObjectConnectionData))
+    connections: List["ObjectConnectionData"] = ListField(EmbeddedDocumentField(ObjectConnectionData))
     # Labels
     labels = ListField(StringField())
     effective_labels = ListField(StringField())
@@ -375,6 +392,22 @@ class Object(Document):
             # Insert new item
             self.data += [
                 ObjectAttr(interface=interface, attr=attr.name, value=value, scope=scope or "")
+            ]
+
+    def set_cfg_data(self, param: str, value: Any, scope: Optional[str] = None) -> None:
+        p = ConfigurationParam.get_by_code(param)
+        if not p:
+            raise AttributeError("Unknown param: %s" % param)
+        # value = param.clean(value)
+        for item in self.cfg_data:
+            if item.param == param:
+                if not scope or item.scope == scope:
+                    item.value = value
+                    break
+        else:
+            # Insert new item
+            self.cfg_data += [
+                ObjectConfigurationData(param=p, value=value, scope=scope or "")
             ]
 
     def reset_data(

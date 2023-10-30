@@ -42,22 +42,18 @@ Ext.define("NOC.cm.configurationscope.Application", {
                     name: "name",
                     xtype: "textfield",
                     fieldLabel: __("Name"),
-                    labelAlign: "top",
                     allowBlank: false,
                     uiStyle: "large"
                 },
                 {
                     name: "uuid",
                     xtype: "displayfield",
-                    fieldLabel: __("UUID"),
-                    labelAlign: "top",
-                    allowBlank: true
+                    fieldLabel: __("UUID")
                 },
                 {
                     name: "description",
                     xtype: "textarea",
                     fieldLabel: __("Description"),
-                    labelAlign: "top",
                     allowBlank: true
                 },
                 {

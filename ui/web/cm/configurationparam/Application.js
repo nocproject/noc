@@ -44,16 +44,34 @@ Ext.define("NOC.cm.configurationparam.Application", {
                     name: "name",
                     xtype: "textfield",
                     fieldLabel: __("Name"),
-                    labelAlign: "top",
                     allowBlank: false,
+                    uiStyle: "large"
+                },
+                {
+                    name: "code",
+                    xtype: "textfield",
+                    fieldLabel: __("Code"),
+                    allowBlank: false,
+                    uiStyle: "large"
+                },
+                {
+                    name: "type",
+                    xtype: "combobox",
+                    fieldLabel: __("Type"),
+                    store: [
+                        ["string", __("String")],
+                        ["number", __("Number")],
+                        ["bool", __("Bool")]
+                    ],
+                    allowBlank: false,
+                    labelWidth: 200,
+                    value: "string",
                     uiStyle: "large"
                 },
                 {
                     name: "uuid",
                     xtype: "displayfield",
-                    fieldLabel: __("UUID"),
-                    labelAlign: "top",
-                    allowBlank: true
+                    fieldLabel: __("UUID")
                 },
                 {
                     name: "description",
@@ -83,20 +101,6 @@ Ext.define("NOC.cm.configurationparam.Application", {
                             renderer: NOC.render.Bool
                         }
                     ]
-                },
-                {
-                    name: "type",
-                    xtype: "combobox",
-                    fieldLabel: __("Type"),
-                    store: [
-                        ["string", __("String")],
-                        ["number", __("Number")],
-                        ["bool", __("Bool")]
-                    ],
-                    allowBlank: false,
-                    labelWidth: 200,
-                    value: "string",
-                    uiStyle: "large"
                 },
                 {
                     name: "schema",
