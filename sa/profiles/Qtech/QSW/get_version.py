@@ -24,7 +24,7 @@ class Script(BaseScript):
     )
     rx_bootprom = re.compile(r"^bootrom version\s+:\s+V(?P<bootprom>\S*)$", re.MULTILINE)
     rx_hardware = re.compile(r"^hardware version\s+:\s+V(?P<hardware>\S+)$", re.MULTILINE)
-    rx_serial = re.compile(r"^product serial number\s+:\s+(?P<serial>\S+)$", re.MULTILINE)
+    rx_serial = re.compile(r"^product serial (number|no\.)\s+:\s+(?P<serial>\S+)$", re.MULTILINE)
 
     rx_plat1 = re.compile(r"^\s+(?P<platform>QSW-\S+) Device, Compiled on", re.MULTILINE)
     rx_plat2 = re.compile(r"^\s+Device: (?P<platform>QSW-\S+), sysLocation:", re.MULTILINE)

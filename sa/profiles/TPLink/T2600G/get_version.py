@@ -13,7 +13,7 @@ from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetversion import IGetVersion
 
 rx_platform = re.compile(r"\s+Hardware Version\s+- (?P<platform>.+?)\n")
-rx_version = re.compile(r"\s+Software Version\s+- (?P<version>.+?)\n")
+rx_version = re.compile(r"\s+(Soft|Firm)ware Version\s+- (?P<version>.+?)\n")
 
 
 class Script(BaseScript):
