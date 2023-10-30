@@ -18,7 +18,7 @@ class CSVParser(BaseParser):
 
     @classmethod
     def to_html(cls, kb_entry):
-        reader = csv.reader([ll.encode("utf-8") for ll in kb_entry.body.splitlines()])
+        reader = csv.reader([ll for ll in kb_entry.body.splitlines()])
         r = ["<TABLE BORDER='1' ID='csvtable' class='tablesorter'>", "<thead>"]
         r += ["<TR>"] + ["<TH>%s</TH>" % smart_text(c) for c in next(reader)] + ["</TR>"]
         r += ["</thead>", "<tbody>"]
