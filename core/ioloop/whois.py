@@ -39,7 +39,7 @@ def parse_response(data):
         line = line.strip()
         if line.startswith(">>>"):
             break
-        if not line.startswith("%") and ':' in line:
+        if not line.startswith("%") and ":" in line:
             k, v = line.split(":", 1)
             k = k.strip().lower()
             k = FIELDS_MAP.get(k, k)
