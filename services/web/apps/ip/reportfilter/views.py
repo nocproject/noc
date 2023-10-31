@@ -53,7 +53,7 @@ class ReportFilterApplication(SimpleReport):
             for f in cf:
                 v = getattr(p, f.name)
                 r += [v if v is not None else ""]
-            r += [p.description, p]
+            r += [p.description, ";".join(p.labels)]
             return r
 
         q = {}
@@ -71,7 +71,7 @@ class ReportFilterApplication(SimpleReport):
                 columns += [TableColumn(f.label, format="bool")]
             else:
                 columns += [f.label]
-        columns += ["Description", TableColumn(_("Tags"), format="tags")]
+        columns += ["Description", "Labels"]
 
         data = [
             get_row(p)
