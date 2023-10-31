@@ -7,9 +7,8 @@
 
 # Python modules
 import logging
-
-# Third-party modules
-from tornado.tcpclient import TCPClient
+import asyncio
+import socket
 
 # NOC modules
 from noc.core.validators import is_fqdn
@@ -18,7 +17,6 @@ from noc.core.ioloop.util import run_sync
 
 DEFAULT_WHOIS_SERVER = "whois.ripe.net"
 DEFAULT_WHOIS_PORT = 43
-DEFAULT_TIMEOUT = 60
 
 logger = logging.getLogger(__name__)
 
@@ -31,8 +29,8 @@ FIELDS_MAP = {
 
 
 def parse_response(data):
-    """
-    Parse whois response
+    """Parse whois response
+
     :param data:
     :return:
     """
@@ -41,11 +39,34 @@ def parse_response(data):
         line = line.strip()
         if line.startswith(">>>"):
             break
-        k, v = line.split(":", 1)
-        k = k.strip().lower()
-        k = FIELDS_MAP.get(k, k)
-        r += [(k, v.strip())]
+        if not line.startswith("%") and ":" in line:
+            k, v = line.split(":", 1)
+            k = k.strip().lower()
+            k = FIELDS_MAP.get(k, k)
+            r += [(k, v.strip())]
     return r
+
+
+async def send_whois_request(host: str, port: int, query: bytes) -> bytes:
+    """Sending a TCP request to the whois server
+
+    :param host: Whois server
+    :param port: Port
+    :param query: Domain name to search
+    :return: Query result
+    """
+    reader, writer = await asyncio.open_connection(host, port)
+    writer.write(query)
+    await writer.drain()
+    response = b""
+    while True:
+        data = await reader.read(3072)
+        if not data:
+            break
+        response += data
+    writer.close()
+    await writer.wait_closed()
+    return response
 
 
 async def whois_async(query, fields=None):
@@ -65,16 +86,11 @@ async def whois_async(query, fields=None):
         server = DEFAULT_WHOIS_SERVER
     # Perform query
     try:
-        client = TCPClient()
-        stream = await client.connect(server, DEFAULT_WHOIS_PORT)
-    except IOError as e:
-        logger.error("Cannot resolve host '%s': %s", server, e)
+        query = smart_bytes(query) + b"\r\n"
+        data = await send_whois_request(host=server, port=DEFAULT_WHOIS_PORT, query=query)
+    except socket.gaierror as e:
+        logger.error(f"Cannot resolve host {server}: {e}")
         return
-    try:
-        await stream.write(smart_bytes(query) + b"\r\n")
-        data = await stream.read_until_close()
-    finally:
-        stream.close()
     data = smart_text(data)
     data = parse_response(data)
     if fields:
