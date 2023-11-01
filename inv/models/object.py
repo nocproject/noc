@@ -400,7 +400,7 @@ class Object(Document):
             raise AttributeError("Unknown param: %s" % param)
         # value = param.clean(value)
         for item in self.cfg_data:
-            if item.param == param:
+            if item.param == p:
                 if not scope or item.scope == scope:
                     item.value = value
                     break
