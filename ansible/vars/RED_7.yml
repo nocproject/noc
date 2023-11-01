@@ -7,7 +7,7 @@ apt_cache_valid_time: 86400
 mongo_arbiter_pid: /var/run/mongodb-arbiter.pid
 mongo_db_path: /var/lib/mongodb/
 nginx_user: nginx
-pgbouncer_path_pid: /var/run/postgresql
+pgbouncer_path_pid: /var/run/pgbouncer
 
 postgres_system_service: "postgresql-14"
 postgresql_hba_path: /var/lib/pgsql/14/data/pg_hba.conf
