@@ -118,7 +118,9 @@ class ScopeVariant(object):
     @classmethod
     def from_code(cls, code: str) -> "ScopeVariant":
         scope, *v = code.split("::")
-        scope = ConfigurationScope.get_by_name(scope)
+        s = ConfigurationScope.get_by_name(scope)
+        if not s:
+            ValueError("Unknown scope: %s" % scope)
         # check value by helper
         return ScopeVariant(scope, v[0] if v else None)
 
@@ -250,6 +252,7 @@ class ConfigurationParam(Document):
             "$collection": self._meta["json_collection"],
             "uuid": self.uuid,
             "type": self.type,
+            "scopes": [s.to_json() for s in self.scopes],
         }
         if self.description:
             r["description"] = self.description

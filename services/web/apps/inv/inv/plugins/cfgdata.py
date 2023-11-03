@@ -47,16 +47,17 @@ class CfgDataPlugin(InvPlugin):
 
     def get_data(self, request, o: Object):
         data = []
-        for cd in o.cfg_data:
+        for cd in o.get_effective_cfg_params():
+            param = ConfigurationParam.get_by_code(cd.name)
             data += [
                 {
-                    "param": str(cd.param.id),
-                    "param__label": cd.param.name,
+                    "param": str(param.id),
+                    "param__label": param.name,
                     "value": cd.value,
-                    "type": cd.param.type,
-                    "description": cd.param.description,
+                    "type": cd.schema.type,
+                    "description": param.description,
                     "is_readonly ": False,
-                    "choices": None,
+                    "choices": cd.schema.choices,
                     "scope": cd.scope,
                     "scope__label": cd.scope,
                 }
@@ -68,8 +69,7 @@ class CfgDataPlugin(InvPlugin):
         data: List[Dict[str, Any]] = self.app.deserialize(request.body)
         for d in data:
             p = self.app.get_object_or_404(ConfigurationParam, id=d["param"])
-            for s in d["scopes"] or [""]:
-                o.set_cfg_data(p.code, d["value"], scope=s)
+            o.set_cfg_data(p, d["value"], scopes=d["scopes"])
         try:
             o.save()
         except Exception as e:

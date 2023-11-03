@@ -114,7 +114,7 @@ class ObjectConfigurationData(EmbeddedDocument):
     def __str__(self):
         if self.scopes:
             scope = "".join(f"@{s.scope.name}::{s.value}" for s in self.scopes)
-            return f"{self.param.code}@{scope} = {self.value}"
+            return f"{self.param.code}{scope} = {self.value}"
         return f"{self.param.code} = {self.value}"
 
 
@@ -468,7 +468,7 @@ class Object(Document):
                 ObjectConfigurationData(
                     param=param,
                     value=value,
-                    scope=[
+                    scopes=[
                         ObjectConfigurationScope(scope=s.scope, value=s.value or None)
                         for s in scopes
                     ],
@@ -490,7 +490,7 @@ class Object(Document):
                     name=d.param.name,
                     scopes=[ScopeVariant(scope=s.scope, value=s.value) for s in d.scopes],
                     schema=d.param.get_schema(self),
-                    value=d.param.value,
+                    value=d.value,
                 )
             ]
         return r

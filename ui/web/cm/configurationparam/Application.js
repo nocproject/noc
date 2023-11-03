@@ -116,12 +116,14 @@ Ext.define("NOC.cm.configurationparam.Application", {
                             editor: {
                                 xtype: "combobox",
                                 store: [
-                                    ["maximum", "maximum"],
-                                    ["minimum", "minimum"],
-                                    ["maxLength", "maxLength"],
-                                    ["minLength", "minLength"],
+                                    ["max", "maximum"],
+                                    ["min", "minimum"],
+                                    ["min", "minimum"],
+                                    ["max_length", "maxLength"],
+                                    ["min_length", "minLength"],
                                     ["pattern", "pattern"],
-                                    ["step", "step"]
+                                    ["step", "step"],
+                                    ["decimal", "Decimal"]
                                 ]
                             }
                         },
