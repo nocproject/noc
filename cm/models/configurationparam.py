@@ -9,7 +9,9 @@
 import threading
 import operator
 import os
-from typing import List, Optional
+import re
+from dataclasses import dataclass
+from typing import List, Optional, Union, NoReturn, Any
 
 # Third-party modules
 from mongoengine.document import Document, EmbeddedDocument
@@ -23,11 +25,9 @@ import cachetools
 
 # NOC modules
 from noc.core.mongo.fields import PlainReferenceField
-from noc.core.ip import IP
 from noc.core.prettyjson import to_json
 from noc.core.text import quote_safe_path
 from noc.core.model.decorator import on_delete_check
-from noc.sa.interfaces.base import StringParameter, IntParameter, BooleanParameter
 from noc.pm.models.metrictype import MetricType
 from .configurationscope import ConfigurationScope
 
@@ -35,17 +35,108 @@ from .configurationscope import ConfigurationScope
 id_lock = threading.Lock()
 
 
-class IPParameter(object):
-    def clean(self, value):
-        return IP.prefix(value)
+@dataclass
+class ParamSchema(object):
+    type: str  # number, string, bool
+    # String Schema
+    pattern: Optional[str] = None
+    format: Optional[str] = None
+    # Number Schema
+    min: Optional[float] = None
+    max: Optional[float] = None
+    recommended_min: Optional[float] = None
+    recommended_max: Optional[float] = None
+    step: Optional[float] = None
+    decimal: Optional[int] = None  # Choices 0, 0.1, 0.01, 0.001, 0.0001
+    recommended_choices: List[str] = None
+    choices: List[float] = None
+
+    def clean(self, value: str) -> Union[str, float, bool]:
+        if self.type == "bool":
+            return bool(value)
+        if self.type == "number":
+            return self.clean_number(value)
+        return self.clean_string(value)
+
+    def clean_number(self, value: str) -> float:
+        value, msg = float(value), ""
+        if self.decimal:
+            value = round(value, self.decimal)
+        if self.min and value < self.min:
+            msg = f"Value less than {value}"
+        if self.max and value > self.max:
+            msg = f"Value less than {value}"
+        if msg:
+            raise ValueError(msg)
+        return value
+
+    def clean_string(self, value: Any) -> str:
+        if self.pattern:
+            match = re.match(self.pattern, value)
+            if match:
+                raise ValueError("Value is not match pattern: %s" % value)
+        return value
+
+    def merge(self, schema: "ParamSchema") -> NoReturn:
+        ...
+
+    @property
+    def json_schema(self):
+        """
+        Return JSON Schema
+        """
+        r = {}
+        if self.pattern:
+            r["pattern"] = self.pattern
+        return r
 
 
-TYPE_MAP = {
-    "str": StringParameter(),
-    "int": IntParameter(),
-    "bool": BooleanParameter(),
-    "ip": IPParameter(),
-}
+@dataclass
+class ScopeVariant(object):
+    scope: "ConfigurationScope"
+    value: Optional[str] = None
+
+    def __str__(self):
+        return self.code
+
+    @property
+    def code(self):
+        if not self.value:
+            return self.scope.name
+        return f"{self.scope.name}::{self.value}"
+
+    def __hash__(self):
+        return hash(self.code)
+
+    def __eq__(self, other) -> bool:
+        if self.scope.id != other.scope.id:
+            return False
+        if not self.value:
+            return True
+        return self.value == other.value
+
+    @classmethod
+    def from_code(cls, code: str) -> "ScopeVariant":
+        scope, *v = code.split("::")
+        scope = ConfigurationScope.get_by_name(scope)
+        # check value by helper
+        return ScopeVariant(scope, v[0] if v else None)
+
+
+@dataclass
+class ParamData(object):
+    name: str
+    schema: ParamSchema
+    scopes: Optional[List[ScopeVariant]] = None
+    value: Optional[Any] = None
+
+    @property
+    def scope(self) -> str:
+        if not self.scopes:
+            return ""
+        return "::".join(
+            f"@{s.scope}::{s.value}" if self.value else f"@{s.scope}" for s in self.scopes
+        )
 
 
 class ScopeItem(EmbeddedDocument):
@@ -78,11 +169,11 @@ class ConfigurationParamChoiceItem(EmbeddedDocument):
         }
 
 
-@on_delete_check(check=[("inv.Object", "cfg_data__param")])
 class ParamSchemaItem(EmbeddedDocument):
     meta = {"strict": False}
     key = StringField(
-        choices=["maximum", "minimum", "maxLength", "minLength", "pattern", "step"], required=True
+        choices=["max", "min", "max_length", "min_length", "pattern", "step", "decimal"],
+        required=True,
     )
     format = StringField(choices=["date-time", "email", "ip", "uuid"], required=False)
     value = StringField(required=False)
@@ -103,6 +194,7 @@ class ParamSchemaItem(EmbeddedDocument):
         return r
 
 
+@on_delete_check(check=[("inv.Object", "cfg_data__param")])
 class ConfigurationParam(Document):
     meta = {
         "collection": "configurationparams",
@@ -183,10 +275,25 @@ class ConfigurationParam(Document):
             ],
         )
 
-    def get_schema(self):
+    def get_schema(self, o) -> ParamSchema:
         """
-        Getting param schema
+        Return param Schema
         """
+        r = {"type": self.type}
+        for si in self.schema:
+            v = si.value
+            if si.model_interface:
+                v = o.model.get_data(si.model_interface, si.model_attr)
+            r[si.key] = v
+        if self.choices:
+            r["choices"] = [c.name for c in self.choices]
+        return ParamSchema(**r)
 
-    def get_parameter(self):
-        return TYPE_MAP[self.type]
+    def clean_scope(self, scopes: List[str]) -> List[ScopeVariant]:
+        """
+        Clean parameter scopes from string
+        """
+        r = []
+        for s in scopes:
+            r.append(ScopeVariant.from_code(s))
+        return r
