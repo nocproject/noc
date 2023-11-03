@@ -17,7 +17,7 @@ class Profile(BaseProfile):
     name = "SKS.SKS"
 
     pattern_unprivileged_prompt = rb"^(?P<hostname>\S+)\s*>"
-    pattern_prompt = rb"^(?P<hostname>(?! #)\S+)(?:\(e1\))?\s*#"
+    pattern_prompt = rb"^(?P<hostname>(?!#+)\S+)(?:\(e1\))?(?:_config\S*)?#"
     pattern_syntax_error = (
         rb"% Unrecognized command|% Wrong number of parameters|"
         rb"% Unrecognized host or address|"
