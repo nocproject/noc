@@ -69,7 +69,8 @@ class CfgDataPlugin(InvPlugin):
         data: List[Dict[str, Any]] = self.app.deserialize(request.body)
         for d in data:
             p = self.app.get_object_or_404(ConfigurationParam, id=d["param"])
-            o.set_cfg_data(p, d["value"], scopes=d["scopes"])
+            for s in d["scopes"]:
+                o.set_cfg_data(p, d["value"], scopes=s.split("@"))
         try:
             o.save()
         except Exception as e:

@@ -361,6 +361,8 @@ COLLECTIONS = [
     "pm.MetricType",
     "pm.MetricAction",
     "fm.Enumeration",
+    "cm.ConfigurationScope",
+    "cm.ConfigurationParam",
     "inv.ConnectionRule",
     "inv.ConnectionType",
     "inv.Vendor",
@@ -386,8 +388,6 @@ COLLECTIONS = [
     "bi.DashboardLayout",
     "bi.Dashboard",
     "cm.ConfDBQuery",
-    "cm.ConfigurationScope",
-    "cm.ConfigurationParam",
     "main.Report",
 ]
 
