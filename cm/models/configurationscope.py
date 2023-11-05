@@ -27,7 +27,9 @@ from noc.core.model.decorator import on_delete_check
 id_lock = threading.Lock()
 
 
-@on_delete_check(check=[("cm.ConfigurationParam", "scopes__scope")])
+@on_delete_check(
+    check=[("cm.ConfigurationParam", "scopes__scope"), ("cm.ConfigurationParam", "choices_scope")]
+)
 class ConfigurationScope(Document):
     meta = {
         "collection": "configurationscopes",
@@ -41,7 +43,6 @@ class ConfigurationScope(Document):
     uuid = UUIDField(binary=True)
     description = StringField()
     helper = StringField(default=None, required=False)
-    model_id = StringField(required=False)
     # helper_params = EmbeddedDocumentListField()
 
     _id_cache = cachetools.TTLCache(maxsize=100, ttl=60)
@@ -72,8 +73,6 @@ class ConfigurationScope(Document):
         }
         if self.description:
             r["description"] = self.description
-        if self.model_id:
-            r["model_id"] = self.model_id
         if self.helper:
             r["helper"] = self.helper
             r["helper_params"] = [p.to_json() for p in self.helper_params]

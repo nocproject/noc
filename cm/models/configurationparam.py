@@ -304,6 +304,10 @@ class ConfigurationParam(Document):
         return r
 
     def has_scope(self, name: str) -> bool:
+        """
+        Check Param has scope
+        :param name: Scope name
+        """
         for s in self.scopes:
             if s.scope.name == name:
                 return True
@@ -311,4 +315,7 @@ class ConfigurationParam(Document):
 
     @property
     def is_common(self) -> bool:
+        """
+        Param has Common Scope (without variant)
+        """
         return self.has_scope("Common")
