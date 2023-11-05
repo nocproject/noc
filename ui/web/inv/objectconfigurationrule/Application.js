@@ -15,6 +15,9 @@ Ext.define("NOC.inv.objectconfigurationrule.Application", {
         "NOC.inv.objectconfigurationrule.Model",
         "NOC.inv.connectiontype.LookupField",
         "NOC.inv.protocol.LookupField",
+        "NOC.cm.configurationscope.LookupField",
+        "NOC.cm.configurationparam.LookupField",
+        "NOC.core.label.LabelField",
         "Ext.ux.form.GridField"
     ],
     model: "NOC.inv.objectconfigurationrule.Model",
@@ -83,6 +86,13 @@ Ext.define("NOC.inv.objectconfigurationrule.Application", {
                     fieldLabel: __("Slot Rules"),
                     columns: [
                         {
+                            text: __("Scope"),
+                            dataIndex: "scope",
+                            editor: "cm.configurationscope.LookupField",
+                            width: 200,
+                            renderer: NOC.render.Lookup("scope")
+                        },
+                        {
                             text: __("Match Slot"),
                             dataIndex: "match_slot",
                             width: 100,
@@ -101,8 +111,8 @@ Ext.define("NOC.inv.objectconfigurationrule.Application", {
                             width: 200,
                             editor: {
                                 xtype: "core.tagfield",
-                                url: "/cm/protocol/lookup/"
-                            }
+                                url: "/inv/protocol/lookup/"
+                            },
                             renderer: NOC.render.Lookup("match_protocols")
                         },
                         {
@@ -112,7 +122,7 @@ Ext.define("NOC.inv.objectconfigurationrule.Application", {
                             editor: {
                                 xtype: "core.tagfield",
                                 url: "/cm/configurationparam/lookup/"
-                            }
+                            },
                             renderer: NOC.render.Lookup("allowed_params")
                         },
                         {
@@ -122,8 +132,42 @@ Ext.define("NOC.inv.objectconfigurationrule.Application", {
                             editor: {
                                 xtype: "core.tagfield",
                                 url: "/cm/configurationparam/lookup/"
-                            }
-                            renderer: NOC.render.Lookup("allowed_params")
+                            },
+                            renderer: NOC.render.Lookup("deny_params")
+                        }
+                    ]
+                },
+                {
+                    name: "param_rules",
+                    xtype: "gridfield",
+                    fieldLabel: __("Param Rules"),
+                    columns: [
+                        {
+                            text: __("Param"),
+                            dataIndex: "param",
+                            editor: "cm.configurationparam.LookupField",
+                            width: 200,
+                            renderer: NOC.render.Lookup("param")
+                        },
+                        {
+                            text: __("Scope"),
+                            dataIndex: "scope",
+                            editor: "cm.configurationscope.LookupField",
+                            width: 200,
+                            renderer: NOC.render.Lookup("scope")
+                        },
+                        {
+                            text: __("Dependency Param"),
+                            dataIndex: "dependency_param",
+                            editor: "cm.configurationparam.LookupField",
+                            width: 200,
+                            renderer: NOC.render.Lookup("dependency_param")
+                        },
+                        {
+                            text: __("Dependency Param Value"),
+                            dataIndex: "dependency_param_value",
+                            width: 100,
+                            editor: "textfield"
                         }
                     ]
                 }

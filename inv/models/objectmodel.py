@@ -245,7 +245,9 @@ class ObjectModel(Document):
     description = StringField()
     vendor: "Vendor" = PlainReferenceField(Vendor)
     connection_rule: "ConnectionRule" = PlainReferenceField(ConnectionRule, required=False)
-    configuration_rule: "ObjectConfigurationRule" = PlainReferenceField(ObjectConfigurationRule, required=False)
+    configuration_rule: "ObjectConfigurationRule" = PlainReferenceField(
+        ObjectConfigurationRule, required=False
+    )
     # Connection rule context
     cr_context = StringField(required=False)
     data: List["ModelAttr"] = EmbeddedDocumentListField(ModelAttr)

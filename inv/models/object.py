@@ -483,7 +483,6 @@ class Object(Document):
         """
         Iterate over Configured Data
         """
-        slot_scope = ConfigurationScope.get_by_name("Slot")
         # Getting param data
         param_data: Dict[Tuple[str, ...], Any] = {}
         for d in self.cfg_data:
@@ -494,7 +493,7 @@ class Object(Document):
         r = []
         # Processed configurations param
         for pr in self.model.configuration_rule.param_rules:
-            if slot_scope not in pr.param.scopes:
+            if not pr.param.scopes:
                 r += [
                     ParamData(
                         name=pr.param.name,
@@ -528,9 +527,9 @@ class Object(Document):
         return r
 
     def iter_configuration_scope(self, param: "ConfigurationParam") -> Iterable["ScopeVariant"]:
-        scope = ConfigurationScope.get_by_name("Slot")
         for c in self.model.connections:
-            if not self.model.configuration_rule.is_match_connection(param, c):
+            scope = self.model.configuration_rule.get_scope(param, c)
+            if not scope:
                 continue
             yield ScopeVariant(scope=scope, value=c.name)
 

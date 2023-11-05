@@ -48,7 +48,7 @@ class CfgDataPlugin(InvPlugin):
     def get_data(self, request, o: Object):
         data = []
         for cd in o.get_effective_cfg_params():
-            param = ConfigurationParam.get_by_code(cd.name)
+            param = ConfigurationParam.objects.get(name=cd.name)
             data += [
                 {
                     "param": str(param.id),

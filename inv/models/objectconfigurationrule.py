@@ -12,7 +12,13 @@ from typing import Any, Dict, Optional, List
 
 # Third-party modules
 from mongoengine.document import Document, EmbeddedDocument
-from mongoengine.fields import StringField, UUIDField, ListField, BooleanField, EmbeddedDocumentListField
+from mongoengine.fields import (
+    StringField,
+    UUIDField,
+    ListField,
+    BooleanField,
+    EmbeddedDocumentListField,
+)
 
 # NOC modules
 from noc.core.mongo.fields import PlainReferenceField, PlainReferenceListField
@@ -29,6 +35,7 @@ class SlotRule(EmbeddedDocument):
     meta = {"strict": False, "auto_create_index": False}
 
     # Match section
+    scope = PlainReferenceField(ConfigurationScope, required=True)
     match_slot = StringField()
     match_connection_type: Optional[ConnectionType] = PlainReferenceField(ConnectionType)
     match_protocols: Optional[List["Protocol"]] = PlainReferenceListField(Protocol)
@@ -69,7 +76,11 @@ class ParamRule(EmbeddedDocument):
 
     @property
     def json_data(self) -> Dict[str, Any]:
-        r = {"param__code": self.param.code, "is_hide": self.is_hide, "is_readonly": self.is_readonly}
+        r = {
+            "param__code": self.param.code,
+            "is_hide": self.is_hide,
+            "is_readonly": self.is_readonly,
+        }
         if self.dependency_param:
             r["dependency_param__code"] = self.dependency_param.code
             r["dependency_param_value"] = self.dependency_param_value
@@ -115,7 +126,8 @@ class ObjectConfigurationRule(Document):
 
     def to_json(self) -> str:
         return to_json(
-            self.json_data, order=["name", "$collection", "uuid", "description", "scope_rules", "param_rules"]
+            self.json_data,
+            order=["name", "$collection", "uuid", "description", "scope_rules", "param_rules"],
         )
 
     def get_json_path(self) -> str:
@@ -129,7 +141,7 @@ class ObjectConfigurationRule(Document):
                 schema.choices = p.choices
         return schema
 
-    def is_match_connection(self, param: "ConfigurationParam", oc) -> bool:
+    def get_scope(self, param: "ConfigurationParam", oc) -> Optional[ConfigurationScope]:
         """
         Check ObjectModel Connection Match with Rule
         :param param:
@@ -148,5 +160,5 @@ class ObjectConfigurationRule(Document):
                 continue
             if rule.match_connection_type and oc.connection_type:
                 continue
-            return True
-        return False
+            return rule.scope
+        return
