@@ -2,6 +2,7 @@
     "name": "SetTxPwr",
     "$collection": "cm.configurationparams",
     "uuid": "dffb2db1-ab3a-465e-8de3-9abfaa92d32f",
+    "code": "tx_power",
     "description": "Trancsever transmit power",
     "scopes": [{
         "is_required": true,
@@ -26,4 +27,3 @@
             "value": "1"
         }
     ]
-}

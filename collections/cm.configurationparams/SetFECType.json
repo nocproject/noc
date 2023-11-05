@@ -2,6 +2,7 @@
     "name": "SetFECType",
     "$collection": "cm.configurationparams",
     "uuid": "0270df77-96bb-48c9-b079-4bbfb866f7df",
+    "code": "otn_fec_type",
     "description": "Line FEC Type",
     "scopes": [
         {

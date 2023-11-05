@@ -252,6 +252,7 @@ class ConfigurationParam(Document):
             "$collection": self._meta["json_collection"],
             "uuid": self.uuid,
             "type": self.type,
+            "code": self.code,
             "scopes": [s.to_json() for s in self.scopes],
         }
         if self.description:
@@ -271,6 +272,7 @@ class ConfigurationParam(Document):
                 "name",
                 "$collection",
                 "uuid",
+                "code",
                 "description",
                 "scopes",
                 "type",
@@ -300,3 +302,13 @@ class ConfigurationParam(Document):
         for s in scopes:
             r.append(ScopeVariant.from_code(s))
         return r
+
+    def has_scope(self, name: str) -> bool:
+        for s in self.scopes:
+            if s.scope.name == name:
+                return True
+        return False
+
+    @property
+    def is_common(self) -> bool:
+        return self.has_scope("Common")

@@ -493,7 +493,7 @@ class Object(Document):
         r = []
         # Processed configurations param
         for pr in self.model.configuration_rule.param_rules:
-            if not pr.param.scopes:
+            if pr.param.is_common:
                 r += [
                     ParamData(
                         name=pr.param.name,
@@ -529,7 +529,7 @@ class Object(Document):
     def iter_configuration_scope(self, param: "ConfigurationParam") -> Iterable["ScopeVariant"]:
         for c in self.model.connections:
             scope = self.model.configuration_rule.get_scope(param, c)
-            if not scope:
+            if not scope or not param.has_scope(scope.name):
                 continue
             yield ScopeVariant(scope=scope, value=c.name)
 

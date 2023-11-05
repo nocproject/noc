@@ -2,6 +2,7 @@
     "name": "SetPayload",
     "$collection": "cm.configurationparams",
     "uuid": "b0ad0fd4-8453-434c-93c7-03ecace02110",
+    "code": "otn_payload",
     "description": "Set OPU4 line paylod",
     "scopes": [
         {

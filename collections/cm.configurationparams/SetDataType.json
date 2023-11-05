@@ -2,6 +2,7 @@
     "name": "SetDataType",
     "$collection": "cm.configurationparams",
     "uuid": "9581d14b-62f9-4eb1-b7e6-d3a20180dd97",
+    "code": "otn_data_type",
     "description": "Optical Line Data Type",
     "scopes": [{
         "is_required": true,

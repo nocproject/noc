@@ -2,6 +2,7 @@
     "name": "SetModType",
     "$collection": "cm.configurationparams",
     "uuid": "8b961817-2aee-4fdf-97ff-910dc1c3cb18",
+    "code": "otn_mod_type",
     "description": "Line modulation type",
     "scopes": [
         {

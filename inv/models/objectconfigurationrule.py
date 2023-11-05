@@ -156,9 +156,9 @@ class ObjectConfigurationRule(Document):
                 continue
             if rule.match_slot and not re.match(rule.match_slot, oc.name):
                 continue
-            if rule.match_protocols and not set(rule.match_protocols).intersection(protocols):
+            if rule.match_connection_type and rule.match_connection_type != oc.type:
                 continue
-            if rule.match_connection_type and oc.connection_type:
+            if rule.match_protocols and not set(rule.match_protocols).intersection(protocols):
                 continue
             return rule.scope
         return
