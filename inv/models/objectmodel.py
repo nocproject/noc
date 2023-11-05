@@ -37,6 +37,7 @@ from noc.core.model.decorator import on_delete_check, on_save
 from noc.core.change.decorator import change
 from noc.pm.models.measurementunits import MeasurementUnits
 from noc.cm.models.configurationparam import ConfigurationParam
+from .objectconfigurationrule import ObjectConfigurationRule
 from .connectiontype import ConnectionType
 from .connectionrule import ConnectionRule
 from .unknownmodel import UnknownModel
@@ -49,10 +50,11 @@ rx_composite_pins_validate = re.compile(r"\d+\-\d+")
 
 
 class ModelAttr(EmbeddedDocument):
+    meta = {"strict": False, "auto_create_index": False}
     interface = StringField()
     attr = StringField()
     value = DynamicField()
-    match_slot = StringField()
+    match_slot = StringField(required=False)
     match_param: Optional["ConfigurationParam"] = PlainReferenceField(
         ConfigurationParam, required=False
     )
@@ -243,6 +245,7 @@ class ObjectModel(Document):
     description = StringField()
     vendor: "Vendor" = PlainReferenceField(Vendor)
     connection_rule: "ConnectionRule" = PlainReferenceField(ConnectionRule, required=False)
+    configuration_rule: "ObjectConfigurationRule" = PlainReferenceField(ObjectConfigurationRule, required=False)
     # Connection rule context
     cr_context = StringField(required=False)
     data: List["ModelAttr"] = EmbeddedDocumentListField(ModelAttr)

@@ -150,7 +150,7 @@ class Object(Document):
     }
 
     name = StringField()
-    model = PlainReferenceField(ObjectModel)
+    model: "ObjectModel" = PlainReferenceField(ObjectModel)
     data: List["ObjectAttr"] = ListField(EmbeddedDocumentField(ObjectAttr))
     container: Optional["Object"] = PlainReferenceField("self", required=False)
     comment = GridVCSField("object_comment")
@@ -483,17 +483,56 @@ class Object(Document):
         """
         Iterate over Configured Data
         """
-        r = []
+        slot_scope = ConfigurationScope.get_by_name("Slot")
+        # Getting param data
+        param_data: Dict[Tuple[str, ...], Any] = {}
         for d in self.cfg_data:
+            key = [d.param.name]
+            for s in d.scopes:
+                key.append(ScopeVariant(scope=s.scope, value=s.value).code)
+            param_data[tuple(key)] = d.value
+        r = []
+        # Processed configurations param
+        for pr in self.model.configuration_rule.param_rules:
+            if slot_scope not in pr.param.scopes:
+                r += [
+                    ParamData(
+                        name=pr.param.name,
+                        scopes=[],
+                        schema=self.model.configuration_rule.get_schema(pr.param, self),
+                        value=param_data.pop((pr.param.name,), None),
+                    )
+                ]
+                continue
+            for scope in self.iter_configuration_scope(pr.param):
+                r += [
+                    ParamData(
+                        name=pr.param.name,
+                        scopes=[scope],
+                        schema=self.model.configuration_rule.get_schema(pr.param, self),
+                        value=param_data.pop((pr.param.name, scope.code), None),
+                    )
+                ]
+        for key, value in param_data.items():
+            param, *scopes = key
+            param = ConfigurationParam.get_by_code(param)
             r += [
                 ParamData(
-                    name=d.param.name,
-                    scopes=[ScopeVariant(scope=s.scope, value=s.value) for s in d.scopes],
-                    schema=d.param.get_schema(self),
-                    value=d.value,
+                    name=param.name,
+                    scopes=[ScopeVariant.from_code(s) for s in scopes],
+                    schema=param.get_schema(self),
+                    value=value,
                 )
             ]
+        # Add from data
         return r
+
+    def iter_configuration_scope(self, param: "ConfigurationParam") -> Iterable["ScopeVariant"]:
+        scope = ConfigurationScope.get_by_name("Slot")
+        for c in self.model.connections:
+            if not self.model.configuration_rule.is_match_connection(param, c):
+                continue
+            yield ScopeVariant(scope=scope, value=c.name)
 
     def has_connection(self, name):
         return self.model.has_connection(name)
