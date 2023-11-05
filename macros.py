@@ -177,6 +177,20 @@ def define_env(env):
         r += ["</div>", "</section>"]
         return "\n".join(r)
 
+    @env.macro
+    def ui_path(*args: List[str]) -> str:
+        """
+        Renders neat UI path in form `ARG1 > ARG2 > ARG3`
+        """
+        return " > ".join(f"`{x}`" for x in args)
+
+    @env.macro
+    def ui_button(title: str) -> str:
+        """
+        Renders neat UI button.
+        """
+        return f"`{title}`"
+
     scripts = []  # Ordered list of scripts
     platforms = defaultdict(set)  # vendor -> {platform}
     script_profiles = defaultdict(set)  # script -> {profile}

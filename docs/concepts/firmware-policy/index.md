@@ -10,8 +10,8 @@ The following policies are available:
 
 ## Settings
 
-The configuration starts in the `Inventory -> Setup -> Firmware Policy` menu. 
-After clicking the `Add` button, a form for creating an external system with the following items opens:
+The configuration starts in the {{ ui_path("Inventory", "Setup", "Firmware Policy") }} menu. 
+After clicking the {{ ui_button("Add") }} button, a form for creating an external system with the following items opens:
 
 * **Platform** - device platform restriction
 * **Firmware Version** - firmware version
@@ -49,5 +49,5 @@ that are allowed for assignment to the device, they will flow into its `effectiv
 ## Display
 
 The current policy is displayed in the device card (`Managed Object Card`). 
-Also, in the report `Service Activation -> Reports -> Managed Object Summary`. 
+Also, in the report {{ ui_path("Service Activation", "Reports", "Managed Object Summary") }}.
 When selecting the report type *By Version*, a column for the current policy will be displayed.
