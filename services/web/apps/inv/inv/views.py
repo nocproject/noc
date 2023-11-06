@@ -130,6 +130,8 @@ class InvApplication(ExtApplication):
                 n["plugins"] += [self.get_plugin_data("contacts")]
             if o.model.sensors:
                 n["plugins"] += [self.get_plugin_data("sensor")]
+            if o.model.configuration_rule:
+                n["plugins"] += [self.get_plugin_data("cfgdata")]
             # Append model's plugins
             for p in m_plugins:
                 if not p.startswith("-"):
