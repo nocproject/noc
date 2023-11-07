@@ -65,18 +65,18 @@ class ParamPlugin(InvPlugin):
                     "is_readonly ": False,
                     "choices": cd.schema.choices,
                     "scope": cd.scope,
-                    "scope__label": cd.scope,
+                    "scope__label": " ".join(s.code for s in cd.scopes),
                 }
             ]
         return {"id": str(o.id), "name": o.name, "model": o.model.name, "data": data}
 
     def api_save_data(self, request, id, **kwargs):
-        o = self.app.get_object_or_404(Object, id=id)
+        o: "Object" = self.app.get_object_or_404(Object, id=id)
         data: List[Dict[str, Any]] = self.app.deserialize(request.body)
         for d in data:
             p = self.app.get_object_or_404(ConfigurationParam, id=d["param"])
             for s in d["scopes"]:
-                o.set_cfg_data(p, d["value"], scopes=s.split("@"))
+                o.set_cfg_data(p, d["value"], scopes=s[1:].split("@"))
         try:
             o.save()
         except Exception as e:
@@ -91,7 +91,7 @@ class ParamPlugin(InvPlugin):
             if not p.scopes:
                 continue
             scopes |= set(s.code for s in p.scopes)
-        return [{"id": s, "label": s} for s in scopes]
+        return [{"id": f"@{s}", "label": s} for s in scopes]
 
     # def api_get_schema(self, request, id, param=None, scope: Optional[str] = None):
     #     """

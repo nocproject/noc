@@ -138,9 +138,7 @@ class ParamData(object):
     def scope(self) -> str:
         if not self.scopes:
             return ""
-        return "::".join(
-            f"@{s.scope}::{s.value}" if self.value else f"@{s.scope}" for s in self.scopes
-        )
+        return "".join(f"@{s.code}" for s in self.scopes)
 
 
 class ScopeItem(EmbeddedDocument):
