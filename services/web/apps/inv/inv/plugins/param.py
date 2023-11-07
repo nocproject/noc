@@ -1,5 +1,5 @@
 # ---------------------------------------------------------------------
-# inv.inv configdata plugin
+# inv.inv param data plugin
 # ---------------------------------------------------------------------
 # Copyright (C) 2007-2023 The NOC Project
 # See LICENSE for details
@@ -15,16 +15,16 @@ from noc.sa.interfaces.base import StringParameter, StringListParameter, DictLis
 from .base import InvPlugin
 
 
-class CfgDataPlugin(InvPlugin):
-    name = "cfgdata"
-    js = "NOC.inv.inv.plugins.data.CfgDataPanel"
+class ParamPlugin(InvPlugin):
+    name = "param"
+    js = "NOC.inv.inv.plugins.param.ParamPanel"
 
     def init_plugin(self):
         super().init_plugin()
         self.add_view(
             "api_plugin_%s_save_data" % self.name,
             self.api_save_data,
-            url="^(?P<id>[0-9a-f]{24})/plugin/cfgdata/$",
+            url="^(?P<id>[0-9a-f]{24})/plugin/param/$",
             method=["PUT"],
             validate=DictListParameter(
                 attrs={
@@ -37,7 +37,7 @@ class CfgDataPlugin(InvPlugin):
         self.add_view(
             "api_plugin_%s_schema" % self.name,
             self.api_save_data,
-            url="^(?P<id>[0-9a-f]{24})/plugin/cfgdata/schema/$",
+            url="^(?P<id>[0-9a-f]{24})/plugin/param/schema/$",
             method=["GET"],
             validate={
                 "param": StringParameter(),
