@@ -528,6 +528,7 @@ class Object(Document):
 
     def iter_configuration_scope(self, param: "ConfigurationParam") -> Iterable["ScopeVariant"]:
         for c in self.model.connections:
+            # Getting param from connection model (for transciever)
             scope = self.model.configuration_rule.get_scope(param, c)
             if not scope or not param.has_scope(scope.name):
                 continue

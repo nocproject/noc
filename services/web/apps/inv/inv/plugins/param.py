@@ -44,6 +44,12 @@ class ParamPlugin(InvPlugin):
                 "scope": StringParameter(),
             },
         )
+        self.add_view(
+            "api_plugin_%s_scopes" % self.name,
+            self.api_scopes,
+            url="^(?P<id>[0-9a-f]{24})/plugin/param/scopes/$",
+            method=["GET"],
+        )
 
     def get_data(self, request, o: Object):
         data = []
@@ -76,6 +82,16 @@ class ParamPlugin(InvPlugin):
         except Exception as e:
             return {"status": False, "message": str(e), "traceback": str(e)}
         return {"status": True}
+
+    def api_scopes(self, request, id, **kwargs):
+        """"""
+        o = self.app.get_object_or_404(Object, id=id)
+        scopes = set()
+        for p in o.get_effective_cfg_params():
+            if not p.scopes:
+                continue
+            scopes |= set(s.code for s in p.scopes)
+        return [{"id": s, "label": s} for s in scopes]
 
     # def api_get_schema(self, request, id, param=None, scope: Optional[str] = None):
     #     """

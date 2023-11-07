@@ -41,6 +41,8 @@ class ParamSchema(object):
     # String Schema
     pattern: Optional[str] = None
     format: Optional[str] = None
+    min_length: Optional[int] = None
+    max_length: Optional[int] = None
     # Number Schema
     min: Optional[float] = None
     max: Optional[float] = None
