@@ -62,7 +62,7 @@ class ParamPlugin(InvPlugin):
                     "value": cd.value,
                     "type": cd.schema.type,
                     "description": param.description,
-                    "is_readonly ": False,
+                    "is_readonly": False,
                     "choices": cd.schema.choices,
                     "scope": cd.scope,
                     "scope__label": " ".join(s.code for s in cd.scopes),

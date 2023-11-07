@@ -10,11 +10,31 @@ Ext.define("NOC.inv.inv.plugins.param.ParamModel", {
     extend: "Ext.data.Model",
     fields: [
         {
-            name: "interface",
+            name: "choices",
+            type: "auto"
+        },
+        {
+            name: "description",
             type: "string"
         },
         {
-            name: "name",
+            name: "is_readonly",
+            type: "boolean"
+        },
+        {
+            name: "param",
+            type: "string"
+        },
+        {
+            name: "param__label",
+            type: "string"
+        },
+        {
+            name: "scope",
+            type: "string"
+        },
+        {
+            name: "scope__label",
             type: "string"
         },
         {
@@ -24,18 +44,6 @@ Ext.define("NOC.inv.inv.plugins.param.ParamModel", {
         {
             name: "type",
             type: "string"
-        },
-        {
-            name: "description",
-            type: "string"
-        },
-        {
-            name: "is_const",
-            type: "boolean"
-        },
-        {
-            name: "choices",
-            type: "auto"
         }
     ]
 });
