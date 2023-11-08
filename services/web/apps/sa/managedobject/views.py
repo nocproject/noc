@@ -18,6 +18,7 @@ from django.db.models import Q as d_Q
 from mongoengine.queryset import Q as MQ
 
 # NOC modules
+from noc.main.models.slowop import SlowOp
 from noc.services.web.base.extmodelapplication import ExtModelApplication, view
 from noc.services.web.base.decorators.state import state_handler
 from noc.sa.models.administrativedomain import AdministrativeDomain
@@ -50,7 +51,6 @@ from noc.sa.models.action import Action
 from noc.core.scheduler.job import Job
 from noc.core.script.loader import loader as script_loader
 from noc.core.mongo.connection import get_db
-from noc.core.wf.interaction import Interaction
 from noc.core.translation import ugettext as _
 from noc.core.comp import smart_text, smart_bytes
 from noc.core.geocoder.loader import loader as geocoder_loader
@@ -60,7 +60,6 @@ from noc.core.text import alnum_key
 from noc.core.middleware.tls import get_user
 from noc.fm.models.activealarm import ActiveAlarm
 from noc.fm.models.alarmclass import AlarmClass
-from noc.config import config
 
 JP_CLAUSE_PATTERN = """jsonb_path_exists(caps, '$[*] ? (@.capability == "{}") ? (@.value {} {})')"""
 
@@ -506,7 +505,8 @@ class ManagedObjectApplication(ExtModelApplication):
     @view(url=r"^(?P<id>\d+)/discovery/$", method=["GET"], access="read", api=True)
     def api_discovery(self, request, id):
         from noc.core.scheduler.job import Job
-
+       
+        self.logger.info(f"Test discovery {__name__=}")
         o = self.get_object_or_404(ManagedObject, id=id)
         if not o.has_access(request.user):
             return self.response_forbidden("Access denied")
@@ -532,10 +532,6 @@ class ManagedObjectApplication(ExtModelApplication):
             job = Job.get_job_data("discovery", jcls=jcls, key=o.id, pool=o.pool.name) or {}
             if name == "interval":
                 enable = getattr(o.object_profile, "enable_metrics")
-            elif name == "box" and Interaction.BoxDiscovery not in o.interactions:
-                enable = False
-            elif name == "periodic" and Interaction.BoxDiscovery not in o.interactions:
-                enable = False
             else:
                 enable = getattr(o.object_profile, f"enable_{name}_discovery")
             d = {
@@ -586,23 +582,16 @@ class ManagedObjectApplication(ExtModelApplication):
         if not o.has_access(request.user):
             return self.response_forbidden("Access denied")
         r = orjson.loads(request.body).get("names", [])
-        shard, d_slots = None, config.get_slot_limits(f"discovery-{o.pool.name}")
-        if d_slots:
-            shard = o.id % d_slots
         for name, jcls in self.DISCOVERY_JOBS:
             if name not in r:
                 continue
             if name == "interval" and not getattr(o.object_profile, "enable_metrics"):
                 continue
-            elif name == "box" and Interaction.BoxDiscovery not in o.interactions:
-                continue
-            elif name == "periodic" and Interaction.PeriodicDiscovery not in o.interactions:
-                continue
             elif name != "interval" and not getattr(
                 o.object_profile, f"enable_{name}_discovery", None
             ):
                 continue  # Disabled by profile
-            Job.submit("discovery", jcls, key=o.id, pool=o.pool.name, shard=shard)
+            Job.submit("discovery", jcls, key=o.id, pool=o.pool.name)
         return {"success": True}
 
     @view(
@@ -617,10 +606,6 @@ class ManagedObjectApplication(ExtModelApplication):
             if name not in r:
                 continue
             if name == "interval" and not getattr(o.object_profile, "enable_metrics"):
-                continue
-            elif name == "box" and Interaction.BoxDiscovery not in o.interactions:
-                continue
-            elif name == "periodic" and Interaction.PeriodicDiscovery not in o.interactions:
                 continue
             elif name != "interval" and not getattr(o.object_profile, f"enable_{name}_discovery"):
                 continue  # Disabled by profile
@@ -882,7 +867,7 @@ class ManagedObjectApplication(ExtModelApplication):
                         "leaf": True,
                         "serial": None,
                         "description": n.description,
-                        "model": ", ".join(str(p) for p in n.protocols),
+                        "model": ", ".join(n.protocols),
                         "interface": if_map.get(n.name) or "",
                     }
                 ]
@@ -1052,7 +1037,7 @@ class ManagedObjectApplication(ExtModelApplication):
             args = orjson.loads(request.body)
         else:
             args = {}
-        return self.submit_slow_op(request, execute, o, a, args)
+        return self.submit_slow_op(o, a, request=request, **args)
 
     @view(url=r"^link/fix/(?P<link_id>[0-9a-f]{24})/$", method=["POST"], access="change_link")
     def api_fix_links(self, request, link_id):
