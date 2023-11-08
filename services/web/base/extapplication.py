@@ -19,10 +19,13 @@ import orjson
 
 # NOC modules
 from noc.main.models.favorites import Favorites
+from noc.main.models.slowop import SlowOp
 from noc.config import config
 from noc.models import is_document
 from .application import Application, view
 from .access import HasPerm, PermitLogged
+from noc.core.defer import call_later
+from noc.models import _MODELS
 
 
 class ExtApplication(Application):
@@ -351,3 +354,23 @@ class ExtApplication(Application):
         else:
             Favorites.remove_item(request.user, self.app_id, item)
         return True
+
+    @view(url=r"^futures/(?P<f_id>[0-9a-f]{24})/$", method=["GET"], access="launch", api=True)
+    def api_future_status(self, request, f_id):
+        op = self.get_object_or_404(SlowOp, id=f_id, user=request.user.username)
+        if op.is_ready():
+            # Note: the slow operation will be purged by TTL index
+            result = op.result()
+            if isinstance(result, Exception):
+                return self.render_json(
+                    {"success": False, "message": "Error", "traceback": str(result)},
+                    status=self.INTERNAL_ERROR,
+                )
+            else:
+                return result
+        else:
+            return self.response_accepted(request.path)
+
+    def submit_slow_op(self, a, o, request, **kwargs):
+        res = SlowOp.submit(a, o, user=request.user.username, **kwargs)
+        return res
