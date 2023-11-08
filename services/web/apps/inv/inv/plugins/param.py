@@ -53,8 +53,14 @@ class ParamPlugin(InvPlugin):
 
     def get_data(self, request, o: Object):
         data = []
+        q = self.app.parse_request_query(request)
+        scopes = set()
+        if "scope" in q:
+            scopes = set(q["scope"].split(","))
         for cd in o.get_effective_cfg_params():
-            param = ConfigurationParam.objects.get(name=cd.name)
+            if scopes and cd.scope not in scopes:
+                continue
+            param = ConfigurationParam.get_by_code(cd.code)
             data += [
                 {
                     "param": str(param.id),

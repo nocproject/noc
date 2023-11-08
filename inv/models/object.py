@@ -496,7 +496,7 @@ class Object(Document):
             if pr.param.is_common:
                 r += [
                     ParamData(
-                        name=pr.param.name,
+                        code=pr.param.code,
                         scopes=[],
                         schema=self.model.configuration_rule.get_schema(pr.param, self),
                         value=param_data.pop((pr.param.name,), None),
@@ -506,7 +506,7 @@ class Object(Document):
             for scope in self.iter_configuration_scope(pr.param):
                 r += [
                     ParamData(
-                        name=pr.param.name,
+                        code=pr.param.code,
                         scopes=[scope],
                         schema=self.model.configuration_rule.get_schema(pr.param, self),
                         value=param_data.pop((pr.param.name, scope.code), None),
@@ -517,7 +517,7 @@ class Object(Document):
             param = ConfigurationParam.get_by_code(param)
             r += [
                 ParamData(
-                    name=param.name,
+                    code=param.code,
                     scopes=[ScopeVariant.from_code(s) for s in scopes],
                     schema=param.get_schema(self),
                     value=value,

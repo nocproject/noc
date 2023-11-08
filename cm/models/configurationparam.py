@@ -124,15 +124,20 @@ class ScopeVariant(object):
         if not s:
             ValueError("Unknown scope: %s" % scope)
         # check value by helper
-        return ScopeVariant(scope, v[0] if v else None)
+        return ScopeVariant(s, v[0] if v else None)
 
 
 @dataclass
 class ParamData(object):
-    name: str
+    code: str
     schema: ParamSchema
     scopes: Optional[List[ScopeVariant]] = None
     value: Optional[Any] = None
+
+    def __str__(self) -> str:
+        if self.scopes:
+            return f"{self.code}@{self.scope} = {self.value}"
+        return f"{self.code} = {self.value}"
 
     @property
     def scope(self) -> str:
@@ -294,7 +299,8 @@ class ConfigurationParam(Document):
             r["choices"] = [c.name for c in self.choices]
         return ParamSchema(**r)
 
-    def clean_scope(self, scopes: List[str]) -> List[ScopeVariant]:
+    @classmethod
+    def clean_scope(cls, scopes: List[str]) -> List[ScopeVariant]:
         """
         Clean parameter scopes from string
         """
