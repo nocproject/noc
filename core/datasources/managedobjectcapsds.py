@@ -40,7 +40,7 @@ class ManagedObjectCapsDS(BaseDataSource):
     def iter_ds_fields(cls):
         yield from super().iter_ds_fields()
         for c_id, c_type, c_name in get_capabilities():
-            FieldInfo(name=c_name, type=c_type, internal_name=str(c_id))
+            yield FieldInfo(name=c_name, type=c_type, internal_name=str(c_id))
 
     @classmethod
     async def iter_caps(
@@ -79,7 +79,7 @@ class ManagedObjectCapsDS(BaseDataSource):
         cls, fields: Optional[Iterable[str]] = None, *args, **kwargs
     ) -> Iterable[Dict[str, Any]]:
         q_caps = {}
-        for f in cls.fields:
+        for f in cls.iter_ds_fields():
             c = (
                 Capability.get_by_id(f.internal_name)
                 if is_objectid(f.internal_name)
