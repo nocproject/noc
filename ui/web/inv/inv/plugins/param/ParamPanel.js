@@ -9,7 +9,6 @@ console.debug("Defining NOC.inv.inv.plugins.param.ParamPanel");
 Ext.define("NOC.inv.inv.plugins.param.ParamPanel", {
     extend: "Ext.panel.Panel",
     requires: [
-        // "Ext.grid.feature.Grouping",
         "NOC.inv.inv.plugins.param.ParamModel"
     ],
     title: __("Param"),
@@ -64,6 +63,7 @@ Ext.define("NOC.inv.inv.plugins.param.ParamPanel", {
                             items: [
                                 {
                                     xtype: "combobox",
+                                    name: "component",
                                     store: ["Option1", "Option2", "Option3"],
                                     displayField: "component",
                                     valueField: "component",
@@ -75,9 +75,25 @@ Ext.define("NOC.inv.inv.plugins.param.ParamPanel", {
                                 {
 
                                     xtype: "textfield",
-                                    name: "param_name",
+                                    name: "param__label",
                                     emptyText: __("Param name input"),
-                                    flex: 1
+                                    flex: 1,
+                                    triggers: {
+                                        clear: {
+                                            cls: 'x-form-clear-trigger',
+                                            hidden: true,
+                                            weight: -1,
+                                            handler: function(field) {
+                                                field.setValue(null);
+                                            }
+                                        }
+                                    },
+                                    listeners: {
+                                        change: {
+                                            fn: me.onFilterChange,
+                                            buffer: 500
+                                        }
+                                    }
                                 },
                             ]
                         },
@@ -186,5 +202,22 @@ Ext.define("NOC.inv.inv.plugins.param.ParamPanel", {
     },
     expandAll: function() {
         this.up("[itemId=paramPanel]").groupingFeature.expandAll();
+    },
+    onFilterChange: function(field, e) {
+        var value = field.getValue(),
+            panel = field.up("[itemId=paramPanel]");
+        if(value.length === 0) {
+            panel.store.clearFilter();
+            field.getTrigger("clear").hide();
+        } else {
+            field.getTrigger("clear").show();
+        }
+        if(value.length > 2) {
+            panel.store.clearFilter();
+            panel.store.filterBy(function(record) {
+                return record.get(field.getName()).toLowerCase().includes(value.toLowerCase());
+                // return Ext.String.startsWith(record.get(field.getName()), value, true);
+            });
+        }
     }
 });
