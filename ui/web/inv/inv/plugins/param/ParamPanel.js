@@ -57,43 +57,43 @@ Ext.define("NOC.inv.inv.plugins.param.ParamPanel", {
                             },
                             defaults: {
                                 padding: 20,
+                                triggers: {
+                                    clear: {
+                                        cls: 'x-form-clear-trigger',
+                                        hidden: true,
+                                        weight: -1,
+                                        handler: function(field) {
+                                            field.setValue(null);
+                                        }
+                                    }
+                                },
+                                listeners: {
+                                    change: {
+                                        fn: me.onFilterChange,
+                                        buffer: 500
+                                    }
+                                }
                             },
                             border: false,
                             width: "100%",
                             items: [
                                 {
                                     xtype: "combobox",
-                                    name: "component",
-                                    store: ["Option1", "Option2", "Option3"],
-                                    displayField: "component",
-                                    valueField: "component",
+                                    name: "scope__label",
+                                    displayField: "label",
+                                    valueField: "id",
                                     editable: false,
-                                    queryMode: "local",
-                                    emptyText: __("Component Sel"),
+                                    multiSelect: true,
+                                    queryMode: "remote",
+                                    emptyText: __("Component Scope"),
                                     flex: 1
                                 },
                                 {
 
                                     xtype: "textfield",
                                     name: "param__label",
-                                    emptyText: __("Param name input"),
-                                    flex: 1,
-                                    triggers: {
-                                        clear: {
-                                            cls: 'x-form-clear-trigger',
-                                            hidden: true,
-                                            weight: -1,
-                                            handler: function(field) {
-                                                field.setValue(null);
-                                            }
-                                        }
-                                    },
-                                    listeners: {
-                                        change: {
-                                            fn: me.onFilterChange,
-                                            buffer: 500
-                                        }
-                                    }
+                                    emptyText: __("Param name"),
+                                    flex: 1
                                 },
                             ]
                         },
@@ -177,6 +177,13 @@ Ext.define("NOC.inv.inv.plugins.param.ParamPanel", {
         var me = this;
         console.log("preview ParamPanel");
         me.store.loadData(data.data);
+        me.down("[name=scope__label]").setStore({
+            autoLoad: true,
+            proxy: {
+                type: "rest",
+                url: "/inv/inv/" + data.id + "/plugin/param/scopes/"
+            }
+        });
     },
     save: function(data) {
         var saveMode = this.up().down("[itemId=saveModeBtn]").pressed;
@@ -203,21 +210,46 @@ Ext.define("NOC.inv.inv.plugins.param.ParamPanel", {
     expandAll: function() {
         this.up("[itemId=paramPanel]").groupingFeature.expandAll();
     },
-    onFilterChange: function(field, e) {
-        var value = field.getValue(),
-            panel = field.up("[itemId=paramPanel]");
-        if(value.length === 0) {
-            panel.store.clearFilter();
-            field.getTrigger("clear").hide();
+    onFilterChange: function(field) {
+        var panel = field.up("[itemId=paramPanel]"),
+            paramValue = panel.down("[name=param__label]").getValue(),
+            compValue = panel.down("[name=scope__label]").getValue();
+
+        // show/hide clear triggers
+        if(paramValue == null || paramValue.length === 0) {
+            panel.down("[name=param__label]").getTrigger("clear").hide();
         } else {
-            field.getTrigger("clear").show();
+            panel.down("[name=param__label]").getTrigger("clear").show();
         }
-        if(value.length > 2) {
+        if(compValue == null || compValue.length === 0) {
+            panel.down("[name=scope__label]").getTrigger("clear").hide();
+        } else {
+            panel.down("[name=scope__label]").getTrigger("clear").show();
+        }
+        // clear filter
+        if((paramValue == null || paramValue.length === 0) && (compValue == null || compValue.length === 0)) {
             panel.store.clearFilter();
-            panel.store.filterBy(function(record) {
-                return record.get(field.getName()).toLowerCase().includes(value.toLowerCase());
-                // return Ext.String.startsWith(record.get(field.getName()), value, true);
-            });
+            return;
         }
+
+        panel.store.clearFilter();
+        panel.store.filterBy(function(record) {
+            var paramCondition = function(record, paramValue) {
+                return record.get("param__label").toLowerCase().includes(paramValue.toLowerCase())
+            },
+                compCondition = function(record, compValue) {
+                    return compValue.filter(function(el) {return record.get("scope").toLowerCase().includes(el.toLowerCase())}).length > 0
+                };
+            if((paramValue && paramValue.length > 2) && (compValue == null || compValue.length === 0)) { // filter by param
+                return paramCondition(record, paramValue);
+            }
+            if((compValue && compValue.length > 0) && (paramValue == null || paramValue.length === 0)) { // filter by scope
+                return compCondition(record, compValue);
+            }
+            if((paramValue && paramValue.length > 2) && (compValue && compValue.length > 0)) { // filter by param and scope
+                return paramCondition(record, paramValue) && compCondition(record, compValue);
+            }
+            return true;
+        });
     }
 });
