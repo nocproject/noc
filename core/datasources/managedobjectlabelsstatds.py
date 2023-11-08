@@ -1,7 +1,7 @@
 # ----------------------------------------------------------------------
 # Managed Object Labels Stat Datasource
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2022 The NOC Project
+# Copyright (C) 2007-2023 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -41,7 +41,7 @@ class ManagedObjectLabelsStatDS(BaseDataSource):
     async def iter_query(
         cls, fields: Optional[Iterable[str]] = None, *args, **kwargs
     ) -> AsyncIterable[Tuple[str, Any]]:
-        query_fields = [ff.name for ff in cls.fields[1:]]
+        query_fields = [ff.name for ff in cls.iter_ds_fields()][1:]
         row_num = 0
         for mo_id, labels in ManagedObject.objects.filter().values_list("id", "labels").iterator():
             labels = set(labels)
