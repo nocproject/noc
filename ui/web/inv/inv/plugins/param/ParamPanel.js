@@ -103,7 +103,7 @@ Ext.define("NOC.inv.inv.plugins.param.ParamPanel", {
                     xtype: "grid",
                     border: false,
                     autoScroll: true,
-                    // stateful: true,
+                    stateful: true,
                     stateId: "inv.inv-param-grid",
                     bufferedRenderer: false,
                     store: me.store,
@@ -119,10 +119,17 @@ Ext.define("NOC.inv.inv.plugins.param.ParamPanel", {
                         {
                             text: __("Value"),
                             dataIndex: "value",
-                            // flex: 1,
-                            // editor: "textfield",
-                            // getEditor: me.onGetEditor,
-                            // renderer: me.onCellRender
+                            flex: 1,
+                            editor: "textfield",
+                            renderer: function(value, metaData, record) {
+                                if(record.get("type") === "bool") {
+                                    if(value == null) {
+                                        value = false;
+                                    }
+                                    return NOC.render.Bool(value);
+                                }
+                                return value;
+                            }
                         },
                         {
                             text: __("Description"),
@@ -130,15 +137,58 @@ Ext.define("NOC.inv.inv.plugins.param.ParamPanel", {
                         }
                     ],
                     features: [me.groupingFeature],
-                    // selType: "cellmodel",
-                    // plugins: [
-                    // Ext.create("Ext.grid.plugin.CellEditing", {
-                    // clicksToEdit: 2
-                    // })
-                    // ],
-                    // viewConfig: {
-                    // enableTextSelection: true
-                    // },
+                    selType: "cellmodel",
+                    plugins: [
+                        Ext.create("Ext.grid.plugin.CellEditing", {
+                            clicksToEdit: 1,
+                            listeners: {
+                                beforeedit: function(editor, context) {
+                                    var record = context.record,
+                                        field = context.field,
+                                        type = record.get("type"),
+                                        value = record.get(field);
+
+                                    switch(type) {
+                                        case "number":
+                                            context.column.setEditor({
+                                                xtype: 'numberfield',
+                                                step: 1,
+                                                allowBlank: true
+                                            });
+                                            break;
+                                        case "bool":
+                                            context.column.setEditor({
+                                                xtype: 'checkboxfield',
+                                                allowBlank: true
+                                            });
+                                            break;
+                                        default:
+                                            if(record.get("choices")) {
+                                                context.column.setEditor({
+                                                    xtype: 'combobox',
+                                                    store: {
+                                                        data: Ext.Array.map(record.get("choices"), function(el) {
+                                                            return {
+                                                                text: el
+                                                            }
+                                                        })
+                                                    },
+                                                    valueField: 'text'
+                                                });
+                                            } else {
+                                                context.column.setEditor({
+                                                    xtype: 'textfield',
+                                                    allowBlank: true
+                                                });
+                                            }
+                                    }
+                                },
+                            }
+                        })
+                    ],
+                    viewConfig: {
+                        enableTextSelection: true
+                    },
                     // listeners: {
                     // scope: me,
                     // edit: me.onEdit
@@ -237,17 +287,17 @@ Ext.define("NOC.inv.inv.plugins.param.ParamPanel", {
             var paramCondition = function(record, paramValue) {
                 return record.get("param__label").toLowerCase().includes(paramValue.toLowerCase())
             },
-                compCondition = function(record, compValue) {
+                scopeCondition = function(record, compValue) {
                     return compValue.filter(function(el) {return record.get("scope").toLowerCase().includes(el.toLowerCase())}).length > 0
                 };
             if((paramValue && paramValue.length > 2) && (compValue == null || compValue.length === 0)) { // filter by param
                 return paramCondition(record, paramValue);
             }
             if((compValue && compValue.length > 0) && (paramValue == null || paramValue.length === 0)) { // filter by scope
-                return compCondition(record, compValue);
+                return scopeCondition(record, compValue);
             }
             if((paramValue && paramValue.length > 2) && (compValue && compValue.length > 0)) { // filter by param and scope
-                return paramCondition(record, paramValue) && compCondition(record, compValue);
+                return paramCondition(record, paramValue) && scopeCondition(record, compValue);
             }
             return true;
         });
