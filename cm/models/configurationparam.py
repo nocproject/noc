@@ -88,8 +88,23 @@ class ParamSchema(object):
         Return JSON Schema
         """
         r = {}
-        if self.pattern:
-            r["pattern"] = self.pattern
+        if self.type == "bool":
+            return {}
+        r["allowBlank"] = False
+        if self.choices:
+            return {"choices": self.choices}
+        elif self.type == "string":
+            r["minLength"] = self.min_length or 0
+            r["maxLength"] = self.max_length or 100
+            if self.pattern:
+                r["regex"] = self.pattern
+        elif self.type == "number":
+            if self.min is not None:
+                r["minValue"] = self.min
+            if self.max is not None:
+                r["maxValue"] = self.max
+            if self.step:
+                r["step"] = self.step
         return r
 
 
@@ -239,12 +254,12 @@ class ConfigurationParam(Document):
 
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_id_cache"), lock=lambda _: id_lock)
-    def get_by_id(cls, id):
+    def get_by_id(cls, id) -> Optional["ConfigurationParam"]:
         return ConfigurationParam.objects.filter(id=id).first()
 
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_code_cache"), lock=lambda _: id_lock)
-    def get_by_code(cls, code):
+    def get_by_code(cls, code) -> Optional["ConfigurationParam"]:
         return ConfigurationParam.objects.filter(code=code).first()
 
     def get_json_path(self) -> str:

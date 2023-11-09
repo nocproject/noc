@@ -74,6 +74,7 @@ class ParamPlugin(InvPlugin):
                     "scope__label": " ".join(s.code for s in cd.scopes),
                 }
             ]
+            data[-1].update(cd.schema.json_schema)
         return {"id": str(o.id), "name": o.name, "model": o.model.name, "data": data}
 
     def api_save_data(self, request, id, **kwargs):
