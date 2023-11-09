@@ -24,6 +24,11 @@ Ext.define("NOC.inv.inv.plugins.param.ParamPanel", {
             model: "NOC.inv.inv.plugins.param.ParamModel",
             groupField: "scope__label",
         });
+        me.bufferSizeText = '<span class="x-btn-inner x-btn-inner-default-toolbar-small">' + __('Buffer Size') + ' : {0}</span>';
+        me.dynamicField = Ext.create({
+            xtype: 'box',
+            html: Ext.String.format(me.bufferSizeText, 0),
+        });
         Ext.apply(me, {
             tbar: [
                 {
@@ -34,8 +39,15 @@ Ext.define("NOC.inv.inv.plugins.param.ParamPanel", {
                 {
                     text: __("Mass"),
                     itemId: "saveModeBtn",
-                    enableToggle: true,
-                    handler: me.changeMode
+                    enableToggle: true
+                },
+                "|",
+                me.dynamicField,
+                "|",
+                {
+                    text: __("Reset"),
+                    glyph: NOC.glyph.eraser,
+                    handler: me.reset,
                 },
                 "->",
                 {
@@ -266,6 +278,7 @@ Ext.define("NOC.inv.inv.plugins.param.ParamPanel", {
             }
             this.saveBuffer.push(buf);
         }
+        this.dynamicField.setHtml(Ext.String.format(this.bufferSizeText, this.saveBuffer.length));
     },
     preview: function(data) {
         var me = this;
@@ -296,6 +309,8 @@ Ext.define("NOC.inv.inv.plugins.param.ParamPanel", {
     },
     onReload: function() {
         var me = this;
+        me.saveBuffer = [];
+        me.dynamicField.setHtml(Ext.String.format(me.bufferSizeText, me.saveBuffer.length));
         Ext.Ajax.request({
             url: "/inv/inv/" + me.currentId + "/plugin/param/",
             method: "GET",
@@ -307,6 +322,10 @@ Ext.define("NOC.inv.inv.plugins.param.ParamPanel", {
                 NOC.error(__("Failed to get data"));
             }
         });
+    },
+    reset: function() {
+        var me = this.up("[itemId=paramPanel]");
+        me.onReload();
     },
     collapseAll: function() {
         this.up("[itemId=paramPanel]").groupingFeature.collapseAll();
