@@ -15,6 +15,7 @@ Ext.define("NOC.inv.inv.plugins.param.ParamPanel", {
     closable: false,
     itemId: "paramPanel",
     border: false,
+    saveBuffer: [],
     initComponent: function() {
         var me = this;
         me.groupingFeature = Ext.create("Ext.grid.feature.Grouping", {startCollapsed: false});
@@ -167,8 +168,14 @@ Ext.define("NOC.inv.inv.plugins.param.ParamPanel", {
                                     switch(type) {
                                         case "number":
                                             var editor = {
-                                                xtype: "numberfield"
+                                                xtype: "numberfield",
                                             };
+                                            if(record.get("minValue") || record.get("maxValue")) {
+                                                editor.fieldLabel = record.get("minValue") + " - " + record.get("maxValue");
+                                                if(record.get("step")) {
+                                                    editor.fieldLabel += "," + record.get("step");
+                                                }
+                                            }
                                             Ext.each([
                                                 {param: "allowBlank", mapTo: "allowBlank"},
                                                 {param: "maxValue", mapTo: "maxValue"},
@@ -226,42 +233,39 @@ Ext.define("NOC.inv.inv.plugins.param.ParamPanel", {
                     viewConfig: {
                         enableTextSelection: true
                     },
-                    // listeners: {
-                    // scope: me,
-                    // edit: me.onEdit
-                    // }
+                    listeners: {
+                        scope: me,
+                        edit: me.onEdit
+                    }
                 },
             ]
         });
         me.callParent();
     },
-    // onEdit: function(editor, e, eOpts) {
-    //     var me = this,
-    //         toReload = e.record.get("interface") === "Common" && e.record.get("name") === "Name";
+    onEdit: function(editor, e, eOpts) {
+        var record = editor.context.record,
+            isMassMode = this.down("[itemId=saveModeBtn]").pressed,
+            grid = this.down("[xtype=grid]");
 
-    //     console.debug("onEdit", e.record.get("interface"), e.record.get("name"));
-    //     Ext.Ajax.request({
-    //         url: "/inv/inv/" + me.currentId + "/plugin/param/",
-    //         method: "PUT",
-    //         jsonData: {
-    //             "scope": e.record.get("scope"),
-    //             "key": e.record.get("name"),
-    //             "value": e.record.get("value")
-    //         },
-    //         scope: me,
-    //         success: function(response) {
-    //             me.onReload();
-    //             if(toReload) {
-    //                 me.app.onReloadNav();
-    //             }
-    //         },
-    //         failure: function() {
-    //             NOC.error(__("Failed to save"));
-    //         }
-    //     });
-    // },
+        if(record.get("value") == null) {
+            return;
+        }
+        if(isMassMode) {
+            var scope = [];
+            grid.getStore().each(function(r) {
+                if(r.get("param") === record.get("param")) {
+                    r.set("value", record.get("value"));
+                }
+                Ext.Array.include(scope, r.get("scope"));
+            });
+            this.saveBuffer.push({param: record.get("param"), value: record.get("value"), scopes: scope});
+        } else {
+            this.saveBuffer.push({param: record.get("param"), value: record.get("value")});
+        }
+    },
     preview: function(data) {
         var me = this;
+        me.currentId = data.id;
         me.store.loadData(data.data);
         me.down("[name=scope__label]").setStore({
             autoLoad: true,
@@ -271,24 +275,34 @@ Ext.define("NOC.inv.inv.plugins.param.ParamPanel", {
             }
         });
     },
-    save: function(data) {
-        var saveMode = this.up().down("[itemId=saveModeBtn]").pressed;
-        console.log("save ParamPanel");
-        alert("save ParamPanel mode : " + (saveMode ? "mass" : "set") + " mode");
-        // Ext.Ajax.request({
-        //     url: "/inv/inv/" + me.currentId + "/plugin/param/",
-        //     method: "PUT",
-        //     jsonData: {
-        //         "mode": saveMode
-        //     },
-        //     scope: me,
-        //     success: function(response) {
-        //         me.onReload();
-        //     },
-        //     failure: function() {
-        //         NOC.error(__("Failed to save"));
-        //     }
-        // });
+    save: function() {
+        var me = this.up("[itemId=paramPanel]");
+        Ext.Ajax.request({
+            url: "/inv/inv/" + me.currentId + "/plugin/param/",
+            method: "PUT",
+            jsonData: me.saveBuffer,
+            scope: me,
+            success: function(response) {
+                me.onReload();
+            },
+            failure: function() {
+                NOC.error(__("Failed to save"));
+            }
+        });
+    },
+    onReload: function() {
+        var me = this;
+        Ext.Ajax.request({
+            url: "/inv/inv/" + me.currentId + "/plugin/param/",
+            method: "GET",
+            scope: me,
+            success: function(response) {
+                me.preview(Ext.decode(response.responseText));
+            },
+            failure: function() {
+                NOC.error(__("Failed to get data"));
+            }
+        });
     },
     collapseAll: function() {
         this.up("[itemId=paramPanel]").groupingFeature.collapseAll();
