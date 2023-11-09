@@ -24,8 +24,6 @@ from noc.config import config
 from noc.models import is_document
 from .application import Application, view
 from .access import HasPerm, PermitLogged
-from noc.core.defer import call_later
-from noc.models import _MODELS
 
 
 class ExtApplication(Application):
