@@ -262,6 +262,9 @@ Ext.define("NOC.inv.inv.plugins.param.ParamPanel", {
         if(record.get("value") == null) {
             return;
         }
+        if(e.originalValue === e.value) {
+            return;
+        }
         if(isMassMode) {
             var scope = [];
             grid.getStore().each(function(r) {
