@@ -260,7 +260,11 @@ Ext.define("NOC.inv.inv.plugins.param.ParamPanel", {
             });
             this.saveBuffer.push({param: record.get("param"), value: record.get("value"), scopes: scope});
         } else {
-            this.saveBuffer.push({param: record.get("param"), value: record.get("value")});
+            const buf = {param: record.get("param"), value: record.get("value")};
+            if(!Ext.isEmpty(record.get("scope"))) {
+                buf.scopes = [record.get("scope")];
+            }
+            this.saveBuffer.push(buf);
         }
     },
     preview: function(data) {
