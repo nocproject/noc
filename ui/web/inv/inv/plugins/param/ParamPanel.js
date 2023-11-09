@@ -59,7 +59,7 @@ Ext.define("NOC.inv.inv.plugins.param.ParamPanel", {
                                 padding: 20,
                                 triggers: {
                                     clear: {
-                                        cls: 'x-form-clear-trigger',
+                                        cls: "x-form-clear-trigger",
                                         hidden: true,
                                         weight: -1,
                                         handler: function(field) {
@@ -146,43 +146,80 @@ Ext.define("NOC.inv.inv.plugins.param.ParamPanel", {
                                     var record = context.record,
                                         field = context.field,
                                         type = record.get("type"),
-                                        value = record.get(field);
+                                        mappingValidationParams = function(el) {
+                                            if(record.get(el.param)) {
+                                                if(el.param === "regex") {
+                                                    editor[el.mapTo] = new RegExp(record.get(el.param));
+                                                } else if(el.param === "step") {
+                                                    var step = Number(record.get(el.param));
+                                                    if(step !== NaN) {
+                                                        editor[el.mapTo] = step;
+                                                    }
+                                                } else {
+                                                    editor[el.mapTo] = record.get(el.param);
+                                                }
+                                            }
+                                        };;
 
+                                    if(record.get("is_readonly")) {
+                                        return false;
+                                    }
                                     switch(type) {
                                         case "number":
-                                            context.column.setEditor({
-                                                xtype: 'numberfield',
-                                                step: 1,
-                                                allowBlank: true
-                                            });
+                                            var editor = {
+                                                xtype: "numberfield"
+                                            };
+                                            Ext.each([
+                                                {param: "allowBlank", mapTo: "allowBlank"},
+                                                {param: "maxValue", mapTo: "maxValue"},
+                                                {param: "minValue", mapTo: "minValue"},
+                                                {param: "step", mapTo: "step"}
+                                            ],
+                                                mappingValidationParams);
+                                            context.column.setEditor(editor);
                                             break;
                                         case "bool":
-                                            context.column.setEditor({
-                                                xtype: 'checkboxfield',
-                                                allowBlank: true
-                                            });
+                                            var editor = {
+                                                xtype: "checkboxfield"
+                                            };
+                                            Ext.each([
+                                                {param: "allowBlank", mapTo: "allowBlank"},
+                                            ],
+                                                mappingValidationParams);
+                                            context.column.setEditor(editor);
                                             break;
                                         default:
                                             if(record.get("choices")) {
-                                                context.column.setEditor({
-                                                    xtype: 'combobox',
+                                                var editor = {
+                                                    xtype: "combobox",
                                                     store: {
                                                         data: Ext.Array.map(record.get("choices"), function(el) {
                                                             return {
                                                                 text: el
-                                                            }
+                                                            };
                                                         })
                                                     },
-                                                    valueField: 'text'
-                                                });
+                                                    valueField: "text"
+                                                };
+                                                Ext.each([
+                                                    {param: "allowBlank", mapTo: "allowBlank"}],
+                                                    mappingValidationParams);
+                                                context.column.setEditor(editor);
                                             } else {
-                                                context.column.setEditor({
-                                                    xtype: 'textfield',
-                                                    allowBlank: true
-                                                });
+                                                var editor = {
+                                                    xtype: "textfield",
+                                                };
+                                                Ext.each([
+                                                    {param: "allowBlank", mapTo: "allowBlank"},
+                                                    {param: "maxLength", mapTo: "maxLength"},
+                                                    {param: "minLength", mapTo: "minLength"},
+                                                    {param: "regex", mapTo: "regex"}
+                                                ],
+                                                    mappingValidationParams);
+                                                context.column.setEditor(editor);
                                             }
                                     }
-                                },
+                                }
                             }
                         })
                     ],
@@ -225,7 +262,6 @@ Ext.define("NOC.inv.inv.plugins.param.ParamPanel", {
     // },
     preview: function(data) {
         var me = this;
-        console.log("preview ParamPanel");
         me.store.loadData(data.data);
         me.down("[name=scope__label]").setStore({
             autoLoad: true,
