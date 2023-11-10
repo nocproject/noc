@@ -30,6 +30,9 @@ class Script(BaseScript):
     )
     rx_rate = re.compile(r"^\s+rate: (?P<rate>\S+)\s*\n", re.MULTILINE)
 
+    def convert_speed(self, rate: str) -> str:
+        return {"1Gbps": "1000", "10Gbps": "10000"}.get(rate, "0")
+
     def execute_cli(self):
         i = []
         v = self.scripts.get_version()
@@ -57,6 +60,7 @@ class Script(BaseScript):
                     rate = None
                 match = self.rx_sfp.search(inv)
                 if match:
+                    data = []
                     vendor = match.group("vendor")
                     description = match.group("part_no")
                     if vendor == "" or vendor == "OEM":
@@ -102,6 +106,39 @@ class Script(BaseScript):
                                 part_no = part + "1G | SFP"
                         else:
                             part_no = part + "Unknown SFP"
+
+                        data = [
+                            {
+                                "interface": "optical",
+                                "attr": "tx_wavelength",
+                                "value": nm,
+                            },
+                            {
+                                "interface": "optical",
+                                "attr": "rx_wavelength",
+                                "value": nm,
+                            },
+                            {
+                                "interface": "optical",
+                                "attr": "bidi",
+                                "value": False,
+                            },
+                            {
+                                "interface": "optical",
+                                "attr": "xwdm",
+                                "value": False,
+                            },
+                            {
+                                "interface": "optical",
+                                "attr": "bit_rate",
+                                "value": self.convert_speed(rate),
+                            },
+                            {
+                                "interface": "optical",
+                                "attr": "distance_max",
+                                "value": ll,
+                            },
+                        ]
                     else:
                         part_no = description
                     x = {
@@ -111,6 +148,7 @@ class Script(BaseScript):
                         "part_no": [part_no],
                         "number": eth[str(port)],
                         "revision": match.group("revision"),
+                        "data": data,
                     }
                     date = match.group("date")
                     if date is not None:

@@ -181,14 +181,30 @@ class AssetCheck(DiscoveryCheck):
                 # Try to resolve via model map
                 m = self.get_model_map(vendor, part_no, serial)
                 if not m:
-                    self.logger.info(
-                        "Unknown model: vendor=%s, part_no=%s (%s). " "Skipping",
-                        vnd.name,
-                        part_no,
-                        description,
-                    )
-                    self.register_unknown_part_no(vnd, part_no, description)
-                    return
+                    if o_type == "XCVR":
+                        self.logger.info(
+                            "Unknown model: vendor=%s, part_no=%s (%s). " "Try resolve later",
+                            vnd.name,
+                            part_no,
+                            description,
+                        )
+
+                        self.prepare_context(o_type, number)
+                        self.objects += [
+                            ("XCVR", part_no[0], self.ctx.copy(), serial, data, m_data)
+                        ]
+                        return
+
+                    else:
+                        self.logger.info(
+                            "Unknown model: vendor=%s, part_no=%s (%s). " "Skipping",
+                            vnd.name,
+                            part_no,
+                            description,
+                        )
+                        self.register_unknown_part_no(vnd, part_no, description)
+                        return
+
         # Sanitize serial number against the model
         serial = self.clean_serial(m, number, serial)
         #
@@ -821,6 +837,22 @@ class AssetCheck(DiscoveryCheck):
                     op="CHANGE",
                 )
 
+    def is_generic_transceiver(self, t_name: str) -> bool:
+        """
+        Checking transceiver part_no can be Generic or not
+        """
+        return t_name and not t_name.startswith("Unknown | Transceiver")
+
+    def get_unresolved_object_model_name(self, name: str, ff: str) -> str:
+        """
+        Generate unresolved object model name
+        """
+        m = f"NoName | Transceiver | {ff}"
+        if self.is_generic_transceiver(name):
+            m = f"Generic | Transceiver | {ff}"
+
+        return m
+
     def resolve_object(
         self,
         name: str,
@@ -850,30 +882,17 @@ class AssetCheck(DiscoveryCheck):
         # Transceiver formfactor
         tp = c.type.name.split(" | ")
         ff = tp[1]
-        m = "NoName | Transceiver | Unknown %s" % ff
-        if name != "Unknown | Transceiver | Unknown":
-            mtype = name[24:].upper().replace("-", "")
-            if "BASE" in mtype:
-                speed, ot = mtype.split("BASE", 1)
-                spd = {"100": "100M", "1000": "1G", "10/100/1000": "1G", "10G": "10G"}.get(speed)
-                if spd:
-                    m = "NoName | Transceiver | %s | %s %s" % (spd, ff, ot)
-                else:
-                    self.logger.error("Unknown transceiver speed: %s", speed)
-                    m = name
-            else:
-                m = name
-        # Add vendor suffix when necessary
-        if len(tp) == 3:
-            m += " | %s" % tp[2]
-        #
+
+        m = self.get_unresolved_object_model_name(name, ff)
+
         if m in self.unk_model:
             model = self.unk_model[m]
         else:
             model = ObjectModel.objects.filter(name=m).first()
             self.unk_model[m] = model
+
         if not model:
-            self.logger.error("Unknown model '%s'", m)
+            self.logger.info("Unknown model '%s' registering unknown model", m)
             self.register_unknown_part_no(self.get_vendor("NONAME"), m, "%s -> %s" % (name, m))
             return None
         # Create object
@@ -882,6 +901,7 @@ class AssetCheck(DiscoveryCheck):
             container = self.object.container.id
         else:
             container = self.lost_and_found
+        data += [ObjectAttr(scope="discovery", interface="asset", attr="part_no", value=[name])]
         o = Object(
             model=model,
             data=[ObjectAttr(scope="", interface="asset", attr="serial", value=serial)] + data,
