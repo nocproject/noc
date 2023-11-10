@@ -1,7 +1,7 @@
 # ----------------------------------------------------------------------
 # ReportDsAlarms datasource
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2022 The NOC Project
+# Copyright (C) 2007-2023 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -264,7 +264,7 @@ class ReportDsAlarms(BaseDataSource):
             if name == "source":
                 if "active" in values or "both" in values:
                     alarm_collections += [ActiveAlarm]
-                if "archive" in values or "both" in values:
+                if "archived" in values or "both" in values:
                     alarm_collections += [ArchivedAlarm]
             elif name == "min_subscribers":
                 match_middle["total_subscribers_sum.sum"] = {"$gte": int(value)}
