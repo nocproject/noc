@@ -1,9 +1,9 @@
 {
-    "name": "Generic | Switch | 48F-c 4G-cf",
+    "name": "Generic | Switch | 48E-4S",
     "$collection": "inv.objectmodels",
-    "uuid": "c9221978-f000-48dd-a2bb-a21b17667a24",
+    "uuid": "9e3e0029-06b5-431f-8ceb-064b0ec91de2",
     "vendor__code": "GENERIC",
-    "description": "Generic switch with 48 ports 10/100BASE-TX, 4 combo 10/100/1000BASE-T/ 100/1000 SFP",
+    "description": "Generic switch with 48 ports RJ45, 4 SFP/SFP+",
     "connection_rule__name": "Generic | Switch SFP",
     "cr_context": "CHASSIS",
     "labels": [
@@ -28,6 +28,10 @@
                 {
                     "direction": "*",
                     "protocol__code": "100BASETX"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "1000BASETX"
                 }
             ],
             "type__name": "Electrical | RJ45"
@@ -45,6 +49,10 @@
                 {
                     "direction": "*",
                     "protocol__code": "100BASETX"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "1000BASETX"
                 }
             ],
             "type__name": "Electrical | RJ45"
@@ -62,6 +70,10 @@
                 {
                     "direction": "*",
                     "protocol__code": "100BASETX"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "1000BASETX"
                 }
             ],
             "type__name": "Electrical | RJ45"
@@ -79,6 +91,10 @@
                 {
                     "direction": "*",
                     "protocol__code": "100BASETX"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "1000BASETX"
                 }
             ],
             "type__name": "Electrical | RJ45"
@@ -96,6 +112,10 @@
                 {
                     "direction": "*",
                     "protocol__code": "100BASETX"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "1000BASETX"
                 }
             ],
             "type__name": "Electrical | RJ45"
@@ -113,6 +133,10 @@
                 {
                     "direction": "*",
                     "protocol__code": "100BASETX"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "1000BASETX"
                 }
             ],
             "type__name": "Electrical | RJ45"
@@ -130,6 +154,10 @@
                 {
                     "direction": "*",
                     "protocol__code": "100BASETX"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "1000BASETX"
                 }
             ],
             "type__name": "Electrical | RJ45"
@@ -147,6 +175,10 @@
                 {
                     "direction": "*",
                     "protocol__code": "100BASETX"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "1000BASETX"
                 }
             ],
             "type__name": "Electrical | RJ45"
@@ -164,6 +196,10 @@
                 {
                     "direction": "*",
                     "protocol__code": "100BASETX"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "1000BASETX"
                 }
             ],
             "type__name": "Electrical | RJ45"
@@ -181,6 +217,10 @@
                 {
                     "direction": "*",
                     "protocol__code": "100BASETX"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "1000BASETX"
                 }
             ],
             "type__name": "Electrical | RJ45"
@@ -198,6 +238,10 @@
                 {
                     "direction": "*",
                     "protocol__code": "100BASETX"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "1000BASETX"
                 }
             ],
             "type__name": "Electrical | RJ45"
@@ -215,6 +259,10 @@
                 {
                     "direction": "*",
                     "protocol__code": "100BASETX"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "1000BASETX"
                 }
             ],
             "type__name": "Electrical | RJ45"
@@ -232,6 +280,10 @@
                 {
                     "direction": "*",
                     "protocol__code": "100BASETX"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "1000BASETX"
                 }
             ],
             "type__name": "Electrical | RJ45"
@@ -249,6 +301,10 @@
                 {
                     "direction": "*",
                     "protocol__code": "100BASETX"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "1000BASETX"
                 }
             ],
             "type__name": "Electrical | RJ45"
@@ -266,6 +322,10 @@
                 {
                     "direction": "*",
                     "protocol__code": "100BASETX"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "1000BASETX"
                 }
             ],
             "type__name": "Electrical | RJ45"
@@ -283,6 +343,10 @@
                 {
                     "direction": "*",
                     "protocol__code": "100BASETX"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "1000BASETX"
                 }
             ],
             "type__name": "Electrical | RJ45"
@@ -300,6 +364,10 @@
                 {
                     "direction": "*",
                     "protocol__code": "100BASETX"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "1000BASETX"
                 }
             ],
             "type__name": "Electrical | RJ45"
@@ -317,6 +385,10 @@
                 {
                     "direction": "*",
                     "protocol__code": "100BASETX"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "1000BASETX"
                 }
             ],
             "type__name": "Electrical | RJ45"
@@ -334,6 +406,10 @@
                 {
                     "direction": "*",
                     "protocol__code": "100BASETX"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "1000BASETX"
                 }
             ],
             "type__name": "Electrical | RJ45"
@@ -351,6 +427,10 @@
                 {
                     "direction": "*",
                     "protocol__code": "100BASETX"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "1000BASETX"
                 }
             ],
             "type__name": "Electrical | RJ45"
@@ -368,6 +448,10 @@
                 {
                     "direction": "*",
                     "protocol__code": "100BASETX"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "1000BASETX"
                 }
             ],
             "type__name": "Electrical | RJ45"
@@ -385,6 +469,10 @@
                 {
                     "direction": "*",
                     "protocol__code": "100BASETX"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "1000BASETX"
                 }
             ],
             "type__name": "Electrical | RJ45"
@@ -402,6 +490,10 @@
                 {
                     "direction": "*",
                     "protocol__code": "100BASETX"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "1000BASETX"
                 }
             ],
             "type__name": "Electrical | RJ45"
@@ -419,6 +511,10 @@
                 {
                     "direction": "*",
                     "protocol__code": "100BASETX"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "1000BASETX"
                 }
             ],
             "type__name": "Electrical | RJ45"
@@ -436,6 +532,10 @@
                 {
                     "direction": "*",
                     "protocol__code": "100BASETX"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "1000BASETX"
                 }
             ],
             "type__name": "Electrical | RJ45"
@@ -453,6 +553,10 @@
                 {
                     "direction": "*",
                     "protocol__code": "100BASETX"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "1000BASETX"
                 }
             ],
             "type__name": "Electrical | RJ45"
@@ -470,6 +574,10 @@
                 {
                     "direction": "*",
                     "protocol__code": "100BASETX"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "1000BASETX"
                 }
             ],
             "type__name": "Electrical | RJ45"
@@ -487,6 +595,10 @@
                 {
                     "direction": "*",
                     "protocol__code": "100BASETX"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "1000BASETX"
                 }
             ],
             "type__name": "Electrical | RJ45"
@@ -504,6 +616,10 @@
                 {
                     "direction": "*",
                     "protocol__code": "100BASETX"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "1000BASETX"
                 }
             ],
             "type__name": "Electrical | RJ45"
@@ -521,6 +637,10 @@
                 {
                     "direction": "*",
                     "protocol__code": "100BASETX"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "1000BASETX"
                 }
             ],
             "type__name": "Electrical | RJ45"
@@ -538,6 +658,10 @@
                 {
                     "direction": "*",
                     "protocol__code": "100BASETX"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "1000BASETX"
                 }
             ],
             "type__name": "Electrical | RJ45"
@@ -555,6 +679,10 @@
                 {
                     "direction": "*",
                     "protocol__code": "100BASETX"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "1000BASETX"
                 }
             ],
             "type__name": "Electrical | RJ45"
@@ -572,6 +700,10 @@
                 {
                     "direction": "*",
                     "protocol__code": "100BASETX"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "1000BASETX"
                 }
             ],
             "type__name": "Electrical | RJ45"
@@ -589,6 +721,10 @@
                 {
                     "direction": "*",
                     "protocol__code": "100BASETX"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "1000BASETX"
                 }
             ],
             "type__name": "Electrical | RJ45"
@@ -606,6 +742,10 @@
                 {
                     "direction": "*",
                     "protocol__code": "100BASETX"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "1000BASETX"
                 }
             ],
             "type__name": "Electrical | RJ45"
@@ -623,6 +763,10 @@
                 {
                     "direction": "*",
                     "protocol__code": "100BASETX"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "1000BASETX"
                 }
             ],
             "type__name": "Electrical | RJ45"
@@ -640,6 +784,10 @@
                 {
                     "direction": "*",
                     "protocol__code": "100BASETX"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "1000BASETX"
                 }
             ],
             "type__name": "Electrical | RJ45"
@@ -657,6 +805,10 @@
                 {
                     "direction": "*",
                     "protocol__code": "100BASETX"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "1000BASETX"
                 }
             ],
             "type__name": "Electrical | RJ45"
@@ -674,6 +826,10 @@
                 {
                     "direction": "*",
                     "protocol__code": "100BASETX"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "1000BASETX"
                 }
             ],
             "type__name": "Electrical | RJ45"
@@ -691,6 +847,10 @@
                 {
                     "direction": "*",
                     "protocol__code": "100BASETX"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "1000BASETX"
                 }
             ],
             "type__name": "Electrical | RJ45"
@@ -708,6 +868,10 @@
                 {
                     "direction": "*",
                     "protocol__code": "100BASETX"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "1000BASETX"
                 }
             ],
             "type__name": "Electrical | RJ45"
@@ -725,6 +889,10 @@
                 {
                     "direction": "*",
                     "protocol__code": "100BASETX"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "1000BASETX"
                 }
             ],
             "type__name": "Electrical | RJ45"
@@ -742,6 +910,10 @@
                 {
                     "direction": "*",
                     "protocol__code": "100BASETX"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "1000BASETX"
                 }
             ],
             "type__name": "Electrical | RJ45"
@@ -759,6 +931,10 @@
                 {
                     "direction": "*",
                     "protocol__code": "100BASETX"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "1000BASETX"
                 }
             ],
             "type__name": "Electrical | RJ45"
@@ -776,6 +952,10 @@
                 {
                     "direction": "*",
                     "protocol__code": "100BASETX"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "1000BASETX"
                 }
             ],
             "type__name": "Electrical | RJ45"
@@ -793,6 +973,10 @@
                 {
                     "direction": "*",
                     "protocol__code": "100BASETX"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "1000BASETX"
                 }
             ],
             "type__name": "Electrical | RJ45"
@@ -810,6 +994,10 @@
                 {
                     "direction": "*",
                     "protocol__code": "100BASETX"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "1000BASETX"
                 }
             ],
             "type__name": "Electrical | RJ45"
@@ -819,24 +1007,6 @@
             "description": "48",
             "direction": "s",
             "gender": "f",
-            "protocols": [
-                {
-                    "direction": "*",
-                    "protocol__code": "10BASET"
-                },
-                {
-                    "direction": "*",
-                    "protocol__code": "100BASETX"
-                }
-            ],
-            "type__name": "Electrical | RJ45"
-        },
-        {
-            "name": "49",
-            "description": "49",
-            "direction": "s",
-            "gender": "f",
-            "group": "49",
             "protocols": [
                 {
                     "direction": "*",
@@ -867,31 +1037,13 @@
                 {
                     "direction": "*",
                     "protocol__code": "TransEth1G"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth10G"
                 }
             ],
             "type__name": "Transceiver | SFP"
-        },
-        {
-            "name": "50",
-            "description": "50",
-            "direction": "s",
-            "gender": "f",
-            "group": "50",
-            "protocols": [
-                {
-                    "direction": "*",
-                    "protocol__code": "10BASET"
-                },
-                {
-                    "direction": "*",
-                    "protocol__code": "100BASETX"
-                },
-                {
-                    "direction": "*",
-                    "protocol__code": "1000BASETX"
-                }
-            ],
-            "type__name": "Electrical | RJ45"
         },
         {
             "name": "sfp50",
@@ -907,31 +1059,13 @@
                 {
                     "direction": "*",
                     "protocol__code": "TransEth1G"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth10G"
                 }
             ],
             "type__name": "Transceiver | SFP"
-        },
-        {
-            "name": "51",
-            "description": "51",
-            "direction": "s",
-            "gender": "f",
-            "group": "51",
-            "protocols": [
-                {
-                    "direction": "*",
-                    "protocol__code": "10BASET"
-                },
-                {
-                    "direction": "*",
-                    "protocol__code": "100BASETX"
-                },
-                {
-                    "direction": "*",
-                    "protocol__code": "1000BASETX"
-                }
-            ],
-            "type__name": "Electrical | RJ45"
         },
         {
             "name": "sfp51",
@@ -947,31 +1081,13 @@
                 {
                     "direction": "*",
                     "protocol__code": "TransEth1G"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth10G"
                 }
             ],
             "type__name": "Transceiver | SFP"
-        },
-        {
-            "name": "52",
-            "description": "52",
-            "direction": "s",
-            "gender": "f",
-            "group": "52",
-            "protocols": [
-                {
-                    "direction": "*",
-                    "protocol__code": "10BASET"
-                },
-                {
-                    "direction": "*",
-                    "protocol__code": "100BASETX"
-                },
-                {
-                    "direction": "*",
-                    "protocol__code": "1000BASETX"
-                }
-            ],
-            "type__name": "Electrical | RJ45"
         },
         {
             "name": "sfp52",
@@ -987,46 +1103,10 @@
                 {
                     "direction": "*",
                     "protocol__code": "TransEth1G"
-                }
-            ],
-            "type__name": "Transceiver | SFP"
-        },
-        {
-            "name": "53",
-            "description": "53",
-            "direction": "s",
-            "gender": "f",
-            "group": "53",
-            "protocols": [
-                {
-                    "direction": "*",
-                    "protocol__code": "10BASET"
                 },
                 {
                     "direction": "*",
-                    "protocol__code": "100BASETX"
-                },
-                {
-                    "direction": "*",
-                    "protocol__code": "1000BASETX"
-                }
-            ],
-            "type__name": "Electrical | RJ45"
-        },
-        {
-            "name": "sfp53",
-            "description": "Fiber port 53",
-            "direction": "i",
-            "gender": "f",
-            "group": "53",
-            "protocols": [
-                {
-                    "direction": "*",
-                    "protocol__code": "TransEth100M"
-                },
-                {
-                    "direction": "*",
-                    "protocol__code": "TransEth1G"
+                    "protocol__code": "TransEth10G"
                 }
             ],
             "type__name": "Transceiver | SFP"
