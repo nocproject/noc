@@ -13,6 +13,7 @@ Ext.define("NOC.inv.objectconfigurationrule.Application", {
         "NOC.core.StringListField",
         "NOC.core.tagfield.Tagfield",
         "NOC.inv.objectconfigurationrule.Model",
+        "NOC.inv.objectconfigurationrule.ComboEditor",
         "NOC.inv.connectiontype.LookupField",
         "NOC.inv.protocol.LookupField",
         "NOC.cm.configurationscope.LookupField",
@@ -110,30 +111,30 @@ Ext.define("NOC.inv.objectconfigurationrule.Application", {
                             dataIndex: "match_protocols",
                             width: 200,
                             editor: {
-                                xtype: "core.tagfield",
+                                xtype: "inv.objectconfigurationrule.comboEditor",
                                 url: "/inv/protocol/lookup/"
                             },
-                            renderer: NOC.render.Lookup("match_protocols")
+                            renderer: me.comboBoxRenderer
                         },
                         {
                             text: __("Allow Params"),
                             dataIndex: "allowed_params",
                             width: 200,
                             editor: {
-                                xtype: "core.tagfield",
+                                xtype: "inv.objectconfigurationrule.comboEditor",
                                 url: "/cm/configurationparam/lookup/"
                             },
-                            renderer: NOC.render.Lookup("allowed_params")
+                            renderer: me.comboBoxRenderer
                         },
                         {
                             text: __("Deny Params"),
                             dataIndex: "deny_params",
                             width: 200,
                             editor: {
-                                xtype: "core.tagfield",
+                                xtype: "inv.objectconfigurationrule.comboEditor",
                                 url: "/cm/configurationparam/lookup/"
                             },
-                            renderer: NOC.render.Lookup("deny_params")
+                            renderer: me.comboBoxRenderer
                         }
                     ]
                 },
@@ -199,5 +200,27 @@ Ext.define("NOC.inv.objectconfigurationrule.Application", {
         var me = this;
         me.showItem(me.ITEM_JSON);
         me.jsonPanel.preview(me.currentRecord);
+    },
+    //
+    comboBoxRenderer: function(value, metaData, record) {
+        if(Ext.isArray(value)) {
+            var flag = false,
+                store = metaData.column.getEditor().getStore(),
+                labels = Ext.Array.map(value, function(item) {
+                    if(Ext.isObject(item) && !item.isModel) {
+                        flag = true;
+                        return item.label;
+                    }
+                    return store.findRecord("id", item).get("label");
+                });
+            if(flag) { // Array of object from backend transfer to array of id
+                var ids = Ext.Array.map(value, function(item) {
+                    return item.id;
+                })
+                record.set(metaData.column.dataIndex, ids, {dirty: false});
+            }
+            return labels.join(", ");
+        }
+        return value;
     }
 });
