@@ -55,7 +55,7 @@ class ParamSchema(object):
 
     def clean(self, value: str) -> Union[str, float, bool]:
         if self.type == "bool":
-            return bool(value)
+            return value in ("yes", "true")
         if self.type == "number":
             return self.clean_number(value)
         return self.clean_string(value)
