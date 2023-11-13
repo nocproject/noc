@@ -13,6 +13,7 @@ import zlib
 # Third-party modules
 import orjson
 import cachetools
+from jinja2 import Template as Jinja2Template
 from django.http import HttpResponse
 from django.db.models import Q as d_Q
 from mongoengine.queryset import Q as MQ
@@ -58,6 +59,7 @@ from noc.core.validators import is_objectid
 from noc.core.debug import error_report
 from noc.core.text import alnum_key
 from noc.core.middleware.tls import get_user
+from noc.core.pm.utils import get_interface_metrics
 from noc.fm.models.activealarm import ActiveAlarm
 from noc.fm.models.alarmclass import AlarmClass
 from noc.config import config
@@ -152,6 +154,22 @@ class ManagedObjectApplication(ExtModelApplication):
         ("interval", "noc.services.discovery.jobs.interval.job.IntervalDiscoveryJob"),
     ]
     clean_fields = {"id": IntParameter(), "address": StringParameter(strip_value=True)}
+
+    x_map = {
+        "table_name": "interface",
+        "map": {
+            "load_in": "Interface | Load | In",
+            "load_out": "Interface | Load | Out",
+            "rx": "Interface | DOM | RxPower",
+            "tx": "Interface | DOM | TxPower",
+            "temp": "Interface | DOM | Temperature",
+            "bias": "Interface | DOM | Bias Current",
+        },
+    }
+
+    iface_metric_template = Jinja2Template(
+        "In: {{load_in}}/Out: {{load_out}}/Rx: {{rx}}dBm/Tx: {{tx}}dBm/Temp:{{temp}}C/Bias: {{bias}}mA",
+    )
 
     @staticmethod
     @cachetools.cached({})
@@ -677,6 +695,15 @@ class ManagedObjectApplication(ExtModelApplication):
         o = self.get_object_or_404(ManagedObject, id=int(id))
         if not o.has_access(request.user):
             return self.response_forbidden("Permission denied")
+        metrics = {}
+        if o.object_profile.enable_metrics:
+            r, _ = get_interface_metrics(managed_objects=[o.bi_id], metrics=self.x_map)
+            for iface in r[o.bi_id]:
+                ctx = {m: "--" for m in self.x_map}
+                ctx.update(r[o.bi_id][iface])
+                ctx["load_in"] = Interface.humanize_speed(int(r[o.bi_id][iface]["load_in"]))
+                ctx["load_out"] = Interface.humanize_speed(int(r[o.bi_id][iface]["load_out"]))
+                metrics[iface] = self.iface_metric_template.render(**ctx)
         # Physical interfaces
         # @todo: proper ordering
         style_cache = {}  # profile_id -> css_style
@@ -690,6 +717,7 @@ class ManagedObjectApplication(ExtModelApplication):
                 "ifindex": i.ifindex,
                 "lag": (i.aggregated_interface.name if i.aggregated_interface else ""),
                 "link": get_link(i),
+                "metrics": metrics.get(i.name, ""),
                 "profile": str(i.profile.id) if i.profile else None,
                 "profile__label": smart_text(i.profile) if i.profile else None,
                 "enabled_protocols": i.enabled_protocols,

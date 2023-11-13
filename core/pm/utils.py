@@ -12,6 +12,8 @@ from typing import Iterable, Union, Tuple, Dict, Optional, DefaultDict, Any, Lis
 import itertools
 import ast
 
+import orjson
+
 # NOC modules
 from noc.sa.models.managedobjectprofile import ManagedObjectProfile
 from noc.core.clickhouse.connect import connection as ch_connection
@@ -120,7 +122,7 @@ def get_objects_metrics(
 
 
 def get_interface_metrics(
-    managed_objects: Union[Iterable, int], meric_map: Optional[Dict[str, Any]] = None
+    managed_objects: Union[Iterable, int], metrics: Optional[Dict[str, Any]] = None
 ) -> Tuple[
     Dict["ManagedObject", Dict[str, Dict[str, Union[float, int]]]],
     Dict["ManagedObject", datetime.datetime],
@@ -128,13 +130,15 @@ def get_interface_metrics(
     """
 
     :param managed_objects: ManagedObject list or bi_id list
-    :param meric_map: For customization getting metrics
+    :param metrics: For customization getting metrics
     :return: Dictionary ManagedObject -> Path -> MetricName -> value
     """
 
     # mo = self.object
-    if not meric_map:
-        meric_map = {
+    if metrics and "map" not in metrics:
+        return defaultdict(dict), {}
+    elif not metrics:
+        metrics = {
             "table_name": "interface",
             "map": {
                 "load_in": "Interface | Load | In",
@@ -143,8 +147,6 @@ def get_interface_metrics(
                 "errors_out": "Interface | Errors | Out",
             },
         }
-    if not meric_map["map"]:
-        return defaultdict(dict), {}
     if not isinstance(managed_objects, Iterable):
         managed_objects = [managed_objects]
     bi_map: Dict[str, "ManagedObject"] = {
@@ -158,7 +160,15 @@ def get_interface_metrics(
     )
     from_date = datetime.datetime.now() - datetime.timedelta(seconds=max(query_interval, 3600))
     from_date = from_date.replace(microsecond=0)
-    SQL = """SELECT managed_object, argMax(ts, ts),  splitByString('::', arrayFirst(x -> startsWith(x, 'noc::interface::'), labels))[-1] as iface, labels, %s
+    requested_metrics = []
+    metric_fields = {}
+    for alias, mt in metrics["map"].items():
+        mt = MetricType.get_by_name(mt)
+        if not mt:
+            continue
+        metric_fields[alias] = mt.field_name
+        requested_metrics += [f"argMax({mt.field_name}, ts) as {alias}"]
+    SQL = """SELECT managed_object, argMax(ts, ts) as tsm,  splitByString('::', arrayFirst(x -> startsWith(x, 'noc::interface::'), labels))[-1] as iface, labels, %s
             FROM %s
             WHERE
               date >= toDate('%s')
@@ -166,9 +176,10 @@ def get_interface_metrics(
               AND managed_object IN (%s)
               AND NOT arrayExists(x -> startsWith(x, 'noc::subinterface::'), labels)
             GROUP BY managed_object, labels
+            FORMAT JSON
             """ % (
-        ", ".join(["argMax(%s, ts) as %s" % (f, f) for f in meric_map["map"].keys()]),
-        meric_map["table_name"],
+        ", ".join(requested_metrics),
+        metrics["table_name"],
         from_date.date().isoformat(),
         from_date.isoformat(sep=" "),
         ", ".join(bi_map),
@@ -178,24 +189,21 @@ def get_interface_metrics(
         dict
     )
     last_ts: Dict["ManagedObject", datetime.datetime] = {}  # mo -> ts
-    metric_fields = list(meric_map["map"].keys())
     try:
-        for result in ch.execute(post=SQL):
-            mo_bi_id, ts, iface, labels = result[:4]
-            labels = ast.literal_eval(labels)
-            res = dict(zip(metric_fields, result[4:]))
-            mo = bi_map.get(mo_bi_id)
-            if len(labels) == 1 and metric_map[mo].get(iface):
-                # If only interface metric
-                continue
-            metric_map[mo][iface] = defaultdict(dict)
-            for field, value in res.items():
-                metric_map[mo][iface][meric_map["map"].get(field)] = (
-                    float(value) if is_float(value) else int(value)
-                )
-                last_ts[mo] = max(ts, last_ts.get(mo, ts))
+        results = ch.execute(post=SQL, return_raw=True)
+        results = orjson.loads(results)
     except ClickhouseError:
-        pass
+        results = {"data": []}
+    for result in results["data"]:
+        mo_bi_id, ts, iface = result["managed_object"], result["tsm"], result["iface"]
+        mo = bi_map.get(mo_bi_id)
+        if len(result["labels"]) == 1 and iface in metric_map[mo]:
+            # If only interface metric
+            continue
+        metric_map[mo][iface] = {}
+        for field in metric_fields.keys():
+            metric_map[mo][iface][field] = result.get(field, 0.0)
+            last_ts[mo] = max(ts, last_ts.get(mo, ts))
     return metric_map, last_ts
 
 
