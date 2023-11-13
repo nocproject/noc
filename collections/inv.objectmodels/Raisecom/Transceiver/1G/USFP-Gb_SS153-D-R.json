@@ -42,7 +42,7 @@
         {
             "attr": "part_no",
             "interface": "asset",
-            "value": ["USFP-GB/SS153", "USFP-Gb/SS153"]
+            "value": ["USFP-GB/SS153", "USFP-Gb/SS153", "USFP-Gb\\SS153"]
         }
     ]
 }
