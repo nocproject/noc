@@ -1,0 +1,227 @@
+{
+    "name": "Raisecom | ROS | ISCOM2110EA-MA-PWR",
+    "$collection": "inv.objectmodels",
+    "uuid": "2bf166dd-ada6-4dec-a0b4-511e2fc9eaaf",
+    "vendor__code": "RAISECOM",
+    "description": "The ISCOM2100 series offers 8 Fast Ethernet downlink access interfaces with 1/2 x Gigabit combo uplinks and a power supply for power demand (PD) devices",
+    "connection_rule__name": "Raisecom | ISCOM",
+    "cr_context": "CHASSIS",
+    "labels": [
+        "noc::inv::chassis",
+        "noc::inv::psu",
+        "noc::inv::sup",
+        "noc::inv::fabric",
+        "noc::inv::port"
+    ],
+    "connections": [
+        {
+            "name": "1",
+            "description": "port 1",
+            "direction": "s",
+            "gender": "f",
+            "protocols": [
+                "10BASET",
+                "100BASETX"
+            ],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "name": "2",
+            "description": "port 2",
+            "direction": "s",
+            "gender": "f",
+            "protocols": [
+                "10BASET",
+                "100BASETX"
+            ],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "name": "3",
+            "description": "port 3",
+            "direction": "s",
+            "gender": "f",
+            "protocols": [
+                "10BASET",
+                "100BASETX"
+            ],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "name": "4",
+            "description": "port 4",
+            "direction": "s",
+            "gender": "f",
+            "protocols": [
+                "10BASET",
+                "100BASETX"
+            ],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "name": "5",
+            "description": "port 5",
+            "direction": "s",
+            "gender": "f",
+            "protocols": [
+                "10BASET",
+                "100BASETX"
+            ],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "name": "6",
+            "description": "port 6",
+            "direction": "s",
+            "gender": "f",
+            "protocols": [
+                "10BASET",
+                "100BASETX"
+            ],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "name": "7",
+            "description": "port 7",
+            "direction": "s",
+            "gender": "f",
+            "protocols": [
+                "10BASET",
+                "100BASETX"
+            ],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "name": "8",
+            "description": "port 8",
+            "direction": "s",
+            "gender": "f",
+            "protocols": [
+                "10BASET",
+                "100BASETX"
+            ],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "name": "9",
+            "description": "port 9",
+            "direction": "s",
+            "gender": "s",
+            "protocols": [
+                "10BASET",
+                "100BASETX",
+                "TransEth100M",
+                "TransEth1G"
+            ],
+            "type__name": "Combined"
+        },
+        {
+            "name": "9_rj",
+            "description": "port 9",
+            "combo": "9",
+            "direction": "s",
+            "gender": "f",
+            "protocols": [
+                "10BASET",
+                "100BASETX"
+            ],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "name": "9_sfp",
+            "description": "Fiber port 9",
+            "combo": "9",
+            "direction": "i",
+            "gender": "f",
+            "protocols": [
+                "TransEth100M",
+                "TransEth1G"
+            ],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "name": "10",
+            "description": "port 10",
+            "direction": "s",
+            "gender": "s",
+            "protocols": [
+                "10BASET",
+                "100BASETX",
+                "1000BASETX",
+                "TransEth100M",
+                "TransEth1G"
+            ],
+            "type__name": "Combined"
+        },
+        {
+            "name": "10_rj",
+            "description": "port 10",
+            "combo": "10",
+            "direction": "s",
+            "gender": "f",
+            "protocols": [
+                "10BASET",
+                "100BASETX",
+                "1000BASETX"
+            ],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "name": "10_sfp",
+            "description": "Fiber port 10",
+            "combo": "10",
+            "direction": "i",
+            "gender": "f",
+            "protocols": [
+                "TransEth100M",
+                "TransEth1G"
+            ],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "name": "console",
+            "description": "Console port",
+            "direction": "s",
+            "gender": "f",
+            "protocols": [
+                ">RS232"
+            ],
+            "type__name": "Electrical | DB9"
+        },
+        {
+            "name": "power",
+            "description": "Power outlet",
+            "direction": "s",
+            "gender": "m",
+            "protocols": [
+                ">220VAC",
+                ">110VAC"
+            ],
+            "type__name": "Power | IEC 60320 C14"
+        }
+    ],
+    "data": {
+        "asset": {
+            "part_no": [
+                "ISCOM2110EA-MA-PWR-DC"
+            ]
+        },
+        "dimensions": {
+            "depth": 130,
+            "height": 44,
+            "width": 260
+        },
+        "management": {
+            "managed": true
+        },
+        "power": {
+            "power": 12.9
+        },
+        "rackmount": {
+            "units": 1.0
+        },
+        "weight": {
+            "weight": 1.2
+        }
+    }
+}
