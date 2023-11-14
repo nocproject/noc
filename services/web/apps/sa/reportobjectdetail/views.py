@@ -1,7 +1,7 @@
 # ---------------------------------------------------------------------
 # fm.reportobjectdetail application
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2020 The NOC Project
+# Copyright (C) 2007-2023 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -282,7 +282,7 @@ class ReportObjectDetailApplication(ExtApplication):
             mos_id = sorted(mos_filter)
         avail = {}
         if "avail" in columns_filter:
-            avail = ManagedObject.get_statuses(mos_id)
+            avail = ManagedObject.get_statuses(list(mos_id))
         link_count = iter(ReportObjectLinkCount(mos_id))
         iface_count = iter(ReportObjectIfacesTypeStat(mos_id))
         if "container" in columns_filter:
