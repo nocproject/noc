@@ -10,8 +10,8 @@ import datetime
 from collections import defaultdict
 from typing import Iterable, Union, Tuple, Dict, Optional, DefaultDict, Any, List
 import itertools
-import ast
 
+# Third-party modules
 import orjson
 
 # NOC modules
@@ -20,7 +20,6 @@ from noc.core.clickhouse.connect import connection as ch_connection
 from noc.core.clickhouse.error import ClickhouseError
 from noc.pm.models.metricscope import MetricScope
 from noc.pm.models.metrictype import MetricType
-from noc.core.validators import is_float
 
 
 def get_objects_metrics(
