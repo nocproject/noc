@@ -304,6 +304,15 @@ class Object(Document):
     def is_wire(self) -> bool:
         return bool(self.model.get_data("length", "length"))
 
+    @property
+    def is_generic_transceiver(self) -> bool:
+        """
+        Check object create by Template Model
+        """
+        return self.model.name.startswith("Generic | Transceiver") or self.model.name.startswith(
+            "NoName | Transceiver"
+        )
+
     def get_nested_ids(self):
         """
         Return id of this and all nested object

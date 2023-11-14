@@ -7,7 +7,8 @@
 
 # Python modules
 from threading import Lock
-from typing import Any, Dict, Optional
+from typing import Any, Dict, Optional, Tuple, Union
+import bisect
 import operator
 
 # Third-party modules
@@ -97,3 +98,24 @@ class Scale(Document):
 
     def get_json_path(self) -> str:
         return f"{quote_safe_path(self.name)}.json"
+
+    @classmethod
+    def humanize(
+        cls, value: Union[int, float], base: int = 10, min_exp: int = 3
+    ) -> Tuple[float, str]:
+        """
+        Humanize integer value for Scale suffix
+        :param value: Value for humanize
+        :param base: Exponent base (10 or 2)
+        :param min_exp: Minimal exponent for humanize
+        """
+        s = sorted(
+            (base**s.exp, s.code) for s in Scale.objects.filter(base=base) if s.exp >= min_exp
+        )
+        idx = bisect.bisect_left(s, (value, None))
+        if not idx:
+            return value, ""
+        exp, code = s[idx - 1]
+        if value // exp * exp == value:
+            return value // exp, code
+        return float(value) / exp, code

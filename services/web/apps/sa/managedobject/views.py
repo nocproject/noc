@@ -60,6 +60,7 @@ from noc.core.debug import error_report
 from noc.core.text import alnum_key
 from noc.core.middleware.tls import get_user
 from noc.core.pm.utils import get_interface_metrics
+from noc.pm.models.scale import Scale
 from noc.fm.models.activealarm import ActiveAlarm
 from noc.fm.models.alarmclass import AlarmClass
 from noc.config import config
@@ -701,8 +702,8 @@ class ManagedObjectApplication(ExtModelApplication):
             for iface in r[o.bi_id]:
                 ctx = {m: "--" for m in self.x_map}
                 ctx.update(r[o.bi_id][iface])
-                ctx["load_in"] = Interface.humanize_speed(int(r[o.bi_id][iface]["load_in"]))
-                ctx["load_out"] = Interface.humanize_speed(int(r[o.bi_id][iface]["load_out"]))
+                ctx["load_in"] = "%.2f%s" % Scale.humanize(int(r[o.bi_id][iface]["load_in"]))
+                ctx["load_out"] = "%.2f%s" % Scale.humanize(int(r[o.bi_id][iface]["load_out"]))
                 metrics[iface] = self.iface_metric_template.render(**ctx)
         # Physical interfaces
         # @todo: proper ordering
@@ -870,7 +871,7 @@ class ManagedObjectApplication(ExtModelApplication):
             d += 1
         return "Discovery processes has been scheduled"
 
-    def get_nested_inventory(self, o):
+    def get_nested_inventory(self, o: "Object"):
         rev = o.get_data("asset", "revision")
         if rev == "None":
             rev = ""
@@ -881,6 +882,26 @@ class ManagedObjectApplication(ExtModelApplication):
             "description": o.model.description,
             "model": o.model.name,
         }
+        if o.is_generic_transceiver:
+            # Generate description by template
+            # 1000Base-BX SFP Transceiver (SMF, 1490nmTx/1550nmRx, 80km, LC, DOM)
+            optical_data = {
+                d.attr: d.value for d in o.get_effective_data() if d.interface == "optical"
+            }
+            if "tx_wavelength" in optical_data:
+                description = ["SMF"]
+                if optical_data["tx_wavelength"] != optical_data["rx_wavelength"]:
+                    description += [
+                        f'{optical_data["tx_wavelength"]}nmTx/{optical_data["rx_wavelength"]}nmRx'
+                    ]
+                else:
+                    description += [f'{optical_data["tx_wavelength"]}nmTx']
+                if "distance_max" in optical_data:
+                    description += [f'{optical_data["distance_max"]}km']
+                description += ["LC", "DOM"]
+                r["description"] = f"SFP Transceiver ({', '.join(description)})"
+                if "bit_rate" in optical_data:
+                    r["description"] = f"{optical_data['bit_rate']}Base " + r["description"]
         if_map = {c.name: c.interface_name for c in o.connections}
         children = []
         for n in o.model.connections:
