@@ -29,6 +29,10 @@ Ext.define("NOC.inv.objectmodel.Model", {
             type: "string"
         },
         {
+            name: "configuration_rule",
+            type: "string"
+        },
+        {
             name: "connection_rule__label",
             type: "string",
             persist: false

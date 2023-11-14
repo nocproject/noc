@@ -20,7 +20,7 @@ Ext.define("NOC.inv.inv.plugins.data.DataPanel", {
 
         // Data Store
         me.store = Ext.create("Ext.data.Store", {
-            model: "NOC.inv.inv.plugins.data.DataModel",
+            // model: "NOC.inv.inv.plugins.data.DataModel",
             groupField: "interface"
         });
         // Grids
@@ -34,7 +34,6 @@ Ext.define("NOC.inv.inv.plugins.data.DataPanel", {
                     stateId: "inv.inv-data-grid",
                     bufferedRenderer: false,
                     store: me.store,
-                    region: "center",
                     columns: [
                         {
                             text: __("Name"),
@@ -45,7 +44,7 @@ Ext.define("NOC.inv.inv.plugins.data.DataPanel", {
                             dataIndex: "description"
                         },
                         {
-                            scope: __("Scope"),
+                            text: __("Scope"),
                             dataIndex: "scope"
                         },
                         {

@@ -21,8 +21,10 @@ from mongoengine.fields import (
     PointField,
     LongField,
     EmbeddedDocumentField,
+    EmbeddedDocumentListField,
     DynamicField,
     ReferenceField,
+    BooleanField,
 )
 from mongoengine import signals
 import cachetools
@@ -43,6 +45,8 @@ from noc.main.models.label import Label
 from noc.core.comp import smart_text
 from noc.config import config
 from noc.pm.models.agent import Agent
+from noc.cm.models.configurationscope import ConfigurationScope
+from noc.cm.models.configurationparam import ConfigurationParam, ParamData, ScopeVariant
 from .objectmodel import ObjectModel
 from .modelinterface import ModelInterface
 from .objectlog import ObjectLog
@@ -74,6 +78,44 @@ class ObjectAttr(EmbeddedDocument):
         if self.scope:
             return "%s.%s@%s = %s" % (self.interface, self.attr, self.scope, self.value)
         return "%s.%s = %s" % (self.interface, self.attr, self.value)
+
+
+class ObjectConfigurationScope(EmbeddedDocument):
+    scope: "ConfigurationScope" = PlainReferenceField(ConfigurationScope, required=True)
+    value: str = StringField(required=False)
+
+    def __str__(self):
+        return self.code
+
+    @property
+    def code(self) -> str:
+        return f"{self.scope.name}::{self.value}"
+
+    def __hash__(self):
+        return hash(self.code)
+
+    def __eq__(self, other) -> bool:
+        if self.scope.id != other.scope.id:
+            return False
+        if not self.value:
+            return True
+        return self.value == other.value
+
+
+class ObjectConfigurationData(EmbeddedDocument):
+    param: "ConfigurationParam" = PlainReferenceField(ConfigurationParam)
+    value = DynamicField()
+    is_dirty = BooleanField(default=False)
+    # Scope Code
+    scopes: Optional[List["ObjectConfigurationScope"]] = EmbeddedDocumentListField(
+        ObjectConfigurationScope, required=False
+    )
+
+    def __str__(self):
+        if self.scopes:
+            scope = "".join(f"@{s.scope.name}::{s.value}" for s in self.scopes)
+            return f"{self.param.code}{scope} = {self.value}"
+        return f"{self.param.code} = {self.value}"
 
 
 @Label.model
@@ -108,15 +150,21 @@ class Object(Document):
     }
 
     name = StringField()
-    model = PlainReferenceField(ObjectModel)
-    data = ListField(EmbeddedDocumentField(ObjectAttr))
-    container = PlainReferenceField("self", required=False)
+    model: "ObjectModel" = PlainReferenceField(ObjectModel)
+    data: List["ObjectAttr"] = ListField(EmbeddedDocumentField(ObjectAttr))
+    container: Optional["Object"] = PlainReferenceField("self", required=False)
     comment = GridVCSField("object_comment")
+    # Configuration Param
+    cfg_data: List["ObjectConfigurationData"] = ListField(
+        EmbeddedDocumentField(ObjectConfigurationData)
+    )
     # Map
-    layer = PlainReferenceField(Layer)
+    layer: Optional["Layer"] = PlainReferenceField(Layer)
     point = PointField(auto_index=True)
     # Additional connection data
-    connections = ListField(EmbeddedDocumentField(ObjectConnectionData))
+    connections: List["ObjectConnectionData"] = ListField(
+        EmbeddedDocumentField(ObjectConnectionData)
+    )
     # Labels
     labels = ListField(StringField())
     effective_labels = ListField(StringField())
@@ -394,6 +442,97 @@ class Object(Document):
             or (scope and item.scope != scope)
             or item.attr not in kset
         ]
+
+    def get_cgf_data(self, param: "ConfigurationParam", scopes: Optional[List[str]] = None) -> Any:
+        scopes = param.clean_scope(scopes)
+        for item in self.cfg_data:
+            if item.param == param:
+                if not scopes or item.scopes == scopes:
+                    return item.value
+        return None
+
+    def set_cfg_data(
+        self, param: "ConfigurationParam", value: Any, scopes: Optional[List[str]] = None
+    ) -> None:
+        schema = param.get_schema(self)
+        scopes = param.clean_scope(scopes)
+        # value = param.clean(value)
+        for item in self.cfg_data:
+            if item.param == param:
+                if not scopes or item.scopes == scopes:
+                    item.value = schema.clean(value)
+                    break
+        else:
+            # Insert new item
+            self.cfg_data += [
+                ObjectConfigurationData(
+                    param=param,
+                    value=value,
+                    scopes=[
+                        ObjectConfigurationScope(scope=s.scope, value=s.value or None)
+                        for s in scopes
+                    ],
+                )
+            ]
+
+    def reset_cfg_data(self, param: "ConfigurationParam", scopes: Optional[List[str]]):
+        """ """
+        ...
+
+    def get_effective_cfg_params(self) -> List["ParamData"]:
+        """
+        Iterate over Configured Data
+        """
+        # Getting param data
+        param_data: Dict[Tuple[str, ...], Any] = {}
+        for d in self.cfg_data:
+            key = [d.param.name]
+            for s in d.scopes:
+                key.append(ScopeVariant(scope=s.scope, value=s.value).code)
+            param_data[tuple(key)] = d.value
+        r = []
+        # Processed configurations param
+        for pr in self.model.configuration_rule.param_rules:
+            if pr.param.is_common:
+                r += [
+                    ParamData(
+                        code=pr.param.code,
+                        scopes=[],
+                        schema=self.model.configuration_rule.get_schema(pr.param, self),
+                        value=param_data.pop((pr.param.name,), None),
+                    )
+                ]
+                continue
+            for scope in self.iter_configuration_scope(pr.param):
+                r += [
+                    ParamData(
+                        code=pr.param.code,
+                        scopes=[scope],
+                        schema=self.model.configuration_rule.get_schema(pr.param, self),
+                        value=param_data.pop((pr.param.name, scope.code), None),
+                    )
+                ]
+        for key, value in param_data.items():
+            param, *scopes = key
+            param = ConfigurationParam.get_by_code(param)
+            r += [
+                ParamData(
+                    code=param.code,
+                    scopes=[ScopeVariant.from_code(s) for s in scopes],
+                    schema=param.get_schema(self),
+                    value=value,
+                )
+            ]
+        # Add from data
+        return r
+
+    def iter_configuration_scope(self, param: "ConfigurationParam") -> Iterable["ScopeVariant"]:
+        for c in self.model.connections:
+            # Getting param from connection model (for transciever)
+            scope = self.model.configuration_rule.get_scope(param, c)
+            if not scope or not param.has_scope(scope.name):
+                continue
+            yield ScopeVariant(scope=scope, value=c.name)
 
     def has_connection(self, name):
         return self.model.has_connection(name)

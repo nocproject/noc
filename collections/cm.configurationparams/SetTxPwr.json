@@ -1,0 +1,32 @@
+{
+    "name": "SetTxPwr",
+    "$collection": "cm.configurationparams",
+    "uuid": "dffb2db1-ab3a-465e-8de3-9abfaa92d32f",
+    "code": "tx_power",
+    "description": "Trancsever transmit power",
+    "scopes": [
+        {
+            "is_required": true,
+            "scope__name": "OpticalPort"
+        }
+    ],
+    "type": "number",
+    "schema": [
+        {
+            "key": "max",
+            "model_attr": "max_tx_power",
+            "model_interface": "optical",
+            "value": null
+        },
+        {
+            "key": "min",
+            "model_attr": "min_tx_power",
+            "model_interface": "optical",
+            "value": null
+        },
+        {
+            "key": "decimal",
+            "value": "1"
+        }
+    ]
+}

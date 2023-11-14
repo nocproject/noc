@@ -1,0 +1,26 @@
+{
+    "name": "SetState",
+    "$collection": "cm.configurationparams",
+    "uuid": "2b3680b3-121a-46e7-ad8a-1f19ed9f097c",
+    "code": "optical_state",
+    "description": "Optical Port Mode",
+    "scopes": [{
+        "is_required": true,
+        "scope__name": "OpticalPort"
+    }],
+    "type": "string",
+    "choices": [
+        {
+            "name": "OOS",
+            "value": "Out of Service"
+        },
+        {
+            "name": "MT",
+            "value": "Maintenance"
+        },
+        {
+            "name": "IS",
+            "value": "In Service"
+        }
+    ]
+}

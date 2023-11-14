@@ -1,0 +1,40 @@
+{
+    "name": "SetFECType",
+    "$collection": "cm.configurationparams",
+    "uuid": "0270df77-96bb-48c9-b079-4bbfb866f7df",
+    "code": "otn_fec_type",
+    "description": "Line FEC Type",
+    "scopes": [
+        {
+            "is_required": true,
+            "scope__name": "OpticalPort"
+        },
+        {
+            "is_required": false,
+            "scope__name": "OTN"
+        }
+    ],
+    "type": "string",
+    "choices": [
+        {
+            "name": "RSFEC",
+            "value": "RSFEC"
+        },
+        {
+            "name": "SDFEC_15_EVEREST",
+            "value": "SDFEC 15% Everest"
+        },
+        {
+            "name": "SDFEC_15_DENALI",
+            "value": "SDFEC 15% Denali"
+        },
+        {
+            "name": "SDFEC_NEL",
+            "value": "SDFEC NEL"
+        },
+        {
+            "name": "EFEC_STAIRCASE",
+            "value": "EFEC Staircase"
+        }
+    ]
+}

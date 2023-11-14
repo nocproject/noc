@@ -1,0 +1,40 @@
+{
+    "name": "SetModType",
+    "$collection": "cm.configurationparams",
+    "uuid": "8b961817-2aee-4fdf-97ff-910dc1c3cb18",
+    "code": "otn_mod_type",
+    "description": "Line modulation type",
+    "scopes": [
+        {
+            "is_required": true,
+            "scope__name": "OpticalPort"
+        },
+        {
+            "is_required": true,
+            "scope__name": "OTN"
+        }
+    ],
+    "type": "string",
+    "choices": [
+        {
+            "name": "QPSK",
+            "value": "QPSK"
+        },
+        {
+            "name": "8QAM",
+            "value": "8QAM"
+        },
+        {
+            "name": "16QAM",
+            "value": "16QAM"
+        },
+        {
+            "name": "32QAM",
+            "value": "32QAM"
+        },
+        {
+            "name": "64QAM",
+            "value": "64QAM"
+        }
+    ]
+}

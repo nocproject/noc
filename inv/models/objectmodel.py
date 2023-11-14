@@ -36,6 +36,8 @@ from noc.core.text import quote_safe_path
 from noc.core.model.decorator import on_delete_check, on_save
 from noc.core.change.decorator import change
 from noc.pm.models.measurementunits import MeasurementUnits
+from noc.cm.models.configurationparam import ConfigurationParam
+from .objectconfigurationrule import ObjectConfigurationRule
 from .connectiontype import ConnectionType
 from .connectionrule import ConnectionRule
 from .unknownmodel import UnknownModel
@@ -48,14 +50,19 @@ rx_composite_pins_validate = re.compile(r"\d+\-\d+")
 
 
 class ModelAttr(EmbeddedDocument):
+    meta = {"strict": False, "auto_create_index": False}
     interface = StringField()
     attr = StringField()
     value = DynamicField()
-    slot = StringField()
+    match_slot = StringField(required=False)
+    match_param: Optional["ConfigurationParam"] = PlainReferenceField(
+        ConfigurationParam, required=False
+    )
+    match_param_values = ListField(StringField())
 
     def __str__(self) -> str:
-        if self.slot:
-            return "%s.%s@%s = %s" % (self.interface, self.attr, self.slot, self.value)
+        if self.match_slot:
+            return "%s.%s@%s = %s" % (self.interface, self.attr, self.match_slot, self.value)
         return "%s.%s = %s" % (self.interface, self.attr, self.value)
 
     @property
@@ -65,8 +72,11 @@ class ModelAttr(EmbeddedDocument):
             "attr": self.attr,
             "value": self.value,
         }
-        if self.slot:
-            r["slot"] = self.slot
+        if self.match_slot:
+            r["match_slot"] = self.match_slot
+        if self.match_param:
+            r["match_param__code"] = self.match_param.code
+            r["match_param_values"] = self.match_param_values
         return r
 
 
@@ -235,6 +245,9 @@ class ObjectModel(Document):
     description = StringField()
     vendor: "Vendor" = PlainReferenceField(Vendor)
     connection_rule: "ConnectionRule" = PlainReferenceField(ConnectionRule, required=False)
+    configuration_rule: "ObjectConfigurationRule" = PlainReferenceField(
+        ObjectConfigurationRule, required=False
+    )
     # Connection rule context
     cr_context = StringField(required=False)
     data: List["ModelAttr"] = EmbeddedDocumentListField(ModelAttr)
@@ -262,10 +275,15 @@ class ObjectModel(Document):
     def get_by_name(cls, name) -> Optional["ObjectModel"]:
         return ObjectModel.objects.filter(name=name).first()
 
-    def get_data(self, interface: str, key: str, slot: Optional[str] = None) -> Any:
+    def get_data(self, interface: str, key: str, slot: Optional[str] = None, **params) -> Any:
         for item in self.data:
             if item.interface == interface and item.attr == key:
-                if not slot or item.slot == slot:
+                if item.match_param and (
+                    item.match_param.code not in params
+                    or params[item.match_param.code] not in item.match_param_values
+                ):
+                    continue
+                if not slot or slot.startswith(item.match_slot):
                     return item.value
         return None
 

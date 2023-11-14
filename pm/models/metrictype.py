@@ -64,6 +64,7 @@ class AgentMappingItem(EmbeddedDocument):
 @on_delete_check(
     check=[
         ("sa.ManagedObjectProfile", "metrics__metric_type"),
+        ("cm.ConfigurationParam", "metric_type"),
         ("inv.InterfaceProfile", "metrics__metric_type"),
         ("sla.SLAProfile", "metrics__metric_type"),
         ("pm.MetricAction", "compose_inputs__metric_type"),
@@ -177,6 +178,8 @@ class MetricType(Document):
                 raise ValidationError({"compose_expression": str(e)})
             for m_f in metric_fields:
                 mt = MetricType.get_by_field_name(m_f)
+                if m_f == "time_delta":
+                    continue
                 if not mt or mt not in self.compose_inputs:
                     raise ValidationError(
                         {"compose_expression": f"Unknown variable {m_f} on expression"}
