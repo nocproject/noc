@@ -1,0 +1,24 @@
+{
+    "name": "EnableTx",
+    "$collection": "cm.configurationparams",
+    "uuid": "1bb3ce14-65f6-42d5-8a3a-18f9ff13fa4d",
+    "code": "enable_tx",
+    "description": "Enable/Disable Line Transmit",
+    "scopes": [
+        {
+            "is_required": true,
+            "scope__name": "OpticalPort"
+        }
+    ],
+    "type": "string",
+    "choices": [
+        {
+            "name": "Enabled",
+            "value": "Enabled"
+        },
+        {
+            "name": "Disabled",
+            "value": "Disabled"
+        }
+    ]
+}

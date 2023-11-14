@@ -1,0 +1,22 @@
+{
+    "name": "Mode",
+    "$collection": "cm.configurationparams",
+    "uuid": "1a02de3f-0e1d-4401-8a76-4f95ad66d37e",
+    "code": "mode",
+    "description": "Device Mode",
+    "scopes": [{
+        "is_required": true,
+        "scope__name": "Common"
+    }],
+    "type": "string",
+    "choices": [
+        {
+            "name": "HHH1",
+            "value": null
+        },
+        {
+            "name": "HHH2",
+            "value": null
+        }
+    ]
+}

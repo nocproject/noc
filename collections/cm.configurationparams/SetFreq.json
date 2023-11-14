@@ -1,0 +1,36 @@
+{
+    "name": "SetFreq",
+    "$collection": "cm.configurationparams",
+    "uuid": "e523900a-5fcf-475e-9970-9fd27274e3ed",
+    "code": "tx_frequency",
+    "description": "Optical Transmitter Frequency",
+    "scopes": [{
+        "is_required": true,
+        "scope__name": "OpticalPort"
+    }],
+    "type": "number",
+    "schema": [
+        {
+            "key": "min",
+            "model_attr": "min_rx_tx_frequency",
+            "model_interface": "dwdm",
+            "value": null
+        },
+        {
+            "key": "max",
+            "model_attr": "max_rx_tx_frequency",
+            "model_interface": "dwdm",
+            "value": null
+        },
+        {
+            "key": "step",
+            "model_attr": "min_frequency_step",
+            "model_interface": "dwdm",
+            "value": null
+        },
+        {
+            "key": "decimal",
+            "value": "1"
+        }
+    ]
+}

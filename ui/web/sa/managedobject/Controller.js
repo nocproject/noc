@@ -698,7 +698,7 @@ Ext.define('NOC.sa.managedobject.Controller', {
         formPanel.up().form = formPanel.getForm();
         view.getLayout().setActiveItem('managedobject-form');
     },
-    editManagedObject: function(gridView, id, suffix) {
+    editManagedObject: function(gridView, id, suffix, isEmbedded) {
         var url = this.url + id + '/',
             view = this.getView();
 
@@ -715,6 +715,12 @@ Ext.define('NOC.sa.managedobject.Controller', {
                         formPanel,
                         form,
                         enabledFields,
+                        standardMode = ["closeBtn", "saveBtn", "resetBtn", "deleteBtn", "createBtn", "cloneBtn", "showMapBtn",
+                            "configBtn", "confDBBtn", "cardBtn", "dashboardBtn", "consoleBtn", "scriptsBtn", "interfacesBtn",
+                            "sensorsBtn", "linksBtn", "discoverBtn", "alarmsBtn", "inventoryBtn", "cmdBtn", "helpBtn"],
+                        embeddedMode = ["saveBtn", "showMapBtn", "configBtn", "confDBBtn", "cardBtn", "dashboardBtn",
+                            "consoleBtn", "scriptsBtn", "interfacesBtn", "sensorsBtn", "linksBtn", "discoverBtn",
+                            "alarmsBtn", "inventoryBtn", "cmdBtn", "helpBtn"],
                         r = {},
                         data = Ext.decode(response.responseText),
                         record = Ext.create("NOC.sa.managedobject.Model", data);
@@ -760,11 +766,11 @@ Ext.define('NOC.sa.managedobject.Controller', {
                     this.clearForm(form);
                     form.setValues(r);
                     this.loadInlineStore(formPanel, data.id);
-                    view.setHistoryHash(data.id);
+                    if(isEmbedded === undefined) {
+                        view.setHistoryHash(data.id);
+                    }
                     view.getLayout().setActiveItem('managedobject-form').down().setActiveItem('managedobject-form-panel');
-                    this.displayButtons(["closeBtn", "saveBtn", "resetBtn", "deleteBtn", "createBtn", "cloneBtn", "showMapBtn",
-                        "configBtn", "confDBBtn", "cardBtn", "dashboardBtn", "consoleBtn", "scriptsBtn", "interfacesBtn",
-                        "sensorsBtn", "linksBtn", "discoverBtn", "alarmsBtn", "inventoryBtn", "cmdBtn", "helpBtn"]);
+                    this.displayButtons(isEmbedded === undefined ? standardMode : embeddedMode);
                     if(suffix) {
                         formView.getController().itemPreview('sa-' + suffix);
                     }
@@ -774,7 +780,7 @@ Ext.define('NOC.sa.managedobject.Controller', {
                 if(view.noc.hasOwnProperty("protected_field")) {
                     this.setProtectedField(view.noc.protected_field);
                 }
-                if(gridView) {
+                if(gridView && isEmbedded === undefined) {
                     gridView.unmask();
                 }
             },

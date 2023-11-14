@@ -26,7 +26,7 @@ class Migration(BaseMigration):
             new_data = []
             for mi in data:
                 for attr, value in data[mi].items():
-                    new_data += [{"slot": "", "interface": mi, "attr": attr, "value": value}]
+                    new_data += [{"interface": mi, "attr": attr, "value": value}]
             bulk += [UpdateOne({"_id": doc["_id"]}, {"$set": {"data": new_data}})]
             if len(bulk) >= self.MAX_BULK_SIZE:
                 coll.bulk_write(bulk)

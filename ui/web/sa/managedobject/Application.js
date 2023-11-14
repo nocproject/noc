@@ -811,4 +811,9 @@ Ext.define('NOC.sa.managedobject.Application', {
         },
     ],
     destroy: Ext.emptyFn,
+    // Used inv.inv tab ManagedObject 
+    loadById: function(id) {
+        var me = this;
+        me.getController().editManagedObject(undefined, id, undefined, true);
+    }
 });

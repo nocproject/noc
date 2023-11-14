@@ -18,6 +18,7 @@ Ext.define("NOC.inv.objectmodel.Application", {
         "NOC.inv.connectionrule.LookupField",
         "NOC.pm.measurementunits.LookupField",
         "NOC.inv.modelinterface.LookupField",
+        "NOC.inv.objectconfigurationrule.LookupField",
         "Ext.ux.form.GridField"
     ],
     model: "NOC.inv.objectmodel.Model",
@@ -130,6 +131,12 @@ Ext.define("NOC.inv.objectmodel.Application", {
                     xtype: "inv.vendor.LookupField",
                     fieldLabel: __("Vendor"),
                     allowBlank: false
+                },
+                {
+                    name: "configuration_rule",
+                    xtype: "inv.objectconfigurationrule.LookupField",
+                    fieldLabel: __("Configuration Rule"),
+                    allowBlank: true
                 },
                 {
                     name: "connection_rule",
