@@ -63,8 +63,8 @@ class ParamRule(EmbeddedDocument):
 
     param: "ConfigurationParam" = PlainReferenceField(ConfigurationParam)
     scope: "ConfigurationScope" = PlainReferenceField(ConfigurationScope)
-    dependency_param: Optional["ConfigurationParam"] = PlainReferenceField(ConfigurationParam)
-    dependency_param_value = StringField()
+    dependency_param: Optional["ConfigurationParam"] = PlainReferenceField(ConfigurationParam, required=False)
+    dependency_param_values = ListField(StringField())
     is_hide = BooleanField(default=False)
     is_readonly = BooleanField(default=False)
     # Set section
@@ -83,7 +83,7 @@ class ParamRule(EmbeddedDocument):
         }
         if self.dependency_param:
             r["dependency_param__code"] = self.dependency_param.code
-            r["dependency_param_value"] = self.dependency_param_value
+            r["dependency_param_values"] = list(self.dependency_param_values)
         if self.choices:
             r["choices"] = list(self.choices)
         return r

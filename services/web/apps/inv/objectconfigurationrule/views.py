@@ -41,3 +41,11 @@ class ObjectConfigurationRuleApplication(ExtDocApplication):
                 r["match_connection_type__label"] = o.match_connection_type.name
             return r
         return super().instance_to_dict(o, fields, nocustom=nocustom)
+
+    def clean(self, data):
+        for r in data["param_rules"]:
+            if "choices" in r and isinstance(r["choices"], str):
+                r["choices"] = [x.strip() for x in r["choices"].split(",") if x.strip()]
+            if "dependency_param_values" in r and isinstance(r["dependency_param_values"], str):
+                r["dependency_param_values"] = [x.strip() for x in r["dependency_param_values"].split(",") if x.strip()]
+        return super().clean(data)

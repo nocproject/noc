@@ -154,6 +154,9 @@ class ParamData(object):
             return f"{self.code}@{self.scope} = {self.value}"
         return f"{self.code} = {self.value}"
 
+    def __eq__(self, other) -> bool:
+        return str(self) == str(other)
+
     @property
     def scope(self) -> str:
         if not self.scopes:

@@ -459,11 +459,11 @@ class Object(Document):
             or item.attr not in kset
         ]
 
-    def get_cgf_data(self, param: "ConfigurationParam", scopes: Optional[List[str]] = None) -> Any:
-        scopes = param.clean_scope(scopes)
+    def get_cfg_data(self, param: "ConfigurationParam", scopes: Optional[List[str]] = None) -> Any:
+        scopes = param.clean_scope(scopes) if not param.is_common else None
         for item in self.cfg_data:
             if item.param == param:
-                if not scopes or item.scopes == scopes:
+                if param.is_common or not scopes or item.scopes == scopes:
                     return item.value
         return None
 
@@ -471,7 +471,7 @@ class Object(Document):
         self, param: "ConfigurationParam", value: Any, scopes: Optional[List[str]] = None
     ) -> None:
         schema = param.get_schema(self)
-        scopes = param.clean_scope(scopes)
+        scopes = param.clean_scope(scopes) if scopes else None
         # value = param.clean(value)
         for item in self.cfg_data:
             if item.param == param:
@@ -486,7 +486,7 @@ class Object(Document):
                     value=value,
                     scopes=[
                         ObjectConfigurationScope(scope=s.scope, value=s.value or None)
-                        for s in scopes
+                        for s in scopes or []
                     ],
                 )
             ]
@@ -507,27 +507,48 @@ class Object(Document):
                 key.append(ScopeVariant(scope=s.scope, value=s.value).code)
             param_data[tuple(key)] = d.value
         r = []
+        processed = set()
         # Processed configurations param
         for pr in self.model.configuration_rule.param_rules:
             if pr.param.is_common:
+                if (
+                    pr.dependency_param
+                    and self.get_cfg_data(pr.dependency_param) not in pr.dependency_param_values
+                ):
+                    continue
+                schema = pr.param.get_schema(self)
+                if pr.choices:
+                    schema.choices = pr.choices
                 r += [
                     ParamData(
                         code=pr.param.code,
                         scopes=[],
-                        schema=self.model.configuration_rule.get_schema(pr.param, self),
+                        schema=schema,
                         value=param_data.pop((pr.param.name,), None),
                     )
                 ]
                 continue
             for scope in self.iter_configuration_scope(pr.param):
+                if (
+                    pr.dependency_param
+                    and self.get_cfg_data(pr.dependency_param, scopes=[scope.code])
+                    not in pr.dependency_param_values
+                ):
+                    continue
+                if (pr.param.code, scope) in processed:
+                    continue
+                schema = pr.param.get_schema(self)
+                if pr.choices:
+                    schema.choices = pr.choices
                 r += [
                     ParamData(
                         code=pr.param.code,
                         scopes=[scope],
-                        schema=self.model.configuration_rule.get_schema(pr.param, self),
+                        schema=schema,
                         value=param_data.pop((pr.param.name, scope.code), None),
                     )
                 ]
+                processed.add((pr.param.code, scope))
         for key, value in param_data.items():
             param, *scopes = key
             param = ConfigurationParam.get_by_code(param)
