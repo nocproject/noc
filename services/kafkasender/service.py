@@ -9,7 +9,8 @@
 # Python modules
 import asyncio
 import random
-from typing import Optional
+from typing import Optional, Union, List
+from collections import defaultdict
 
 # Third-party modules
 from aiokafka import AIOKafkaProducer
@@ -20,6 +21,7 @@ from aiokafka.errors import (
     RequestTimedOutError,
 )
 from kafka.errors import NodeNotReadyError
+from atomicl import AtomicLong
 
 # NOC modules
 from noc.config import config
@@ -36,6 +38,7 @@ KAFKASENDER_STREAM = "kafkasender"
 class KafkaSenderService(FastAPIService):
     name = "kafkasender"
     use_telemetry = True
+    number_message = defaultdict(lambda: AtomicLong(-1))
 
     def __init__(self):
         super().__init__()
@@ -67,7 +70,7 @@ class KafkaSenderService(FastAPIService):
             smart_text(dst),
             msg.value,
             msg.headers.get(MX_SHARDING_KEY),
-            msg.headers.get(KAFKA_PARTITION),
+            self.get_partition(msg.headers.get(KAFKA_PARTITION), msg.headers.get(MX_TO)),
         )
         metrics["messages_processed"] += 1
 
@@ -145,6 +148,25 @@ class KafkaSenderService(FastAPIService):
             deviation: Deviation from delay in seconds.
         """
         await asyncio.sleep(delay - deviation + 2 * deviation * random.random())
+
+    @classmethod
+    def get_partition(cls, partitions: Union[bytes, List], topic: bytes) -> Union[bytes, None]:
+        """
+        Get partitions from headers kafka.
+
+        Args:
+            partitions: bytes. Example: 0,1,2
+            topic: Topic for Kafka
+        """
+        if partitions is None:
+            return None
+        elif isinstance(partitions, bytes):
+            partitions = [partition.strip() for partition in partitions.decode("utf-8").split(",")]
+
+        if len(partitions) == 1:
+            return partitions[0].encode("utf-8")
+        cls.number_message[topic] += 1
+        return partitions[cls.number_message[topic].value % len(partitions)].encode("utf-8")
 
 
 if __name__ == "__main__":
