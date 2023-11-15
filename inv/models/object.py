@@ -313,6 +313,13 @@ class Object(Document):
             "NoName | Transceiver"
         )
 
+    @property
+    def is_generic(self) -> bool:
+        """
+        Object is Generic
+        """
+        return self.model.vendor.name == "Generic" or self.model.vendor.name == "NoName"
+
     def get_nested_ids(self):
         """
         Return id of this and all nested object

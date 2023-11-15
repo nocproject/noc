@@ -543,9 +543,9 @@ class AssetCheck(DiscoveryCheck):
                     op="CONNECT",
                 )
             c_name = o2.model.get_model_connection(c2)  # If internal_name use
-            self.logger.debug(
-                "[%s|%s]To disconnect object: %s", o2, c_name.name, self.to_disconnect
-            )
+            # self.logger.debug(
+            #    "[%s|%s]To disconnect object: %s", o2, c_name.name, self.to_disconnect
+            # )
             if (o2, c_name.name, o1, c1) in self.to_disconnect:
                 # Remove if connection on system
                 self.to_disconnect.remove((o2, c_name.name, o1, c1))
