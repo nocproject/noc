@@ -15,7 +15,6 @@ from noc.services.web.base.site import site
 from noc.services.web.base.extmodelapplication import ExtModelApplication, view
 from noc.aaa.models.group import Group
 from noc.aaa.models.permission import Permission
-from noc.core.cache.decorator import cachedmethod
 from noc.core.translation import ugettext as _
 
 apps_lock = threading.RLock()
