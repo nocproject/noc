@@ -54,29 +54,6 @@ class UserApplication(ExtModelApplication):
     ignored_fields = {"id", "bi_id", "password"}
     custom_m2m_fields = {"permissions": Permission}
 
-    @classmethod
-    def apps_permissions_list(cls):
-        r = []
-        apps = list(site.apps)
-        perms = Permission.objects.values_list("name", flat=True)
-        for module in [m for m in settings.INSTALLED_APPS if m.startswith("noc.")]:
-            mod = module[4:]
-            m = __import__("noc.services.web.apps.%s" % mod, {}, {}, "MODULE_NAME")
-            for app in [app for app in apps if app.startswith(mod + ".")]:
-                app_perms = sorted([p for p in perms if p.startswith(app.replace(".", ":") + ":")])
-                a = site.apps[app]
-                if app_perms:
-                    for p in app_perms:
-                        r += [
-                            {
-                                "module": m.MODULE_NAME,
-                                "title": str(a.title),
-                                "name": p,
-                                "status": False,
-                            }
-                        ]
-        return r
-
     @view(method=["POST"], url=r"^$", access="create", api=True)
     def api_create(self, request):
         response = super().api_create(request)
@@ -109,12 +86,16 @@ class UserApplication(ExtModelApplication):
     def instance_to_dict_get(self, o, fields=None):
         r = super().instance_to_dict(o, fields)
         del r["password"]
-        r["permissions"] = self.apps_permissions_list()
         current_perms = Permission.get_user_permissions(o)
-        if current_perms:
-            for p in r["permissions"]:
-                if p["name"] in current_perms:
-                    p["status"] = True
+        r["permissions"] = [
+            {
+                "module": p.module,
+                "title": p.title,
+                "name": p.name,
+                "status": p.name in current_perms,
+            }
+            for p in site.get_app_permissions_list()
+        ]
         return r
 
     def clean_list_data(self, data):
@@ -144,7 +125,20 @@ class UserApplication(ExtModelApplication):
         Returns dict available permissions
         """
         return self.response(
-            {"data": {"user_permissions": self.apps_permissions_list()}}, status=self.OK
+            {
+                "data": {
+                    "user_permissions": [
+                        {
+                            "module": p.module,
+                            "title": p.title,
+                            "name": p.name,
+                            "status": False,
+                        }
+                        for p in site.get_app_permissions_list()
+                    ]
+                }
+            },
+            status=self.OK,
         )
 
     @view(
