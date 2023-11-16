@@ -9,7 +9,6 @@ import threading
 
 # Third-party modules
 from django.http import HttpResponse
-from django.conf import settings
 
 # NOC modules
 from noc.services.web.base.site import site
