@@ -1,0 +1,22 @@
+{
+    "name": "signal_level",
+    "$collection": "inv.modelinterfaces",
+    "uuid": "78da73ad-b0bb-47e8-9be6-522515db9da7",
+    "description": "",
+    "attrs": [
+        {
+            "name": "logic_0",
+            "type": "int",
+            "description": "Logic 0 signal level",
+            "required": false,
+            "is_const": false
+        },
+        {
+            "name": "logic_1",
+            "type": "int",
+            "description": "Logic 1 signal level",
+            "required": false,
+            "is_const": false
+        }
+    ]
+}
