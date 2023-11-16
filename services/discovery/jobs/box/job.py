@@ -45,6 +45,7 @@ from .prefix import PrefixCheck
 from .address import AddressCheck
 from .segmentation import SegmentationCheck
 from .ifdesc import IfDescCheck
+from .configparam import ConfigParamCheck
 from ..periodic.alarms import AlarmsCheck
 from ..periodic.diagnostic import DiagnosticCheck
 
@@ -141,6 +142,7 @@ class BoxDiscoveryJob(MODiscoveryJob):
         if self.object.object_profile.enable_box_discovery_hk:
             HouseKeepingCheck(self).run()
         DiagnosticCheck(self, run_order="E").run()
+        ConfigParamCheck(self).run()
 
     def get_running_policy(self):
         return self.object.get_effective_box_discovery_running_policy()

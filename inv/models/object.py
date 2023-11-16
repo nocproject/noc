@@ -476,18 +476,19 @@ class Object(Document):
             or item.attr not in kset
         ]
 
-    def has_cfg_scope(self, param: ConfigurationParam, scope: str):
+    def has_cfg_scope(self, param: ConfigurationParam, scope: str) -> bool:
         """
-        Check Configuration Scope exists
+        Check Configuration Scope exists on Object
         """
-        ...
+        return True
 
     def get_cfg_data(self, param: "ConfigurationParam", scope: Optional[str] = None) -> Any:
         """
         Getting Configuration Param Data. Scope - scope string
         """
-        if param.has_scopes and not scope:
-            raise ValueError("Required Scope")
+        # Check Required Slot
+        # if param.has_scopes(scope) and not scope:
+        #     raise ValueError("Required Scope")
         scope = ConfigurationParam.clean_scope(param, scope)
         for item in self.cfg_data:
             if item.param == param:
@@ -583,14 +584,14 @@ class Object(Document):
                     )
                 ]
                 continue
-            for scope in self.iter_configuration_scope(pr.param):
+            for scope in self.iter_configuration_scopes(pr.param):
+                if (pr.param.code, scope.code) in seen:
+                    continue
                 if (
                     pr.dependency_param
                     and self.get_cfg_data(pr.dependency_param, scope.code)
                     not in pr.dependency_param_values
                 ):
-                    continue
-                if (pr.param.code, scope.code) in seen:
                     continue
                 schema = pr.param.get_schema(self)
                 # Getting param from connection model (for transceiver)
