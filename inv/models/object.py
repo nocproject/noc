@@ -82,6 +82,7 @@ class ObjectAttr(EmbeddedDocument):
 
 
 class ObjectConfigurationScope(EmbeddedDocument):
+    meta = {"strict": False, "auto_create_index": False}
     scope: "ConfigurationScope" = PlainReferenceField(ConfigurationScope, required=True)
     value: str = StringField(required=False)
 
@@ -118,6 +119,7 @@ class ObjectConfigurationScope(EmbeddedDocument):
 
 
 class ObjectConfigurationData(EmbeddedDocument):
+    meta = {"strict": False, "auto_create_index": False}
     param: "ConfigurationParam" = PlainReferenceField(ConfigurationParam, required=True)
     value = DynamicField()
     is_dirty = BooleanField(default=False)
@@ -520,7 +522,6 @@ class Object(Document):
             if item.param == param:
                 if not scope or item.scope == scope:
                     item.value = schema.clean(value)
-                    item.is_dirty = is_dirty
                     break
         else:
             # Insert new item
@@ -529,7 +530,7 @@ class Object(Document):
                     param=param,
                     value=value,
                     is_dirty=is_dirty,
-                    scopes=ObjectConfigurationScope.from_code(scope),
+                    contexts=ObjectConfigurationScope.from_code(scope),
                 )
             ]
 

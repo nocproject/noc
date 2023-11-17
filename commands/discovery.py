@@ -67,6 +67,7 @@ class Command(BaseCommand):
             "nri_service",
             "alarms",
             "diagnostic",
+            "configparam",
         ],
         "periodic": [
             "uptime",

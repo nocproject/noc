@@ -11,7 +11,7 @@ import operator
 import os
 import re
 from dataclasses import dataclass
-from typing import List, Optional, Union, NoReturn, Any
+from typing import List, Optional, Union, NoReturn, Any, Set
 
 # Third-party modules
 from mongoengine.document import Document, EmbeddedDocument
@@ -340,10 +340,12 @@ class ConfigurationParam(Document):
         Check Param has scope
         :param name: Scope name
         """
+        if not self.has_required_scopes:
+            return True
         for s in self.scopes:
             if s.scope.name == name:
                 return True
-        return False
+        return True
 
     @property
     def is_common(self) -> bool:

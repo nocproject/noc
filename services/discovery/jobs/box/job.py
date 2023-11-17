@@ -141,8 +141,9 @@ class BoxDiscoveryJob(MODiscoveryJob):
             SLACheck(self).run()
         if self.object.object_profile.enable_box_discovery_hk:
             HouseKeepingCheck(self).run()
+        if self.object.object_profile.enable_box_discovery_param_data:
+            ConfigParamCheck(self).run()
         DiagnosticCheck(self, run_order="E").run()
-        ConfigParamCheck(self).run()
 
     def get_running_policy(self):
         return self.object.get_effective_box_discovery_running_policy()

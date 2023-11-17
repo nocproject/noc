@@ -35,7 +35,7 @@ class ConfigParamCheck(DiscoveryCheck):
             ed[pd] = pd.value
         self.logger.info("[%s] Submit Param Data", o)
         for pd in data:
-            if pd not in ed in pd:
+            if pd not in ed:
                 pass
             elif ed[pd] == pd.value:
                 # Same value
@@ -45,10 +45,13 @@ class ConfigParamCheck(DiscoveryCheck):
                 # Set is_dirty
                 # Set Data
                 # Register Conflict
+                # is_conflicted=True
+                # o.set_cfg_data(pd.param, pd.value, pd.scope, is_conflicted=True)
+                # continue
                 pass
             o.set_cfg_data(pd.param, pd.value, pd.scope)
             o.log(
-                f"Object param '{pd.param}' changed: {ed[pd]} -> {pd.value}",
+                f"Object param '{pd.param}' changed: {ed.get(pd)} -> {pd.value}",
                 system="DISCOVERY",
                 managed_object=self.object,
                 op="PARAM_CHANGED",
@@ -56,7 +59,7 @@ class ConfigParamCheck(DiscoveryCheck):
             # Set Last Seen
         o.save()
 
-    def clean_result(self, o: Object, data: List[Dict[str, Any]]) -> List[ParamData]:
+    def clean_result(self, o: Object, data: List[Dict[str, Any]]) -> List["ParamData"]:
         r = []
         for d in data:
             param = ConfigurationParam.get_by_code(d["param"])
@@ -85,7 +88,7 @@ class ConfigParamCheck(DiscoveryCheck):
         o = Object.get_managed(self.object)
         return bool(o)
 
-    def get_param_data_confdb(self, o: Object) -> List[ParamData]:
+    def get_param_data_confdb(self, o: Object) -> List["ParamData"]:
         """
         Getting Config Param Data from ConfDB
         :param o: Chassis Object
@@ -98,7 +101,7 @@ class ConfigParamCheck(DiscoveryCheck):
             return []
         return []
 
-    def get_param_data_artifact(self, o: Object) -> List[Tuple[Object, List[ParamData]], ...]:
+    def get_param_data_artifact(self, o: Object) -> List[Tuple["Object", List["ParamData"]]]:
         """
         Getting Config Param Data from Artifacts
         :param o: Chassis Object
@@ -117,7 +120,7 @@ class ConfigParamCheck(DiscoveryCheck):
             r.append((o, self.clean_result(o, params)))
         return r
 
-    def get_param_data_script(self, o: Object) -> List[ParamData]:
+    def get_param_data_script(self, o: Object) -> List["ParamData"]:
         """
         Getting Config Param Data from script
         :param o: Chassis Object
