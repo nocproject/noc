@@ -63,7 +63,9 @@ class ParamRule(EmbeddedDocument):
 
     param: "ConfigurationParam" = PlainReferenceField(ConfigurationParam)
     scope: "ConfigurationScope" = PlainReferenceField(ConfigurationScope)
-    dependency_param: Optional["ConfigurationParam"] = PlainReferenceField(ConfigurationParam, required=False)
+    dependency_param: Optional["ConfigurationParam"] = PlainReferenceField(
+        ConfigurationParam, required=False
+    )
     dependency_param_values = ListField(StringField())
     is_hide = BooleanField(default=False)
     is_readonly = BooleanField(default=False)

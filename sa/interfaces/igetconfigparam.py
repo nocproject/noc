@@ -13,14 +13,14 @@ from .base import DictListParameter, StringParameter
 class IGetConfigParam(BaseInterface):
     returns = DictListParameter(
         attrs={
-                "param": StringParameter(required=True),
-                "value": StringParameter(),
-                "scopes": DictListParameter(
-                    attrs={
-                        "scope": StringParameter(required=True),
-                        "value": StringParameter(required=False),
-                    }
-                ),
-                "measurement": StringParameter(required=False),
-            }
-        )
+            "param": StringParameter(required=True),
+            "value": StringParameter(),
+            "scopes": DictListParameter(
+                attrs={
+                    "scope": StringParameter(required=True),
+                    "value": StringParameter(required=False),
+                }
+            ),
+            "measurement": StringParameter(required=False),
+        }
+    )

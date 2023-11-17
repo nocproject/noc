@@ -59,7 +59,9 @@ class OpticalDWDMDiscriminatorSource(BaseDiscriminatorSource):
             # tx_frequency
         return [
             DiscriminatorDataItem("dwdm", "tx_frequency", tx),
-            DiscriminatorDataItem("optical", "tx_wavelength", self.frequency_wl_map.get(tx, 1560.61)),
+            DiscriminatorDataItem(
+                "optical", "tx_wavelength", self.frequency_wl_map.get(tx, 1560.61)
+            ),
         ]
 
     def get_code(self, data: List[DiscriminatorDataItem]) -> str:

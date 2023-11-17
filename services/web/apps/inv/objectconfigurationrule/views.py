@@ -47,5 +47,7 @@ class ObjectConfigurationRuleApplication(ExtDocApplication):
             if "choices" in r and isinstance(r["choices"], str):
                 r["choices"] = [x.strip() for x in r["choices"].split(",") if x.strip()]
             if "dependency_param_values" in r and isinstance(r["dependency_param_values"], str):
-                r["dependency_param_values"] = [x.strip() for x in r["dependency_param_values"].split(",") if x.strip()]
+                r["dependency_param_values"] = [
+                    x.strip() for x in r["dependency_param_values"].split(",") if x.strip()
+                ]
         return super().clean(data)

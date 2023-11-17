@@ -501,7 +501,12 @@ class Object(Document):
         return None
 
     def set_cfg_data(
-        self, param: "ConfigurationParam", value: Any, scope: Optional[str] = None, is_conflicted: bool = False, is_dirty: bool = False
+        self,
+        param: "ConfigurationParam",
+        value: Any,
+        scope: Optional[str] = None,
+        is_conflicted: bool = False,
+        is_dirty: bool = False,
     ) -> None:
         """
         Set ConfigurationParam value, and check is_dirty for provisioning
