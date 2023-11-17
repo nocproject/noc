@@ -6,20 +6,12 @@
 # ---------------------------------------------------------------------
 
 # Python modules
-from typing import List
-from collections import namedtuple
+from typing import List, Dict, Any, Tuple
 
 # NOC modules
 from noc.services.discovery.jobs.base import DiscoveryCheck
 from noc.inv.models.object import Object
-from noc.cm.models.configurationparam import ParamData, ScopeVariant
-
-SRC_INTERFACE = "i"
-SRC_MPLS = "m"
-SRC_MANUAL = "M"
-SRC_CONFDB = "c"
-
-PREF_VALUE = {SRC_INTERFACE: 0, SRC_MPLS: 1, SRC_CONFDB: 2, SRC_MANUAL: 3}
+from noc.cm.models.configurationparam import ConfigurationParam, ParamData, ScopeVariant
 
 
 class ConfigParamCheck(DiscoveryCheck):
@@ -28,21 +20,75 @@ class ConfigParamCheck(DiscoveryCheck):
     get_param_script = "get_params_data"
 
     def handler(self):
-        r: List[ParamData] = []
-        r += self.get_param_data_confdb()
-        r += self.get_param_data_artifact()
-        r += self.get_param_data_script()
+        chassis = Object.get_managed(self.object)
+        chassis_data = self.get_param_data_confdb(chassis)
+        chassis_data += self.get_param_data_script(chassis)
+        if chassis_data:
+            self.submit_param_data(chassis, chassis_data)
+        for o, data in self.get_param_data_artifact(chassis):
+            self.submit_param_data(o, data)
+
+    def submit_param_data(self, o: "Object", data):
+        """ """
+        ed: Dict[ParamData, Any] = {}
+        for pd in o.get_effective_cfg_params():
+            ed[pd] = pd.value
+        self.logger.info("[%s] Submit Param Data", o)
+        for pd in data:
+            if pd not in ed in pd:
+                pass
+            elif ed[pd] == pd.value:
+                # Same value
+                continue
+            elif ed[pd] is not None:
+                # Conflict (Resolve by policy(:
+                # Set is_dirty
+                # Set Data
+                # Register Conflict
+                pass
+            o.set_cfg_data(pd.param, pd.value, pd.scope)
+            o.log(
+                f"Object param '{pd.param}' changed: {ed[pd]} -> {pd.value}",
+                system="DISCOVERY",
+                managed_object=self.object,
+                op="PARAM_CHANGED",
+            )
+            # Set Last Seen
+        o.save()
+
+    def clean_result(self, o: Object, data: List[Dict[str, Any]]) -> List[ParamData]:
+        r = []
+        for d in data:
+            param = ConfigurationParam.get_by_code(d["param"])
+            if not param:
+                self.logger.error("[%s] Unknown param. Skipping...", d["param"])
+                continue
+            scopes = []
+            for s in d.get("scopes", []):
+                if s.get("value") is None:
+                    scopes.append(ScopeVariant.from_code(s["scope"]))
+                else:
+                    scopes.append(ScopeVariant.from_code(f"{s['scope']}::{s['value']}"))
+            schema = param.get_schema(o)
+            try:
+                value = schema.clean(d["value"])
+            except ValueError:
+                self.logger.error("[%s] Bad value: %s", param, d["value"])
+                continue
+            r.append(ParamData(code=param.code, value=value, scopes=scopes, schema=schema))
+        return r
 
     def is_enabled(self):
         enabled = super().is_enabled()
         if not enabled:
             return False
         o = Object.get_managed(self.object)
-        return o and o.model.configuration_rule
+        return bool(o)
 
-    def get_param_data_confdb(self) -> List[ParamData]:
+    def get_param_data_confdb(self, o: Object) -> List[ParamData]:
         """
         Getting Config Param Data from ConfDB
+        :param o: Chassis Object
         :return:
         """
         self.logger.debug("Getting ParamData from ConfDB")
@@ -52,38 +98,34 @@ class ConfigParamCheck(DiscoveryCheck):
             return []
         return []
 
-    def get_param_data_artifact(self) -> List[ParamData]:
+    def get_param_data_artifact(self, o: Object) -> List[Tuple[Object, List[ParamData]], ...]:
         """
         Getting Config Param Data from Artifacts
+        :param o: Chassis Object
         :return:
         """
         self.logger.debug("Getting ParamData from Artifacts")
-        params = self.get_artefact("config_param_data")
-        if not params:
-            self.logger.info("No interface_vpn artefact, skipping interface prefixes")
+        o_artifacts: Dict[str, List[Dict[str, Any]]] = self.get_artefact("object_param_artifacts")
+        if not o_artifacts:
+            self.logger.info("No object asset artifacts, skipping object param data")
             return []
         r = []
-        for p in params:
-            scopes = [ScopeVariant.from_code(p["scope"])]
-            r.append(
-                ParamData(code=p["param"], value=p["value"], scopes=scopes, schema=None)
-            )
+        for o, params in o_artifacts.items():
+            o = Object.get_by_id(o)
+            if not o:
+                continue
+            r.append((o, self.clean_result(o, params)))
         return r
 
-    def get_param_data_script(self) -> List[ParamData]:
+    def get_param_data_script(self, o: Object) -> List[ParamData]:
         """
         Getting Config Param Data from script
+        :param o: Chassis Object
         :return:
         """
         self.logger.debug("Getting ParamData from script")
         if self.get_param_script not in self.object.scripts:
             self.logger.info("Script '%s' is not supported. Skipping...", self.get_param_script)
             return []
-        r = []
-        params = self.object.scripts.get_params_data()
-        for p in params:
-            scopes = [ScopeVariant.from_code(p["scope"])]
-            r.append(
-                ParamData(code=p["param"], value=p["value"], scopes=scopes, schema=None)
-            )
-        return r
+        r = self.object.scripts.get_params_data()
+        return self.clean_result(o, r)

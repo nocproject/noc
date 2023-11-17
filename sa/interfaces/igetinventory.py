@@ -97,6 +97,21 @@ class IGetInventory(BaseInterface):
                 },
                 required=False,
             ),
+            # Configured Param
+            "param_data": DictListParameter(
+                attrs={
+                    "param": StringParameter(required=True),
+                    "value": StringParameter(),
+                    "scopes": DictListParameter(
+                        attrs={
+                            "scope": StringParameter(required=True),
+                            "value": StringParameter(required=False),
+                        }
+                    ),
+                    "measurement": StringParameter(required=False),
+                },
+                required=False,
+            ),
         },
     )
     preview = "NOC.sa.managedobject.scripts.ShowInventory"

@@ -25,6 +25,7 @@ from mongoengine.fields import (
     DynamicField,
     ReferenceField,
     BooleanField,
+    DateTimeField,
 )
 from mongoengine import signals
 import cachetools
@@ -120,6 +121,9 @@ class ObjectConfigurationData(EmbeddedDocument):
     param: "ConfigurationParam" = PlainReferenceField(ConfigurationParam, required=True)
     value = DynamicField()
     is_dirty = BooleanField(default=False)
+    is_conflicted = BooleanField(default=False)
+    conflicted_value = DynamicField(required=False)
+    last_seen = DateTimeField()
     # Scope Code
     contexts: Optional[List["ObjectConfigurationScope"]] = EmbeddedDocumentListField(
         ObjectConfigurationScope, required=False
@@ -497,7 +501,7 @@ class Object(Document):
         return None
 
     def set_cfg_data(
-        self, param: "ConfigurationParam", value: Any, scope: Optional[str] = None
+        self, param: "ConfigurationParam", value: Any, scope: Optional[str] = None, is_conflicted: bool = False, is_dirty: bool = False
     ) -> None:
         """
         Set ConfigurationParam value, and check is_dirty for provisioning
@@ -511,6 +515,7 @@ class Object(Document):
             if item.param == param:
                 if not scope or item.scope == scope:
                     item.value = schema.clean(value)
+                    item.is_dirty = is_dirty
                     break
         else:
             # Insert new item
@@ -518,6 +523,7 @@ class Object(Document):
                 ObjectConfigurationData(
                     param=param,
                     value=value,
+                    is_dirty=is_dirty,
                     scopes=ObjectConfigurationScope.from_code(scope),
                 )
             ]

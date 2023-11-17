@@ -157,9 +157,16 @@ class ParamData(object):
     def __eq__(self, other) -> bool:
         return str(self) == str(other)
 
+    def __hash__(self):
+        return hash(str(self))
+
     @property
     def scope(self) -> str:
         return "".join(f"@{s.code}" for s in self.scopes)
+
+    @property
+    def param(self) -> "ConfigurationParam":
+        return ConfigurationParam.get_by_code(self.code)
 
 
 class ScopeItem(EmbeddedDocument):

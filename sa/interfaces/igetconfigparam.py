@@ -10,7 +10,7 @@ from noc.core.interface.base import BaseInterface
 from .base import DictListParameter, StringParameter
 
 
-class IGetDHCPBinding(BaseInterface):
+class IGetConfigParam(BaseInterface):
     returns = DictListParameter(
         attrs={
                 "param": StringParameter(required=True),
@@ -21,6 +21,6 @@ class IGetDHCPBinding(BaseInterface):
                         "value": StringParameter(required=False),
                     }
                 ),
-                "units": StringParameter(required=False),
+                "measurement": StringParameter(required=False),
             }
         )
