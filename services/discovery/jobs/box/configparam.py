@@ -41,14 +41,22 @@ class ConfigParamCheck(DiscoveryCheck):
                 # Same value
                 continue
             elif ed[pd] is not None:
-                # Conflict (Resolve by policy(:
-                # Set is_dirty
-                # Set Data
-                # Register Conflict
-                # is_conflicted=True
-                # o.set_cfg_data(pd.param, pd.value, pd.scope, is_conflicted=True)
-                # continue
-                pass
+                # Resolve conflict when discovery diff value from object,
+                # Resolve from policy
+                if (
+                    self.object.object_profile.box_discovery_param_data_conflict_resolve_policy
+                    == "M"
+                ):
+                    # Manual conflict
+                    o.set_cfg_data(pd.param, pd.value, pd.scope, is_conflicted=True)
+                    continue
+                elif (
+                    self.object.object_profile.box_discovery_param_data_conflict_resolve_policy
+                    == "O"
+                ):
+                    # Set param is_dirty
+                    o.set_cfg_data(pd.param, ed[pd], pd.scope, is_dirty=True)
+                    continue
             o.set_cfg_data(pd.param, pd.value, pd.scope)
             o.log(
                 f"Object param '{pd.param}' changed: {ed.get(pd)} -> {pd.value}",

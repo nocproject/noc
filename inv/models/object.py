@@ -514,6 +514,11 @@ class Object(Document):
         Set ConfigurationParam value, and check is_dirty for provisioning
         @todo check is_dirty provisioned, when reset (remove)?
         @todo Catch lock for protect when provisioned, is_dirty ?
+        :param param: Changed Configured Param
+        :param value: Param Value
+        :param scope: Param scope
+        :param is_conflicted: Param conflicted with current
+        :param is_dirty: Param is dirty and needed provisioned
         """
         scope = ConfigurationParam.clean_scope(param, scope)
         schema = param.get_schema(self)

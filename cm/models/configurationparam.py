@@ -11,7 +11,7 @@ import operator
 import os
 import re
 from dataclasses import dataclass
-from typing import List, Optional, Union, NoReturn, Any, Set
+from typing import List, Optional, Union, NoReturn, Any
 
 # Third-party modules
 from mongoengine.document import Document, EmbeddedDocument
