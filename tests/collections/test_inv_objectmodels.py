@@ -213,7 +213,17 @@ CONNECTION_CHECKLIST = {
     },
     "Transceiver | CFP2": {
         "directions": ["i", "o"],
-        "protocols": ["TransEth40G", "TransEth100G", "TransEth200G"],
+        "protocols": [
+            "TransEth40G",
+            "TransEth100G",
+            "TransEth200G",
+            "OTU1",
+            "OTU2",
+            "OTU2e",
+            "OTU3",
+            "OTU4",
+            "OTU2C",
+        ],
     },
     "Transceiver | CFP4": {
         "directions": ["i", "o"],
