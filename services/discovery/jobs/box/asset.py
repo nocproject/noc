@@ -78,6 +78,9 @@ class AssetCheck(DiscoveryCheck):
         self.managed: Set[str] = set()  # Object ids
         self.unk_model: Dict[str, ObjectModel] = {}  # name -> model
         self.lost_and_found = self.get_lost_and_found(self.object)
+        self.generic_vendor = Vendor.get_by_code("GENERIC")
+        self.noname_vendor = Vendor.get_by_code("NONAME")
+        self.generic_models: List[str] = self.get_generic_models()
 
     def handler(self):
         self.logger.info("Checking assets")
@@ -231,7 +234,8 @@ class AssetCheck(DiscoveryCheck):
                     self.set_context(scope, number)
         # Find existing object or create new
         o: Optional["Object"] = Object.objects.filter(
-            model=m.id, data__match={"interface": "asset", "attr": "serial", "value": serial}
+            model__in=[m.id] + self.generic_models,
+            data__match={"interface": "asset", "attr": "serial", "value": serial},
         ).first()
         if not o:
             # Create new object
@@ -254,6 +258,17 @@ class AssetCheck(DiscoveryCheck):
                 system="DISCOVERY",
                 managed_object=self.object,
                 op="CREATE",
+            )
+        elif o.is_generic:
+            """
+            Generic Template
+            """
+            o.model = m
+            o.log(
+                f"Object Model changed: Generic -> {m.name}",
+                system="DISCOVERY",
+                managed_object=self.object,
+                op="CHANGE",
             )
         else:
             # Add all connection to disconnect list
@@ -528,6 +543,9 @@ class AssetCheck(DiscoveryCheck):
                     op="CONNECT",
                 )
             c_name = o2.model.get_model_connection(c2)  # If internal_name use
+            # self.logger.debug(
+            #    "[%s|%s]To disconnect object: %s", o2, c_name.name, self.to_disconnect
+            # )
             if (o2, c_name.name, o1, c1) in self.to_disconnect:
                 # Remove if connection on system
                 self.to_disconnect.remove((o2, c_name.name, o1, c1))
@@ -837,7 +855,8 @@ class AssetCheck(DiscoveryCheck):
                     op="CHANGE",
                 )
 
-    def is_generic_transceiver(self, t_name: str) -> bool:
+    @staticmethod
+    def is_generic_transceiver(t_name: str) -> bool:
         """
         Checking transceiver part_no can be Generic or not
         """
@@ -847,11 +866,9 @@ class AssetCheck(DiscoveryCheck):
         """
         Generate unresolved object model name
         """
-        m = f"NoName | Transceiver | {ff}"
-        if self.is_generic_transceiver(name):
-            m = f"Generic | Transceiver | {ff}"
-
-        return m
+        if not self.is_generic_transceiver(name):
+            return f"NoName | Transceiver | {ff}"
+        return f"Generic | Transceiver | {ff}"
 
     def resolve_object(
         self,
@@ -867,6 +884,7 @@ class AssetCheck(DiscoveryCheck):
         """
         # Check object is already exists
         c, object, c_name = t_object.get_p2p_connection(t_c)
+        self.logger.debug("[%s] Resolve Object. Check already exists: %s", t_c, c)
         if c is not None:
             if c_name == m_c and object.get_data("asset", "serial") == serial:
                 # Object with same serial number exists
@@ -895,6 +913,11 @@ class AssetCheck(DiscoveryCheck):
             self.logger.info("Unknown model '%s' registering unknown model", m)
             self.register_unknown_part_no(self.get_vendor("NONAME"), m, "%s -> %s" % (name, m))
             return None
+        o = Object.objects.filter(
+            model=model, data__match={"interface": "asset", "attr": "serial", "value": serial}
+        ).first()
+        if o:
+            return o
         # Create object
         self.logger.info("Creating new object. model='%s', serial='%s'", m, serial)
         if self.object.container:
@@ -950,6 +973,15 @@ class AssetCheck(DiscoveryCheck):
             self.logger.error("Lost&Found not found")
             return None
         return lf.id
+
+    def get_generic_models(self) -> List[str]:
+        """ """
+        return [
+            om.id
+            for om in ObjectModel.objects.filter(
+                vendor__in=[self.generic_vendor, self.noname_vendor]
+            )
+        ]
 
     def generate_serial(self, model: ObjectModel, number: Optional[str]) -> str:
         """
