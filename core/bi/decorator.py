@@ -9,7 +9,7 @@
 import struct
 
 # Third-party modules
-from csiphash import siphash24
+from siphash24 import siphash24
 import bson
 
 # NOC modules
@@ -43,7 +43,7 @@ def bi_hash(v):
     """
     if not isinstance(v, str):
         v = str(v)
-    bh = siphash24(SIPHASH_SEED, smart_bytes(v))
+    bh = siphash24(smart_bytes(v), key=SIPHASH_SEED).digest()
     return int(struct.unpack("!Q", bh)[0] & 0x7FFFFFFFFFFFFFFF)
 
 
