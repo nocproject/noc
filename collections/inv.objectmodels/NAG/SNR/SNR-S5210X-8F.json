@@ -1,0 +1,237 @@
+{
+    "name": "NAG | SNR | SNR-S5210X-8F",
+    "$collection": "inv.objectmodels",
+    "uuid": "ea7b1ae6-a6a4-4831-955e-f058e2c54a93",
+    "vendor__code": "NAG",
+    "description": "Управляемый коммутатор уровня 2+, 8 x 1/10GE SFP+. Питание: 220V AC",
+    "connection_rule__name": "Generic | Switch SFP",
+    "cr_context": "CHASSIS",
+    "connections": [
+        {
+            "name": "xe1",
+            "description": "Fiber port 1 SFP+",
+            "direction": "i",
+            "gender": "f",
+            "internal_name": "sfpxe1",
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth1G"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth10G"
+                }
+            ],
+            "type__name": "Transceiver | SFP+"
+        },
+        {
+            "name": "xe2",
+            "description": "Fiber port 2 SFP+",
+            "direction": "i",
+            "gender": "f",
+            "internal_name": "sfpxe2",
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth1G"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth10G"
+                }
+            ],
+            "type__name": "Transceiver | SFP+"
+        },
+        {
+            "name": "xe3",
+            "description": "Fiber port 3 SFP+",
+            "direction": "i",
+            "gender": "f",
+            "internal_name": "sfpxe3",
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth1G"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth10G"
+                }
+            ],
+            "type__name": "Transceiver | SFP+"
+        },
+        {
+            "name": "xe4",
+            "description": "Fiber port 4 SFP+",
+            "direction": "i",
+            "gender": "f",
+            "internal_name": "sfpxe4",
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth1G"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth10G"
+                }
+            ],
+            "type__name": "Transceiver | SFP+"
+        },
+        {
+            "name": "xe5",
+            "description": "Fiber port 5 SFP+",
+            "direction": "i",
+            "gender": "f",
+            "internal_name": "sfpxe5",
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth1G"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth10G"
+                }
+            ],
+            "type__name": "Transceiver | SFP+"
+        },
+        {
+            "name": "xe6",
+            "description": "Fiber port 6 SFP+",
+            "direction": "i",
+            "gender": "f",
+            "internal_name": "sfpxe6",
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth1G"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth10G"
+                }
+            ],
+            "type__name": "Transceiver | SFP+"
+        },
+        {
+            "name": "xe7",
+            "description": "Fiber port 7 SFP+",
+            "direction": "i",
+            "gender": "f",
+            "internal_name": "sfpxe7",
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth1G"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth10G"
+                }
+            ],
+            "type__name": "Transceiver | SFP+"
+        },
+        {
+            "name": "xe8",
+            "description": "Fiber port 8 SFP+",
+            "direction": "i",
+            "gender": "f",
+            "internal_name": "sfpxe8",
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth1G"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth10G"
+                }
+            ],
+            "type__name": "Transceiver | SFP+"
+        },
+        {
+            "name": "console",
+            "description": "Console port",
+            "direction": "s",
+            "gender": "f",
+            "protocols": [{
+                "direction": ">",
+                "protocol__code": "RS232"
+            }],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "name": "usb",
+            "description": "USB port",
+            "direction": "s",
+            "gender": "f",
+            "protocols": [
+                {
+                    "direction": ">",
+                    "protocol__code": "USB10"
+                },
+                {
+                    "direction": ">",
+                    "protocol__code": "USB11"
+                },
+                {
+                    "direction": ">",
+                    "protocol__code": "USB20"
+                }
+            ],
+            "type__name": "Electrical | USB"
+        },
+        {
+            "name": "power",
+            "description": "Power outlet",
+            "direction": "i",
+            "gender": "m",
+            "protocols": [{
+                "direction": ">",
+                "protocol__code": "220VAC"
+            }],
+            "type__name": "Power | IEC 60320 C14"
+        }
+    ],
+    "data": [
+        {
+            "attr": "part_no",
+            "interface": "asset",
+            "value": [
+                "SNR-S5210X-8F"
+            ]
+        },
+        {
+            "attr": "depth",
+            "interface": "dimensions",
+            "value": 180
+        },
+        {
+            "attr": "height",
+            "interface": "dimensions",
+            "value": 44
+        },
+        {
+            "attr": "width",
+            "interface": "dimensions",
+            "value": 280
+        },
+        {
+            "attr": "managed",
+            "interface": "management",
+            "value": true
+        },
+        {
+            "attr": "power",
+            "interface": "power",
+            "value": 30.0
+        },
+        {
+            "attr": "units",
+            "interface": "rackmount",
+            "value": 1.0
+        }
+    ]
+}
