@@ -21,7 +21,7 @@ Sharding-Key
 : Key for consistent sharding.
 
 Kafka_partition
-: Kafka partition number.
+: Kafka partition numbers. You can write some partitional separate by ',' in this case  will load balance between partitional. Example: 0,1,2
 
 ## Message Format
 
