@@ -20,10 +20,16 @@
             "description": "Посадочное место под клиентский QSFP28 модуль 1",
             "direction": "i",
             "gender": "f",
-            "protocols": [{
-                "direction": "*",
-                "protocol__code": "TransEth10G"
-            }],
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth100G"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "OTU4"
+                }
+            ],
             "type__name": "Transceiver | QSFP+"
         },
         {
@@ -31,10 +37,16 @@
             "description": "Линейный порт 1",
             "direction": "i",
             "gender": "f",
-            "protocols": [{
-                "direction": "*",
-                "protocol__code": "TransEth100G"
-            }],
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "OTU4"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "OTU2C"
+                }
+            ],
             "type__name": "Transceiver | CFP2"
         },
         {
@@ -42,10 +54,16 @@
             "description": "Посадочное место под клиентский QSFP28 модуль 1",
             "direction": "i",
             "gender": "f",
-            "protocols": [{
-                "direction": "*",
-                "protocol__code": "TransEth10G"
-            }],
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth100G"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "OTU4"
+                }
+            ],
             "type__name": "Transceiver | QSFP+"
         },
         {
@@ -53,10 +71,16 @@
             "description": "Посадочное место под клиентский QSFP28 модуль 1",
             "direction": "i",
             "gender": "f",
-            "protocols": [{
-                "direction": "*",
-                "protocol__code": "TransEth10G"
-            }],
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth100G"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "OTU4"
+                }
+            ],
             "type__name": "Transceiver | QSFP+"
         },
         {
@@ -64,10 +88,16 @@
             "description": "Линейный порт 1",
             "direction": "i",
             "gender": "f",
-            "protocols": [{
-                "direction": "*",
-                "protocol__code": "TransEth100G"
-            }],
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "OTU4"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "OTU2C"
+                }
+            ],
             "type__name": "Transceiver | CFP2"
         },
         {
@@ -75,10 +105,16 @@
             "description": "Посадочное место под клиентский QSFP28 модуль 1",
             "direction": "i",
             "gender": "f",
-            "protocols": [{
-                "direction": "*",
-                "protocol__code": "TransEth10G"
-            }],
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth100G"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "OTU4"
+                }
+            ],
             "type__name": "Transceiver | QSFP+"
         },
         {
