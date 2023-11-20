@@ -11,6 +11,7 @@ import re
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetversion import IGetVersion
+from .profile import Param
 
 
 class Script(BaseScript):
@@ -34,7 +35,10 @@ class Script(BaseScript):
             f"&names=pId,SwNumber,SrNumber,HwNumber&fields=name,value,description",
             json=True,
         )
-        r = self.profile.parse_params(v["params"])
+        r = {}
+        for p in v["params"]:
+            p = Param.from_code(**p)
+            r[p.name] = p
         return {
             "vendor": "IRE-Polus",
             "platform": platform,

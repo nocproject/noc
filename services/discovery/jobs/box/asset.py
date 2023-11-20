@@ -81,6 +81,8 @@ class AssetCheck(DiscoveryCheck):
         self.generic_vendor = Vendor.get_by_code("GENERIC")
         self.noname_vendor = Vendor.get_by_code("NONAME")
         self.generic_models: List[str] = self.get_generic_models()
+        #
+        self.object_param_artifacts: Dict[str, List[Dict[str, Any]]] = {}  # oid: [Data]
 
     def handler(self):
         self.logger.info("Checking assets")
@@ -90,7 +92,6 @@ class AssetCheck(DiscoveryCheck):
         for o in result:
             self.logger.info("Submit %s", str_dict(o))
             # Split data to Constant and ObjectData
-            o_data, c_data = self.clean_sa_data(o.get("data"))
             self.submit(
                 o_type=o["type"],
                 number=o.get("number"),
@@ -102,8 +103,8 @@ class AssetCheck(DiscoveryCheck):
                 mfg_date=o.get("mfg_date"),
                 description=o.get("description"),
                 sensors=o.get("sensors"),
-                data=o_data,
-                m_data=c_data,
+                sa_data=o.get("data"),
+                param_data=o.get("param_data"),
             )
         # Assign stack members
         self.submit_stack_members()
@@ -115,6 +116,8 @@ class AssetCheck(DiscoveryCheck):
         self.disconnect_connections()
         #
         self.sync_sensors()
+        #
+        self.set_artefact("object_param_artifacts", self.object_param_artifacts)
 
     def submit(
         self,
@@ -128,8 +131,8 @@ class AssetCheck(DiscoveryCheck):
         mfg_date: Optional[str] = None,
         description: Optional[str] = None,
         sensors: List[Dict[str, Any]] = None,
-        data: List[ObjectAttr] = None,
-        m_data: List[ObjectAttr] = None,
+        sa_data: List[Dict[str, Any]] = None,
+        param_data: List[Dict[str, Any]] = None,
     ):
         # Check the vendor and the serial are sane
         # OEM transceivers return binary trash often
@@ -148,6 +151,7 @@ class AssetCheck(DiscoveryCheck):
                 self.logger.info("Trash submitted as serial: %s", serial.encode("hex"))
                 return
         #
+        data, constant_data = self.clean_sa_data(sa_data)
         is_unknown_xcvr = not builtin and part_no[0].startswith("Unknown | Transceiver | ")
         if not o_type and is_unknown_xcvr:
             o_type = "XCVR"
@@ -160,7 +164,7 @@ class AssetCheck(DiscoveryCheck):
         if is_unknown_xcvr:
             self.logger.info("%s S/N %s should be resolved later", part_no[0], serial)
             self.prepare_context(o_type, number)
-            self.objects += [("XCVR", part_no[0], self.ctx.copy(), serial, data, m_data)]
+            self.objects += [("XCVR", part_no[0], self.ctx.copy(), serial, data, constant_data)]
             return
         # Cache description
         if description:
@@ -194,7 +198,7 @@ class AssetCheck(DiscoveryCheck):
 
                         self.prepare_context(o_type, number)
                         self.objects += [
-                            ("XCVR", part_no[0], self.ctx.copy(), serial, data, m_data)
+                            ("XCVR", part_no[0], self.ctx.copy(), serial, data, constant_data)
                         ]
                         return
 
@@ -245,8 +249,8 @@ class AssetCheck(DiscoveryCheck):
                 o_data += [ObjectAttr(scope="", interface="asset", attr="revision", value=revision)]
             if mfg_date:
                 o_data += [ObjectAttr(scope="", interface="asset", attr="mfg_date", value=mfg_date)]
-            if m_data:
-                o_data += m_data
+            # if m_data:
+            #     o_data += m_data
             if self.object.container:
                 container = self.object.container.id
             else:
@@ -326,7 +330,7 @@ class AssetCheck(DiscoveryCheck):
             self.update_name(o)
             if o.id in self.managed:
                 self.managed.remove(o.id)
-        self.objects += [(o_type, o, self.ctx.copy(), serial, data, m_data)]
+        self.objects += [(o_type, o, self.ctx.copy(), serial, data, constant_data)]
         # Collect sensors
         if sensors:
             for s in sensors:
@@ -335,12 +339,14 @@ class AssetCheck(DiscoveryCheck):
         if number and o.get_data("stack", "stackable"):
             self.stack_member[o] = number
         self.sync_data(o, data)
+        if param_data:
+            self.object_param_artifacts[str(o.id)] = param_data
 
     def clean_sa_data(
         self, data: List[Dict[str, str]]
     ) -> Tuple[List[ObjectAttr], List[ObjectAttr]]:
         """
-        Cleanup data from script
+        Cleanup data from script, Split it to Object Data and Constant Data
         """
         o_data, c_data = [], []
         if not data:

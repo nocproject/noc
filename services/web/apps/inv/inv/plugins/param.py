@@ -68,7 +68,7 @@ class ParamPlugin(InvPlugin):
                     "value": cd.value,
                     "type": cd.schema.type,
                     "description": param.description,
-                    "is_readonly": False,
+                    "is_readonly": cd.value and cd.schema.choices and len(cd.schema.choices) == 1,
                     "choices": cd.schema.choices,
                     "scope": cd.scope,
                     "scope__label": " ".join(s.code for s in cd.scopes),
@@ -82,8 +82,11 @@ class ParamPlugin(InvPlugin):
         data: List[Dict[str, Any]] = self.app.deserialize(request.body)
         for d in data:
             p = self.app.get_object_or_404(ConfigurationParam, id=d["param"])
-            for s in d["scopes"]:
-                o.set_cfg_data(p, d["value"], scopes=s[1:].split("@"))
+            if not d.get("scopes"):
+                o.set_cfg_data(p, d["value"])
+            else:
+                for s in d["scopes"]:
+                    o.set_cfg_data(p, d["value"], scopes=s[1:].split("@"))
         try:
             o.save()
         except Exception as e:

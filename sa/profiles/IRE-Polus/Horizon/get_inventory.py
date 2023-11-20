@@ -8,7 +8,8 @@
 # Python modules
 import re
 from dataclasses import dataclass
-from typing import Dict
+from typing import Dict, List, Any
+from collections import defaultdict
 
 # Third-party modules
 import orjson
@@ -35,6 +36,16 @@ class Script(BaseScript):
 
     rx_devices = re.compile(r"(?P<slot>\d+)\s*\|(?P<name>\S+)\s*")
     rx_table = re.compile(r"(?P<pname>\S+)\s*\|(?P<punits>\S*)\s*\|(?P<pvalue>.+)\s*")
+
+    cfg_params = {
+        "SetTxFreqSp",
+        "EnableTx",
+        "SetState",
+        "SetDataType",
+        "SetFECType",
+        "SetPayload",
+        "SetPayload",
+    }
 
     def parse_table(self, v):
         r = {}
@@ -75,24 +86,48 @@ class Script(BaseScript):
                 }
         return list(r.values())
 
+    def parse_components2(self, params: List[Param]) -> List[Dict[str, Any]]:
+        r = defaultdict(dict)
+        for p in params:
+            if p.component in {"CARD", "PORT"}:
+                continue
+            component = (p.component, p.port)
+            if component not in r:
+                r[component]["vendor"] = "IRE-Polus"
+            if p.name == "PtNumber":
+                r[component]["part_no"] = p.value
+            elif p.name == "SrNumber":
+                r[component]["serial"] = p.value
+            elif p.name == "HwNumber":
+                r[component]["revision"] = p.value
+            elif p.name == "Vendor":
+                r[component]["vendor"] = p.value
+            elif p.name == "State":
+                r[component]["state"] = p.value != "Отсутствует"
+        return list(r.values())
+
     def execute_http(self, **kwargs):
         r = []
         c = self.http.get("/api/crates", json=True)
         if not c:
             return
-        c_params = self.http.get("/api/crates/params?names=SrNumber,sysDevType", json=True)
+        v = self.http.get("/api/crates/params?names=SrNumber,sysDevType", json=True)
         c = c["crates"][0]
         # c_params = self.process_params(c_params["params"])
-        c_params = self.profile.parse_params(c_params["params"])
+        # c_params = self.profile.parse_params(c_params["params"])
         r += [
             {
                 "type": "CHASSIS",
                 "number": "1",
                 "vendor": "IRE-Polus",
                 "part_no": c["chassis"],
-                "serial": c_params["SrNumber"].value,
+                # "serial": c_params["SrNumber"].value,
             }
         ]
+        for p in v["params"]:
+            p = Param.from_code(**p)
+            if p.name == "SrNumber":
+                r[-1]["serial"] = p.value
         # slots = self.http.get("/api/slots")
         devices: Dict[int, Device] = {}  # slot -> device info
         v = self.http.get("/api/devices", json=True)
@@ -116,11 +151,11 @@ class Script(BaseScript):
         # /api/devices/params?crateId=1&slotNumber=3
         adapters = {}
         for slot, d in devices.items():
-            params = self.http.get(
+            v = self.http.get(
                 f"/api/devices/params?crateId={d.crate_id}&slotNumber={slot}&fields=name,value,description",
                 json=True,
             )
-            params: Dict[str, Param] = self.profile.parse_params(params["params"])
+            # params: Dict[str, Param] = self.profile.parse_params(params["params"])
             # if params["pId"].value == "ADM-10-SFP/SFP+-H8":
             #    print(params)
             adapter, num = None, d.slot_name
@@ -138,17 +173,28 @@ class Script(BaseScript):
                         "part_no": "HS-H8",
                     }
                 ]
-            r += [
-                {
-                    "type": "LINECARD",
-                    "number": num,
-                    "vendor": "IRE-Polus",
-                    "part_no": params["pId"].value,
-                    "serial": params["SrNumber"].value,
-                    "revision": params["HwNumber"].value,
-                }
-            ]
-            r += self.parse_components(params)
+            card = {
+                "type": "LINECARD",
+                "number": num,
+                "vendor": "IRE-Polus",
+                # "part_no": params["pId"].value,
+                # "serial": params["SrNumber"].value,
+                # "revision": params["HwNumber"].value,
+            }
+            params: List[Param] = []
+            for p in v["params"]:
+                p = Param.from_code(**p)
+                if p.component == "CARD" and p.name == "pId":
+                    card["part_no"] = p.value
+                elif p.component == "CARD" and p.name == "SrNumber":
+                    card["serial"] = p.value
+                elif p.component == "CARD" and p.name == "HwNumber":
+                    card["revision"] = p.value
+                params.append(p)
+            self.logger.debug("[%s] Params: %s", num, [p for p in params if p.value])
+            r += [card]
+            # r += self.parse_components(params)
+            r += self.parse_components2(params)
         return r
 
     def execute_cli(self, **kwargs):

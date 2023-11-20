@@ -8,6 +8,7 @@
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetuptime import IGetUptime
+from .profile import Param
 
 
 class Script(BaseScript):
@@ -25,7 +26,8 @@ class Script(BaseScript):
             f"/api/devices/params?crateId={crate}&slotNumber={cu_slot}&names=Time&fields=name,value,description",
             json=True,
         )
-        r = self.profile.parse_params(v["params"])
-        if "Time" in r:
-            return float(r["Time"].value)
+        for p in v["params"]:
+            p = Param.from_code(**p)
+            if p.name == "Time":
+                return float(p.value)
         return None

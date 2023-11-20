@@ -334,6 +334,15 @@ class ManagedObjectProfile(NOCModel):
     enable_box_discovery_ifdesc = models.BooleanField(default=False)
     # Enable Housekeeping
     enable_box_discovery_hk = models.BooleanField(default=False)
+    # Enable Config Param Data Discovery
+    enable_box_discovery_param_data = models.BooleanField(default=False)
+    # Resovle conflict when discovery diff value from object
+    box_discovery_param_data_conflict_resolve_policy = models.CharField(
+        _("Box ParamData Conflict Resolve Policy"),
+        max_length=1,
+        choices=[("M", "Manual"), ("D", "Prefer Discovery"), ("O", "Prefer Object")],
+        default="O",
+    )
     # Enable Alarms
     enable_box_discovery_alarms = models.BooleanField(default=False)
     # Enable Box CPE status policy

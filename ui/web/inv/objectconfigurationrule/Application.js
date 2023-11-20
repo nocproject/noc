@@ -148,28 +148,53 @@ Ext.define("NOC.inv.objectconfigurationrule.Application", {
                             dataIndex: "param",
                             editor: "cm.configurationparam.LookupField",
                             width: 200,
-                            renderer: NOC.render.Lookup("param")
+                            renderer: NOC.render.Lookup("param"),
+                            sortable: false
                         },
                         {
                             text: __("Scope"),
                             dataIndex: "scope",
                             editor: "cm.configurationscope.LookupField",
                             width: 200,
-                            renderer: NOC.render.Lookup("scope")
+                            renderer: NOC.render.Lookup("scope"),
+                            sortable: false
+                        },
+                        {
+                            text: __("Hide"),
+                            dataIndex: "is_hide",
+                            width: 30,
+                            renderer: NOC.render.Bool,
+                            sortable: false
+                        },
+                        {
+                            text: __("Read Only"),
+                            dataIndex: "is_readonly",
+                            width: 30,
+                            renderer: NOC.render.Bool,
+                            sortable: false
                         },
                         {
                             text: __("Dependency Param"),
                             dataIndex: "dependency_param",
                             editor: "cm.configurationparam.LookupField",
                             width: 200,
-                            renderer: NOC.render.Lookup("dependency_param")
+                            renderer: NOC.render.Lookup("dependency_param"),
+                            sortable: false
                         },
                         {
-                            text: __("Dependency Param Value"),
-                            dataIndex: "dependency_param_value",
+                            text: __("Dependency Param Values"),
+                            dataIndex: "dependency_param_values",
                             width: 100,
-                            editor: "textfield"
-                        }
+                            editor: "textfield",
+                            sortable: false
+                        },
+                        {
+                            text: __("Choices"),
+                            dataIndex: "choices",
+                            width: 150,
+                            editor: "textfield",
+                            sortable: false
+                        },
                     ]
                 }
             ],

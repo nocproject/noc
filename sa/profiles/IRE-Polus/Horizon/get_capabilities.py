@@ -14,4 +14,4 @@ class Script(BaseScript):
 
     def execute_platform_cli(self, caps):
         crate, cu_slot = self.profile.get_cu_slot(self)
-        caps["Polus | ControlUnit | Location"] = f"{crate}/{cu_slot}"
+        caps["IRE-Polus | ControlUnit | Location"] = f"{crate}/{cu_slot}"

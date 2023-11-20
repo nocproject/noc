@@ -135,7 +135,7 @@ class ScopeVariant(object):
     @classmethod
     def from_code(cls, code: str) -> "ScopeVariant":
         scope, *v = code.split("::")
-        s = ConfigurationScope.get_by_name(scope)
+        s = ConfigurationScope.get_by_name(scope.strip("@"))
         if not s:
             ValueError("Unknown scope: %s" % scope)
         # check value by helper
@@ -154,11 +154,19 @@ class ParamData(object):
             return f"{self.code}@{self.scope} = {self.value}"
         return f"{self.code} = {self.value}"
 
+    def __eq__(self, other) -> bool:
+        return str(self) == str(other)
+
+    def __hash__(self):
+        return hash(str(self))
+
     @property
     def scope(self) -> str:
-        if not self.scopes:
-            return ""
         return "".join(f"@{s.code}" for s in self.scopes)
+
+    @property
+    def param(self) -> "ConfigurationParam":
+        return ConfigurationParam.get_by_code(self.code)
 
 
 class ScopeItem(EmbeddedDocument):
@@ -315,24 +323,29 @@ class ConfigurationParam(Document):
         return ParamSchema(**r)
 
     @classmethod
-    def clean_scope(cls, scopes: List[str]) -> List[ScopeVariant]:
+    def clean_scope(cls, param: "ConfigurationParam", scope: str) -> str:
         """
         Clean parameter scopes from string
         """
-        r = []
-        for s in scopes:
-            r.append(ScopeVariant.from_code(s))
-        return r
+        for s in scope.strip("@").split("@"):
+            sv = ScopeVariant.from_code(s)
+            if not param.has_scope(sv.scope.name):
+                raise ValueError("Not supported scope '%s' on param: %s" % (s, param.code))
+        if scope.startswith("@"):
+            return scope
+        return f"@{scope}"
 
     def has_scope(self, name: str) -> bool:
         """
         Check Param has scope
         :param name: Scope name
         """
+        if not self.has_required_scopes:
+            return True
         for s in self.scopes:
             if s.scope.name == name:
                 return True
-        return False
+        return True
 
     @property
     def is_common(self) -> bool:
@@ -340,3 +353,7 @@ class ConfigurationParam(Document):
         Param has Common Scope (without variant)
         """
         return self.has_scope("Common")
+
+    @property
+    def has_required_scopes(self) -> bool:
+        return any(s for s in self.scopes if s.is_required)
