@@ -8,6 +8,8 @@ console.debug("Defining NOC.main.desktop.HeaderPanel");
 Ext.define("NOC.main.desktop.HeaderPanel", {
     extend: "Ext.Panel",
     requires: [
+        // "NOC.core.plugin.badgeable.Badgeable",
+        "Ext.ux.plugin.badgeable.Badgeable",
         "Ext.ux.form.SearchField"
     ],
     region: "north",
@@ -82,6 +84,22 @@ Ext.define("NOC.main.desktop.HeaderPanel", {
             inputType: "password",
             hidden: true
         });
+        me.pressed = 0;
+        me.queueButton = Ext.create("Ext.Button", {
+            text: __("Queue"),
+            badgeText: "",
+            plugins: [
+                {
+                    ptype: "badgeable",
+                    cls: "noc-badge-running",
+                    style: "padding: 0 3px;text-align: center; width: auto;"
+                }
+            ],
+            handler: function(e) {
+                console.log("Queue button pressed");
+                this.setBadgeText(["99", "", "999", "9", "222", "10000000", "", "1", "2", "3", "4"][me.pressed++]);
+            }
+        });
         Ext.apply(me, {
             items: [
                 // NOC logo
@@ -113,6 +131,7 @@ Ext.define("NOC.main.desktop.HeaderPanel", {
                     border: false
                 },
                 me.emptyField,
+                me.queueButton,
                 // Last update
                 me.lastUpdateButton,
                 // User menu
