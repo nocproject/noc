@@ -176,11 +176,15 @@ class AssetCheck(DiscoveryCheck):
         if not vnd:
             # Try to resolve via model map
             m = self.get_model_map(vendor, part_no, serial)
-            if not m:
+            if not m and o_type != "XCVR":
                 self.logger.error(
                     "Unknown vendor '%s' for S/N %s (%s)", vendor, serial, description
                 )
                 return
+            else:
+                self.logger.info(
+                    "Unknown xcvr vendor '%s' for S/N %s (%s)", vendor, serial, description
+                )
         else:
             # Find model
             m = ObjectModel.get_model(vnd, part_no)
