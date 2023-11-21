@@ -183,8 +183,15 @@ class AssetCheck(DiscoveryCheck):
                 return
             else:
                 self.logger.info(
-                    "Unknown xcvr vendor '%s' for S/N %s (%s)", vendor, serial, description
+                    "Unknown xcvr vendor '%s' for S/N %s (%s). Creating it.", vendor, serial, description
                 )
+                try:
+                    vnd = Vendor.ensure_vendor(vendor)
+                except ValueError as e:
+                    self.logger.error(
+                        "Vendor creating failed '%s' for S/N %s (%s)", vendor, serial, description
+                    )
+                    return
         else:
             # Find model
             m = ObjectModel.get_model(vnd, part_no)
