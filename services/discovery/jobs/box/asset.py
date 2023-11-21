@@ -183,7 +183,10 @@ class AssetCheck(DiscoveryCheck):
                 return
             else:
                 self.logger.info(
-                    "Unknown xcvr vendor '%s' for S/N %s (%s). Create it.", vendor, serial, description
+                    "Unknown xcvr vendor '%s' for S/N %s (%s). Create it.",
+                    vendor,
+                    serial,
+                    description
                 )
                 try:
                     vnd = Vendor.ensure_vendor(vendor)
