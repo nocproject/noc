@@ -186,7 +186,7 @@ class AssetCheck(DiscoveryCheck):
                     "Unknown xcvr vendor '%s' for S/N %s (%s). Create it.",
                     vendor,
                     serial,
-                    description
+                    description,
                 )
                 try:
                     vnd = Vendor.ensure_vendor(vendor)
