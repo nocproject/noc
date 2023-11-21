@@ -1,7 +1,7 @@
 #
 # Base layer containing system packages and requirements
 #
-FROM python:3.9.10-slim-bullseye AS code
+FROM python:3.9-slim-bullseye AS code
 ENV\
     DJANGO_SETTINGS_MODULE=noc.settings \
     NOC_THREAD_STACK_SIZE=524288 \
@@ -56,13 +56,6 @@ RUN \
     && useradd -d /opt/noc -M -r -u 1200 -U noc -s /bin/sh \
     && chown noc /opt/noc
 
-VOLUME /opt/noc
-
-EXPOSE 1200
-
-# https://code.getnoc.com/noc/noc/-/issues/1480
-#HEALTHCHECK --interval=10s --timeout=1s \
-#    CMD curl -f http://0.0.0.0:1200/health/ || exit 1
 
 #
 # Developer's container
