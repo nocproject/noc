@@ -176,55 +176,56 @@ class AssetCheck(DiscoveryCheck):
         if not vnd:
             # Try to resolve via model map
             m = self.get_model_map(vendor, part_no, serial)
-            if not m and o_type != "XCVR":
-                self.logger.error(
-                    "Unknown vendor '%s' for S/N %s (%s)", vendor, serial, description
-                )
-                return
-            else:
-                self.logger.info(
-                    "Unknown xcvr vendor '%s' for S/N %s (%s). Create it.",
-                    vendor,
-                    serial,
-                    description,
-                )
-                try:
-                    vnd = Vendor.ensure_vendor(vendor)
-                except ValueError:
+            if not m:
+                if o_type == "XCVR":
+                    self.logger.info(
+                        "Unknown xcvr vendor '%s' for S/N %s (%s). Create it.",
+                        vendor,
+                        serial,
+                        description,
+                    )
+                    try:
+                        vnd = Vendor.ensure_vendor(vendor)
+                    except ValueError:
+                        self.logger.error(
+                            "Vendor creating failed '%s' for S/N %s (%s)", vendor, serial, description
+                        )
+                        return
+                else:
                     self.logger.error(
-                        "Vendor creating failed '%s' for S/N %s (%s)", vendor, serial, description
+                        "Unknown vendor '%s' for S/N %s (%s)", vendor, serial, description
                     )
                     return
-        else:
-            # Find model
-            m = ObjectModel.get_model(vnd, part_no)
+
+        # Find model
+        m = ObjectModel.get_model(vnd, part_no)
+        if not m:
+            # Try to resolve via model map
+            m = self.get_model_map(vendor, part_no, serial)
             if not m:
-                # Try to resolve via model map
-                m = self.get_model_map(vendor, part_no, serial)
-                if not m:
-                    if o_type == "XCVR":
-                        self.logger.info(
-                            "Unknown model: vendor=%s, part_no=%s (%s). " "Try resolve later",
-                            vnd.name,
-                            part_no,
-                            description,
-                        )
+                if o_type == "XCVR":
+                    self.logger.info(
+                        "Unknown model: vendor=%s, part_no=%s (%s). " "Try resolve later",
+                        vnd.name,
+                        part_no,
+                        description,
+                    )
 
-                        self.prepare_context(o_type, number)
-                        self.objects += [
-                            ("XCVR", part_no[0], self.ctx.copy(), serial, data, constant_data)
-                        ]
-                        return
+                    self.prepare_context(o_type, number)
+                    self.objects += [
+                        ("XCVR", part_no[0], self.ctx.copy(), serial, data, constant_data)
+                    ]
+                    return
 
-                    else:
-                        self.logger.info(
-                            "Unknown model: vendor=%s, part_no=%s (%s). " "Skipping",
-                            vnd.name,
-                            part_no,
-                            description,
-                        )
-                        self.register_unknown_part_no(vnd, part_no, description)
-                        return
+                else:
+                    self.logger.info(
+                        "Unknown model: vendor=%s, part_no=%s (%s). " "Skipping",
+                        vnd.name,
+                        part_no,
+                        description,
+                    )
+                    self.register_unknown_part_no(vnd, part_no, description)
+                    return
 
         # Sanitize serial number against the model
         serial = self.clean_serial(m, number, serial)
