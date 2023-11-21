@@ -188,7 +188,10 @@ class AssetCheck(DiscoveryCheck):
                         vnd = Vendor.ensure_vendor(vendor)
                     except ValueError:
                         self.logger.error(
-                            "Vendor creating failed '%s' for S/N %s (%s)", vendor, serial, description
+                            "Vendor creating failed '%s' for S/N %s (%s)",
+                            vendor,
+                            serial,
+                            description,
                         )
                         return
                 else:
