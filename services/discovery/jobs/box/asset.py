@@ -800,9 +800,7 @@ class AssetCheck(DiscoveryCheck):
                 try:
                     o = Vendor.ensure_vendor(v)
                 except ValueError:
-                    self.logger.error(
-                        "Vendor creating failed '%s'", v
-                    )
+                    self.logger.error("Vendor creating failed '%s'", v)
         self.vendors[v] = o
         return o
 
