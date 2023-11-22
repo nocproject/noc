@@ -793,9 +793,8 @@ class AssetCheck(DiscoveryCheck):
             v = "INTEL"
         if "FINISAR" in v:
             v = "FINISAR"
-        o = Vendor.objects.filter(code=v).first()
+        o = Vendor.get_by_code(v)
         if not o:
-            o = None
             if o_type == "XCVR":
                 try:
                     o = Vendor.ensure_vendor(v)
