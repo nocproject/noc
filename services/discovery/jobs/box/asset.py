@@ -172,7 +172,7 @@ class AssetCheck(DiscoveryCheck):
                 if p not in self.pn_description:
                     self.pn_description[p] = description
         # Find vendor
-        vnd = self.get_vendor(vendor)
+        vnd = self.get_vendor(vendor, o_type)
         if not vnd:
             # Try to resolve via model map
             m = self.get_model_map(vendor, part_no, serial)
@@ -775,9 +775,9 @@ class AssetCheck(DiscoveryCheck):
                 r += [n]
         return r
 
-    def get_vendor(self, v: Optional[str]) -> Optional["Vendor"]:
+    def get_vendor(self, v: Optional[str], o_type: Optional[str] = "") -> Optional["Vendor"]:
         """
-        Get vendor instance or None
+        Get vendor instance or None. Create vendor if object type is XCVR.
         """
         if v is None or v.startswith("OEM") or v == "None":
             v = "NONAME"
@@ -793,13 +793,14 @@ class AssetCheck(DiscoveryCheck):
             v = "INTEL"
         if "FINISAR" in v:
             v = "FINISAR"
-        o = Vendor.objects.filter(code=v).first()
-        if o:
-            self.vendors[v] = o
-            return o
-        else:
-            self.vendors[v] = None
-            return None
+        o = Vendor.get_by_code(v)
+        if not o and o_type == "XCVR":
+            try:
+                o = Vendor.ensure_vendor(v)
+            except ValueError:
+                self.logger.error("Vendor creating failed '%s'", v)
+        self.vendors[v] = o
+        return o
 
     def set_rule(self, rule: "ConnectionRule"):
         self.logger.debug("Setting connection rule '%s'", rule.name)
