@@ -5,13 +5,17 @@
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
+# Python modules
+import os
+import subprocess
+from pathlib import Path
+
 # NOC modules
-from noc.core.handler import get_handler
 from noc.core.migration.base import BaseMigration
 
 
 class Migration(BaseMigration):
     def migrate(self):
-        fix = get_handler("noc.fixes.fix_bi_id.fix")
-        if fix:
-            fix()
+        if not os.path.exists(Path("fixes", "fix_bi_id")):
+            return
+        subprocess.check_call(["./noc", "fix", "apply", "fix_bi_id"])
