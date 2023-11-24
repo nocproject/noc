@@ -10,6 +10,7 @@ import json
 
 # NOC modules
 from .mo import MODashboard
+from noc.inv.models.object import Object
 from noc.inv.models.interface import Interface
 from noc.inv.models.subinterface import SubInterface
 
@@ -46,6 +47,18 @@ class MOCardDashboard(MODashboard):
                 return metrics
             return None
 
+        def interface_dom_metrics(profile):
+            """
+            Check interface profile has metrics
+            """
+            metrics = []
+            for m in profile.metrics:
+                if "Interface | DOM |" in m.metric_type.name:
+                    metrics.append(m.metric_type.field_name)
+            if metrics:
+                return metrics
+            return None
+
         def check_metrics(metric):
             """
             Object check metrics
@@ -58,6 +71,8 @@ class MOCardDashboard(MODashboard):
         port_types = []
         subif = []
         radio_types = []
+        sfp_types = []
+        data = None
         extra_template = self.extra_template.replace("'", '"')
         result = json.loads(extra_template)
         if result["type"] == "iface":
@@ -98,12 +113,37 @@ class MOCardDashboard(MODashboard):
                 if radio:
                     radio_types = {"name": iface.profile.name, "port": radio, "metrics": metrics}
 
-            return {
-                "object_metrics": object_metrics,
-                "port_types": port_types,
-                "subifaces": subif,
-                "radio_types": radio_types,
-            }
+        if result["type"] == "sfp":
+            data = result["data"]
+            sfp = []
+            iface = Interface.objects.get(managed_object=self.object.id, name=result["name"])
+            iprof = iface.profile if interface_profile_has_metrics(iface.profile) else None
+            if iprof:
+                metrics = [str(m.metric_type.field_name) for m in iface.profile.metrics]
+                if interface_dom_metrics(iface.profile):
+                    sfp = {
+                        "name": iface.name,
+                        "descr": self.str_cleanup(
+                            iface.description, remove_letters=TITLE_BAD_CHARS
+                        ),
+                        "status": iface.status,
+                        "metrics": interface_dom_metrics(iface.profile),
+                    }
+                if sfp:
+                    sfp_types = {"name": iface.profile.name, "port": sfp, "metrics": metrics}
+            o = Object.get_by_id(data["id"])
+            if o:
+                data["vendor"] = o.model.vendor.name
+                data["part_n"] = o.model.get_data("asset", "part_no")
+
+        return {
+            "object_metrics": object_metrics,
+            "port_types": port_types,
+            "subifaces": subif,
+            "radio_types": radio_types,
+            "sfp_types": sfp_types,
+            "extra_vars": data,
+        }
 
     def get_context(self):
         return {
@@ -112,6 +152,8 @@ class MOCardDashboard(MODashboard):
             "device": self.object.name.replace('"', ""),
             "subifaces": self.object_data["subifaces"],
             "radio_types": self.object_data["radio_types"],
+            "sfp_types": self.object_data["sfp_types"],
+            "extra_vars": self.object_data["extra_vars"],
             "bi_id": self.object.bi_id,
             "pool": self.object.pool.name,
             "ping_interval": self.object.object_profile.ping_interval,

@@ -463,10 +463,16 @@
                                     href="/ui/grafana/dashboard/script/noc.js?dashboard=mocard&id={{ object.id }}&extra_template={'type': 'iface', 'name': '{{i["name"]}}'}">
                                     <i class="fa fa-dashboard"></i><span class="noc-port-link-label">Загрузка</span>
                                 </a>
-                                <a target="_blank" class="noc-port-link"
-                                    data-toggle="tooltip" data-placement="right" title="{{ _("Open SFP") }}"
-                                    href="https://xxxx">
-                                    <i class="fa fa-newspaper-o"></i><span class="noc-port-link-label">SFP</span></a>
+                                {% if inventory %}
+                                    {% for ii in inventory %}
+                                        {% if i["name"] == ii["name"] and ii["id"]%}
+                                            <a target="_blank" class="noc-port-link"
+                                                data-toggle="tooltip" data-placement="right" title="{{ _("Open SFP") }}"
+                                                href="/ui/grafana/dashboard/script/noc.js?dashboard=mocard&id={{ object.id }}&extra_template={'type': 'sfp', 'name': '{{i["name"]}}', 'data': {{ ii }}}">
+                                                <i class="fa fa-newspaper-o"></i><span class="noc-port-link-label">SFP</span></a>
+                                        {% endif %}
+                                    {% endfor %}
+                                {% endif %}
                                 <a target="_" class="noc-port-link"
                                     data-toggle="tooltip" data-placement="right" title="{{ _("Run VPN Trace") }}"
                                     href="/api/card/view/interfacepath/{{ i["id"] }}/">
