@@ -35,5 +35,5 @@ def fix():
             bi_id = bi_hash(d["_id"])
             bulk.append(UpdateOne({"_id": d["_id"]}, {"$set": {"bi_id": bson.Int64(bi_id)}}))
         if bulk:
-            print("    Update %d items" % len(bulk))
+            print(f"    Update {len(bulk)} items")
             coll.bulk_write(bulk)
