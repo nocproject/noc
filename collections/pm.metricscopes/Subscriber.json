@@ -24,6 +24,7 @@
             "label": "noc::chassis::*"
         },
         {
+            "is_key_label": true,
             "is_order_key": true,
             "is_path": true,
             "is_primary_key": false,
@@ -32,6 +33,7 @@
             "view_column": "slot"
         },
         {
+            "is_key_label": true,
             "is_order_key": false,
             "is_path": true,
             "is_primary_key": false,
@@ -40,6 +42,7 @@
             "view_column": "module"
         },
         {
+            "is_key_label": true,
             "is_order_key": true,
             "is_path": true,
             "is_primary_key": false,
