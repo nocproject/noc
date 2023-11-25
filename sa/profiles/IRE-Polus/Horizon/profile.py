@@ -15,15 +15,34 @@ from dataclasses import dataclass
 # NOC modules
 from noc.core.profile.base import BaseProfile
 
+# Modules:
+# Amp1OSC - Канала служебной связи
+# Amp1 - усилителя 1
+# Amp1Att - VOA усилителя 1
+# Amp1In - на входе усилителя 1
+# Amp1OutSig - сигнала на выходе усилителя 1
+# Amp1Pump1 - лазера накачки 1 усилителя 1
+# BstAmpIn - входе бустера
+# BstAmpOutSig - сигнала на выходе бустера
+# BstAmpOut - на выходе бустера
+# BstAmpPump - лазера накачки бустера
+# PreAmpIn - входе предусилителя
+# PreAmpOutSig - сигнала на выходе предусилителя
+# PreAmpOut - на выходе предусилителя
+# PreAmp - предусилителя
+# PreAmpPump - лазера накачки предусилителя
 
 rx_case_component = re.compile(
     r"(pt|Module)?(?P<component>(PEM|FAN|Flash|Case|Crate|AirFilter|Port"
     r"|Ln|Dir|Cl|Line|Client|ASIC|PIC|ITLA|Pump|FPGA)(In|Out)?\d*)(?P<name>\S+)$"
 )
 
-rx_transceiver = re.compile(r"\S+(?P<transiever>SFP|SFP\+|QSFP28|CFP2)\S+")
+rx_transceiver = re.compile(r"\S+(?P<transiever>SFP|SFP\+|QSFP28|QSFP|CFP2)\S+")
 rx_port = re.compile(
     r"^((?:pt)?(?:Ln|Dir|Cl|Line|Client|PORT|Port|OCM|Com|Mon|OUT|ChH|ChC|C\d+|H\d+)(?:In|Out)?_?\d*)"
+)
+rx_module = re.compile(
+    r"^(Module)?(?P<module>Amp\d*|PreAmp|BstAmp|ASIC|FPGA|PIC\d*|TLA\d*|Pump\d*)(In|Out|OSC|Att|OutSig|Pump\d*)?"
 )
 rx_channel = re.compile(r"\S+Lane_(\d+)\S+")
 rx_threshold = re.compile(r"(?P<param>\S+)(?P<type>CMax|WMax|WMin|CMin)$")
@@ -41,6 +60,10 @@ METRIC_MAP = {
     "RxSNR": "1",
     "RxPwr": "dBm",
     "TxPwr": "dBm",
+    "PwrDrift": "dB",
+    "Att": "dB",
+    "ILD": "A,m",
+    "Gain": "dB",
     "FECBER": "%",
     # Errors
     "EB": "1",
@@ -216,9 +239,12 @@ class PolusParam:
         """
         Return Module
         """
-        if not self.name.startswith("Module"):
-            return
-        return self.name[6:-4]
+        if self.port:
+            return None
+        match = rx_module.match(self.name)
+        if match:
+            return match.group("module")
+        return None
 
     @classmethod
     def from_code(cls, name, value, description: Optional[str] = None, **kwargs) -> "PolusParam":

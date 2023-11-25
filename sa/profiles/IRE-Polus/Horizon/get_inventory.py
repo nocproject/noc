@@ -118,16 +118,15 @@ class Script(BaseScript):
             return r
         return None
 
-    def get_sensors(self, c: Component) -> List[Dict[str, Any]]:
+    def get_sensors(self, c: Component, slot_num: str) -> List[Dict[str, Any]]:
         """
         Getting Sensors from component metrics
         """
         r = []
         for p in c.metrics:
-            labels, thresholds, status = [], [], True
+            labels, thresholds, status = [f"slot::{slot_num}"], [], True
             if p.port:
                 labels.append(f"port::{p.port}")
-                labels.append(f"slot::{p.port}")
                 # status = port_states.get(p.port) or T
             if p.channel:
                 labels.append(f"channel::{p.channel}")
@@ -260,7 +259,7 @@ class Script(BaseScript):
                 "part_no": c_fru.part_no,
                 "serial": c_fru.serial,
                 "revision": c_fru.revision,
-                "sensors": self.get_sensors(common),
+                "sensors": self.get_sensors(common, slot),
                 # "param_data": self.get_cfg_param_data(common),
             }
             r += [card]
@@ -269,7 +268,7 @@ class Script(BaseScript):
                 if c.is_common:
                     continue
                 elif not fru:
-                    card["sensors"] += self.get_sensors(c)
+                    card["sensors"] += self.get_sensors(c, slot)
                     continue
                 self.logger.info("[%s] Parse FRU", fru)
                 # card["param_data"] += self.get_cfg_param_data(c)
@@ -281,7 +280,7 @@ class Script(BaseScript):
                         "part_no": fru.part_no,
                         "serial": fru.serial,
                         "revision": fru.revision,
-                        "sensors": self.get_sensors(c),
+                        "sensors": self.get_sensors(c, slot),
                     }
                 ]
         return r
