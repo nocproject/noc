@@ -22,7 +22,7 @@ Ext.define("NOC.inv.inv.plugins.metric.MetricPanel", {
     // Metric Store
     me.store = Ext.create("Ext.data.Store", {
       model: "NOC.inv.inv.plugins.metric.MetricModel",
-      // groupField: "scope__label",
+      groupField: "component",
     });
     Ext.apply(me, {
       tbar: [
@@ -63,7 +63,7 @@ Ext.define("NOC.inv.inv.plugins.metric.MetricPanel", {
           columns: [
             {
               text: __("Metric Type"),
-              dataIndex: "type",
+              dataIndex: "name",
             },
             {
               text: __("Component"),
@@ -105,7 +105,7 @@ Ext.define("NOC.inv.inv.plugins.metric.MetricPanel", {
             // dataIndex: "description",
             // },
           ],
-          // features: [me.groupingFeature],
+          features: [me.groupingFeature],
           viewConfig: {
             enableTextSelection: true,
           },
