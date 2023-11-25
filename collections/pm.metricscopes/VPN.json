@@ -25,6 +25,7 @@
             "view_column": "instance"
         },
         {
+            "is_key_label": true,
             "is_order_key": false,
             "is_path": true,
             "is_primary_key": false,
@@ -33,6 +34,7 @@
             "view_column": "local_endpoint"
         },
         {
+            "is_key_label": true,
             "is_order_key": true,
             "is_path": true,
             "is_primary_key": false,
