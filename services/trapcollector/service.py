@@ -122,7 +122,7 @@ class TrapCollectorService(FastAPIService):
             metrics["error", ("type", "object_not_found")] += 1
         return None
 
-    def register_message(
+    def register_trap_message(
         self,
         cfg: SourceConfig,
         timestamp: int,
@@ -153,7 +153,14 @@ class TrapCollectorService(FastAPIService):
         raw_pdu: Optional[bytes] = None,
         raw_varbinds: List[Tuple[str, Any, bytes]] = None,
     ):
-        metrics["events_message"] += 1
+        metrics["events_mx_message"] += 1
+        if not cfg.managed_object:
+            self.logger.warning(
+                "[%s] Cfg source not ManagedObject Meta."
+                " Please Reboot cfgtrap datastream and reboot collector. Skipping..",
+                source_address,
+            )
+            return
         n_partitions = get_mx_partitions()
         self.publish(
             value=orjson.dumps(
