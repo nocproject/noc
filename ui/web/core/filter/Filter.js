@@ -247,6 +247,7 @@ Ext.define('NOC.core.filter.Filter', {
             fieldLabel: __('By Labels:'),
             isLookupField: true,
             toBufferTrigger: false,
+            filterProtected: false,
             query: {
                 "enable_managedobject": true
             },
