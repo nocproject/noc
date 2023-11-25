@@ -2,7 +2,11 @@
 # Perform all migrations
 set -e
 ./noc migrate
-./noc sync-perm
-./noc migrate-ch
+./noc ensure-indexes
 ./noc migrate-liftbridge
 ./noc collection sync
+./noc migrate-liftbridge
+./noc migrate-ch
+./noc sync-perm
+./noc sync-mibs
+
