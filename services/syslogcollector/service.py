@@ -143,14 +143,14 @@ class SyslogCollectorService(FastAPIService):
                     }
                 ],
             )
-        if not cfg.managed_object:
+        if config.message.enable_syslog and not cfg.managed_object:
             self.logger.warning(
                 "[%s] Cfg source not ManagedObject Meta."
                 " Please Reboot cfgsyslog datastream and reboot collector. Skipping..",
                 source_address,
             )
             return
-        if config.message.enable_snmptrap:
+        elif config.message.enable_syslog:
             metrics["events_message"] += 1
             n_partitions = get_mx_partitions()
             self.publish(
