@@ -49,7 +49,7 @@ class MigrationLoader(object):
 
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_migration_cache"))
-    def get_migration(cls, name: str, is_custom: bool) -> BaseMigration:
+    def get_migration(cls, name: str, is_custom: bool = False) -> BaseMigration:
         """
         Get migration instance.
 
