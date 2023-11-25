@@ -26,21 +26,6 @@ Ext.define("NOC.inv.inv.plugins.metric.MetricPanel", {
     });
     Ext.apply(me, {
       tbar: [
-        // {
-        //   text: __("Save"),
-        //   glyph: NOC.glyph.save,
-        //   handler: me.save,
-        // },
-        // {
-        //   text: __("Mass"),
-        //   itemId: "saveModeBtn",
-        //   enableToggle: true,
-        // },
-        // {
-        //   text: __("Reset"),
-        //   glyph: NOC.glyph.eraser,
-        //   handler: me.reset,
-        // },
         "->",
         {
           text: __("Collapse All"),
@@ -66,10 +51,6 @@ Ext.define("NOC.inv.inv.plugins.metric.MetricPanel", {
               dataIndex: "name",
             },
             {
-              text: __("Component"),
-              dataIndex: "component__label",
-            },
-            {
               text: __("Value"),
               dataIndex: "value",
             },
@@ -81,38 +62,11 @@ Ext.define("NOC.inv.inv.plugins.metric.MetricPanel", {
               text: __("Alarm"),
               dataIndex: "oper_state__label",
             },
-            // {
-            // text: __("Scope"),
-            // dataIndex: "scope__label",
-            // },
-            // {
-            // text: __("Value"),
-            // dataIndex: "value",
-            // flex: 1,
-            // editor: "textfield",
-            // renderer: function (value, metaData, record) {
-            // if (record.get("type") === "bool") {
-            // if (value == null) {
-            // value = false;
-            // }
-            // return NOC.render.Bool(value);
-            // }
-            // return value;
-            // },
-            // },
-            // {
-            // text: __("Description"),
-            // dataIndex: "description",
-            // },
           ],
           features: [me.groupingFeature],
           viewConfig: {
             enableTextSelection: true,
           },
-          // listeners: {
-          // scope: me,
-          // edit: me.onEdit,
-          // },
         },
       ],
     });
