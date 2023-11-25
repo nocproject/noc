@@ -1,8 +1,8 @@
 #!/bin/sh
+# Perform all migrations
 set -e
 ./noc migrate
 ./noc sync-perm
-if [ ! -z "$(getent hosts clickhouse)" ]; then
-     ./noc migrate-ch
-fi
-python ./scripts/deploy/install-packages requirements/collections.json && ./noc collection sync
+./noc migrate-ch
+./noc migrate-liftbridge
+./noc collection sync
