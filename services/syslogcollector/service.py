@@ -90,7 +90,7 @@ class SyslogCollectorService(FastAPIService):
         metrics["error", ("type", "object_not_found")] += 1
         return None
 
-    def register_message(
+    def register_syslog_message(
         self,
         cfg: SourceConfig,
         timestamp: int,
@@ -143,6 +143,13 @@ class SyslogCollectorService(FastAPIService):
                     }
                 ],
             )
+        if not cfg.managed_object:
+            self.logger.warning(
+                "[%s] Cfg source not ManagedObject Meta."
+                " Please Reboot cfgsyslog datastream and reboot collector. Skipping..",
+                source_address,
+            )
+            return
         if config.message.enable_snmptrap:
             metrics["events_message"] += 1
             n_partitions = get_mx_partitions()
