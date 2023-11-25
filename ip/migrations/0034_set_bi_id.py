@@ -36,4 +36,3 @@ class Migration(BaseMigration):
                     updates = []
             if updates:
                 coll.bulk_write(updates)
-                
