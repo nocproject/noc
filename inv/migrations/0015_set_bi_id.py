@@ -17,13 +17,20 @@ MONGO_CHUNK = 500
 
 
 class Migration(BaseMigration):
+    depends_on = [("sa", "0151_managed_object_vendor"), ("sa", "0152_managed_object_platform")]
+
     def migrate(self):
         # Update mongodb collections
         mdb = self.mongo_db
         for coll_name in [
-            "addressprofiles",
-            "prefixprofiles",
-            "vpnprofiles",
+            "noc.firmwares",
+            "noc.interface_profiles",
+            "noc.networksegments",
+            "noc.networksegmentprofiles",
+            "noc.objects",
+            "noc.platforms",
+            "noc.vendors",
+            "technologies",
         ]:
             coll = mdb[coll_name]
             updates = []
@@ -36,3 +43,4 @@ class Migration(BaseMigration):
                     updates = []
             if updates:
                 coll.bulk_write(updates)
+                
