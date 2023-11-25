@@ -1,0 +1,67 @@
+[
+  {
+    "bi_id": "7110652794113621713",
+    "id": "655f227562b19881ea5c5356",
+    "name": "Time",
+    "component": "",
+    "component__label": "",
+    "units": "6547d5c7cec30759bc234eb2",
+    "units__label": "Scalar",
+    "value": 0,
+    "oper_state": "ok",
+    "oper_state__label": "OK",
+    "thresholds": []
+  },
+  {
+    "bi_id": "7936116313944305541",
+    "id": "655f227562b19881ea5c5358",
+    "name": "CaseTemp",
+    "component": "",
+    "component__label": "",
+    "units": "6547d5c7cec30759bc234eb2",
+    "units__label": "Scalar",
+    "value": 27.1,
+    "oper_state": "ok",
+    "oper_state__label": "OK",
+    "thresholds": [
+      {
+        "value": 70,
+        "is_readonly": false,
+        "name": "c_max",
+        "description": "UP threshold for Temp"
+      },
+      {
+        "value": 15,
+        "is_readonly": false,
+        "name": "c_min",
+        "description": "Down threshold for Temp"
+      }
+    ]
+  },
+  {
+    "bi_id": "1723501383330958455",
+    "id": "655f227562b19881ea5c535a",
+    "name": "PowerLed",
+    "component": "",
+    "component__label": "",
+    "units": "6547d5c7cec30759bc234eb2",
+    "units__label": "Scalar",
+    "value": 0,
+    "oper_state": "ok",
+    "oper_state__label": "OK",
+    "thresholds": []
+  },
+  {
+    "bi_id": "3797876961973120968",
+    "id": "655f227562b19881ea5c535c",
+    "name": "AlarmLed",
+    "component": "",
+    "component__label": "",
+    "units": "6547d5c7cec30759bc234eb2",
+    "units__label": "Scalar",
+    "value": 0,
+    "oper_state": "ok",
+    "oper_state__label": "OK",
+    "thresholds": []
+  }
+]
