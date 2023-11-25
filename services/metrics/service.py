@@ -193,15 +193,11 @@ class MetricsService(FastAPIService):
                 metrics["discard", ("reason", "unknown_scope")] += 1
                 return  # Unknown scope
             labels = item.get("labels") or []
-            if si.key_labels and not labels:
+            if si.required_labels and not labels:
                 self.logger.debug("No labels: %s", item)
                 metrics["discard", ("reason", "no_labels")] += 1
                 return  # No labels
             mk, req = self.get_key(si, item)
-            if si.key_fields and not mk[1]:
-                self.logger.debug("No key fields: %s", item)
-                metrics["discard", ("reason", "no_keyfields")] += 1
-                return  # No key fields
             if si.required_labels and len(req) != len(si.required_labels):
                 self.logger.debug("Missed key label: %s", item)
                 metrics["discard", ("reason", "missed_keylabel")] += 1
