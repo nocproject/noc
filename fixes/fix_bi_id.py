@@ -10,41 +10,30 @@ from pymongo import UpdateOne
 import bson
 
 # NOC modules
-from noc.models import get_model, is_document
 from noc.core.bi.decorator import bi_hash
+from noc.core.mongo.connection import get_db
 
-BI_SYNC_MODELS = [
-    "ip.AddressProfile",
-    "ip.PrefixProfile",
-    "vc.VPNProfile",
-    "inv.Firmware",
-    "inv.Platform",
-    "inv.Vendor",
-    "inv.Technology",
-    "sa.Profile",
+BI_COLLECTIONS = [
+    "addressprofiles",
+    "prefixprofiles",
+    "vpnprofiles",
+    "noc.firmwares",
+    "noc.platforms",
+    "noc.vendors",
+    "technologies",
+    "noc.profiles",
 ]
 
 
 def fix():
-    for model_id in BI_SYNC_MODELS:
-        model = get_model(model_id)
-        print("[%s]" % model_id)
-        if is_document(model):
-            fix_document(model)
-        else:
-            fix_model(model)
-
-
-def fix_document(model):
-    coll = model._get_collection()
-    bulk = []
-    for d in coll.find({"bi_id": {"$exists": False}}, {"_id": 1}):
-        bi_id = bi_hash(d["_id"])
-        bulk += [UpdateOne({"_id": d["_id"]}, {"$set": {"bi_id": bson.Int64(bi_id)}})]
-    if bulk:
-        print("    Update %d items" % len(bulk))
-        coll.bulk_write(bulk)
-
-
-def fix_model(model):
-    pass
+    db = get_db()
+    for coll_name in BI_COLLECTIONS:
+        print(f"[{coll_name}]")
+        coll = db[coll_name]
+        bulk = []
+        for d in coll.find({"bi_id": {"$exists": False}}, {"_id": 1}):
+            bi_id = bi_hash(d["_id"])
+            bulk.append(UpdateOne({"_id": d["_id"]}, {"$set": {"bi_id": bson.Int64(bi_id)}}))
+        if bulk:
+            print(f"    Update {len(bulk)} items")
+            coll.bulk_write(bulk)
