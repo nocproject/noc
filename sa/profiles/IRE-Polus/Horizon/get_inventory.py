@@ -8,8 +8,7 @@
 # Python modules
 import re
 from dataclasses import dataclass
-from typing import Dict, List, Any
-from collections import defaultdict
+from typing import Dict, List, Any, Optional
 
 # Third-party modules
 import orjson
@@ -17,17 +16,68 @@ import orjson
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetinventory import IGetInventory
-from .profile import Param
+from .profile import PolusParam, Component
 
 
 @dataclass
-class Device(object):
+class Device:
     pid: str
     address: int
     slot_name: str
     slot_number: int
     crate_id: int
     d_class: str
+
+
+@dataclass
+class FRU:
+    part_no: str
+    serial: str
+    revision: Optional[str] = None
+    type: str = "LINECARD"
+    vendor: str = "IRE-Polus"
+
+    # def parse_sensors(self, params: List[PolusParam]) -> List[Dict[str, Any]]:
+    #     r = {}
+    #     thresholds: List[PolusParam] = []
+    #     port_states = {}
+    #     for p in params:
+    #         if p.is_threshold:
+    #             thresholds.append(p)
+    #             continue
+    #         elif p.port and p.name == "State":
+    #             port_states[p.port] = p.value != "Отсутствует"
+    #             continue
+    #         elif not p.is_metric:
+    #             continue
+    #         labels = []
+    #         status = True
+    #         if p.port:
+    #             labels.append(f"port::{p.port}")
+    #             labels.append(f"slot::{p.port}")
+    #             status = port_states.get(p.port) or True
+    #         if p.channel:
+    #             labels.append(f"channel::{p.port}")
+    #         if p.module:
+    #             labels.append(f"module::{p.port}")
+    #         r[(p.prefix, p.name)] = {
+    #             "name": f"{p.prefix or ''}{p.name}",
+    #             "status": status,
+    #             "description": p.description,
+    #             "measurement": p.get_measurement_unit,
+    #             "labels": labels,
+    #             "thresholds": [],
+    #         }
+    #     # print("TH", thresholds)
+    #     for th in thresholds:
+    #         if (th.prefix, th.name[:-4]) in r:
+    #             r[(th.prefix, th.name[:-4])]["thresholds"] += [{
+    #                 "id": f"{th.prefix or ''}{th.name}",
+    #                 "value": th.value,
+    #                 "realtion": "<=" if th.name.endswith("Min") else ">=",
+    #                 "description": th.description,
+    #             }]
+    #     return list(r.values())
 
 
 class Script(BaseScript):
@@ -47,64 +97,93 @@ class Script(BaseScript):
         "SetPayload",
     }
 
+    def get_fru(self, c: Component) -> Optional[FRU]:
+        """
+        Getting FRU from component info
+        """
+        r = FRU("", "")
+        for p in c.info_params:
+            if p.code == "PtNumber" or p.code == "pId":
+                r.part_no = p.value
+                r.type = p.component_type
+            elif p.code == "SrNumber":
+                r.serial = p.value
+            elif p.code == "HwNumber":
+                r.revision = p.value
+            elif p.code == "Vendor":
+                r.vendor = p.value
+            # elif p.name == "State":
+            #    r[component]["state"] = p.value != "Отсутствует"
+        if r.serial:
+            return r
+        return None
+
+    def get_sensors(self, c: Component) -> List[Dict[str, Any]]:
+        """
+        Getting Sensors from component metrics
+        """
+        r = []
+        for p in c.metrics:
+            labels, thresholds, status = [], [], True
+            if p.port:
+                labels.append(f"port::{p.port}")
+                labels.append(f"slot::{p.port}")
+                # status = port_states.get(p.port) or T
+            if p.channel:
+                labels.append(f"channel::{p.channel}")
+            if p.module:
+                labels.append(f"module::{p.module}")
+            for tp in c.cfg_thresholds:
+                if tp.name.startswith(p.name):
+                    thresholds.append(
+                        {
+                            "id": tp.name,
+                            "value": tp.value,
+                            "realtion": "<=" if tp.name.endswith("Min") else ">=",
+                            "description": tp.description,
+                        }
+                    )
+            r += [
+                {
+                    "name": p.name,
+                    "status": status,
+                    "description": p.description,
+                    "measurement": p.get_measurement_unit,
+                    "labels": labels,
+                    "thresholds": thresholds,
+                }
+            ]
+        return r
+
+    def get_cfg_param_data(self, c: Component) -> List[Dict[str, str]]:
+        """
+        Getting Configuration Param Datafrom component cfg_param
+        """
+        r = []
+        for p in c.cfg_params:
+            scopes = []
+            if p.port:
+                scopes += [
+                    {
+                        "scope": "OpticalPort",
+                        "value": p.port,
+                    }
+                ]
+            r.append(
+                {
+                    "param": p.code,
+                    "value": p.value,
+                    "scopes": scopes,
+                    # "measurement":
+                }
+            )
+        return r
+
     def parse_table(self, v):
         r = {}
         for match in self.rx_table.finditer(v):
             r[match.group("pname")] = match.group("pvalue").strip()
         return r
-
-    def parse_components(self, params: Dict[str, Param]):
-        r = {}
-        for _, p in params.items():
-            if p.component in r:
-                continue
-            if (
-                p.component_type in {"FAN", "PEM"}
-                and params[(p.component, "State")].value != "Отсутствует"
-            ):
-                r[p.component] = {
-                    "type": p.component_type,
-                    "number": p.component[-1],
-                    "vendor": "IRE-Polus",
-                    "part_no": params[(p.component, "PtNumber")].value,
-                    "serial": params[(p.component, "SrNumber")].value,
-                }
-                if (p.component, "HwNumber") in params:
-                    rev = params[(p.component, "HwNumber")].value
-                    r[p.component]["revision"] = rev.split()[-1]
-            elif (
-                p.component
-                and p.component.endswith("SFP")
-                and params[(p.component, "State")].value == "Ok"
-            ):
-                r[p.component] = {
-                    "type": "XCVR",
-                    "number": p.component[-5],
-                    "vendor": params[(p.component, "Vendor")].value,
-                    "part_no": params[(p.component, "PtNumber")].value,
-                    "serial": params[(p.component, "SrNumber")].value,
-                }
-        return list(r.values())
-
-    def parse_components2(self, params: List[Param]) -> List[Dict[str, Any]]:
-        r = defaultdict(dict)
-        for p in params:
-            if p.component in {"CARD", "PORT"}:
-                continue
-            component = (p.component, p.port)
-            if component not in r:
-                r[component]["vendor"] = "IRE-Polus"
-            if p.name == "PtNumber":
-                r[component]["part_no"] = p.value
-            elif p.name == "SrNumber":
-                r[component]["serial"] = p.value
-            elif p.name == "HwNumber":
-                r[component]["revision"] = p.value
-            elif p.name == "Vendor":
-                r[component]["vendor"] = p.value
-            elif p.name == "State":
-                r[component]["state"] = p.value != "Отсутствует"
-        return list(r.values())
 
     def execute_http(self, **kwargs):
         r = []
@@ -113,8 +192,6 @@ class Script(BaseScript):
             return
         v = self.http.get("/api/crates/params?names=SrNumber,sysDevType", json=True)
         c = c["crates"][0]
-        # c_params = self.process_params(c_params["params"])
-        # c_params = self.profile.parse_params(c_params["params"])
         r += [
             {
                 "type": "CHASSIS",
@@ -125,8 +202,8 @@ class Script(BaseScript):
             }
         ]
         for p in v["params"]:
-            p = Param.from_code(**p)
-            if p.name == "SrNumber":
+            p = PolusParam.from_code(**p)
+            if p.code == "SrNumber":
                 r[-1]["serial"] = p.value
         # slots = self.http.get("/api/slots")
         devices: Dict[int, Device] = {}  # slot -> device info
@@ -155,9 +232,6 @@ class Script(BaseScript):
                 f"/api/devices/params?crateId={d.crate_id}&slotNumber={slot}&fields=name,value,description",
                 json=True,
             )
-            # params: Dict[str, Param] = self.profile.parse_params(params["params"])
-            # if params["pId"].value == "ADM-10-SFP/SFP+-H8":
-            #    print(params)
             adapter, num = None, d.slot_name
             if "." in num:
                 adapter, num = num.split(".")
@@ -173,28 +247,43 @@ class Script(BaseScript):
                         "part_no": "HS-H8",
                     }
                 ]
+            params: List[PolusParam] = [PolusParam.from_code(**p) for p in v["params"]]
+            self.logger.debug("[%s] Params: %s", num, [p for p in params if p.value])
+            # Getting components
+            components = Component.get_components(params=params)
+            common = components["common"]
+            c_fru = self.get_fru(common)
             card = {
                 "type": "LINECARD",
                 "number": num,
                 "vendor": "IRE-Polus",
-                # "part_no": params["pId"].value,
-                # "serial": params["SrNumber"].value,
-                # "revision": params["HwNumber"].value,
+                "part_no": c_fru.part_no,
+                "serial": c_fru.serial,
+                "revision": c_fru.revision,
+                "sensors": self.get_sensors(common),
+                # "param_data": self.get_cfg_param_data(common),
             }
-            params: List[Param] = []
-            for p in v["params"]:
-                p = Param.from_code(**p)
-                if p.component == "CARD" and p.name == "pId":
-                    card["part_no"] = p.value
-                elif p.component == "CARD" and p.name == "SrNumber":
-                    card["serial"] = p.value
-                elif p.component == "CARD" and p.name == "HwNumber":
-                    card["revision"] = p.value
-                params.append(p)
-            self.logger.debug("[%s] Params: %s", num, [p for p in params if p.value])
             r += [card]
-            # r += self.parse_components(params)
-            r += self.parse_components2(params)
+            for c_name, c in components.items():
+                fru = self.get_fru(c)
+                if c.is_common:
+                    continue
+                elif not fru:
+                    card["sensors"] += self.get_sensors(c)
+                    continue
+                self.logger.info("[%s] Parse FRU", fru)
+                # card["param_data"] += self.get_cfg_param_data(c)
+                r += [
+                    {
+                        "type": fru.type,
+                        "number": c.num,
+                        "vendor": fru.vendor,
+                        "part_no": fru.part_no,
+                        "serial": fru.serial,
+                        "revision": fru.revision,
+                        "sensors": self.get_sensors(c),
+                    }
+                ]
         return r
 
     def execute_cli(self, **kwargs):

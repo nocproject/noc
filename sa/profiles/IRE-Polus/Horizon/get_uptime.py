@@ -8,7 +8,7 @@
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetuptime import IGetUptime
-from .profile import Param
+from .profile import PolusParam
 
 
 class Script(BaseScript):
@@ -27,7 +27,7 @@ class Script(BaseScript):
             json=True,
         )
         for p in v["params"]:
-            p = Param.from_code(**p)
+            p = PolusParam.from_code(**p)
             if p.name == "Time":
                 return float(p.value)
         return None
