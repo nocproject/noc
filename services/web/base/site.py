@@ -568,7 +568,7 @@ class Site(object):
                 if app_perms:
                     a = self.apps[app]
                     for p in app_perms:
-                        r.append(AppPermission(module=module_name), title=str(a.title), name=p)
+                        r.append(AppPermission(module=module_name, title=str(a.title), name=p))
         return r
 
 

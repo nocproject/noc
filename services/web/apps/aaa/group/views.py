@@ -78,7 +78,7 @@ class GroupsApplication(ExtModelApplication):
         return self.response(
             {
                 "data": {
-                    "user_permissions": [
+                    "permissions": [
                         {
                             "module": p.module,
                             "title": p.title,
