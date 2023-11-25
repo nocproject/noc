@@ -198,8 +198,12 @@ def _get_loader():
     if not parts[0]:
         root = os.sep + root
     root = os.path.abspath(root)
-    alt_speedup = os.path.join(root, "nocspeedup")
-    if os.path.exists(alt_speedup):
+    alt_speedup = os.getenv("NOC_SPEEDUP_PATH")
+    if not alt_speedup:
+        alt = os.path.join(root, "nocspeedup")
+        if os.path.exists(alt):
+            alt_speedup = alt
+    if alt_speedup:
         NOCSpeedupLoader.ROOT = alt_speedup
         loader_map[NOCSpeedupLoader.PREFIX] = NOCSpeedupLoader
     return ImportRouter(loader_map)
