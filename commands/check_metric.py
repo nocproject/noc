@@ -8,162 +8,20 @@
 # Python modules
 import os
 import argparse
-import pprint
-import datetime
 import re
-from collections import namedtuple
-from typing import Union, Optional, List, Tuple, Callable, Dict, Any
-import types
 
 # Third-party modules
-from fs import open_fs
 import orjson
-import yaml
-import codecs
-import uuid
 
 # NOC modules
 from noc.core.management.base import BaseCommand
-from noc.core.validators import is_int
-from noc.core.span import get_spans, Span
 from noc.core.script.loader import loader
-from noc.core.script.beef import Beef
-from noc.core.script.scheme import (
-    CLI_PROTOCOLS,
-    HTTP_PROTOCOLS,
-    PROTOCOLS,
-    BEEF,
-    TELNET,
-    SSH,
-    HTTP,
-    HTTPS,
-)
-from noc.core.mongo.connection import connect
-from noc.core.comp import smart_text, smart_bytes
 
-from noc.sa.profiles.Generic.get_metrics import MetricConfig, MetricCollectorConfig
-
-BEEF_FORMAT = "1"
-CLI_ENCODING = "quopri"
-MIB_ENCODING = "base64"
-Credentials = namedtuple(
-    "Credentials", ["user", "password", "super_password", "snmp_ro", "snmp_rw", "snmp_rate_limit"]
-)
-
-def stub_execute(self, metrics: Optional[List[Dict[str, Any]]] = None, collected: List[Dict[str, Any]] = None):
-        self.logger.debug("Hello from stub exec")
-            # Generate list of MetricConfig from input parameters
-        sla_metrics: List[MetricCollectorConfig] = []
-        cpe_metrics: List[MetricCollectorConfig] = []
-        sensor_metrics: List[MetricCollectorConfig] = []
-        object_metrics: List[MetricConfig] = []
-
-        # self.logger.debug("==%s==", collected)
-        # self.logger.debug("==%s==", metrics)
-
-        if metrics:
-            # sm = {}
-            for m in metrics:
-                # if m["metric"] == "Sensor | Value":
-                #     sensor_metrics.append(
-                #         MetricCollectorConfig(
-                #             collector="sensor",
-                #             metrics=["Sensor | Value"],
-                #             labels=m.get("labels", []),
-                #             sensor=m.get("sensor"),
-                #         )
-                #     )
-                # elif m["metric"].startswith("SLA"):
-                #     sla_probe = m.get("sla_probe")
-                #     if sla_probe not in sm:
-                #         sm[sla_probe] = MetricCollectorConfig(
-                #             collector="sla",
-                #             metrics=[m["metric"]],
-                #             labels=m.get("labels", []),
-                #             sla_probe=sla_probe,
-                #         )
-                #     else:
-                #         sm[sla_probe].metrics.append(m["metric"])
-                # else:
-                object_metrics.append(MetricConfig(**m))
-            # sla_metrics = list(sm.values())
-            # metrics: List[MetricConfig] = [MetricConfig(**m) for m in metrics]
-        else:
-            raise ValueError("Parameter 'metrics' required")
-        # Split by metric types
-        # self.metric_labels = {self.get_labels_hash(m.metric, m.labels): m for m in object_metrics}
-        # for m in object_metrics:
-        #     self.metric_configs[m.metric] += [m]
-        # Process metrics collection
-        # persistent = set()
-        # self.logger.debug("%s", self._mt_map)
-
-        # self.logger.debug("%s", cpe_metrics)
-        for m in object_metrics:
-            if m.metric not in self._mt_map:
-                self.logger.info("[%s] Metric type is not supported. Skipping", m.metric)
-                continue
-            # Call handlers
-            # for h in self.iter_handlers(m.metric):
-            #     hid = id(h)
-            #     if not h.mt_volatile and hid in persistent:
-            #         continue  # persistent function already called
-            #     h(self, self.metric_configs[m.metric])
-            #     if not h.mt_volatile:
-            #         persistent.add(hid)
-            #     if m.id in self.seen_ids:
-            #         break  # Metric collected
-        # Request snmp metrics from box
-        # if self.snmp_batch:
-            # self.collect_snmp_metrics()
-        # Apply sensor metrics
-        # if sensor_metrics:
-            # self.collect_sensor_metrics(sensor_metrics)
-        # Apply sla metrics
-        # if sla_metrics:
-            # self.collect_sla_metrics(sla_metrics)
-        # if cpe_metrics:
-            # self.collect_cpe_metrics(cpe_metrics)
-        # Apply custom metric collection processes
-        # self.collect_profile_metrics(object_metrics)
-        # return self.get_metrics()
-        return []
-
-
+from noc.sa.profiles.Generic.get_metrics import MetricConfig
 
 class Command(BaseCommand):
     def add_arguments(self, parser):
-        # Output options
-        # out_group = parser.add_mutually_exclusive_group()
-        # out_group.add_argument(
-        #     "--pretty",
-        #     action="store_true",
-        #     dest="pretty",
-        #     default=False,
-        #     help="Pretty-print output",
-        # )
-        # out_group.add_argument(
-        #     "--yaml", action="store_true", dest="yaml_o", default=False, help="YAML output"
-        # )
-        # parser.add_argument(
-        #     "--without-snmp", action="store_false", dest="use_snmp", help="Disable SNMP"
-        # )
-        # parser.add_argument(
-        #     "--access-preference", dest="access_preference", help="Alter access method preference"
-        # )
-        # parser.add_argument(
-        #     "--snmp-rate-limit",
-        #     type=int,
-        #     default=0,
-        #     dest="snmp_rate_limit",
-        #     help="Set SNMP Rate-limit setting",
-        # )
-        # parser.add_argument("--update-spec", help="Append all issued commands to spec")
-        # parser.add_argument(
-        #     "-o", dest="beef_output", type=smart_text, help="Save script output to beef"
-        # )
         parser.add_argument("script", nargs=1, help="Script name")
-        # parser.add_argument("profile_name", nargs=1, help="Profile name")
         parser.add_argument(
             "arguments", nargs=argparse.REMAINDER, help="Arguments passed to script"
         )
@@ -171,23 +29,10 @@ class Command(BaseCommand):
     def handle(
         self,
         script,
-        # profile_name,
         arguments,
-        # pretty,
-        # yaml_o,
-        # use_snmp,
-        # access_preference,
-        # snmp_rate_limit,
-        # update_spec,
-        # beef_output,
         *args,
         **options,
     ):
-        # Get object
-        # obj = self.get_object(object_name[0])
-        # Build credentials
-        # credentials = self.get_credentials(obj)
-        # Parse arguments
         args = self.get_script_args(arguments)
         # Load script
         self.stdout.write(f"{script}")
@@ -225,93 +70,6 @@ class Command(BaseCommand):
 
         self.stdout.write(f"supported:   {supported_metrics}\n")
         self.stdout.write(f"unsupported: {unsupported_metrics}\n")
-
-        # self.stdout.write(f"{scr._mt_map}\n")
-        # self.stdout.write(f"{args}\n")
-        # scr.execute = types.MethodType(stub_execute, scr)
-        # span_sample = 0
-        # result = ""
-        # if beef_output:
-        #     scr.start_tracking()
-        # with Span(sample=span_sample, suppress_trace=span_sample):
-        #     result = scr.run()
-        # if pretty:
-        #     pprint.pprint(result)
-        # elif yaml_o:
-        #     import sys
-
-        #     yaml.dump(result, sys.stdout)
-        # else:
-        #     self.stdout.write("%s\n" % result)
-        # self.stdout.write("%s\n" % result)
-        # if update_spec:
-        #     self.update_spec(update_spec, scr)
-        # if beef_output:
-        #     bdata = self.get_beef(scr, obj)
-        #     beef = Beef.from_json(bdata)
-        #     storage = StorageStub("osfs:///")
-        #     sdata = beef.get_data(decode=True)
-        #     with storage.open_fs() as fs:
-        #         fs.writebytes(beef_output, smart_bytes(yaml.safe_dump(sdata)))
-
-    # def get_object(self, object_name):
-    #     """
-    #     Resolve object by name or by id
-    #     """
-    #     if object_name.endswith(".json") and os.path.isfile(object_name):
-    #         return JSONObject(object_name)
-
-    #     from noc.sa.models.managedobject import ManagedObject
-    #     from django.db.models import Q
-
-    #     connect()
-
-    #     q = Q(name=object_name)
-    #     if is_int(object_name):
-    #         q = Q(id=int(object_name)) | q
-    #     try:
-    #         return ManagedObject.objects.get(q)
-    #     except ManagedObject.DoesNotExist:
-    #         self.die("Object is not found: %s" % object_name)
-
-    # def get_credentials(self, obj):
-    #     """
-    #     Returns object's credentials
-    #     """
-    #     creds = obj.credentials
-
-    #     credentials = {
-    #         "name": obj.name,
-    #         "address": obj.address,
-    #         "user": creds.user,
-    #         "password": creds.password,
-    #         "super_password": creds.super_password,
-    #         "path": obj.remote_path,
-    #         "raise_privileges": obj.to_raise_privileges,
-    #         "access_preference": obj.get_access_preference(),
-    #         "snmp_rate_limit": obj.snmp_rate_limit or None,
-    #     }
-    #     if creds.snmp_ro:
-    #         credentials["snmp_version"] = "v2c"
-    #         credentials["snmp_ro"] = creds.snmp_ro
-    #     if obj.scheme in CLI_PROTOCOLS:
-    #         credentials["cli_protocol"] = PROTOCOLS[obj.scheme]
-    #         if obj.port:
-    #             credentials["cli_port"] = obj.port
-    #     elif obj.scheme in HTTP_PROTOCOLS:
-    #         credentials["http_protocol"] = PROTOCOLS[obj.scheme]
-    #         if obj.port:
-    #             credentials["http_port"] = obj.port
-    #     if (
-    #         obj.scheme == BEEF
-    #         and obj.object_profile.beef_storage
-    #         and obj.object_profile.beef_path_template
-    #     ):
-    #         beef_path = obj.object_profile.beef_path_template.render_subject(object=obj)
-    #         if beef_path:
-    #             credentials["beef_storage_url"] = obj.object_profile.beef_storage.url
-    #             credentials["beef_path"] = beef_path
-    #     return credentials
 
     rx_arg = re.compile(r"^(?P<name>[a-zA-Z][a-zA-Z0-9_]*)(?P<op>:?=@?)(?P<value>.*)$")
 
@@ -352,136 +110,6 @@ class Command(BaseCommand):
                 args[name] = parse_json(read_file(value))
         return args
 
-    # def update_spec(self, name, script, save=True):
-    #     """
-    #     Update named spec
-    #     :param name: Spec name
-    #     :param script: BaseScript instance
-    #     :param save:
-    #     :return:
-    #     """
-    #     from noc.dev.models.quiz import Quiz
-    #     from noc.dev.models.spec import Spec, SpecAnswer
-    #     from noc.sa.models.profile import Profile
-
-    #     connect()
-    #     self.print("Updating spec: %s" % name)
-    #     spec = Spec.get_by_name(name)
-    #     changed = False
-    #     if not spec:
-    #         self.print("   Spec not found. Creating")
-    #         # Get Ad-Hoc quiz
-    #         quiz = Quiz.get_by_name("Ad-Hoc")
-    #         if not quiz:
-    #             self.print("   'Ad-Hoc' quiz not found. Skipping")
-    #             return
-    #         # Create Ad-Hoc spec for profile
-    #         spec = Spec(
-    #             name,
-    #             description="Auto-generated Ad-Hoc spec for %s profile" % script.profile.name,
-    #             revision=1,
-    #             quiz=quiz,
-    #             author="NOC",
-    #             profile=Profile.get_by_name(script.profile.name),
-    #             changes=[],
-    #             answers=[],
-    #         )
-    #         changed = True
-    #     # Fetch commands from spans
-    #     cli_svc = {"beef_cli", "cli", "telnet", "ssh"}
-    #     commands = set()
-    #     for span in get_spans():
-    #         if span.service not in cli_svc:
-    #             continue
-    #         # Delete last \\n symbol and add command
-    #         commands.add(span.in_label[:-1].decode("string_escape").strip())
-    #     # Update specs
-    #     s_name = "cli_%s" % script.name.rsplit(".", 1)[-1]
-    #     names = set()
-    #     for ans in spec.answers:
-    #         if (ans.name == s_name or ans.name.startswith(s_name + ".")) and ans.type == "cli":
-    #             names.add(ans.name)
-    #             if ans.value in commands:
-    #                 # Already recorded
-    #                 commands.remove(ans.value)
-    #     if commands:
-    #         # New commands left
-    #         max_n = 0
-    #         for n in names:
-    #             if "." in n:
-    #                 nn = int(n.rsplit(".", 1)[-1])
-    #                 if nn > max_n:
-    #                     max_n = nn
-    #         #
-    #         ntpl = "%s.%%d" % s_name
-    #         for nn, cmd in enumerate(sorted(commands)):
-    #             spec.answers += [SpecAnswer(name=ntpl % (nn + 1), type="cli", value=cmd)]
-    #         changed = True
-    #     if not save:
-    #         return spec
-    #     if changed:
-    #         spec.save()
-
-    # def get_beef(self, script, obj):
-    #     result = {
-    #         "version": BEEF_FORMAT,
-    #         "uuid": str(uuid.uuid4()),
-    #         "spec": None,
-    #         "changed": datetime.datetime.now().isoformat(),
-    #         "cli": [],
-    #         "cli_fsm": [],
-    #         "mib": [],
-    #         "mib_encoding": MIB_ENCODING,
-    #         "cli_encoding": CLI_ENCODING,
-    #     }
-    #     # Process CLI answers
-    #     result["cli"] = self.get_cli_results(script)
-    #     # Apply CLI fsm states
-    #     result["cli_fsm"] = self.get_cli_fsm_results(script)
-    #     # Apply MIB snapshot
-    #     # self.logger.debug("Collecting MIB snapshot")
-    #     # result["mib"] = self.get_snmp_results(spec)
-    #     # Process version reply
-    #     if script.version:
-    #         result["box"] = script.version
-    #     else:
-    #         result["box"] = {
-    #             "vendor": smart_text(obj.vendor.name) if obj.vendor else "Unknown",
-    #             "platform": obj.platform.name if obj.platform else "Unknown",
-    #             "version": obj.version.version if obj.version else "Unknown",
-    #         }
-    #     result["box"]["profile"] = obj.profile.name
-    #     return result
-
-    # def get_cli_results(self, script):
-    #     r = []
-    #     cmd_num = 1
-    #     for rcmd, packets in script.iter_cli_tracking():
-    #         r += [
-    #             {
-    #                 "names": ["cli_%d" % cmd_num],
-    #                 "request": rcmd,
-    #                 "reply": [self.encode_cli(v) for v in packets],
-    #             }
-    #         ]
-    #         cmd_num += 1
-    #     script.stop_tracking()
-    #     return r
-
-    # def get_cli_fsm_results(self, script):
-    #     r = []
-    #     for state, reply in script.iter_cli_fsm_tracking():
-    #         r += [{"state": state, "reply": [self.encode_cli(v) for v in reply]}]
-    #     return r
-
-    # @classmethod
-    # def encode_cli(cls, s):
-    #     """
-    #     Apply CLI encoding
-    #     """
-    #     return codecs.encode(smart_bytes(s), CLI_ENCODING)
-
-
 class ServiceStub(object):
     class ServiceConfig(object):
         def __init__(self, pool, tos=None):
@@ -490,90 +118,6 @@ class ServiceStub(object):
 
     def __init__(self, pool):
         self.config = self.ServiceConfig(pool=pool)
-
-
-class PoolStub(object):
-    def __init__(self, name):
-        self.name = name
-
-
-class ProfileStub(object):
-    def __init__(self, name):
-        self.name = name
-
-
-class VendorStub(object):
-    def __init__(self, name):
-        self.name = name
-
-
-class PlatformStub(object):
-    def __init__(self, name):
-        self.name = name
-
-
-class VersionStub(object):
-    def __init__(self, version):
-        self.version = version
-
-
-class JSONObject(object):
-    def __init__(self, path):
-        with open(path) as f:
-            data = orjson.loads(f.read())
-        self.scheme = {"telnet": TELNET, "ssh": SSH, "http": HTTP, "https": HTTPS}.get(
-            data.get("scheme", "telnet"), TELNET
-        )
-        self.name = data.get("name", "")
-        self.profile = ProfileStub(data.get("profile"))
-        self.address = data["address"]
-        self.port = data.get("port")
-        self.creds = data.get("credentials", {})
-        self.caps = data.get("caps")
-        self.remote_path = self.creds.get("path")
-        self.to_raise_privileges = data.get("raise_privileges", True)
-        self.access_preference = data.get("access_preference", "CS")
-        self.snmp_rate_limit = int(data.get("snmp_rate_limit", 0))
-        self.pool = PoolStub("default")
-        self.vendor = VendorStub(data["vendor"]) if "vendor" in data else None
-        self.platform = PlatformStub(data["platform"]) if "platform" in data else None
-        self.version = VersionStub(data["version"]) if "version" in data else None
-        self.software_image = data["image"] if "image" in data else None
-        self.managedobjectattribute_set = data["attributes"] if "attributes" in data else None
-
-    @property
-    def credentials(self):
-        return Credentials(
-            **{
-                k: self.creds.get(k)
-                for k in (
-                    "user",
-                    "password",
-                    "super_password",
-                    "snmp_ro",
-                    "snmp_rw",
-                    "snmp_rate_limit",
-                )
-            }
-        )
-
-    def get_caps(self):
-        return self.caps
-
-    def get_access_preference(self):
-        return self.access_preference
-
-
-class StorageStub(object):
-    def __init__(self, url):
-        self.url = url
-
-    def open_fs(self):
-        return open_fs(self.url)
-
-    class Error(Exception):
-        pass
-
 
 if __name__ == "__main__":
     Command().run()
