@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # Login service
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2021 The NOC Project
+# Copyright (C) 2007-2023 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -27,9 +27,7 @@ class LoginService(FastAPIService):
     process_name = "noc-%(name).10s-%(instance).2s"
     use_mongo = True
     use_translation = True
-    if config.features.traefik:
-        traefik_backend = "login"
-        traefik_frontend_rule = "PathPrefix:/api/login,/api/auth/auth"
+    traefik_routes_rule = "PathPrefix(`/api/login`) || PathPrefix(`/api/auth/auth`)"
 
     OPENAPI_TAGS_DOCS = {
         "login": "Authentication services",

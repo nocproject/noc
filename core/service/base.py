@@ -1,7 +1,7 @@
 # ----------------------------------------------------------------------
 # Base service
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2022 The NOC Project
+# Copyright (C) 2007-2023 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -91,11 +91,9 @@ class BaseService(object):
     use_jinja = False
     # Collect and send spans
     use_telemetry = False
-    # Register traefik backend if not None
-    traefik_backend = None
-    # Traefik frontend rule
-    # i.e. PathPrefix:/api/<name>
-    traefik_frontend_rule = None
+    # Traefik routing rule
+    # Requires config.features.traefik option
+    traefik_routes_rule: Optional[str] = None
     # Require DCS health status to be considered healthy
     # Usually means resolution error to required services
     # temporary leads service to unhealthy state
@@ -453,20 +451,23 @@ class BaseService(object):
 
     def get_register_tags(self):
         tags = ["noc"]
-        if config.features.traefik:
-            if self.traefik_backend and self.traefik_frontend_rule:
-                tags += [
-                    "traefik.tags=backend",
-                    "traefik.backend=%s" % self.traefik_backend,
-                    "traefik.frontend.rule=%s" % self.traefik_frontend_rule,
-                    "traefik.backend.load-balancing=wrr",
-                ]
-                weight = self.get_backend_weight()
-                if weight:
-                    tags += ["traefik.backend.weight=%s" % weight]
-                limit = self.get_backend_limit()
-                if limit:
-                    tags += ["traefik.backend.maxconn.amount=%s" % limit]
+        if config.features.traefik and self.traefik_routes_rule and self.name:
+            tags += [
+                # Traefik used with exposeedByDefault=false
+                # So enable routing
+                "traefik.enable=true",
+                # Apply routing rule
+                f"traefik.http.routers.{self.name}.rule={self.traefik_routes_rule}",
+                # Set service name
+                f"traefik.http.routers.{self.name}.service={self.name}",
+                f"traefik.http.service.{self.name}",
+            ]
+            # weight = self.get_backend_weight()
+            # if weight:
+            #     tags += [f"traefik.backend.weight={weight}"]
+            # limit = self.get_backend_limit()
+            # if limit:
+            #     tags += [f"traefik.backend.maxconn.amount={limit}"]
         return tags
 
     async def on_register(self):
