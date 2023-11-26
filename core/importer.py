@@ -82,18 +82,17 @@ class NOCLoader(object):
         # package (if any).
         if self.is_package(fullname):
             mod.__package__ = fullname
-        else:
-            mod.__package__ = ".".join(fullname.split(".")[:-1])
-
-        if self.is_package(fullname):
             # Set __path__ for packages
             # so we can find the sub-modules.
-            mod.__path__ = [self.path_entry]
+            # Strip __init__.py
+            mod.__path__ = [mod.__file__[:-12]]
+        else:
+            mod.__package__ = ".".join(fullname.split(".")[:-1])
 
         if isinstance(source, str):
             # Convert to UTF-8 to prevent
             # SyntaxError: encoding declaration in Unicode string
-            source = source.encode("utf-8")
+            source = source.encode()
         exec(source, mod.__dict__)
         return mod
 
