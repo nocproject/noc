@@ -11,8 +11,6 @@ from threading import Lock
 from dataclasses import dataclass
 from typing import Any, Dict, Optional, List, Callable
 
-import orjson
-
 # Third-party modules
 from mongoengine.document import Document, EmbeddedDocument
 from mongoengine.fields import (
