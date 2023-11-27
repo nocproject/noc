@@ -27,6 +27,7 @@
   "version": 33,
   "gnetId": null,
   "rows": [
+    {%if sfp_types %}
     {
       "collapse": false,
       "editable": false,
@@ -35,13 +36,13 @@
       "internal_comment": "info_row",
       "title": "{{ extra_vars.model }}",
       "panels": [
-      {%if sfp_types %}
           {% include "panel_sfp.j2" with context -%}
-      {% endif %}
-
       ]
     }
+    {% endif %}
+
     {%if port_types %}
+
         {
           "collapse": false,
           "editable": false,

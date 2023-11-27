@@ -1,0 +1,20 @@
+{
+  "span": 6,
+  "links": [],
+  "title": "Описание: {{ extra_vars.description }}",
+  "editable": true,
+  "options": {
+    "mode": "html",
+    "content": "<br>\n<font size=\"3\" color=##1E90FF\t>Производитель: {{ extra_vars.vendor }}</font><br>\n<font size=\"3\" color=##1E90FF\t>Модель:</font> {{ extra_vars.model }}<br>\n<font size=\"3\" color=##1E90FF\t>Part_Number:</font> {{ extra_vars.part_n }} <br>\n<font size=\"3\" color=##1E90FF\t>Serial:</font> {{ extra_vars.serial }} {% if extra_vars.revision %}<br>\n<font size=\"3\" color=##1E90FF\t>Ревизия:</font> {{ extra_vars.revision }}{% endif %} {% if extra_vars.distance %}<br>\n<font size=\"3\" color=##1E90FF\t>Дистанция:</font> {{ extra_vars.distance }}{% endif %} {% if extra_vars.rx %}<br>\n<font size=\"3\" color=##1E90FF\t>RX:</font> {{ extra_vars.rx }}{% endif %} {% if extra_vars.tx %}<br>\n<font size=\"3\" color=##1E90FF\t>TX:</font> {{ extra_vars.tx }}{% endif %}"
+  },
+  "mode": "markdown",
+  "error": false,
+  "type": "text",
+  "gridPos": {
+          "x": 0,
+          "y": 0,
+          "w": 12,
+          "h": 100
+        },
+  "id": 31
+}
