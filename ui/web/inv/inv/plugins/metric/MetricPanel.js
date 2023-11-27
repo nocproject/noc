@@ -62,6 +62,20 @@ Ext.define("NOC.inv.inv.plugins.metric.MetricPanel", {
               text: __("Alarm"),
               dataIndex: "oper_state__label",
             },
+            {
+              xtype: "widgetcolumn",
+              width: 100,
+              widget: {
+                xtype: "button",
+                text: __("Graph"),
+                handler: function (btn) {
+                  // var record = btn.getWidgetRecord();
+                  // var dataIndex = btn.getWidgetColumn().dataIndex;
+                  // var value = record.get(dataIndex);
+                  window.open("http://127.0.0.1", "_blank");
+                },
+              },
+            },
           ],
           features: [me.groupingFeature],
           viewConfig: {
