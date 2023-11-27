@@ -1,7 +1,7 @@
 # ---------------------------------------------------------------------
 # ManagedObject's dynamic dashboard
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2020 The NOC Project
+# Copyright (C) 2007-2023 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -133,8 +133,17 @@ class MOCardDashboard(MODashboard):
                     sfp_types = {"name": iface.profile.name, "port": sfp, "metrics": metrics}
             o = Object.get_by_id(data["id"])
             if o:
+                distance = o.get_data("optical", "distance_max") or o.model.get_data(
+                    "optical", "distance_max"
+                )
+                data["distance"] = f"{float(distance/1000)}km" if distance else None
                 data["vendor"] = o.model.vendor.name
                 data["part_n"] = o.model.get_data("asset", "part_no")
+                for c in o.model.connections:
+                    if c.direction == "s" and c.name.lower() == "rx":
+                        data["rx"] = ", ".join(str(p) for p in c.protocols)
+                    if c.direction == "s" and c.name.lower() == "tx":
+                        data["tx"] = ", ".join(str(p) for p in c.protocols)
 
         return {
             "object_metrics": object_metrics,
