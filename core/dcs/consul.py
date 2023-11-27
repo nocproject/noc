@@ -365,11 +365,11 @@ class ConsulDCS(DCSBase):
             try:
                 if limit > 0:
                     self.logger.info("Setting slots for %s = %s", name, limit)
-                    self.consul.kv.put(key=manifest_path, value=orjson.dumps({"Limit", limit}))
+                    await self.consul.kv.put(key=manifest_path, value=orjson.dumps({"Limit": limit}))
                     return
                 else:
-                    self.logger.info("Deletig slots for %s", name)
-                    self.consul.kv.delete(key=manifest_path)
+                    self.logger.info("Deleting slots for %s", name)
+                    await self.consul.kv.delete(key=manifest_path)
                     return
             except ConsulRepeatableErrors:
                 await asyncio.sleep(self.DEFAULT_CONSUL_RETRY_TIMEOUT)

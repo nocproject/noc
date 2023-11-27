@@ -29,7 +29,7 @@ class Command(BaseCommand):
 
     def handle_set_slots(self, *args, **options):
         async def inner() -> None:
-            for k, v in sorted(limits):
+            for k, v in sorted(limits.items()):
                 await dcs.set_slot_limit(k, v)
 
         limits: Dict[str, int] = {}
