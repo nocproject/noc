@@ -888,7 +888,6 @@ nav:
           - shell: man/shell.md
           - snmp: man/snmp.md
           - stencil: man/stencil.md
-          - sync-doc: man/sync-doc.md
           - sync-mibs: man/sync-mibs.md
           - sync-perm: man/sync-perm.md
           - sync-refbooks: man/sync-refbooks.md
