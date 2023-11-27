@@ -1,5 +1,5 @@
 # ----------------------------------------------------------------------
-# set-slots command
+# dcs command
 # ----------------------------------------------------------------------
 # Copyright (C) 2007-2023 The NOC Project
 # See LICENSE for details
@@ -36,10 +36,12 @@ class Command(BaseCommand):
         files = options.get("file")
         if files:
             for fn in files:
+                if fn == "-":
+                    fn = "/dev/stdin"
                 with open(fn) as fp:
                     for line in fp:
-                        k, v = line.strip().split()
-                        limits[k] = int(v)
+                        k, v = line.split(":")
+                        limits[k.strip()] = int(v.strip())
         dcs = get_dcs()
         asyncio.run(inner())
 
