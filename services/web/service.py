@@ -24,7 +24,7 @@ class WebService(FastAPIService):
     use_translation = True
     use_mongo = True
     use_router = True
-    traefik_routes_rule = "PathPrefix(`/`)"
+    traefik_routes_rule = "!PathPrefix(`/api/`) && PathPrefix(`/`)"
 
     def __init__(self):
         super().__init__()

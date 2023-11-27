@@ -461,6 +461,8 @@ class BaseService(object):
                 # Set service name
                 f"traefik.http.routers.{self.name}.service={self.name}",
                 f"traefik.http.service.{self.name}",
+                # Set up healthchecks
+                f"traefik.http.services.{self.name}.loadbalancer.healthcheck.path=/health?{self.name}",
             ]
             # weight = self.get_backend_weight()
             # if weight:
