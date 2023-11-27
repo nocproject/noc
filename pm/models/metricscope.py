@@ -8,7 +8,10 @@
 # Python modules
 import operator
 from threading import Lock
+from dataclasses import dataclass
 from typing import Any, Dict, Optional, List, Callable
+
+import orjson
 
 # Third-party modules
 from mongoengine.document import Document, EmbeddedDocument
@@ -33,6 +36,14 @@ to_path_code = {}
 code_lock = Lock()
 
 OLD_PM_SCHEMA_TABLE = "noc_old"
+
+
+@dataclass
+class ExistingColumn:
+    name: str
+    type: str
+    default_kind: Optional[str] = None  # DEFAULT, MATERIALIZED
+    default_expression: Optional[str] = None
 
 
 class KeyField(EmbeddedDocument):
@@ -336,7 +347,7 @@ class MetricScope(Document):
             c = False
             # Alter when necessary
             existing = {}
-            for name, type, default_expression, default_kind in ch.execute(
+            for name, c_type, default_expression, default_kind in ch.execute(
                 """
                 SELECT name, type, default_expression, default_kind
                 FROM system.columns
@@ -346,7 +357,12 @@ class MetricScope(Document):
                 """,
                 [config.clickhouse.db, table_name],
             ):
-                existing[name] = (type, default_expression if default_kind == "DEFAULT" else None)
+                existing[name]: Dict[str, ExistingColumn] = ExistingColumn(
+                    name,
+                    c_type,
+                    default_kind,
+                    str(default_expression),
+                )
             after = None
             for f, t, me, de in self.iter_fields():
                 if f not in existing:
@@ -355,13 +371,14 @@ class MetricScope(Document):
                     )
                     c = True
                 after = f
-                if f in existing and existing[f][0] != t:
+                if f in existing and existing[f].type != t:
                     print(f"Warning! Type mismatch for column {f}: {existing[f]} <> {t}")
-                    print(f"Set command manually: ALTER TABLE {table_name} MODIFY COLUMN {f} {t}")
+                    # print(f"Set command manually: ALTER TABLE {table_name} MODIFY COLUMN {f} {t}")
+                    ch.execute(f"ALTER TABLE {table_name} MODIFY COLUMN {f} {t}")
             # Check default value
             for f, t, me, de in self.iter_metrics_fields():
-                if (
-                    f in existing and existing[f][1] and existing[f][1] != str(de).strip("0")
+                if f in existing and (existing[f].default_expression or "") != str(de).strip(
+                    "0"
                 ):  # Strip for float value xxx.
                     if de:
                         ch.execute(post=f"ALTER TABLE {table_name} MODIFY COLUMN {f} DEFAULT {de}")
