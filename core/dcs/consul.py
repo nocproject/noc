@@ -365,7 +365,9 @@ class ConsulDCS(DCSBase):
             try:
                 if limit > 0:
                     self.logger.info("Setting slots for %s = %s", name, limit)
-                    await self.consul.kv.put(key=manifest_path, value=orjson.dumps({"Limit": limit}))
+                    await self.consul.kv.put(
+                        key=manifest_path, value=orjson.dumps({"Limit": limit})
+                    )
                     return
                 else:
                     self.logger.info("Deleting slots for %s", name)
