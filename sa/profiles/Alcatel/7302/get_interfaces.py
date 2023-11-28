@@ -31,8 +31,7 @@ class Script(BaseScript):
         re.MULTILINE,
     )
     rx_uplink_port = re.compile(
-        r"^(?P<port>\d+)\s+(?P<admin_status>up|down)\s+(?P<oper_status>up|down)",
-        re.MULTILINE
+        r"^(?P<port>\d+)\s+(?P<admin_status>up|down)\s+(?P<oper_status>up|down)", re.MULTILINE
     )
     rx_vlan_map = re.compile(r"^(?P<ifname>\S+)\s+(?P<vlan_id>\d+)\s*\n", re.MULTILINE)
     rx_ifname = re.compile(r"port : (?P<ifname>\S+)")
@@ -264,12 +263,12 @@ class Script(BaseScript):
             for match in self.rx_uplink_port.finditer(v):
                 port_id = "network:" + match.group("port")
                 interfaces[port_id] = {
-                     "name": port_id,
-                     "oper_status": match.group("oper_status") == "up",
-                     "admin_status": match.group("admin_status")== "up",
-                     "subinterfaces": [],
-                     "type": "physical",
-                     "hints": hints,
+                    "name": port_id,
+                    "oper_status": match.group("oper_status") == "up",
+                    "admin_status": match.group("admin_status") == "up",
+                    "subinterfaces": [],
+                    "type": "physical",
+                    "hints": hints,
                 }
                 sub = {
                     "name": port_id,
