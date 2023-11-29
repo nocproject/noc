@@ -18,6 +18,9 @@ from noc.core.profile.loader import loader as profile_loader
 
 class Command(BaseCommand):
     def add_arguments(self, parser):
+        parser.add_argument(
+            "--json", action="store_true", default=False, dest="json_format", help="output in JSONEachRow format"
+        )
         parser.add_argument("--profile", help="Profile list in JSON format")
         parser.add_argument("--metric", help="Metric list in JSON format")
 
@@ -31,6 +34,8 @@ class Command(BaseCommand):
         self.stdout.write(f";{';'.join(m for m in metric_list)};\n")
 
         for p in profile_list:
+            if not p["metrics"]:
+                continue
             self.stdout.write(f"{p['name']};")
             for m in metric_list:
                 metric = p["metrics"].get(m)
@@ -40,6 +45,17 @@ class Command(BaseCommand):
                     self.stdout.write("x")
                 self.stdout.write(";")
             self.stdout.write("\n")
+
+    def print_json(self, profile_list, metric_list):
+        res = []
+        for p in profile_list:
+            if not p["metrics"]:
+                continue
+            p_name = p['name']
+            metrics = p["metrics"]
+            res.append({"name": p_name, **metrics})
+
+        self.stdout.write(orjson.dumps(res).decode())
 
     def get_metric_source(self, func_list):
         res = ""
@@ -55,6 +71,7 @@ class Command(BaseCommand):
 
     def handle(
         self,
+        json_format,
         profile,
         metric
     ):
@@ -98,18 +115,24 @@ class Command(BaseCommand):
                     if m not in metric_list:
                         metric_list.append(m)
                     if m in scr._mt_map:
-                        p_item.get("metrics")[m] = "C"
+                        metric_func_list = scr._mt_map[m]
+                        p_item.get("metrics")[m] = self.get_metric_source(metric_func_list)
             else:
                 for m in scr._mt_map:
-                    metric_func_list = scr._mt_map[m]
                     if m not in metric_list:
                         metric_list.append(m)
+                    metric_func_list = scr._mt_map[m]
                     p_item.get("metrics")[m] = self.get_metric_source(metric_func_list)
 
             profile_list.append(p_item)
 
         metric_list.sort()
-        self.print_csv(profile_list, metric_list)
+
+        if json_format:
+            self.print_json(profile_list, metric_list)
+        else:
+            self.print_csv(profile_list, metric_list)
+        
 
 class ServiceStub(object):
     class ServiceConfig(object):
