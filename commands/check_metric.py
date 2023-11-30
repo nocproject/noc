@@ -6,7 +6,6 @@
 # ----------------------------------------------------------------------
 
 # Python modules
-import os
 
 # Third-party modules
 import orjson
