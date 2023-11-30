@@ -275,7 +275,7 @@ class Job(object):
             leader.children = [ref(j) for j in jobs.values()]
             # Bind children dependencies
             for dn, dlist in deps.items():
-                jobs[dn].depends_on = [ref(j) for j in dlist]
+                jobs[dn].depends_on = [ref(jobs[j]) for j in dlist]
         # Finnlly yield all
         yield leader
         for ch in chains:

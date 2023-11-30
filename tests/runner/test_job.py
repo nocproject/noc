@@ -135,29 +135,55 @@ class RunnerWrapper(Runner):
         self.last_state[job.name] = status
 
 
+def get_scenario_id(x) -> str:
+    if isinstance(x, JobRequest):
+        return str(x.description)
+    if isinstance(x, dict):
+        return x["root"].name
+
+
 @pytest.mark.parametrize(
     ("req", "expected"),
     [
         # single-success
-        (JobRequest(name="root", action="success"), {"root": JobStatus.SUCCESS}),
+        (
+            JobRequest(name="root", action="success", description="single-succes"),
+            {"root": JobStatus.SUCCESS},
+        ),
         # single-failed
-        (JobRequest(name="root", action="fail"), {"root": JobStatus.FAILED}),
+        (
+            JobRequest(name="root", action="fail", description="single-failed"),
+            {"root": JobStatus.FAILED},
+        ),
         # single-warning
-        (JobRequest(name="root", action="fail", allow_fail=True), {"root": JobStatus.WARNING}),
+        (
+            JobRequest(name="root", action="fail", description="single-warning", allow_fail=True),
+            {"root": JobStatus.WARNING},
+        ),
         # group-single-success
         (
-            JobRequest(name="root", jobs=[JobRequest(name="job-1", action="success")]),
+            JobRequest(
+                name="root",
+                description="group-single-succes",
+                jobs=[JobRequest(name="job-1", action="success")],
+            ),
             {"root": JobStatus.SUCCESS, "job-1": JobStatus.SUCCESS},
         ),
         # group-single-failed
         (
-            JobRequest(name="root", jobs=[JobRequest(name="job-1", action="fail")]),
+            JobRequest(
+                name="root",
+                description="group-single-failed",
+                jobs=[JobRequest(name="job-1", action="fail")],
+            ),
             {"root": JobStatus.FAILED, "job-1": JobStatus.FAILED},
         ),
         # group-single-warning
         (
             JobRequest(
-                name="root", jobs=[JobRequest(name="job-1", action="fail", allow_fail=True)]
+                name="root",
+                description="group-single-warning",
+                jobs=[JobRequest(name="job-1", action="fail", allow_fail=True)],
             ),
             {"root": JobStatus.SUCCESS, "job-1": JobStatus.WARNING},
         ),
@@ -165,8 +191,21 @@ class RunnerWrapper(Runner):
         (
             JobRequest(
                 name="root",
+                description="group-two-success",
                 jobs=[
                     JobRequest(name="job-1", action="success"),
+                    JobRequest(name="job-2", action="success"),
+                ],
+            ),
+            {"root": JobStatus.SUCCESS, "job-1": JobStatus.SUCCESS, "job-2": JobStatus.SUCCESS},
+        ),
+        # group-two-success-deps
+        (
+            JobRequest(
+                name="root",
+                description="group-two-success-deps",
+                jobs=[
+                    JobRequest(name="job-1", action="success", depends_on=["job-2"]),
                     JobRequest(name="job-2", action="success"),
                 ],
             ),
@@ -176,6 +215,7 @@ class RunnerWrapper(Runner):
         (
             JobRequest(
                 name="root",
+                description="group-two-one-fail1",
                 jobs=[
                     JobRequest(name="job-1", action="fail"),
                     JobRequest(name="job-2", action="success"),
@@ -187,6 +227,7 @@ class RunnerWrapper(Runner):
         (
             JobRequest(
                 name="root",
+                description="group-two-one-fail2",
                 jobs=[
                     JobRequest(name="job-1", action="success"),
                     JobRequest(name="job-2", action="fail"),
@@ -198,6 +239,7 @@ class RunnerWrapper(Runner):
         (
             JobRequest(
                 name="root",
+                description="group-two-two-fails",
                 jobs=[
                     JobRequest(name="job-1", action="fail"),
                     JobRequest(name="job-2", action="fail"),
@@ -209,6 +251,7 @@ class RunnerWrapper(Runner):
         (
             JobRequest(
                 name="root",
+                description="group-two-warning1",
                 jobs=[
                     JobRequest(name="job-1", action="fail", allow_fail=True),
                     JobRequest(name="job-2", action="success"),
@@ -220,6 +263,7 @@ class RunnerWrapper(Runner):
         (
             JobRequest(
                 name="root",
+                description="group-two-warning2",
                 jobs=[
                     JobRequest(name="job-1", action="success"),
                     JobRequest(name="job-2", action="fail", allow_fail=True),
@@ -227,21 +271,154 @@ class RunnerWrapper(Runner):
             ),
             {"root": JobStatus.SUCCESS, "job-1": JobStatus.SUCCESS, "job-2": JobStatus.WARNING},
         ),
+        # group-tree-success
+        (
+            JobRequest(
+                name="root",
+                description="job-tree-success",
+                jobs=[
+                    JobRequest(
+                        name="group-1",
+                        jobs=[
+                            JobRequest(name="job-1-1", action="success"),
+                            JobRequest(name="job-1-2", action="success"),
+                            JobRequest(name="job-1-3", action="success"),
+                        ],
+                    ),
+                    JobRequest(
+                        name="group-2",
+                        jobs=[
+                            JobRequest(name="job-2-1", action="success"),
+                            JobRequest(name="job-2-2", action="success"),
+                            JobRequest(name="job-2-3", action="success"),
+                        ],
+                    ),
+                    JobRequest(
+                        name="group-3",
+                        jobs=[
+                            JobRequest(name="job-3-1", action="success"),
+                            JobRequest(name="job-3-2", action="success"),
+                            JobRequest(name="job-3-3", action="success"),
+                        ],
+                    ),
+                ],
+            ),
+            {
+                "root": JobStatus.SUCCESS,
+                "group-1": JobStatus.SUCCESS,
+                "group-2": JobStatus.SUCCESS,
+                "group-3": JobStatus.SUCCESS,
+                "job-1-1": JobStatus.SUCCESS,
+                "job-1-2": JobStatus.SUCCESS,
+                "job-1-3": JobStatus.SUCCESS,
+                "job-2-1": JobStatus.SUCCESS,
+                "job-2-2": JobStatus.SUCCESS,
+                "job-2-3": JobStatus.SUCCESS,
+                "job-3-1": JobStatus.SUCCESS,
+                "job-3-2": JobStatus.SUCCESS,
+                "job-3-3": JobStatus.SUCCESS,
+            },
+        ),
+        # group-tree-success-deps
+        (
+            JobRequest(
+                name="root",
+                description="job-tree-success-deps",
+                jobs=[
+                    JobRequest(
+                        name="group-1",
+                        jobs=[
+                            JobRequest(name="job-1-1", action="success", depends_on=["job-1-2"]),
+                            JobRequest(name="job-1-2", action="success", depends_on=["job-1-3"]),
+                            JobRequest(name="job-1-3", action="success"),
+                        ],
+                    ),
+                    JobRequest(
+                        name="group-2",
+                        jobs=[
+                            JobRequest(
+                                name="job-2-1", action="success", depends_on=["job-2-2", "job-2-3"]
+                            ),
+                            JobRequest(name="job-2-2", action="success", depends_on=["job-2-3"]),
+                            JobRequest(name="job-2-3", action="success"),
+                        ],
+                    ),
+                    JobRequest(
+                        name="group-3",
+                        jobs=[
+                            JobRequest(name="job-3-1", action="success"),
+                            JobRequest(name="job-3-2", action="success"),
+                            JobRequest(name="job-3-3", action="success"),
+                        ],
+                    ),
+                ],
+            ),
+            {
+                "root": JobStatus.SUCCESS,
+                "group-1": JobStatus.SUCCESS,
+                "group-2": JobStatus.SUCCESS,
+                "group-3": JobStatus.SUCCESS,
+                "job-1-1": JobStatus.SUCCESS,
+                "job-1-2": JobStatus.SUCCESS,
+                "job-1-3": JobStatus.SUCCESS,
+                "job-2-1": JobStatus.SUCCESS,
+                "job-2-2": JobStatus.SUCCESS,
+                "job-2-3": JobStatus.SUCCESS,
+                "job-3-1": JobStatus.SUCCESS,
+                "job-3-2": JobStatus.SUCCESS,
+                "job-3-3": JobStatus.SUCCESS,
+            },
+        ),
+        # group-tree-success
+        (
+            JobRequest(
+                name="root",
+                description="job-tree-success",
+                jobs=[
+                    JobRequest(
+                        name="group-1",
+                        jobs=[
+                            JobRequest(name="job-1-1", action="success"),
+                            JobRequest(name="job-1-2", action="success"),
+                            JobRequest(name="job-1-3", action="success"),
+                        ],
+                    ),
+                    JobRequest(
+                        name="group-2",
+                        jobs=[
+                            JobRequest(name="job-2-1", action="success"),
+                            JobRequest(name="job-2-2", action="fail"),
+                            JobRequest(name="job-2-3", action="success"),
+                        ],
+                    ),
+                    JobRequest(
+                        name="group-3",
+                        jobs=[
+                            JobRequest(name="job-3-1", action="success"),
+                            JobRequest(name="job-3-2", action="success"),
+                            JobRequest(name="job-3-3", action="success"),
+                        ],
+                    ),
+                ],
+            ),
+            {
+                "root": JobStatus.FAILED,
+                "group-1": JobStatus.SUCCESS,
+                "group-2": JobStatus.FAILED,
+                "group-3": JobStatus.CANCELLED,
+                "job-1-1": JobStatus.SUCCESS,
+                "job-1-2": JobStatus.SUCCESS,
+                "job-1-3": JobStatus.SUCCESS,
+                "job-2-1": JobStatus.SUCCESS,
+                "job-2-2": JobStatus.FAILED,
+                "job-2-3": JobStatus.CANCELLED,
+                "job-3-1": JobStatus.CANCELLED,
+                "job-3-2": JobStatus.CANCELLED,
+                "job-3-3": JobStatus.CANCELLED,
+            },
+        ),
     ],
-    ids=[
-        "single-success",
-        "single-failed",
-        "single-warning",
-        "group-single-success",
-        "group-single-failed",
-        "group-single-warning",
-        "group-two-success",
-        "group-two-one-fail1",
-        "group-two-one-fail2",
-        "group-two-two-fails",
-        "group-two-warning1",
-        "group-two-warnning2",
-    ],
+    ids=get_scenario_id,
 )
 def test_scenario(req: JobRequest, expected: Dict[str, JobStatus]):
     async def inner() -> None:

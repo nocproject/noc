@@ -141,7 +141,7 @@ class Runner(object):
         """
         # Unblock siblings
         for s in job.iter_siblings():
-            if s.is_running and not s.is_scheduled:
+            if s.is_waiting and not s.is_scheduled and not s.is_blocked():
                 self._schedule_job(s)
         #
         p = job.parent
@@ -157,6 +157,7 @@ class Runner(object):
         fail = any(True for c in p.iter_children() if not c.is_complete_success)
         if not fail:
             self.set_status(p, JobStatus.SUCCESS)
+            self.check_group_success(p)
 
     def check_group_fail(self, job: Job) -> None:
         """
