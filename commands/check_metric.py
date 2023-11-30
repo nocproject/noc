@@ -16,10 +16,15 @@ from noc.core.management.base import BaseCommand
 from noc.core.script.loader import loader as script_loader
 from noc.core.profile.loader import loader as profile_loader
 
+
 class Command(BaseCommand):
     def add_arguments(self, parser):
         parser.add_argument(
-            "--json", action="store_true", default=False, dest="json_format", help="output in JSONEachRow format"
+            "--json",
+            action="store_true",
+            default=False,
+            dest="json_format",
+            help="output in JSONEachRow format"
         )
         parser.add_argument("--profile", help="Profile list in JSON format")
         parser.add_argument("--metric", help="Metric list in JSON format")
@@ -51,7 +56,7 @@ class Command(BaseCommand):
         for p in profile_list:
             if not p["metrics"]:
                 continue
-            p_name = p['name']
+            p_name = p["name"]
             metrics = p["metrics"]
             res.append({"name": p_name, **metrics})
 
@@ -62,19 +67,14 @@ class Command(BaseCommand):
         for mf in func_list:
             func_name = mf.__name__
             metric_src = "S" if func_name.startswith("get_snmp_json") else "C"
-            
+
             if (metric_src == "S" and res == "C") or (metric_src == "C" and res == "S"):
                 res = "SC"
             if not res:
                 res = metric_src
         return res
 
-    def handle(
-        self,
-        json_format,
-        profile,
-        metric
-    ):
+    def handle(self, json_format, profile, metric):
         if profile:
             profiles = self.parse_json(profile)
         else:
@@ -132,7 +132,7 @@ class Command(BaseCommand):
             self.print_json(profile_list, metric_list)
         else:
             self.print_csv(profile_list, metric_list)
-        
+
 
 class ServiceStub(object):
     class ServiceConfig(object):
@@ -142,6 +142,7 @@ class ServiceStub(object):
 
     def __init__(self, pool):
         self.config = self.ServiceConfig(pool=pool)
+
 
 if __name__ == "__main__":
     Command().run()
