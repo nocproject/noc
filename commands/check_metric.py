@@ -24,7 +24,7 @@ class Command(BaseCommand):
             action="store_true",
             default=False,
             dest="json_format",
-            help="output in JSONEachRow format"
+            help="output in JSONEachRow format",
         )
         parser.add_argument("--profile", help="Profile list in JSON format")
         parser.add_argument("--metric", help="Metric list in JSON format")
