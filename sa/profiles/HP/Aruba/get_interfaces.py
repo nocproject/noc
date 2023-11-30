@@ -1,7 +1,7 @@
 # ---------------------------------------------------------------------
 # HP.Aruba.get_interfaces
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2022 The NOC Project
+# Copyright (C) 2007-2023 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -9,7 +9,7 @@
 import re
 
 # NOC modules
-from noc.core.script.base import BaseScript
+from noc.sa.profiles.Generic.get_interfaces import Script as BaseScript
 from noc.sa.interfaces.igetinterfaces import IGetInterfaces
 
 
@@ -17,69 +17,72 @@ class Script(BaseScript):
     name = "HP.Aruba.get_interfaces"
     interface = IGetInterfaces
 
-    rx_admin_status = re.compile(
-        r"Port No\s+:(?P<interface>\d+).\s*Active\s+:(?P<admin>(Yes|No)).*$",
-        re.MULTILINE | re.DOTALL | re.IGNORECASE,
-    )
-    rx_ipif = re.compile(
-        r"^\s+IP\[(?P<ip>\d+\.\d+\.\d+\.\d+)\],\s+"
-        r"Netmask\[(?P<mask>\d+\.\d+\.\d+\.\d+)\],"
-        r"\s+VID\[(?P<vid>\d+)\]$",
+    rx_interface_splitter = re.compile(
+        r"Interface\s+(?P<name>\S+) is (?P<oper>up|down)\s*(\(Administratively (?P<admin>up|down)\))?",
         re.MULTILINE,
     )
+    rx_mac = re.compile(r"MAC Address: (?P<mac>\S+)")
+    rx_description = re.compile(r"Description:\s+(?P<description>.+)\s*")
+    rx_mtu = re.compile(r"MTU\s+(?P<mtu>\d+)")
+    rx_aggregated = re.compile(r"Aggregated-interfaces\s+:\s+(?P<port>\S+)")
 
-    def execute_snmp(self):
-        interfaces = []
-        # Get portchannes
-        portchannel_members = {}  # member -> (portchannel, type)
-        # with self.cached():
-        #    for pc in self.scripts.get_portchannel():
-        #        i = pc["interface"]
-        #        t = pc["type"] == "L"
-        #        for m in pc["members"]:
-        #            portchannel_members[m] = (i, t)
-        admin_status = {}
-        for n, s in self.snmp.join_tables(
-            "1.3.6.1.2.1.31.1.1.1.1", "1.3.6.1.2.1.2.2.1.7"
-        ):  # IF-MIB
-            if n[:3] == "Aux" or n[:4] == "Vlan" or n[:11] == "InLoopBack":
+    def execute_cli(self, **kwargs):
+        """
+         Admin state is up
+        Link state: up for 16 days (since Tue Nov 14 13:25:42 MSK 2023)
+        Link transitions: 5
+        Description: -Access Switch-
+        Persona:
+        Hardware: Ethernet, MAC Address: d4:e0:53:da:15:34
+        MTU 9198
+
+        """
+        # Get portchannels
+        portchannel_members = {}
+        for pc in self.scripts.get_portchannel():
+            i = pc["interface"]
+            t = pc["type"] == "L"
+            for m in pc["members"]:
+                portchannel_members[m] = (i, t)
+        ifaces = {}
+        v = self.cli("show interface")
+        prev = None
+        for match in self.rx_interface_splitter.finditer(v):
+            if not prev:
+                prev = match
                 continue
-            else:
-                admin_status.update({n: int(s) == 1})
-
-        # Get switchports
-        for swp in self.scripts.get_switchport():
-            admin = admin_status[swp["interface"]]
-            name = swp["interface"]
+            ll = v[prev.end() : match.start()]
+            r = {}
+            for rx in [self.rx_mac, self.rx_description, self.rx_mtu]:
+                m = rx.search(ll)
+                if m:
+                    r.update(m.groupdict())
+            ifname = prev.group("name")
+            iftype = self.profile.get_interface_type(ifname)
             iface = {
-                "name": name,
-                "type": "aggregated" if len(swp["members"]) > 0 else "physical",
-                "admin_status": admin,
-                "oper_status": swp["status"],
-                # "mac": mac,
+                "name": ifname,
+                "type": iftype,
+                "admin_status": not prev.group("admin"),
+                "oper_status": prev.group("oper") == "up",
+                "mac": r.get("mac"),
+                "enabled_protocols": [],
                 "subinterfaces": [
                     {
-                        "name": name,
-                        "admin_status": admin,
-                        "oper_status": swp["status"],
-                        "enabled_afi": ["BRIDGE"],
+                        "name": ifname,
+                        "admin_status": prev.group("admin"),
+                        "oper_status": prev.group("oper") == "up",
+                        "enabled_afi": [],
                         # "mac": mac,
                         # "snmp_ifindex": self.scripts.get_ifindex(interface=name)
                     }
                 ],
             }
-            if swp["tagged"]:
-                iface["subinterfaces"][0]["tagged_vlans"] = swp["tagged"]
-            try:
-                iface["subinterfaces"][0]["untagged_vlan"] = swp["untagged"]
-            except KeyError:
-                pass
-            if swp["description"]:
-                iface["description"] = swp["description"]
-            if name in portchannel_members:
-                iface["aggregated_interface"] = portchannel_members[name][0]
-                if portchannel_members[name][1]:
-                    n["enabled_protocols"] = ["LACP"]
-            interfaces += [iface]
-
-        return [{"interfaces": interfaces}]
+            if iftype == "physical" and ifname in portchannel_members:
+                ai, is_lacp = portchannel_members[ifname]
+                iface["aggregated_interface"] = ai
+                iface["subinterfaces"] = []
+                if is_lacp:
+                    iface["enabled_protocols"] += ["LACP"]
+            ifaces[ifname] = iface
+            prev = match
+        return [{"interfaces": list(ifaces.values())}]

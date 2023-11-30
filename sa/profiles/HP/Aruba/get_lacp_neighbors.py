@@ -15,7 +15,7 @@ from noc.sa.interfaces.igetlacpneighbors import IGetLACPNeighbors
 
 
 class Script(BaseScript):
-    name = "Huawei.VRP.get_lacp_neighbors"
+    name = "HP.Aruba.get_lacp_neighbors"
     interface = IGetLACPNeighbors
 
     rx_system_id = re.compile(r"System-ID\s+:\s*(?P<system_id>\S+)")
