@@ -35,6 +35,10 @@
     "data": {
         "asset": {
             "part_no": ["QSC-SFP10.0GE-1310", "QSC-SFP10GE-1310"]
+        },
+        "optical": {
+            "distance_max": "10000",
+            "tx_wawelength": "1310"
         }
     }
 }

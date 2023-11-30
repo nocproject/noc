@@ -35,6 +35,11 @@
     "data": {
         "asset": {
             "part_no": ["QSC-SFP20GEW-1", "QSCSFP20GEW1", "QSC-SFP20GEW", "QSCSFP20GEW"]
+        },
+        "optical": {
+            "distance_max": "20000",
+            "rx_wawelength": "1310",
+            "tx_wawelength": "1550"
         }
     }
 }
