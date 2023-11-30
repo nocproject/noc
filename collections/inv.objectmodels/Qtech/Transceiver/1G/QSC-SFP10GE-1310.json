@@ -38,6 +38,7 @@
         },
         "optical": {
             "distance_max": "10000",
+            "rx_wawelength": "1550",
             "tx_wawelength": "1310"
         }
     }

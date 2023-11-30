@@ -38,11 +38,14 @@
             "type__name": "Optical | LC"
         }
     ],
-    "data": [
-        {
-            "attr": "part_no",
-            "interface": "asset",
-            "value": ["USFP-GB/SS153", "USFP-Gb/SS153"]
+    "data": {
+        "asset": {
+            "part_no": ["USFP-GB/SS153", "USFP-Gb/SS153", "USFP-Gb/SS153-DR"]
+        },
+        "optical": {
+            "distance_max": "15000",
+            "rx_wawelength": "1550",
+            "tx_wawelength": "1310"
         }
-    ]
+    }
 }
