@@ -1,81 +1,48 @@
 # ---------------------------------------------------------------------
 # HP.Aruba.get_portchannel
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2022 The NOC Project
+# Copyright (C) 2007-2023 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
+# Python modules
+import re
+
 # NOC modules
-from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetportchannel import IGetPortchannel
+from noc.sa.profiles.Generic.get_portchannel import Script as BaseScript
+from noc.core.text import parse_kv
 
 
 class Script(BaseScript):
     name = "HP.Aruba.get_portchannel"
     interface = IGetPortchannel
 
-    always_prefer = "S"
+    rx_lag_splitter = re.compile(
+        r"^Aggregate (?P<lag>lag\d+) is (?P<status>down|up)\s*", re.MULTILINE
+    )
 
-    def execute_snmp(self):
+    parse_kv_map = {
+        "aggregated-interfaces": "port",
+        "aggregate mode": "mode",
+    }
+
+    def execute_cli(self, **kwargs):
         r = []
-
-        def hex2bin(ports):
-            bin = [
-                "0000",
-                "0001",
-                "0010",
-                "0011",
-                "0100",
-                "0101",
-                "0110",
-                "0111",
-                "1000",
-                "1001",
-                "1010",
-                "1011",
-                "1100",
-                "1101",
-                "1110",
-                "1111",
+        v = self.cli("show lag")
+        prev = None
+        for match in self.rx_lag_splitter.finditer(v):
+            if not prev:
+                prev = match
+                continue
+            ll = parse_kv(self.parse_kv_map, v[prev.start() : match.end()])
+            r += [
+                {
+                    "interface": prev.group("lag"),
+                    "members": ll["port"].split(),
+                    "type": "L" if ll["mode"] == "active" else "S",
+                }
             ]
-            ports = ["%02x" % ord(c) for c in ports]
-            p = ""
-            for c in ports:
-                for i in range(len(c) - 1):
-                    p += bin[int(c[i], 16)]
-            return p
+            prev = match
 
-            for v in self.snmp.get_tables(
-                [
-                    "1.2.840.10006.300.43.1.1.1.1.6",
-                    "1.2.840.10006.300.43.1.1.2.1.1",
-                    "1.2.840.10006.300.43.1.1.1.1.5",
-                ],
-                bulk=True,
-            ):
-                oid = "1.3.6.1.2.1.31.1.1.1.1." + str(v[1])
-                port = self.snmp.get(oid, cached=True)  # IF-MIB
-                if not port:
-                    oid = "1.3.6.1.2.1.2.2.1.2." + str(v[1])
-                    port = self.snmp.get(oid, cached=True)
-                s = hex2bin(v[2])
-                members = []
-                for i in range(len(s)):
-                    if s[i] == "1":
-                        oid = "1.3.6.1.2.1.31.1.1.1.1." + str(i + 1)
-                        iface = self.snmp.get(oid, cached=True)  # IF-MIB
-                        if not iface:
-                            oid = "1.3.6.1.2.1.2.2.1.2." + str(i + 1)
-                            iface = self.snmp.get(oid, cached=True)
-                        members.append(iface)
-
-                r.append(
-                    {
-                        "interface": port,
-                        # ?????? type detection
-                        # 1.2.840.10006.300.43.1.1.1.1.5 is correct???????????
-                        "type": "L" if v[3] == "1" else "S",
-                        "members": members,
-                    }
-                )
-            return r
+        return r

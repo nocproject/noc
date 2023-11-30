@@ -5,70 +5,32 @@
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
+# Python modules
+import re
+
 # NOC modules
-from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetmacaddresstable import IGetMACAddressTable
+from noc.sa.profiles.Generic.get_mac_address_table import Script as BaseScript
 
 
 class Script(BaseScript):
     name = "HP.Aruba.get_mac_address_table"
     interface = IGetMACAddressTable
-    cached = True
 
-    def execute_snmp(self, interface=None, vlan=None, mac=None):
+    rx_mac_table = re.compile(
+        r"(?P<mac>\S+)\s+(?P<vlan>\d+)\s+(?P<type>dynamic|static)\s+(?P<port>\S+)"
+    )
+
+    def execute_cli(self, **kwargs):
         r = []
-        vlan_oid = []
-        if mac is not None:
-            mac = mac.lower()
-        for v in self.snmp.get_tables(["1.3.6.1.2.1.17.7.1.2.2.1.2"], bulk=True):
-            vlan_oid.append(v[0])
-        # mac iface type
-        for v in self.snmp.get_tables(
-            ["1.3.6.1.2.1.17.4.3.1.1", "1.3.6.1.2.1.17.4.3.1.2", "1.3.6.1.2.1.17.4.3.1.3"],
-            bulk=True,
-        ):
-            if v[1]:
-                chassis = ":".join(["%02x" % ord(c) for c in v[1]])
-                if mac is not None:
-                    if chassis == mac:
-                        pass
-                    else:
-                        continue
-            else:
-                continue
-            if not v[3]:
-                continue
-            if int(v[3]) > 3 or int(v[3]) < 1:
-                continue
-            # iface = self.snmp.get("1.3.6.1.2.1.31.1.1.1.1." + v[2],
-            #        cached=True)  # IF-MIB
-            # if not iface:
-            #    oid = "1.3.6.1.2.1.2.2.1.2." + v[2]
-            #    i = self.snmp.get(oid, cached=True)
-            if int(v[3]) < 25:
-                iface = "Ethernet0/" + str(int(v[2]))
-            else:
-                iface = "Copper0/" + str(int(v[2]))
-            if interface is not None:
-                if iface == interface:
-                    pass
-                else:
-                    continue
-            for i in vlan_oid:
-                if v[0] in i:
-                    vlan_id = int(i.split(".")[0])
-                    break
-            if vlan is not None:
-                if vlan_id == vlan:
-                    pass
-                else:
-                    continue
-            r.append(
+        v = self.cli("show mac-address-table")
+        for mac, vlan, m_type, port in self.rx_mac_table.findall(v):
+            r += [
                 {
-                    "interfaces": [iface],
-                    "mac": chassis,
-                    "type": {"3": "D", "2": "S", "1": "S"}[str(v[3])],
-                    "vlan_id": vlan_id,
+                    "vlan_id": vlan,
+                    "mac": mac,
+                    "interfaces": [port],
+                    "type": m_type[0].upper(),
                 }
-            )
+            ]
         return r

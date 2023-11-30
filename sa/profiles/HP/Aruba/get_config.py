@@ -1,7 +1,7 @@
 # ---------------------------------------------------------------------
-# HP.Aruba.get_config
+# Aruba.ArubaOS.get_config
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2022 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -14,9 +14,13 @@ class Script(BaseScript):
     name = "HP.Aruba.get_config"
     interface = IGetConfig
 
-    def execute(self, TFTP_root="", TFTP_IP="", file_name="", **kwargs):
-        # Try snmp first
-        #
-        #
-        # See bug NOC-291: http://bt.nocproject.org/browse/NOC-291
-        raise self.NotSupportedError("Not supported on")
+    def execute_cli(self, policy="r"):
+        assert policy in ("r", "s")
+        if policy == "s":
+            config = self.cli("show startup-config")
+        else:
+            config = self.cli("show running-config")
+        if config.startswith("Building "):
+            # Strip "Building configuration\n\n"
+            config = self.strip_first_lines(config, 3)
+        return self.cleaned_config(config)

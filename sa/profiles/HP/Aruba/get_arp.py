@@ -1,32 +1,35 @@
 # ---------------------------------------------------------------------
 # HP.Aruba.get_arp
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2022 The NOC Project
+# Copyright (C) 2007-2023 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
+# Python modules
+import re
+
 # NOC modules
-from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetarp import IGetARP
+from noc.sa.profiles.Generic.get_arp import Script as BaseScript
 
 
 class Script(BaseScript):
     name = "HP.Aruba.get_arp"
     interface = IGetARP
-    cache = True
+    rx_arp_table = re.compile(
+        r"(?P<address>\d+\.\d+\.\d+\.\d+)\s+(?P<mac>\S+)\s+"
+        r"(?P<port>\S+)\s+(?P<pprot>\d+/\d+/\d+|lag\d+)"
+    )
 
-    def execute_snmp(self):
+    def execute_cli(self, **kwargs):
         r = []
-        for v in self.snmp.get_tables(
-            ["1.3.6.1.2.1.4.22.1.1", "1.3.6.1.2.1.4.22.1.2", "1.3.6.1.2.1.4.22.1.3"],
-            bulk=True,
-        ):
-            iface = self.snmp.get("1.3.6.1.2.1.31.1.1.1.1." + str(v[1]), cached=True)  # IF-MIB
-            if not iface:
-                oid = "1.3.6.1.2.1.2.2.1.2." + str(v[1])
-                iface = self.snmp.get(oid, cached=True)
-            mac = ":".join(["%02x" % ord(c) for c in v[2]])
-            ip = ["%02x" % ord(c) for c in v[3]]
-            ip = ".".join(str(int(c, 16)) for c in ip)
-            r.append({"ip": ip, "mac": mac, "interface": iface})
+        v = self.cli("show arp")
+        for ip, mac, vlan, port in self.rx_arp_table.findall(v):
+            r += [
+                {
+                    "ip": ip,
+                    "mac": mac,
+                    "interface": port,
+                }
+            ]
         return r
