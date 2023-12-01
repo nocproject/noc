@@ -1119,6 +1119,7 @@ class Config(BaseConfig):
         return run_sync(partial(dcs.get_slot_limit, slot_name))
 
 
+# 1
 config = Config()
 config.load()
 config.setup_logging()
