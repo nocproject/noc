@@ -51,15 +51,12 @@ class Command(BaseCommand):
             self.stdout.write("\n")
 
     def print_json(self, profile_list, metric_list):
-        res = []
         for p in profile_list:
             if not p["metrics"]:
                 continue
             p_name = p["name"]
             metrics = p["metrics"]
-            res.append({"name": p_name, **metrics})
-
-        self.stdout.write(orjson.dumps(res).decode())
+            self.stdout.write("%s\n" % orjson.dumps({"name": p_name, **metrics}).decode())
 
     def get_metric_source(self, func_list):
         res = ""
@@ -95,7 +92,8 @@ class Command(BaseCommand):
                 self.die("Failed to load script %s" % script_class)
 
             service = ServiceStub(pool="")
-            # Suppress any errors
+            # TODO dirty hack
+            # Suppress error in /opt/noc/sa/profiles/Ericsson/MINI_LINK/profile.py
             try:
                 scr = script_class(
                     service=service,
@@ -106,7 +104,7 @@ class Command(BaseCommand):
                     timeout=3600,
                     name=script_name,
                 )
-            except:
+            except AttributeError:
                 continue
 
             if metrics:
