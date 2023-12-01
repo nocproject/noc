@@ -335,10 +335,10 @@ class CLI(BaseCLI):
         pg = match.group(0)
         for p, c in self.patterns["more_patterns_commands"]:
             if p.search(pg):
-                self.collected_data += [data]
+                # self.collected_data += [data]
                 if isinstance(c, bytes):
                     await self.send(c)
-                    return
+                    return data
                 elif isinstance(c, dict):
                     # handling case if command is dict
                     default_command = c.get(None)
@@ -347,10 +347,10 @@ class CLI(BaseCLI):
                             ck = set(ck)
                             if ck & self.labels == ck:
                                 await self.send(cv)
-                                return
+                                return data
                     if default_command:
                         await self.send(default_command)
-                        return
+                        return data
                     raise self.InvalidPagerCommand("Absent required None key")
                 else:
                     raise self.InvalidPagerCommand(c)
