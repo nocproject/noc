@@ -7,6 +7,7 @@
 
 # Python modules
 import operator
+import random
 from typing import Optional, List, Set, Dict, Any, Iterable, Tuple
 from collections import defaultdict
 from dataclasses import asdict
@@ -133,11 +134,13 @@ class TopologyBase(object):
         # Apply node hints
         attrs.update(self.node_hints.get(o_id) or {})
         # Apply default attributes
+        uptime, cpu = random.randint(1_000_0, 1_000_00), random.randint(1, 100)
         attrs.update(
             {
                 "type": n.type,
                 "id": o_id,
                 "node_id": n.resource_id,
+                "metrics_label": f"Uptime: {uptime} s</b> CPU Usage: {cpu}",
                 "level": n.level,
                 "name": n.title or "",
                 "shape": getattr(stencil, "path", ""),
@@ -146,6 +149,7 @@ class TopologyBase(object):
                 "shape_overlay": [asdict(x) for x in n.overlays] if n.overlays else [],
                 "ports": [],
                 "caps": list(oc),
+                "object_metrics": ["602ed9ccedf26ece540d7f65", "602ed9ccedf26ece540d7f98"],
                 "object_filter": n.object_filter,
             }
         )

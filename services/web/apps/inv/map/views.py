@@ -8,6 +8,7 @@
 # Python modules
 import itertools
 import threading
+import random
 from collections import defaultdict
 from typing import List, Set, Dict
 
@@ -29,6 +30,7 @@ from noc.sa.interfaces.base import (
     IntParameter,
     StringParameter,
     DictListParameter,
+    StringListParameter,
     DictParameter,
 )
 from noc.fm.models.activealarm import ActiveAlarm
@@ -368,7 +370,11 @@ class MapApplication(ExtApplication):
         api=True,
         validate={
             "nodes": DictListParameter(
-                attrs={"id": StringParameter(), "node_type": StringParameter()}
+                attrs={
+                    "id": StringParameter(),
+                    "node_type": StringParameter(),
+                    "metrics": StringListParameter(required=False),
+                }
             )
         },
     )
@@ -439,7 +445,14 @@ class MapApplication(ExtApplication):
                 object_group[mo_id].add(n_id)
         # Mark all as unknown
         objects = list(itertools.chain(nid, object_group))
-        r = {o: self.ST_UNKNOWN for o in itertools.chain(nid.values(), group_nodes.values())}
+        uptime, cpu = random.randint(1_000_0, 1_000_00), random.randint(1, 100)
+        r = {
+            o: {
+                "status_code": self.ST_UNKNOWN,
+                "metrics_label": f"Uptime: {uptime} s</b> CPU Usage: {cpu}",
+            }
+            for o in itertools.chain(nid.values(), group_nodes.values())
+        }
         sr = ManagedObject.get_statuses(objects)
         sa = get_alarms(objects)
         mo = Maintenance.currently_affected(objects)
@@ -449,29 +462,29 @@ class MapApplication(ExtApplication):
             if sr[o]:
                 # Check for alarms
                 if o in sa:
-                    r[o] = self.ST_ALARM
+                    r[o]["status_code"] = self.ST_ALARM
                 else:
-                    r[o] = self.ST_OK
+                    r[o] = {"status_code":  self.ST_OK, "metric_label": "222222"}
             else:
-                r[o] = self.ST_DOWN
+                r[o]["status_code"] = self.ST_DOWN
             if o in mo:
-                r[o] |= self.ST_MAINTENANCE
+                r[o]["status_code"] |= self.ST_MAINTENANCE
             if o not in object_group:
                 continue
             for g in object_group[o]:
-                group_status[g].add(r[o])
+                group_status[g].add(r[o]["status_code"])
         for g, status in group_status.items():
             if self.ST_ALARM in status or self.ST_DOWN in status:
-                r[g] = self.ST_ALARM
+                r[g]["status_code"] = self.ST_ALARM
             elif self.ST_OK in status:
-                r[g] = self.ST_OK
+                r[g]["status_code"] = self.ST_OK
         segments = [s for s, g in group_nodes if not g]
         sa = get_alarms_segment(segments)
         for s in segments:
             if s in sa:
-                r[s] = self.ST_ALARM
+                r[s]["status_code"] = self.ST_ALARM
             else:
-                r[s] = self.ST_OK
+                r[s]["status_code"] = self.ST_OK
         return r
 
     @classmethod
