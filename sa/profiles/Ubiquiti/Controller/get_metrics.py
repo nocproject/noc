@@ -17,6 +17,9 @@ NS = 1_000_000_000
 
 
 class Script(GetMetricsScript):
+    """
+    WLAN Statistics: /v2/api/site/default/wlan/enriched-configuration
+    """
     name = "Ubiquiti.Controller.get_metrics"
     CPE_METRICS_CONFIG = {
         "Radio | TxRetries | Ratio": ProfileMetricConfig(
@@ -40,8 +43,8 @@ class Script(GetMetricsScript):
             scale=1,
             units="1",
         ),
-        "Interface | Load | In": ProfileMetricConfig(
-            metric="Interface | Load | In",
+        "Interface | Speed": ProfileMetricConfig(
+            metric="Interface | Speed",
             oid="phy_rate_most_common",
             sla_types=[],
             scale=1,
