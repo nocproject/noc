@@ -11,6 +11,9 @@ from noc.sa.interfaces.igetcpe import IGetCPE
 
 
 class Script(BaseScript):
+    """
+    Clients: /v2/api/site/default/clients/history?onlyNonBlocked=true&includeUnifiDevices=true&withinHours=0
+    """
     name = "Ubiquiti.Controller.get_cpe"
     interface = IGetCPE
 
