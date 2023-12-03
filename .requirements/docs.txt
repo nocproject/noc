@@ -8,7 +8,7 @@
 # as any other are incompatible with mkdocs-static-i18n
 mkdocs-material==9.2.5
 mkdocstrings[python]==0.22.0
-mkdocs-macros-plugin==1.0.4
+mkdocs-macros-plugin==1.0.5
 #mkdocs-static-i18n==1.1.1
 git+https://github.com/dvolodin7/mkdocs-static-i18n.git@patch-1#egg=mkdocs-static-i18n
 mkdocs-gen-files==0.5.0
