@@ -924,8 +924,10 @@ Ext.define("NOC.inv.map.MapPanel", {
         )
       );
       node.attributes.data.metrics_label = data.metrics_label;
-      node.attributes.text = node.setFilter(me.statusFilter[data[s] & 0x1f]); // Remove maintenance bit
-      if (data[s] & 0x20) {
+      node.attributes.text = node.setFilter(
+        me.statusFilter[data[s].status_code & 0x1f]
+      ); // Remove maintenance bit
+      if (data[s].status_code & 0x20) {
         // Maintenance mode
         if (!node.get("data").isMaintenance) {
           var wrench = me.createBadge(node, {position: "NE", form: "c", code: 61613});
