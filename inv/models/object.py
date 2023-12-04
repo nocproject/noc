@@ -1,7 +1,7 @@
 # ---------------------------------------------------------------------
 # ObjectModel model
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2021 The NOC Project
+# Copyright (C) 2007-2023 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -367,6 +367,14 @@ class Object(Document):
 
     def get_data(self, interface: str, key: str, scope: Optional[str] = None) -> Any:
         attr = ModelInterface.get_interface_attr(interface, key)
+<<<<<<< HEAD
+=======
+        if attr.is_const:
+            # Lookup model
+            v = self.model.get_data(interface, key)
+            if v is not None:
+                return v
+>>>>>>> 46b55c03e0 (Update)
         for item in self.data:
             if item.interface == interface and item.attr == key:
                 if not scope or item.scope == scope:

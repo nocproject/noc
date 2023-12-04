@@ -138,7 +138,9 @@ class MOCardDashboard(MODashboard):
                 )
                 data["distance"] = f"{float(distance/1000)}km" if distance else None
                 data["vendor"] = o.model.vendor.name
-                data["part_n"] = o.model.get_data("asset", "part_no")
+                data["part_n"] = o.get_data(
+                    "asset", "part_no", scope="discovery"
+                ) or o.model.get_data("asset", "part_no")
                 for c in o.model.connections:
                     if c.direction == "s" and c.name.lower() == "rx":
                         data["rx"] = ", ".join(str(p) for p in c.protocols)
