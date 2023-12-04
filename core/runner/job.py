@@ -6,7 +6,7 @@
 # ---------------------------------------------------------------------
 
 # Python modules
-from typing import Dict, List, Iterable, Optional, Set, Iterator, Any, Coroutine, Type
+from typing import Dict, List, Iterable, Optional, Set, Iterator, Type
 from logging import getLogger
 from weakref import ref, ReferenceType
 import asyncio
