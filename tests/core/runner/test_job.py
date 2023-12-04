@@ -14,9 +14,9 @@ import pytest
 
 # NOC modules
 from noc.sa.models.job import JobStatus
-from noc.services.runner.runner import Runner
-from noc.services.runner.job import Job
-from noc.services.runner.models.jobreq import JobRequest
+from noc.core.runner.runner import Runner
+from noc.core.runner.job import Job
+from noc.core.runner.models.jobreq import JobRequest
 
 
 @pytest.mark.parametrize(

@@ -12,7 +12,7 @@ from typing import Optional, Dict, List
 import pytest
 
 # NOC modules
-from noc.services.runner.env import Environment
+from noc.core.runner.env import Environment
 
 
 def env(*e: Dict[str, str]) -> Environment:

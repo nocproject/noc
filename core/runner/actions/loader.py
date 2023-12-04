@@ -13,7 +13,7 @@ from .base import BaseAction
 class ActionLoader(BaseLoader):
     name = "action"
     base_cls = BaseAction
-    base_path = ("services", "runner", "actions")
+    base_path = ("core", "runner", "actions")
     ignored_names = {"base", "loader"}
 
 
