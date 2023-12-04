@@ -2389,17 +2389,26 @@ class ManagedObject(NOCModel):
             r[c["_id"]] = set(chain(*c["neighbors"])) - {c["_id"]}
         # Update ManagedObject links
         for lo in r:
-            with pg_connection.cursor() as cursor:
-                cursor.execute(
-                    """
+            if r[lo]:
+                # Add Links
+                SQL = """
                     UPDATE sa_managedobject
                     SET effective_labels = CASE WHEN 'noc::is_linked::=' = ANY(effective_labels)
-                        THEN effective_labels else effective_labels || '{"noc::is_linked::="}' END,
+                        THEN effective_labels ELSE effective_labels || '{"noc::is_linked::="}' END,
                         links = %s::numeric[]
                     WHERE id = %s;
-                    """,
-                    [list(r[lo]), lo],
-                )
+                    """
+            else:
+                # Remove Links
+                SQL = """
+                    UPDATE sa_managedobject
+                    SET effective_labels = CASE WHEN 'noc::is_linked::=' = ANY(effective_labels)
+                        THEN array_remove(effective_labels, 'noc::is_linked::=') ELSE effective_labels END,
+                        links = %s::numeric[]
+                    WHERE id = %s;
+                    """
+            with pg_connection.cursor() as cursor:
+                cursor.execute(SQL, [list(r[lo]), lo])
                 # Generate change
             ManagedObject._reset_caches(lo)
 
