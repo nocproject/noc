@@ -496,6 +496,7 @@ class AssetCheck(DiscoveryCheck):
                         # Check target object has proper connection
                         t_c = self.expand_context(r.target_connection, context)
                         if not t_object.has_connection(t_c):
+                            self.logger.debug("Unknown connection %s", t_c)
                             continue
                         # Check source object has proper connection
                         m_c = self.expand_context(r.match_connection, context)
