@@ -24,6 +24,7 @@ class UbiquitiAuthMiddeware(BaseMiddleware):
         if not headers:
             headers = {}
         if self.http.cookies:
+            headers["X-Csrf-Token"] = self.http.cookies.get("csrf_token").value
             return url, body, headers
         # Auth
         # self.logger.debug("[%s] Process middleware on: %s", self.name, url)
