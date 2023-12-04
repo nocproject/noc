@@ -4,7 +4,7 @@
 # Copyright (C) 2007-2022 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
-
+import datetime
 # Python modules
 import operator
 import random
@@ -140,7 +140,10 @@ class TopologyBase(object):
                 "type": n.type,
                 "id": o_id,
                 "node_id": n.resource_id,
-                "metrics_label": f"Uptime: {uptime} s</b> CPU Usage: {cpu}",
+                "metrics_label": "",
+                "metrics_template": "</br>".join(
+                    ["Uptime: {{ metric.object.sys_uptime.humanize }}", "CPU Usage: {{ metric.cpu.usage.humanize }}"],
+                ),
                 "level": n.level,
                 "name": n.title or "",
                 "shape": getattr(stencil, "path", ""),

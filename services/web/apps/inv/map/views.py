@@ -446,13 +446,16 @@ class MapApplication(ExtApplication):
         # Mark all as unknown
         objects = list(itertools.chain(nid, object_group))
         uptime, cpu = random.randint(1_000_0, 1_000_00), random.randint(1, 100)
-        r = {
-            o: {
-                "status_code": self.ST_UNKNOWN,
-                "metrics_label": f"Uptime: {uptime} s</b> CPU Usage: {cpu}",
+        r = defaultdict(dict)
+        r.update(
+            {
+                o: {
+                    "status_code": self.ST_UNKNOWN,
+                    "metrics_label": f"Uptime: {uptime} s</br> CPU Usage: {cpu}",
+                }
+                for o in itertools.chain(nid.values(), group_nodes.values())
             }
-            for o in itertools.chain(nid.values(), group_nodes.values())
-        }
+        )
         sr = ManagedObject.get_statuses(objects)
         sa = get_alarms(objects)
         mo = Maintenance.currently_affected(objects)
@@ -464,7 +467,7 @@ class MapApplication(ExtApplication):
                 if o in sa:
                     r[o]["status_code"] = self.ST_ALARM
                 else:
-                    r[o] = {"status_code":  self.ST_OK, "metric_label": "222222"}
+                    r[o]["status_code"] = self.ST_OK
             else:
                 r[o]["status_code"] = self.ST_DOWN
             if o in mo:
