@@ -204,11 +204,6 @@ class Link(Document):
                 ["noc::is_linked::="],
                 instance_filters=[("_id", [i.id for i in self.interfaces])],
             )
-            Label.add_model_labels(
-                "sa.ManagedObject",
-                ["noc::is_linked::="],
-                instance_filters=[("id", self.linked_objects)],
-            )
             ManagedObject.update_links(self.linked_objects)
 
     def on_delete(self):

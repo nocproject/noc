@@ -2368,6 +2368,7 @@ class ManagedObject(NOCModel):
         :return:
         """
         from noc.inv.models.link import Link
+        from django.db import connection as pg_connection
 
         coll = Link._get_collection()
         r: Dict[int, Set] = {lo: set() for lo in linked_objects}
@@ -2388,7 +2389,18 @@ class ManagedObject(NOCModel):
             r[c["_id"]] = set(chain(*c["neighbors"])) - {c["_id"]}
         # Update ManagedObject links
         for lo in r:
-            ManagedObject.objects.filter(id=lo).update(links=list(r[lo]))
+            with pg_connection.cursor() as cursor:
+                cursor.execute(
+                    """
+                    UPDATE sa_managedobject
+                    SET effective_labels = CASE WHEN 'noc::is_linked::=' = ANY(effective_labels)
+                        THEN effective_labels else effective_labels || '{"noc::is_linked::="}' END,
+                        links = %s::numeric[]
+                    WHERE id = %s;
+                    """,
+                    [list(r[lo]), lo],
+                )
+                # Generate change
             ManagedObject._reset_caches(lo)
 
     @property
