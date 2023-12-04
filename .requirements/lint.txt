@@ -5,9 +5,9 @@
 # ---------------------------------------------------------------------
 flake8==4.0.1
 flake8_formatter_junit_xml==0.0.6
-ruff==0.0.251
+ruff==0.1.6
 mypy==0.950
 black==22.3.0
-mongo-types==0.14.2
+mongo-types==0.15.1
 types-orjson==3.6.2
 types-cachetools==4.2.4
