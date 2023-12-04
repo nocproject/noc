@@ -74,6 +74,22 @@
         {
             "match_connection": "in",
             "match_type": "XCVR",
+            "scope": "chassis",
+            "target_connection": "GigabitEthernetX/0/{N}",
+            "target_number": "",
+            "target_type": "CHASSIS"
+        },
+        {
+            "match_connection": "in",
+            "match_type": "XCVR",
+            "scope": "chassis",
+            "target_connection": "XGigabitEthernetX/0/{N}",
+            "target_number": "",
+            "target_type": "CHASSIS"
+        },
+        {
+            "match_connection": "in",
+            "match_type": "XCVR",
             "scope": "em",
             "target_connection": "Port_{N}",
             "target_number": "",
@@ -100,6 +116,22 @@
             "match_type": "XCVR",
             "scope": "em",
             "target_connection": "XGigabitEthernetX/0/{N}_sfp+",
+            "target_number": "",
+            "target_type": "EM"
+        },
+        {
+            "match_connection": "in",
+            "match_type": "XCVR",
+            "scope": "em",
+            "target_connection": "GigabitEthernetX/0/{N}",
+            "target_number": "",
+            "target_type": "EM"
+        },
+        {
+            "match_connection": "in",
+            "match_type": "XCVR",
+            "scope": "em",
+            "target_connection": "XGigabitEthernetX/0/{N}",
             "target_number": "",
             "target_type": "EM"
         },
