@@ -48,10 +48,11 @@ class JobRequest(BaseModel):
     Attributes:
         name: Jobb name, unique within job group
         action: Name of the action. Mutual exclusive with jobs.
-        description: Optional descriptionn.
+        description: Optional description.
         labels: List of labels.
         allow_fail: If set to true, FAILED job became WARNING.
-        locks: Optional list of lock names.
+        locks: Optional list of lock names. Lock names are jinja2
+            template variables, in where environment is used as content.
         inputs: List of input mappigs.
         outputs: List of output mappings.
         require_approval: Job will be created in PENDING status.

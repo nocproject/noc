@@ -88,7 +88,7 @@ class Runner(object):
             logger.info("[%s] Job is missed, skipping", job_id)
             return
         # Jobs can be started only from WAITING
-        if job.status != JobStatus.WAITING:
+        if not job.is_waiting:
             logger.info("[%s] Job status is %s, skipping", job, job.status)
             return
         # Check if job is not blocked by parents.
@@ -123,6 +123,7 @@ class Runner(object):
             dt = perf_counter_ns() - t0
             logger.info("[%s] executed in %d ms", job, dt / 1_000_000)
         self.set_status(job, status)
+        job.set_task(None)
         await self.apply_group(job)
 
     async def apply_group(self, job: Job) -> None:
@@ -147,7 +148,7 @@ class Runner(object):
         p = job.parent
         if not p or p.is_complete:
             return
-        if p.status != JobStatus.RUNNING:
+        if not p.is_running:
             return
         if any(True for c in p.iter_children() if not c.is_complete):
             return  # Incomplete jobs
@@ -182,7 +183,7 @@ class Runner(object):
                 return
             if p.allow_fail:
                 self.set_status(p, JobStatus.WARNING)
-                self.update_group(p)
+                self.check_group_success(p)
             else:
                 self.set_status(p, job.status)
                 self.check_group_fail(p)
@@ -196,5 +197,5 @@ class Runner(object):
             return
         logger.info("[%s] Status change %s -> %s", job, job.status.name, status.name)
         job.status = status
-        if status == JobStatus.CANCELLED:
+        if job.is_cancelled:
             job.cancel()

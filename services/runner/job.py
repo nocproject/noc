@@ -19,6 +19,7 @@ from .models.jobreq import JobRequest
 from noc.sa.models.job import JobStatus
 from .actions.loader import loader
 from .actions.base import BaseAction
+from .env import Environment
 
 logger = getLogger(__name__)
 
@@ -38,6 +39,7 @@ class Job(object):
         action: Optional[Type[BaseAction]] = None,
         allow_fail: bool = False,
         parent: Optional["Job"] = None,
+        environment: Optional[Dict[str, str]] = None,
     ) -> None:
         self.id = ObjectId()
         self.name = name
@@ -45,6 +47,9 @@ class Job(object):
         self.allow_fail = allow_fail
         self.status: JobStatus = status
         self.parent = parent
+        self.environment = Environment(environment)
+        if self.parent:
+            self.environment.set_parent(self.parent.environment)
         self.depends_on: Optional[List[ReferenceType[Job]]] = None
         self.children: Optional[List[ReferenceType[Job]]] = None
         self._task: Optional[ReferenceType[asyncio.Task]] = None
@@ -114,6 +119,10 @@ class Job(object):
     @property
     def is_running(self) -> bool:
         return self.status == JobStatus.RUNNING
+
+    @property
+    def is_cancelled(self) -> bool:
+        return self.status == JobStatus.CANCELLED
 
     @property
     def is_complete_success(self) -> bool:
@@ -258,6 +267,7 @@ class Job(object):
             status=cls._get_initial_status(req),
             allow_fail=req.allow_fail,
             parent=parent,
+            environment=req.environment,
         )
         # Create nested jobs
         chains: List[List[Job]] = []

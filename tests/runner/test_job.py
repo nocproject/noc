@@ -6,7 +6,7 @@
 # ----------------------------------------------------------------------
 
 # Python modules
-from typing import List, Iterable, Dict
+from typing import List, Iterable, Dict, Tuple
 import asyncio
 
 # Third-party modules
@@ -98,6 +98,14 @@ def test_unique_names(jobs: List[JobRequest], expected: bool) -> None:
                 JobRequest(name="job-3", action="success", depends_on=["job-2"]),
             ],
         ),
+        # Neither action or jobs
+        JobRequest(name="job"),
+        # action and jobs
+        JobRequest(
+            name="leader", action="success", jobs=[JobRequest(name="job-1", action="success")]
+        ),
+        # invalid action
+        JobRequest(name="job", action="totallymessedup"),
     ],
 )
 def test_from_req_errors(req: JobRequest):
@@ -428,4 +436,28 @@ def test_scenario(req: JobRequest, expected: Dict[str, JobStatus]):
         return runner.last_state
 
     r = asyncio.run(inner())
+    assert r == expected
+
+
+@pytest.mark.parametrize(
+    ("req", "expected"),
+    [
+        (JobRequest(name="job", action="success"), []),
+        (
+            JobRequest(name="job", action="success", environment={"a": "1", "b": "2"}),
+            [("a", "1"), ("b", "2")],
+        ),
+        (
+            JobRequest(
+                name="job",
+                environment={"a": "1", "b": "2"},
+                jobs=[JobRequest(name="g1", action="success", environment={"a": "4", "c": "3"})],
+            ),
+            [("a", "4"), ("b", "2"), ("c", "3")],
+        ),
+    ],
+)
+def test_job_env(req: JobRequest, expected: List[Tuple[str, str]]) -> None:
+    job = list(Job.from_req(req))[-1]
+    r = list(sorted(job.environment.items()))
     assert r == expected
