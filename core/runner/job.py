@@ -13,6 +13,7 @@ import asyncio
 
 # Third-party modules
 from bson import ObjectId
+from jinja2 import Template
 
 # NOC modules
 from .models.jobreq import JobRequest
@@ -40,6 +41,7 @@ class Job(object):
         allow_fail: bool = False,
         parent: Optional["Job"] = None,
         environment: Optional[Dict[str, str]] = None,
+        locks: Optional[Iterable[str]] = None,
     ) -> None:
         self.id = ObjectId()
         self.name = name
@@ -50,6 +52,7 @@ class Job(object):
         self.environment = Environment(environment)
         if self.parent:
             self.environment.set_parent(self.parent.environment)
+        self.locks = list(locks) if locks is not None else None
         self.depends_on: Optional[List[ReferenceType[Job]]] = None
         self.children: Optional[List[ReferenceType[Job]]] = None
         self._task: Optional[ReferenceType[asyncio.Task]] = None
@@ -268,6 +271,7 @@ class Job(object):
             allow_fail=req.allow_fail,
             parent=parent,
             environment=req.environment,
+            locks=req.locks,
         )
         # Create nested jobs
         chains: List[List[Job]] = []
@@ -310,6 +314,19 @@ class Job(object):
         if self._task is None:
             return False
         return bool(self._task())
+
+    def iter_lock_names(self) -> Iterator[str]:
+        """
+        Iterate real lock names.
+        """
+        all_locks: Set[str] = set()
+        if self.locks:
+            for lock in self.locks:
+                r = Template(lock).render(**self.environment)
+                all_locks.add(r)
+        for parent in self.iter_parents():
+            all_locks.update(parent.iter_lock_names())
+        yield from all_locks
 
     async def run(self) -> None:
         if self.action is None:

@@ -19,6 +19,7 @@ from noc.core.debug import error_report
 from noc.sa.models.job import JobStatus
 from .models.jobreq import JobRequest
 from .job import Job
+from .lock import LockManager
 from .actions.base import ActionError
 
 
@@ -35,6 +36,7 @@ class Runner(object):
         self._tasks: Set[asyncio.Task] = set()
         self._semaphore = asyncio.Semaphore(concurrency)
         self._status_lock = asyncio.Lock()
+        self._locks = LockManager()
 
     async def drain(self) -> None:
         """Wait until all task complete."""
@@ -102,10 +104,17 @@ class Runner(object):
         for p in job.iter_parents():
             if p.is_waiting:
                 self.set_status(p, JobStatus.RUNNING)
+        # Process job logs
         # Run job
         t0 = perf_counter_ns()
+        locks = list(job.iter_lock_names())
         try:
-            await job.run()
+            if locks:
+                logger.info("[%s] Acquiring locks: %s", job, ", ".join(locks))
+            async with self._locks.acquire(locks):
+                if locks:
+                    logger.info("[%s] All locks are aquired", job)
+                await job.run()
             status = JobStatus.SUCCESS
         except asyncio.TimeoutError:
             logger.error("[%s] Timed out", job)

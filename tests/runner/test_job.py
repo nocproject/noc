@@ -499,3 +499,40 @@ def test_iter_locks(req: JobRequest, expected: List[str]) -> None:
     job = list(Job.from_req(req))[-1]
     r = list(sorted(job.iter_lock_names()))
     assert r == expected
+
+
+@pytest.mark.parametrize(
+    "req",
+    [
+        JobRequest(
+            name="job",
+            action="success",
+            locks=["lock-1", "env-{{name}}"],
+            environment={"name": "myname"},
+        ),
+        JobRequest(
+            name="job",
+            locks=["lock-1", "env-{{name}}"],
+            environment={"name": "myname"},
+            jobs=[
+                JobRequest(
+                    name="job1", action="success", locks=["job-lock-1", "job-lock-2", "job-lock-3"]
+                ),
+                JobRequest(
+                    name="job2", action="success", locks=["job-lock-2", "job-lock-3", "job-lock-1"]
+                ),
+                JobRequest(
+                    name="job3", action="success", locks=["job-lock-3", "job-lock-1", "job-lock-2"]
+                ),
+            ],
+        ),
+    ],
+)
+def test_locks(req: JobRequest) -> None:
+    async def inner() -> None:
+        runner = RunnerWrapper()
+        runner.submit(req)
+        await asyncio.wait_for(runner.drain(), 1.0)
+        return runner.last_state
+
+    asyncio.run(inner())
