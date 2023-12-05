@@ -59,6 +59,7 @@ py-lint:
     - ruff -q -e --output-format=grouped . # To see stdout in joblog
     - ruff -q -e --output-format=junit . > build/reports/junit-ruff.xml
     - STATUS_RUFF=$?
+    - ls -al build/reports
     # flake8
     # @todo: Will be replaced by ruff
     - >
