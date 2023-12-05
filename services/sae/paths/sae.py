@@ -277,18 +277,13 @@ class SAEAPI(JSONRPCAPI):
         # Bild security level SNMPv3
         if capabilities.get("SNMP | v3"):
             credentials["snmp_version"] = "v3"
-        if snmp_username:
-            if snmp_security_level == "noAuthNoPriv":
-                credentials["snmp_username"] = snmp_username
-                credentials["snmp_ctx_name"] = snmp_ctx_name
-            elif snmp_security_level == "authNoPriv":
-                credentials["snmp_username"] = snmp_username
-                credentials["snmp_ctx_name"] = snmp_ctx_name
+        if snmp_username and snmp_security_level != "Community":
+            credentials["snmp_username"] = snmp_username
+            credentials["snmp_ctx_name"] = snmp_ctx_name
+            if snmp_security_level == "authNoPriv":
                 credentials["snmp_auth_proto"] = snmp_auth_proto
                 credentials["snmp_auth_key"] = snmp_auth_key
             elif snmp_security_level == "authPriv":
-                credentials["snmp_username"] = snmp_username
-                credentials["snmp_ctx_name"] = snmp_ctx_name
                 credentials["snmp_auth_proto"] = snmp_auth_proto
                 credentials["snmp_priv_proto"] = snmp_priv_proto
                 credentials["snmp_priv_key"] = snmp_priv_key
