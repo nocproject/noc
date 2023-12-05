@@ -236,6 +236,13 @@ class SAEAPI(JSONRPCAPI):
             super_password = ap_super_password
             snmp_ro = ap_snmp_ro
             snmp_rw = ap_snmp_rw  # noqa just to be
+            snmp_security_level = ap_snmp_security_level
+            snmp_username = ap_snmp_username
+            snmp_auth_proto = ap_snmp_auth_proto
+            snmp_auth_key = ap_snmp_auth_key
+            snmp_priv_proto = ap_snmp_priv_proto
+            snmp_priv_key = ap_snmp_priv_key
+            snmp_ctx_name = ap_snmp_ctx_name
         #
         if privilege_policy == "E":
             raise_privileges = True
@@ -269,14 +276,8 @@ class SAEAPI(JSONRPCAPI):
                 credentials["snmp_version"] = "v1"
         # Bild security level SNMPv3
         if capabilities.get("SNMP | v3"):
-            if ap_snmp_username:
-                snmp_security_level = ap_snmp_security_level
-                snmp_username = ap_snmp_username
-                snmp_auth_proto = ap_snmp_auth_proto
-                snmp_auth_key = ap_snmp_auth_key
-                snmp_priv_proto = ap_snmp_priv_proto
-                snmp_priv_key = ap_snmp_priv_key
-                snmp_ctx_name = ap_snmp_ctx_name
+            credentials["snmp_version"] = "v3"
+        if snmp_username:
             if snmp_security_level == "noAuthNoPriv":
                 credentials["snmp_username"] = snmp_username
                 credentials["snmp_ctx_name"] = snmp_ctx_name
