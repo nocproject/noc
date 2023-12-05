@@ -727,14 +727,14 @@ class ManagedObject(NOCModel):
     snmp_username = CharField("SNMP user name", max_length=32, null=True, blank=True)
     snmp_auth_proto = CharField(
         "Authentication protocol",
-        max_length=1,
+        max_length=3,
         choices=[("MD5", "MD5"), ("SHA", "SHA")],
         default="MD5",
     )
     snmp_auth_key = CharField("Authentication key", max_length=32, null=True, blank=True)
     snmp_priv_proto = CharField(
         "Privacy protocol",
-        max_length=1,
+        max_length=3,
         choices=[("DES", "DES"), ("AES", "AES")],
         default="DES",
     )
