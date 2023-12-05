@@ -461,3 +461,41 @@ def test_job_env(req: JobRequest, expected: List[Tuple[str, str]]) -> None:
     job = list(Job.from_req(req))[-1]
     r = list(sorted(job.environment.items()))
     assert r == expected
+
+
+@pytest.mark.parametrize(
+    ("req", "expected"),
+    [
+        (JobRequest(name="job", action="success"), []),
+        (JobRequest(name="job", action="success", locks=["global", "l-1"]), ["global", "l-1"]),
+        (
+            JobRequest(
+                name="job",
+                action="success",
+                environment={"a": "1", "b": "2"},
+                locks=["global", "text", "a=={{a}}"],
+            ),
+            ["a==1", "global", "text"],
+        ),
+        (
+            JobRequest(
+                name="job",
+                environment={"a": "1", "b": "2"},
+                locks=["global", "up", "a=={{a}}"],
+                jobs=[
+                    JobRequest(
+                        name="g1",
+                        action="success",
+                        environment={"a": "4", "c": "3"},
+                        locks=["inner", "a=={{a}}"],
+                    )
+                ],
+            ),
+            ["a==1", "a==4", "global", "inner", "up"],
+        ),
+    ],
+)
+def test_iter_locks(req: JobRequest, expected: List[str]) -> None:
+    job = list(Job.from_req(req))[-1]
+    r = list(sorted(job.iter_lock_names()))
+    assert r == expected
