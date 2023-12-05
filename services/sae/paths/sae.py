@@ -269,28 +269,29 @@ class SAEAPI(JSONRPCAPI):
                 credentials["snmp_version"] = "v1"
         # Bild security level SNMPv3
         if capabilities.get("SNMP | v3"):
-            if ap_snmp_username:
-                snmp_security_level = ap_snmp_security_level
-                snmp_username = ap_snmp_username
-                snmp_auth_proto = ap_snmp_auth_proto
-                snmp_auth_key = ap_snmp_auth_key
-                snmp_priv_proto = ap_snmp_priv_proto
-                snmp_priv_key = ap_snmp_priv_key
-                snmp_ctx_name = ap_snmp_ctx_name
-            if snmp_security_level == "noAuthNoPriv":
-                credentials["snmp_username"] = snmp_username
-                credentials["snmp_ctx_name"] = snmp_ctx_name
-            elif snmp_security_level == "authNoPriv":
-                credentials["snmp_username"] = snmp_username
-                credentials["snmp_ctx_name"] = snmp_ctx_name
-                credentials["snmp_auth_proto"] = snmp_auth_proto
-                credentials["snmp_auth_key"] = snmp_auth_key
-            elif snmp_security_level == "authPriv":
-                credentials["snmp_username"] = snmp_username
-                credentials["snmp_ctx_name"] = snmp_ctx_name
-                credentials["snmp_auth_proto"] = snmp_auth_proto
-                credentials["snmp_priv_proto"] = snmp_priv_proto
-                credentials["snmp_priv_key"] = snmp_priv_key
+            credentials["snmp_version"] = "v3"
+        if ap_snmp_username:
+            snmp_security_level = ap_snmp_security_level
+            snmp_username = ap_snmp_username
+            snmp_auth_proto = ap_snmp_auth_proto
+            snmp_auth_key = ap_snmp_auth_key
+            snmp_priv_proto = ap_snmp_priv_proto
+            snmp_priv_key = ap_snmp_priv_key
+            snmp_ctx_name = ap_snmp_ctx_name
+        if snmp_security_level == "noAuthNoPriv":
+            credentials["snmp_username"] = snmp_username
+            credentials["snmp_ctx_name"] = snmp_ctx_name
+        elif snmp_security_level == "authNoPriv":
+            credentials["snmp_username"] = snmp_username
+            credentials["snmp_ctx_name"] = snmp_ctx_name
+            credentials["snmp_auth_proto"] = snmp_auth_proto
+            credentials["snmp_auth_key"] = snmp_auth_key
+        elif snmp_security_level == "authPriv":
+            credentials["snmp_username"] = snmp_username
+            credentials["snmp_ctx_name"] = snmp_ctx_name
+            credentials["snmp_auth_proto"] = snmp_auth_proto
+            credentials["snmp_priv_proto"] = snmp_priv_proto
+            credentials["snmp_priv_key"] = snmp_priv_key
         if scheme in CLI_PROTOCOLS:
             credentials["cli_protocol"] = PROTOCOLS[scheme]
             if port:
