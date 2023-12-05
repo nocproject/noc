@@ -6,14 +6,16 @@
 # ---------------------------------------------------------------------
 
 # Python modules
-from typing import Dict, List, Iterable, Optional, Set, Iterator, Type
+from typing import Dict, List, Iterable, Optional, Set, Iterator, Type, DefaultDict, Union
 from logging import getLogger
 from weakref import ref, ReferenceType
 import asyncio
+from dataclasses import dataclass
+from collections import defaultdict
 
 # Third-party modules
 from bson import ObjectId
-from jinja2 import Template
+from jinja2 import Template, TemplateSyntaxError
 
 # NOC modules
 from .models.jobreq import JobRequest
@@ -23,6 +25,25 @@ from .actions.base import BaseAction
 from .env import Environment
 
 logger = getLogger(__name__)
+
+
+@dataclass
+class Input(object):
+    """
+    Input mapping.
+
+    Arguments:
+        name: Name of the input parameter, action specific.
+        value: Parameter value. Jinja2 template in where
+            the environment is used as context.
+            If `job` parameter is set, the job result is exposed
+            as `result` context variable.
+        job: Optional job name.
+    """
+
+    name: str
+    value: str
+    job: Optional[str] = None
 
 
 class Job(object):
@@ -42,6 +63,7 @@ class Job(object):
         parent: Optional["Job"] = None,
         environment: Optional[Dict[str, str]] = None,
         locks: Optional[Iterable[str]] = None,
+        inputs: Optional[Iterable[Input]] = None,
     ) -> None:
         self.id = ObjectId()
         self.name = name
@@ -52,10 +74,12 @@ class Job(object):
         self.environment = Environment(environment)
         if self.parent:
             self.environment.set_parent(self.parent.environment)
+        self.inputs = list(inputs) if inputs else None
         self.locks = list(locks) if locks is not None else None
         self.depends_on: Optional[List[ReferenceType[Job]]] = None
         self.children: Optional[List[ReferenceType[Job]]] = None
         self._task: Optional[ReferenceType[asyncio.Task]] = None
+        self.results: Dict[str, Union[None, str, object]] = {}
 
     def __str__(self) -> str:
         return f"{self.name}({self.id})"
@@ -231,6 +255,40 @@ class Job(object):
         if req.action and req.action not in loader:
             msg = f"Invalid action {req.action}"
             raise ValueError(msg)
+        if req.inputs and not req.action:
+            msg = "action must be set"
+            raise ValueError(msg)
+        # Validate inputs
+        if req.inputs:
+            action: Type[BaseAction] = loader[req.action]
+            seen_inputs: Set[str] = set()
+            for i in req.inputs:
+                if i.name not in action.inputs:
+                    msg = f"Invalid input `{i.name}`"
+                    raise ValueError(msg)
+                if i.name in seen_inputs:
+                    msg = f"Input `{i.name}` is defined twice"
+                    raise ValueError(msg)
+                seen_inputs.add(i.name)
+                # @todo: Test name
+                try:
+                    Template(i.value)
+                except TemplateSyntaxError as e:
+                    msg = f"Invalid value for input {i.name}: '{i.value}' ({e})"
+                    raise ValueError(msg) from e
+            # Check all required inputs are set
+            missed = set(k for k, v in action.inputs.items() if not v) - seen_inputs
+            if missed:
+                msg = f"Missed inputs: {', '.join(missed)}"
+                raise ValueError(msg)
+        # Validate locks
+        if req.locks:
+            for lock in req.locks:
+                try:
+                    Template(lock)
+                except TemplateSyntaxError as e:
+                    msg = f"Invalid lock template '{lock}': {e}"
+                    raise ValueError(msg) from e
         if not req.jobs:
             return
         # Check for unique names
@@ -241,9 +299,16 @@ class Job(object):
         known_names = {j.name for j in req.jobs}
         for j in req.jobs:
             if j.depends_on:
+                # Direct dependencies
                 for dj in j.depends_on:
                     if dj not in known_names:
                         msg = f"Dependency refers to unknown job {dj}"
+                        raise ValueError(msg)
+            if j.inputs:
+                # Input dependencies
+                for i in j.inputs:
+                    if i.job and i.job not in known_names:
+                        msg = f"Dependency refers to unknown job {i.job}"
                         raise ValueError(msg)
         # Check for dependency cycles
         graph = {j.name: j.depends_on if j.depends_on else [] for j in req.jobs}
@@ -263,6 +328,11 @@ class Job(object):
         if not parent:
             # Check only from top level
             cls._validate_req(req)
+        # Inputs
+        if req.inputs:
+            inputs = [Input(name=i.name, value=i.value, job=i.job) for i in req.inputs] or None
+        else:
+            inputs = None
         # Create leader
         leader = Job(
             name=req.name,
@@ -271,25 +341,32 @@ class Job(object):
             allow_fail=req.allow_fail,
             parent=parent,
             environment=req.environment,
+            inputs=inputs,
             locks=req.locks,
         )
         # Create nested jobs
         chains: List[List[Job]] = []
         if req.jobs:
             jobs: Dict[str, Job] = {}
-            deps: Dict[str, List[str]] = {}
+            deps: DefaultDict[str, Set[str]] = defaultdict(set)
             for j_req in req.jobs:
                 chain = list(Job.from_req(j_req, parent=leader))
                 first = chain[0]
                 jobs[first.name] = first
+                # Direct dependencies
                 if j_req.depends_on:
-                    deps[first.name] = j_req.depends_on
+                    deps[first.name].update(j_req.depends_on)
+                # Input dependencies
+                if j_req.inputs:
+                    for i in j_req.inputs:
+                        if i.job:
+                            deps[first.name].add(i.job)
                 chains.append(chain)
             # Bind children
             leader.children = [ref(j) for j in jobs.values()]
             # Bind children dependencies
-            for dn, dlist in deps.items():
-                jobs[dn].depends_on = [ref(jobs[j]) for j in dlist]
+            for dn, dset in deps.items():
+                jobs[dn].depends_on = [ref(jobs[j]) for j in dset]
         # Finnlly yield all
         yield leader
         for ch in chains:
@@ -329,7 +406,23 @@ class Job(object):
         yield from all_locks
 
     async def run(self) -> None:
+        """
+        Run action.
+        """
         if self.action is None:
             return
+        # Prepare input arguments
+        kwargs: Dict[str, str] = {}
+        if self.inputs:
+            for i in self.inputs:
+                if self.parent and i.job:
+                    kwargs[i.name] = Template(i.value).render(
+                        result=self.parent.results[i.job], **self.environment
+                    )
+                else:
+                    kwargs[i.name] = Template(i.value).render(**self.environment)
         action = self.action({}, logger=logger)
-        await action.execute(None)
+        r = await action.execute(**kwargs)
+        if self.parent:
+            logger.info("[%s] Set result: %s", self, r)
+            self.parent.results[self.name] = r

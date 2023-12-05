@@ -1,5 +1,5 @@
 # ---------------------------------------------------------------------
-# Success action
+# echo action
 # ---------------------------------------------------------------------
 # Copyright (C) 2007-2023 The NOC Project
 # See LICENSE for details
@@ -9,12 +9,12 @@
 from .base import BaseAction
 
 
-class SuccessAction(BaseAction):
+class EchoAction(BaseAction):
     """
-    Always success.
+    Pass input to output.
     """
 
-    name = "success"
+    name = "echo"
 
-    async def execute(self: "SuccessAction", **kwargs: str) -> None:
-        pass
+    async def execute(self: "EchoAction", *, x: str, **kwargs: str) -> str:
+        return x

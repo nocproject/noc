@@ -6,8 +6,9 @@
 # ---------------------------------------------------------------------
 
 # Python modules
-from typing import Generic, TypeVar, Dict
+from typing import TypeVar, Dict, Union, Optional
 from logging import Logger
+from inspect import signature
 
 # NOC modules
 from noc.core.error import NOCError
@@ -20,28 +21,40 @@ class ActionError(NOCError):
     pass
 
 
-class BaseAction(Generic[REQ, RESP]):
+class ActionMetaclass(type):
+    def __new__(mcs, name, bases, attrs):
+        m = type.__new__(mcs, name, bases, attrs)
+        # Get inputs
+        m.inputs = {}
+        sig = signature(m.execute)
+        for param in sig.parameters.values():
+            if param.kind != param.KEYWORD_ONLY:
+                continue
+            m.inputs[param.name] = param.annotation == Optional[str]
+        return m
+
+
+class BaseAction(object, metaclass=ActionMetaclass):
     """
     Base class for actions.
 
-    Subclasses must override `handle` method.
+    Subclasses must override `execute` method.
 
     Args:
         env: Environment instance.
     """
 
     name: str
+    inputs: Dict[str, bool]  # Set by metaclass
 
     def __init__(self, env: Dict[str, str], logger: Logger):
         self.env = env
         self.logger = logger
 
-    async def execute(self, req: REQ) -> RESP:
+    async def execute(self, **kwargs: str) -> Union[None, str, object]:
         """
         Process request and generate response.
 
-        Args:
-            req: Request type.
         Returns:
             response.
         Raises:

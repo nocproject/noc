@@ -16,7 +16,7 @@ import pytest
 from noc.sa.models.job import JobStatus
 from noc.core.runner.runner import Runner
 from noc.core.runner.job import Job
-from noc.core.runner.models.jobreq import JobRequest
+from noc.core.runner.models.jobreq import JobRequest, InputMapping
 
 
 @pytest.mark.parametrize(
@@ -82,6 +82,7 @@ def test_unique_names(jobs: List[JobRequest], expected: bool) -> None:
                 JobRequest(name="job-1", action="success"),
             ],
         ),
+        # Unknown direct dependency
         JobRequest(
             name="leader",
             jobs=[
@@ -90,6 +91,20 @@ def test_unique_names(jobs: List[JobRequest], expected: bool) -> None:
                 JobRequest(name="job-3", action="success", depends_on=["unknown"]),
             ],
         ),
+        # Unknown input depedency
+        JobRequest(
+            name="leader",
+            jobs=[
+                JobRequest(name="job-1", action="success", depends_on=["job-3"]),
+                JobRequest(name="job-2", action="success", depends_on=["job-1"]),
+                JobRequest(
+                    name="job-3",
+                    action="success",
+                    inputs=[InputMapping(name="in", value="{{result}}", job="unknown")],
+                ),
+            ],
+        ),
+        # Cycle
         JobRequest(
             name="leader",
             jobs=[
@@ -106,6 +121,30 @@ def test_unique_names(jobs: List[JobRequest], expected: bool) -> None:
         ),
         # invalid action
         JobRequest(name="job", action="totallymessedup"),
+        # invalid lock template
+        JobRequest(name="leader", action="success", locks=["{{"]),
+        # invalid input template
+        JobRequest(name="leader", action="echo", inputs=[InputMapping(name="x", value="{{")]),
+        # Duplicated inputs
+        JobRequest(
+            name="leader",
+            action="echo",
+            inputs=[InputMapping(name="x", value="1"), InputMapping(name="x", value="2")],
+        ),
+        # Invalid input name
+        JobRequest(name="leader", action="echo", inputs=[InputMapping(name="foo", value="1")]),
+        # Inputs without action
+        JobRequest(
+            name="leader",
+            inputs=[InputMapping(name="x", value="1"), InputMapping(name="x", value="2")],
+            jobs=[JobRequest(name="job", action="success")],
+        ),
+        # Missed inputs
+        JobRequest(
+            name="leader",
+            action="assert_cmp",
+            inputs=[InputMapping(name="x", value="1")],
+        ),
     ],
 )
 def test_from_req_errors(req: JobRequest):
@@ -533,6 +572,38 @@ def test_locks(req: JobRequest) -> None:
         runner = RunnerWrapper()
         runner.submit(req)
         await asyncio.wait_for(runner.drain(), 1.0)
-        return runner.last_state
 
     asyncio.run(inner())
+
+
+@pytest.mark.parametrize(
+    "req",
+    [
+        JobRequest(
+            name="leader",
+            jobs=[
+                JobRequest(
+                    name="assert",
+                    action="assert_cmp",
+                    inputs=[
+                        InputMapping(name="op", value="=="),
+                        InputMapping(name="x", value="{{result}}", job="echo"),
+                        InputMapping(name="y", value="foo"),
+                    ],
+                ),
+                JobRequest(
+                    name="echo", action="echo", inputs=[InputMapping(name="x", value="foo")]
+                ),
+            ],
+        )
+    ],
+)
+def test_inputs(req: JobRequest) -> None:
+    async def inner() -> Dict[str, JobStatus]:
+        runner = RunnerWrapper()
+        runner.submit(req)
+        await asyncio.wait_for(runner.drain(), 1.0)
+        return runner.last_state
+
+    r = asyncio.run(inner())
+    assert not any(True for x in r.values() if x != JobStatus.SUCCESS)

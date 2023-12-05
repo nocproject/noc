@@ -21,24 +21,14 @@ class InputMapping(BaseModel):
         name: Name of the input parameter, action specific.
         value: Parameter value. Jinja2 template in where
             the environment is used as context.
+            If `job` parameter is set, the job result is exposed
+            as `result` context variable.
+        job: Optional job name.
     """
 
     name: str
     value: str
-
-
-class OutputMapping(BaseModel):
-    """
-    Output mappings.
-
-    Argumens:
-        name: Evironment variable name.
-        value: Jinja2 template, in where output parameters
-            are used as context.
-    """
-
-    name: str
-    value: str
+    job: Optional[str] = None
 
 
 class JobRequest(BaseModel):
@@ -54,7 +44,6 @@ class JobRequest(BaseModel):
         locks: Optional list of lock names. Lock names are jinja2
             template variables, in where environment is used as content.
         inputs: List of input mappigs.
-        outputs: List of output mappings.
         require_approval: Job will be created in PENDING status.
         depends_on: List of dependencies. Dependencies are
             the name of the jobs from the same group.
@@ -75,7 +64,6 @@ class JobRequest(BaseModel):
     allow_fail: bool = False
     locks: Optional[List[str]] = None
     inputs: Optional[List[InputMapping]] = None
-    outputs: Optional[List[OutputMapping]] = None
     require_approval: bool = False
     depends_on: Optional[List[str]] = None
     environment: Optional[Dict[str, str]] = None

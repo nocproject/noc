@@ -9,13 +9,13 @@
 from .base import BaseAction, ActionError
 
 
-class FailAction(BaseAction[None, None]):
+class FailAction(BaseAction):
     """
     Always success/
     """
 
     name = "fail"
 
-    async def execute(self: "FailAction", req: None) -> None:
+    async def execute(self: "FailAction", **kwargs: str) -> None:
         msg = "Always failed."
         raise ActionError(msg)
