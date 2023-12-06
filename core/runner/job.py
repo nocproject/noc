@@ -333,7 +333,7 @@ class Job(object):
             inputs = [Input(name=i.name, value=i.value, job=i.job) for i in req.inputs] or None
         else:
             inputs = None
-        # Create leader
+        # Create job
         leader = Job(
             name=req.name,
             action=loader[req.action] if req.action else None,
@@ -421,7 +421,7 @@ class Job(object):
                     )
                 else:
                     kwargs[i.name] = Template(i.value).render(**self.environment)
-        action = self.action({}, logger=logger)
+        action = self.action(env=self.environment, logger=logger)
         r = await action.execute(**kwargs)
         if self.parent:
             logger.info("[%s] Set result: %s", self, r)

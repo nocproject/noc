@@ -62,7 +62,10 @@ class Environment(object):
         """
         Square bracket setter.
         """
-        self._data[name] = value
+        if self._parent:
+            self._parent._data[name] = value
+        else:
+            self._data[name] = value
 
     def __iter__(self) -> Iterable["str"]:
         return self.keys()

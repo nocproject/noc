@@ -12,6 +12,7 @@ from inspect import signature
 
 # NOC modules
 from noc.core.error import NOCError
+from ..env import Environment
 
 REQ = TypeVar("REQ")
 RESP = TypeVar("RESP")
@@ -47,7 +48,7 @@ class BaseAction(object, metaclass=ActionMetaclass):
     name: str
     inputs: Dict[str, bool]  # Set by metaclass
 
-    def __init__(self, env: Dict[str, str], logger: Logger):
+    def __init__(self, env: Environment, logger: Logger):
         self.env = env
         self.logger = logger
 

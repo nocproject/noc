@@ -595,7 +595,35 @@ def test_locks(req: JobRequest) -> None:
                     name="echo", action="echo", inputs=[InputMapping(name="x", value="foo")]
                 ),
             ],
-        )
+        ),
+        # set environment
+        JobRequest(
+            name="leader",
+            environment={"FOO": "foo"},
+            jobs=[
+                JobRequest(
+                    name="echo", action="echo", inputs=[InputMapping(name="x", value="baz-{{FOO}}")]
+                ),
+                JobRequest(
+                    name="setenv",
+                    action="setenv",
+                    inputs=[
+                        InputMapping(name="name", value="FOO"),
+                        InputMapping(name="value", value="bar-{{result}}", job="echo"),
+                    ],
+                ),
+                JobRequest(
+                    name="cmp",
+                    action="assert_cmp",
+                    depends_on=["setenv"],
+                    inputs=[
+                        InputMapping(name="op", value="=="),
+                        InputMapping(name="x", value="{{FOO}}"),
+                        InputMapping(name="y", value="bar-baz-foo"),
+                    ],
+                ),
+            ],
+        ),
     ],
 )
 def test_inputs(req: JobRequest) -> None:
