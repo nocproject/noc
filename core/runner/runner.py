@@ -39,9 +39,14 @@ class Runner(object):
         self._locks = LockManager()
 
     async def drain(self) -> None:
-        """Wait until all task complete."""
+        """Wait until all task are complete."""
         while self._tasks:
-            await asyncio.wait(tuple(self._tasks))
+            # await asyncio.wait(tuple(self._tasks))
+            for task in asyncio.as_completed(tuple(self._tasks)):
+                try:
+                    await task
+                except asyncio.CancelledError:
+                    pass
 
     def iter_jobs(self) -> Iterator[Job]:
         """Iterate all jobs known to runner."""
@@ -63,7 +68,7 @@ class Runner(object):
         Called when new job is instantiated.
         """
         self._jobs[job.id] = job
-        if not job.is_leader and not job.is_blocked():
+        if not job.has_children and not job.is_blocked():
             self._schedule_job(job)
 
     def _schedule_job(self, job: Job) -> None:
@@ -96,8 +101,6 @@ class Runner(object):
         # Check if job is not blocked by parents.
         if job.is_blocked_by_parents():
             logger.info("[%s] is blocked by parents, skipping", job)
-        # or waiting and not blocked by their siblings
-        # @todo: Parse arguments
         # Set job status
         self.set_status(job, JobStatus.RUNNING)
         # Run parents if necessary
@@ -134,6 +137,19 @@ class Runner(object):
         self.set_status(job, status)
         job.set_task(None)
         await self.apply_group(job)
+        self.prune_jobs(job)
+
+    def prune_jobs(self, job: "Job") -> None:
+        """
+        Remove all jobs
+        """
+        leader = job.leader
+        if not leader.is_complete:
+            return
+        for j in leader.iter_group():
+            if j.id in self._jobs:
+                logger.info("[%s] Pruning job", j)
+                del self._jobs[j.id]
 
     async def apply_group(self, job: Job) -> None:
         """

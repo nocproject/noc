@@ -85,16 +85,18 @@ class Job(object):
         return f"{self.name}({self.id})"
 
     @property
-    def is_leader(self) -> bool:
+    def has_children(self) -> bool:
         return bool(self.children)
 
     def iter_parents(self) -> Iterable["Job"]:
+        """Iterate over parents all way up."""
         p = self.parent
         while p is not None:
             yield p
             p = p.parent
 
     def iter_children(self) -> Iterable["Job"]:
+        """Iterate over direct children."""
         if self.children:
             for r in self.children:
                 item = r()
@@ -102,6 +104,7 @@ class Job(object):
                     yield item
 
     def iter_siblings(self) -> Iterable["Job"]:
+        """Iterate over siblings."""
         if self.parent:
             for item in self.parent.iter_children():
                 if item != self:
@@ -116,6 +119,14 @@ class Job(object):
                 r = d()
                 if r:
                     yield r
+
+    def iter_group(self) -> Iterable["Job"]:
+        """
+        Iterate job and all direct and indirect children.
+        """
+        yield self
+        for c in self.iter_children():
+            yield from c.iter_group()
 
     def is_blocked_by_parents(self) -> bool:
         for p in self.iter_parents():
@@ -138,6 +149,25 @@ class Job(object):
 
     def is_blocked(self) -> bool:
         return not self.is_waiting or self.is_blocked_by_parents() or self.is_blocked_by_siblings()
+
+    @property
+    def leader(self) -> "Job":
+        """
+        Top-level job.
+        """
+        if self.is_leader:
+            return self
+        return list(self.iter_parents())[-1]
+
+    @property
+    def is_leader(self) -> bool:
+        """
+        Check if job is top-level job.
+
+        Returns:
+            True, if job has no parent
+        """
+        return not self.parent
 
     @property
     def is_waiting(self) -> bool:

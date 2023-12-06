@@ -166,10 +166,10 @@ def test_is_leader() -> None:
     )
     jobs = list(Job.from_req(req))
     assert len(jobs) == 4
-    assert jobs[0].is_leader
-    assert not jobs[1].is_leader
-    assert not jobs[2].is_leader
-    assert not jobs[3].is_leader
+    assert jobs[0].has_children
+    assert not jobs[1].has_children
+    assert not jobs[2].has_children
+    assert not jobs[3].has_children
 
 
 class RunnerWrapper(Runner):
@@ -472,6 +472,7 @@ def test_scenario(req: JobRequest, expected: Dict[str, JobStatus]):
         runner = RunnerWrapper()
         runner.submit(req)
         await asyncio.wait_for(runner.drain(), 1.0)
+        assert len(list(runner.iter_jobs())) == 0
         return runner.last_state
 
     r = asyncio.run(inner())
@@ -631,6 +632,7 @@ def test_inputs(req: JobRequest) -> None:
         runner = RunnerWrapper()
         runner.submit(req)
         await asyncio.wait_for(runner.drain(), 1.0)
+        assert len(list(runner.iter_jobs())) == 0
         return runner.last_state
 
     r = asyncio.run(inner())
