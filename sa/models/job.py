@@ -18,6 +18,7 @@ from mongoengine.fields import (
     ObjectIdField,
     EmbeddedDocumentListField,
     DateTimeField,
+    DictField,
 )
 
 
@@ -30,28 +31,17 @@ class InputMapping(EmbeddedDocument):
         value: Parameter value. Contains jinja2 template
             which will be rendered at actual code,
             using pipeline environment as context.
+        job: If not empty, expose `result` variable
+            containing job result.
     """
 
     name = StringField(required=True)
     value = StringField(required=True)
+    job = StringField(required=False)
 
     def __str__(self) -> str:
         """Convert to string representation."""
         return f"{self.name} = {self.value}"
-
-
-class OutputMapping(EmbeddedDocument):
-    """
-    Output parameter mapping.
-
-    Arguments:
-        name: Environment variable name.
-        value: Jinja2 template.
-    """
-
-    # @todo: Replace
-    name = StringField(required=False)
-    value = StringField(required=True)
 
 
 class Job(Document):
@@ -88,8 +78,8 @@ class Job(Document):
     parent = ReferenceField("self", required=False)
     name = StringField(required=True)
     description = StringField()
-    labels = ListField(StringField())
-    effective_labels = ListField(StringField())
+    # labels = ListField(StringField())
+    # effective_labels = ListField(StringField())
     status = StringField(
         choices=["p", "w", "r", "S", "s", "f", "W", "c"], default="w", required=True
     )
@@ -97,13 +87,13 @@ class Job(Document):
     depends_on = ListField(ObjectIdField(), required=False)
     action = StringField(required=False)
     inputs = EmbeddedDocumentListField(InputMapping)
-    outputs = EmbeddedDocumentListField(OutputMapping)
     locks = ListField(StringField(), required=False)
+    environment = DictField(required=False)
     created_at = DateTimeField(required=True)
     started_at = DateTimeField(required=False)
     completed_at = DateTimeField(required=False)
-    after = DateTimeField(required=False)
-    deadline = DateTimeField(required=False)
+    # after = DateTimeField(required=False)
+    # deadline = DateTimeField(required=False)
 
     def __str__(self) -> str:
         return f"{self.name}::{self.action}"

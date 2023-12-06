@@ -148,11 +148,14 @@ def test_unique_names(jobs: List[JobRequest], expected: bool) -> None:
     ],
 )
 def test_from_req_errors(req: JobRequest):
-    runner = Runner()
-    with pytest.raises(ValueError):
-        runner.submit(req)
-    # Should not submit jobs
-    assert len(list(runner.iter_jobs())) == 0
+    async def inner():
+        runner = Runner()
+        with pytest.raises(ValueError):
+            await runner.submit(req)
+        # Should not submit jobs
+        assert len(list(runner.iter_jobs())) == 0
+
+    asyncio.run(inner())
 
 
 def test_is_leader() -> None:
@@ -470,7 +473,7 @@ def get_scenario_id(x) -> str:
 def test_scenario(req: JobRequest, expected: Dict[str, JobStatus]):
     async def inner() -> None:
         runner = RunnerWrapper()
-        runner.submit(req)
+        await runner.submit(req)
         await asyncio.wait_for(runner.drain(), 1.0)
         assert len(list(runner.iter_jobs())) == 0
         return runner.last_state
@@ -571,7 +574,7 @@ def test_iter_locks(req: JobRequest, expected: List[str]) -> None:
 def test_locks(req: JobRequest) -> None:
     async def inner() -> None:
         runner = RunnerWrapper()
-        runner.submit(req)
+        await runner.submit(req)
         await asyncio.wait_for(runner.drain(), 1.0)
 
     asyncio.run(inner())
@@ -630,7 +633,7 @@ def test_locks(req: JobRequest) -> None:
 def test_inputs(req: JobRequest) -> None:
     async def inner() -> Dict[str, JobStatus]:
         runner = RunnerWrapper()
-        runner.submit(req)
+        await runner.submit(req)
         await asyncio.wait_for(runner.drain(), 1.0)
         assert len(list(runner.iter_jobs())) == 0
         return runner.last_state

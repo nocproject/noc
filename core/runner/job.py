@@ -56,8 +56,10 @@ class Job(object):
 
     def __init__(
         self,
+        *,
         name: str,
         status: JobStatus,
+        id: Optional[str] = None,
         action: Optional[Type[BaseAction]] = None,
         allow_fail: bool = False,
         parent: Optional["Job"] = None,
@@ -65,7 +67,7 @@ class Job(object):
         locks: Optional[Iterable[str]] = None,
         inputs: Optional[Iterable[Input]] = None,
     ) -> None:
-        self.id = ObjectId()
+        self.id = ObjectId(id) if id else ObjectId()
         self.name = name
         self.action = action
         self.allow_fail = allow_fail
@@ -350,7 +352,12 @@ class Job(object):
             cls._validate_req(j_req)
 
     @classmethod
-    def from_req(cls, req: JobRequest, parent: Optional["Job"] = None) -> Iterator["Job"]:
+    def from_req(
+        cls,
+        req: JobRequest,
+        *,
+        parent: Optional["Job"] = None,
+    ) -> Iterator["Job"]:
         """
         Create jobs from request.
         """

@@ -52,9 +52,9 @@ class Runner(object):
         """Iterate all jobs known to runner."""
         yield from self._jobs.values()
 
-    def submit(self, req: JobRequest) -> None:
+    async def submit(self, req: JobRequest) -> None:
         """
-        Submit new job to runner.
+        Submit new job group to runner.
 
         Args:
             req: Job request.
@@ -72,6 +72,9 @@ class Runner(object):
             self._schedule_job(job)
 
     def _schedule_job(self, job: Job) -> None:
+        """
+        Submit job to run.
+        """
         logger.info("[%s] Sheduling to execution", job)
         task = asyncio.create_task(self.run_job(job.id))
         self._tasks.add(task)
@@ -218,6 +221,9 @@ class Runner(object):
         error_up(job)
 
     def set_status(self, job: Job, status: JobStatus) -> None:
+        """
+        Set job's status.
+        """
         if job.status == status:
             return
         logger.info("[%s] Status change %s -> %s", job, job.status.name, status.name)

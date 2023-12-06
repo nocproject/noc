@@ -10,7 +10,8 @@ from typing import Optional, List, Dict
 import datetime
 
 # Third party modules
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
+from bson import ObjectId
 
 
 class InputMapping(BaseModel):
@@ -57,6 +58,7 @@ class JobRequest(BaseModel):
         jobs: List of nested jobs. Mutual exclusive with actions.
     """
 
+    id: str = Field(default_factory=lambda: str(ObjectId()))
     name: str
     action: Optional[str] = None
     description: Optional[str] = None
