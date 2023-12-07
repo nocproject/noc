@@ -54,6 +54,10 @@ Ext.define("NOC.sa.managedobjectprofile.Model", {
             type: "string"
         },
         {
+            name: "shape_title_template",
+            type: "string"
+        },
+        {
             name: "style__label",
             type: "string",
             persist: false

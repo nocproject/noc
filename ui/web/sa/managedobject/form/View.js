@@ -234,6 +234,12 @@ Ext.define('NOC.sa.managedobject.form.View', {
                                     uiStyle: "medium-combo",
                                     fieldLabel: __("Form"),
                                     allowBlank: true
+                                },
+                                {
+                                    name: "shape_title_template",
+                                    xtype: "textfield",
+                                    fieldLabel: __("Shape Name template"),
+                                    allowBlank: true
                                 }
                             ]
                         }
