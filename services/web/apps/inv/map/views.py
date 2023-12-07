@@ -8,7 +8,6 @@
 # Python modules
 import itertools
 import threading
-import random
 from collections import defaultdict
 from typing import List, Set, Dict
 
@@ -31,7 +30,6 @@ from noc.sa.interfaces.base import (
     IntParameter,
     StringParameter,
     DictListParameter,
-    StringListParameter,
     DictParameter,
 )
 from noc.fm.models.activealarm import ActiveAlarm
@@ -415,7 +413,6 @@ class MapApplication(ExtApplication):
             }
 
         nid = {}
-        print(nodes)
         metrics_template: Dict[str, str] = {}
         group_nodes = {}  # (segment, group)
         # Build id -> object_id mapping
@@ -507,7 +504,6 @@ class MapApplication(ExtApplication):
                 r[str(o)]["status_code"] = self.ST_ALARM
             else:
                 r[str(o)]["status_code"] = self.ST_OK
-        print(r)
         return r
 
     @classmethod
