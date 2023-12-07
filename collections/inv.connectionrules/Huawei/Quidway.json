@@ -74,22 +74,6 @@
         {
             "match_connection": "in",
             "match_type": "XCVR",
-            "scope": "chassis",
-            "target_connection": "GigabitEthernetX/0/{N}",
-            "target_number": "",
-            "target_type": "CHASSIS"
-        },
-        {
-            "match_connection": "in",
-            "match_type": "XCVR",
-            "scope": "chassis",
-            "target_connection": "XGigabitEthernetX/0/{N}",
-            "target_number": "",
-            "target_type": "CHASSIS"
-        },
-        {
-            "match_connection": "in",
-            "match_type": "XCVR",
             "scope": "em",
             "target_connection": "Port_{N}",
             "target_number": "",
@@ -122,18 +106,34 @@
         {
             "match_connection": "in",
             "match_type": "XCVR",
-            "scope": "em",
-            "target_connection": "GigabitEthernetX/0/{N}",
+            "scope": "lpu",
+            "target_connection": "Port_{N}",
             "target_number": "",
-            "target_type": "EM"
+            "target_type": "LPU"
         },
         {
             "match_connection": "in",
             "match_type": "XCVR",
-            "scope": "em",
-            "target_connection": "XGigabitEthernetX/0/{N}",
+            "scope": "lpu",
+            "target_connection": "GigabitEthernetX/0/{N}_sfp",
             "target_number": "",
-            "target_type": "EM"
+            "target_type": "LPU"
+        },
+        {
+            "match_connection": "in",
+            "match_type": "XCVR",
+            "scope": "lpu",
+            "target_connection": "XGigabitEthernetX/0/{N}_xfp",
+            "target_number": "",
+            "target_type": "LPU"
+        },
+        {
+            "match_connection": "in",
+            "match_type": "XCVR",
+            "scope": "lpu",
+            "target_connection": "XGigabitEthernetX/0/{N}_sfp+",
+            "target_number": "",
+            "target_type": "LPU"
         },
         {
             "match_connection": "in",
