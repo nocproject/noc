@@ -428,6 +428,7 @@ Ext.define("NOC.inv.map.MapPanel", {
         isMaintenance: false,
         portal: data.portal,
         object_filter: data.object_filter,
+        metrics_template: data.metrics_template,
         shape_width: data.shape_width,
         metrics_label: data.metrics_label,
       },
@@ -443,6 +444,7 @@ Ext.define("NOC.inv.map.MapPanel", {
       node_id: data.node_id,
       id: data.id,
       object_filter: data.object_filter,
+      metrics_template: data.metrics_template,
     });
     return {node: node, badges: badges};
   },

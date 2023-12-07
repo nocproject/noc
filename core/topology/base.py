@@ -5,6 +5,7 @@
 # See LICENSE for details
 # ----------------------------------------------------------------------
 import datetime
+
 # Python modules
 import operator
 import random
@@ -142,7 +143,10 @@ class TopologyBase(object):
                 "node_id": n.resource_id,
                 "metrics_label": "",
                 "metrics_template": "</br>".join(
-                    ["Uptime: {{ metric.object.sys_uptime.humanize }}", "CPU Usage: {{ metric.cpu.usage.humanize }}"],
+                    [
+                        "Uptime: {{ metric.object(managed_object=managed_object).sys_uptime() }}",
+                        "CPU Usage: {{ metric.cpu(managed_object=managed_object).usage() }}",
+                    ],
                 ),
                 "level": n.level,
                 "name": n.title or "",
