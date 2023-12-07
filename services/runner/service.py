@@ -20,11 +20,9 @@ from pymongo import InsertOne, UpdateOne
 # NOC modules
 from noc.core.service.fastapi import FastAPIService
 from noc.core.msgstream.message import Message
-from noc.core.handler import get_handler
-from noc.core.debug import error_report
 from noc.core.perf import metrics
 from noc.core.runner.runner import Runner
-from noc.core.mongo.connection_async import get_db
+from noc.core.mongo.connection_async import get_db, connect_async
 from noc.config import config
 from noc.sa.models.job import JobStatus
 from noc.services.runner.models.runnerreq import RunnerRequest, JobRequest
@@ -65,7 +63,7 @@ class RunnerService(FastAPIService):
             return
         await msg_handler(req)
 
-    async def on_msg_submit(req: JobRequest) -> None:
+    async def on_msg_submit(self, req: JobRequest) -> None:
         try:
             metrics["submits"] += 1
             self.runner.submit(req)
