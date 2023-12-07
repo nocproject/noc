@@ -1,7 +1,7 @@
 # ----------------------------------------------------------------------
 # CPE
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2022 The NOC Project
+# Copyright (C) 2007-2023 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -34,6 +34,8 @@ from noc.core.mongo.fields import PlainReferenceField, ForeignKeyField
 from noc.core.models.cfgmetrics import MetricCollectorConfig, MetricItem
 from noc.core.validators import is_ipv4
 from noc.core.model.decorator import on_delete_check
+from noc.core.topology.types import ShapeOverlay, TopologyNode
+from noc.core.stencil import Stencil
 from noc.main.models.label import Label
 from noc.main.models.textindex import full_text_search
 from noc.sa.models.managedobject import ManagedObject
@@ -94,6 +96,8 @@ class CPE(Document):
     type = StringField(choices=[(x, x) for x in CPE_TYPES], default="other")
     # IPv4 CPE address, used for ManagedObject sync
     address = StringField(validation=is_ipv4)
+    #
+    label = StringField(required=False)
     # Capabilities
     caps: List[CapsItem] = EmbeddedDocumentListField(CapsItem)
     # Object id in BI
@@ -337,6 +341,9 @@ class CPE(Document):
                 caps[cn.name] = ci.value
         return caps
 
+    def get_caps(self) -> Dict[str, Any]:
+        return CapsItem.get_caps(self.caps)
+
     def set_oper_status(
         self,
         status: bool,
@@ -418,3 +425,25 @@ class CPE(Document):
         )
         r = next(r, {})
         return r.get("interval", 0)
+
+    def get_stencil(self) -> Optional[Stencil]:
+        if self.profile.shape:
+            # Use profile's shape
+            return self.profile.shape
+        return
+
+    def get_shape_overlays(self) -> List[ShapeOverlay]:
+        return []
+
+    def get_topology_node(self) -> TopologyNode:
+        return TopologyNode(
+            id=str(self.id),
+            type="cpe",
+            resource_id=self.id,
+            title=self.label,
+            title_metric_template=self.profile.shape_title_template or "",
+            stencil=self.get_stencil(),
+            overlays=self.get_shape_overlays(),
+            level=10,
+            attrs={"address": self.address, "mo": self.controller, "caps": self.get_caps()},
+        )

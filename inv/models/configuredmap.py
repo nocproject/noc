@@ -36,6 +36,7 @@ from noc.inv.models.resourcegroup import ResourceGroup
 from noc.inv.models.networksegment import NetworkSegment
 from noc.inv.models.object import Object
 from noc.inv.models.link import Link
+from noc.inv.models.cpe import CPE
 
 
 class AlarmFilter(EmbeddedDocument):
@@ -52,6 +53,7 @@ class ObjectFilter(EmbeddedDocument):
     resource_group = ReferenceField(ResourceGroup, required=False)
     managed_object = ForeignKeyField(ManagedObject, required=False)
     container = ReferenceField(Object)
+    cpe = ReferenceField(CPE)
 
     def __str__(self):
         return f"Segment: {self.segment}; Group: {self.resource_group}; ManagedObject: {self.managed_object}"
@@ -61,7 +63,9 @@ class NodeItem(EmbeddedDocument):
     node_id = ObjectIdField(default=bson.ObjectId)
     parent = ObjectIdField()
     # Generator Config
-    node_type = StringField(choices=["objectgroup", "managedobject", "objectsegment", "other"])
+    node_type = StringField(
+        choices=["objectgroup", "managedobject", "objectsegment", "cpe", "container", "other"]
+    )
     object_filter: ObjectFilter = EmbeddedDocumentField(ObjectFilter)
     add_nested = BooleanField()  # Add nested nodes (if supported) all nodes from group or children
     # Draw block
@@ -86,6 +90,8 @@ class NodeItem(EmbeddedDocument):
         "managedobject": ManagedObject,
         "objectgroup": ResourceGroup,
         "objectsegment": NetworkSegment,
+        "container": Object,
+        "cpe": CPE,
     }
 
     def __str__(self):
@@ -110,6 +116,10 @@ class NodeItem(EmbeddedDocument):
             return self.object_filter.resource_group
         if self.node_type == "objectsegment" and self.object_filter.segment:
             return self.object_filter.segment
+        if self.node_type == "cpe" and self.object_filter.cpe:
+            return self.object_filter.cpe
+        if self.node_id == "container" and self.object_filter.container:
+            return self.object_filter.container
         return None
 
     @property
@@ -120,6 +130,8 @@ class NodeItem(EmbeddedDocument):
             return Portal(generator="objectgroup", id=str(self.object_filter.resource_group.id))
         elif self.node_type == "objectsegment":
             return Portal(generator="segment", id=str(self.object_filter.segment.id))
+        elif self.node_type == "container":
+            return Portal(generator="container", id=str(self.object_filter.container.id))
         elif self.node_type == "other" and self.portal_generator:
             return Portal(
                 generator=self.portal_generator,

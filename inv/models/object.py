@@ -1003,6 +1003,17 @@ class Object(Document):
             data__match={"interface": "management", "attr": "managed_object", "value": mo}
         ).read_preference(ReadPreference.SECONDARY_PREFERRED)
 
+    @classmethod
+    def get_cpe(cls, cpe) -> Optional["Object"]:
+        """
+        Get Object CPE by cpe
+        """
+        if hasattr(cpe, "id"):
+            cpe = str(cpe.id)
+        return cls.objects.filter(
+            data__match={"interface": "cpe", "attr": "cpe_id", "value": cpe}
+        ).read_preference(ReadPreference.SECONDARY_PREFERRED)
+
     def iter_managed_object_id(self) -> Iterator[int]:
         for d in Object._get_collection().aggregate(
             [

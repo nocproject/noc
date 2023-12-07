@@ -194,6 +194,7 @@ Ext.define("NOC.inv.configuredmap.Application", {
                                                 ["objectgroup", "Group"],
                                                 ["objectsegment", "Segment"],
                                                 ["managedobject", "Managed Object"],
+                                                ["container", "Container"],
                                                 ["other", "Other"]
                                             ],
                                             listeners: {

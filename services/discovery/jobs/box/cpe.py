@@ -1,7 +1,7 @@
 # ---------------------------------------------------------------------
 # CPE check
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2022 The NOC Project
+# Copyright (C) 2007-2023 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -56,6 +56,8 @@ class CPECheck(DiscoveryCheck):
             processed.add(cpe.id)
             if cpe.description != r.get("description"):
                 cpe.description = r.get("description")
+            if cpe.label != r.get("name"):
+                cpe.label = r.get("name")
             # Update labels
             labels = r.get("labels")
             if labels is not None:
@@ -81,6 +83,7 @@ class CPECheck(DiscoveryCheck):
                 artifacts_assets += [
                     (
                         str(cpe.id),
+                        str(cpe.type),
                         caps.get("CPE | Vendor"),
                         caps.get("CPE | Model"),
                         caps.get("CPE | Serial Number"),
