@@ -8,8 +8,9 @@
 
 # Python modules
 import asyncio
-from typing import Optional, Dict, Any, Tuple
+from typing import Optional, Dict, Any, Tuple, DefaultDict, List
 from time import perf_counter_ns
+from collections import defaultdict
 
 # Third-party modules
 import orjson
@@ -22,6 +23,7 @@ from noc.core.service.fastapi import FastAPIService
 from noc.core.msgstream.message import Message
 from noc.core.perf import metrics
 from noc.core.runner.runner import Runner
+from noc.core.runner.job import Job
 from noc.core.mongo.connection_async import get_db, connect_async
 from noc.config import config
 from noc.sa.models.job import JobStatus
@@ -89,17 +91,32 @@ class RunnerService(FastAPIService):
                 self.logger.debug("Writing %s changes", len(bulk))
                 t0 = perf_counter_ns()
                 await coll.bulk_write(bulk)
-                dt = t0 - perf_counter_ns()
+                dt = perf_counter_ns() - t0
                 self.logger.debug("%d changes written in %.2fms", float(dt) / 1_000_000.0)
                 metrics["sync_changes"] += len(bulk)
             asyncio.sleep(1.0)
 
     async def restore_state(self):
+        def create_job(doc: Dict[str, Any]) -> Job:
+            job = Job.from_dict(doc, jmap=jobs)
+            jobs[job.id] = job
+            # Release blocked jobs
+            if job.id in blocks:
+                for j_id in blocks[job.id]:
+                    jdoc = blocked[j_id]
+                    if not any(j not in jobs for j in jdoc["depends_on"]):
+                        create_job(jdoc)
+                        del blocked[j_id]
+                del blocks[job.id]
+            return job
+
+        if self.runner is None:
+            return
         coll = get_db()["jobs"]
-        perf_counter_ns()
+        t0 = perf_counter_ns()
         self.logger.info("Restoring state")
         # Find non-complete leaders
-        jobs = {}
+        jobs: Dict[ObjectId, Job] = {}
         async for doc in coll.find(
             {
                 "parent": None,
@@ -113,15 +130,37 @@ class RunnerService(FastAPIService):
                 },
             }
         ):
-            jobs[doc["_id"]] = doc
+            create_job(doc)
         # Find all children
+        blocked: Dict[ObjectId, Dict[str, Any]] = {}
+        blocks: DefaultDict[ObjectId, List[ObjectId]] = defaultdict(list)
         wave = list(jobs)
         while wave:
             new_wave = []
             async for doc in coll.find({"parent": {"$in": wave}}):
-                jobs[doc["_id"]] = doc
+                depends_on: List[ObjectId] = doc.get("depends_on") or []
+                if not depends_on:
+                    # Not blocked, no dependencies
+                    create_job(doc)
+                else:
+                    is_blocked = False
+                    for j in depends_on:
+                        if j not in jobs:
+                            is_blocked = True
+                            blocks[j] = doc["_id"]
+                    if is_blocked:
+                        blocked[doc["_id"]] = doc
+                    else:
+                        create_job(doc)
+                # Prepare next wave
                 new_wave.append(doc["_id"])
             wave = new_wave
+        if blocked or blocks:
+            self.logger.error("There are %d jobs unprocessed", max(len(blocks), len(blocked)))
+        for job in jobs.values():
+            self.runner.add_job(job)
+        dt = perf_counter_ns() - t0
+        self.logger.info("%d jobs restored in %.2fms", len(jobs), float(dt) / 1_000_000.0)
 
 
 if __name__ == "__main__":

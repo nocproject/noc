@@ -6,7 +6,7 @@
 # ----------------------------------------------------------------------
 
 # Python modules
-from typing import List, Iterable, Dict, Tuple
+from typing import List, Iterable, Dict, Tuple, Any
 import asyncio
 
 # Third-party modules
@@ -712,7 +712,33 @@ def test_queue(req: JobRequest) -> None:
         # Updates
         n_updates = len(r) - n_inserts
         assert n_updates >= 2 * n_jobs
-        return runner.last_state
+        assert not any(True for x in runner.last_state.values() if x != JobStatus.SUCCESS)
+        # Recreate jobs on other runner
+        runner2 = RunnerWrapper()
+        jmap = {}
+        n_jobs2 = 0
+        for doc in iter_resolved(y for x, y in r if x is None):
+            job = Job.from_dict(doc, jmap=jmap)
+            jmap[job.id] = job
+            n_jobs2 += 1
+        for job in jmap.values():
+            runner2.add_job(job)
+        assert n_jobs == n_jobs2
+        await asyncio.wait_for(runner2.drain(), 1.0)
+        assert len(list(runner2.iter_jobs())) == 0
+        assert not any(True for x in runner2.last_state.values() if x != JobStatus.SUCCESS)
 
-    r = asyncio.run(inner())
-    assert not any(True for x in r.values() if x != JobStatus.SUCCESS)
+    def iter_resolved(data: Iterable[Dict[str, Any]], rmap=None) -> Iterable[Dict[str, Any]]:
+        rmap = set() if rmap is None else rmap
+        blocked = []
+        for d in data:
+            depends_on = d.get("depends_on")
+            if not depends_on or not any(j not in rmap for j in depends_on):
+                yield d
+                rmap.add(d["_id"])
+            else:
+                blocked.append(d)
+        if blocked:
+            yield from iter_resolved(blocked, rmap)
+
+    asyncio.run(inner())

@@ -74,12 +74,17 @@ class Job(object):
         self.status: JobStatus = status
         self.parent = parent
         self.environment = Environment(environment)
+        self.children: Optional[List[ReferenceType[Job]]] = None
         if self.parent:
             self.environment.set_parent(self.parent.environment)
+            # Update children
+            if self.parent.children is None:
+                self.parent.children = [ref(self)]
+            else:
+                self.parent.children.append(ref(self))
         self.inputs = list(inputs) if inputs else None
         self.locks = list(locks) if locks is not None else None
         self.depends_on: Optional[List[ReferenceType[Job]]] = None
-        self.children: Optional[List[ReferenceType[Job]]] = None
         self._task: Optional[ReferenceType[asyncio.Task]] = None
         self.results: Dict[str, Union[None, str, object]] = {}
         self._result_is_dirty = False
@@ -401,8 +406,6 @@ class Job(object):
                         if i.job:
                             deps[first.name].add(i.job)
                 chains.append(chain)
-            # Bind children
-            leader.children = [ref(j) for j in jobs.values()]
             # Bind children dependencies
             for dn, dset in deps.items():
                 jobs[dn].depends_on = [ref(jobs[j]) for j in dset]
@@ -410,6 +413,31 @@ class Job(object):
         yield leader
         for ch in chains:
             yield from ch
+
+    @classmethod
+    def from_dict(cls, doc: Dict[str, Any], jmap: Optional[Dict[ObjectId, "Job"]] = None) -> "Job":
+        """
+        Create job from database dict.
+        """
+        job = Job(
+            id=doc["_id"],
+            name=doc["name"],
+            action=loader[doc["action"]] if doc.get("action") else None,
+            status=JobStatus(doc["status"]),
+            allow_fail=doc["allow_fail"],
+            parent=jmap[doc["parent"]] if doc.get("parent") else None,
+            environment=doc.get("environment"),
+            inputs=[
+                Input(name=i["name"], value=i["value"], job=i.get("job"))
+                for i in doc.get("inputs") or []
+            ]
+            or None,
+            locks=doc.get("locks"),
+        )
+        depends_on = doc.get("depends_on")
+        if depends_on:
+            job.depends_on = [ref(jmap[j]) for j in depends_on]
+        return job
 
     def set_task(self, task: Optional[asyncio.Task] = None) -> None:
         if self._task and not task:

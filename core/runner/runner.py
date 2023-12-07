@@ -78,11 +78,11 @@ class Runner(object):
         j_map = {r.id: r for r in iter_req(req)}
         for job in Job.from_req(req):
             logger.info("[%s] Submitted job", job)
-            self._on_new_job(job)
+            self.add_job(job)
             if self._queue is not None:
                 self._save_new_job(job, j_map[str(job.id)])
 
-    def _on_new_job(self, job: Job) -> None:
+    def add_job(self, job: Job) -> None:
         """
         Called when new job is instantiated.
         """
@@ -117,6 +117,7 @@ class Runner(object):
             "inputs": [{"name": i.name, "value": i.value, "job": i.job} for i in req.inputs]
             if req.inputs
             else None,
+            "locks": req.locks,
             "depends_on": [j.id for j in job.iter_depends_on()],
             "environment": req.environment or None,
             "created_at": datetime.datetime.now(),
