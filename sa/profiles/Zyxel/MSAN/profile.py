@@ -2,7 +2,7 @@
 # Vendor: Zyxel
 # OS:     MSAN
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2023 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -16,8 +16,7 @@ from noc.core.profile.base import BaseProfile
 class Profile(BaseProfile):
     name = "Zyxel.MSAN"
 
-    pattern_prompt = rb"^(?P<hostname>[a-zA-Z0-9-_\.\'`\s/]+?)(config|chips|bridge|ethernet|adsl|gshdsl|vlan1q)?[#>]\s*"
-    # pattern_unprivileged_prompt = r"^(?P<hostname>[a-zA-Z0-9-_\.\s/]+)?>\s*"
+    pattern_prompt = rb"^(?P<hostname>[a-zA-Z0-9-_\(\)\.\' /]+?)(config|chips|bridge|ethernet|adsl|gshdsl|vlan1q)?[#>]\s*"
     pattern_syntax_error = rb"((Unknown|invalid) (command|input)|Commands are:)"
     pattern_more = [
         (rb"Press any key to continue, 'n' to nopause,'e' to exit", b"n"),
