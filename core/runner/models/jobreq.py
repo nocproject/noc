@@ -6,7 +6,7 @@
 # ----------------------------------------------------------------------
 
 # Python modules
-from typing import Optional, List, Dict
+from typing import Optional, List, Dict, Literal
 import datetime
 
 # Third party modules
@@ -58,6 +58,7 @@ class JobRequest(BaseModel):
         jobs: List of nested jobs. Mutual exclusive with actions.
     """
 
+    op: Literal["submit"] = Field(None, alias="$op")
     id: str = Field(default_factory=lambda: str(ObjectId()))
     name: str
     action: Optional[str] = None

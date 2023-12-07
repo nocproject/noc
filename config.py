@@ -559,6 +559,9 @@ class Config(BaseConfig):
         async_connect_timeout = SecondsParameter(default="20s")
         async_request_timeout = SecondsParameter(default="1h")
 
+    class runner(ConfigSection):
+        max_jobs = IntParameter(default=10)
+
     class sae(ConfigSection):
         db_threads = IntParameter(default=20)
         activator_resolution_retries = IntParameter(default=5)
