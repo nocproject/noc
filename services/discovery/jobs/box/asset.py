@@ -106,6 +106,19 @@ class AssetCheck(DiscoveryCheck):
                 sa_data=o.get("data"),
                 param_data=o.get("param_data"),
             )
+            # cpe_objects
+        cpes = self.get_artefact("cpe_objects")
+        if cpes:
+            self.logger.info("CPE Processed: %s", len(cpes))
+            for cpe_id, vendor, model, sn in cpes:
+                self.submit(
+                    o_type="CHASSIS",
+                    number="0",
+                    vendor=vendor,
+                    part_no=model,
+                    serial=sn,
+                    cpe_id=cpe_id,
+                )
         # Assign stack members
         self.submit_stack_members()
         #
@@ -133,6 +146,7 @@ class AssetCheck(DiscoveryCheck):
         sensors: List[Dict[str, Any]] = None,
         sa_data: List[Dict[str, Any]] = None,
         param_data: List[Dict[str, Any]] = None,
+        cpe_id: Optional[str] = None,
     ):
         # Check the vendor and the serial are sane
         # OEM transceivers return binary trash often

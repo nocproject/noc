@@ -80,6 +80,7 @@ class CPECheck(DiscoveryCheck):
             if cpe.profile.sync_asset and caps.get("CPE | Model"):
                 artifacts_assets += [
                     (
+                        str(cpe.id),
                         caps.get("CPE | Vendor"),
                         caps.get("CPE | Model"),
                         caps.get("CPE | Serial Number"),
