@@ -136,7 +136,7 @@ class RunnerService(FastAPIService):
         blocks: DefaultDict[ObjectId, List[ObjectId]] = defaultdict(list)
         wave = list(jobs)
         while wave:
-            new_wave = []
+            new_wave: List[ObjectId] = []
             async for doc in coll.find({"parent": {"$in": wave}}):
                 depends_on: List[ObjectId] = doc.get("depends_on") or []
                 if not depends_on:
