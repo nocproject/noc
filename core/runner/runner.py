@@ -6,10 +6,11 @@
 # ---------------------------------------------------------------------
 
 # Python modules
-from typing import Iterator, Dict, Set
+from typing import Iterator, Dict, Set, Optional, Any, Tuple
 from logging import getLogger
 import asyncio
 from time import perf_counter_ns
+import datetime
 
 # Third-party modules
 from bson import ObjectId
@@ -31,12 +32,17 @@ class Runner(object):
     Job Runner.
     """
 
-    def __init__(self, concurrency: int = 10):
+    def __init__(
+        self,
+        concurrency: int = 10,
+        queue: Optional[asyncio.Queue[Tuple[Optional[ObjectId], Dict[str, Any]]]] = None,
+    ):
         self._jobs: Dict[ObjectId, Job] = {}
         self._tasks: Set[asyncio.Task] = set()
         self._semaphore = asyncio.Semaphore(concurrency)
         self._status_lock = asyncio.Lock()
         self._locks = LockManager()
+        self._queue = queue
 
     async def drain(self) -> None:
         """Wait until all task are complete."""
@@ -52,16 +58,29 @@ class Runner(object):
         """Iterate all jobs known to runner."""
         yield from self._jobs.values()
 
-    async def submit(self, req: JobRequest) -> None:
+    def submit(self, req: JobRequest) -> None:
         """
         Submit new job group to runner.
 
         Args:
             req: Job request.
         """
+
+        def iter_req(req: JobRequest) -> Iterator[JobRequest]:
+            """
+            Yields all nested job requests
+            """
+            yield req
+            if req.jobs:
+                for r in req.jobs:
+                    yield from iter_req(r)
+
+        j_map = {r.id: r for r in iter_req(req)}
         for job in Job.from_req(req):
             logger.info("[%s] Submitted job", job)
             self._on_new_job(job)
+            if self._queue is not None:
+                self._save_new_job(job, j_map[str(job.id)])
 
     def _on_new_job(self, job: Job) -> None:
         """
@@ -80,6 +99,29 @@ class Runner(object):
         self._tasks.add(task)
         task.add_done_callback(self._tasks.discard)
         job.set_task(task)
+
+    def _save_new_job(self, job: Job, req: JobRequest) -> None:
+        """
+        Send to persistent storage.
+        """
+        if not self._queue:
+            return
+        r: Dict[str, Any] = {
+            "_id": job.id,
+            "name": req.name,
+            "parent": job.parent.id if job.parent else None,
+            "description": req.description,
+            "allow_fail": req.allow_fail,
+            "status": job.status.value,
+            "action": req.action or None,
+            "inputs": [{"name": i.name, "value": i.value, "job": i.job} for i in req.inputs]
+            if req.inputs
+            else None,
+            "depends_on": [j.id for j in job.iter_depends_on()],
+            "environment": req.environment or None,
+            "created_at": datetime.datetime.now(),
+        }
+        self._queue.put_nowait((None, r))
 
     async def run_job(self, job_id: ObjectId) -> None:
         """
@@ -228,5 +270,23 @@ class Runner(object):
             return
         logger.info("[%s] Status change %s -> %s", job, job.status.name, status.name)
         job.status = status
+        if self._queue:
+            # Store
+            r: Dict[str, Any] = {"status": job.status.value}
+            if job.is_running:
+                r["started_at"] = datetime.datetime.now()
+            elif job.is_complete:
+                r["completed_at"] = datetime.datetime.now()
+                if job.parent:
+                    parent = job.parent
+                    if parent.environment.is_dirty:
+                        # Update environment
+                        r["environment"] = parent.environment.raw_data()
+                        parent.environment.clear_dirty()
+                    if parent.is_dirty_result:
+                        # Update results
+                        r["results"] = parent.results_json()
+                        parent.clear_dirty_result()
+            self._queue.put_nowait((job.id, r))
         if job.is_cancelled:
             job.cancel()

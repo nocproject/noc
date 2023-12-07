@@ -151,7 +151,7 @@ def test_from_req_errors(req: JobRequest):
     async def inner():
         runner = Runner()
         with pytest.raises(ValueError):
-            await runner.submit(req)
+            runner.submit(req)
         # Should not submit jobs
         assert len(list(runner.iter_jobs())) == 0
 
@@ -473,7 +473,7 @@ def get_scenario_id(x) -> str:
 def test_scenario(req: JobRequest, expected: Dict[str, JobStatus]):
     async def inner() -> None:
         runner = RunnerWrapper()
-        await runner.submit(req)
+        runner.submit(req)
         await asyncio.wait_for(runner.drain(), 1.0)
         assert len(list(runner.iter_jobs())) == 0
         return runner.last_state
@@ -574,7 +574,7 @@ def test_iter_locks(req: JobRequest, expected: List[str]) -> None:
 def test_locks(req: JobRequest) -> None:
     async def inner() -> None:
         runner = RunnerWrapper()
-        await runner.submit(req)
+        runner.submit(req)
         await asyncio.wait_for(runner.drain(), 1.0)
 
     asyncio.run(inner())
@@ -633,9 +633,85 @@ def test_locks(req: JobRequest) -> None:
 def test_inputs(req: JobRequest) -> None:
     async def inner() -> Dict[str, JobStatus]:
         runner = RunnerWrapper()
-        await runner.submit(req)
+        runner.submit(req)
         await asyncio.wait_for(runner.drain(), 1.0)
         assert len(list(runner.iter_jobs())) == 0
+        return runner.last_state
+
+    r = asyncio.run(inner())
+    assert not any(True for x in r.values() if x != JobStatus.SUCCESS)
+
+
+@pytest.mark.parametrize(
+    "req",
+    [
+        JobRequest(
+            name="leader",
+            jobs=[
+                JobRequest(
+                    name="assert",
+                    action="assert_cmp",
+                    inputs=[
+                        InputMapping(name="op", value="=="),
+                        InputMapping(name="x", value="{{result}}", job="echo"),
+                        InputMapping(name="y", value="foo"),
+                    ],
+                ),
+                JobRequest(
+                    name="echo", action="echo", inputs=[InputMapping(name="x", value="foo")]
+                ),
+            ],
+        ),
+        # set environment
+        JobRequest(
+            name="leader",
+            environment={"FOO": "foo"},
+            jobs=[
+                JobRequest(
+                    name="echo", action="echo", inputs=[InputMapping(name="x", value="baz-{{FOO}}")]
+                ),
+                JobRequest(
+                    name="setenv",
+                    action="setenv",
+                    inputs=[
+                        InputMapping(name="name", value="FOO"),
+                        InputMapping(name="value", value="bar-{{result}}", job="echo"),
+                    ],
+                ),
+                JobRequest(
+                    name="cmp",
+                    action="assert_cmp",
+                    depends_on=["setenv"],
+                    inputs=[
+                        InputMapping(name="op", value="=="),
+                        InputMapping(name="x", value="{{FOO}}"),
+                        InputMapping(name="y", value="bar-baz-foo"),
+                    ],
+                ),
+            ],
+        ),
+    ],
+)
+def test_queue(req: JobRequest) -> None:
+    async def inner() -> Dict[str, JobStatus]:
+        queue = asyncio.Queue()
+        runner = RunnerWrapper(queue=queue)
+        runner.submit(req)
+        n_jobs = sum(1 for _ in runner.iter_jobs())
+        await asyncio.wait_for(runner.drain(), 1.0)
+        assert len(list(runner.iter_jobs())) == 0
+        # Get changes
+        r = []
+        while not queue.empty():
+            r.append(await queue.get())
+        # At least 2 changes per job
+        assert len(r) >= 3 * n_jobs
+        # Count inserts
+        n_inserts = sum(1 for x, _ in r if x is None)
+        assert n_inserts == n_jobs
+        # Updates
+        n_updates = len(r) - n_inserts
+        assert n_updates >= 2 * n_jobs
         return runner.last_state
 
     r = asyncio.run(inner())

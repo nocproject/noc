@@ -23,6 +23,26 @@ class Environment(object):
         if data:
             self._data.update(data.items())
         self._parent: Optional[Environment] = None
+        self._is_dirty = False
+
+    @property
+    def is_dirty(self) -> bool:
+        """
+        Check if ennvironment is modified
+        """
+        return self._is_dirty
+
+    def clear_dirty(self) -> None:
+        """
+        Clear dirty status.
+        """
+        self._is_dirty = False
+
+    def raw_data(self) -> Dict[str, str]:
+        """
+        Returns data directly belonging to the environment.
+        """
+        return self._data
 
     def set_parent(self, parent: "Environment") -> None:
         """
@@ -64,8 +84,10 @@ class Environment(object):
         """
         if self._parent:
             self._parent._data[name] = value
+            self._parent._is_dirty = True
         else:
             self._data[name] = value
+            self._is_dirty = True
 
     def __iter__(self) -> Iterable["str"]:
         return self.keys()

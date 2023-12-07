@@ -68,6 +68,7 @@ class Job(Document):
         after: Optional timestamp of deferred execution.
         deadline: Optional timestamp when pipeline
             considered expired.
+        results: Dict of results of the complete jobs.
     """
 
     meta = {
@@ -94,6 +95,7 @@ class Job(Document):
     completed_at = DateTimeField(required=False)
     # after = DateTimeField(required=False)
     # deadline = DateTimeField(required=False)
+    results = DictField(required=False)
 
     def __str__(self) -> str:
         return f"{self.name}::{self.action}"

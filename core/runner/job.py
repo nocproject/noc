@@ -6,11 +6,11 @@
 # ---------------------------------------------------------------------
 
 # Python modules
-from typing import Dict, List, Iterable, Optional, Set, Iterator, Type, DefaultDict, Union
+from typing import Dict, List, Iterable, Optional, Set, Iterator, Type, DefaultDict, Union, Any
 from logging import getLogger
 from weakref import ref, ReferenceType
 import asyncio
-from dataclasses import dataclass
+from dataclasses import dataclass, asdict
 from collections import defaultdict
 
 # Third-party modules
@@ -82,6 +82,7 @@ class Job(object):
         self.children: Optional[List[ReferenceType[Job]]] = None
         self._task: Optional[ReferenceType[asyncio.Task]] = None
         self.results: Dict[str, Union[None, str, object]] = {}
+        self._result_is_dirty = False
 
     def __str__(self) -> str:
         return f"{self.name}({self.id})"
@@ -372,6 +373,7 @@ class Job(object):
             inputs = None
         # Create job
         leader = Job(
+            id=req.id,
             name=req.name,
             action=loader[req.action] if req.action else None,
             status=cls._get_initial_status(req),
@@ -404,7 +406,7 @@ class Job(object):
             # Bind children dependencies
             for dn, dset in deps.items():
                 jobs[dn].depends_on = [ref(jobs[j]) for j in dset]
-        # Finnlly yield all
+        # Finally yield all
         yield leader
         for ch in chains:
             yield from ch
@@ -460,6 +462,32 @@ class Job(object):
                     kwargs[i.name] = Template(i.value).render(**self.environment)
         action = self.action(env=self.environment, logger=logger)
         r = await action.execute(**kwargs)
-        if self.parent:
+        if self.parent and r is not None:
             logger.info("[%s] Set result: %s", self, r)
             self.parent.results[self.name] = r
+            self.parent._result_is_dirty = True
+
+    @property
+    def is_dirty_result(self) -> bool:
+        """
+        Check if result is changed
+        """
+        return self._result_is_dirty
+
+    def clear_dirty_result(self) -> None:
+        """
+        Clear dirty result status.
+        """
+        self._result_is_dirty = False
+
+    def results_json(self) -> Dict[str, Any]:
+        """
+        Serialize results to JSON.
+        """
+
+        def q(r: Union[str, object]) -> Union[str, Dict[str, str]]:
+            if isinstance(r, str):
+                return r
+            return asdict(r)
+
+        return {k: q(v) for k, v in self.results.items()}
