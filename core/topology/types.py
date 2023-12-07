@@ -87,6 +87,7 @@ class TopologyNode(object):
     # Подпись
     title: Optional[str] = ""
     title_position: Optional[ShapeOverlayPosition] = "S"
+    title_metric_template: Optional[str] = ""
     #
     stencil: Optional[str] = None
     overlays: List[ShapeOverlay] = None

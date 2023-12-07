@@ -139,12 +139,7 @@ class TopologyBase(object):
                 "id": o_id,
                 "node_id": n.resource_id,
                 "metrics_label": "",
-                "metrics_template": "</br>".join(
-                    [
-                        "Uptime: {{ metric.object(managed_object=managed_object).sys_uptime() }}",
-                        "CPU Usage: {{ metric.cpu(managed_object=managed_object).usage() }}",
-                    ],
-                ),
+                "metrics_template": n.title_metric_template or "",
                 "level": n.level,
                 "name": n.title or "",
                 "shape": getattr(stencil, "path", ""),
