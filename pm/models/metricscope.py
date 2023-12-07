@@ -199,7 +199,7 @@ class MetricScope(Document):
             default_value = None
             if config.clickhouse.enable_default_value:
                 default_value = getattr(config.clickhouse, f"default_{t.field_type}", None)
-            yield t.field_name, t.field_type, "", default_value or ""
+            yield t.field_name, t.field_type, "DEFAULT" if default_value else "", default_value or ""
 
     def iter_fields(self):
         """
@@ -297,9 +297,13 @@ class MetricScope(Document):
         f_expr = ""
         if config.clickhouse.enable_default_value:
             # field != default_value
-            r = []
+            r = ["date", "ts"]
+            if view_columns:
+                r += ["labels"]
+            for f in self.key_fields:
+                r += [f"{f.field_name}"]
             for n, t, me, de in self.iter_metrics_fields():
-                r += [f"{n} != {de}"]
+                r += [f"nullIf({n}, {de}) AS {n}"]
             f_expr = ",".join(r)
         return (
             f"CREATE OR REPLACE VIEW {view} AS SELECT {v_path}{vc_expr}{f_expr or '*'} FROM {src}"
