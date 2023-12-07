@@ -266,6 +266,13 @@ Ext.define("NOC.sa.managedobjectprofile.Application", {
                                                     xtype: "main.ref.stencil.LookupField",
                                                     fieldLabel: __("Shape"),
                                                     allowBlank: true
+                                                },
+                                                {
+                                                    name: "shape_title_template",
+                                                    xtype: "textfield",
+                                                    fieldLabel: __("Shape Name template"),
+                                                    allowBlank: true,
+                                                    uiStyle: "large"
                                                 }
                                             ]
                                         }

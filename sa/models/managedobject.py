@@ -132,7 +132,7 @@ from .managedobjectprofile import ManagedObjectProfile
 from .objectdiagnosticconfig import ObjectDiagnosticConfig
 
 # Increase whenever new field added or removed
-MANAGEDOBJECT_CACHE_VERSION = 46
+MANAGEDOBJECT_CACHE_VERSION = 47
 CREDENTIAL_CACHE_VERSION = 6
 
 Credentials = namedtuple(
@@ -427,6 +427,7 @@ class ManagedObject(NOCModel):
         null=True,
         blank=True,
     )
+    shape_title_template = CharField("Shape Name template", max_length=256, blank=True, null=True)
     #
     time_pattern = ForeignKey(TimePattern, null=True, blank=True, on_delete=SET_NULL)
     # Config processing handlers
@@ -2620,6 +2621,9 @@ class ManagedObject(NOCModel):
             type="managedobject",
             resource_id=self.id,
             title=self.name,
+            title_metric_template=self.shape_title_template
+            or self.object_profile.shape_title_template
+            or "",
             stencil=self.get_stencil(),
             overlays=self.get_shape_overlays(),
             level=self.object_profile.level,

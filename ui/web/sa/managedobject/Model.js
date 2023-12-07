@@ -257,6 +257,10 @@ Ext.define("NOC.sa.managedobject.Model", {
             type: "string"
         },
         {
+            name: "shape_title_template",
+            type: "string"
+        },
+        {
             name: "config_filter_handler",
             type: "string"
         },

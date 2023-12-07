@@ -181,6 +181,9 @@ class ManagedObjectProfile(NOCModel):
         null=True,
         blank=True,
     )
+    shape_title_template = models.CharField(
+        _("Shape Title template"), max_length=256, blank=True, null=True
+    )
     # Name restrictions
     # Regular expression to check name format
     name_template = models.CharField(_("Name template"), max_length=256, blank=True, null=True)

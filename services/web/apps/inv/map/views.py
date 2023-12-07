@@ -13,6 +13,7 @@ from typing import List, Set, Dict
 
 # Third-party modules
 from concurrent.futures import ThreadPoolExecutor, as_completed
+from jinja2.environment import Environment
 from bson import ObjectId
 
 # NOC modules
@@ -35,7 +36,7 @@ from noc.fm.models.activealarm import ActiveAlarm
 from noc.maintenance.models.maintenance import Maintenance
 from noc.core.text import alnum_key
 from noc.core.validators import is_objectid
-from noc.core.pm.utils import get_interface_metrics
+from noc.core.pm.utils import get_interface_metrics, MetricProxy
 from noc.core.translation import ugettext as _
 from noc.core.cache.decorator import cachedmethod
 from noc.core.topology.loader import loader
@@ -368,11 +369,17 @@ class MapApplication(ExtApplication):
         api=True,
         validate={
             "nodes": DictListParameter(
-                attrs={"id": StringParameter(), "node_type": StringParameter()}
+                attrs={
+                    "id": StringParameter(),
+                    "node_type": StringParameter(),
+                    "node_id": StringParameter(),
+                    "metrics_template": StringParameter(required=False),
+                    "object_filter": StringParameter(required=False),
+                }
             )
         },
     )
-    def api_objects_statuses(self, request, nodes: List[Dict[str, int]]):
+    def api_objects_statuses(self, request, nodes: List[Dict[str, str]]):
         def get_alarms(objects: List[int]) -> Set[int]:
             """
             Returns a set of objects with alarms
@@ -406,11 +413,13 @@ class MapApplication(ExtApplication):
             }
 
         nid = {}
+        metrics_template: Dict[str, str] = {}
         group_nodes = {}  # (segment, group)
         # Build id -> object_id mapping
         for o in nodes:
             if o["node_type"] == "managedobject":
                 nid[o["node_id"]] = o["id"]
+                metrics_template[o["id"]] = o["metrics_template"]
             elif o["node_type"] == "objectgroup":
                 group_nodes[("", o["node_id"])] = o["id"]
             elif o["node_type"] == "objectsegment":
@@ -438,8 +447,31 @@ class MapApplication(ExtApplication):
             for mo_id in mos:
                 object_group[mo_id].add(n_id)
         # Mark all as unknown
-        objects = list(itertools.chain(nid, object_group))
-        r = {o: self.ST_UNKNOWN for o in itertools.chain(nid.values(), group_nodes.values())}
+        objects = [int(x) for x in itertools.chain(nid, object_group)]
+        bi_id_map = {
+            str(mo_id): bi_id
+            for mo_id, bi_id in ManagedObject.objects.filter(id__in=objects).values_list(
+                "id", "bi_id"
+            )
+        }
+        env = Environment()
+        env.globals["metric"] = MetricProxy(
+            metric_keys=[{"managed_object": bi_id} for bi_id in bi_id_map.values()]
+        )
+        r = defaultdict(dict)
+        for o in itertools.chain(nid.values(), group_nodes.values()):
+            r[o]["status_code"] = self.ST_UNKNOWN
+            if o not in metrics_template:
+                continue
+            try:
+                r[o]["metrics_label"] = env.from_string(metrics_template[o]).render(
+                    {"managed_object": bi_id_map[o]}
+                )
+            except (ValueError, AttributeError) as e:
+                r[o]["metrics_label"] = "#ERROR#"
+                self.logger.error(
+                    "[%s] Error when processed MetricTemplate: %s", metrics_template[o], e
+                )
         sr = ManagedObject.get_statuses(objects)
         sa = get_alarms(objects)
         mo = Maintenance.currently_affected(objects)
@@ -449,29 +481,29 @@ class MapApplication(ExtApplication):
             if sr[o]:
                 # Check for alarms
                 if o in sa:
-                    r[o] = self.ST_ALARM
+                    r[str(o)]["status_code"] = self.ST_ALARM
                 else:
-                    r[o] = self.ST_OK
+                    r[str(o)]["status_code"] = self.ST_OK
             else:
-                r[o] = self.ST_DOWN
+                r[str(o)]["status_code"] = self.ST_DOWN
             if o in mo:
-                r[o] |= self.ST_MAINTENANCE
+                r[str(o)]["status_code"] |= self.ST_MAINTENANCE
             if o not in object_group:
                 continue
             for g in object_group[o]:
-                group_status[g].add(r[o])
+                group_status[g].add(r[o]["status_code"])
         for g, status in group_status.items():
             if self.ST_ALARM in status or self.ST_DOWN in status:
-                r[g] = self.ST_ALARM
+                r[str(o)]["status_code"] = self.ST_ALARM
             elif self.ST_OK in status:
-                r[g] = self.ST_OK
+                r[str(o)]["status_code"] = self.ST_OK
         segments = [s for s, g in group_nodes if not g]
         sa = get_alarms_segment(segments)
         for s in segments:
             if s in sa:
-                r[s] = self.ST_ALARM
+                r[str(o)]["status_code"] = self.ST_ALARM
             else:
-                r[s] = self.ST_OK
+                r[str(o)]["status_code"] = self.ST_OK
         return r
 
     @classmethod
