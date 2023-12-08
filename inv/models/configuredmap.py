@@ -60,6 +60,7 @@ class ObjectFilter(EmbeddedDocument):
 
 
 class NodeItem(EmbeddedDocument):
+    meta = {"strict": False, "auto_create_index": False}
     node_id = ObjectIdField(default=bson.ObjectId)
     parent = ObjectIdField()
     # Generator Config
@@ -161,12 +162,14 @@ class NodeItem(EmbeddedDocument):
 
     def get_generator_settings(self) -> Optional[Dict[str, str]]:
         r = {}
+        if not self.object_filter:
+            return r
         if self.object_filter.segment:
             r["segment"] = str(self.object_filter.segment.id)
         if self.object_filter.resource_group:
             r["resource_group"] = str(self.object_filter.resource_group.id)
         if self.object_filter.container:
-            r["container"] = str(self.object_filter.container)
+            r["container"] = str(self.object_filter.container.id)
         return r
 
     def clean(self):
@@ -187,6 +190,7 @@ class NodeItem(EmbeddedDocument):
 
 
 class LinkItem(EmbeddedDocument):
+    meta = {"strict": False, "auto_create_index": False}
     type = StringField(choices=["p2p", "cloud", "aggregate"], default="p2p")
     link = ReferenceField(Link)
     source_node = ObjectIdField()  # node_id

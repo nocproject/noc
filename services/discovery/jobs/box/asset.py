@@ -29,6 +29,7 @@ from noc.inv.models.modelmapping import ModelMapping
 from noc.inv.models.error import ConnectionError
 from noc.inv.models.sensor import Sensor
 from noc.inv.models.sensorprofile import SensorProfile
+from noc.inv.models.cpe import CPE
 from noc.pm.models.measurementunits import MeasurementUnits, DEFAULT_UNITS_NAME
 from noc.core.text import str_dict
 from noc.core.comp import smart_bytes
@@ -81,6 +82,8 @@ class AssetCheck(DiscoveryCheck):
         self.generic_vendor = Vendor.get_by_code("GENERIC")
         self.noname_vendor = Vendor.get_by_code("NONAME")
         self.generic_models: List[str] = self.get_generic_models()
+        # CPEs
+        self.cpes: List[Tuple[str, str, str, str, str]] = self.get_artefact("cpe_objects")
         #
         self.object_param_artifacts: Dict[str, List[Dict[str, Any]]] = {}  # oid: [Data]
 
@@ -107,18 +110,6 @@ class AssetCheck(DiscoveryCheck):
                 param_data=o.get("param_data"),
             )
             # cpe_objects
-        cpes = self.get_artefact("cpe_objects")
-        if cpes:
-            self.logger.info("CPE Processed: %s", len(cpes))
-            for cpe_id, vendor, model, sn in cpes:
-                self.submit(
-                    o_type="CHASSIS",
-                    number="0",
-                    vendor=vendor,
-                    part_no=model,
-                    serial=sn,
-                    cpe_id=cpe_id,
-                )
         # Assign stack members
         self.submit_stack_members()
         #
@@ -129,6 +120,8 @@ class AssetCheck(DiscoveryCheck):
         self.disconnect_connections()
         #
         self.sync_sensors()
+        #
+        self.sync_cpes()
         #
         self.set_artefact("object_param_artifacts", self.object_param_artifacts)
 
@@ -330,7 +323,7 @@ class AssetCheck(DiscoveryCheck):
                 op="CHANGE",
             )
         # Check management
-        if o.get_data("management", "managed"):
+        if o.get_data("management", "managed") and not cpe_id:
             if o.get_data("management", "managed_object") != self.object.id:
                 self.logger.info("Changing object management to '%s'", self.object.name)
                 o.set_data("management", "managed_object", self.object.id)
@@ -344,6 +337,18 @@ class AssetCheck(DiscoveryCheck):
             self.update_name(o)
             if o.id in self.managed:
                 self.managed.remove(o.id)
+                # Check CPE
+        if o.get_data("cpe", "is_cpe"):
+            if o.get_data("cpe", "cpe_id") != cpe_id:
+                self.logger.info("Changing object CPE to '%s'", cpe_id)  # Global_id
+            o.set_data("cpe", "cpe_id", cpe_id)
+            o.save()
+            o.log(
+                "CPE granted",
+                system="DISCOVERY",
+                managed_object=self.object,
+                op="CHANGE",
+            )
         self.objects += [(o_type, o, self.ctx.copy(), serial, data, constant_data)]
         # Collect sensors
         if sensors:
@@ -736,6 +741,20 @@ class AssetCheck(DiscoveryCheck):
         if not units:
             units = MeasurementUnits.get_by_name(DEFAULT_UNITS_NAME)
         return units
+
+    def sync_cpes(self):
+        if not self.cpes:
+            return
+        self.logger.info("CPE Processed: %s", len(self.cpes))
+        for cpe_id, cpe_type, vendor, model, sn in self.cpes:
+            self.submit(
+                o_type="CHASSIS",
+                number="0",
+                vendor=vendor,
+                part_no=[model],
+                serial=sn,
+                cpe_id=cpe_id,
+            )
 
     def submit_stack_members(self):
         if len(self.stack_member) < 2:
