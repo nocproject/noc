@@ -518,3 +518,18 @@ class InvApplication(ExtApplication):
                     "slot": rd.connection,
                 }
         return cs
+
+    @view(url=r"^(?P<oid>[0-9a-f]{24})/map_lookup/$", method=["GET"], access="read", api=True)
+    def api_map_lookup(self, request, oid):
+        o: Object = self.get_object_or_404(Object, id=oid)
+        if not o.get_data("container", "container"):
+            return []
+        r = [
+            {
+                "id": str(o.id),
+                "label": _("ManagedObject Container: ") + str(o.name),
+                "is_default": True,
+                "args": ["objectcontainer", str(o.id), str(o.id)],
+            }
+        ]
+        return r
