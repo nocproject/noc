@@ -701,6 +701,13 @@ class Config(BaseConfig):
             segment_max_bytes = BytesParameter(default=0)
             auto_pause_time = SecondsParameter(default=0)
 
+        class submit(ConfigSection):
+            retention_max_age = SecondsParameter(default="24h")
+            retention_max_bytes = BytesParameter(default=0)
+            segment_max_age = SecondsParameter(default="1h")
+            segment_max_bytes = BytesParameter(default=0)
+            auto_pause_time = SecondsParameter(default=0)
+
     class syslogcollector(ConfigSection):
         listen = StringParameter(default="0.0.0.0:514")
         enable_reuseport = BooleanParameter(default=True)
