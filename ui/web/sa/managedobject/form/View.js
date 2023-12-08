@@ -96,9 +96,9 @@ Ext.define('NOC.sa.managedobject.form.View', {
                                     name: "name",
                                     xtype: "textfield",
                                     fieldLabel: __("Name"),
+                                    tabIndex: 10,
                                     allowBlank: false,
-                                    autoFocus: true,
-                                    tabIndex: 10
+                                    autoFocus: true
                                 },
                                 {
                                     name: "description",
@@ -112,7 +112,7 @@ Ext.define('NOC.sa.managedobject.form.View', {
                                     name: "is_managed",
                                     xtype: "checkboxfield",
                                     fieldLabel: __("Is Managed?"),
-                                    tabIndex: 30,
+                                    tabIndex: 30
                                 }
                             ]
                         }, {
@@ -127,10 +127,10 @@ Ext.define('NOC.sa.managedobject.form.View', {
                                 {
                                     name: "labels",
                                     fieldLabel: __("Labels"),
+                                    tabIndex: 40,
                                     xtype: "labelfield",
                                     allowBlank: true,
                                     minWidth: 100,
-                                    tabIndex: 40,
                                     query: {
                                         "enable_managedobject": true
                                     }
@@ -149,6 +149,7 @@ Ext.define('NOC.sa.managedobject.form.View', {
                     name: "state",
                     xtype: "statefield",
                     fieldLabel: __("State"),
+                    tabIndex: 50,
                     restUrl: "sa/managedobject/",
                     allowBlank: false
                 },
@@ -186,13 +187,13 @@ Ext.define('NOC.sa.managedobject.form.View', {
                                     restUrl: "/sa/managedobjectprofile/lookup/",
                                     uiStyle: "medium-combo",
                                     fieldLabel: __("Object Profile"),
+                                    tabIndex: 60,
                                     tooltip: __(
                                         "More settings for worked with devices. <br/>" +
                                         "Place on Service Activaton -> Setup -> Object Profile."
                                     ),
                                     itemId: "object_profile",
                                     allowBlank: false,
-                                    tabIndex: 50,
                                     groupEdit: true,
                                     listeners: {
                                         render: 'addTooltip'
@@ -208,6 +209,7 @@ Ext.define('NOC.sa.managedobject.form.View', {
                                     restUrl: "/main/ref/stencil/lookup/",
                                     uiStyle: "medium-combo",
                                     fieldLabel: __("Shape"),
+                                    tabIndex: 70,
                                     allowBlank: true,
                                     groupEdit: true
                                 },
@@ -217,6 +219,7 @@ Ext.define('NOC.sa.managedobject.form.View', {
                                     restUrl: "/main/glyph/lookup/",
                                     uiStyle: "medium-combo",
                                     fieldLabel: __("Glyph"),
+                                    tabIndex: 80,
                                     allowBlank: true
                                 },
                                 {
@@ -225,6 +228,7 @@ Ext.define('NOC.sa.managedobject.form.View', {
                                     restUrl: "/main/ref/soposition/lookup/",
                                     uiStyle: "medium-combo",
                                     fieldLabel: __("Position"),
+                                    tabIndex: 90,
                                     allowBlank: true
                                 },
                                 {
@@ -233,12 +237,14 @@ Ext.define('NOC.sa.managedobject.form.View', {
                                     restUrl: "/main/ref/soform/lookup/",
                                     uiStyle: "medium-combo",
                                     fieldLabel: __("Form"),
+                                    tabIndex: 100,
                                     allowBlank: true
                                 },
                                 {
                                     name: "shape_title_template",
                                     xtype: "textfield",
                                     fieldLabel: __("Shape Name template"),
+                                    tabIndex: 110,
                                     allowBlank: true
                                 }
                             ]
@@ -260,6 +266,7 @@ Ext.define('NOC.sa.managedobject.form.View', {
                                     restUrl: "/inv/vendor/lookup/",
                                     uiStyle: "medium-combo",
                                     fieldLabel: __("Vendor"),
+                                    tabIndex: 120,
                                     tooltip: __(
                                         "Set after Version Discovery. Not for manual set"
                                     ),
@@ -273,6 +280,7 @@ Ext.define('NOC.sa.managedobject.form.View', {
                                     restUrl: "/inv/platform/lookup/",
                                     uiStyle: "medium-combo",
                                     fieldLabel: __("Platform"),
+                                    tabIndex: 130,
                                     tooltip: __(
                                         "Set after Version Discovery. Not for manual set"
                                     ),
@@ -290,11 +298,13 @@ Ext.define('NOC.sa.managedobject.form.View', {
                                     restUrl: "/inv/firmware/lookup/",
                                     uiStyle: "medium-combo",
                                     fieldLabel: __("Version"),
+                                    tabIndex: 140,
                                     allowBlank: true
                                 }, {
                                     name: "software_image",
                                     xtype: "displayfield",
                                     fieldLabel: __("Software Image"),
+                                    tabIndex: 150,
                                     allowBlank: true
                                 }
                             ]
@@ -316,13 +326,13 @@ Ext.define('NOC.sa.managedobject.form.View', {
                                     restUrl: "/sa/profile/lookup/",
                                     uiStyle: "medium-combo",
                                     fieldLabel: __("SA Profile"),
+                                    tabIndex: 160,
                                     labelStyle: "font-weight:bold",
                                     tooltip: __(
                                         "Profile (Adapter) for device work. <br/>" +
                                         "!! Auto detect profile by SNMP if Object Profile -> Box -> Profile is set. <br/>"
                                     ),
                                     allowBlank: true,
-                                    tabIndex: 60,
                                     groupEdit: true,
                                     listeners: {
                                         render: 'addTooltip'
@@ -332,16 +342,16 @@ Ext.define('NOC.sa.managedobject.form.View', {
                                     name: "scheme",
                                     xtype: "sa.managedobject.SchemeLookupField",
                                     fieldLabel: __("Scheme"),
+                                    tabIndex: 170,
                                     allowBlank: false,
-                                    tabIndex: 70,
                                     groupEdit: true
                                 },
                                 {
                                     name: "address",
                                     xtype: "textfield",
                                     fieldLabel: __("Address"),
+                                    tabIndex: 180,
                                     allowBlank: false,
-                                    tabIndex: 80,
                                     groupEdit: true,
                                     vtype: "IPv4Group"
                                 },
@@ -349,6 +359,7 @@ Ext.define('NOC.sa.managedobject.form.View', {
                                     name: "access_preference",
                                     xtype: "combobox",
                                     fieldLabel: __("Access Preference"),
+                                    tabIndex: 190,
                                     tooltip: __(
                                         "Preference mode with worked profile script. <br/>" +
                                         "!! Work if Device Profile supported. <br/>" +
@@ -375,6 +386,7 @@ Ext.define('NOC.sa.managedobject.form.View', {
                                     name: "port",
                                     xtype: "numberfield",
                                     fieldLabel: __("Port"),
+                                    tabIndex: 200,
                                     allowBlank: true,
                                     minValue: 0,
                                     maxValue: 65535,
@@ -385,6 +397,7 @@ Ext.define('NOC.sa.managedobject.form.View', {
                                     name: "cli_session_policy",
                                     xtype: "combobox",
                                     fieldLabel: __("CLI Session Policy"),
+                                    tabIndex: 210,
                                     tooltip: __(
                                         "Use one session worked on device. <br/>" +
                                         "Profile (default) - use Object Profile settings <br/>" +
@@ -405,6 +418,7 @@ Ext.define('NOC.sa.managedobject.form.View', {
                                     name: "cli_privilege_policy",
                                     xtype: "combobox",
                                     fieldLabel: __("CLI Privilege Policy"),
+                                    tabIndex: 220,
                                     tooltip: __(
                                         "Do enable if login unprivilege mode on device. <br/>" +
                                         "Raise Privileges - send enable<br/>" +
@@ -425,6 +439,7 @@ Ext.define('NOC.sa.managedobject.form.View', {
                                     name: "remote_path",
                                     xtype: "textfield",
                                     fieldLabel: __("Path"),
+                                    tabIndex: 230,
                                     allowBlank: true,
                                     groupEdit: true
                                 }
@@ -438,12 +453,12 @@ Ext.define('NOC.sa.managedobject.form.View', {
                                     restUrl: "/sa/authprofile/lookup/",
                                     uiStyle: "medium-combo",
                                     fieldLabel: __("Auth Profile"),
+                                    tabIndex: 240,
                                     tooltip: __(
                                         'Get credentials (user, pass, snmp etc.) from Auth profile.<br/> ' +
                                         ' Service Activation -> Setup -> Auth Profile. If set - ' +
                                         'value in field user, password, snmp community will be IGNORED'
                                     ),
-                                    tabIndex: 60,
                                     allowBlank: true,
                                     groupEdit: true,
                                     listeners: {
@@ -454,7 +469,7 @@ Ext.define('NOC.sa.managedobject.form.View', {
                                     name: "user",
                                     xtype: "textfield",
                                     fieldLabel: __("User"),
-                                    tabIndex: 70,
+                                    tabIndex: 250,
                                     allowBlank: true,
                                     groupEdit: true
                                 },
@@ -462,7 +477,7 @@ Ext.define('NOC.sa.managedobject.form.View', {
                                     name: "password",
                                     xtype: "password",
                                     fieldLabel: __("Password"),
-                                    tabIndex: 80,
+                                    tabIndex: 260,
                                     allowBlank: true,
                                     inputType: "password",
                                     groupEdit: true
@@ -471,6 +486,7 @@ Ext.define('NOC.sa.managedobject.form.View', {
                                     name: "super_password",
                                     xtype: "password",
                                     fieldLabel: __("Super Password"),
+                                    tabIndex: 270,
                                     allowBlank: true,
                                     inputType: "password",
                                     groupEdit: true
@@ -479,7 +495,7 @@ Ext.define('NOC.sa.managedobject.form.View', {
                                     name: "snmp_ro",
                                     xtype: "password",
                                     fieldLabel: __("RO Community"),
-                                    tabIndex: 90,
+                                    tabIndex: 280,
                                     allowBlank: true,
                                     groupEdit: true
                                 },
@@ -487,7 +503,7 @@ Ext.define('NOC.sa.managedobject.form.View', {
                                     name: "snmp_rw",
                                     xtype: "password",
                                     fieldLabel: __("RW Community"),
-                                    tabIndex: 100,
+                                    tabIndex: 290,
                                     allowBlank: true,
                                     groupEdit: true
                                 },
@@ -495,6 +511,7 @@ Ext.define('NOC.sa.managedobject.form.View', {
                                     name: "max_scripts",
                                     xtype: "numberfield",
                                     fieldLabel: __("Max. Scripts"),
+                                    tabIndex: 300,
                                     allowBlank: true,
                                     hideTrigger: true,
                                     minValue: 0,
@@ -505,6 +522,7 @@ Ext.define('NOC.sa.managedobject.form.View', {
                                     name: "snmp_rate_limit",
                                     xtype: "numberfield",
                                     fieldLabel: __("SNMP Rate limit"),
+                                    tabIndex: 310,
                                     tooltip: __(
                                         'Limit SNMP (Query per second).'
                                     ),
@@ -523,6 +541,7 @@ Ext.define('NOC.sa.managedobject.form.View', {
                                     restUrl: "/main/timepattern/lookup/",
                                     uiStyle: "medium-combo",
                                     fieldLabel: __("Time Pattern"),
+                                    tabIndex: 320,
                                     tooltip: __(
                                         'Use this field if you want disable ping check on specified time.<br/> ' +
                                         ' Main -> Setup -> Time Patterns'
@@ -552,13 +571,13 @@ Ext.define('NOC.sa.managedobject.form.View', {
                                     restUrl: "/sa/administrativedomain/",
                                     uiStyle: "medium-combo",
                                     fieldLabel: __("Administrative Domain"),
+                                    tabIndex: 330,
                                     tooltip: __(
                                         "Use for setup User permission on Object. <br/>" +
                                         "Place on Service Activaton -> Setup -> Administrative Domain.<br/>" +
                                         "Permission on Activaton -> Setup -> Group Access/User Access.<br/>"
                                     ),
                                     allowBlank: false,
-                                    tabIndex: 110,
                                     groupEdit: true,
                                     listeners: {
                                         render: 'addTooltip'
@@ -569,8 +588,8 @@ Ext.define('NOC.sa.managedobject.form.View', {
                                     xtype: "noc.core.combotree",
                                     restUrl: "/inv/networksegment/",
                                     fieldLabel: __("Segment"),
+                                    tabIndex: 340,
                                     allowBlank: false,
-                                    tabIndex: 120,
                                     groupEdit: true
                                 },
                                 {
@@ -579,12 +598,12 @@ Ext.define('NOC.sa.managedobject.form.View', {
                                     restUrl: "/main/pool/lookup/",
                                     uiStyle: "medium-combo",
                                     fieldLabel: __("Pool"),
+                                    tabIndex: 350,
                                     tooltip: __(
                                         "Use for shard devices over intersection IP Address spaces. <br/>" +
                                         "Create and Set on Tower<br/>"
                                     ),
                                     allowBlank: false,
-                                    tabIndex: 130,
                                     groupEdit: true,
                                     listeners: {
                                         render: 'addTooltip'
@@ -596,8 +615,8 @@ Ext.define('NOC.sa.managedobject.form.View', {
                                     restUrl: "/project/project/lookup/",
                                     uiStyle: "medium-combo",
                                     fieldLabel: __("Project"),
+                                    tabIndex: 360,
                                     allowBlank: true,
-                                    tabIndex: 140,
                                     groupEdit: true,
                                     listeners: {
                                         render: 'addTooltip'
@@ -607,6 +626,7 @@ Ext.define('NOC.sa.managedobject.form.View', {
                                     name: "fqdn",
                                     xtype: "textfield",
                                     fieldLabel: __("FQDN"),
+                                    tabIndex: 370,
                                     tooltip: __(
                                         "Set device name. If FQDN suffix is not set use dot after name: NAME.<br/>" +
                                         "FQND suffix set on Object Profile: " +
@@ -614,7 +634,6 @@ Ext.define('NOC.sa.managedobject.form.View', {
                                     ),
                                     allowBlank: true,
                                     uiStyle: "medium",
-                                    tabIndex: 150,
                                     listeners: {
                                         render: 'addTooltip'
                                     }
@@ -628,8 +647,8 @@ Ext.define('NOC.sa.managedobject.form.View', {
                                     restUrl: "/ip/vrf/lookup/",
                                     uiStyle: "medium-combo",
                                     fieldLabel: __("VRF"),
+                                    tabIndex: 380,
                                     allowBlank: true,
-                                    tabIndex: 160,
                                     groupEdit: true
                                 },
                                 {
@@ -638,17 +657,17 @@ Ext.define('NOC.sa.managedobject.form.View', {
                                     restUrl: "/vc/l2domain/lookup/",
                                     uiStyle: "medium-combo",
                                     fieldLabel: __("L2 Domain"),
+                                    tabIndex: 390,
                                     allowBlank: true,
-                                    tabIndex: 170,
                                     groupEdit: true
                                 },
                                 {
                                     name: "autosegmentation_policy",
                                     xtype: "combobox",
                                     fieldLabel: __("Autosegmentation Policy"),
+                                    tabIndex: 400,
                                     allowBlank: true,
                                     groupEdit: true,
-                                    tabIndex: 180,
                                     store: [
                                         ["p", __("Profile")],
                                         ["d", __("Do not segmentate")],
@@ -661,7 +680,7 @@ Ext.define('NOC.sa.managedobject.form.View', {
                                     name: "address_resolution_policy",
                                     xtype: "combobox",
                                     fieldLabel: __("Address Resolution Policy"),
-                                    tabIndex: 190,
+                                    tabIndex: 410,
                                     tooltip: __(
                                         'Activate resolve Address by FQND field (or other handler).<br/> ' +
                                         'Profile - Use profile settings<br/>' +
@@ -686,10 +705,9 @@ Ext.define('NOC.sa.managedobject.form.View', {
                                     xtype: "noc.core.combotree",
                                     restUrl: "/inv/container/",
                                     uiStyle: "medium-combo",
-                                    tabIndex: 200,
                                     fieldLabel: __("Container"),
+                                    tabIndex: 420,
                                     allowBlank: false,
-                                    tabIndex: 200,
                                     groupEdit: true
                                 }
                             ]
@@ -708,6 +726,7 @@ Ext.define('NOC.sa.managedobject.form.View', {
                             xtype: "combobox",
                             reference: "configPolicy",
                             fieldLabel: __("Config Policy"),
+                            tabIndex: 430,
                             allowBlank: false,
                             tooltip: __('Select method of config gathering'),
                             displayField: "label",
@@ -727,6 +746,7 @@ Ext.define('NOC.sa.managedobject.form.View', {
                             name: "config_fetch_policy",
                             xtype: "combobox",
                             fieldLabel: __("Config fetch Policy"),
+                            tabIndex: 440,
                             allowBlank: false,
                             tooltip: __('Select method of config fetching'),
                             displayField: "label",
@@ -744,6 +764,7 @@ Ext.define('NOC.sa.managedobject.form.View', {
                             name: "caps_discovery_policy",
                             xtype: "combobox",
                             fieldLabel: __("Caps Policy"),
+                            tabIndex: 450,
                             store: [
                                 ["P", __("Profile")],
                                 ["s", __("Script")],
@@ -758,6 +779,7 @@ Ext.define('NOC.sa.managedobject.form.View', {
                             name: "interface_discovery_policy",
                             xtype: "combobox",
                             fieldLabel: __("Interface Policy"),
+                            tabIndex: 460,
                             store: [
                                 ["P", __("Profile")],
                                 ["s", __("Script")],
@@ -772,6 +794,7 @@ Ext.define('NOC.sa.managedobject.form.View', {
                             name: "vlan_discovery_policy",
                             xtype: "combobox",
                             fieldLabel: __("VLAN Policy"),
+                            tabIndex: 470,
                             store: [
                                 ["P", __("Profile")],
                                 ["s", __("Script")],
@@ -795,6 +818,7 @@ Ext.define('NOC.sa.managedobject.form.View', {
                             name: "confdb_raw_policy",
                             xtype: "combobox",
                             fieldLabel: __("Raw Policy"),
+                            tabIndex: 480,
                             store: [
                                 ["P", __("Profile")],
                                 ["E", __("Enable")],
@@ -820,11 +844,11 @@ Ext.define('NOC.sa.managedobject.form.View', {
                                     restUrl: "/main/pool/lookup/",
                                     uiStyle: "medium-combo",
                                     fieldLabel: __("FM Pool"),
+                                    tabIndex: 490,
                                     tooltip: __(
                                         "Use to override pool for events processing"
                                     ),
                                     allowBlank: true,
-                                    tabIndex: 160,
                                     groupEdit: true,
                                     listeners: {
                                         render: 'addTooltip'
@@ -834,6 +858,7 @@ Ext.define('NOC.sa.managedobject.form.View', {
                                     name: "event_processing_policy",
                                     xtype: "combobox",
                                     fieldLabel: __("Event Policy"),
+                                    tabIndex: 500,
                                     store: [
                                         ["P", __("Profile")],
                                         ["E", __("Enable")],
@@ -846,6 +871,7 @@ Ext.define('NOC.sa.managedobject.form.View', {
                                     name: "trap_source_type",
                                     xtype: "combobox",
                                     fieldLabel: __("Trap Source"),
+                                    tabIndex: 510,
                                     store: [
                                         ["d", __("Disable")],
                                         ["m", __("Management Address")],
@@ -868,6 +894,7 @@ Ext.define('NOC.sa.managedobject.form.View', {
                                     name: "trap_source_ip",
                                     xtype: "textfield",
                                     fieldLabel: __("Trap Source IP"),
+                                    tabIndex: 520,
                                     allowBlank: true,
                                     groupEdit: true
                                 },
@@ -875,6 +902,7 @@ Ext.define('NOC.sa.managedobject.form.View', {
                                     name: "syslog_archive_policy",
                                     xtype: "combobox",
                                     fieldLabel: __("Syslog Archive Policy"),
+                                    tabIndex: 530,
                                     store: [
                                         ["P", __("Profile")],
                                         ["E", __("Enable")],
@@ -890,6 +918,7 @@ Ext.define('NOC.sa.managedobject.form.View', {
                                     name: "syslog_source_type",
                                     xtype: "combobox",
                                     fieldLabel: __("Syslog Source"),
+                                    tabIndex: 540,
                                     store: [
                                         ["d", __("Disable")],
                                         ["m", __("Management Address")],
@@ -912,6 +941,7 @@ Ext.define('NOC.sa.managedobject.form.View', {
                                     name: "syslog_source_ip",
                                     xtype: "textfield",
                                     fieldLabel: __("Syslog Source IP"),
+                                    tabIndex: 550,
                                     allowBlank: true,
                                     groupEdit: true
                                 },
@@ -919,6 +949,7 @@ Ext.define('NOC.sa.managedobject.form.View', {
                                     name: "trap_community",
                                     xtype: "password",
                                     fieldLabel: __("Trap Community"),
+                                    tabIndex: 560,
                                     allowBlank: true,
                                     groupEdit: true
                                 }
@@ -1030,6 +1061,7 @@ Ext.define('NOC.sa.managedobject.form.View', {
                                     restUrl: "/sa/managedobject/lookup/",
                                     uiStyle: "medium-combo",
                                     fieldLabel: __("Controller"),
+                                    tabIndex: 570,
                                     allowBlank: true,
                                     groupEdit: true
                                 },
@@ -1037,6 +1069,7 @@ Ext.define('NOC.sa.managedobject.form.View', {
                                     name: "local_cpe_id",
                                     xtype: "textfield",
                                     fieldLabel: __("Local CPE Id"),
+                                    tabIndex: 580,
                                     allowBlank: true
                                 }]
                         },
@@ -1046,12 +1079,14 @@ Ext.define('NOC.sa.managedobject.form.View', {
                                     name: "global_cpe_id",
                                     xtype: "textfield",
                                     fieldLabel: __("Global CPE Id"),
+                                    tabIndex: 590,
                                     allowBlank: true
                                 },
                                 {
                                     name: "last_seen",
                                     xtype: "displayfield",
                                     fieldLabel: __("Last Seen"),
+                                    tabIndex: 600,
                                     allowBlank: true
                                 }]
                         }
@@ -1073,6 +1108,7 @@ Ext.define('NOC.sa.managedobject.form.View', {
                                     restUrl: "/main/handler/lookup/",
                                     uiStyle: "medium-combo",
                                     fieldLabel: __("Config Filter Handler"),
+                                    tabIndex: 610,
                                     allowBlank: true,
                                     groupEdit: true,
                                     query: {
@@ -1085,6 +1121,7 @@ Ext.define('NOC.sa.managedobject.form.View', {
                                     restUrl: "/main/handler/lookup/",
                                     uiStyle: "medium-combo",
                                     fieldLabel: __("Config Diff Filter Handler"),
+                                    tabIndex: 620,
                                     allowBlank: true,
                                     groupEdit: true,
                                     query: {
@@ -1099,6 +1136,7 @@ Ext.define('NOC.sa.managedobject.form.View', {
                                     restUrl: "/main/handler/lookup/",
                                     uiStyle: "medium-combo",
                                     fieldLabel: __("Config Validation Handler"),
+                                    tabIndex: 630,
                                     allowBlank: true,
                                     groupEdit: true,
                                     query: {
@@ -1124,12 +1162,14 @@ Ext.define('NOC.sa.managedobject.form.View', {
                                     restUrl: "/main/remotesystem/lookup/",
                                     uiStyle: "medium-combo",
                                     fieldLabel: __("Remote System"),
+                                    tabIndex: 640,
                                     allowBlank: true
                                 },
                                 {
                                     name: "remote_id",
                                     xtype: "textfield",
                                     fieldLabel: __("Remote ID"),
+                                    tabIndex: 650,
                                     allowBlank: true
                                 }]
                         }, {
@@ -1151,6 +1191,7 @@ Ext.define('NOC.sa.managedobject.form.View', {
                                     name: "escalation_policy",
                                     xtype: "combobox",
                                     fieldLabel: __("Escalation Policy"),
+                                    tabIndex: 660,
                                     allowBlank: true,
                                     store: [
                                         ["P", __("Profile")],
@@ -1166,6 +1207,7 @@ Ext.define('NOC.sa.managedobject.form.View', {
                                     restUrl: "/fm/ttsystem/lookup/",
                                     uiStyle: "medium-combo",
                                     fieldLabel: __("TT System"),
+                                    tabIndex: 670,
                                     allowBlank: true,
                                     groupEdit: true
                                 }]
@@ -1175,6 +1217,7 @@ Ext.define('NOC.sa.managedobject.form.View', {
                                     name: "tt_queue",
                                     xtype: "textfield",
                                     fieldLabel: __("TT Queue"),
+                                    tabIndex: 680,
                                     allowBlank: true,
                                     groupEdit: true
                                 },
@@ -1182,6 +1225,7 @@ Ext.define('NOC.sa.managedobject.form.View', {
                                     name: "tt_system_id",
                                     xtype: "textfield",
                                     fieldLabel: __("TT System ID"),
+                                    tabIndex: 690,
                                     allowBlank: true
                                 }
                             ]
@@ -1202,6 +1246,7 @@ Ext.define('NOC.sa.managedobject.form.View', {
                                     name: "box_discovery_alarm_policy",
                                     xtype: "combobox",
                                     fieldLabel: __("Box Alarm"),
+                                    tabIndex: 700,
                                     allowBlank: true,
                                     store: [
                                         ["P", __("Profile")],
@@ -1217,6 +1262,7 @@ Ext.define('NOC.sa.managedobject.form.View', {
                                     name: "periodic_discovery_alarm_policy",
                                     xtype: "combobox",
                                     fieldLabel: __("Periodic Alarm"),
+                                    tabIndex: 710,
                                     allowBlank: true,
                                     store: [
                                         ["P", __("Profile")],
@@ -1232,6 +1278,7 @@ Ext.define('NOC.sa.managedobject.form.View', {
                                     name: "denied_firmware_policy",
                                     xtype: "combobox",
                                     fieldLabel: __("On Denied Firmware"),
+                                    tabIndex: 720,
                                     allowBlank: true,
                                     store: [
                                         ["P", __("Profile")],
@@ -1259,6 +1306,7 @@ Ext.define('NOC.sa.managedobject.form.View', {
                                     name: "box_discovery_telemetry_policy",
                                     xtype: "combobox",
                                     fieldLabel: __("Box Telemetry"),
+                                    tabIndex: 730,
                                     allowBlank: true,
                                     store: [
                                         ["P", __("Profile")],
@@ -1271,6 +1319,7 @@ Ext.define('NOC.sa.managedobject.form.View', {
                                     name: "box_discovery_telemetry_sample",
                                     xtype: "numberfield",
                                     fieldLabel: __("Box Sample"),
+                                    tabIndex: 740,
                                     groupEdit: true
                                 }]
                         }, {
@@ -1279,6 +1328,7 @@ Ext.define('NOC.sa.managedobject.form.View', {
                                     name: "periodic_discovery_telemetry_policy",
                                     xtype: "combobox",
                                     fieldLabel: __("Periodic Telemetry"),
+                                    tabIndex: 750,
                                     allowBlank: true,
                                     store: [
                                         ["P", __("Profile")],
@@ -1291,6 +1341,7 @@ Ext.define('NOC.sa.managedobject.form.View', {
                                     name: "periodic_discovery_telemetry_sample",
                                     xtype: "numberfield",
                                     fieldLabel: __("Periodic Sample"),
+                                    tabIndex: 760,
                                     groupEdit: true
                                 }]
                         }
