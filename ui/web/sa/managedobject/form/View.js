@@ -629,6 +629,7 @@ Ext.define('NOC.sa.managedobject.form.View', {
                                     uiStyle: "medium-combo",
                                     fieldLabel: __("VRF"),
                                     allowBlank: true,
+                                    tabIndex: 160,
                                     groupEdit: true
                                 },
                                 {
@@ -638,6 +639,7 @@ Ext.define('NOC.sa.managedobject.form.View', {
                                     uiStyle: "medium-combo",
                                     fieldLabel: __("L2 Domain"),
                                     allowBlank: true,
+                                    tabIndex: 170,
                                     groupEdit: true
                                 },
                                 {
@@ -646,6 +648,7 @@ Ext.define('NOC.sa.managedobject.form.View', {
                                     fieldLabel: __("Autosegmentation Policy"),
                                     allowBlank: true,
                                     groupEdit: true,
+                                    tabIndex: 180,
                                     store: [
                                         ["p", __("Profile")],
                                         ["d", __("Do not segmentate")],
@@ -658,6 +661,7 @@ Ext.define('NOC.sa.managedobject.form.View', {
                                     name: "address_resolution_policy",
                                     xtype: "combobox",
                                     fieldLabel: __("Address Resolution Policy"),
+                                    tabIndex: 190,
                                     tooltip: __(
                                         'Activate resolve Address by FQND field (or other handler).<br/> ' +
                                         'Profile - Use profile settings<br/>' +
@@ -676,6 +680,17 @@ Ext.define('NOC.sa.managedobject.form.View', {
                                     listeners: {
                                         render: 'addTooltip'
                                     }
+                                },
+                                {
+                                    name: "container",
+                                    xtype: "noc.core.combotree",
+                                    restUrl: "/inv/container/",
+                                    uiStyle: "medium-combo",
+                                    tabIndex: 200,
+                                    fieldLabel: __("Container"),
+                                    allowBlank: false,
+                                    tabIndex: 110,
+                                    groupEdit: true
                                 }
                             ]
                         }
