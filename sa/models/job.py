@@ -21,6 +21,9 @@ from mongoengine.fields import (
     DictField,
 )
 
+# NOC models
+from noc.core.model.decorator import on_delete_check
+
 
 class InputMapping(EmbeddedDocument):
     """
@@ -44,6 +47,7 @@ class InputMapping(EmbeddedDocument):
         return f"{self.name} = {self.value}"
 
 
+@on_delete_check(check=[("sa.Job", "parent")])
 class Job(Document):
     """
     Pipeline job.

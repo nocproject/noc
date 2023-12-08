@@ -37,7 +37,7 @@ class JobRequest(BaseModel):
     Pipeline job.
 
     Attributes:
-        name: Jobb name, unique within job group
+        name: Job name, unique within job group
         action: Name of the action. Mutual exclusive with jobs.
         description: Optional description.
         labels: List of labels.
@@ -47,7 +47,7 @@ class JobRequest(BaseModel):
         inputs: List of input mappigs.
         require_approval: Job will be created in PENDING status.
         depends_on: List of dependencies. Dependencies are
-            the name of the jobs from the same group.
+            the names of the jobs from the same group.
             Circular dependensies are not allowed.
         environment: Dict of evrironment variables and their
             values, available for same job and exposed to

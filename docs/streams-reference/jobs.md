@@ -1,6 +1,6 @@
 # jobs Stream
 
-`jobs` stream is a part of [GMX Pipeline](index.md#generic-message-exchange-pipeline).
+`jobs` stream is a part of [Orchestration Pipeline](index.md#orchestration-pipeline).
 
 ## Subscribers
 

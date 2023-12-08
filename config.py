@@ -560,7 +560,7 @@ class Config(BaseConfig):
         async_request_timeout = SecondsParameter(default="1h")
 
     class runner(ConfigSection):
-        max_jobs = IntParameter(default=10)
+        max_running = IntParameter(default=10)
 
     class sae(ConfigSection):
         db_threads = IntParameter(default=20)

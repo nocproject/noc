@@ -30,6 +30,7 @@ from noc.sa.models.job import JobStatus
 from noc.services.runner.models.runnerreq import RunnerRequest, JobRequest
 
 ta_RunnerRequest = TypeAdapter(RunnerRequest)
+STREAM = "submit"
 
 
 class RunnerService(FastAPIService):
@@ -45,8 +46,8 @@ class RunnerService(FastAPIService):
 
     async def on_activate(self):
         connect_async()
-        self.runner = Runner(concurrency=config.runner.max_jobs, queue=self.queue)
-        await self.subscribe_stream("runner", self.slot_number, self.on_msg)
+        self.runner = Runner(concurrency=config.runner.max_running, queue=self.queue)
+        await self.subscribe_stream(STREAM, self.slot_number, self.on_msg)
 
     async def on_msg(self, msg: Message):
         metrics["requests"] += 1
