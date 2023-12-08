@@ -689,7 +689,7 @@ Ext.define('NOC.sa.managedobject.form.View', {
                                     tabIndex: 200,
                                     fieldLabel: __("Container"),
                                     allowBlank: false,
-                                    tabIndex: 110,
+                                    tabIndex: 200,
                                     groupEdit: true
                                 }
                             ]
