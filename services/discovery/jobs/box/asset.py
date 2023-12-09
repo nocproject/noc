@@ -83,7 +83,7 @@ class AssetCheck(DiscoveryCheck):
         self.noname_vendor = Vendor.get_by_code("NONAME")
         self.generic_models: List[str] = self.get_generic_models()
         # CPEs
-        self.cpes: Dict[str, Tuple[str, str, str, str]] = self.load_cpe()
+        self.cpes: Dict[str, Tuple[str, str, str, str, str]] = self.load_cpe()
         #
         self.object_param_artifacts: Dict[str, List[Dict[str, Any]]] = {}  # oid: [Data]
 
@@ -122,13 +122,14 @@ class AssetCheck(DiscoveryCheck):
         self.sync_sensors()
         #
         self.logger.info("CPE Processed: %s", len(self.cpes))
-        for cpe_id, (_, vendor, model, sn) in self.cpes.items():
+        for cpe_id, (_, _, vendor, model, sn) in self.cpes.items():
             self.submit(
                 o_type="CHASSIS",
                 number="0",
                 vendor=vendor,
                 part_no=[model],
                 serial=sn,
+                sa_data=[{"interface": "asset", "key": "part_no", "value": [model]}],
                 cpe_id=cpe_id,
             )
         #
@@ -259,7 +260,10 @@ class AssetCheck(DiscoveryCheck):
         if not o:
             # Create new object
             self.logger.info("Creating new object. model='%s', serial='%s'", m.name, serial)
-            o_data = [ObjectAttr(scope="", interface="asset", attr="serial", value=serial)]
+            o_data = [
+                ObjectAttr(scope="", interface="asset", attr="part_no", value=[part_no]),
+                ObjectAttr(scope="", interface="asset", attr="serial", value=serial),
+            ]
             if revision:
                 o_data += [ObjectAttr(scope="", interface="asset", attr="revision", value=revision)]
             if mfg_date:
@@ -349,14 +353,15 @@ class AssetCheck(DiscoveryCheck):
         if o.get_data("cpe", "is_cpe"):
             if o.get_data("cpe", "cpe_id") != cpe_id:
                 self.logger.info("Changing object CPE to '%s'", cpe_id)  # Global_id
-            o.set_data("cpe", "cpe_id", cpe_id)
-            o.save()
-            o.log(
-                "CPE granted",
-                system="DISCOVERY",
-                managed_object=self.object,
-                op="CHANGE",
-            )
+                o.set_data("cpe", "cpe_id", cpe_id)
+                o.save()
+                o.log(
+                    "CPE granted",
+                    system="DISCOVERY",
+                    managed_object=self.object,
+                    op="CHANGE",
+                )
+            self.update_name(o, cpe_id)
         self.objects += [(o_type, o, self.ctx.copy(), serial, data, constant_data)]
         # Collect sensors
         if sensors:
@@ -451,8 +456,11 @@ class AssetCheck(DiscoveryCheck):
             if reset_scopes:
                 self.reset_context(reset_scopes)
 
-    def update_name(self, obj: Object):
-        n = self.get_name(obj, self.object)
+    def update_name(self, obj: Object, cpe_id: Optional[str] = None):
+        if cpe_id and cpe_id in self.cpes:
+            n = self.cpes[cpe_id][0]
+        else:
+            n = self.get_name(obj, self.object)
         if n and n != obj.name:
             obj.name = n
             self.logger.info("Changing name to '%s'", n)
@@ -1034,7 +1042,7 @@ class AssetCheck(DiscoveryCheck):
             )
         ]
 
-    def load_cpe(self) -> Dict[str, Tuple[str, str, str, str]]:
+    def load_cpe(self) -> Dict[str, Tuple[str, str, str, str, str]]:
         """
         Load CPE from CPE Discovery Artefacts
         """
@@ -1045,6 +1053,7 @@ class AssetCheck(DiscoveryCheck):
             if not cpe.profile.sync_asset or not caps.get("CPE | Model"):
                 continue
             r[str(cpe.id)] = (
+                str(cpe),
                 str(cpe.type),
                 caps.get("CPE | Vendor"),
                 caps.get("CPE | Model"),

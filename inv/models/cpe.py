@@ -111,6 +111,9 @@ class CPE(Document):
     _bi_id_cache = cachetools.TTLCache(maxsize=100, ttl=60)
 
     def __str__(self):
+        return self.label or f"{self.controller}: {self.local_id}"
+
+    def __repr__(self):
         return f"{self.controller}: {self.local_id}"
 
     @classmethod

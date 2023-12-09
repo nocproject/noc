@@ -1,9 +1,9 @@
 {
-    "name": "Generic | CPE | AP",
+    "name": "Generic | CPE | ONT",
     "$collection": "inv.objectmodels",
-    "uuid": "3366caba-da71-4617-8556-e79a3bc72765",
+    "uuid": "985e58c8-4ad0-4820-9898-e106d9198f2c",
     "vendor__code": "GENERIC",
-    "description": "Gereric WLAN Access Point Device",
+    "description": "Gereric ONT user terminal",
     "connections": [
         {
             "name": "eth0",
@@ -29,6 +29,17 @@
                 }
             ],
             "type__name": "Electrical | RJ45"
+        },
+        {
+            "name": "line",
+            "description": "Optical line port",
+            "direction": "s",
+            "gender": "m",
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "GPON"
+            }],
+            "type__name": "Optical | LC"
         }
     ],
     "data": [

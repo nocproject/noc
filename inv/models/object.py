@@ -366,13 +366,15 @@ class Object(Document):
 
     def get_data(self, interface: str, key: str, scope: Optional[str] = None) -> Any:
         attr = ModelInterface.get_interface_attr(interface, key)
-        if attr.is_const:
-            # Lookup model
-            return self.model.get_data(interface, key)
         for item in self.data:
             if item.interface == interface and item.attr == key:
                 if not scope or item.scope == scope:
                     return item.value
+        if attr.is_const:
+            # Lookup model
+            v = self.model.get_data(interface, key)
+            if v is not None:
+                return v
         return None
 
     def get_data_dict(
