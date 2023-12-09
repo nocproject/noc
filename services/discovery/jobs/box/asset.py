@@ -129,7 +129,6 @@ class AssetCheck(DiscoveryCheck):
                 vendor=vendor,
                 part_no=[model],
                 serial=sn,
-                sa_data=[{"interface": "asset", "key": "part_no", "value": [model]}],
                 cpe_id=cpe_id,
             )
         #
@@ -1017,7 +1016,7 @@ class AssetCheck(DiscoveryCheck):
                 return mm.model
         if cpe_id:
             # Try Resolve by Generic Model
-            m = f"Generic | CPE | {self.cpes[cpe_id][0].upper()}"
+            m = f"Generic | CPE | {self.cpes[cpe_id][1].upper()}"
             self.logger.debug("Try Resolve by Generic CPE model: %s", m)
             return ObjectModel.get_by_name(m)
         return None
