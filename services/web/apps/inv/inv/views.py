@@ -15,6 +15,7 @@ from noc.services.web.base.extapplication import ExtApplication, view
 from noc.inv.models.object import Object
 from noc.inv.models.error import ConnectionError
 from noc.inv.models.objectmodel import ObjectModel
+from noc.inv.models.configuredmap import ConfiguredMap
 from noc.core.validators import is_objectid
 from noc.sa.interfaces.base import (
     StringParameter,
@@ -532,4 +533,13 @@ class InvApplication(ExtApplication):
                 "args": ["objectcontainer", str(o.id), str(o.id)],
             }
         ]
+        for cm in ConfiguredMap.objects.filter(nodes__object_filter__container=oid):
+            r += [
+                {
+                    "id": str(cm.id),
+                    "label": _("Configured Map Container: ") + str(o.name),
+                    "is_default": False,
+                    "args": ["configured", str(cm.id)],
+                }
+            ]
         return r
