@@ -78,17 +78,6 @@ class CPECheck(DiscoveryCheck):
                 cpe.address = r.get("address")
             cpe.save()
             # Profile classification
-            # Sync Asset
-            if cpe.profile.sync_asset and caps.get("CPE | Model"):
-                artifacts_assets += [
-                    (
-                        str(cpe.id),
-                        str(cpe.type),
-                        caps.get("CPE | Vendor"),
-                        caps.get("CPE | Model"),
-                        caps.get("CPE | Serial Number"),
-                    )
-                ]
             # Sync ManagedObject
             if cpe.profile.sync_managedobject:
                 self.submit_managed_object(cpe)

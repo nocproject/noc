@@ -707,7 +707,7 @@ Ext.define('NOC.sa.managedobject.form.View', {
                                     uiStyle: "medium-combo",
                                     fieldLabel: __("Container"),
                                     tabIndex: 420,
-                                    allowBlank: false,
+                                    allowBlank: true,
                                     groupEdit: true
                                 }
                             ]

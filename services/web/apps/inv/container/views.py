@@ -13,7 +13,7 @@ from noc.inv.models.object import Object
 
 class ObjectContainerApplication(ExtApplication):
     """
-    Container application, for containers lookup
+    Container application lookup
     """
 
     menu = None
@@ -22,17 +22,28 @@ class ObjectContainerApplication(ExtApplication):
     def queryset(self, request, query=None):
         # if not request.user.is_superuser:
         # qs = qs.filter(adm_domains__in=UserAccess.get_domains(request.user))
-        models = list(
-            ObjectModel.objects.filter(
-                data__match={"interface": "container", "attr": "container", "value": True}
-            )
-        )
+        models = list(ObjectModel.objects.filter(data__match={"interface": "container", "attr": "container", "value": True}))
         qs = Object.objects.filter(model__in=models)
         return qs
 
     def cleaned_query(self, q):
         q = q.copy()
-        q["container"] = q.pop("parent", None)
+        for p in self.ignored_params:
+            if p in q:
+                del q[p]
+        for p in (
+            self.limit_param,
+                    self.page_param,
+                    self.start_param,
+                    self.format_param,
+                    self.sort_param,
+                    self.query_param,
+                    self.only_param,
+        ):
+            if p in q:
+                del q[p]
+        if "id" not in q:
+            q["container"] = q.pop("parent", None) or None
         return q
 
     def instance_to_lookup(self, o, fields=None):
@@ -47,8 +58,5 @@ class ObjectContainerApplication(ExtApplication):
         o = self.get_object_or_404(Object, id=oid)
         path = [Object.get_by_id(ns) for ns in o.get_path()]
         return {
-            "data": [
-                {"level": level + 1, "id": str(p.id), "label": p.name}
-                for level, p in enumerate(path)
-            ]
+            "data": [{"level": level + 1, "id": str(p.id), "label": p.name} for level, p in enumerate(path)]
         }

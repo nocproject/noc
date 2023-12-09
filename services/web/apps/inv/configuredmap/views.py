@@ -61,6 +61,11 @@ class ConfiguredMapApplication(ExtDocApplication):
                 node["segment"] = str(object_filter.segment.id)
                 node["segment__label"] = object_filter.segment.name
                 title = title or object_filter.segment.name
+            if object_filter and object_filter.container:
+                # ns = NetworkSegment.get_by_id(ref_id)
+                node["container"] = str(object_filter.container.id)
+                node["container__label"] = object_filter.container.name
+                title = title or object_filter.container.name
             node_map[str(nn.node_id)] = title
             r["nodes"].append(node)
         for ll in o.links:
@@ -82,6 +87,7 @@ class ConfiguredMapApplication(ExtDocApplication):
             mo = node.pop("managed_object", None)
             rg = node.pop("resource_group", None)
             sg = node.pop("segment", None)
+            cnt = node.pop("container", None)
             object_filter = {}
             if node["node_type"] in {"managedobject", "other"} and mo:
                 object_filter["managed_object"] = mo
@@ -89,6 +95,8 @@ class ConfiguredMapApplication(ExtDocApplication):
                 object_filter["resource_group"] = rg
             if node["node_type"] in {"objectsegment", "other"} and sg:
                 object_filter["segment"] = sg
+            if node["node_type"] in {"container", "other"} and cnt:
+                object_filter["container"] = cnt
             node["object_filter"] = object_filter or None
         return super().clean(data)
 
