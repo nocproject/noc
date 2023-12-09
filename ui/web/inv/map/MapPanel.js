@@ -579,6 +579,11 @@ Ext.define("NOC.inv.map.MapPanel", {
         me.currentHighlight = view;
         me.app.inspectObjectSegment(data.node_id);
         break;
+      case "cpe":
+        view.highlight();
+        me.currentHighlight = view;
+        me.app.inspectCPE(data.node_id);
+        break;
       case "other":
         view.highlight();
         me.currentHighlight = view;

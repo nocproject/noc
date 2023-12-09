@@ -56,7 +56,8 @@ class ObjectFilter(EmbeddedDocument):
     cpe = ReferenceField(CPE)
 
     def __str__(self):
-        return f"Segment: {self.segment}; Group: {self.resource_group}; ManagedObject: {self.managed_object}"
+        return f"Segment: {self.segment}; Group: {self.resource_group}; "\
+               f"ManagedObject: {self.managed_object}; Container: {self.container}"
 
 
 class NodeItem(EmbeddedDocument):
@@ -119,7 +120,7 @@ class NodeItem(EmbeddedDocument):
             return self.object_filter.segment
         if self.node_type == "cpe" and self.object_filter.cpe:
             return self.object_filter.cpe
-        if self.node_id == "container" and self.object_filter.container:
+        if self.node_type == "container" and self.object_filter.container:
             return self.object_filter.container
         return None
 

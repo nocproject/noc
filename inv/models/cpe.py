@@ -442,8 +442,8 @@ class CPE(Document):
         return TopologyNode(
             id=str(self.id),
             type="cpe",
-            resource_id=self.id,
-            title=self.label,
+            resource_id=str(self.id),
+            title=str(self),
             title_metric_template=self.profile.shape_title_template or "",
             stencil=self.get_stencil(),
             overlays=self.get_shape_overlays(),
