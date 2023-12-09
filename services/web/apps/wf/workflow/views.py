@@ -178,7 +178,7 @@ class WorkflowApplication(ExtDocApplication):
                 get_model(am)
             except ImportError:
                 raise ValueError("Bad Model: %s" % am)
-            wf.allowed_models += [am]        
+            wf.allowed_models += [am]
         wf.save()
         # Get current state
         current_states = {}  # str(id) -> state
