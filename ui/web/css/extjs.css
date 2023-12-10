@@ -667,3 +667,46 @@ table {
 .noc-state-enabled {
     background: lightgreen;
 }
+
+.noc-metric-range-container {
+    position: relative;
+    z-index: 5;
+    height: 3px;
+}
+
+.noc-metric-value {
+    position: relative;
+    width: 1px;
+    height: 3px; 
+    margin-top: 9px;
+    background: black;
+}
+
+.noc-metric-value::before {
+    display: block;
+    content: attr(data-value);
+    transform: translate(-50%, -100%);
+}
+
+.noc-metric-range {
+    height: 100%;
+    position: absolute;
+}
+
+.noc-metric-green-range {
+    width: 100%; 
+    background: green;
+}
+
+.noc-metric-ticks-container {
+    position: relative;
+    z-index: 5;
+    height: 5px;
+}
+
+.noc-metric-tick {
+    background: black;
+    height: 100%;
+    width: 2px;
+    position: absolute;
+}
