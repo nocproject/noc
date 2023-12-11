@@ -210,7 +210,12 @@ class Link(Document):
         from noc.sa.models.managedobject import ManagedObject
 
         self.update_topology()
-        self.reset_label()
+        # Assumption that Interface has only one Link :)
+        Label.remove_model_labels(
+            "inv.Interface",
+            ["noc::is_linked::="],
+            instance_filters=[("_id", [i.id for i in self.interfaces])],
+        )
         ManagedObject.update_links(self.linked_objects, exclude_link_ids=[self.id])
 
     @property
