@@ -277,10 +277,14 @@ class MetricValue:
     # def humanize
     """
 
-    def __init__(self, proxy: "MetricScopeProxy", metric_type):
+    functions = {"count_distinct": "count(distinct(%s))"}
+
+    def __init__(self, proxy: "MetricScopeProxy", field, scale=None):
         self.metric_proxy = proxy
-        self.metric_type: "MetricType" = metric_type
-        self.function = "last"
+        # self.metric_type: Optional["MetricType"] = metric_type
+        self.field: Optional[str] = field
+        self.function = "argMax"
+        self.group: Optional[Tuple[str, ...]] = None
         # Start and stop ts
 
     @property
@@ -288,29 +292,44 @@ class MetricValue:
         """
         Metric value alias, union by field_name and agg function
         """
-        return self.metric_type.field_name
+        if not self.function or self.function == "argMax":
+            return self.field
+        return f"{self.field}_{self.function}"
 
     @property
     def query(self) -> str:
         """
         Expression for query metric value
         """
-        return f"argMax({self.metric_type.field_name}, ts)"
+        if self.function in {"argMax"}:
+            return f"argMax({self.field}, ts)"
+        if self.function in self.functions:
+            return self.functions[self.function] % self.field
+        return f"{self.function}({self.field})"
 
-    def __call__(self, *args, **kwargs) -> float:
+    def __call__(self, group_by: Optional[List[str]] = None, *args, **kwargs) -> float:
         """
         scale = convert value by scale
         """
-        print("Call MetricValue", args, kwargs)
+        print("Call MetricValue", args, kwargs, group_by)
+        if group_by:
+            self.group = tuple(group_by)
         r = self.metric_proxy.query_metrics([self], **kwargs)
-        # return self.__call__(managed_object="ЦАТС-102-61#1000006")
-        return r.get(self.metric_type.field_name)
+        r = r.get(self.alias)
+        if r is None:
+            return "ERROR"
+        if len(r) == 1:
+            return r[0]
+        return r
 
     def __getattr__(self, item) -> "MetricValue":
         """
         humanize - return str value
         """
-        if self.function:
+        print("Metric Value GA", item)
+        if item == "jinja_pass_arg":
+            return self
+        if self.function == item:
             return self
         self.function = item
         return self
@@ -338,8 +357,9 @@ class MetricScopeProxy:
                 # Resolve object if f.field_name__ in kwargs
                 keys.append((k.field_name, int(kwargs[k.field_name])))
         for ll in self.scope.labels:
-            if ll.field_name in kwargs:
-                keys.append((ll.field_name, f"'{str(kwargs[ll.field_name])}'"))
+            f_name = ll.store_column or ll.view_column or ll.field_name
+            if f_name in kwargs:
+                keys.append((f_name, f"'{str(kwargs[f_name])}'"))
         if "labels" in kwargs:
             labels = tuple(kwargs["labels"])
         else:
@@ -360,14 +380,14 @@ class MetricScopeProxy:
         return r
 
     def get_query(self, req_metrics: List[MetricValue], **kwargs) -> str:
-        fields, group_by = [], set()
+        fields, group_by = set(), set()
         conditions = defaultdict(list)
         for mk in self.metric_keys:
             _, keys, labels = mk
             key, values = [], []
             for field, value in keys:
                 if (field, field) not in fields:
-                    fields.append((field, field))
+                    fields.add((field, field))
                 group_by.add(field)
                 key.append(field)
                 values.append(str(value))
@@ -377,7 +397,10 @@ class MetricScopeProxy:
         for cond, values in conditions.items():
             where += [" (%s) IN (%s)" % (", ".join(cond), ", ".join(values))]
         for m in req_metrics:
-            fields.append((m.query, m.alias))
+            fields.add((m.query, m.alias))
+            if m.group:
+                group_by |= set(m.group)
+                fields |= {(f, f) for f in m.group}  # fields += list(m.group)
         SQL = """
               SELECT argMax(ts, ts), %s
               FROM %s
@@ -405,7 +428,7 @@ class MetricScopeProxy:
             _, keys, labels = self.current_metric_key
         else:
             raise ValueError("Not selected Object for request metrics")
-        r: Dict[str, float] = {}
+        r: Dict[str, List[float, Tuple[str, ...]]] = defaultdict(list)
         for m in req_metrics:
             print((m.alias, keys, labels) in self.metric_cache)
             if (m.alias, keys, labels) in self.metric_cache:
@@ -415,21 +438,21 @@ class MetricScopeProxy:
         ch = ch_connection()
         from_date = datetime.datetime.now().replace(microsecond=0) - datetime.timedelta(hours=2)
         query = self.get_query(req_metrics, **kwargs)
-        # print(query)
+        print(query)
         result = ch.execute(
             sql=query,
             args=[from_date.date().isoformat(), from_date.isoformat(sep=" ")],
             return_raw=True,
         )
-        # print(result)
+        print(result)
         req_metrics = {m.alias for m in req_metrics}
         for row in result.splitlines():
             row = orjson.loads(row)
             _, keys, labels = self.get_metric_key(**row)
             for name, value in row.items():
                 if name in req_metrics:
-                    r[name] = value
-                    self.metric_cache[(name, keys, labels)] = value
+                    r[name].append([float(value), tuple(keys[1:])])
+                    self.metric_cache[(name, keys, labels)] = float(value)
         if r is None:
             raise ValueError
         return r
@@ -441,13 +464,13 @@ class MetricScopeProxy:
         elif not self.scope:
             self.scope = MetricScope.get_by_table_name(item)
             return self
-        mt = MetricType.get_by_field_name(item, scope=self.scope.table_name)
-        if not mt:
+        # mt = MetricType.get_by_field_name(item, scope=self.scope.table_name)
+        if not self.has_field(item):
             raise AttributeError("[%s] Unknown metric: %s" % (self.scope.name, item))
-        if mt.field_name in self.metric_requests:
-            return self.metric_requests[mt.field_name]
-        self.metric_requests[mt.field_name] = MetricValue(self, mt)
-        return self.metric_requests[mt.field_name]
+        # if mt.field_name in self.metric_requests:
+        #     return self.metric_requests[mt.field_name]
+        self.metric_requests[item] = MetricValue(self, item)
+        return self.metric_requests[item]
 
     def __call__(self, *args: List[Dict[str, Any]], **kwargs):
         # print("Call", kwargs)
@@ -462,6 +485,12 @@ class MetricScopeProxy:
         for p in keys:
             mk = self.get_metric_key(**p)
             self.metric_keys.add(mk)
+
+    def has_field(self, name) -> bool:
+        """
+        Check Field name exists in scope
+        """
+        return True
 
 
 class MetricProxy:
