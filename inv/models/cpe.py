@@ -25,6 +25,7 @@ from mongoengine.fields import (
     DictField,
     EmbeddedDocumentListField,
 )
+from mongoengine.errors import ValidationError
 
 # NOC modules
 from noc.core.wf.decorator import workflow
@@ -51,6 +52,11 @@ id_lock = Lock()
 CPE_TYPES = IGetCPE.returns.element.attrs["type"].choices
 logger = logging.getLogger(__name__)
 
+
+def check_address(value):
+    if not is_ipv4(value):
+        raise ValidationError(f"Bad IPv4 Address: %s" % value)
+    
 
 @full_text_search
 @Label.model
@@ -95,7 +101,7 @@ class CPE(Document):
     # Probe type
     type = StringField(choices=[(x, x) for x in CPE_TYPES], default="other")
     # IPv4 CPE address, used for ManagedObject sync
-    address = StringField(validation=is_ipv4)
+    address = StringField(validation=check_address)
     #
     label = StringField(required=False)
     # Capabilities

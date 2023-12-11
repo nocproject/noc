@@ -348,8 +348,8 @@ class AssetCheck(DiscoveryCheck):
             self.update_name(o)
             if o.id in self.managed:
                 self.managed.remove(o.id)
-                # Check CPE
-        if o.get_data("cpe", "is_cpe"):
+        # Check CPE
+        if o.get_data("cpe", "cpe"):
             if o.get_data("cpe", "cpe_id") != cpe_id:
                 self.logger.info("Changing object CPE to '%s'", cpe_id)  # Global_id
                 o.set_data("cpe", "cpe_id", cpe_id)
@@ -456,10 +456,10 @@ class AssetCheck(DiscoveryCheck):
                 self.reset_context(reset_scopes)
 
     def update_name(self, obj: Object, cpe_id: Optional[str] = None):
-        if cpe_id and cpe_id in self.cpes:
-            n = self.cpes[cpe_id][0]
-        else:
-            n = self.get_name(obj, self.object)
+        cpe = None
+        if cpe_id:
+            cpe = self.cpes[cpe_id][0]
+        n = self.get_name(obj, self.object, cpe)
         if n and n != obj.name:
             obj.name = n
             self.logger.info("Changing name to '%s'", n)
@@ -1056,7 +1056,7 @@ class AssetCheck(DiscoveryCheck):
                 str(cpe.type),
                 caps.get("CPE | Vendor"),
                 caps.get("CPE | Model"),
-                caps.get("CPE | Serial Number"),
+                caps.get("CPE | Serial Number") or cpe.global_id,
             )
         return r
 
@@ -1071,12 +1071,14 @@ class AssetCheck(DiscoveryCheck):
         return f"NOC{base64.b32encode(h.digest())[:7].decode('utf-8')}"
 
     @staticmethod
-    def get_name(obj: Object, managed_object: Optional[Any] = None) -> str:
+    def get_name(obj: Object, managed_object: Optional[Any] = None, cpe_name: Optional[str] = None) -> str:
         """
         Generate discovered object's name
         """
         name = None
-        if managed_object:
+        if cpe_name:
+            name = cpe_name
+        elif managed_object:
             name = managed_object.name
             sm = obj.get_data("stack", "member")
             if sm is not None:

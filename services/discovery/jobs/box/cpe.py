@@ -6,7 +6,7 @@
 # ---------------------------------------------------------------------
 
 # Python modules
-from typing import Optional, Dict, Any, List, Tuple
+from typing import Optional, Dict, Any
 
 # Third-party modules
 from mongoengine.queryset.visitor import Q as m_Q
@@ -44,7 +44,6 @@ class CPECheck(DiscoveryCheck):
         self.logger.info("Checking CPEs")
         result = self.object.scripts.get_cpe()
         processed = set()
-        artifacts_assets: List[Tuple[str, str, str]] = []
         bulk = []
         for r in result:
             cpe = self.ensure_cpe(
@@ -74,8 +73,8 @@ class CPECheck(DiscoveryCheck):
             else:
                 cpe.fire_event("down", bulk=bulk)
             # Sync Address
-            if cpe.address != r.get("address"):
-                cpe.address = r.get("address")
+            if cpe.address != r.get("ip"):
+                cpe.address = r.get("ip")
             cpe.save()
             # Profile classification
             # Sync ManagedObject
@@ -83,9 +82,6 @@ class CPECheck(DiscoveryCheck):
                 self.submit_managed_object(cpe)
         if bulk:
             CPE._get_collection().bulk_write(bulk)
-        # Sync Asset
-        if artifacts_assets:
-            self.set_artefact("cpe_objects", artifacts_assets)
         # Remove Unseen
         unseen_cpe_ids = (
             set(CPE.objects.filter(controller=self.object.id).values_list("id")) - processed
