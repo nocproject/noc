@@ -62,6 +62,16 @@ Ext.define("NOC.inv.inv.Application", {
             handler: me.onOpenDashboard
         });
 
+        me.mapButton = Ext.create("Ext.button.Split", {
+            text: __("Show Map"),
+            glyph: NOC.glyph.globe,
+            scope: me,
+            handler: me.onShowMap,
+            arrowVisible: false,
+            disabled: true,
+            menu: [] // Dynamically add items, after select node in navigation, method 'onSelectNav'
+        });
+
         me.removeButton = Ext.create("Ext.button.Button", {
             glyph: NOC.glyph.minus,
             tooltip: __("Remove group"),
@@ -89,7 +99,8 @@ Ext.define("NOC.inv.inv.Application", {
                     me.addButton,
                     me.removeButton,
                     me.createConnectionButton,
-                    me.dashboardButton
+                    me.dashboardButton,
+                    me.mapButton
                 ]
             }],
             listeners: {
@@ -208,6 +219,48 @@ Ext.define("NOC.inv.inv.Application", {
         me.addButton.setDisabled(!record.get("can_add"));
         me.removeButton.setDisabled(!record.get("can_delete"));
         me.dashboardButton.setDisabled(false);
+        Ext.Ajax.request({
+            url: "/inv/inv/" + objectId + "/map_lookup/",
+            method: "GET",
+            success: function(response) {
+                var data = Ext.decode(response.responseText);
+
+                if(Ext.isEmpty(data)) {
+                    me.mapButton.setDisabled(true);
+                    me.mapButton.setArrowVisible(false);
+                    return;
+                }
+                defaultHandler = data.filter(function(el) {
+                    return el.is_default
+                })[0];
+                me.mapButton.setHandler(function() {
+                    NOC.launch("inv.map", "history", {
+                        args: defaultHandler.args
+                    });
+                }, me);
+                me.mapButton.getMenu().removeAll();
+                menuItems = data.filter(function(el) {
+                    return !el.is_default
+                }).map(function(el) {
+                    return {
+                        text: el.label,
+                        handler: function() {
+                            NOC.launch("inv.map", "history", {
+                                args: el.args
+                            })
+                        }
+                    }
+                });
+                Ext.Array.each(menuItems, function(item) {
+                    me.mapButton.getMenu().add(item);
+                });
+                me.mapButton.setArrowVisible(menuItems.length);
+                me.mapButton.setDisabled(false);
+            },
+            failure: function() {
+                NOC.error(__("Failed get map menu"));
+            }
+        });
         me.invPlugins = {};
         me.tabPanel.removeAll();
         Ext.each(plugins, function(p) {

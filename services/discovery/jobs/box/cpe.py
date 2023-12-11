@@ -1,12 +1,12 @@
 # ---------------------------------------------------------------------
 # CPE check
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2022 The NOC Project
+# Copyright (C) 2007-2023 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
 # Python modules
-from typing import Optional, Dict, Any, List, Tuple
+from typing import Optional, Dict, Any
 
 # Third-party modules
 from mongoengine.queryset.visitor import Q as m_Q
@@ -44,7 +44,6 @@ class CPECheck(DiscoveryCheck):
         self.logger.info("Checking CPEs")
         result = self.object.scripts.get_cpe()
         processed = set()
-        artifacts_assets: List[Tuple[str, str, str]] = []
         bulk = []
         for r in result:
             cpe = self.ensure_cpe(
@@ -56,6 +55,8 @@ class CPECheck(DiscoveryCheck):
             processed.add(cpe.id)
             if cpe.description != r.get("description"):
                 cpe.description = r.get("description")
+            if cpe.label != r.get("name"):
+                cpe.label = r.get("name")
             # Update labels
             labels = r.get("labels")
             if labels is not None:
@@ -72,27 +73,15 @@ class CPECheck(DiscoveryCheck):
             else:
                 cpe.fire_event("down", bulk=bulk)
             # Sync Address
-            if cpe.address != r.get("address"):
-                cpe.address = r.get("address")
+            if cpe.address != r.get("ip"):
+                cpe.address = r.get("ip")
             cpe.save()
             # Profile classification
-            # Sync Asset
-            if cpe.profile.sync_asset and caps.get("CPE | Model"):
-                artifacts_assets += [
-                    (
-                        caps.get("CPE | Vendor"),
-                        caps.get("CPE | Model"),
-                        caps.get("CPE | Serial Number"),
-                    )
-                ]
             # Sync ManagedObject
             if cpe.profile.sync_managedobject:
                 self.submit_managed_object(cpe)
         if bulk:
             CPE._get_collection().bulk_write(bulk)
-        # Sync Asset
-        if artifacts_assets:
-            self.set_artefact("cpe_objects", artifacts_assets)
         # Remove Unseen
         unseen_cpe_ids = (
             set(CPE.objects.filter(controller=self.object.id).values_list("id")) - processed

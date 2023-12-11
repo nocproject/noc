@@ -34,6 +34,11 @@ Ext.define("NOC.inv.cpe.Application", {
                     width: 160
                 },
                 {
+                    text: __("Label"),
+                    dataIndex: "label",
+                    width: 160
+                },
+                {
                     text: __("Profile"),
                     dataIndex: "profile",
                     width: 150,
