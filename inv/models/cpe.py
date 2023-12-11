@@ -56,7 +56,7 @@ logger = logging.getLogger(__name__)
 def check_address(value):
     if not is_ipv4(value):
         raise ValidationError(f"Bad IPv4 Address: %s" % value)
-    
+
 
 @full_text_search
 @Label.model
@@ -156,9 +156,7 @@ class CPE(Document):
     @classmethod
     def _reset_caches(cls, cpe_id: int):
         try:
-            del cls._id_cache[
-                str(cpe_id),
-            ]
+            del cls._id_cache[str(cpe_id),]
         except KeyError:
             pass
 

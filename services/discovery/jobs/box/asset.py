@@ -1071,7 +1071,9 @@ class AssetCheck(DiscoveryCheck):
         return f"NOC{base64.b32encode(h.digest())[:7].decode('utf-8')}"
 
     @staticmethod
-    def get_name(obj: Object, managed_object: Optional[Any] = None, cpe_name: Optional[str] = None) -> str:
+    def get_name(
+        obj: Object, managed_object: Optional[Any] = None, cpe_name: Optional[str] = None
+    ) -> str:
         """
         Generate discovered object's name
         """

@@ -97,10 +97,11 @@ Ext.define("NOC.inv.cpeprofile.Application", {
                 },
                 {
                     name: "shape_title_template",
-                    xtype: "textfield",
+                    xtype: "textarea",
+                    maxLength: 250,
                     fieldLabel: __("Shape Name template"),
                     allowBlank: true,
-                    uiStyle: "large"
+                    width: 650,
                 }
             ]
         },
