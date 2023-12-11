@@ -73,7 +73,7 @@ Ext.define("NOC.inv.inv.plugins.metric.MetricPanel", {
                 });
                 if(!Ext.isEmpty(record.get("thresholds"))) {
                   Ext.each(record.get("thresholds"), function(threshold) {
-                    result += "<div class='noc-metric-tick' style='left: " + (threshold.value - record.get("min_value")) / percent + "%'></div>";
+                    result += "<div class='noc-metric-tick' data-qtip='" + threshold.value + " : " + threshold.description + "' style='left: " + (threshold.value - record.get("min_value")) / percent + "%'></div>";
                   });
                 }
                 result += "</div>";

@@ -678,15 +678,15 @@ table {
 .noc-metric-value {
     position: relative;
     width: 1px;
-    height: 4px; 
-    margin-top: 9px;
+    height: 7px; 
+    margin-top: 6px;
     background: black;
 }
 
 .noc-metric-value::before {
     display: block;
     content: attr(data-value);
-    transform: translate(-50%, -100%);
+    transform: translate(120%, -70%);
 }
 
 .noc-metric-range {
