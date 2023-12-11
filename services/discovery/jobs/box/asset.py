@@ -1,7 +1,7 @@
 # ---------------------------------------------------------------------
 # Asset check
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2020 The NOC Project
+# Copyright (C) 2007-2023 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -29,6 +29,7 @@ from noc.inv.models.modelmapping import ModelMapping
 from noc.inv.models.error import ConnectionError
 from noc.inv.models.sensor import Sensor
 from noc.inv.models.sensorprofile import SensorProfile
+from noc.inv.models.cpe import CPE
 from noc.pm.models.measurementunits import MeasurementUnits, DEFAULT_UNITS_NAME
 from noc.core.text import str_dict
 from noc.core.comp import smart_bytes
@@ -81,6 +82,8 @@ class AssetCheck(DiscoveryCheck):
         self.generic_vendor = Vendor.get_by_code("GENERIC")
         self.noname_vendor = Vendor.get_by_code("NONAME")
         self.generic_models: List[str] = self.get_generic_models()
+        # CPEs
+        self.cpes: Dict[str, Tuple[str, str, str, str, str]] = self.load_cpe()
         #
         self.object_param_artifacts: Dict[str, List[Dict[str, Any]]] = {}  # oid: [Data]
 
@@ -106,6 +109,7 @@ class AssetCheck(DiscoveryCheck):
                 sa_data=o.get("data"),
                 param_data=o.get("param_data"),
             )
+            # cpe_objects
         # Assign stack members
         self.submit_stack_members()
         #
@@ -116,6 +120,17 @@ class AssetCheck(DiscoveryCheck):
         self.disconnect_connections()
         #
         self.sync_sensors()
+        #
+        self.logger.info("CPE Processed: %s", len(self.cpes))
+        for cpe_id, (_, _, vendor, model, sn) in self.cpes.items():
+            self.submit(
+                o_type="CHASSIS",
+                number="0",
+                vendor=vendor,
+                part_no=[model],
+                serial=sn,
+                cpe_id=cpe_id,
+            )
         #
         self.set_artefact("object_param_artifacts", self.object_param_artifacts)
 
@@ -133,6 +148,7 @@ class AssetCheck(DiscoveryCheck):
         sensors: List[Dict[str, Any]] = None,
         sa_data: List[Dict[str, Any]] = None,
         param_data: List[Dict[str, Any]] = None,
+        cpe_id: Optional[str] = None,
     ):
         # Check the vendor and the serial are sane
         # OEM transceivers return binary trash often
@@ -175,7 +191,7 @@ class AssetCheck(DiscoveryCheck):
         vnd = self.get_vendor(vendor, o_type)
         if not vnd:
             # Try to resolve via model map
-            m = self.get_model_map(vendor, part_no, serial)
+            m = self.get_model_map(vendor, part_no, serial, cpe_id)
             if not m:
                 self.logger.error(
                     "Unknown vendor '%s' for S/N %s (%s)", vendor, serial, description
@@ -186,11 +202,11 @@ class AssetCheck(DiscoveryCheck):
             m = ObjectModel.get_model(vnd, part_no)
             if not m:
                 # Try to resolve via model map
-                m = self.get_model_map(vendor, part_no, serial)
+                m = self.get_model_map(vendor, part_no, serial, cpe_id)
                 if not m:
                     if o_type == "XCVR":
                         self.logger.info(
-                            "Unknown model: vendor=%s, part_no=%s (%s). " "Try resolve later",
+                            "Unknown model: vendor=%s, part_no=%s (%s). Try resolve later",
                             vnd.name,
                             part_no,
                             description,
@@ -201,10 +217,9 @@ class AssetCheck(DiscoveryCheck):
                             ("XCVR", part_no[0], self.ctx.copy(), serial, data, constant_data)
                         ]
                         return
-
                     else:
                         self.logger.info(
-                            "Unknown model: vendor=%s, part_no=%s (%s). " "Skipping",
+                            "Unknown model: vendor=%s, part_no=%s (%s). Skipping...",
                             vnd.name,
                             part_no,
                             description,
@@ -221,7 +236,7 @@ class AssetCheck(DiscoveryCheck):
             o_type = m.cr_context
         if not o_type:
             self.logger.info(
-                "Cannot resolve type for: vendor=%s, part_no=%s (%s). " "Skipping",
+                "Cannot resolve type for: vendor=%s, part_no=%s (%s). Skipping...",
                 vnd.name,
                 description,
                 part_no,
@@ -244,7 +259,10 @@ class AssetCheck(DiscoveryCheck):
         if not o:
             # Create new object
             self.logger.info("Creating new object. model='%s', serial='%s'", m.name, serial)
-            o_data = [ObjectAttr(scope="", interface="asset", attr="serial", value=serial)]
+            o_data = [
+                ObjectAttr(scope="", interface="asset", attr="part_no", value=[part_no]),
+                ObjectAttr(scope="", interface="asset", attr="serial", value=serial),
+            ]
             if revision:
                 o_data += [ObjectAttr(scope="", interface="asset", attr="revision", value=revision)]
             if mfg_date:
@@ -316,7 +334,7 @@ class AssetCheck(DiscoveryCheck):
                 op="CHANGE",
             )
         # Check management
-        if o.get_data("management", "managed"):
+        if o.get_data("management", "managed") and not cpe_id:
             if o.get_data("management", "managed_object") != self.object.id:
                 self.logger.info("Changing object management to '%s'", self.object.name)
                 o.set_data("management", "managed_object", self.object.id)
@@ -330,6 +348,19 @@ class AssetCheck(DiscoveryCheck):
             self.update_name(o)
             if o.id in self.managed:
                 self.managed.remove(o.id)
+        # Check CPE
+        if o.get_data("cpe", "cpe"):
+            if o.get_data("cpe", "cpe_id") != cpe_id:
+                self.logger.info("Changing object CPE to '%s'", cpe_id)  # Global_id
+                o.set_data("cpe", "cpe_id", cpe_id)
+                o.save()
+                o.log(
+                    "CPE granted",
+                    system="DISCOVERY",
+                    managed_object=self.object,
+                    op="CHANGE",
+                )
+            self.update_name(o, cpe_id)
         self.objects += [(o_type, o, self.ctx.copy(), serial, data, constant_data)]
         # Collect sensors
         if sensors:
@@ -424,8 +455,11 @@ class AssetCheck(DiscoveryCheck):
             if reset_scopes:
                 self.reset_context(reset_scopes)
 
-    def update_name(self, obj: Object):
-        n = self.get_name(obj, self.object)
+    def update_name(self, obj: Object, cpe_id: Optional[str] = None):
+        cpe = None
+        if cpe_id:
+            cpe = self.cpes[cpe_id][0]
+        n = self.get_name(obj, self.object, cpe)
         if n and n != obj.name:
             obj.name = n
             self.logger.info("Changing name to '%s'", n)
@@ -925,7 +959,7 @@ class AssetCheck(DiscoveryCheck):
 
         if not model:
             self.logger.info("Unknown model '%s' registering unknown model", m)
-            self.register_unknown_part_no(self.get_vendor("NONAME"), m, "%s -> %s" % (name, m))
+            self.register_unknown_part_no(self.get_vendor("NONAME"), m, f"{name} -> {m}")
             return None
         o = Object.objects.filter(
             model=model, data__match={"interface": "asset", "attr": "serial", "value": serial}
@@ -954,7 +988,11 @@ class AssetCheck(DiscoveryCheck):
         return o
 
     def get_model_map(
-        self, vendor: str, part_no: Union[List[str], str], serial: Optional[str]
+        self,
+        vendor: str,
+        part_no: Union[List[str], str],
+        serial: Optional[str],
+        cpe_id: Optional[str] = None,
     ) -> Optional["ObjectModel"]:
         """
         Try to resolve using model map
@@ -962,7 +1000,7 @@ class AssetCheck(DiscoveryCheck):
         # Process list of part no
         if isinstance(part_no, list):
             for p in part_no:
-                m = self.get_model_map(vendor, p, serial)
+                m = self.get_model_map(vendor, p, serial, cpe_id)
                 if m:
                     return m
             return None
@@ -970,11 +1008,17 @@ class AssetCheck(DiscoveryCheck):
             if mm.part_no and mm.part_no != part_no:
                 continue
             if mm.from_serial and mm.to_serial:
-                if mm.from_serial <= serial and serial <= mm.to_serial:
+                # if mm.from_serial <= serial and serial <= mm.to_serial:
+                if mm.from_serial >= serial <= mm.to_serial:
                     return mm.model
             else:
                 self.logger.debug("Mapping %s %s %s to %s", vendor, part_no, serial, mm.model.name)
                 return mm.model
+        if cpe_id:
+            # Try Resolve by Generic Model
+            m = f"Generic | CPE | {self.cpes[cpe_id][1].upper()}"
+            self.logger.debug("Try Resolve by Generic CPE model: %s", m)
+            return ObjectModel.get_by_name(m)
         return None
 
     def get_lost_and_found(self, object):
@@ -997,6 +1041,25 @@ class AssetCheck(DiscoveryCheck):
             )
         ]
 
+    def load_cpe(self) -> Dict[str, Tuple[str, str, str, str, str]]:
+        """
+        Load CPE from CPE Discovery Artefacts
+        """
+        r = {}
+        for cpe in CPE.objects.filter(controller=self.object.id):
+            # Sync Asset
+            caps = cpe.get_caps()
+            if not cpe.profile.sync_asset or not caps.get("CPE | Model"):
+                continue
+            r[str(cpe.id)] = (
+                str(cpe),
+                str(cpe.type),
+                caps.get("CPE | Vendor"),
+                caps.get("CPE | Model"),
+                caps.get("CPE | Serial Number") or cpe.global_id,
+            )
+        return r
+
     def generate_serial(self, model: ObjectModel, number: Optional[str]) -> str:
         """
         Generate virtual serial number
@@ -1008,12 +1071,16 @@ class AssetCheck(DiscoveryCheck):
         return f"NOC{base64.b32encode(h.digest())[:7].decode('utf-8')}"
 
     @staticmethod
-    def get_name(obj: Object, managed_object: Optional[Any] = None) -> str:
+    def get_name(
+        obj: Object, managed_object: Optional[Any] = None, cpe_name: Optional[str] = None
+    ) -> str:
         """
         Generate discovered object's name
         """
         name = None
-        if managed_object:
+        if cpe_name:
+            name = cpe_name
+        elif managed_object:
             name = managed_object.name
             sm = obj.get_data("stack", "member")
             if sm is not None:

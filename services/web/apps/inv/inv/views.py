@@ -15,6 +15,7 @@ from noc.services.web.base.extapplication import ExtApplication, view
 from noc.inv.models.object import Object
 from noc.inv.models.error import ConnectionError
 from noc.inv.models.objectmodel import ObjectModel
+from noc.inv.models.configuredmap import ConfiguredMap
 from noc.core.validators import is_objectid
 from noc.sa.interfaces.base import (
     StringParameter,
@@ -518,3 +519,27 @@ class InvApplication(ExtApplication):
                     "slot": rd.connection,
                 }
         return cs
+
+    @view(url=r"^(?P<oid>[0-9a-f]{24})/map_lookup/$", method=["GET"], access="read", api=True)
+    def api_map_lookup(self, request, oid):
+        o: Object = self.get_object_or_404(Object, id=oid)
+        if not o.get_data("container", "container"):
+            return []
+        r = [
+            {
+                "id": str(o.id),
+                "label": _("ManagedObject Container: ") + str(o.name),
+                "is_default": True,
+                "args": ["objectcontainer", str(o.id), str(o.id)],
+            }
+        ]
+        for cm in ConfiguredMap.objects.filter(nodes__object_filter__container=oid):
+            r += [
+                {
+                    "id": str(cm.id),
+                    "label": _("Configured Map Container: ") + str(o.name),
+                    "is_default": False,
+                    "args": ["configured", str(cm.id)],
+                }
+            ]
+        return r

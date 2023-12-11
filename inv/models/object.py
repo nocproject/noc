@@ -41,6 +41,7 @@ from noc.core.defer import call_later
 from noc.core.model.decorator import on_save, on_delete_check
 from noc.core.bi.decorator import bi_sync
 from noc.core.change.decorator import change
+from noc.core.topology.types import TopologyNode
 from noc.main.models.remotesystem import RemoteSystem
 from noc.main.models.label import Label
 from noc.core.comp import smart_text
@@ -366,13 +367,15 @@ class Object(Document):
 
     def get_data(self, interface: str, key: str, scope: Optional[str] = None) -> Any:
         attr = ModelInterface.get_interface_attr(interface, key)
-        if attr.is_const:
-            # Lookup model
-            return self.model.get_data(interface, key)
         for item in self.data:
             if item.interface == interface and item.attr == key:
                 if not scope or item.scope == scope:
                     return item.value
+        if attr.is_const:
+            # Lookup model
+            v = self.model.get_data(interface, key)
+            if v is not None:
+                return v
         return None
 
     def get_data_dict(
@@ -1003,6 +1006,17 @@ class Object(Document):
             data__match={"interface": "management", "attr": "managed_object", "value": mo}
         ).read_preference(ReadPreference.SECONDARY_PREFERRED)
 
+    @classmethod
+    def get_cpe(cls, cpe) -> Optional["Object"]:
+        """
+        Get Object CPE by cpe
+        """
+        if hasattr(cpe, "id"):
+            cpe = str(cpe.id)
+        return cls.objects.filter(
+            data__match={"interface": "cpe", "attr": "cpe_id", "value": cpe}
+        ).read_preference(ReadPreference.SECONDARY_PREFERRED)
+
     def iter_managed_object_id(self) -> Iterator[int]:
         for d in Object._get_collection().aggregate(
             [
@@ -1204,6 +1218,19 @@ class Object(Document):
         if agent:
             agent = Agent.get_by_id(agent)
         return agent
+
+    def get_topology_node(self) -> "TopologyNode":
+        return TopologyNode(
+            id=str(self.id),
+            type="container",
+            resource_id=str(self.id),
+            title=self.name,
+            title_metric_template="",
+            stencil="Juniper/cloud",
+            overlays=[],
+            level=10,
+            attrs={},
+        )
 
 
 signals.pre_delete.connect(Object.detach_children, sender=Object)

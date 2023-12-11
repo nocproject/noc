@@ -25,8 +25,14 @@ Ext.define("NOC.inv.cpe.Model", {
             persist: false
         },
         {
+            name: "label",
+            type: "string",
+            persist: false
+        },
+        {
             name: "global_id",
-            type: "string"
+            type: "string",
+            persist: false
         },
         {
             name: "local_id",

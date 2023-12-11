@@ -24,6 +24,7 @@ from noc.inv.models.discoveryid import DiscoveryID
 from noc.inv.models.mapsettings import MapSettings
 from noc.inv.models.link import Link
 from noc.inv.models.resourcegroup import ResourceGroup
+from noc.inv.models.cpe import CPE
 from noc.sa.models.managedobject import ManagedObject
 from noc.sa.interfaces.base import (
     ListOfParameter,
@@ -255,6 +256,21 @@ class MapApplication(ExtApplication):
             ]
         return r
 
+    def inspector_cpe(self, request, id, cpe_id):
+        cpe: "CPE" = self.get_object_or_404(CPE, id=cpe_id)
+        caps = cpe.get_caps()
+        r = {
+            "id": str(cpe.id),
+            "name": str(cpe),
+            "description": cpe.description,
+            "address": cpe.address,
+            "platform": caps.get("CPE | Model"),
+            # "external": object.segment.id != segment.id,
+            # "external_segment": {"id": str(object.segment.id), "name": object.segment.name},
+            "caps": caps,
+        }
+        return r
+
     @view(
         url=r"^info/(?P<inspector>\w+)/(?P<gen_id>[0-9a-f]{24}|\d+)/(?P<r_id>([0-9a-f]{24}|\d+))/$",
         method=["GET"],
@@ -415,6 +431,7 @@ class MapApplication(ExtApplication):
         nid = {}
         metrics_template: Dict[str, str] = {}
         group_nodes = {}  # (segment, group)
+        cpes = set()
         # Build id -> object_id mapping
         for o in nodes:
             if o["node_type"] == "managedobject":
@@ -424,6 +441,8 @@ class MapApplication(ExtApplication):
                 group_nodes[("", o["node_id"])] = o["id"]
             elif o["node_type"] == "objectsegment":
                 group_nodes[(o["node_id"], "")] = o["id"]
+            elif o["node_type"] == "cpe":
+                cpes.add(o["node_id"])
             elif o["node_type"] == "other" and o.get("object_filter"):
                 group_nodes[
                     (
@@ -504,6 +523,14 @@ class MapApplication(ExtApplication):
                 r[str(o)]["status_code"] = self.ST_ALARM
             else:
                 r[str(o)]["status_code"] = self.ST_OK
+        # CPE
+        for cpe in CPE.objects.filter(id__in=list(cpes)):
+            if cpe.oper_status is None:
+                r[str(cpe.id)]["status_code"] = self.ST_UNKNOWN
+            elif not cpe.oper_status:
+                r[str(cpe.id)]["status_code"] = self.ST_ALARM
+            else:
+                r[str(cpe.id)]["status_code"] = self.ST_OK
         return r
 
     @classmethod

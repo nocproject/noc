@@ -27,6 +27,7 @@ from mongoengine.fields import (
 
 # NOC modules
 from noc.core.model.decorator import on_delete_check
+from noc.core.stencil import stencil_registry
 from noc.core.bi.decorator import bi_sync
 from noc.core.change.decorator import change
 from noc.core.mongo.fields import PlainReferenceField, ForeignKeyField
@@ -94,6 +95,9 @@ class CPEProfile(Document):
         Workflow, default=partial(Workflow.get_default_workflow, "inv.SensorProfile")
     )
     style = ForeignKeyField(Style)
+    # Stencils
+    shape = StringField(required=False, null=True, choices=stencil_registry.choices, max_length=128)
+    shape_title_template = StringField(max_length=256, required=False, null=True)
     # Sync CPE with Inventory Object
     sync_asset = BooleanField(default=False)
     # Sync CPE with ManagedObject

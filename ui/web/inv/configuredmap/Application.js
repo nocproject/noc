@@ -194,6 +194,8 @@ Ext.define("NOC.inv.configuredmap.Application", {
                                                 ["objectgroup", "Group"],
                                                 ["objectsegment", "Segment"],
                                                 ["managedobject", "Managed Object"],
+                                                ["container", "Container"],
+                                                ["cpe", "CPE"],
                                                 ["other", "Other"]
                                             ],
                                             listeners: {
@@ -238,6 +240,17 @@ Ext.define("NOC.inv.configuredmap.Application", {
                                                     disabled: true,
                                                     width: 200,
                                                     renderer: NOC.render.Lookup("managed_object"),
+                                                },
+                                                {
+                                                    name: "container",
+                                                    xtype: "noc.core.combotree",
+                                                    restUrl: "/inv/container/",
+                                                    uiStyle: "medium-combo",
+                                                    fieldLabel: __("Container"),
+                                                    labelAlign: "top",
+                                                    tabIndex: 220,
+                                                    allowBlank: true,
+                                                    renderer: NOC.render.Lookup("container"),
                                                 },
                                                 {
                                                     name: "add_nested",
@@ -399,7 +412,7 @@ Ext.define("NOC.inv.configuredmap.Application", {
     onChangeType: function(field, value) {
         var me = this, field_name;
         Ext.Array.each(
-          me.up().query('[name/="resource_group|segment|managed_object"]'),
+          me.up().query('[name/="resource_group|segment|managed_object|container"]'),
           function(field) {
               field.setDisabled(value !== "other");
               field.setValue(null);
@@ -413,6 +426,9 @@ Ext.define("NOC.inv.configuredmap.Application", {
                 break;
             case "managedobject":
                 field_name = "managed_object";
+                break;
+            case "container":
+                field_name = "container";
                 break;
         }
         if(field_name) {

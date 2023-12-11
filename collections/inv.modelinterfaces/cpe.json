@@ -1,0 +1,22 @@
+{
+    "name": "cpe",
+    "$collection": "inv.modelinterfaces",
+    "uuid": "c36fe981-0c5b-4439-8819-5eafcbdf9036",
+    "description": "CPE (Customer-premises equipment) binding",
+    "attrs": [
+        {
+            "name": "cpe",
+            "type": "bool",
+            "description": "Object can be bind to the CPE",
+            "required": false,
+            "is_const": true
+        },
+        {
+            "name": "cpe_id",
+            "type": "objectid",
+            "description": "CPE id",
+            "required": false,
+            "is_const": false
+        }
+    ]
+}
