@@ -64,21 +64,19 @@ Ext.define("NOC.inv.inv.plugins.metric.MetricPanel", {
                   percent = (Math.abs(record.get("max_value")) + Math.abs(record.get("min_value"))) / 100;
 
                 result += "<div data-value='" + value + "' class='noc-metric-value' style='left:" + (value - record.get("min_value")) / percent + "%'></div>";
-                result += "<div class='noc-metric-range-container'>";
+                result += "<div class='noc-metric-container'>";
                 result += "<div class='noc-metric-range noc-metric-green-range'></div>";
                 Ext.each(record.get("ranges"), function(range) {
                   var start = (range.left - record.get("min_value")) / percent,
                     end = (range.right - record.get("min_value")) / percent;
                   result += "<div class='noc-metric-range' style='left: " + start + "%; width: " + (end - start) + "%; background: " + range.color + ";'></div>";
                 });
-                result += "</div>";
                 if(!Ext.isEmpty(record.get("thresholds"))) {
-                  result += "<div class='noc-metric-ticks-container'>";
                   Ext.each(record.get("thresholds"), function(threshold) {
                     result += "<div class='noc-metric-tick' style='left: " + (threshold.value - record.get("min_value")) / percent + "%'></div>";
                   });
-                  result += "</div>";
                 }
+                result += "</div>";
                 return result;
               },
             },
