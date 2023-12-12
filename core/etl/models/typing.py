@@ -27,4 +27,4 @@ class Reference(Generic[T]):
 
     @classmethod
     def validate(cls, v, field: FieldInfo):
-        return v
+        return str(v)
