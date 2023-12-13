@@ -23,6 +23,7 @@ Ext.define('NOC.sa.managedobject.form.View', {
         'NOC.core.ComboBox',
         'NOC.core.InlineGrid',
         'NOC.core.InlineModelStore',
+        'NOC.core.PasswordField',
         'NOC.core.StateField',
         'NOC.sa.managedobject.AttributesModel',
         'NOC.sa.managedobject.CapabilitiesModel',
@@ -492,26 +493,10 @@ Ext.define('NOC.sa.managedobject.form.View', {
                                     groupEdit: true
                                 },
                                 {
-                                    name: "snmp_ro",
-                                    xtype: "password",
-                                    fieldLabel: __("RO Community"),
-                                    tabIndex: 280,
-                                    allowBlank: true,
-                                    groupEdit: true
-                                },
-                                {
-                                    name: "snmp_rw",
-                                    xtype: "password",
-                                    fieldLabel: __("RW Community"),
-                                    tabIndex: 290,
-                                    allowBlank: true,
-                                    groupEdit: true
-                                },
-                                {
                                     name: "max_scripts",
                                     xtype: "numberfield",
                                     fieldLabel: __("Max. Scripts"),
-                                    tabIndex: 300,
+                                    tabIndex: 280,
                                     allowBlank: true,
                                     hideTrigger: true,
                                     minValue: 0,
@@ -522,7 +507,7 @@ Ext.define('NOC.sa.managedobject.form.View', {
                                     name: "snmp_rate_limit",
                                     xtype: "numberfield",
                                     fieldLabel: __("SNMP Rate limit"),
-                                    tabIndex: 310,
+                                    tabIndex: 290,
                                     tooltip: __(
                                         'Limit SNMP (Query per second).'
                                     ),
@@ -541,7 +526,7 @@ Ext.define('NOC.sa.managedobject.form.View', {
                                     restUrl: "/main/timepattern/lookup/",
                                     uiStyle: "medium-combo",
                                     fieldLabel: __("Time Pattern"),
-                                    tabIndex: 320,
+                                    tabIndex: 300,
                                     tooltip: __(
                                         'Use this field if you want disable ping check on specified time.<br/> ' +
                                         ' Main -> Setup -> Time Patterns'
@@ -551,6 +536,151 @@ Ext.define('NOC.sa.managedobject.form.View', {
                                     listeners: {
                                         render: 'addTooltip'
                                     }
+                                }
+                            ]
+                        }
+                    ]
+                },
+                {
+                    xtype: "fieldset",
+                    title: __("SNMP"),
+                    layout: "column",
+                    defaults: this.fieldSetDefaults,
+                    collapsible: true,
+                    items: [
+                        {
+                            items: [
+                                {
+                                    name: "snmp_security_level",
+                                    xtype: "combobox",
+                                    fieldLabel: __("Security Level"),
+                                    tabIndex: 305,
+                                    groupEdit: true,
+                                    store: [
+                                        ["Community", "Community"],
+                                        ["noAuthNoPriv", "No Auth No Priv"],
+                                        ["authNoPriv", "Auth No Priv"],
+                                        ["authPriv", "Auth Priv"]
+                                    ],
+                                    queryMode: "local",
+                                    value: "Community",
+                                    listeners: {
+                                        change: "onChangeSNMP_SecurityLevel"
+                                    }
+                                },
+                                {
+                                    name: "snmp_ro",
+                                    xtype: "password",
+                                    fieldLabel: __("RO Community"),
+                                    tabIndex: 310,
+                                    readOnlyCls: 'x-item-disabled',
+                                    allowBlank: true,
+                                    groupEdit: true
+                                },
+                                {
+                                    name: "snmp_rw",
+                                    xtype: "password",
+                                    fieldLabel: __("RW Community"),
+                                    tabIndex: 320,
+                                    readOnlyCls: 'x-item-disabled',
+                                    allowBlank: true,
+                                    groupEdit: true
+                                }
+                            ]
+                        },
+                        {
+                            items: [
+                                {
+                                    name: "snmp_username",
+                                    xtype: "textfield",
+                                    fieldLabel: __("Username"),
+                                    tabIndex: 322,
+                                    readOnlyCls: 'x-item-disabled',
+                                    allowBlank: true,
+                                    groupEdit: true
+                                },
+                                {
+                                    name: "snmp_ctx_name",
+                                    xtype: "textfield",
+                                    fieldLabel: __("Context Name"),
+                                    tabIndex: 324,
+                                    readOnlyCls: 'x-item-disabled',
+                                    allowBlank: true,
+                                    groupEdit: true
+                                },
+                                {
+                                    xtype: "fieldcontainer",
+                                    itemId: "snmp_auth_proto",
+                                    fieldLabel: __("Auth Proto"),
+                                    visible: false,
+                                    defaultType: "radiofield",
+                                    defaults: {
+                                        flex: 1
+                                    },
+                                    layout: "hbox",
+                                    items: [
+                                        {
+                                            boxLabel: 'MD5',
+                                            tabIndex: 325,
+                                            groupEdit: true,
+                                            name: 'snmp_auth_proto',
+                                            padding: "0 5",
+                                            inputValue: "MD5",
+                                        },
+                                        {
+                                            boxLabel: "SHA",
+                                            tabIndex: 326,
+                                            groupEdit: true,
+                                            name: 'snmp_auth_proto',
+                                            inputValue: "SHA",
+                                        }
+                                    ]
+                                },
+                                {
+                                    xtype: "password",
+                                    fieldLabel: __("Auth Key"),
+                                    tabIndex: 327,
+                                    visible: false,
+                                    name: "snmp_auth_key",
+                                    allowBlank: true,
+                                    groupEdit: true
+                                },
+                                {
+                                    xtype: "fieldcontainer",
+                                    itemId: "snmp_priv_proto",
+                                    fieldLabel: __("Priv Proto"),
+                                    visible: false,
+                                    defaultType: "radiofield",
+                                    defaults: {
+                                        flex: 1
+                                    },
+                                    layout: "hbox",
+                                    items: [
+                                        {
+                                            boxLabel: "DES",
+                                            tabIndex: 328,
+                                            groupEdit: true,
+                                            name: 'snmp_priv_proto',
+                                            padding: "0 5",
+                                            inputValue: "DES",
+                                        },
+                                        {
+                                            boxLabel: "AES",
+                                            tabIndex: 329,
+                                            groupEdit: true,
+                                            name: 'snmp_priv_proto',
+                                            inputValue: "AES",
+                                        }
+                                    ]
+                                },
+                                {
+                                    xtype: "password",
+                                    fieldLabel: __("Priv Key"),
+                                    tabIndex: 330,
+                                    visible: false,
+                                    name: "snmp_priv_key",
+                                    allowBlank: true,
+                                    groupEdit: true
                                 }
                             ]
                         }
@@ -571,7 +701,7 @@ Ext.define('NOC.sa.managedobject.form.View', {
                                     restUrl: "/sa/administrativedomain/",
                                     uiStyle: "medium-combo",
                                     fieldLabel: __("Administrative Domain"),
-                                    tabIndex: 330,
+                                    tabIndex: 335,
                                     tooltip: __(
                                         "Use for setup User permission on Object. <br/>" +
                                         "Place on Service Activaton -> Setup -> Administrative Domain.<br/>" +
