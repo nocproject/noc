@@ -10,6 +10,7 @@ nav:
   - Home: index.md
   - Installation:
       - Overview: installation-guide/index.md
+      - Using Gufo Thor: installation-guide/install-using-gufo-thor.md
   - Guides:
       - Overview: sections-overview/guides.md
       - Quickstart: quickstart-guide/index.md
@@ -521,6 +522,7 @@ nav:
           - Managed Object Version Changed: mx-messages-reference/version_changed.md
       - Technologies: technologies-reference/index.md
       - Services:
+          - Overview: services-reference/index.md
           - activator: services-reference/activator.md
           - bi: services-reference/bi.md
           - card: services-reference/card.md
@@ -1094,6 +1096,7 @@ theme:
   logo: assets/logo.svg
   custom_dir: docs/overrides
   features:
+    - content.action.edit
     - navigation.tabs
     - navigation.tabs.sticky
     # - navigation.path
