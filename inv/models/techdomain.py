@@ -14,7 +14,7 @@ import operator
 from bson import ObjectId
 import cachetools
 from mongoengine.document import Document, EmbeddedDocument
-from mongoengine.fields import StringField, LongField, ListDocumentField, UUIDField
+from mongoengine.fields import StringField, LongField, EmbeddedDocumentListField, UUIDField
 
 # NOC modules
 from noc.core.model.decorator import on_delete_check
@@ -78,7 +78,7 @@ class TechDomain(Document):
     code = StringField(unique=True)
     uuid = UUIDField(binary=True)
     description = StringField()
-    discriminators = ListDocumentField(DiscriminatorItem)
+    discriminators = EmbeddedDocumentListField(DiscriminatorItem)
     # Object id in BI
     bi_id = LongField(unique=True)
 
