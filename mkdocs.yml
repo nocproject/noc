@@ -1167,6 +1167,8 @@ plugins:
           name: Русский
           build: true
           nav_translations:
+            Installation: Установка
+            Using Gufo Thor: Используя Gufo Thor
             Overview: Обзор
             External Storage: Внешнее хранилище
             Interface: Интерфейс
