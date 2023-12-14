@@ -73,35 +73,75 @@ class Command(BaseCommand):
         return res
 
     wav_patterns = [
-        re.compile(r"(?P<rx>\d+) rx (?P<tx>\d+) tx"),
-        re.compile(r"(?P<tx>\d+) tx (?P<rx>\d+) rx"),
-        re.compile(r"rx (?P<rx>\d+) tx (?P<tx>\d+)"),
-        re.compile(r"tx/rx: (?P<tx>\d+)/(?P<rx>\d+)nm"),
-        re.compile(r"rx-(?P<rx>\d+)/tx-(?P<tx>\d+)"),
-        re.compile(r"rx(?P<rx>\d+)/tx(?P<tx>\d+)"),
-        re.compile(r"tx(?P<tx>\d+)/rx(?P<rx>\d+)"),
-        re.compile(r"(?P<tx>\d+)-tx/(?P<rx>\d+)-rx"),
-        re.compile(r"(?P<tx>\d+)nm-tx/(?P<rx>\d+)nm-rx"),
+        re.compile(r"(?:\s|^)(?P<rx>\d+)\s+rx\s+(?P<tx>\d+)\s+tx(?:\s|$)"),
+        re.compile(r"(?:\s|^)(?P<tx>\d+)\s+tx\s+(?P<rx>\d+)\s+rx(?:\s|$)"),
+        re.compile(r"(?:\s|^)rx (?P<rx>\d+) tx (?P<tx>\d+)(?:\s|$)"),
+        re.compile(r"(?:\s|^)tx/rx: (?P<tx>\d+)/(?P<rx>\d+)nm(?:\s|$)"),
 
-        re.compile(r"wavelength: (?P<tx>\d+)-(?P<rx>\d+) nm"),
-        re.compile(r"wavelength:(?P<tx>\d+) nm"),
+        re.compile(r"(?:\s|^)rx-(?P<rx>\d+)/tx-(?P<tx>\d+)(?:\s|$)"),
+        re.compile(r"(?:\s|^)tx-(?P<tx>\d+)/rx-(?P<rx>\d+)(?:\s|$)"),
+        
+        re.compile(r"(?:\s|^)rx(?P<rx>\d+)/tx(?P<tx>\d+)(?:\s|$)"),
+        re.compile(r"(?:\s|^)tx(?P<tx>\d+)/rx(?P<rx>\d+)(?:\s|$)"),
+        re.compile(r"(?:\s|^)(?P<tx>\d+)-tx/(?P<rx>\d+)-rx(?:\s|$)"),
+        re.compile(r"(?:\s|^)(?P<tx>\d+)nm-tx/(?P<rx>\d+)nm-rx(?:\s|$)"),
 
-        re.compile(r"(?P<txrx>\d+) txrx"),
-        re.compile(r"tx (?P<tx>\d+)"),
-        re.compile(r"rx (?P<rx>\d+)"),
+        re.compile(r"(?:\s|^)wavelength: (?P<tx>\d+)-(?P<rx>\d+) nm(?:\s|$)"),
+        re.compile(r"(?:\s|^)wavelength:(?P<tx>\d+) nm(?:\s|$)"),
 
-        re.compile(r"(?P<tx>\d+)nm"),
-        re.compile(r"(?P<tx>\d+) nm"),
+        re.compile(r"(?:\s|^)(?P<txrx>\d+) txrx(?:\s|$)"),
+        re.compile(r"(?:\s|^)tx (?P<tx>\d+)(?:\s|$)"),
+        re.compile(r"(?:\s|^)rx (?P<rx>\d+)(?:\s|$)"),
+
+        re.compile(r"(?:\s|^)(?P<tx>\d+)nm(?:\s|$)"),
+        re.compile(r"(?:\s|^)(?P<tx>\d+)-nm(?:\s|$)"),
+        re.compile(r"(?:\s|^)(?P<tx>\d+) nm(?:\s|$)"),
+        re.compile(r"(?:\s|^)(?P<tx>1310)(?:\s|$)"),
+        re.compile(r"(?:\s|^)(?P<tx>1550)(?:\s|$)"),
+        re.compile(r"(?:\s|^)(?P<tx>1\d{3})(?:\s|$)"),
     ]
 
     dist_patterns = [
-        re.compile(r"\s(?P<km>\d+)km\s"),
-        re.compile(r"^(?P<km>\d+)km\s"),
-        re.compile(r"\s(?P<km>\d+)km$"),
+        re.compile(r"(?::|;|\s|^)(?P<km>\d+)km(?::|;|\s|$)"),
 
-        re.compile(r"\s(?P<m>\d+)m\s"),
-        re.compile(r"^(?P<m>\d+)m\s"),
-        re.compile(r"\s(?P<m>\d+)m$"),
+        re.compile(r"(?::|;|\s|^)(?P<km>\d+)\s+km(?::|;|\s|$)"),
+
+        re.compile(r"(?::|;|\s|^)(?P<m>\d+)m(?::|;|\s|$)"),
+        re.compile(r"(?::|;|\s|^)(?P<m>\d+)\s+meter(?::|;|\s|$)"),
+
+        re.compile(r"(?::|;|\s|^)(?P<m>\d+)\s+m(?::|;|\s|$)"),
+    ]
+
+    connector_patterns = [
+        re.compile(r"(?:\s|^)(?P<connector>lc)(?:\s|$)"),
+        re.compile(r"(?:\s|^)(?P<connector>sc)(?:\s|$)"),
+    ]
+
+    transceiver_patterns = [
+        re.compile(r"(?:\s|^)10gbase-(?P<ttype10g>cr|sr|srl|lr|lrm|cx4|lx4|er|zr)(?:/|\s|$)"),
+        re.compile(r"(?:\s|^)sfp\+\s+(?P<ttype10g>cr|sr|srl|lr|lrm|cx4|lx4|er|zr)(?:\s|$)"),
+        re.compile(r"(?:\s|^)10g\s+(?P<ttype10g>cr|sr|srl|lr|lrm|cx4|lx4|er|zr)(?:\s|$)"),
+        re.compile(r"(?:\s|^)xfp\s+(?P<ttype10g>cr|sr|srl|lr|lrm|cx4|lx4|er|zr)(?:\s|$)"),
+
+        re.compile(r"(?:\s|^)1000base-(?P<ttype1g>sx|t)(?:\s|$)"),
+        re.compile(r"(?:\s|^)sfp\s+(?P<ttype1g>sx|t)(?:\s|$)"),
+
+
+        re.compile(r"(?:\s|^)(?P<ttype1g>lh/lx)\s+transceiver(?:\s|$)"),
+    ]
+
+    bidi_patterns = [
+        re.compile(r"(?:\s|^)sfp wdm(?:\s|$)"),
+        re.compile(r"(?:\s|^)sfp\+ wdm(?:\s|$)"),
+        re.compile(r"(?:\s|^)wdm-1g\S+(?:\s|$)"),
+
+        re.compile(r"(?:\s|^)bi-directional(?:\s|$)"),
+        re.compile(r"(?:\s|^)bidirectional(?:\s|$)"),
+        re.compile(r"(?:\s|^)wdm(?:\s|$)"),
+
+        re.compile(r"(?:\s|^)gepon(?:\s|$)"),
+        re.compile(r"(?:\s|^)epon(?:\s|$)"),
+        re.compile(r"(?:\s|^)gpon(?:\s|$)"),
     ]
 
     def handle(self, json_format, profile, metric):
@@ -115,29 +155,67 @@ class Command(BaseCommand):
             self.stdout.write("%s\n" % o)
             self.stdout.write("    %s\n" % description)
 
+            for p in self.connector_patterns:
+                match = p.search(description)
+                if match:
+                    if "connector" in match.groupdict():
+                        self.stdout.write("        CONNECTOR: %s\n" % match.group("connector"))
+
+            for p in self.transceiver_patterns:
+                match = p.search(description)
+                if match:
+                    if "ttype10g" in match.groupdict():
+                        self.stdout.write("        TTYPE10G: %s\n" % match.group("ttype10g"))
+
+                    if "ttype1g" in match.groupdict():
+                        self.stdout.write("        TTYPE1G: %s\n" % match.group("ttype1g"))
+
+            isbidi = False
+            for p in self.bidi_patterns:
+                match = p.search(description)
+                if match:
+                    isbidi = True
+                    break
+
+            tx = 0
+            rx = 0
             for p in self.wav_patterns:
                 match = p.search(description)
                 if match:
-                    if "rx" in match.groupdict():
-                        self.stdout.write("    RX: %s\n" % match.group("rx"))
-                        break
-                    if "tx" in match.groupdict():
-                        self.stdout.write("    TX: %s\n" % match.group("tx"))
-                        break
+                    if not rx and "rx" in match.groupdict():
+                        rx = match.group("rx")
+                        self.stdout.write("        RX: %s\n" % rx)
+                        if tx:
+                            break
+                    if not tx and "tx" in match.groupdict():
+                        tx = match.group("tx")
+                        self.stdout.write("        TX: %s\n" % tx)
+                        if rx:
+                            break
                     if "txrx" in match.groupdict():
-                        self.stdout.write("    TX: %s\n" % match.group("txrx"))
-                        self.stdout.write("    RX: %s\n" % match.group("txrx"))
+                        tx = match.group("txrx")
+                        rx = match.group("txrx")
+                        self.stdout.write("        TX: %s\n" % tx)
+                        self.stdout.write("        RX: %s\n" % rx)
                         break
+
+            # if tx and rx and tx != rx:
+            #     isbidi = True
 
             for p in self.dist_patterns:
                 match = p.search(description)
                 if match:
                     if "km" in match.groupdict():
-                        self.stdout.write("    Distance: %skm\n" % match.group("km"))
+                        self.stdout.write("        Distance: %skm\n" % match.group("km"))
                         break
                     if "m" in match.groupdict():
-                        self.stdout.write("    Distance: %sm\n" % match.group("m"))
+                        self.stdout.write("        Distance: %sm\n" % match.group("m"))
                         break
+
+            self.stdout.write("        BIDI: %s\n" % isbidi)
+
+            self.stdout.write("\n")
+            
             continue
 
             parts = description.split()
