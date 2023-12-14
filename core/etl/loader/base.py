@@ -233,7 +233,7 @@ class BaseLoader(object):
         """
         dm = data_model or self.data_model
         for line in f:
-            yield dm.parse_raw(line.replace("\\r", ""))
+            yield dm.model_validate_json(line.replace("\\r", ""))
 
     def diff(
         self, old: Iterable[BaseModel], new: Iterable[BaseModel], include_fields: Set = None
