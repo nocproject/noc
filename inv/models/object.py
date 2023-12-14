@@ -49,6 +49,7 @@ from noc.config import config
 from noc.pm.models.agent import Agent
 from noc.cm.models.configurationscope import ConfigurationScope
 from noc.cm.models.configurationparam import ConfigurationParam, ParamData, ScopeVariant
+from noc.core.discriminator import discriminator
 from .objectmodel import ObjectModel
 from .modelinterface import ModelInterface
 from .objectlog import ObjectLog
@@ -142,6 +143,26 @@ class ObjectConfigurationData(EmbeddedDocument):
         return "".join(f"@{s.code}" for s in self.contexts)
 
 
+class ObjectCrossing(EmbeddedDocument):
+    """
+    Dynamic crossing.
+
+    Attributes:
+        input: Input slot name.
+        output: Output slot name.
+        discriminator: Optional discriminator.
+    """
+
+    input = StringField(required=True)
+    output = StringField(required=True)
+    discriminator = StringField(required=False)
+
+    def __str__(self) -> str:
+        if self.discriminator:
+            return f"{self.input} -> {self.output}: {self.discriminator}"
+        return f"{self.input} -> {self.output}"
+
+
 @Label.model
 @bi_sync
 @on_save
@@ -189,6 +210,8 @@ class Object(Document):
     connections: List["ObjectConnectionData"] = ListField(
         EmbeddedDocumentField(ObjectConnectionData)
     )
+    # Dynamic crossings
+    cross = ListField(EmbeddedDocumentField(ObjectCrossing))
     # Labels
     labels = ListField(StringField())
     effective_labels = ListField(StringField())
@@ -1241,6 +1264,39 @@ class Object(Document):
             level=10,
             attrs={},
         )
+
+    def iter_cross(
+        self, name: str, discriminators: Optional[Iterable[str]] = None
+    ) -> Iterable[str]:
+        """
+        Iterate crossed output.
+
+        Given the input name and the optional discriminators,
+        find and iterate all reachable outputs names.
+        Process using dynamic crossings from objects and
+        static crossings from models.
+        """
+
+        def is_passable(item: ObjectCrossing) -> bool:
+            if not item.discriminator:
+                return True
+            if not discriminators:
+                return False
+            item_desc = discriminator(item.discriminator)
+            return any(d in item_desc for d in discriminators)
+
+        seen: Set[str] = set()
+        discriminators = [discriminator(x) for x in discriminators or []]
+        # Dynamic crossings
+        if self.cross:
+            for item in self.cross:
+                if item.input == name and item.output not in seen and is_passable(item):
+                    yield item.output
+                    seen.add(item.output)
+        # Static crossings
+        # @todo: Implement according to https://getnoc.com/connection-restrictions/#crossing
+        # for c in self.model.conections:
+        #     if c.name==name and c.direction == "s" and c.cross:
 
 
 signals.pre_delete.connect(Object.detach_children, sender=Object)
