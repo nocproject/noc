@@ -1,7 +1,7 @@
 # ----------------------------------------------------------------------
 # Supplier
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2020 The NOC Project
+# Copyright (C) 2007-2023 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -33,7 +33,13 @@ id_lock = Lock()
 @Label.model
 @bi_sync
 @workflow
-@on_delete_check(check=[("phone.PhoneRange", "supplier"), ("sa.Service", "supplier")])
+@on_delete_check(
+    check=[
+        ("inv.Channel", "supplier"),
+        ("phone.PhoneRange", "supplier"),
+        ("sa.Service", "supplier"),
+    ]
+)
 class Supplier(Document):
     meta = {
         "collection": "noc.suppliers",

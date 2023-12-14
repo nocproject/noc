@@ -1,7 +1,7 @@
 # ----------------------------------------------------------------------
 # Subscriber
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2020 The NOC Project
+# Copyright (C) 2007-2023 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -32,7 +32,7 @@ id_lock = Lock()
 
 @Label.model
 @bi_sync
-@on_delete_check(check=[("sa.Service", "subscriber")])
+@on_delete_check(check=[("inv.Channel", "subscriber"), ("sa.Service", "subscriber")])
 @workflow
 class Subscriber(Document):
     meta = {
