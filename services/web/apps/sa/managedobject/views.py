@@ -83,7 +83,6 @@ class ManagedObjectApplication(ExtModelApplication):
     # Inlines
     attrs = ModelInline(ManagedObjectAttribute)
     cfg = RepoInline("config", access="config")
-    page_limit = 100
 
     extra_permissions = ["alarm", "change_interface", "commands"]
     implied_permissions = {"read": ["inv:networksegment:lookup", "main:handler:lookup"]}
