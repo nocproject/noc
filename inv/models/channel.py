@@ -14,21 +14,15 @@ from enum import Enum
 # Third-party modules
 from bson import ObjectId
 import cachetools
-from mongoengine.document import Document, EmbeddedDocument
+from mongoengine.document import Document
 from mongoengine.fields import (
     StringField,
     LongField,
-    ListDocumentField,
-    UUIDField,
-    ReferenceField,
     ListField,
 )
 
 # NOC modules
-from noc.core.model.decorator import on_delete_check
 from noc.core.bi.decorator import bi_sync
-from noc.core.prettyjson import to_json
-from noc.core.text import quote_safe_path
 from noc.core.mongo.fields import PlainReferenceField, ForeignKeyField
 from noc.project.models.project import Project
 from noc.crm.models.subscriber import Subscriber
@@ -94,8 +88,8 @@ class Channel(Document):
     kind = StringField(choices=[x.value for x in ChannelKind], required=True)
     topology = StringField(choices=[x.value for x in ChannelTopology], required=True)
     project = ForeignKeyField(Project)
-    supplier = ReferenceField(Supplier)
-    subscriber = ReferenceField(Subscriber)
+    supplier = PlainReferenceField(Supplier)
+    subscriber = PlainReferenceField(Subscriber)
     labels = ListField(StringField())
     effective_labels = ListField(StringField())
     # Object id in BI
