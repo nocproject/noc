@@ -190,7 +190,7 @@ _MODELS = {
     "inv.Sensor": "noc.inv.models.sensor.Sensor",
     "inv.SensorProfile": "noc.inv.models.sensor.SensorProfile",
     "inv.SubInterface": "noc.inv.models.subinterface.SubInterface",
-    "inv.TechDomain": "noc.inv.models.technology.TechDomain",
+    "inv.TechDomain": "noc.inv.models.techdomain.TechDomain",
     "inv.Technology": "noc.inv.models.technology.Technology",
     "inv.ResourceGroup": "noc.inv.models.resourcegroup.ResourceGroup",
     "inv.UnknownModel": "noc.inv.models.unknownmodel.UnknownModel",
