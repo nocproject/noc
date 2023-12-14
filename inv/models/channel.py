@@ -7,18 +7,28 @@
 
 # Python modules
 from threading import Lock
-from typing import Optional, Union
+from typing import Optional, Union, Dict, Any
 import operator
 from enum import Enum
 
 # Third-party modules
 from bson import ObjectId
 import cachetools
-from mongoengine.document import Document
-from mongoengine.fields import StringField, LongField, ListField, BooleanField
+from mongoengine.document import Document, EmbeddedDocument
+from mongoengine.fields import (
+    StringField,
+    LongField,
+    ListDocumentField,
+    UUIDField,
+    ReferenceField,
+    ListField,
+)
 
 # NOC modules
+from noc.core.model.decorator import on_delete_check
 from noc.core.bi.decorator import bi_sync
+from noc.core.prettyjson import to_json
+from noc.core.text import quote_safe_path
 from noc.core.mongo.fields import PlainReferenceField, ForeignKeyField
 from noc.project.models.project import Project
 from noc.crm.models.subscriber import Subscriber
@@ -28,6 +38,23 @@ from noc.main.models.remotesystem import RemoteSystem
 from noc.core.model.decorator import on_delete_check
 
 id_lock = Lock()
+
+
+class ChannelKind(Enum):
+    """
+    Kind of channel.
+
+    Attributes:
+        L1: Level-1
+        L2: Level-2
+        L3: Level-3
+        INTERNET: Global connectivity.
+    """
+
+    L1 = "l1"
+    L2 = "l2"
+    L3 = "l3"
+    INTERNET = "internet"
 
 
 class ChannelTopology(Enum):
@@ -64,17 +91,13 @@ class Channel(Document):
 
     name = StringField(unique=True)
     description = StringField()
+    kind = StringField(choices=[x.value for x in ChannelKind], required=True)
+    topology = StringField(choices=[x.value for x in ChannelTopology], required=True)
     project = ForeignKeyField(Project)
-    supplier = PlainReferenceField(Supplier)
-    subscriber = PlainReferenceField(Subscriber)
-    is_free = BooleanField()
+    supplier = ReferenceField(Supplier)
+    subscriber = ReferenceField(Subscriber)
     labels = ListField(StringField())
     effective_labels = ListField(StringField())
-    # Integration with external NRI and TT systems
-    # Reference to remote system object has been imported from
-    remote_system = PlainReferenceField(RemoteSystem)
-    # Object id in remote system
-    remote_id = StringField()
     # Object id in BI
     bi_id = LongField(unique=True)
 
