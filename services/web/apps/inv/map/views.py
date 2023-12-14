@@ -443,6 +443,7 @@ class MapApplication(ExtApplication):
                 group_nodes[(o["node_id"], "")] = o["id"]
             elif o["node_type"] == "cpe":
                 cpes.add(o["node_id"])
+                metrics_template[o["id"]] = o["metrics_template"]
             elif o["node_type"] == "other" and o.get("object_filter"):
                 group_nodes[
                     (
@@ -523,14 +524,31 @@ class MapApplication(ExtApplication):
                 r[str(o)]["status_code"] = self.ST_ALARM
             else:
                 r[str(o)]["status_code"] = self.ST_OK
+        if not cpes:
+            return r
         # CPE
+        env = Environment()
+        env.globals["metric"] = MetricProxy()
+        metric_keys = []
         for cpe in CPE.objects.filter(id__in=list(cpes)):
+            o = str(cpe.id)
             if cpe.oper_status is None:
-                r[str(cpe.id)]["status_code"] = self.ST_UNKNOWN
+                r[o]["status_code"] = self.ST_UNKNOWN
             elif not cpe.oper_status:
-                r[str(cpe.id)]["status_code"] = self.ST_ALARM
+                r[o]["status_code"] = self.ST_ALARM
             else:
-                r[str(cpe.id)]["status_code"] = self.ST_OK
+                r[o]["status_code"] = self.ST_OK
+            if str(cpe.id) not in metrics_template:
+                continue
+            try:
+                r[o]["metrics_label"] = env.from_string(metrics_template[o]).render(
+                    {"managed_object": cpe.bi_id}
+                )
+            except (ValueError, AttributeError) as e:
+                r[o]["metrics_label"] = "#ERROR#"
+                self.logger.error(
+                    "[%s] Error when processed MetricTemplate: %s", metrics_template[o], e
+                )
         return r
 
     @classmethod
@@ -591,7 +609,7 @@ class MapApplication(ExtApplication):
                     mlst += [(m["metric"], object, m["tags"]["interface"])]
                 except KeyError:
                     pass
-        # @todo: Get last values from cache
+                # @todo: Get last values from cache
         if not mlst:
             return {}
 
