@@ -108,7 +108,7 @@ class TechDomain(Document):
     code = StringField(unique=True)
     uuid = UUIDField(binary=True)
     description = StringField()
-    discriminators = ListDocumentField(DiscriminatorItem)
+    discriminators = EmbeddedDocumentListField(DiscriminatorItem)
     # Object id in BI
     bi_id = LongField(unique=True)
 
