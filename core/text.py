@@ -255,7 +255,7 @@ def ranges_to_list(s, splitter=","):
             raise SyntaxError
         for i in range(f, t + 1):
             r += [i]
-    return sorted(r)
+    return list(sorted(r))
 
 
 def replace_re_group(expr, group, pattern):
