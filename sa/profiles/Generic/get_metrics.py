@@ -483,6 +483,7 @@ class Script(BaseScript, metaclass=MetricScriptBase):
             data_mt = rr["metric"].replace(" ", "_")
             if data_mt not in s_data:
                 self.logger.warning("Unknown Metric Type: %s", data_mt)
+                continue
             scope_name = s_data[data_mt]["scope"]
             field_name = s_data[data_mt]["field"]
             mm = (scope_name, tuple(rr["labels"]))
