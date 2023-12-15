@@ -209,27 +209,11 @@ class ManagedObjectApplication(ExtModelApplication):
                 {"managed_object": 1},
             )
         )
-        os = ManagedObject.get_statuses(mo_ids)
-        disabled = set(
-            ManagedObject.objects.filter(object_profile__enable_ping=False).values_list(
-                "id", flat=True
-            )
-        )
         # Apply oper_state
         for x in data:
-            if not x.get("is_managed") or x["id"] in disabled:
-                # possibly exclude degradated state
-                x["oper_state"] = "disabled"
-                x["oper_state__label"] = _("Disable")
-            elif not os.get(x["id"], True):
-                x["oper_state"] = "failed"
-                x["oper_state__label"] = _("Down")
-            elif x["id"] in alarms:
+            if x["oper_state"] not in {"failed", "disabled"} and x["id"] in alarms:
                 x["oper_state"] = "degraded"
                 x["oper_state__label"] = _("Warning")
-            else:
-                x["oper_state"] = "full"
-                x["oper_state__label"] = _("Up")
         return data
 
     # def bulk_field_link_count(self, data):
@@ -297,10 +281,21 @@ class ManagedObjectApplication(ExtModelApplication):
         :param fields:
         :return:
         """
+        if not o.is_managed or not o.object_profile.enable_ping:
+            ostate = "disabled"
+            ostate_label = _("Disable")
+        elif not o.get_status():
+            ostate = "failed"
+            ostate_label = _("Down")
+        else:
+            ostate = "full"
+            ostate_label = _("Up")
         return {
             "id": o.id,
             "name": o.name,
             "address": o.address,
+            "oper_state": ostate,
+            "oper_state__label": ostate_label,
             "is_managed": getattr(o, "is_managed", True),
             "administrative_domain": str(o.administrative_domain.name),
             "object_profile": str(o.object_profile.name),
