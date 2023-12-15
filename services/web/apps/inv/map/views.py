@@ -529,7 +529,7 @@ class MapApplication(ExtApplication):
         # CPE
         env = Environment()
         env.globals["metric"] = MetricProxy()
-        metric_keys = []
+        # metric_keys = []
         for cpe in CPE.objects.filter(id__in=list(cpes)):
             o = str(cpe.id)
             if cpe.oper_status is None:

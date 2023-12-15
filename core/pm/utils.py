@@ -21,6 +21,7 @@ from noc.core.clickhouse.connect import connection as ch_connection
 from noc.core.clickhouse.error import ClickhouseError
 from noc.pm.models.metricscope import MetricScope
 from noc.pm.models.metrictype import MetricType
+from noc.pm.models.measurementunits import MeasurementUnits
 from noc.pm.models.scale import Scale
 
 
@@ -272,6 +273,10 @@ MetricKey = Tuple[Tuple[Tuple[str, Any], ...], Tuple[str, ...]]
 
 @dataclass
 class Function:
+    """
+    Aggregate function class
+    """
+
     name: str
     function: Optional["Function"] = None
     alias: Optional[str] = None
@@ -295,10 +300,14 @@ class MetricValue:
     value: float
     meta: Dict[str, str]
     value_scale: Optional["Scale"] = None
+    value_units: Optional["MeasurementUnits"] = None
 
     def __str__(self):
         # Type, Scale for int value
-        return str(self.value)
+        if not self.meta:
+            return str(self.value)
+        meta = [f"{v}" for k, v in self.meta.items() if k != "managed_object"]
+        return f"{'@'.join(meta)}: {self.value}"
 
     def __hash__(self):
         return hash(self.meta)
@@ -315,6 +324,10 @@ class MetricValue:
 
 
 class QueryField:
+    """
+    Query Field class, Describe field that append to requested from DB
+    """
+
     function_map: Dict[str, Function] = {
         "last": Function("argMax", alias="last", args="ts"),
         "count": Function("count", alias="count"),
@@ -322,17 +335,35 @@ class QueryField:
         "count_distinct": Function("count", Function("distinct"), alias="count_distinct"),
     }
 
-    def __init__(self, proxy: "MetricScopeProxy", field: str):
+    def __init__(
+        self,
+        proxy: "MetricScopeProxy",
+        field: str,
+        scale: Optional[Scale] = None,
+        measure: Optional[MeasurementUnits] = None,
+    ):
         self.metric_proxy = proxy
         self.field: str = field
         self.function: Function = self.function_map["last"]
         self.group_by: Optional[List[str]] = None
+        self.scale: Optional[Scale] = scale
+        self.units: Optional[MeasurementUnits] = measure
 
     def __hash__(self):
         return hash(self.function.get_expr(self.field))
 
+    def __str__(self):
+        """
+        Format requested Metrics
+        """
+        r = self.metric_proxy.query_metrics([self])
+        return "\n".join(str(x) for x in r)
+
     @property
     def query_expr(self) -> str:
+        """
+        Field Expression on query
+        """
         return self.function.get_expr(self.field)
 
     @property
@@ -356,16 +387,16 @@ class QueryField:
             self.function = self.function_map[item]
         return self
 
-    def __call__(self, *args, **kwargs) -> float:  # MetricValue
+    def __call__(self, *args, **kwargs) -> "str":  # MetricValue
         """
         scale = convert value by scale
         """
         if "group_by" in kwargs:
             self.group_by = kwargs["group_by"]
-        print("Call MetricValue", args, kwargs)
-        r = self.metric_proxy.query_metrics([self], **kwargs)
-        # return self.__call__(managed_object="ЦАТС-102-61#1000006")
-        return r
+        return str(self)
+
+    def values(self, **kwargs) -> List["MetricValue"]:
+        return self.metric_proxy.query_metrics([self])
 
 
 class MetricScopeProxy:
@@ -378,11 +409,17 @@ class MetricScopeProxy:
 
     def __init__(self, scope: Optional["MetricScope"] = None):
         self.scope: "MetricScope" = scope
-        self.queries: Dict[str, QueryField] = {}
-        self.query_conditions: Set[MetricKey] = set()
-        self.query_cache: Dict[QueryField, Dict[MetricKey, List["MetricValue"]]] = {}
+        self.queries: Dict[str, QueryField] = {}  # Requested Queries to MetricScope
+        self.query_conditions: Set[MetricKey] = set()  # Predefined conditions to query
+        self.query_cache: Dict[
+            QueryField, Dict[MetricKey, List["MetricValue"]]
+        ] = {}  # Cached return values
 
     def get_metric_key(self, **kwargs) -> "MetricKey":
+        """
+        Getting requested MetricKey. Contains Key Field and Key Label. Unique for Metric Instances
+        :param kwargs: Map - KeyFieldName -> KeyFieldValue
+        """
         keys = []
         for k in self.scope.key_fields:
             if k.field_name in kwargs:
@@ -402,13 +439,18 @@ class MetricScopeProxy:
         return tuple(keys), labels
 
     def get_query(self, req_metrics: List[QueryField], **kwargs) -> Iterable[str]:
+        """
+        Build Clickhouse Query by QueryField
+        """
         # fields: Set[str] = set()
         group: Dict[Tuple[str, ...], List[QueryField]] = defaultdict(list)
         conditions = defaultdict(list)
         select_fields = set()
+        # Processed query group by
         for q in req_metrics:
             # fields.add(q.field)
             group[q.group_key].append(q)
+        # Processed query conditions (where)
         for mk in self.query_conditions:
             key, values = [], []
             # Keys field
@@ -418,14 +460,18 @@ class MetricScopeProxy:
                 values.append(str(value))
             # @todo labels
             conditions[tuple(key)].append("(%s)" % ", ".join(values))
+        # Build Final Query select and other
         for g, fields in group.items():
             select, group_by, condition = list(select_fields), list(select_fields), []
+            # Select
             for qf in fields:
                 select.append(f"{qf.query_expr} AS {qf.alias}")
+            # Where
             condition = [
                 " (%s) IN (%s)" % (", ".join(cond), ", ".join(values))
                 for cond, values in conditions.items()
             ]
+            # Group By
             if g:
                 select += list(g)
                 group_by += list(g)
@@ -449,26 +495,33 @@ class MetricScopeProxy:
     def query_metrics(self, req_metrics: List[QueryField], **kwargs) -> List["MetricValue"]:
         """
         Gettinig metrics from database
+        :param req_metrics: List QueryField for requst
+        :param kwargs: Key fields map
         """
+        # Build requested MetricKey for condition
         if kwargs:
             mk = self.get_metric_key(**kwargs)
         elif self.current_metric_key:
             mk = self.current_metric_key
         else:
             raise ValueError("Not selected Object for request metrics")
-        # self.query_cache: Dict[QueryField, Dict[MetricKey2, List[MetricValueX]]]
         r: List[MetricValue] = []
         query_map = {}
+        # Proecessed requested metrics for cache check.
         for qf in req_metrics:
             # Get chache
             if qf in self.query_cache and mk in self.query_cache[qf]:
                 r += self.query_cache[qf][mk]
                 continue
+            elif qf in self.query_cache and mk in self.query_conditions:
+                # Nothinп metric on DB for mk
+                continue
             query_map[qf.alias] = qf
         if not query_map:
             return r
         ch = ch_connection()
-        from_date = datetime.datetime.now().replace(microsecond=0) - datetime.timedelta(hours=2)
+        # @todo Custom requested interval by DiscoveryInterval
+        from_date = datetime.datetime.now().replace(microsecond=0) - datetime.timedelta(hours=1)
         for query in self.get_query(list(query_map.values()), **kwargs):
             print(query)
             result = ch.execute(
@@ -482,9 +535,10 @@ class MetricScopeProxy:
                 for name, value in row.items():
                     if name not in query_map:
                         continue
-                    mv = MetricValue(value, dict(mk[0]))
-                    r.append(mv)
                     q = query_map[name]
+                    mv = MetricValue(value, dict(mk[0]), value_scale=q.scale, value_units=q.units)
+                    r.append(mv)
+                    # Append to Cache
                     if q not in self.query_cache:
                         self.query_cache[q] = defaultdict(list)
                     if mv not in self.query_cache[q][mk]:
@@ -492,11 +546,18 @@ class MetricScopeProxy:
         return r
 
     def add_keys(self, keys: List[Dict[str, Any]]):
+        """
+        Add predefined metric Key for query
+        """
         for p in keys:
             mk = self.get_metric_key(**p)
             self.query_conditions.add(mk)
 
     def has_field(self, name: str) -> bool:
+        """
+        Check field exists on scope
+        :param name: Field name
+        """
         for label in self.scope.labels:
             if label.store_column == name or label.view_column == name:
                 return True
@@ -511,7 +572,7 @@ class MetricScopeProxy:
             return self
         mt = MetricType.get_by_field_name(item, scope=self.scope.table_name)
         if mt:
-            qf = QueryField(self, mt.field_name)
+            qf = QueryField(self, mt.field_name, mt.scale, mt.measure)
         elif self.has_field(item):
             qf = QueryField(self, item)
         else:
@@ -532,11 +593,19 @@ class MetricScopeProxy:
 
 
 class MetricProxy:
+    """
+    Proxy Metic Requests to MetricScope table.
+    """
+
     def __init__(self, metric_keys: Optional[List[Dict[str, Any]]] = None):
-        self._scopes: Dict[str, "MetricScopeProxy"] = {}
-        self._metric_keys = metric_keys
+        self._scopes: Dict[str, "MetricScopeProxy"] = {}  # Scope Storage
+        self._metric_keys = metric_keys  # Predefined Request Keys
 
     def __getattr__(self, item) -> "MetricScopeProxy":
+        """
+        Getting Metric Scope Proxy for request metrics
+        :param item: MetricScope Table Name
+        """
         if item in self._scopes:
             return self._scopes[item]
         scope = MetricScope.get_by_table_name(item)
