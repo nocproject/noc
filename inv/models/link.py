@@ -204,18 +204,18 @@ class Link(Document):
                 ["noc::is_linked::="],
                 instance_filters=[("_id", [i.id for i in self.interfaces])],
             )
-            Label.add_model_labels(
-                "sa.ManagedObject",
-                ["noc::is_linked::="],
-                instance_filters=[("id", self.linked_objects)],
-            )
             ManagedObject.update_links(self.linked_objects)
 
     def on_delete(self):
         from noc.sa.models.managedobject import ManagedObject
 
         self.update_topology()
-        self.reset_label()
+        # Assumption that Interface has only one Link :)
+        Label.remove_model_labels(
+            "inv.Interface",
+            ["noc::is_linked::="],
+            instance_filters=[("_id", [i.id for i in self.interfaces])],
+        )
         ManagedObject.update_links(self.linked_objects, exclude_link_ids=[self.id])
 
     @property
