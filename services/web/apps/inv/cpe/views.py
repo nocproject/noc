@@ -1,7 +1,7 @@
 # ---------------------------------------------------------------------
 # inv.cpe application
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2022 The NOC Project
+# Copyright (C) 2007-2023 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -21,7 +21,7 @@ class CPEApplication(ExtDocApplication):
     title = _("CPEs")
     menu = _("CPEs")
     model = CPE
-    query_fields = ["description__contains", "global_id", "global_id__contains"]
+    query_fields = ["description__contains", "global_id", "global_id__contains", "address", "label"]
 
     @staticmethod
     def get_style(cpe: CPE):
