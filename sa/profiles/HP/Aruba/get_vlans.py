@@ -21,7 +21,7 @@ class Script(BaseScript):
 
     def execute_cli(self, **kwargs):
         r = []
-        v = self.cli("show vlan")
+        v = self.cli("show vlan", cached=True)
         for vlan, name in self.rx_vlan.findall(v):
             r += [
                 {

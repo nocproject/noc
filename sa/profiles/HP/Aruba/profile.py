@@ -19,6 +19,7 @@ class Profile(BaseProfile):
     pattern_unprivileged_prompt = rb"^(?P<hostname>\S+)\s*>\s*"
     pattern_prompt = rb"^(?P<hostname>\S+)\s*#"
     pattern_syntax_error = rb"% Ambiguous command."
+    command_disable_pager = "no page"
     command_super = b"enable"
     pattern_more = [
         (rb"--\s*MORE\s*--, next page: Space, next line: Enter, quit: q", b" "),
@@ -35,8 +36,9 @@ class Profile(BaseProfile):
 
     @classmethod
     def get_interface_type(cls, name):
+        name = name.lower()
         if name.startswith("vlan"):
             return "SVI"
         elif name.startswith("lag"):
-            raise "aggregated"
+            return "aggregated"
         return "physical"
