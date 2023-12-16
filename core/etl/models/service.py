@@ -53,7 +53,6 @@ class Service(BaseModel):
     checkpoint: Optional[str] = None
 
     class Config:
-        fields = {"state_changed": "logical_status_start", "state": "logical_status"}
         populate_by_name = True
 
     _csv_fields = [
