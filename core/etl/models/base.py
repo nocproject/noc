@@ -44,13 +44,7 @@ class BaseModel(_BaseModel):
         :param iter:
         :return:
         """
-        d = {}
-        for fn, val in zip_longest(cls._csv_fields.default, value):
-            if not fn or not val or fn not in cls.model_fields:
-                continue
-            field = cls.model_fields[fn]
-            d[fn] = Reference(name="", model=None, value=val) if cls.is_reference(field) else val
-        return cls(**d)
+        return cls(**{fn: val for fn, val in zip_longest(cls._csv_fields.default, value) if fn})
 
     @classmethod
     def get_mapped_fields(cls) -> Dict[str, str]:

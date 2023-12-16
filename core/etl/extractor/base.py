@@ -190,7 +190,7 @@ class BaseExtractor(object):
                 line = line.strip()
                 if not line:
                     continue
-                data.append(self.model.parse_raw(line))
+                data.append(self.model.model_validate_json(line))
         return data
 
     def get_checkpoint(self, data: List[BaseModel]) -> Optional[str]:
