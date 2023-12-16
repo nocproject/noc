@@ -16,7 +16,8 @@ from noc.core.management.base import BaseCommand
 from noc.core.script.loader import loader as script_loader
 from noc.core.profile.loader import loader as profile_loader
 from noc.core.mongo.connection import connect
-from noc.inv.models.objectmodel import ObjectModel
+from noc.inv.models.objectmodel import ObjectModel, ModelAttr
+from noc.inv.models.object import ObjectAttr
 
 class Command(BaseCommand):
     def add_arguments(self, parser):
@@ -144,6 +145,16 @@ class Command(BaseCommand):
         re.compile(r"(?:\s|^)gpon(?:\s|$)"),
     ]
 
+    xwdm_patterns = [
+        re.compile(r"(?:\s|^)cwdm(?:\s|$)"),
+    ]
+
+    xpon_patterns = [
+        re.compile(r"(?:\s|^)gpon(?:\s|$)"),
+        re.compile(r"(?:\s|^)gepon(?:\s|$)"),
+        re.compile(r"(?:\s|^)epon(?:\s|$)"),
+    ]
+
     def handle(self, json_format, profile, metric):
         connect()
         for o in ObjectModel.objects.filter(name={"$regex": ".*Transceiver.*"}):
@@ -177,45 +188,77 @@ class Command(BaseCommand):
                     isbidi = True
                     break
 
+            isxwdm = False
+            for p in self.xwdm_patterns:
+                match = p.search(description)
+                if match:
+                    isxwdm = True
+                    break
+
+            isxpon = False
+            for p in self.xpon_patterns:
+                match = p.search(description)
+                if match:
+                    isxpon = True
+                    break
+
             tx = 0
             rx = 0
             for p in self.wav_patterns:
                 match = p.search(description)
                 if match:
                     if not rx and "rx" in match.groupdict():
-                        rx = match.group("rx")
-                        self.stdout.write("        RX: %s\n" % rx)
+                        rx = int(match.group("rx"))
                         if tx:
                             break
                     if not tx and "tx" in match.groupdict():
-                        tx = match.group("tx")
-                        self.stdout.write("        TX: %s\n" % tx)
+                        tx = int(match.group("tx"))
                         if rx:
                             break
                     if "txrx" in match.groupdict():
-                        tx = match.group("txrx")
-                        rx = match.group("txrx")
-                        self.stdout.write("        TX: %s\n" % tx)
-                        self.stdout.write("        RX: %s\n" % rx)
+                        tx = int(match.group("txrx"))
+                        rx = int(match.group("txrx"))
                         break
 
             # if tx and rx and tx != rx:
             #     isbidi = True
 
+            distance = 0
             for p in self.dist_patterns:
                 match = p.search(description)
                 if match:
                     if "km" in match.groupdict():
-                        self.stdout.write("        Distance: %skm\n" % match.group("km"))
+                        distance = int(match.group("km")) * 1000
                         break
                     if "m" in match.groupdict():
-                        self.stdout.write("        Distance: %sm\n" % match.group("m"))
+                        distance = int(match.group("m"))
                         break
 
+            if not (rx and tx) and isxpon:
+                tx = 1490
+                rx = 1310
+
+            self.stdout.write("        Distance: %sm\n" % distance)
+            self.stdout.write("        RX: %s\n" % rx)
+            self.stdout.write("        TX: %s\n" % tx)
             self.stdout.write("        BIDI: %s\n" % isbidi)
+            self.stdout.write("        XWDM: %s\n" % isxwdm)
+            self.stdout.write("        XPON: %s\n" % isxpon)
 
             self.stdout.write("\n")
+
+            if tx:
+                o.data += [ModelAttr(interface="optical", attr="tx_wavelength", value=tx)]
+
+            if rx:
+                o.data += [ModelAttr(interface="optical", attr="rx_wavelength", value=rx)]
+
+            if distance:
+                o.data += [ModelAttr(interface="optical", attr="distance_max", value=distance)]
             
+            o.data += [ModelAttr(interface="optical", attr="bidi", value=isbidi)]
+            o.data += [ModelAttr(interface="optical", attr="xwdm", value=isxwdm)]
+            self.stdout.write("%s\n" % o.to_json())
             continue
 
             parts = description.split()
