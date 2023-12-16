@@ -14,6 +14,7 @@ from typing import List, Set, Dict
 # Third-party modules
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from jinja2.environment import Environment
+from jinja2.exceptions import TemplateError
 from bson import ObjectId
 
 # NOC modules
@@ -487,7 +488,7 @@ class MapApplication(ExtApplication):
                 r[o]["metrics_label"] = env.from_string(metrics_template[o]).render(
                     {"managed_object": bi_id_map[o]}
                 )
-            except (ValueError, AttributeError) as e:
+            except (ValueError, TemplateError) as e:
                 r[o]["metrics_label"] = "#ERROR#"
                 self.logger.error(
                     "[%s] Error when processed MetricTemplate: %s", metrics_template[o], e
@@ -544,7 +545,7 @@ class MapApplication(ExtApplication):
                 r[o]["metrics_label"] = env.from_string(metrics_template[o]).render(
                     {"managed_object": cpe.bi_id}
                 )
-            except (ValueError, AttributeError) as e:
+            except (ValueError, TemplateError) as e:
                 r[o]["metrics_label"] = "#ERROR#"
                 self.logger.error(
                     "[%s] Error when processed MetricTemplate: %s", metrics_template[o], e
