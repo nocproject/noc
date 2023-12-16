@@ -1,4 +1,0 @@
-# Ubuntu settings
----
-nginx_user: www-data
-nginx_permit_firewall: "False"

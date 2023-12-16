@@ -64,14 +64,6 @@ build_centos7:
      - cloud
      - docker
 
-# build_centos8:
-#   extends: .base_builder
-#   variables:
-#     PKG_CACHE: /var/cache/yum
-#     SCENARIO_NAME: centos8
-#   tags:
-#     - cloud
-#     - docker
 
 build_debian10:
   extends: .base_builder
@@ -88,14 +80,6 @@ build_debian11:
   tags:
     - cloud
     - docker
-
-build_ubuntu18:
-   extends: .base_builder
-   variables:
-     SCENARIO_NAME: ubuntu18
-   tags:
-     - cloud
-     - docker
 
 build_ubuntu20:
    extends: .base_builder

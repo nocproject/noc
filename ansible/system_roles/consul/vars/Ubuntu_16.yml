@@ -1,5 +1,0 @@
-# Ubuntu settings
----
-consul_control_venv: /opt/pyconsul
-consul_control_python: "{{ consul_control_venv }}/bin/python"
-virtualenv_executable: /usr/bin/virtualenv
