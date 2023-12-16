@@ -34,6 +34,8 @@ class Profile(BaseProfile):
             return interface.replace("f", "FastEthernet")
         elif interface.startswith("g"):
             return interface.replace("g", "GigaEthernet")
+        elif interface.startswith("tg"):
+            return interface.replace("tg", "TGigaEthernet")
         elif interface.startswith("v"):
             return interface.replace("v", "VLAN")
         elif interface.startswith("n"):
