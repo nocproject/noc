@@ -134,6 +134,13 @@ Ext.define("NOC.inv.cpe.Application", {
                         }
                     ]
                 },
+                {
+                    name: "bi_id",
+                    xtype: "displayfield",
+                    fieldLabel: __("BI ID"),
+                    allowBlank: true,
+                    uiStyle: "medium"
+                },
                 //{
                 //    xtype: "fieldset",
                 //    title: __("Resource Groups"),
