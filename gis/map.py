@@ -32,7 +32,7 @@ class Map(object):
             return srid
         ss = self.proj.get(srid)
         if not ss:
-            ss = pyproj.Proj(init=srid)
+            ss = pyproj.Proj(srid)
             self.proj[srid] = ss
         return ss
 
