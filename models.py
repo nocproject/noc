@@ -160,6 +160,7 @@ _MODELS = {
     "inv.CPE": "noc.inv.models.cpe.CPE",
     "inv.CPEProfile": "noc.inv.models.cpeprofile.CPEProfile",
     "inv.DiscoveryID": "noc.inv.models.discoveryid.DiscoveryID",
+    "inv.Endpoint": "noc.inv.models.endpoint.Endpoint",
     "inv.ExtNRILink": "noc.inv.models.extnrilink.ExtNRILink",
     "inv.Firmware": "noc.inv.models.firmware.Firmware",
     "inv.FirmwarePolicy": "noc.inv.models.firmwarepolicy.FirmwarePolicy",
