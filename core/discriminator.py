@@ -85,7 +85,7 @@ ODU_LIMITS = {
 }
 
 
-class OduDiscriminator(object):
+class OduDiscrimiator(object):
     scope: str = "odu"
 
     def __init__(self, value: str):
@@ -127,7 +127,7 @@ class OduDiscriminator(object):
         return f"{self.scope}::{'::'.join(r)}"
 
     def __contains__(self, other: "OduDiscriminator") -> bool:
-        if not isinstance(other, OduDiscriminator):
+        if not isinstance(other, OduDiscrimiator):
             return False
         for (x, i1), (y, i2) in zip(self.odu, other.odu):
             if x == y:
@@ -138,10 +138,10 @@ class OduDiscriminator(object):
         return True
 
 
-scopes = {x.scope: x for x in (LambdaDiscriminator, VlanDiscriminator, OduDiscriminator)}
+scopes = {x.scope: x for x in (LambdaDiscriminator, VlanDiscriminator, OduDiscrimiator)}
 
 
-def discriminator(v: str) -> Union[LambdaDiscriminator, VlanDiscriminator, OduDiscriminator]:
+def discriminator(v: str) -> Union[LambdaDiscriminator, VlanDiscriminator, OduDiscrimiator]:
     if SCOPE_SEPARATOR not in v:
         msg = "Invalid Format"
         raise ValueError(msg)
