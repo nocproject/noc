@@ -22,6 +22,8 @@ from mongoengine.fields import (
     DynamicField,
     EmbeddedDocumentListField,
     ObjectIdField,
+    FloatField,
+    EmbeddedDocumentField,
 )
 from mongoengine.errors import ValidationError
 import cachetools
@@ -117,6 +119,48 @@ class ProtocolVariantItem(EmbeddedDocument):
         return r and self.discriminator == other.discriminator
 
 
+class Crossing(EmbeddedDocument):
+    """
+    Dynamic/Static crossing.
+
+    Attributes:
+        input: Input slot name.
+        input_discriminator: Input filter.
+        output: Output slot name.
+        output_discriminator: When not-empty, input to output mapping.
+        gain_db: When non-empty, signal gain in dB.
+    """
+
+    input = StringField(required=True)
+    input_discriminator = StringField(required=False)
+    output = StringField(required=True)
+    output_discriminator = StringField(required=False)
+    gain_db = FloatField(required=False)
+
+    def __str__(self) -> str:
+        r = [self.input]
+        if self.input_discriminator:
+            r += [f": {self.input_discriminator}"]
+        r += [" -> ", self.output]
+        if self.output_discriminator:
+            r += [f": {self.output_discriminator}"]
+        return "".join(r)
+
+    @property
+    def json_data(self) -> Dict[str, Any]:
+        r: Dict[str, Any] = {
+            "input": self.input,
+        }
+        if self.input_discriminator:
+            r["input_discriminator"] = self.input_discriminator
+        r["output"] = self.output
+        if self.output_discriminator:
+            r["output_discriminator"] = self.output_discriminator
+        if self.gain_db:
+            r["gain_db"] = self.gain_db
+        return r
+
+
 class ObjectModelConnection(EmbeddedDocument):
     meta = {"strict": False, "auto_create_index": False}
     name = StringField()
@@ -125,8 +169,8 @@ class ObjectModelConnection(EmbeddedDocument):
     direction = StringField(choices=["i", "o", "s"])  # Inner slot  # Outer slot  # Connection
     gender = StringField(choices=["s", "m", "f"])
     combo = StringField(required=False)
-    group = StringField(required=False)
-    cross = StringField(required=False)
+    group = StringField(required=False)  # @todo:Remove
+    cross = StringField(required=False)  # @todo: Remove
     protocols = EmbeddedDocumentListField(ProtocolVariantItem)
     internal_name = StringField(required=False)
     composite = StringField(required=False)
@@ -252,6 +296,8 @@ class ObjectModel(Document):
     cr_context = StringField(required=False)
     data: List["ModelAttr"] = EmbeddedDocumentListField(ModelAttr)
     connections: List["ObjectModelConnection"] = EmbeddedDocumentListField(ObjectModelConnection)
+    # Static crossings
+    cross = ListField(EmbeddedDocumentField(Crossing))
     sensors: List["ObjectModelSensor"] = EmbeddedDocumentListField(ObjectModelSensor)
     plugins = ListField(StringField(), required=False)
     # Labels
