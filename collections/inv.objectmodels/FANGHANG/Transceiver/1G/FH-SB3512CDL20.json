@@ -27,6 +27,11 @@
     "data": {
         "asset": {
             "part_no": ["FH-SB3512CDL20"]
+        },
+        "optical": {
+            "distance_max": "20000",
+            "rx_wawelength": "1550",
+            "tx_wawelength": "1310"
         }
     }
 }
