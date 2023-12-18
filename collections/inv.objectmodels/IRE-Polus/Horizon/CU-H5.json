@@ -18,6 +18,16 @@
             "description": "Management port",
             "direction": "s",
             "gender": "f",
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "10BASET"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "100BASETX"
+                }
+            ],
             "type__name": "Electrical | RJ45"
         },
         {
@@ -25,6 +35,16 @@
             "description": "Management port",
             "direction": "s",
             "gender": "f",
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "10BASET"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "100BASETX"
+                }
+            ],
             "type__name": "Electrical | RJ45"
         },
         {
@@ -51,11 +71,6 @@
         }
     ],
     "data": [
-        {
-            "attr": "order_part_no",
-            "interface": "asset",
-            "value": ["ШКРН.433746.103-04."]
-        },
         {
             "attr": "part_no",
             "interface": "asset",
