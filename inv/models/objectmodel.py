@@ -147,21 +147,6 @@ class Crossing(EmbeddedDocument):
             r += [f": {self.output_discriminator}"]
         return "".join(r)
 
-    def clean(self) -> None:
-        if self.input_discriminator:
-            try:
-                discriminator(self.input_discriminator)
-            except ValueError as e:
-                msg = f"Invalid input_discriminator: {e}"
-                raise ValidationError(msg) from e
-        if self.output_discriminator:
-            try:
-                discriminator(self.output_discriminator)
-            except ValueError as e:
-                msg = f"Invalid output_discriminator: {e}"
-                raise ValidationError(msg) from e
-        super().clean()
-
     @property
     def json_data(self) -> Dict[str, Any]:
         r: Dict[str, Any] = {
@@ -186,6 +171,7 @@ class ObjectModelConnection(EmbeddedDocument):
     gender = StringField(choices=["s", "m", "f"])
     combo = StringField(required=False)
     group = StringField(required=False)  # @todo:Remove
+    cross = StringField(required=False)  # @todo: Remove
     protocols = EmbeddedDocumentListField(ProtocolVariantItem)
     internal_name = StringField(required=False)
     composite = StringField(required=False)

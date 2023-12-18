@@ -26,7 +26,6 @@ from mongoengine.fields import (
     ReferenceField,
     BooleanField,
     DateTimeField,
-    FloatField,
 )
 from mongoengine import signals
 import cachetools
@@ -51,7 +50,7 @@ from noc.pm.models.agent import Agent
 from noc.cm.models.configurationscope import ConfigurationScope
 from noc.cm.models.configurationparam import ConfigurationParam, ParamData, ScopeVariant
 from noc.core.discriminator import discriminator
-from .objectmodel import ObjectModel
+from .objectmodel import ObjectModel, Crossing
 from .modelinterface import ModelInterface
 from .objectlog import ObjectLog
 from .error import ConnectionError, ModelDataError
@@ -144,34 +143,6 @@ class ObjectConfigurationData(EmbeddedDocument):
         return "".join(f"@{s.code}" for s in self.contexts)
 
 
-class ObjectCrossing(EmbeddedDocument):
-    """
-    Dynamic crossing.
-
-    Attributes:
-        input: Input slot name.
-        input_discriminator: Input filter.
-        output: Output slot name.
-        output_discriminator: When not-empty, input to output mapping.
-        gain_db: When non-empty, signal gain in dB.
-    """
-
-    input = StringField(required=True)
-    input_discriminator = StringField(required=False)
-    output = StringField(required=True)
-    output_discriminator = StringField(required=False)
-    gain_db = FloatField(required=False)
-
-    def __str__(self) -> str:
-        r = [self.input]
-        if self.input_discriminator:
-            r += [f": {self.input_discriminator}"]
-        r += [" -> ", self.output]
-        if self.output_discriminator:
-            r += [f": {self.output_discriminator}"]
-        return "".join(r)
-
-
 @Label.model
 @bi_sync
 @on_save
@@ -220,7 +191,7 @@ class Object(Document):
         EmbeddedDocumentField(ObjectConnectionData)
     )
     # Dynamic crossings
-    cross = ListField(EmbeddedDocumentField(ObjectCrossing))
+    cross = ListField(EmbeddedDocumentField(Crossing))
     # Labels
     labels = ListField(StringField())
     effective_labels = ListField(StringField())
@@ -1294,18 +1265,23 @@ class Object(Document):
             item_desc = discriminator(item.input_discriminator)
             return any(d in item_desc for d in discriminators)
 
+        def iter_merge(
+            i1: Optional[Iterable[Crossing]], i2: Optional[Iterable[Crossing]]
+        ) -> Iterable[Crossing]:
+            if i1:
+                yield from i1
+            if i2:
+                yield from i2
+
         seen: Set[str] = set()
         discriminators = [discriminator(x) for x in discriminators or []]
         # Dynamic crossings
         if self.cross:
-            for item in self.cross:
+            for item in iter_merge(self.cross, self.model.cross):
+                # @todo: Restrict to type `s`?
                 if item.input == name and item.output not in seen and is_passable(item):
                     yield item.output
                     seen.add(item.output)
-        # Static crossings
-        # @todo: Implement according to https://getnoc.com/connection-restrictions/#crossing
-        # for c in self.model.conections:
-        #     if c.name==name and c.direction == "s" and c.cross:
 
 
 signals.pre_delete.connect(Object.detach_children, sender=Object)

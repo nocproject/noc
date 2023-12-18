@@ -303,90 +303,39 @@ Ext.define("NOC.inv.objectmodel.Application", {
                     }
                 },
                 {
-                    xtype: "container",
-                    layout: "hbox",
-                    items: [
+                    name: "cross",
+                    fieldLabel: __("Cross"),
+                    xtype: "gridfield",
+                    allowBlank: true,
+                    columns: [
                         {
-                            name: "cross",
-                            fieldLabel: __("Cross"),
-                            xtype: "gridfield",
-                            allowBlank: true,
-                            flex: 1,
-                            columns: [
-                                {
-                                    text: __("Input"),
-                                    dataIndex: "input",
-                                    width: 150,
-                                    editor: {
-                                        xtype: "combobox",
-                                        valueField: "id",
-                                        editable: false,
-                                        queryMode: "local",
-                                        forceSelection: true
-                                    }
-                                },
-                                {
-                                    text: __("Input Discriminator"),
-                                    dataIndex: "input_discriminator",
-                                    width: 200,
-                                    editor: "textfield"
-                                },
-                                {
-                                    text: __("Output"),
-                                    dataIndex: "output",
-                                    width: 150,
-                                    editor: {
-                                        xtype: "combobox",
-                                        valueField: "id",
-                                        editable: false,
-                                        queryMode: "local",
-                                        forceSelection: true
-                                    }
-                                },
-                                {
-                                    text: __("Output Discriminator"),
-                                    dataIndex: "output_discriminator",
-                                    width: 200,
-                                    editor: "textfield"
-                                },
-                                {
-                                    text: __("Gain (dB)"),
-                                    dataIndex: "gain_db",
-                                    editor: "textfield"
-                                }
-                            ],
-                            onBeforeEdit: function (editor, context) {
-                                if (["input", "output"].includes(context.column.dataIndex)) {
-                                    var connectionsField = context.view.up("[xtype=form]").down("[name=connections]"),
-                                        data = Ext.Array.map(connectionsField.value, function (value) { return { id: value.name, text: value.name } }),
-                                        combo = editor.getEditor(context.record, context.column).field;
-                                    combo.getStore().loadData(data);
-                                }
-                                context.cancel = context.record.get("is_persist");
-                            },
-                            listeners: {
-                                scope: me,
-                                delete: me.onDeleteRow,
-                            },
-                            onCellEdit: function (editor, context) {
-                                var me = this,
-                                    app = this.up("[appId=inv.objectmodel]"),
-                                    ed = context.grid.columns[context.colIdx].getEditor(),
-                                    field = context.grid.columns[context.colIdx].field;
-                                if (ed.rawValue) {
-                                    context.record.set(context.field + "__label", ed.rawValue);
-                                }
-                                if (field.xtype === "labelfield") {
-                                    context.value = field.valueCollection.items;
-                                }
-                                app.drawDiagram(app.generateDiagram());
-                            },
+                            text: __("Input"),
+                            dataIndex: "input",
+                            width: 150,
+                            editor: "textfield"
                         },
                         {
-                            xtype: "panel",
-                            flex: 1,
-                            itemId: "diagram",
-                            border: false,
+                            text: __("Input Discriminator"),
+                            dataIndex: "input_discrimiator",
+                            width: 200,
+                            editor: "textfield"
+                        },
+                        {
+                            text: __("Output"),
+                            dataIndex: "output",
+                            width: 150,
+                            editor: "textfield"
+                        },
+                        {
+                            text: __("Output Discriminator"),
+                            dataIndex: "output_discrimiator",
+                            width: 200,
+                            editor: "textfield"
+                        },
+                        {
+                            text: __("Gain (dB)"),
+                            dataIndex: "gain_db",
+                            editor: "textfield"
                         }
                     ]
                 },
