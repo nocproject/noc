@@ -72,7 +72,7 @@ class ReportDiscoveryLinks(ReportSource):
          GROUP BY pool
          ORDER BY pool
         """
-        for row in sql.query(SQL).to_dicts():
+        for row in sql.execute(SQL, eager=True).to_dicts():
             if not row["all"]:
                 continue
             pool = Pool.get_by_name(row["pool"])

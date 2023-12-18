@@ -306,7 +306,7 @@ class ReportEngine(object):
                     query.datasource or root_band.name,
                     data.lazy() if data is not None else root_band.rows.lazy(),
                 )
-                data = sql.query(Jinja2Template(query.query).render(q_ctx))
+                data = sql.execute(Jinja2Template(query.query).render(q_ctx), eager=True)
                 if query.transpose:
                     data = data.transpose(include_header=True)
             if num and (data is None or data.is_empty()):
