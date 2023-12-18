@@ -1,0 +1,28 @@
+{
+    "name": "Category",
+    "$collection": "cm.configurationparams",
+    "uuid": "7df80e14-9833-44b1-a44b-ab0c45a9d71d",
+    "code": "port_category",
+    "description": "Optical Port Category",
+    "scopes": [
+        {
+            "is_required": true,
+            "scope__name": "OpticalPort"
+        },
+        {
+            "is_required": true,
+            "scope__name": "OTN"
+        }
+    ],
+    "type": "number",
+    "schema": [
+        {
+            "key": "max",
+            "value": "9"
+        },
+        {
+            "key": "min",
+            "value": "0"
+        }
+    ]
+}

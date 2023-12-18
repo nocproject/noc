@@ -1,0 +1,31 @@
+{
+    "name": "SetLoopback",
+    "$collection": "cm.configurationparams",
+    "uuid": "c24206ec-4a93-46ca-856d-9052d9e5b245",
+    "code": "optical_loopback_detect",
+    "scopes": [
+        {
+            "is_required": true,
+            "scope__name": "OpticalPort"
+        },
+        {
+            "is_required": true,
+            "scope__name": "OTN"
+        }
+    ],
+    "type": "string",
+    "choices": [
+        {
+            "name": "Disabled",
+            "value": "Disabled"
+        },
+        {
+            "name": "Near-End",
+            "value": "Near-End"
+        },
+        {
+            "name": "Far-End",
+            "value": "Far-End"
+        }
+    ]
+}
