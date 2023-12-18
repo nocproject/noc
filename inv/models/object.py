@@ -583,7 +583,7 @@ class Object(Document):
         seen: Set[Tuple[str, str]] = set()
         # Processed configurations param
         for pr in self.model.configuration_rule.param_rules:
-            if not pr.param.has_required_scopes:
+            if not pr.param.has_required_scopes or pr.param.is_common:
                 if (
                     pr.dependency_param
                     and self.get_cfg_data(pr.dependency_param) not in pr.dependency_param_values
@@ -610,6 +610,9 @@ class Object(Document):
                     not in pr.dependency_param_values
                 ):
                     continue
+                if pr.scope and pr.scope != scope.scope:
+                    print("Exclude", pr.scope, scope.code, scope)
+                    continue
                 schema = pr.param.get_schema(self)
                 # Getting param from connection model (for transceiver)
                 if pr.choices:
@@ -629,7 +632,7 @@ class Object(Document):
             r += [
                 ParamData(
                     code=param.code,
-                    scopes=[ScopeVariant.from_code(s) for s in scopes],
+                    scopes=[ScopeVariant.from_code(s) for s in scopes if s],
                     schema=param.get_schema(self),
                     value=value,
                 )
@@ -640,7 +643,7 @@ class Object(Document):
     def iter_configuration_scopes(self, param: "ConfigurationParam") -> Iterable["ScopeVariant"]:
         for c in self.model.connections:
             scope = self.model.configuration_rule.get_scope(param, c)
-            if not scope or not param.has_scope(scope.name):
+            if not scope or not param.has_scope(scope.name) or scope.is_common:
                 continue
             yield ScopeVariant(scope=scope, value=c.name)
 

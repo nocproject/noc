@@ -352,7 +352,12 @@ class ConfigurationParam(Document):
         """
         Param has Common Scope (without variant)
         """
-        return self.has_scope("Common")
+        if not self.scopes:
+            return True
+        for s in self.scopes:
+            if s.scope.is_common:
+                return True
+        return False
 
     @property
     def has_required_scopes(self) -> bool:
