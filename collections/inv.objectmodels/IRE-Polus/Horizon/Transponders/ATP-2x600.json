@@ -7,6 +7,7 @@
     "connection_rule__name": "IRE-Polus | Horizon",
     "cr_context": "LINECARD",
     "labels": ["noc::inv::lc"],
+    "configuration_rule__name": "ATP_2x600",
     "connections": [
         {
             "name": "in",
@@ -16,8 +17,16 @@
             "type__name": "IRE-Polus | Horizon | H8 Card"
         },
         {
+            "name": "LINE1",
+            "description": null,
+            "direction": "s",
+            "gender": "s",
+            "type__name": "Composed"
+        },
+        {
             "name": "LINE1_TX",
             "description": "Line 1 TX Port",
+            "composite": "LINE1",
             "direction": "s",
             "gender": "f",
             "type__name": "Optical | LC"
@@ -25,13 +34,22 @@
         {
             "name": "LINE1_RX",
             "description": "Line 1 RX Port",
+            "composite": "LINE1",
             "direction": "s",
             "gender": "f",
             "type__name": "Optical | LC"
         },
         {
+            "name": "LINE2",
+            "description": null,
+            "direction": "s",
+            "gender": "s",
+            "type__name": "Composed"
+        },
+        {
             "name": "LINE2_TX",
             "description": "Line 2 TX Port",
+            "composite": "LINE2",
             "direction": "s",
             "gender": "f",
             "type__name": "Optical | LC"
@@ -39,6 +57,7 @@
         {
             "name": "LINE2_RX",
             "description": "Line 2 RX Port",
+            "composite": "LINE2",
             "direction": "s",
             "gender": "f",
             "type__name": "Optical | LC"

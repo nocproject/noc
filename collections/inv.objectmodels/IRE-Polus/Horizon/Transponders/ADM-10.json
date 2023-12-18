@@ -1,0 +1,519 @@
+{
+    "name": "IRE-Polus | Horizon | Transponders | ADM-10",
+    "$collection": "inv.objectmodels",
+    "uuid": "60392e07-aab2-4d9f-a304-17b09b27675f",
+    "vendor__code": "IRE-POLUS",
+    "description": "Карта ADM-10 предназначена для объединения 16 клиентских потоков до 2.5G (1GE/STM1/STM4/STM16) в 2 линейных независимых сигнала с общей полосой пропускания до 10G. На лицевой панели карты ADM-10 размещаются 16 клиентских портов SFP и 4 линейных порта SFP+",
+    "connection_rule__name": "IRE-Polus | Horizon",
+    "cr_context": "LINECARD",
+    "configuration_rule__name": "ADM-10",
+    "connections": [
+        {
+            "name": "in",
+            "description": "Chassis connection",
+            "direction": "o",
+            "gender": "m",
+            "type__name": "IRE-Polus | Horizon | H8 Card"
+        },
+        {
+            "name": "LINE1",
+            "description": "Line port 1",
+            "direction": "i",
+            "gender": "f",
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "OTU1"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "OTU2"
+                }
+            ],
+            "type__name": "Transceiver | SFP+"
+        },
+        {
+            "name": "LINE2",
+            "description": "Line port 2",
+            "direction": "i",
+            "gender": "f",
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "OTU1"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "OTU2"
+                }
+            ],
+            "type__name": "Transceiver | SFP+"
+        },
+        {
+            "name": "LINE3",
+            "description": "Line port 3",
+            "direction": "i",
+            "gender": "f",
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "OTU1"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "OTU2"
+                }
+            ],
+            "type__name": "Transceiver | SFP+"
+        },
+        {
+            "name": "LINE4",
+            "description": "Line port 4",
+            "direction": "i",
+            "gender": "f",
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "OTU1"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "OTU2"
+                }
+            ],
+            "type__name": "Transceiver | SFP+"
+        },
+        {
+            "name": "CLIENT1",
+            "description": "Client port 1",
+            "direction": "i",
+            "gender": "f",
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth1G"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "STM1"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "STM4"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "STM16"
+                }
+            ],
+            "type__name": "Transceiver | SFP+"
+        },
+        {
+            "name": "CLIENT2",
+            "description": "Client port 2",
+            "direction": "i",
+            "gender": "f",
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth1G"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "STM1"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "STM4"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "STM16"
+                }
+            ],
+            "type__name": "Transceiver | SFP+"
+        },
+        {
+            "name": "CLIENT3",
+            "description": "Client port 3",
+            "direction": "i",
+            "gender": "f",
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth1G"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "STM1"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "STM4"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "STM16"
+                }
+            ],
+            "type__name": "Transceiver | SFP+"
+        },
+        {
+            "name": "CLIENT4",
+            "description": "Client port 4",
+            "direction": "i",
+            "gender": "f",
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth1G"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "STM1"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "STM4"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "STM16"
+                }
+            ],
+            "type__name": "Transceiver | SFP+"
+        },
+        {
+            "name": "CLIENT5",
+            "description": "Client port 5",
+            "direction": "i",
+            "gender": "f",
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth1G"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "STM1"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "STM4"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "STM16"
+                }
+            ],
+            "type__name": "Transceiver | SFP+"
+        },
+        {
+            "name": "CLIENT6",
+            "description": "Client port 6",
+            "direction": "i",
+            "gender": "f",
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth1G"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "STM1"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "STM4"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "STM16"
+                }
+            ],
+            "type__name": "Transceiver | SFP+"
+        },
+        {
+            "name": "CLIENT7",
+            "description": "Client port 7",
+            "direction": "i",
+            "gender": "f",
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth1G"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "STM1"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "STM4"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "STM16"
+                }
+            ],
+            "type__name": "Transceiver | SFP+"
+        },
+        {
+            "name": "CLIENT8",
+            "description": "Client port 8",
+            "direction": "i",
+            "gender": "f",
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth1G"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "STM1"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "STM4"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "STM16"
+                }
+            ],
+            "type__name": "Transceiver | SFP+"
+        },
+        {
+            "name": "CLIENT9",
+            "description": "Client port 9",
+            "direction": "i",
+            "gender": "f",
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth1G"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "STM1"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "STM4"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "STM16"
+                }
+            ],
+            "type__name": "Transceiver | SFP+"
+        },
+        {
+            "name": "CLIENT10",
+            "description": "Client port 10",
+            "direction": "i",
+            "gender": "f",
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth1G"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "STM1"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "STM4"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "STM16"
+                }
+            ],
+            "type__name": "Transceiver | SFP+"
+        },
+        {
+            "name": "CLIENT11",
+            "description": "Client port 11",
+            "direction": "i",
+            "gender": "f",
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth1G"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "STM1"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "STM4"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "STM16"
+                }
+            ],
+            "type__name": "Transceiver | SFP+"
+        },
+        {
+            "name": "CLIENT12",
+            "description": "Client port 12",
+            "direction": "i",
+            "gender": "f",
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth1G"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "STM1"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "STM4"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "STM16"
+                }
+            ],
+            "type__name": "Transceiver | SFP+"
+        },
+        {
+            "name": "CLIENT13",
+            "description": "Client port 13",
+            "direction": "i",
+            "gender": "f",
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth1G"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "STM1"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "STM4"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "STM16"
+                }
+            ],
+            "type__name": "Transceiver | SFP+"
+        },
+        {
+            "name": "CLIENT14",
+            "description": "Client port 14",
+            "direction": "i",
+            "gender": "f",
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth1G"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "STM1"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "STM4"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "STM16"
+                }
+            ],
+            "type__name": "Transceiver | SFP+"
+        },
+        {
+            "name": "CLIENT15",
+            "description": "Client port 15",
+            "direction": "i",
+            "gender": "f",
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth1G"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "STM1"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "STM4"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "STM16"
+                }
+            ],
+            "type__name": "Transceiver | SFP+"
+        },
+        {
+            "name": "CLIENT16",
+            "description": "Client port 16",
+            "direction": "i",
+            "gender": "f",
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth1G"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "STM1"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "STM4"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "STM16"
+                }
+            ],
+            "type__name": "Transceiver | SFP+"
+        }
+    ],
+    "data": [
+        {
+            "attr": "power",
+            "interface": "power",
+            "value": 64.0
+        },
+        {
+            "attr": "width",
+            "interface": "dimensions",
+            "value": 351
+        },
+        {
+            "attr": "depth",
+            "interface": "dimensions",
+            "value": 292
+        },
+        {
+            "attr": "height",
+            "interface": "dimensions",
+            "value": 30
+        },
+        {
+            "attr": "weight",
+            "interface": "weight",
+            "value": 2.1
+        },
+        {
+            "attr": "part_no",
+            "interface": "asset",
+            "value": ["ADM-10-SFP/SFP+-H8"]
+        }
+    ]
+}

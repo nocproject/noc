@@ -1,0 +1,10 @@
+{
+    "name": "STM4",
+    "code": "STM4",
+    "$collection": "inv.protocols",
+    "uuid": "c86512ad-ace7-41ec-839b-d2b399d3cb91",
+    "description": "622 Mbit/s",
+    "data": [],
+    "connection_schema": "BO",
+    "technology__name": "SDH"
+}

@@ -1,0 +1,10 @@
+{
+    "name": "OSC",
+    "code": "OSC",
+    "$collection": "inv.protocols",
+    "uuid": "8ccd040b-dac6-48bf-b3b7-d3a1dfcfaf34",
+    "description": "OSC (Optical Supervisory Channel) is a carrier of DWDM working statement information, including the information of network management, service and monitoring",
+    "data": [],
+    "connection_schema": "BD",
+    "technology__name": "WDM"
+}

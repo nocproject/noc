@@ -65,6 +65,10 @@ class ConfigurationScope(Document):
         p = [quote_safe_path(n.strip()) for n in self.name.split("|")]
         return os.path.join(*p) + ".json"
 
+    @property
+    def is_common(self) -> bool:
+        return self.name == "Common"
+
     def to_json(self) -> str:
         r = {
             "name": self.name,

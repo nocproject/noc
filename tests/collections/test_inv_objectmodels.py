@@ -151,7 +151,15 @@ CONNECTION_CHECKLIST = {
         "directions": ["i", "o"],
         "protocols": ["TransEth100M", "TransEth1G", "GPON"],
     },
-    "Transceiver | SFP+": {"directions": ["i", "o"], "protocols": ["TransEth1G", "TransEth10G"]},
+    "Transceiver | SFP+": {
+        "directions": ["i", "o"],
+        "protocols": [
+            "TransEth1G",
+            "TransEth10G",
+            "OTU1",
+            "OTU2",
+        ],
+    },
     "Transceiver | SFP+ | Cisco": {
         "directions": ["i", "o"],
         "protocols": ["TransEth1G", "TransEth10G"],
