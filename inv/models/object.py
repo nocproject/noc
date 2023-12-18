@@ -1257,7 +1257,7 @@ class Object(Document):
         static crossings from models.
         """
 
-        def is_passable(item: ObjectCrossing) -> bool:
+        def is_passable(item: Crossing) -> bool:
             if not item.input_discriminator:
                 return True
             if not discriminators:
