@@ -257,7 +257,7 @@ class ManagedObjectDS(BaseDataSource):
             r = await super().query(fields=None, *args, **kwargs)
             sql = pl.SQLContext()
             sql.register("mo", r.lazy())
-            return sql.query(kwargs["detail_query"]).select(fields or [])
+            return sql.execute(kwargs["detail_query"], eager=True).select(fields or [])
         return await super().query(fields=fields, *args, **kwargs)
 
     @classmethod

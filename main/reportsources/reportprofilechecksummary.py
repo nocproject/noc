@@ -130,7 +130,7 @@ class ReportProfileCheckSummary(ReportSource):
                 b.set_data({"name": "Summary"})
                 query = f"SELECT {condition} FROM mo"
             data.append(b)
-            for row in sql.query(query).transpose(include_header=True).to_dicts():
+            for row in sql.execute(query, eager=True).transpose(include_header=True).to_dicts():
                 if row["column"] == "1.2" and row["column_0"] == 0:
                     data.pop()
                     break
