@@ -6,7 +6,7 @@
 # ----------------------------------------------------------------------
 
 # Python modules
-from typing import Any, Union, Set
+from typing import Any, Union, Set, List, Tuple, Iterable
 
 # NOC modules
 from noc.core.text import ranges_to_list
@@ -68,18 +68,80 @@ class VlanDiscriminator(object):
         return f"{self.scope}{SCOPE_SEPARATOR}{self.vlan}"
 
     def __contains__(self, other: Any) -> bool:
-        # @todo: VLAN Filter support
         if not isinstance(other, VlanDiscriminator):
             return False
-        print(self.vlan)
-        print(other.vlan)
         return self.vlan == other.vlan or other.vlan.issubset(self.vlan)
 
 
-scopes = {x.scope: x for x in (LambdaDiscriminator, VlanDiscriminator)}
+# ODU -> Nested ODU -> limit
+ODU_LIMITS = {
+    "ODU0": {},
+    "ODU1": {"ODU0": 2},
+    "ODU2": {"ODU0": 8},
+    "ODU2e": {},
+    "ODU3": {"ODU0": 32, "ODU1": 16},
+    "ODU3e2": {"ODU2e": 4},
+    "ODU4": {"ODU0": 80, "ODU1": 40, "ODU2": 10, "ODU3": 2},
+}
 
 
-def discriminator(v: str) -> Union[LambdaDiscriminator, VlanDiscriminator]:
+class OduDiscrimiator(object):
+    scope: str = "odu"
+
+    def __init__(self, value: str):
+        self.odu: List[Tuple[str, int]] = list(self._iter_parse(value))
+        # Check odu
+        prev_odu = None
+        for n, idx in self.odu:
+            if n not in ODU_LIMITS:
+                msg = f"Invalid ODU type: {n}"
+                raise ValueError(msg)
+            if prev_odu:
+                if n not in ODU_LIMITS[prev_odu]:
+                    msg = f"{n} cannot be nested in {prev_odu}"
+                    raise ValueError(msg)
+                max_idx = ODU_LIMITS[prev_odu][n]
+                if idx >= max_idx:
+                    msg = f"ODU index overflow: {idx} >= {max_idx}"
+                    raise ValueError(msg)
+            elif idx:
+                msg = "Top-level ODU must have index 0"
+                raise ValueError(msg)
+            prev_odu = n
+
+    @staticmethod
+    def _iter_parse(value: str) -> Iterable[Tuple[str, int]]:
+        def q(x: str) -> Tuple[str, int]:
+            if "-" in x:
+                n, y = x.split("-", 1)
+                return n, int(y)
+            return x, 0
+
+        for x in value.split("::"):
+            yield q(x)
+
+    def __str__(self) -> str:
+        r = [self.odu[0][0]]
+        for n, idx in self.odu[1:]:
+            r.append(f"{n}-{idx}")
+        return f"{self.scope}::{'::'.join(r)}"
+
+    def __contains__(self, other: "OduDiscriminator") -> bool:
+        if not isinstance(other, OduDiscrimiator):
+            return False
+        for (x, i1), (y, i2) in zip(self.odu, other.odu):
+            if x == y:
+                if i1 != i2:
+                    return False
+            elif y not in ODU_LIMITS[x]:
+                return False
+        return True
+
+
+scopes = {x.scope: x for x in (LambdaDiscriminator, VlanDiscriminator, OduDiscrimiator)}
+
+
+def discriminator(v: str) -> Union[LambdaDiscriminator, VlanDiscriminator, OduDiscrimiator]:
     if SCOPE_SEPARATOR not in v:
         msg = "Invalid Format"
         raise ValueError(msg)

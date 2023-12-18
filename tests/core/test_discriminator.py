@@ -25,6 +25,11 @@ from noc.core.discriminator import discriminator
         "vlan::-10",
         "vlan::4096",
         "vlan::100-10000",
+        # odu
+        "odu::ODU777",
+        "odu::ODU1-2",
+        "odu::ODU1::ODU0-2",
+        "odu::ODU0::ODU1",
     ],
 )
 def test_invalid_value(v: str) -> None:
@@ -44,11 +49,14 @@ def test_invalid_value(v: str) -> None:
         ("lambda::100-50", "lambda::150-10", False),
         ("lambda::100-50", "lambda::100-60", False),
         ("lambda::100-50", "lambda::200-50", False),
-        #
+        # VLAN
         ("vlan::1", "vlan::1", True),
         ("vlan::1", "vlan::2", False),
         ("vlan::1,2,7-15", "vlan::12", True),
         ("vlan::1,2,7-15", "vlan::12-15", True),
+        # ODU
+        ("odu::ODU2", "odu::ODU1", False),
+        ("odu::ODU2", "odu::ODU2::ODU0-1", True),
     ],
 )
 def test_contains(x: str, y: str, expected: str) -> None:
