@@ -8,8 +8,7 @@
 
 # Python modules
 import re
-import enum
-from typing import List, Dict, Any, Optional, Tuple
+from typing import List, Dict, Optional, Tuple
 from dataclasses import dataclass
 
 # NOC modules

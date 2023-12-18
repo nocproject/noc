@@ -124,7 +124,7 @@ class Script(BaseScript):
         """
         r = []
         for p in c.metrics:
-            labels, thresholds, status = [f"slot::{slot_num}"], [], True
+            labels, status = [f"slot::{slot_num}"], True
             if p.port:
                 labels.append(f"port::{p.port}")
                 # status = port_states.get(p.port) or T
