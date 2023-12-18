@@ -7,6 +7,8 @@
 
 # Python modules
 import re
+import os
+import errno
 
 # Third-party modules
 import orjson
@@ -22,20 +24,46 @@ from noc.inv.models.object import ObjectAttr
 class Command(BaseCommand):
     def add_arguments(self, parser):
         parser.add_argument(
-            "--json",
+            "--apply",
             action="store_true",
             default=False,
-            dest="json_format",
-            help="output in JSONEachRow format",
+            dest="apply_mongo",
+            help="store changes to mongo",
         )
-        parser.add_argument("--profile", help="Profile list in JSON format")
-        parser.add_argument("--metric", help="Metric list in JSON format")
+        parser.add_argument(
+            "--backup-dir",
+            dest="backup_dir",
+            help="save collections backup to specified directory before apply",
+        )
+        parser.add_argument(
+            "--output-dir",
+            dest="output_dir",
+            help="save changed collections to specified directory",
+        )
 
-    def parse_json(self, j):
+    def gen_filename(self, output_dir: str, o: ObjectModel)-> str:
+        name_parts = o.name.split("|")
+        name_parts = [s.strip().replace(" ", "_") for s in name_parts]
+        name_parts[-1] += ".json"
+
+        file_name = os.path.join(output_dir, *name_parts)
+
+        return file_name
+
+    def save_json(self, o_dir, o) -> None:
+        fname = self.gen_filename(o_dir, o)
+        dir_name = os.path.dirname(fname)
+
         try:
-            return orjson.loads(j)
-        except ValueError as e:
-            self.die("Failed to parse JSON: %s" % e)
+            os.makedirs(dir_name)
+        except OSError as e:
+            if e.errno != errno.EEXIST:
+                raise
+
+        with open(fname, "w") as f:
+            f.write(o.to_json())
+
+        return
 
     def print_csv(self, profile_list, metric_list):
         self.stdout.write(f";{';'.join(m for m in metric_list)};\n")
@@ -89,6 +117,7 @@ class Command(BaseCommand):
 
         re.compile(r"(?:\s|^)wavelength: (?P<tx>\d+)-(?P<rx>\d+) nm(?:\s|$)"),
         re.compile(r"(?:\s|^)wavelength:(?P<tx>\d+) nm(?:\s|$)"),
+        re.compile(r"(?:\s|^)wavelength: (?P<tx>\d+)tx(?:\s|$)"),
 
         re.compile(r"(?:\s|^)(?P<txrx>\d+) txrx(?:\s|$)"),
         re.compile(r"(?:\s|^)tx (?P<tx>\d+)(?:\s|$)"),
@@ -153,9 +182,18 @@ class Command(BaseCommand):
         re.compile(r"(?:\s|^)gpon(?:\s|$)"),
         re.compile(r"(?:\s|^)gepon(?:\s|$)"),
         re.compile(r"(?:\s|^)epon(?:\s|$)"),
+        re.compile(r"(?:\s|^)epon(?:\S|$)"),
     ]
 
-    def handle(self, json_format, profile, metric):
+    def handle(self, apply_mongo, backup_dir, output_dir):
+        if output_dir and not os.path.isdir(output_dir) and os.access(output_dir, os.W_OK):
+            self.stdout.write("Output dir not exists or not writeable '%s'" % output_dir)
+            return
+
+        if backup_dir and not os.path.isdir(backup_dir) and os.access(backup_dir, os.W_OK):
+            self.stdout.write("Backup dir not exists or not writeable '%s'" % backup_dir)
+            return
+
         connect()
         for o in ObjectModel.objects.filter(name={"$regex": ".*Transceiver.*"}):
             description = o.description.strip()
@@ -238,11 +276,15 @@ class Command(BaseCommand):
                 tx = 1490
                 rx = 1310
 
-            self.stdout.write("        Distance: %sm\n" % distance)
-            self.stdout.write("        RX: %s\n" % rx)
-            self.stdout.write("        TX: %s\n" % tx)
+            if distance:
+                self.stdout.write("        Distance: %sm\n" % distance)
+            if rx:
+                self.stdout.write("        RX: %s\n" % rx)
+            if tx:
+                self.stdout.write("        TX: %s\n" % tx)
             self.stdout.write("        BIDI: %s\n" % isbidi)
             self.stdout.write("        XWDM: %s\n" % isxwdm)
+            self.stdout.write("\n")
             self.stdout.write("        XPON: %s\n" % isxpon)
 
             self.stdout.write("\n")
@@ -258,127 +300,13 @@ class Command(BaseCommand):
             
             o.data += [ModelAttr(interface="optical", attr="bidi", value=isbidi)]
             o.data += [ModelAttr(interface="optical", attr="xwdm", value=isxwdm)]
-            self.stdout.write("%s\n" % o.to_json())
+
+            if output_dir:
+                self.save_json(output_dir, o)
+            # self.stdout.write("%s\n" % o.to_json())
             continue
 
-            parts = description.split()
-            next_parts = parts[1:] + [""]
-            prev_parts = [""] + parts
-            # self.stdout.write("%s\n" % parts)
-            # self.stdout.write("%s\n" % prev_parts)
-            for p_now, p_prev, p_next in zip(parts, prev_parts, next_parts):
-                # self.stdout.write("now %s\n" % p_now)
-                # self.stdout.write("prev %s\n" % p_prev)
-                # self.stdout.write("next %s\n" % p_next)
-                if p_now == "rx":
-                    if p_prev.isdigit():
-                        self.stdout.write("    0    RX Wavelength: %s\n" % p_prev)
-                    else:
-                        if p_next.isdigit():
-                            self.stdout.write("    0    RX Wavelength: %s\n" % p_prev)
-
-                if p_now == "tx":
-                    if p_prev.isdigit():
-                        self.stdout.write("    0    TX Wavelength: %s\n" % p_prev)
-                    else:
-                        if p_next.isdigit():
-                            self.stdout.write("    0    TX Wavelength: %s\n" % p_prev)
-
-                if p_now == "nm":
-                    if p_prev.isdigit():
-                        self.stdout.write("    5    TX Wavelength: %s\n" % p_prev)
-                    else:
-                        nm_parts = p_prev.split("/")
-                        if len(nm_parts) == 2:
-                            for p in nm_parts:
-                                if "rx-" in p:
-                                    p = p.replace("rx-", "")
-                                    if p.isdigit():
-                                        self.stdout.write("    7    RX Wavelength: %s\n" % p)
-                                if "tx-" in p:
-                                    p = p.replace("tx-", "")
-                                    if p.isdigit():
-                                        self.stdout.write("    7    TX Wavelength: %s\n" % p)
-
-                if p_now.endswith("nm") and p_now != "nm":
-                    nm = p_now.replace("nm", "")
-                    if nm.isdigit():
-                        self.stdout.write("    10    TX Wavelength: %s\n" % nm)
-                    else:
-                        nm_parts = nm.split("/")
-                        if len(nm_parts) == 2:
-                            self.stdout.write("    15    TX Wavelength: %s\n" % nm_parts[0])
-                            self.stdout.write("    15    RX Wavelength: %s\n" % nm_parts[1])
-
-                if p_now.endswith("km") and p_now != "km":
-                    km = p_now.replace("km", "")
-                    if km.isdigit():
-                        self.stdout.write("        Distance: %s km\n" % km)
-
-                if p_now.endswith("m") and p_now != "m":
-                    km = p_now.replace("m", "")
-                    if km.isdigit():
-                        self.stdout.write("        Distance: %s m\n" % km)
         return
-        # if profile:
-        #     profiles = self.parse_json(profile)
-        # else:
-        #     profiles = [x for x in profile_loader.iter_profiles()]
-
-        # if metric:
-        #     metrics = self.parse_json(metric)
-        # else:
-        #     metrics = []
-
-        # metric_list = []
-        # profile_list = []
-
-        # for p in profiles:
-        #     p_item = {"name": p, "metrics": {}}
-        #     script_name = f"{p}.get_metrics"
-        #     script_class = script_loader.get_script(script_name)
-        #     if not script_class:
-        #         self.die("Failed to load script %s" % script_class)
-
-        #     service = ServiceStub(pool="")
-        #     # TODO dirty hack
-        #     # Suppress error in /opt/noc/sa/profiles/Ericsson/MINI_LINK/profile.py
-        #     try:
-        #         scr = script_class(
-        #             service=service,
-        #             credentials={},
-        #             capabilities=[],
-        #             args=[],
-        #             version={},
-        #             timeout=3600,
-        #             name=script_name,
-        #         )
-        #     except AttributeError:
-        #         continue
-
-        #     if metrics:
-        #         for m in metrics:
-        #             if m not in metric_list:
-        #                 metric_list.append(m)
-        #             if m in scr._mt_map:
-        #                 metric_func_list = scr._mt_map[m]
-        #                 p_item.get("metrics")[m] = self.get_metric_source(metric_func_list)
-        #     else:
-        #         for m in scr._mt_map:
-        #             if m not in metric_list:
-        #                 metric_list.append(m)
-        #             metric_func_list = scr._mt_map[m]
-        #             p_item.get("metrics")[m] = self.get_metric_source(metric_func_list)
-
-        #     profile_list.append(p_item)
-
-        # metric_list.sort()
-
-        # if json_format:
-        #     self.print_json(profile_list, metric_list)
-        # else:
-        #     self.print_csv(profile_list, metric_list)
-
 
 class ServiceStub(object):
     class ServiceConfig(object):
