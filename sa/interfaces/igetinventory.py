@@ -49,9 +49,13 @@ class IGetInventory(BaseInterface):
             "crossing": DictListParameter(
                 attrs={
                     # Input connection name, according to model
-                    "in": StringParameter(),
+                    "input": StringParameter(),
+                    # Input filter
+                    "input_discriminator": StringParameter(required=False),
                     # Output connection name, according to model
-                    "out": StringParameter(),
+                    "output": StringParameter(),
+                    # Output signal mapping
+                    "output_discriminator": StringParameter(required=False),
                     # Power gain, in dB
                     "gain": FloatParameter(),
                 },

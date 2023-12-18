@@ -26,6 +26,7 @@ from mongoengine.fields import (
     ReferenceField,
     BooleanField,
     DateTimeField,
+    FloatField,
 )
 from mongoengine import signals
 import cachetools
@@ -149,18 +150,26 @@ class ObjectCrossing(EmbeddedDocument):
 
     Attributes:
         input: Input slot name.
+        input_discriminator: Input filter.
         output: Output slot name.
-        discriminator: Optional discriminator.
+        output_discriminator: When not-empty, input to output mapping.
+        gain_db: When non-empty, signal gain in dB.
     """
 
     input = StringField(required=True)
+    input_discriminator = StringField(required=False)
     output = StringField(required=True)
-    discriminator = StringField(required=False)
+    output_discriminator = StringField(required=False)
+    gain_db = FloatField(required=False)
 
     def __str__(self) -> str:
-        if self.discriminator:
-            return f"{self.input} -> {self.output}: {self.discriminator}"
-        return f"{self.input} -> {self.output}"
+        r = [self.input]
+        if self.input_discriminator:
+            r += [f": {self.input_discriminator}"]
+        r += [" -> ", self.output]
+        if self.output_discriminator:
+            r += [f": {self.output_discriminator}"]
+        return "".join(r)
 
 
 @Label.model
@@ -1269,7 +1278,7 @@ class Object(Document):
         self, name: str, discriminators: Optional[Iterable[str]] = None
     ) -> Iterable[str]:
         """
-        Iterate crossed output.
+        Iterate crossed outputs.
 
         Given the input name and the optional discriminators,
         find and iterate all reachable outputs names.
@@ -1278,11 +1287,11 @@ class Object(Document):
         """
 
         def is_passable(item: ObjectCrossing) -> bool:
-            if not item.discriminator:
+            if not item.input_discriminator:
                 return True
             if not discriminators:
                 return False
-            item_desc = discriminator(item.discriminator)
+            item_desc = discriminator(item.input_discriminator)
             return any(d in item_desc for d in discriminators)
 
         seen: Set[str] = set()
