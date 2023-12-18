@@ -132,16 +132,16 @@ class Script(BaseScript):
                 labels.append(f"channel::{p.channel}")
             if p.module:
                 labels.append(f"module::{p.module}")
-            for tp in c.cfg_thresholds:
-                if tp.name.startswith(p.name):
-                    thresholds.append(
-                        {
-                            "id": tp.name,
-                            "value": tp.value,
-                            "realtion": "<=" if tp.name.endswith("Min") else ">=",
-                            "description": tp.description,
-                        }
-                    )
+            # for tp in c.cfg_thresholds:
+            #     if tp.name.startswith(p.name):
+            #         thresholds.append(
+            #             {
+            #                 "id": tp.name,
+            #                 "value": tp.value,
+            #                 "realtion": "<=" if tp.name.endswith("Min") else ">=",
+            #                 "description": tp.description,
+            #             }
+            #         )
             r += [
                 {
                     "name": p.name,
@@ -149,7 +149,7 @@ class Script(BaseScript):
                     "description": p.description,
                     "measurement": p.get_measurement_unit,
                     "labels": labels,
-                    "thresholds": thresholds,
+                    # "thresholds": thresholds,
                 }
             ]
         return r
