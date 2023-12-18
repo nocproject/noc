@@ -431,6 +431,8 @@ class ObjectModel(Document):
             r["sensors"] = [s.json_data for s in self.sensors]
         if self.connection_rule:
             r["connection_rule__name"] = self.connection_rule.name
+        if self.configuration_rule:
+            r["configuration_rule__name"] = self.configuration_rule.name
         if self.cr_context:
             r["cr_context"] = self.cr_context
         if self.plugins:

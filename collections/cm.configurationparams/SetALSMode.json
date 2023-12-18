@@ -1,0 +1,32 @@
+{
+    "name": "SetALSMode",
+    "$collection": "cm.configurationparams",
+    "uuid": "f869dfae-7855-4428-a473-2a8afb6aaec1",
+    "code": "optical_als_mode",
+    "description": "Automatic Laser Shutdown Mode",
+    "scopes": [
+        {
+            "is_required": true,
+            "scope__name": "OpticalPort"
+        },
+        {
+            "is_required": true,
+            "scope__name": "OTN"
+        }
+    ],
+    "type": "string",
+    "choices": [
+        {
+            "name": "Disabled",
+            "value": "Disabled"
+        },
+        {
+            "name": "Near-End",
+            "value": "Near-End"
+        },
+        {
+            "name": "Remote",
+            "value": "Remote"
+        }
+    ]
+}

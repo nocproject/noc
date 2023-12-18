@@ -1,0 +1,10 @@
+{
+    "name": "STM16",
+    "code": "STM16",
+    "$collection": "inv.protocols",
+    "uuid": "6fe5fd3b-8f81-4950-805b-446c5d712b0e",
+    "description": "2 500 Mbit/s",
+    "data": [],
+    "connection_schema": "BO",
+    "technology__name": "SDH"
+}

@@ -8,6 +8,7 @@
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetinterfaces import IGetInterfaces
+from .profile import Component
 
 
 class Script(BaseScript):
@@ -22,22 +23,22 @@ class Script(BaseScript):
             json=True,
             cached=True,
         )
-        cu_params = self.profile.parse_params(cu_params["params"])
-        for _, p in cu_params.items():
-            if p.component_type != "Port":
+        components = Component.from_params(cu_params["params"])
+        for c_name, c in components.items():
+            if not c_name.startswith("Port"):
                 continue
-            if p.component not in r:
-                r[p.component] = {
+            if c_name not in r:
+                r[c_name] = {
                     "type": "physical",
-                    "name": p.component,
+                    "name": c_name,
                     "admin_status": False,
                     "oper_status": False,
                     "hints": ["noc::interface::role::uplink"],
                     "subinterfaces": [],
                 }
-            if p.name == "Mode":
-                r[p.component]["oper_status"] = p.value != "Unknown"
-            if p.name == "SetState":
-                r[p.component]["admin_status"] = p.value == "IS"
+            # if p.name == "Mode":
+            #     r[p.component]["oper_status"] = p.value != "Unknown"
+            # if p.name == "SetState":
+            #    r[p.component]["admin_status"] = p.value == "IS"
 
         return [{"interfaces": list(r.values())}]
