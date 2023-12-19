@@ -7,7 +7,7 @@
 
 # Python modules
 import operator
-from typing import List, Dict, Any
+from typing import List, Dict, Any, Tuple
 
 # NOC modules
 from .base import InvPlugin
@@ -48,7 +48,7 @@ class MetricPlugin(InvPlugin):
             ]
         return r
 
-    def get_threshold_ranges(self, thresholds) -> List[Dict[str, Any]]:
+    def get_threshold_ranges(self, thresholds, value) -> Tuple[int, int, List[Dict[str, Any]]]:
         """
         "left": 50,
         "right": 120,
@@ -57,10 +57,10 @@ class MetricPlugin(InvPlugin):
         #fce97d - warning
         """
         r = []
-        min_value, max_value = -100, 120
-        left, right, color = min_value, None, None
         left = sorted([t for t in thresholds if t["op"] == "<="], key=operator.itemgetter("value"))
         right = sorted([t for t in thresholds if t["op"] == ">="], key=operator.itemgetter("value"))
+        min_value = min(value, left[0]["value"] if left else value) - 10
+        max_value = max(value, right[-1]["value"] if right else value) + 10
         if len(left) == 1:
             r += [
                 {
@@ -103,7 +103,7 @@ class MetricPlugin(InvPlugin):
                     "color": "#d2403d",
                 },
             ]
-        return r
+        return min_value, max_value, r
 
     def get_data(self, request, o):
         r = []
@@ -114,7 +114,8 @@ class MetricPlugin(InvPlugin):
             if s.object != o:
                 components.insert(0, f"object::{o.name}")
             thresholds = self.get_sensor_thresholds(o, s)
-            ranges = self.get_threshold_ranges(thresholds)
+            value = 1
+            min_value, max_value, ranges = self.get_threshold_ranges(thresholds, value)
             r.append(
                 {
                     "bi_id": str(s.bi_id),
@@ -124,9 +125,9 @@ class MetricPlugin(InvPlugin):
                     "component__label": " ".join(components),
                     "units": str(s.units.id),
                     "units__label": s.units.name,
-                    "value": 1,
-                    "min_value": -100,
-                    "max_value": 120,
+                    "value": value,
+                    "min_value": min_value,
+                    "max_value": max_value,
                     "oper_state": "ok",
                     "oper_state__label": _("OK"),
                     # "description": s.description,
