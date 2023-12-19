@@ -26,7 +26,6 @@ Ext.define("NOC.inv.inv.plugins.managedobject.ManagedObjectPanel", {
     preview: function(data) {
         var me = this;
         me.currentId = data.id;
-        console.log(me.items, me.items.length);
         if(!me.items.length) {
             me.app.addAppForm(me, "sa.managedobject", data.managed_object_id);
         }
