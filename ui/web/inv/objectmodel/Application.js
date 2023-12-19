@@ -47,7 +47,7 @@ Ext.define("NOC.inv.objectmodel.Application", {
         }
     ],
 
-    initComponent: function () {
+    initComponent: function() {
         var me = this;
 
         // JSON Panel
@@ -318,7 +318,13 @@ Ext.define("NOC.inv.objectmodel.Application", {
                             text: __("Input"),
                             dataIndex: "input",
                             width: 150,
-                            editor: "textfield"
+                            editor: {
+                                xtype: "combobox",
+                                valueField: "id",
+                                editable: false,
+                                queryMode: "local",
+                                forceSelection: true
+                            }
                         },
                         {
                             text: __("Input Discriminator"),
@@ -330,7 +336,13 @@ Ext.define("NOC.inv.objectmodel.Application", {
                             text: __("Output"),
                             dataIndex: "output",
                             width: 150,
-                            editor: "textfield"
+                            editor: {
+                                xtype: "combobox",
+                                valueField: "id",
+                                editable: false,
+                                queryMode: "local",
+                                forceSelection: true
+                            }
                         },
                         {
                             text: __("Output Discriminator"),
@@ -343,7 +355,14 @@ Ext.define("NOC.inv.objectmodel.Application", {
                             dataIndex: "gain_db",
                             editor: "textfield"
                         }
-                    ]
+                    ],
+                    onBeforeEdit: function(editor, context) {
+                        var connectionsField = context.view.up("[xtype=form]").down("[name=connections]"),
+                            data = Ext.Array.map(connectionsField.value, function(value) {return {id: value.name, text: value.name}}),
+                            combo = editor.getEditor(context.record, context.column).field;
+                        combo.getStore().loadData(data);
+                        context.cancel = context.record.get("is_persist");
+                    }
                 },
                 {
                     name: "sensors",
@@ -431,40 +450,40 @@ Ext.define("NOC.inv.objectmodel.Application", {
         me.callParent();
     },
     //
-    onJSON: function () {
+    onJSON: function() {
         var me = this;
         me.showItem(me.ITEM_JSON);
         me.jsonPanel.preview(me.currentRecord);
     },
     //
-    onTest: function () {
+    onTest: function() {
         var me = this;
         Ext.Ajax.request({
             url: "/inv/objectmodel/" + me.currentRecord.get("id") + "/compatible/",
             method: "GET",
             scope: me,
-            success: function (response) {
+            success: function(response) {
                 var data = Ext.decode(response.responseText);
                 me.showItem(me.ITEM_TEST).preview(me.currentRecord, data);
             },
-            failure: function () {
+            failure: function() {
                 NOC.error(__("Failed to get data"));
             }
         });
     },
     //
-    cleanData: function (v) {
+    cleanData: function(v) {
         var me = this,
             i, c, x;
-        for (i in v.connections) {
+        for(i in v.connections) {
             c = v.connections[i];
-            if (!Ext.isArray(c.protocols)) {
-                if (!Ext.isEmpty(c.protocols)) {
+            if(!Ext.isArray(c.protocols)) {
+                if(!Ext.isEmpty(c.protocols)) {
                     x = c.protocols.trim();
-                    if (x === "" || x === undefined || x === null) {
+                    if(x === "" || x === undefined || x === null) {
                         c.protocols = [];
                     } else {
-                        c.protocols = c.protocols.split(",").map(function (v) {
+                        c.protocols = c.protocols.split(",").map(function(v) {
                             return v.trim();
                         });
                     }
@@ -473,11 +492,11 @@ Ext.define("NOC.inv.objectmodel.Application", {
         }
     },
     //
-    onCloneConnection: function (record) {
+    onCloneConnection: function(record) {
         var me = this,
             v = record.get("name"),
             m = v.match(/(.*?)(\d+)/);
-        if (m === null) {
+        if(m === null) {
             return;
         }
         var n = +m[2] + 1;
