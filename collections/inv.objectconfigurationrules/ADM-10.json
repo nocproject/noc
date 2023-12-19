@@ -3,11 +3,6 @@
     "$collection": "inv.objectconfigurationrules",
     "uuid": "f974ee40-4145-4944-abfa-24331ad73e23",
     "description": null,
-    "scope_rules": [{
-            "match_slot": "LINE\\d+$"
-        }, {
-            "match_slot": "CLIENT\\d+$"
-        }],
     "param_rules": [
         {
             "is_hide": false,
@@ -60,6 +55,16 @@
             "is_hide": false,
             "is_readonly": false,
             "param__code": "optical_loopback_detect"
+        }
+    ],
+    "slot_rules": [
+        {
+            "match_slot": "LINE\\d+$",
+            "scope__name": "OTN"
+        },
+        {
+            "match_slot": "CLIENT\\d+$",
+            "scope__name": "OpticalPort"
         }
     ]
 }

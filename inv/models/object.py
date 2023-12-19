@@ -584,6 +584,8 @@ class Object(Document):
             param_data[(d.param.code, d.scope)] = d.value
         r: List["ParamData"] = []
         seen: Set[Tuple[str, str]] = set()
+        if not self.model.configuration_rule:
+            return r
         # Processed configurations param
         for pr in self.model.configuration_rule.param_rules:
             if not pr.param.has_required_scopes or pr.param.is_common:

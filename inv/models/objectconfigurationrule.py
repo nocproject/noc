@@ -46,13 +46,15 @@ class SlotRule(EmbeddedDocument):
 
     @property
     def json_data(self) -> Dict[str, Any]:
-        r = {}
+        r = {"scope__name": self.scope.name}
         if self.match_slot:
             r["match_slot"] = self.match_slot
         if self.match_connection_type:
             r["match_connection_type__name"] = self.match_connection_type.name
         if self.match_protocols:
             r["match_protocols"] = [p.code for p in self.match_protocols]
+        if self.allowed_params:
+            r["allowed_params"] = [p.code for p in self.allowed_params]
         if self.deny_params:
             r["deny_params"] = [p.code for p in self.deny_params]
         return r
@@ -122,7 +124,7 @@ class ObjectConfigurationRule(Document):
             "$collection": self._meta["json_collection"],
             "uuid": self.uuid,
             "description": self.description,
-            "scope_rules": [s.json_data for s in self.slot_rules],
+            "slot_rules": [s.json_data for s in self.slot_rules],
             "param_rules": [p.json_data for p in self.param_rules],
         }
 

@@ -32,7 +32,7 @@ class MetricPlugin(InvPlugin):
         # description
         """
         r = []
-        mt = MetricType.get_by_id("Sensor | Value")
+        mt = MetricType.get_by_name("Sensor | Value")
         for p in ConfigurationParam.objects.filter(metric_type=mt):
             d = o.get_cfg_data(param=p, scope=f"Sensor::{sensor.local_id}")
             if not d:
@@ -40,7 +40,7 @@ class MetricPlugin(InvPlugin):
             r += [
                 {
                     "value": d,
-                    "op": ">",
+                    "op": p.threshold_op,
                     "is_readonly": False,
                     "name": f"{p.code}@Sensor::{sensor.local_id}",
                     "description": "Threshold for Sensor",
@@ -57,8 +57,52 @@ class MetricPlugin(InvPlugin):
         #fce97d - warning
         """
         r = []
-        for t in sorted(thresholds, key=operator.itemgetter("value")):
-            ...
+        min_value, max_value = -100, 120
+        left, right, color = min_value, None, None
+        left = sorted([t for t in thresholds if t["op"] == "<="], key=operator.itemgetter("value"))
+        right = sorted([t for t in thresholds if t["op"] == ">="], key=operator.itemgetter("value"))
+        if len(left) == 1:
+            r += [
+                {
+                    "left": min_value,
+                    "right": left[0]["value"],
+                    "color": "#d2403d",
+                }
+            ]
+        elif len(left) > 1:
+            r += [
+                {
+                    "left": min_value,
+                    "right": left[0]["value"],
+                    "color": "#d2403d",
+                },
+                {
+                    "left": left[0]["value"],
+                    "right": left[-1]["value"],
+                    "color": "#fce97d",
+                },
+            ]
+        if len(right) == 1:
+            r += [
+                {
+                    "left": right[0]["value"],
+                    "right": max_value,
+                    "color": "#d2403d",
+                }
+            ]
+        elif len(right) > 1:
+            r += [
+                {
+                    "left": right[0]["value"],
+                    "right": right[-1]["value"],
+                    "color": "#fce97d",
+                },
+                {
+                    "left": right[-1]["value"],
+                    "right": max_value,
+                    "color": "#d2403d",
+                },
+            ]
         return r
 
     def get_data(self, request, o):
@@ -71,7 +115,6 @@ class MetricPlugin(InvPlugin):
                 components.insert(0, f"object::{o.name}")
             thresholds = self.get_sensor_thresholds(o, s)
             ranges = self.get_threshold_ranges(thresholds)
-
             r.append(
                 {
                     "bi_id": str(s.bi_id),
@@ -81,7 +124,7 @@ class MetricPlugin(InvPlugin):
                     "component__label": " ".join(components),
                     "units": str(s.units.id),
                     "units__label": s.units.name,
-                    "value": 0,
+                    "value": 1,
                     "min_value": -100,
                     "max_value": 120,
                     "oper_state": "ok",

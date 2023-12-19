@@ -364,3 +364,11 @@ class ConfigurationParam(Document):
     @property
     def has_required_scopes(self) -> bool:
         return any(s for s in self.scopes if s.is_required)
+
+    @property
+    def threshold_op(self) -> Optional[str]:
+        if not self.threshold_type:
+            return None
+        elif self.threshold_type.endswith("min"):
+            return "<="
+        return ">="
