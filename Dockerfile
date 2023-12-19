@@ -58,6 +58,7 @@ RUN \
     && python3 ./scripts/deploy/install-packages requirements/card.json \
     && python3 ./scripts/deploy/install-packages requirements/bi.json \
     && python3 ./scripts/deploy/install-packages requirements/theme-noc.json \
+    && (curl -L https://get.static-web-server.net/ | sed 's/sudo //g' | sh) \
     && find /opt/noc/ -type f -name "*.py" -print0 | xargs -0 python3 -m py_compile \
     && pip cache purge \
     && rm -rf /var/lib/apt/lists/* /tmp/*.whl\
