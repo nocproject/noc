@@ -194,6 +194,12 @@ class PolusParam:
         return True
 
     @property
+    def threshold_param(self) -> Optional[str]:
+        if not self.is_threshold:
+            return
+        return rx_threshold.match(self.name).group("type")
+
+    @property
     def get_measurement_unit(self) -> str:
         if self.name in METRIC_MAP:
             return METRIC_MAP[self.name]

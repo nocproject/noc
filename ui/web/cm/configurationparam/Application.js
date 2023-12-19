@@ -13,6 +13,7 @@ Ext.define("NOC.cm.configurationparam.Application", {
         "NOC.cm.configurationparam.Model",
         "NOC.cm.configurationscope.LookupField",
         "NOC.pm.measurementunits.LookupField",
+        "NOC.pm.metrictype.LookupField",
         "NOC.inv.modelinterface.LookupField",
         "Ext.ux.form.GridField"
     ],
@@ -81,6 +82,36 @@ Ext.define("NOC.cm.configurationparam.Application", {
                     allowBlank: true
                 },
                 {
+                    xtype: "fieldset",
+                    title: __("Metric Threshold bind"),
+                    layout: "hbox",
+                    defaults: {
+                        padding: 4,
+                        labelAlign: "right"
+                    },
+                    items: [
+                        {
+                            name: "threshold_type",
+                            xtype: "combobox",
+                            fieldLabel: __("Threshold Type"),
+                            store: [
+                                ["critical_min", __("Min. Critical")],
+                                ["warning_min", __("Min. Warning")],
+                                ["warning_max", __("Max. Warning")],
+                                ["critical_max", __("Max. Critical")]
+                            ],
+                            allowBlank: true,
+                            labelWidth: 200,
+                        },
+                        {
+                            name: "metric_type",
+                            xtype: "pm.metrictype.LookupField",
+                            fieldLabel: __("Metric Type"),
+                            allowBlank: true
+                        }
+                    ]
+                },
+                {
                     name: "scopes",
                     xtype: "gridfield",
                     fieldLabel: __("Configuration Scopes"),
@@ -116,13 +147,14 @@ Ext.define("NOC.cm.configurationparam.Application", {
                             editor: {
                                 xtype: "combobox",
                                 store: [
-                                    ["max", "maximum"],
-                                    ["min", "minimum"],
-                                    ["min", "minimum"],
-                                    ["max_length", "maxLength"],
-                                    ["min_length", "minLength"],
-                                    ["pattern", "pattern"],
-                                    ["step", "step"],
+                                    ["max", "Maximum"],
+                                    ["min", "Minimum"],
+                                    ["recommended_max", "Recommend Max"],
+                                    ["recommended_min", "Recommend Minimum"],
+                                    ["max_length", "Max Length"],
+                                    ["min_length", "Min Length"],
+                                    ["pattern", "Pattern"],
+                                    ["step", "Step"],
                                     ["decimal", "Decimal"]
                                 ]
                             }

@@ -8,7 +8,7 @@
 # Python modules
 import re
 from dataclasses import dataclass
-from typing import Dict, List, Any, Optional
+from typing import Dict, List, Any, Optional, Tuple
 
 # Third-party modules
 import orjson
@@ -118,30 +118,34 @@ class Script(BaseScript):
             return r
         return None
 
-    def get_sensors(self, c: Component, slot_num: str) -> List[Dict[str, Any]]:
+    def get_sensors(self, c: Component, slot_num: str) -> Tuple[List[Dict[str, Any]], List[Dict[str, Any]]] :
         """
         Getting Sensors from component metrics
         """
         r = []
+        cfg_thresholds = []
         for p in c.metrics:
-            labels, status = [f"slot::{slot_num}"], True
+            labels, status = [f"noc::slot::{slot_num}"], [], True
             if p.port:
-                labels.append(f"port::{p.port}")
+                labels.append(f"noc::port::{p.port}")
                 # status = port_states.get(p.port) or T
-            if p.channel:
-                labels.append(f"channel::{p.channel}")
+            # if p.channel:
+            #     labels.append(f"channel::{p.channel}")
             if p.module:
-                labels.append(f"module::{p.module}")
-            # for tp in c.cfg_thresholds:
-            #     if tp.name.startswith(p.name):
-            #         thresholds.append(
-            #             {
-            #                 "id": tp.name,
-            #                 "value": tp.value,
-            #                 "realtion": "<=" if tp.name.endswith("Min") else ">=",
-            #                 "description": tp.description,
-            #             }
-            #         )
+                labels.append(f"noc::module::{p.module}")
+            for tp in c.cfg_thresholds:
+                if tp.name.startswith(p.name):
+                    cfg_thresholds.append(
+                        {
+                            "param": tp.threshold_param,
+                            "value": tp.value,
+                            "scopes": [{"scope": "Sensor", "value": p.name}],
+                            # "id": tp.name,
+                            # "value": tp.value,
+                            # "realtion": "<=" if tp.name.endswith("Min") else ">=",
+                            # "description": tp.description,
+                        }
+                    )
             r += [
                 {
                     "name": p.name,
@@ -152,7 +156,7 @@ class Script(BaseScript):
                     # "thresholds": thresholds,
                 }
             ]
-        return r
+        return r, cfg_thresholds
 
     def get_cfg_param_data(self, c: Component) -> List[Dict[str, str]]:
         """

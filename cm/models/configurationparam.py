@@ -251,7 +251,9 @@ class ConfigurationParam(Document):
         ConfigurationScope, required=False
     )
     # Threshold
-    threshold_type = StringField()
+    threshold_type = StringField(
+        choices=["critical_min", "warning_min", "warning_max", "critical_max"]
+    )
     metric_type: Optional["MetricType"] = PlainReferenceField(MetricType, required=False)
 
     _id_cache = cachetools.TTLCache(maxsize=100, ttl=60)

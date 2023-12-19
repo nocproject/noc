@@ -1,7 +1,7 @@
 # ----------------------------------------------------------------------
 # inv.sensor application
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2023 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -31,9 +31,9 @@ class SensorApplication(ExtDocApplication):
         else:
             return ""
 
-    def cleaned_query(self, q):
-        q = super().cleaned_query(q)
-        if "managed_object" in q:
-            q["object__in"] = Object.get_managed(q["managed_object"])
-            del q["managed_object"]
-        return q
+    # def cleaned_query(self, q):
+    #     q = super().cleaned_query(q)
+    #     if "managed_object" in q:
+    #         q["object__in"] = Object.get_managed(q["managed_object"])
+    #         del q["managed_object"]
+    #     return q

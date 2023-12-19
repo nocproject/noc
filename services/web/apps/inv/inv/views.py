@@ -16,6 +16,7 @@ from noc.inv.models.object import Object
 from noc.inv.models.error import ConnectionError
 from noc.inv.models.objectmodel import ObjectModel
 from noc.inv.models.configuredmap import ConfiguredMap
+from noc.inv.models.sensor import Sensor
 from noc.core.validators import is_objectid
 from noc.sa.interfaces.base import (
     StringParameter,
@@ -129,8 +130,9 @@ class InvApplication(ExtApplication):
                 n["plugins"] += [self.get_plugin_data("managedobject")]
             if o.get_data("contacts", "has_contacts"):
                 n["plugins"] += [self.get_plugin_data("contacts")]
-            if o.model.sensors:
+            if o.model.sensors or Sensor.objects.filter(object=o.id):
                 n["plugins"] += [self.get_plugin_data("sensor")]
+                n["plugins"] += [self.get_plugin_data("metric")]
             if o.model.configuration_rule:
                 n["plugins"] += [self.get_plugin_data("param")]
             # Append model's plugins
