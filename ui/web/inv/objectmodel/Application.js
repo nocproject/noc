@@ -304,90 +304,97 @@ Ext.define("NOC.inv.objectmodel.Application", {
                     ],
                     listeners: {
                         scope: me,
-                        clone: me.onCloneConnection
+                        clone: me.onCloneConnection,
+                        delete: me.onDeleteRow
                     }
                 },
                 {
                     xtype: "container",
                     layout: "hbox",
-                    items: [{
-                        name: "cross",
-                        fieldLabel: __("Cross"),
-                        xtype: "gridfield",
-                        allowBlank: true,
-                        flex: 1,
-                        columns: [
-                            {
-                                text: __("Input"),
-                                dataIndex: "input",
-                                width: 150,
-                                editor: {
-                                    xtype: "combobox",
-                                    valueField: "id",
-                                    editable: false,
-                                    queryMode: "local",
-                                    forceSelection: true
+                    items: [
+                        {
+                            name: "cross",
+                            fieldLabel: __("Cross"),
+                            xtype: "gridfield",
+                            allowBlank: true,
+                            flex: 1,
+                            columns: [
+                                {
+                                    text: __("Input"),
+                                    dataIndex: "input",
+                                    width: 150,
+                                    editor: {
+                                        xtype: "combobox",
+                                        valueField: "id",
+                                        editable: false,
+                                        queryMode: "local",
+                                        forceSelection: true
+                                    }
+                                },
+                                {
+                                    text: __("Input Discriminator"),
+                                    dataIndex: "input_discriminator",
+                                    width: 200,
+                                    editor: "textfield"
+                                },
+                                {
+                                    text: __("Output"),
+                                    dataIndex: "output",
+                                    width: 150,
+                                    editor: {
+                                        xtype: "combobox",
+                                        valueField: "id",
+                                        editable: false,
+                                        queryMode: "local",
+                                        forceSelection: true
+                                    }
+                                },
+                                {
+                                    text: __("Output Discriminator"),
+                                    dataIndex: "output_discriminator",
+                                    width: 200,
+                                    editor: "textfield"
+                                },
+                                {
+                                    text: __("Gain (dB)"),
+                                    dataIndex: "gain_db",
+                                    editor: "textfield"
                                 }
-                            },
-                            {
-                                text: __("Input Discriminator"),
-                                dataIndex: "input_discriminator",
-                                width: 200,
-                                editor: "textfield"
-                            },
-                            {
-                                text: __("Output"),
-                                dataIndex: "output",
-                                width: 150,
-                                editor: {
-                                    xtype: "combobox",
-                                    valueField: "id",
-                                    editable: false,
-                                    queryMode: "local",
-                                    forceSelection: true
+                            ],
+                            onBeforeEdit: function(editor, context) {
+                                if(["input", "output"].includes(context.column.dataIndex)) {
+                                    var connectionsField = context.view.up("[xtype=form]").down("[name=connections]"),
+                                        data = Ext.Array.map(connectionsField.value, function(value) {return {id: value.name, text: value.name}}),
+                                        combo = editor.getEditor(context.record, context.column).field;
+                                    combo.getStore().loadData(data);
                                 }
+                                context.cancel = context.record.get("is_persist");
                             },
-                            {
-                                text: __("Output Discriminator"),
-                                dataIndex: "output_discriminator",
-                                width: 200,
-                                editor: "textfield"
+                            listeners: {
+                                scope: me,
+                                delete: me.onDeleteRow,
                             },
-                            {
-                                text: __("Gain (dB)"),
-                                dataIndex: "gain_db",
-                                editor: "textfield"
-                            }
-                        ],
-                        onBeforeEdit: function(editor, context) {
-                            if(["input", "output"].includes(context.column.dataIndex)) {
-                                var connectionsField = context.view.up("[xtype=form]").down("[name=connections]"),
-                                    data = Ext.Array.map(connectionsField.value, function(value) {return {id: value.name, text: value.name}}),
-                                    combo = editor.getEditor(context.record, context.column).field;
-                                combo.getStore().loadData(data);
-                            }
-                            context.cancel = context.record.get("is_persist");
+                            onCellEdit: function(editor, context) {
+                                var me = this,
+                                    app = this.up("[appId=inv.objectmodel]"),
+                                    ed = context.grid.columns[context.colIdx].getEditor(),
+                                    field = context.grid.columns[context.colIdx].field;
+                                if(ed.rawValue) {
+                                    context.record.set(context.field + "__label", ed.rawValue);
+                                }
+                                if(field.xtype === "labelfield") {
+                                    context.value = field.valueCollection.items;
+                                }
+                                app.drawDiagram(app.generateDiagram());
+                            },
                         },
-                        onCellEdit: function(editor, context) {
-                            var me = this,
-                                app = this.up("[appId=inv.objectmodel]"),
-                                ed = context.grid.columns[context.colIdx].getEditor(),
-                                field = context.grid.columns[context.colIdx].field;
-                            if(ed.rawValue) {
-                                context.record.set(context.field + "__label", ed.rawValue);
-                            }
-                            if(field.xtype === "labelfield") {
-                                context.value = field.valueCollection.items;
-                            }
-                            app.drawDiagram(app.generateDiagram(app.currentRecord));
-                        },
-                    },
-                    {
-                        xtype: "panel",
-                        flex: 1,
-                        itemId: "diagram",
-                        border: false,
-                    }]
+                        {
+                            xtype: "panel",
+                            flex: 1,
+                            itemId: "diagram",
+                            border: false,
+                        }
+                    ]
                 },
                 {
                     name: "sensors",
@@ -528,9 +535,9 @@ Ext.define("NOC.inv.objectmodel.Application", {
         record.set("name", m[1] + n);
     },
     editRecord: function(record) {
-        var diagram = this.generateDiagram(record);
-        this.drawDiagram(diagram);
         this.callParent([record]);
+        var diagram = this.generateDiagram();
+        this.drawDiagram(diagram);
     },
     drawDiagram: function(code) {
         var panel = this.down("[itemId=diagram]");
@@ -539,16 +546,19 @@ Ext.define("NOC.inv.objectmodel.Application", {
             panel.setHtml(svg);
         });
     },
-    generateDiagram: function(record) {
-        var cross = record.get("cross"),
-            aliases = Ext.Array.reduce(record.get("connections"), function(acc, item, index) {
+    generateDiagram: function() {
+        var data = this.getFormData(),
+            aliases = Ext.Array.reduce(data.connections, function(acc, item, index) {
                 acc[item.name] = index;
                 return acc;
             }, {}),
             diagram = "graph LR\n";
         diagram += Ext.Array.map(
-            cross,
+            data.cross,
             function(item) {
+                if(!aliases.hasOwnProperty(item.input) || !aliases.hasOwnProperty(item.output)) {
+                    return "";
+                }
                 var row = "s" + aliases[item.input] + "[[" + item.input + "]]\ns" + aliases[item.output] + "[[" + item.output + "]]";
                 if(!Ext.isEmpty(item.input_discriminator)) {
                     row += "\ns" + aliases[item.input] + "_s:::hidden\ns" + aliases[item.input] + "_s -- " + item.input_discriminator + " --> s" + aliases[item.input];
@@ -561,5 +571,8 @@ Ext.define("NOC.inv.objectmodel.Application", {
                 return row;
             }).join("\n");
         return diagram;
+    },
+    onDeleteRow: function() {
+        this.drawDiagram(this.generateDiagram());
     }
 });

@@ -233,6 +233,7 @@ Ext.define("Ext.ux.form.GridField", {
             me.deleteButton.setDisabled(true);
             me.cloneButton.setDisabled(true);
         }
+        me.fireEvent("delete");
     },
     //
     onCloneRecord: function() {
