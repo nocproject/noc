@@ -322,7 +322,7 @@ Ext.define("NOC.inv.objectmodel.Application", {
                         },
                         {
                             text: __("Input Discriminator"),
-                            dataIndex: "input_discrimiator",
+                            dataIndex: "input_discriminator",
                             width: 200,
                             editor: "textfield"
                         },
@@ -340,7 +340,7 @@ Ext.define("NOC.inv.objectmodel.Application", {
                         },
                         {
                             text: __("Output Discriminator"),
-                            dataIndex: "output_discrimiator",
+                            dataIndex: "output_discriminator",
                             width: 200,
                             editor: "textfield"
                         },
