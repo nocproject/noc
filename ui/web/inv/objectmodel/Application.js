@@ -357,10 +357,12 @@ Ext.define("NOC.inv.objectmodel.Application", {
                         }
                     ],
                     onBeforeEdit: function(editor, context) {
-                        var connectionsField = context.view.up("[xtype=form]").down("[name=connections]"),
-                            data = Ext.Array.map(connectionsField.value, function(value) {return {id: value.name, text: value.name}}),
-                            combo = editor.getEditor(context.record, context.column).field;
-                        combo.getStore().loadData(data);
+                        if(["input", "output"].includes(context.column.dataIndex)) {
+                            var connectionsField = context.view.up("[xtype=form]").down("[name=connections]"),
+                                data = Ext.Array.map(connectionsField.value, function(value) {return {id: value.name, text: value.name}}),
+                                combo = editor.getEditor(context.record, context.column).field;
+                            combo.getStore().loadData(data);
+                        }
                         context.cancel = context.record.get("is_persist");
                     }
                 },
