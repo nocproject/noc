@@ -1,0 +1,8 @@
+{
+  "$metric": "Interface | DOM | Voltage",
+  "$type": "ifindex",
+  "oid": "1.3.6.1.4.1.8886.1.18.2.3.1.1.3.{{ ifIndex }}.1.5",
+  "type": "gauge",
+  "units": "VDC",
+  "scale": "scale(0.001)"
+}
