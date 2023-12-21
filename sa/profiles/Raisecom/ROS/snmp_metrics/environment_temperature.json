@@ -8,20 +8,27 @@
       }
     }
   },
-  "$match": [{
-    "$match": "is_RSI2308FE",
-    "$type": "oid",
-    "oid": "1.3.6.1.4.1.41752.1.1.4.2.1.0",
-    "labels": ["noc::sensor::Temperature"],
-    "type": "gauge",
-    "scale": 1,
-    "units": "C"
-   },{
-    "$type": "oid",
-    "oid": "1.3.6.1.4.1.8886.1.1.4.2.1.0",
-    "labels": ["noc::sensor::Temperature"],
-    "type": "gauge",
-    "scale": 1,
-    "units": "C"
-  }]
+  "$match": [
+    {
+      "$match": "is_RSI2308FE",
+      "$type": "oid",
+      "oid": "1.3.6.1.4.1.41752.1.1.4.2.1.0",
+      "labels": [
+        "noc::sensor::Temperature"
+      ],
+      "type": "gauge",
+      "scale": 1,
+      "units": "C"
+    },
+    {
+      "$type": "oid",
+      "oid": "1.3.6.1.4.1.8886.1.1.4.2.1.0",
+      "labels": [
+        "noc::sensor::Temperature"
+      ],
+      "type": "gauge",
+      "scale": 1,
+      "units": "C"
+    }
+  ]
 }
