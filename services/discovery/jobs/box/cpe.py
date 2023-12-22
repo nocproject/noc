@@ -15,7 +15,7 @@ from mongoengine.queryset.visitor import Q as m_Q
 from noc.services.discovery.jobs.base import DiscoveryCheck
 from noc.sa.models.managedobject import ManagedObject
 from noc.sa.models.profile import Profile
-from noc.inv.models.cpe import CPE
+from noc.inv.models.cpe import CPE, ControllerItem
 from noc.inv.models.cpeprofile import CPEProfile
 from noc.main.models.label import Label
 
@@ -49,10 +49,11 @@ class CPECheck(DiscoveryCheck):
             cpe = self.ensure_cpe(
                 r["id"], r["global_id"], c_type=r["type"], interface=r.get("interface")
             )
-            cpe.fire_event("seen")
+            cpe.fire_event("seen", self.object, r["local_id"], r.get("interface"), r["status"])
             # Change controller ? Log changes
             # cpe_cache[cpe.id] = cpe
             processed.add(cpe.id)
+            # ? multiple active
             if cpe.description != r.get("description"):
                 cpe.description = r.get("description")
             if cpe.label != r.get("name"):
@@ -68,7 +69,7 @@ class CPECheck(DiscoveryCheck):
             caps = self.cleanup_caps(r)
             cpe.update_caps(caps, source="cpe", scope="cpe")
             # State
-            if r["status"] == "active":
+            if cpe.controller == self.object:
                 cpe.fire_event("up", bulk=bulk)
             else:
                 cpe.fire_event("down", bulk=bulk)
@@ -89,9 +90,9 @@ class CPECheck(DiscoveryCheck):
         if unseen_cpe_ids:
             self.logger.info("%s CPE not seen", len(unseen_cpe_ids))
             for cpe in CPE.objects.filter(id__in=list(unseen_cpe_ids)):
-                cpe.fire_event("unseen")
+                cpe.fire_event("unseen", self.object)
         self.update_caps(
-            {"DB | CPEs": CPE.objects.filter(controller=self.object.id).count()},
+            {"DB | CPEs": CPE.objects.filter(controllers__controller=self.object.id).count()},
             source="cpe",
         )
 
@@ -112,9 +113,7 @@ class CPECheck(DiscoveryCheck):
             mo.save()
         elif mo and not cpe.address:
             self.logger.info(
-                "[%s|%s] CPE Reset address. Change ManagedObject to inactive state",
-                cpe.local_id,
-                cpe.global_id,
+                "[%s] CPE Reset address. Change ManagedObject to inactive state", cpe.global_id,
             )
             mo.fire_event("unmanaged")
             mo.save()
@@ -123,8 +122,7 @@ class CPECheck(DiscoveryCheck):
             return
         elif mo and mo.address != cpe.address:
             self.logger.info(
-                "[%s|%s] Changed ManagedObject Address: %s -> %s",
-                cpe.local_id,
+                "[%s] Changed ManagedObject Address: %s -> %s",
                 cpe.global_id,
                 mo.address,
                 cpe.address,
@@ -137,18 +135,18 @@ class CPECheck(DiscoveryCheck):
             mo.fire_event("seen")
             return
         # Create ManagedObject
-        self.logger.info("[%s|%s] Created ManagedObject %s", cpe.local_id, cpe.global_id, name)
+        self.logger.info("[%s] Created ManagedObject %s", cpe.global_id, name)
         mo = ManagedObject(
             name=name,
             pool=cpe.profile.object_pool or self.object.pool,
             profile=Profile.get_by_id(Profile.get_generic_profile_id()),
             object_profile=cpe.profile.object_profile or self.object.object_profile,
             administrative_domain=self.object.administrative_domain,
-            scheme=self.object.scheme,
-            segment=self.object.segment,
+            scheme=cpe.controller.scheme,
+            segment=cpe.controller.segment,
             auth_profile=None,
             address=cpe.address or "0.0.0.0",
-            controller=self.object,
+            controller=cpe.controller,
             cpe_id=str(cpe.id),
             bi_id=cpe.bi_id,
         )
@@ -170,17 +168,22 @@ class CPECheck(DiscoveryCheck):
         :return:
         """
         cpe = CPE.objects.filter(
-            m_Q(global_id=global_id) | m_Q(controller=self.object.id, local_id=local_id)
+            m_Q(global_id=global_id)
+            | m_Q(data__match={"controller": self.object.id, "local_id": local_id})
         ).first()
         if cpe:
             return cpe
         self.logger.info("[%s|%s] Creating new cpe", global_id, local_id)
         cpe = CPE(
             profile=CPEProfile.get_default_profile(),
-            controller=self.object,
-            interface=interface,
+            controllers=[
+                ControllerItem(
+                    controller=self.object,
+                    local_id=local_id,
+                    interface=interface,
+                )
+            ],
             type=c_type,
-            local_id=local_id,
             global_id=global_id,
         )
         cpe.save()

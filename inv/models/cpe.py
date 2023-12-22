@@ -15,7 +15,7 @@ from typing import Optional, Iterable, List, Any, Dict
 # Third-party modules
 import cachetools
 from pymongo import UpdateOne, ReadPreference
-from mongoengine.document import Document
+from mongoengine.document import Document, EmbeddedDocument
 from mongoengine.fields import (
     StringField,
     LongField,
@@ -58,6 +58,13 @@ def check_address(value):
         raise ValidationError("Bad IPv4 Address: %s" % value)
 
 
+class ControllerItem(EmbeddedDocument):
+    controller: ManagedObject = ForeignKeyField(ManagedObject)
+    local_id: str = StringField()
+    interface = StringField()
+    is_active: bool = BooleanField(default=True)
+
+
 @full_text_search
 @Label.model
 @change
@@ -70,18 +77,20 @@ class CPE(Document):
         "strict": False,
         "auto_create_index": False,
         "indexes": [
-            "controller",
+            "controllers",
             "global_id",
             "labels",
             "effective_labels",
-            {"fields": ["controller", "local_id"], "unique": True},
+            {
+                "fields": ["controllers.controller"],
+                "partialFilterExpression": {"controllers.active": True},
+            },
+            {"fields": ("controllers.controller", "controllers.local_id"), "unique": True},
         ],
     }
 
-    controller: ManagedObject = ForeignKeyField(ManagedObject)
-    interface = StringField()
     # (<managed object>, <local_id>) Must be unique
-    local_id = StringField()
+    controllers: List[ControllerItem] = EmbeddedDocumentListField(ControllerItem)
     global_id = StringField(unique=True)
     # Probe profile
     profile: CPEProfile = PlainReferenceField(CPEProfile, default=CPEProfile.get_default_profile)
@@ -122,6 +131,13 @@ class CPE(Document):
     def __repr__(self):
         return f"{self.controller}: {self.local_id}"
 
+    @property
+    def controller(self) -> Optional[ManagedObject]:
+        for c in self.controllers:
+            if c.is_active:
+                return c.controller
+        return
+
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_id_cache"), lock=lambda _: id_lock)
     def get_by_id(cls, cpe_id) -> Optional["CPE"]:
@@ -156,11 +172,78 @@ class CPE(Document):
     @classmethod
     def _reset_caches(cls, cpe_id: int):
         try:
-            del cls._id_cache[
-                str(cpe_id),
-            ]
+            del cls._id_cache[str(cpe_id),]
         except KeyError:
             pass
+
+    def seen(
+        self,
+        controller: Optional[ManagedObject] = None,
+        local_id: Optional[str] = None,
+        interface: Optional[str] = None,
+        status: bool = True,
+    ):
+        """
+        Seen sensor
+        """
+        if not controller or not local_id:
+            self.fire_event("seen")
+            self.touch()  # Worflow expired
+            return
+        changes = {}
+        seen = False
+        for c in self.controllers:
+            if c.controller != controller:
+                continue
+            seen = True
+            if c.local_id != local_id:
+                c.local_id = local_id
+                changes["controllers.$.local_id"] = local_id
+            if c.interface != interface:
+                c.interface = interface
+                changes["controllers.$.interface"] = interface
+            if c.is_active != status:
+                c.is_active = status
+                changes["controllers.$.is_active"] = status
+        if not seen:
+            # New Controller
+            self._get_collection().update_one(
+                {"_id": self.id},
+                {
+                    "$push": {
+                        "controller": controller.id,
+                        "local_id": local_id,
+                        "interface": interface,
+                        "is_active": status,
+                    }
+                },
+            )
+        elif changes:
+            self._get_collection().update_one(
+                {"_id": self.id, "controllers": {"$elemMatch": {"controller": controller.id}}},
+                {"$set": changes},
+            )
+        self.fire_event("seen")
+        self.touch()  # Worflow expired
+
+    def unseen(self, controller: Optional[str] = None):
+        """
+        Unseen sensor
+        """
+        logger.info("[%s] CPE is missed on '%s'",controller)
+        if controller:
+            self.controllers = [c for c in self.controllers if c.controller != controller]
+            self._get_collection().update_one(
+                {"_id": self.id}, {"$pull": {"controllers": {"controller": controller.id}}}
+            )
+        elif not controller:
+            # For empty source, clean sources
+            self.controllers = []
+            self._get_collection().update_one({"_id": self.id}, {"$set": {"controllers": []}})
+        if not self.controllers:
+            # source - None, set sensor to missed
+            self.fire_event("missed")
+            self.touch()
 
     @classmethod
     def get_component(
