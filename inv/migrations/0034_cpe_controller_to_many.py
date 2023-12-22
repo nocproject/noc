@@ -26,12 +26,14 @@ class Migration(BaseMigration):
                     {"_id": cpe["_id"]},
                     {
                         "$set": {
-                            "controllers": {
-                                "controller": cpe["controller"],
-                                "local_id": cpe["local_id"],
-                                "interface": cpe.get("interface"),
-                                "is_active": True,
-                            }
+                            "controllers": [
+                                {
+                                    "managed_object": cpe["controller"],
+                                    "local_id": cpe["local_id"],
+                                    "interface": cpe.get("interface"),
+                                    "is_active": True,
+                                }
+                            ]
                         }
                     },
                 ),

@@ -49,7 +49,7 @@ class CPECheck(DiscoveryCheck):
             cpe = self.ensure_cpe(
                 r["id"], r["global_id"], c_type=r["type"], interface=r.get("interface")
             )
-            cpe.fire_event("seen", self.object, r["local_id"], r.get("interface"), r["status"])
+            cpe.seen(self.object, r["id"], r.get("interface"), r["status"])
             # Change controller ? Log changes
             # cpe_cache[cpe.id] = cpe
             processed.add(cpe.id)
@@ -85,14 +85,15 @@ class CPECheck(DiscoveryCheck):
             CPE._get_collection().bulk_write(bulk)
         # Remove Unseen
         unseen_cpe_ids = (
-            set(CPE.objects.filter(controller=self.object.id).values_list("id")) - processed
+            set(CPE.objects.filter(controllers__managed_object=self.object.id).values_list("id"))
+            - processed
         )
         if unseen_cpe_ids:
             self.logger.info("%s CPE not seen", len(unseen_cpe_ids))
             for cpe in CPE.objects.filter(id__in=list(unseen_cpe_ids)):
-                cpe.fire_event("unseen", self.object)
+                cpe.unseen(self.object)
         self.update_caps(
-            {"DB | CPEs": CPE.objects.filter(controllers__controller=self.object.id).count()},
+            {"DB | CPEs": CPE.objects.filter(controllers__managed_object=self.object.id).count()},
             source="cpe",
         )
 
@@ -143,11 +144,11 @@ class CPECheck(DiscoveryCheck):
             profile=Profile.get_by_id(Profile.get_generic_profile_id()),
             object_profile=cpe.profile.object_profile or self.object.object_profile,
             administrative_domain=self.object.administrative_domain,
-            scheme=cpe.controller.scheme,
-            segment=cpe.controller.segment,
+            scheme=cpe.controller.managed_object.scheme,
+            segment=cpe.controller.managed_object.segment,
             auth_profile=None,
             address=cpe.address or "0.0.0.0",
-            controller=cpe.controller,
+            controller=cpe.controller.managed_object,
             cpe_id=str(cpe.id),
             bi_id=cpe.bi_id,
         )
@@ -170,7 +171,7 @@ class CPECheck(DiscoveryCheck):
         """
         cpe = CPE.objects.filter(
             m_Q(global_id=global_id)
-            | m_Q(controllers__match={"controller": self.object.id, "local_id": local_id})
+            | m_Q(controllers__match={"managed_object": self.object.id, "local_id": local_id})
         ).first()
         if cpe:
             return cpe
@@ -179,7 +180,7 @@ class CPECheck(DiscoveryCheck):
             profile=CPEProfile.get_default_profile(),
             controllers=[
                 ControllerItem(
-                    controller=self.object,
+                    managed_object=self.object,
                     local_id=local_id,
                     interface=interface,
                 )

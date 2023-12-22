@@ -59,10 +59,18 @@ def check_address(value):
 
 
 class ControllerItem(EmbeddedDocument):
-    controller: ManagedObject = ForeignKeyField(ManagedObject)
+    managed_object: ManagedObject = ForeignKeyField(ManagedObject)
     local_id: str = StringField()
     interface = StringField()
     is_active: bool = BooleanField(default=True)
+
+    def __str__(self):
+        return f"{self.managed_object.name}: {self.local_id}"
+
+    def get_interface(self):
+        if not self.interface:
+            return None
+        return self.managed_object.get_interface(self.interface)
 
 
 @full_text_search
@@ -126,16 +134,16 @@ class CPE(Document):
     _bi_id_cache = cachetools.TTLCache(maxsize=100, ttl=60)
 
     def __str__(self):
-        return self.label or f"{self.controller}: {self.local_id}"
+        return self.label or str(self.controller)
 
     def __repr__(self):
-        return f"{self.controller}: {self.local_id}"
+        return str(self.controller)
 
     @property
-    def controller(self) -> Optional[ManagedObject]:
+    def controller(self) -> Optional[ControllerItem]:
         for c in self.controllers:
             if c.is_active:
-                return c.controller
+                return c
         return
 
     @classmethod
@@ -163,7 +171,11 @@ class CPE(Document):
         yield list(instance.labels or [])
         if instance.profile.labels:
             yield list(instance.profile.labels)
-        yield [ll for ll in instance.controller.get_effective_labels() if ll != "noc::is_linked::="]
+        yield [
+            ll
+            for ll in instance.controller.managed_object.get_effective_labels()
+            if ll != "noc::is_linked::="
+        ]
 
     @classmethod
     def can_set_label(cls, label):
@@ -193,7 +205,7 @@ class CPE(Document):
         changes = {}
         seen = False
         for c in self.controllers:
-            if c.controller != controller:
+            if c.managed_object != controller:
                 continue
             seen = True
             if c.local_id != local_id:
@@ -211,7 +223,7 @@ class CPE(Document):
                 {"_id": self.id},
                 {
                     "$push": {
-                        "controller": controller.id,
+                        "managed_object": controller.id,
                         "local_id": local_id,
                         "interface": interface,
                         "is_active": status,
@@ -220,7 +232,7 @@ class CPE(Document):
             )
         elif changes:
             self._get_collection().update_one(
-                {"_id": self.id, "controllers": {"$elemMatch": {"controller": controller.id}}},
+                {"_id": self.id, "controllers": {"$elemMatch": {"managed_object": controller.id}}},
                 {"$set": changes},
             )
         self.fire_event("seen")
@@ -232,9 +244,9 @@ class CPE(Document):
         """
         logger.info("[%s] CPE is missed on '%s'", controller)
         if controller:
-            self.controllers = [c for c in self.controllers if c.controller != controller]
+            self.controllers = [c for c in self.controllers if c.managed_object != controller]
             self._get_collection().update_one(
-                {"_id": self.id}, {"$pull": {"controllers": {"controller": controller.id}}}
+                {"_id": self.id}, {"$pull": {"controllers": {"managed_object": controller.id}}}
             )
         elif not controller:
             # For empty source, clean sources
@@ -255,7 +267,7 @@ class CPE(Document):
             return CPE.objects.filter(global_id=global_id).first()
         if local_id:
             return CPE.objects.filter(
-                controllers__match={"controller": managed_object, "local_id": local_id}
+                controllers__match={"managed_object": managed_object, "local_id": local_id}
             ).first()
 
     @classmethod
@@ -275,7 +287,7 @@ class CPE(Document):
         d_interval = d_interval or mo.get_metric_discovery_interval()
         # logger.info("Sharding mode activated. Buckets: %d", buckets)
         for cpe in CPE.objects.filter(
-            controllers__match={"controller": mo.id, "is_active": True}
+            controllers__match={"managed_object": mo.id, "is_active": True}
         ).read_preference(ReadPreference.SECONDARY_PREFERRED):
             if not cpe.state.is_productive:
                 continue
@@ -304,7 +316,7 @@ class CPE(Document):
                 continue
             labels, hints = [f"noc::chassis::{cpe.global_id}"], [
                 f"cpe_type::{cpe.type}",
-                f"local_id::{cpe.local_id}",
+                f"local_id::{cpe.controller.local_id}",
             ]
             if cpe.interface:
                 iface = cpe.get_cpe_interface()
@@ -335,14 +347,14 @@ class CPE(Document):
         return {
             "type": "cpe",
             "bi_id": cpe.bi_id,
-            "fm_pool": cpe.controller.get_effective_fm_pool().name,
+            "fm_pool": cpe.controller.managed_object.get_effective_fm_pool().name,
             "labels": labels,
             "metrics": [
                 {"name": mc.metric_type.field_name, "is_stored": mc.is_stored}
                 for mc in cpe.profile.metrics
             ],
             "rules": [ma for ma in MetricRule.iter_rules_actions(cpe.effective_labels)],
-            "sharding_key": cpe.controller.bi_id if cpe.controller else None,
+            "sharding_key": cpe.controller.managed_object.bi_id if cpe.controller else None,
             "items": [],
         }
 
@@ -356,9 +368,7 @@ class CPE(Document):
         return config.get("metrics") or config.get("items")
 
     def get_cpe_interface(self):
-        if not self.interface:
-            return None
-        return self.controller.get_interface(self.interface)
+        return self.controller.get_interface()
 
     def update_caps(
         self, caps: Dict[str, Any], source: str, scope: Optional[str] = None
@@ -539,5 +549,9 @@ class CPE(Document):
             stencil=self.get_stencil(),
             overlays=self.get_shape_overlays(),
             level=10,
-            attrs={"address": self.address, "mo": self.controller, "caps": self.get_caps()},
+            attrs={
+                "address": self.address,
+                "mo": self.controller.managed_object,
+                "caps": self.get_caps(),
+            },
         )
