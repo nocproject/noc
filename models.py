@@ -127,7 +127,6 @@ _MODELS = {
     "main.Style": "noc.main.models.style.Style",
     "main.SystemNotification": "noc.main.models.systemnotification.SystemNotification",
     "main.SystemTemplate": "noc.main.models.systemtemplate.SystemTemplate",
-    "main.Tag": "noc.main.models.tag.Tag",
     "main.Template": "noc.main.models.template.Template",
     "main.TextIndex": "noc.main.models.textindex.TextIndex",
     "main.TimePattern": "noc.main.models.timepattern.TimePattern",
