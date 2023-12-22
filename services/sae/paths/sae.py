@@ -61,7 +61,13 @@ class SAEAPI(JSONRPCAPI):
             mop.cli_privilege_policy, mop.snmp_rate_limit,
             mo.access_preference, mop.access_preference,
             mop.beef_storage, mop.beef_path_template_id,
-            mo.caps, mo.diagnostics, mo.state
+            mo.caps, mo.diagnostics, mo.state,
+            mo.snmp_security_level, mo.snmp_username, mo.snmp_auth_proto,
+            mo.snmp_auth_key, mo.snmp_priv_proto, mo.snmp_priv_key,
+            mo.snmp_ctx_name,
+            ap.snmp_security_level, ap.snmp_username, ap.snmp_auth_proto,
+            ap.snmp_auth_key, ap.snmp_priv_proto, ap.snmp_priv_key,
+            ap.snmp_ctx_name
         FROM
             sa_managedobject mo
             JOIN sa_managedobjectprofile mop ON (mo.object_profile_id = mop.id)
@@ -197,6 +203,20 @@ class SAEAPI(JSONRPCAPI):
             caps,
             diagnostics,
             state,
+            snmp_security_level,
+            snmp_username,
+            snmp_auth_proto,
+            snmp_auth_key,
+            snmp_priv_proto,
+            snmp_priv_key,
+            snmp_ctx_name,
+            ap_snmp_security_level,
+            ap_snmp_username,
+            ap_snmp_auth_proto,
+            ap_snmp_auth_key,
+            ap_snmp_priv_proto,
+            ap_snmp_priv_key,
+            ap_snmp_ctx_name,
         ) = data[0]
         # Check object is managed
         state = State.get_by_id(state)
@@ -216,6 +236,13 @@ class SAEAPI(JSONRPCAPI):
             super_password = ap_super_password
             snmp_ro = ap_snmp_ro
             snmp_rw = ap_snmp_rw  # noqa just to be
+            snmp_security_level = ap_snmp_security_level
+            snmp_username = ap_snmp_username
+            snmp_auth_proto = ap_snmp_auth_proto
+            snmp_auth_key = ap_snmp_auth_key
+            snmp_priv_proto = ap_snmp_priv_proto
+            snmp_priv_key = ap_snmp_priv_key
+            snmp_ctx_name = ap_snmp_ctx_name
         #
         if privilege_policy == "E":
             raise_privileges = True
@@ -247,6 +274,20 @@ class SAEAPI(JSONRPCAPI):
                 credentials["snmp_version"] = "v2c"
             elif capabilities.get("SNMP | v1"):
                 credentials["snmp_version"] = "v1"
+        # Bild security level SNMPv3
+        if snmp_username and snmp_security_level != "Community":
+            if capabilities.get("SNMP | v3"):
+                credentials["snmp_version"] = "v3"
+            credentials["snmp_username"] = snmp_username
+            credentials["snmp_ctx_name"] = snmp_ctx_name
+            if snmp_security_level == "authNoPriv":
+                credentials["snmp_auth_proto"] = snmp_auth_proto
+                credentials["snmp_auth_key"] = snmp_auth_key
+            elif snmp_security_level == "authPriv":
+                credentials["snmp_auth_proto"] = snmp_auth_proto
+                credentials["snmp_auth_key"] = snmp_auth_key
+                credentials["snmp_priv_proto"] = snmp_priv_proto
+                credentials["snmp_priv_key"] = snmp_priv_key
         if scheme in CLI_PROTOCOLS:
             credentials["cli_protocol"] = PROTOCOLS[scheme]
             if port:

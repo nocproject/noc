@@ -536,6 +536,34 @@ Ext.define("NOC.sa.managedobject.Model", {
             name: "row_class",
             type: "string",
             persist: false
-        }
+        },
+        {
+            name: "snmp_security_level",
+            type: "string"
+        },
+        {
+            name: "snmp_username",
+            type: "string"
+        },
+        {
+            name: "snmp_ctx_name",
+            type: "string"
+        },
+        {
+            name: "snmp_auth_proto",
+            type: "string"
+        },
+        {
+            name: "snmp_auth_key",
+            type: "string"
+        },
+        {
+            name: "snmp_priv_proto",
+            type: "string"
+        },
+        {
+            name: "snmp_priv_key",
+            type: "string"
+        },
     ]
 });

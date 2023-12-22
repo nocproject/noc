@@ -106,16 +106,122 @@ Ext.define("NOC.sa.authprofile.Application", {
                     allowBlank: true
                 },
                 {
+                    name: "snmp_security_level",
+                    xtype: "combobox",
+                    fieldLabel: __("SNMP Security Level"),
+                    uiStyle: "large",
+                    store: [
+                        ["Community", "Community"],
+                        ["noAuthNoPriv", "No Auth No Priv"],
+                        ["authNoPriv", "Auth No Priv"],
+                        ["authPriv", "Auth Priv"]
+                    ],
+                    queryMode: "local",
+                    listeners: {
+                        change: me.onChangeSNMP_SecurityLevel
+                    }
+                },
+                {
                     name: "snmp_ro",
-                    xtype: "textfield",
-                    fieldLabel: __("RO Community"),
+                    xtype: "password",
+                    fieldLabel: __("SNMP RO Community"),
+                    uiStyle: "large",
+                    readOnlyCls: 'x-item-disabled',
                     allowBlank: true
                 },
                 {
                     name: "snmp_rw",
-                    xtype: "textfield",
-                    fieldLabel: __("RW Community"),
+                    xtype: "password",
+                    fieldLabel: __("SNMP RW Community"),
+                    uiStyle: "large",
+                    readOnlyCls: 'x-item-disabled',
                     allowBlank: true
+                },
+                {
+                    name: "snmp_username",
+                    xtype: "textfield",
+                    fieldLabel: __("SNMP Username"),
+                    uiStyle: "large",
+                    readOnlyCls: 'x-item-disabled',
+                    allowBlank: true,
+                    groupEdit: true
+                },
+                {
+                    name: "snmp_ctx_name",
+                    xtype: "textfield",
+                    fieldLabel: __("SNMP Context Name"),
+                    allowBlank: true,
+                    uiStyle: "large",
+                    readOnlyCls: 'x-item-disabled',
+                    groupEdit: true
+                },
+                {
+                    xtype: "fieldcontainer",
+                    itemId: "snmp_auth_proto",
+                    fieldLabel: __("SNMP Auth Proto"),
+                    visible: false,
+                    maxWidth: 200,
+                    defaultType: "radiofield",
+                    defaults: {
+                        flex: 1
+                    },
+                    layout: "hbox",
+                    items: [
+                        {
+                            boxLabel: 'MD5',
+                            name: 'snmp_auth_proto',
+                            padding: "0 5",
+                            inputValue: "MD5",
+                        },
+                        {
+                            boxLabel: "SHA",
+                            name: 'snmp_auth_proto',
+                            inputValue: "SHA",
+                        }
+                    ]
+                },
+                {
+                    xtype: "password",
+                    fieldLabel: __("SNMP Auth Key"),
+                    visible: false,
+                    uiStyle: "large",
+                    name: "snmp_auth_key",
+                    allowBlank: true,
+                    groupEdit: true
+                },
+                {
+                    xtype: "fieldcontainer",
+                    itemId: "snmp_priv_proto",
+                    fieldLabel: __("SNMP Priv Proto"),
+                    visible: false,
+                    maxWidth: 200,
+                    defaultType: "radiofield",
+                    defaults: {
+                        flex: 1
+                    },
+                    layout: "hbox",
+                    items: [
+                        {
+                            boxLabel: "DES",
+                            name: 'snmp_priv_proto',
+                            padding: "0 5",
+                            inputValue: "DES",
+                        },
+                        {
+                            boxLabel: "AES",
+                            name: 'snmp_priv_proto',
+                            inputValue: "AES",
+                        }
+                    ]
+                },
+                {
+                    xtype: "password",
+                    fieldLabel: __("SNMP Priv Key"),
+                    visible: false,
+                    uiStyle: "large",
+                    name: "snmp_priv_key",
+                    allowBlank: true,
+                    groupEdit: true
                 },
                 {
                     name: "enable_suggest_by_rule",
@@ -227,5 +333,16 @@ Ext.define("NOC.sa.authprofile.Application", {
             ]
         });
         me.callParent();
+    },
+    onChangeSNMP_SecurityLevel: function(field, value) {
+        var form = this.up();
+        form.down('[name=snmp_ro]').setReadOnly(!["Community"].includes(value));
+        form.down('[name=snmp_rw]').setReadOnly(!["Community"].includes(value));
+        form.down('[name=snmp_username]').setReadOnly(!["noAuthNoPriv", "authNoPriv", "authPriv"].includes(value));
+        form.down('[name=snmp_ctx_name]').setReadOnly(!["noAuthNoPriv", "authNoPriv", "authPriv"].includes(value));
+        form.down('[itemId=snmp_auth_proto]').setHidden(["Community", "noAuthNoPriv"].includes(value));
+        form.down('[name=snmp_auth_key]').setHidden(["Community", "noAuthNoPriv"].includes(value));
+        form.down('[itemId=snmp_priv_proto]').setHidden(["Community", "noAuthNoPriv", "authNoPriv"].includes(value));
+        form.down('[name=snmp_priv_key]').setHidden(["Community", "noAuthNoPriv", "authNoPriv"].includes(value));
     },
 });

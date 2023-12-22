@@ -119,6 +119,34 @@ class AuthProfile(NOCModel):
         models.CharField(max_length=250), blank=True, null=True, default=list
     )
 
+    snmp_security_level = models.CharField(
+        _("SNMP protocol security"),
+        max_length=12,
+        choices=[
+            ("Community", "Community"),
+            ("noAuthNoPriv", "noAuthNoPriv"),
+            ("authNoPriv", "authNoPriv"),
+            ("authPriv", "authPriv"),
+        ],
+        default="Community",
+    )
+    snmp_username = models.CharField("SNMP user name", max_length=32, null=True, blank=True)
+    snmp_auth_proto = models.CharField(
+        _("Authentication protocol"),
+        max_length=3,
+        choices=[("MD5", "MD5"), ("SHA", "SHA")],
+        default="MD5",
+    )
+    snmp_auth_key = models.CharField("Authentication key", max_length=32, null=True, blank=True)
+    snmp_priv_proto = models.CharField(
+        _("Privacy protocol"),
+        max_length=3,
+        choices=[("DES", "DES"), ("AES", "AES")],
+        default="DES",
+    )
+    snmp_priv_key = models.CharField("Privacy key", max_length=32, null=True, blank=True)
+    snmp_ctx_name = models.CharField("Context name", max_length=32, null=True, blank=True)
+
     _id_cache = cachetools.TTLCache(maxsize=100, ttl=60)
 
     def __str__(self):
