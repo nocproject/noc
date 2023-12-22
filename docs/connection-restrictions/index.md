@@ -172,13 +172,13 @@ may pass trannsparently from input to one or more output slots.
 Crossing is defined as table of items, each connects particular input with
 particular output. Additonal restrictions, named discriminators, are possible.
 
-| Name                   | Description                                  |
-| ---------------------- | -------------------------------------------- |
-| `input`                | Input connection name                        |
-| `input_discriminator`  | Optional input discriminator                 |
-| `output`               | Output connection name                       |
-| `output_discriminator` | Optional output discriminator, for reference |
-| `gain_db`              | Signal gain, in dB                           |
+| Name                   | Description                                                 |
+| ---------------------- | ----------------------------------------------------------- |
+| `input`                | Input connection name                                       |
+| `input_discriminator`  | Optional input discriminator                                |
+| `output`               | Output connection name                                      |
+| `output_discriminator` | Optional output discriminator, for describe output mappings |
+| `gain_db`              | Signal gain, in dB                                          |
 
 !!! note
     Unlike other restrictions, which defines the object's communications
