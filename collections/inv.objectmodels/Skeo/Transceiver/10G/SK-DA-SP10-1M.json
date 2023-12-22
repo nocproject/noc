@@ -9,25 +9,27 @@
         {
             "name": "in1",
             "description": "Chassis connection",
-            "cross": "in2",
             "direction": "o",
             "gender": "m",
-            "protocols": [{
-                "direction": "*",
-                "protocol__code": "TransEth10G"
-            }],
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth10G"
+                }
+            ],
             "type__name": "Transceiver | SFP+"
         },
         {
             "name": "in2",
             "description": "Chassis connection",
-            "cross": "in1",
             "direction": "o",
             "gender": "m",
-            "protocols": [{
-                "direction": "*",
-                "protocol__code": "TransEth10G"
-            }],
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth10G"
+                }
+            ],
             "type__name": "Transceiver | SFP+"
         }
     ],
@@ -35,7 +37,11 @@
         {
             "attr": "part_no",
             "interface": "asset",
-            "value": ["SK-DA-SP10-1M", "SK-DA-SP11-1M", "SKDA-SP10-1M"]
+            "value": [
+                "SK-DA-SP10-1M",
+                "SK-DA-SP11-1M",
+                "SKDA-SP10-1M"
+            ]
         },
         {
             "attr": "alias",
@@ -56,6 +62,16 @@
             "attr": "twinax",
             "interface": "twinax",
             "value": true
+        }
+    ],
+    "cross": [
+        {
+            "input": "in1",
+            "output": "in2"
+        },
+        {
+            "input": "in2",
+            "output": "in1"
         }
     ]
 }

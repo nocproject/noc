@@ -485,6 +485,8 @@ class ObjectModel(Document):
             "data": [c.json_data for c in self.data],
             "connections": [c.json_data for c in self.connections],
         }
+        if self.cross:
+            r["cross"] = [s.json_data for s in self.cross]
         if self.sensors:
             r["sensors"] = [s.json_data for s in self.sensors]
         if self.connection_rule:

@@ -5,30 +5,34 @@
     "vendor__code": "JUNIPER",
     "description": "Juniper SFP+ 10 Gigabit Ethernet Direct Attach Copper (twinax copper cable) 1m",
     "cr_context": "XCVR",
-    "labels": ["noc::inv::xcvr"],
+    "labels": [
+        "noc::inv::xcvr"
+    ],
     "connections": [
         {
             "name": "in1",
             "description": "Chassis connection",
-            "cross": "in2",
             "direction": "o",
             "gender": "m",
-            "protocols": [{
-                "direction": "*",
-                "protocol__code": "TransEth10G"
-            }],
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth10G"
+                }
+            ],
             "type__name": "Transceiver | SFP+"
         },
         {
             "name": "in2",
             "description": "Chassis connection",
-            "cross": "in1",
             "direction": "o",
             "gender": "m",
-            "protocols": [{
-                "direction": "*",
-                "protocol__code": "TransEth10G"
-            }],
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth10G"
+                }
+            ],
             "type__name": "Transceiver | SFP+"
         }
     ],
@@ -36,7 +40,9 @@
         {
             "attr": "part_no",
             "interface": "asset",
-            "value": ["740-030076"]
+            "value": [
+                "740-030076"
+            ]
         },
         {
             "attr": "alias",
@@ -57,6 +63,16 @@
             "attr": "connection2",
             "interface": "twinax",
             "value": "in2"
+        }
+    ],
+    "cross": [
+        {
+            "input": "in1",
+            "output": "in2"
+        },
+        {
+            "input": "in2",
+            "output": "in1"
         }
     ]
 }
