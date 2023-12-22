@@ -85,7 +85,7 @@ class CPE(Document):
                 "fields": ["controllers.controller"],
                 "partialFilterExpression": {"controllers.active": True},
             },
-            {"fields": ("controllers.controller", "controllers.local_id"), "unique": True},
+            # {"fields": ("controllers.controller", "controllers.local_id"), "unique": True},
         ],
     }
 
@@ -230,7 +230,7 @@ class CPE(Document):
         """
         Unseen sensor
         """
-        logger.info("[%s] CPE is missed on '%s'",controller)
+        logger.info("[%s] CPE is missed on '%s'", controller)
         if controller:
             self.controllers = [c for c in self.controllers if c.controller != controller]
             self._get_collection().update_one(
@@ -254,7 +254,9 @@ class CPE(Document):
         if global_id:
             return CPE.objects.filter(global_id=global_id).first()
         if local_id:
-            return CPE.objects.filter(controller=managed_object, local_id=local_id).first()
+            return CPE.objects.filter(
+                controllers__match={"controller": managed_object, "local_id": local_id}
+            ).first()
 
     @classmethod
     def iter_collected_metrics(
@@ -272,9 +274,9 @@ class CPE(Document):
             return
         d_interval = d_interval or mo.get_metric_discovery_interval()
         # logger.info("Sharding mode activated. Buckets: %d", buckets)
-        for cpe in CPE.objects.filter(controller=mo.id).read_preference(
-            ReadPreference.SECONDARY_PREFERRED
-        ):
+        for cpe in CPE.objects.filter(
+            controllers__match={"controller": mo.id, "is_active": True}
+        ).read_preference(ReadPreference.SECONDARY_PREFERRED):
             if not cpe.state.is_productive:
                 continue
             buckets = cpe.profile.metrics_interval_buckets
@@ -491,7 +493,7 @@ class CPE(Document):
         coll = cls._get_collection()
         r = coll.aggregate(
             [
-                {"$match": {"controller": mo.id}},
+                {"controllers": {"$elemMatch": {"controller": mo.id, "is_active": True}}},
                 {
                     "$lookup": {
                         "from": "cpeprofiles",

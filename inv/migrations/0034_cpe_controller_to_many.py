@@ -9,17 +9,18 @@
 from noc.core.migration.base import BaseMigration
 
 # Third-party modules
-from pymongo import InsertOne, UpdateMany, UpdateOne
+from pymongo import UpdateOne
 
 
 class Migration(BaseMigration):
     def migrate(self):
         db = self.mongo_db
         # Migrate profiles
-        cpe_coll = db["noc.cpes"]
+        cpe_coll = db["cpes"]
+        # cpe_coll.drop_index("controller_1")
         bulk = []
         # DropIndex
-        for cpe in cpe_coll.find():
+        for cpe in cpe_coll.find({"controller": {"$exists": True}}):
             bulk += [
                 UpdateOne(
                     {"_id": cpe["_id"]},

@@ -113,7 +113,8 @@ class CPECheck(DiscoveryCheck):
             mo.save()
         elif mo and not cpe.address:
             self.logger.info(
-                "[%s] CPE Reset address. Change ManagedObject to inactive state", cpe.global_id,
+                "[%s] CPE Reset address. Change ManagedObject to inactive state",
+                cpe.global_id,
             )
             mo.fire_event("unmanaged")
             mo.save()
@@ -169,7 +170,7 @@ class CPECheck(DiscoveryCheck):
         """
         cpe = CPE.objects.filter(
             m_Q(global_id=global_id)
-            | m_Q(data__match={"controller": self.object.id, "local_id": local_id})
+            | m_Q(controllers__match={"controller": self.object.id, "local_id": local_id})
         ).first()
         if cpe:
             return cpe
