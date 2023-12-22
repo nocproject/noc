@@ -171,6 +171,8 @@ class CPE(Document):
         yield list(instance.labels or [])
         if instance.profile.labels:
             yield list(instance.profile.labels)
+        if not instance.controller:
+            return
         yield [
             ll
             for ll in instance.controller.managed_object.get_effective_labels()
@@ -219,6 +221,14 @@ class CPE(Document):
                 changes["controllers.$.is_active"] = status
         if not seen:
             # New Controller
+            self.controllers += [
+                ControllerItem(
+                    managed_object=controller,
+                    local_id=local_id,
+                    interface=interface,
+                    is_active=status,
+                )
+            ]
             self._get_collection().update_one(
                 {"_id": self.id},
                 {

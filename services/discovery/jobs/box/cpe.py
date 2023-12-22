@@ -49,10 +49,17 @@ class CPECheck(DiscoveryCheck):
             cpe = self.ensure_cpe(
                 r["id"], r["global_id"], c_type=r["type"], interface=r.get("interface")
             )
-            cpe.seen(self.object, r["id"], r.get("interface"), r["status"])
+            cpe.seen(self.object, r["id"], r.get("interface"), r["status"] == "active")
             # Change controller ? Log changes
             # cpe_cache[cpe.id] = cpe
             processed.add(cpe.id)
+            # State
+            if cpe.controller and cpe.controller.managed_object.id == self.object.id:
+                cpe.fire_event("up", bulk=bulk)
+            else:
+                # For down CPE data is not updated
+                cpe.fire_event("down", bulk=bulk)
+                continue
             # ? multiple active
             if cpe.description != r.get("description"):
                 cpe.description = r.get("description")
@@ -68,11 +75,6 @@ class CPECheck(DiscoveryCheck):
             # Update Caps
             caps = self.cleanup_caps(r)
             cpe.update_caps(caps, source="cpe", scope="cpe")
-            # State
-            if cpe.controller == self.object:
-                cpe.fire_event("up", bulk=bulk)
-            else:
-                cpe.fire_event("down", bulk=bulk)
             # Sync Address
             if cpe.address != r.get("ip"):
                 cpe.address = r.get("ip")
