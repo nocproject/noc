@@ -33,7 +33,7 @@ Ext.define("NOC.core.TagsField", {
                 pageSize: 25,
                 proxy: {
                     type: "rest",
-                    url: '/main/tag/ac_lookup/',
+                    url: '/main/label/lookup/',
                     pageParam: "__page",
                     startParam: "__start",
                     limitParam: "__limit",

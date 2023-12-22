@@ -118,7 +118,6 @@ const apps = [
     // '../../../ui/web/main/sync/Application.js', // not found in menu - deleted
     '../../../ui/web/main/systemnotification/Application.js',
     '../../../ui/web/main/systemtemplate/Application.js',
-    '../../../ui/web/main/tag/Application.js',
     '../../../ui/web/main/template/Application.js',
     '../../../ui/web/main/timepattern/Application.js',
     '../../../ui/web/main/userprofile/Application.js',
