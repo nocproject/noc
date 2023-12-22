@@ -338,6 +338,16 @@ Ext.define('NOC.sa.managedobject.form.FormController', {
             });
         }
     },
+    onChangeSNMP_SecurityLevel: function(field, value) {
+        this.getView().down('[name=snmp_ro]').setReadOnly(!["Community"].includes(value));
+        this.getView().down('[name=snmp_rw]').setReadOnly(!["Community"].includes(value));
+        this.getView().down('[name=snmp_username]').setReadOnly(!["noAuthNoPriv", "authNoPriv", "authPriv"].includes(value));
+        this.getView().down('[name=snmp_ctx_name]').setReadOnly(!["noAuthNoPriv", "authNoPriv", "authPriv"].includes(value));
+        this.getView().down('[itemId=snmp_auth_proto]').setHidden(["Community", "noAuthNoPriv"].includes(value));
+        this.getView().down('[name=snmp_auth_key]').setHidden(["Community", "noAuthNoPriv"].includes(value));
+        this.getView().down('[itemId=snmp_priv_proto]').setHidden(["Community", "noAuthNoPriv", "authNoPriv"].includes(value));
+        this.getView().down('[name=snmp_priv_key]').setHidden(["Community", "noAuthNoPriv", "authNoPriv"].includes(value));
+    },
     // Workaround labelField
     onChange: Ext.emptyFn,
 });

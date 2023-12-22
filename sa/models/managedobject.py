@@ -713,6 +713,34 @@ class ManagedObject(NOCModel):
     # Interval
     effective_metric_discovery_interval = IntegerField(default=0, validators=[MinValueValidator(0)])
 
+    snmp_security_level = CharField(
+        "SNMP protocol security",
+        max_length=12,
+        choices=[
+            ("Community", "Community"),
+            ("noAuthNoPriv", "noAuthNoPriv"),
+            ("authNoPriv", "authNoPriv"),
+            ("authPriv", "authPriv"),
+        ],
+        default="Community",
+    )
+    snmp_username = CharField("SNMP user name", max_length=32, null=True, blank=True)
+    snmp_auth_proto = CharField(
+        "Authentication protocol",
+        max_length=3,
+        choices=[("MD5", "MD5"), ("SHA", "SHA")],
+        default="MD5",
+    )
+    snmp_auth_key = CharField("Authentication key", max_length=32, null=True, blank=True)
+    snmp_priv_proto = CharField(
+        "Privacy protocol",
+        max_length=3,
+        choices=[("DES", "DES"), ("AES", "AES")],
+        default="DES",
+    )
+    snmp_priv_key = CharField("Privacy key", max_length=32, null=True, blank=True)
+    snmp_ctx_name = CharField("Context name", max_length=32, null=True, blank=True)
+
     # Overridden objects manager
     objects = ManagedObjectManager()
 
