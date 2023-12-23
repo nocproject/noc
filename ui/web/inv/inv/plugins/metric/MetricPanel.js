@@ -30,6 +30,13 @@ Ext.define("NOC.inv.inv.plugins.metric.MetricPanel", {
       tbar: [
         "->",
         {
+          enableToggle: true,
+          fieldLabel: "Ranges",
+          itemId: "rangesBtn",
+          text: __("Ranges") + ": " + __("Relative"),
+          handler: me.rangeStyleToggle
+        },
+        {
           text: __("Collapse All"),
           handler: me.collapseAll,
         },
@@ -131,6 +138,14 @@ Ext.define("NOC.inv.inv.plugins.metric.MetricPanel", {
     var me = this.up("[itemId=metricPanel]");
     me.onReload();
   },
+  rangeStyleToggle: function(btn) {
+    if(btn.pressed) {
+      btn.setText(__("Ranges") + ": " + __("Absolute"),);
+    } else {
+      btn.setText(__("Ranges") + ": " + __("Relative"),);
+    }
+    this.up("[itemId=metricPanel]").down("[xtype=grid]").getView().refresh();
+  },
   collapseAll: function() {
     this.up("[itemId=metricPanel]").groupingFeature.collapseAll();
   },
@@ -138,29 +153,32 @@ Ext.define("NOC.inv.inv.plugins.metric.MetricPanel", {
     this.up("[itemId=metricPanel]").groupingFeature.expandAll();
   },
   valueRenderer: function(value, metaData, record, rowIndex, colIndex, store, view) {
+    var val, result = "",
+      rangeStyle = this.up().down('[itemId=rangesBtn]').pressed,
+      percent = (Math.abs(record.get("max_value")) + Math.abs(record.get("min_value"))) / 100;
     if(Ext.isEmpty(record.get("min_value")) || Ext.isEmpty(record.get("max_value"))) {
       return value
     }
     if(Ext.isEmpty(record.get("ranges"))) {
       return value
     }
-    var result = "",
-      percent = (Math.abs(record.get("max_value")) + Math.abs(record.get("min_value"))) / 100;
 
-    result += "<div data-value='" + value + "' class='noc-metric-value' style='left:" + (value - record.get("min_value")) / percent + "%'></div>";
+    val = rangeStyle ? (value - record.get("min_value")) / percent : record.get("relative_position");
+    result += "<div data-value='" + value + "' class='noc-metric-value' style='left:" + val + "%'></div>";
     result += "<div class='noc-metric-container'>";
     result += "<div class='noc-metric-range noc-metric-green-range'></div>";
     Ext.each(record.get("ranges"), function(range) {
-      var start = (range.left - record.get("min_value")) / percent,
-        end = (range.right - record.get("min_value")) / percent;
+      var start = rangeStyle ? ((range.left - record.get("min_value")) / percent) : range.relative_position.left,
+        end = rangeStyle ? ((range.right - record.get("min_value")) / percent) : range.relative_position.right;
       result += "<div class='noc-metric-range' style='left: " + start + "%; width: " + (end - start) + "%; background: " + range.color + ";'></div>";
     });
     if(!Ext.isEmpty(record.get("thresholds"))) {
       Ext.each(record.get("thresholds"), function(threshold) {
-        result += "<div class='noc-metric-tick' data-qtip='" + threshold.value + " : " + threshold.description + "' style='left: " + (threshold.value - record.get("min_value")) / percent + "%'></div>";
+        var position = rangeStyle ? ((threshold.value - record.get("min_value")) / percent) : threshold.relative_position;
+        result += "<div class='noc-metric-tick' data-qtip='" + threshold.value + " : " + threshold.description + "' style='left: " + position + "%'></div>";
       });
     }
     result += "</div>";
     return result;
-  },
+  }
 });
