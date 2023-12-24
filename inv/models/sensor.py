@@ -101,7 +101,9 @@ class Sensor(Document):
     expired = DateTimeField()
     # Timestamp of first discovery
     first_discovered = DateTimeField(default=datetime.datetime.now)
-    protocol = StringField(choices=["modbus_rtu", "modbus_ascii", "modbus_tcp", "snmp", "ipmi"])
+    protocol = StringField(
+        choices=["modbus_rtu", "modbus_ascii", "modbus_tcp", "snmp", "ipmi", "other"]
+    )
     modbus_register = IntField()
     modbus_format = StringField(choices=MODBUS_FORMAT)
     snmp_oid = StringField()
@@ -235,17 +237,16 @@ class Sensor(Document):
         Return metrics setting for collected by box or periodic
         :return:
         """
-        o: List[str] = Object.get_managed(mo).values_list("id")
         d_interval = d_interval or mo.get_metric_discovery_interval()
-        for sensor in Sensor.objects.filter(object__in=list(o)).read_preference(
+        for sensor in Sensor.objects.filter(managed_object=mo.id).read_preference(
             ReadPreference.SECONDARY_PREFERRED
         ):
-            if (
-                not sensor.state.is_productive
-                or not sensor.profile.enable_collect
-                or not sensor.snmp_oid
+            if not (
+                sensor.state.is_productive
+                or sensor.profile.enable_collect
+                or sensor.protocol in {"snmp", "other"}
             ):
-                return
+                continue
             metrics: List[MetricItem] = []
             for mt_name in ["Sensor | Value", "Sensor | Status"]:
                 mt = MetricType.get_by_name(mt_name)
@@ -259,12 +260,17 @@ class Sensor(Document):
                     metrics.append(mi)
             if not metrics:
                 # self.logger.info("SLA metrics are not configured. Skipping")
-                return
+                continue
+            hints = []
+            if sensor.snmp_oid:
+                hints.append(f"oid::{sensor.snmp_oid}")
+            if sensor.object and sensor.object.get_data("hw_path", "slot"):
+                hints.append(f'slot::{sensor.object.get_data("hw_path", "slot")}')
             yield MetricCollectorConfig(
                 collector="sensor",
                 metrics=tuple(metrics),
                 labels=(f"noc::sensor::{sensor.local_id}",),
-                hints=[f"oid::{sensor.snmp_oid}"],
+                hints=hints,
                 sensor=sensor.bi_id,
             )
 

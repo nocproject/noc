@@ -127,7 +127,7 @@ class Script(BaseScript):
         r = []
         cfg_thresholds = []
         for p in c.metrics:
-            labels, status = [f"noc::slot::{slot_num}"], True
+            labels, status = [], True
             if p.port:
                 labels.append(f"noc::port::{p.port}")
                 # status = port_states.get(p.port) or T
@@ -268,6 +268,7 @@ class Script(BaseScript):
                 "revision": c_fru.revision,
                 "sensors": sensors,
                 "param_data": cfgs,
+                "data": [{"interface": "hw_path", "attr": "slot", "value": str(slot)}]
                 # "param_data": self.get_cfg_param_data(common),
             }
             r += [card]

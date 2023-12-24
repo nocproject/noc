@@ -1,0 +1,15 @@
+{
+    "name": "hw_path",
+    "$collection": "inv.modelinterfaces",
+    "uuid": "a3046385-4b22-427d-956f-56f3979478a3",
+    "description": "Hardware path parts",
+    "attrs": [
+        {
+            "name": "slot",
+            "type": "str",
+            "description": "Slot number",
+            "required": false,
+            "is_const": false
+        }
+    ]
+}
