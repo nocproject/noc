@@ -133,7 +133,7 @@ class TTCommentInfo(BaseModel):
     """
 
     ts: Optional[datetime]
-    login: Optional[TTRef]
+    login: Optional[str]
     subject: Optional[str]
     body: str
     reply_to: Optional[str]
@@ -162,7 +162,7 @@ class TTInfo(BaseModel):
 
 class TTCommentRequest(BaseModel):
     ts: Optional[datetime]
-    login: Optional[TTRef]
+    login: Optional[str]
     subject: Optional[str]
     body: str
     reply_to: Optional[str]
