@@ -186,7 +186,9 @@ class CPE(Document):
     @classmethod
     def _reset_caches(cls, cpe_id: int):
         try:
-            del cls._id_cache[str(cpe_id),]
+            del cls._id_cache[
+                str(cpe_id),
+            ]
         except KeyError:
             pass
 
@@ -328,8 +330,8 @@ class CPE(Document):
                 f"cpe_type::{cpe.type}",
                 f"local_id::{cpe.controller.local_id}",
             ]
-            if cpe.interface:
-                iface = cpe.get_cpe_interface()
+            if cpe.controller.interface:
+                iface = cpe.controller.get_cpe_interface()
                 if iface and iface.ifindex:
                     hints += [f"ifindex::{iface.ifindex}"]
             yield MetricCollectorConfig(

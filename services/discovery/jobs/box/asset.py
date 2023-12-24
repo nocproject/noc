@@ -1046,7 +1046,9 @@ class AssetCheck(DiscoveryCheck):
         Load CPE from CPE Discovery Artefacts
         """
         r = {}
-        for cpe in CPE.objects.filter(controllers__match={"managed_object": self.object.id, "is_active": True}):
+        for cpe in CPE.objects.filter(
+            controllers__match={"managed_object": self.object.id, "is_active": True}
+        ):
             # Sync Asset
             caps = cpe.get_caps()
             if not cpe.profile.sync_asset or not caps.get("CPE | Model"):
