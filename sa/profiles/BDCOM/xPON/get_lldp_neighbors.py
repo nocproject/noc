@@ -26,7 +26,7 @@ class Script(BaseScript):
     name = "BDCOM.xPON.get_lldp_neighbors"
     interface = IGetLLDPNeighbors
 
-    rx_local_port = re.compile(r"^\S*\s+(?P<port>Gig|TGi\d+\S+)\s+", re.MULTILINE)
+    rx_local_port = re.compile(r"^\S*\s+(?P<port>(Gig|TGi)\d+\S+)\s+", re.MULTILINE)
     rx_remote = re.compile(
         r"^chassis id: (?P<chassis_id>\S+)\s*\n"
         r"^port id: (?P<port_id>.+)\s*\n"
