@@ -3,14 +3,6 @@
     "$collection": "inv.objectconfigurationrules",
     "uuid": "b5eb9152-37b3-4928-9e6d-0a7ae7fed250",
     "description": null,
-    "scope_rules": [
-        {
-            "match_slot": "LINE\\d+$"
-        },
-        {
-            "match_connection_type__name": "Transceiver | QSFP+"
-        }
-    ],
     "param_rules": [
         {
             "is_hide": false,
@@ -146,6 +138,16 @@
             "is_hide": false,
             "is_readonly": false,
             "param__code": "optical_loopback_detect"
+        }
+    ],
+    "slot_rules": [
+        {
+            "match_slot": "LINE\\d+$",
+            "scope__name": "OTN"
+        },
+        {
+            "match_connection_type__name": "Transceiver | QSFP+",
+            "scope__name": "OpticalPort"
         }
     ]
 }

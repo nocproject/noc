@@ -35,21 +35,22 @@ class Script(GetMetricsScript):
         # devices: Dict[int, Device] = {}  # slot -> device info
         sensor_map: Dict[Tuple[str, str], int] = {}
         for sensor in metrics:
+            hints = sensor.get_hints()
+            if "slot" not in hints:
+                continue
+            slot = hints["slot"]
+            name = sensor.labels[0][13:]
             # labels - "noc::sensor::Time", "noc::slot::1"
-            name, slot = sensor.labels[:2]
-            name, slot = name[13:], slot[11:]
             sensor_map[(slot, name)] = sensor.sensor
-        v = self.http.get("/api/devices", json=True)
-        for item in v["devices"]:
-            slot = str(item["slotNumber"])
+        # v = self.http.get("/api/devices", json=True)
+        for slot in {x for x, _ in sensor_map}:
             v = self.http.get(
                 f"/api/devices/params?crateId=1&slotNumber={slot}"
                 f"&fields=name,value,description,measureUnit,performanceProcessing,sectionId",
                 json=True,
             )
             for p in v["params"]:
-                if p["sectionId"] != 2:
-                    # Only Dynamic Param Section
+                if (slot, p["name"]) not in sensor_map:
                     continue
                 try:
                     value = float(p["value"])
@@ -59,13 +60,11 @@ class Script(GetMetricsScript):
                 self.logger.debug(
                     "[%s|%s] Processed Dynamic param: %s", slot, p["name"], p["value"]
                 )
-                if (slot, p["name"]) not in sensor_map:
-                    continue
                 sensor = sensor_map[(slot, p["name"])]
                 self.set_metric(
                     id=sensor,
                     metric="Sensor | Value",
-                    labels=[],
+                    labels=[f"noc::sensor::{p['name']}", f"noc::slot::{slot}"],
                     value=float(value),
                     units=units,
                     sensor=sensor,

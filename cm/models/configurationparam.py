@@ -251,7 +251,9 @@ class ConfigurationParam(Document):
         ConfigurationScope, required=False
     )
     # Threshold
-    threshold_type = StringField()
+    threshold_type = StringField(
+        choices=["critical_min", "warning_min", "warning_max", "critical_max"]
+    )
     metric_type: Optional["MetricType"] = PlainReferenceField(MetricType, required=False)
 
     _id_cache = cachetools.TTLCache(maxsize=100, ttl=60)
@@ -362,3 +364,11 @@ class ConfigurationParam(Document):
     @property
     def has_required_scopes(self) -> bool:
         return any(s for s in self.scopes if s.is_required)
+
+    @property
+    def threshold_op(self) -> Optional[str]:
+        if not self.threshold_type:
+            return None
+        elif self.threshold_type.endswith("min"):
+            return "<="
+        return ">="

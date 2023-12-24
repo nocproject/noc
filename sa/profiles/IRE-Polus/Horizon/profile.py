@@ -107,6 +107,13 @@ INFO_PARAMS = {
 
 STATE_MAP = {"Absent", "Ok"}
 
+THRESHOLD_PARAM_MAP = {
+    "CMax": "threshold_c_max",
+    "WMax": "threshold_w_max",
+    "WMin": "threshold_c_min",
+    "CMin": "threshold_w_min",
+}
+
 
 @dataclass
 class PolusParam:
@@ -192,6 +199,12 @@ class PolusParam:
         if not match:
             return False
         return True
+
+    @property
+    def threshold_param(self) -> Optional[str]:
+        if not self.is_threshold:
+            return
+        return THRESHOLD_PARAM_MAP[rx_threshold.match(self.name).group("type")]
 
     @property
     def get_measurement_unit(self) -> str:

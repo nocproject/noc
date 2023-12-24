@@ -157,7 +157,6 @@ Ext.define("NOC.inv.inv.Application", {
             case "history":
                 me.restoreHistory(me.noc.cmd.args);
                 return;
-                break;
         }
     },
     //
@@ -177,7 +176,7 @@ Ext.define("NOC.inv.inv.Application", {
             scope: me,
             success: function(response) {
                 var data = Ext.decode(response.responseText);
-                plugin.preview(data);
+                plugin.preview(data, objectId);
             },
             failure: function() {
                 NOC.error(__("Failed to get data for plugin") + " " + pData.name);
