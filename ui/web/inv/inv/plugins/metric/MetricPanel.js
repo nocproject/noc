@@ -15,7 +15,6 @@ Ext.define("NOC.inv.inv.plugins.metric.MetricPanel", {
   closable: false,
   itemId: "metricPanel",
   border: false,
-  saveBuffer: [],
   initComponent: function() {
     var me = this;
     me.groupingFeature = Ext.create("Ext.grid.feature.Grouping", {
@@ -30,8 +29,12 @@ Ext.define("NOC.inv.inv.plugins.metric.MetricPanel", {
       tbar: [
         "->",
         {
+          text: __("Refresh"),
+          scope: me,
+          handler: me.refreshMetric
+        },
+        {
           enableToggle: true,
-          fieldLabel: "Ranges",
           itemId: "rangesBtn",
           text: __("Ranges") + ": " + __("Relative"),
           handler: me.rangeStyleToggle
@@ -94,49 +97,109 @@ Ext.define("NOC.inv.inv.plugins.metric.MetricPanel", {
           viewConfig: {
             enableTextSelection: true,
           },
+          listeners: {
+            scope: me,
+            celldblclick: function(grid, td, cellIndex, record, tr, rowIndex, e, eOpts) {
+              var metricPanel = this;
+              if(Ext.isEmpty(record.get("thresholds"))) {
+                return;
+              }
+              var popupWindow = Ext.create('Ext.window.Window', {
+                title: __("Edit Thresholds"),
+                modal: true,
+                items: [
+                  {
+                    xtype: "form",
+                    scrollable: "y",
+                    layout: "vbox",
+                    defaults: {
+                      xtype: "container",
+                    },
+                    tbar: [
+                      {
+                        text: __("Save"),
+                        handler: function() {
+                          var me = this,
+                            url = Ext.String.format("/inv/inv/{0}/plugin/metric/{1}/set_threshold/", record.get("object"), record.get("id")),
+                            values = me.up("form").getValues(),
+                            body = {thresholds: Ext.Object.getKeys(values).map(function(el) {return {name: el, value: values[el]}})};
+
+                          Ext.Ajax.request({
+                            url: url,
+                            method: "POST",
+                            scope: me,
+                            jsonData: body,
+                            success: function() {
+                              metricPanel.refreshMetric();
+                              NOC.info(__("Thresholds has been updated"));
+                              me.up("window").close();
+                            },
+                            failure: function() {
+                              NOC.error(__("Thresholds update failed"));
+                            }
+                          });
+                        },
+                      },
+                      {
+                        text: __("Cancel"),
+                        handler: function() {
+                          this.up("window").close();
+                        },
+                      },
+                    ],
+                    items: Ext.Array.map(record.get("thresholds"), function(threshold) {
+                      return {
+                        layout: "column",
+                        padding: "10 10 0 10",
+                        defaults: {
+                          columnWidth: 0.5,
+                        },
+                        items: [
+                          {
+                            xtype: "displayfield",
+                            minWidth: 200,
+                            maxWidth: 500,
+                            value: threshold.label
+                          },
+                          {
+                            xtype: "numberfield",
+                            name: threshold.name,
+                            value: threshold.value,
+                          }
+                        ]
+                      }
+                    })
+                  }
+                ]
+              });
+              popupWindow.show();
+            },
+          }
         },
       ],
     });
     me.callParent();
   },
-  preview: function(data) {
+  preview: function(data, objectId) {
     var me = this;
-    me.currentId = data.id;
+    me.currentId = objectId;
     me.store.loadData(data);
   },
-  save: function() {
-    var me = this.up("[itemId=metricPanel]");
-    Ext.Ajax.request({
-      url: "/inv/inv/" + me.currentId + "/plugin/metric/",
-      method: "PUT",
-      jsonData: me.saveBuffer,
-      // scope: me,
-      success: function(response) {
-        me.onReload();
-      },
-      failure: function() {
-        NOC.error(__("Failed to save"));
-      },
-    });
-  },
-  onReload: function() {
+  refreshMetric: function() {
     var me = this;
-    me.saveBuffer = [];
+
     Ext.Ajax.request({
       url: "/inv/inv/" + me.currentId + "/plugin/metric/",
       method: "GET",
-      // scope: me,
+      scope: me,
       success: function(response) {
-        me.preview(Ext.decode(response.responseText));
+        var data = Ext.decode(response.responseText);
+        me.preview(data, me.currentId);
       },
       failure: function() {
-        NOC.error(__("Failed to get data"));
-      },
+        NOC.error(__("Failed to get data for plugin") + " metric");
+      }
     });
-  },
-  reset: function() {
-    var me = this.up("[itemId=metricPanel]");
-    me.onReload();
   },
   rangeStyleToggle: function(btn) {
     if(btn.pressed) {
