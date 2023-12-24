@@ -8,7 +8,7 @@
 # Python modules
 import re
 from dataclasses import dataclass
-from typing import Dict, List, Any, Optional
+from typing import Dict, List, Any, Optional, Tuple
 
 # Third-party modules
 import orjson
@@ -118,30 +118,36 @@ class Script(BaseScript):
             return r
         return None
 
-    def get_sensors(self, c: Component, slot_num: str) -> List[Dict[str, Any]]:
+    def get_sensors(
+        self, c: Component, slot_num: str
+    ) -> Tuple[List[Dict[str, Any]], List[Dict[str, Any]]]:
         """
         Getting Sensors from component metrics
         """
         r = []
+        cfg_thresholds = []
         for p in c.metrics:
-            labels, status = [f"slot::{slot_num}"], True
+            labels, status = [], True
             if p.port:
-                labels.append(f"port::{p.port}")
+                labels.append(f"noc::port::{p.port}")
                 # status = port_states.get(p.port) or T
-            if p.channel:
-                labels.append(f"channel::{p.channel}")
+            # if p.channel:
+            #     labels.append(f"channel::{p.channel}")
             if p.module:
-                labels.append(f"module::{p.module}")
-            # for tp in c.cfg_thresholds:
-            #     if tp.name.startswith(p.name):
-            #         thresholds.append(
-            #             {
-            #                 "id": tp.name,
-            #                 "value": tp.value,
-            #                 "realtion": "<=" if tp.name.endswith("Min") else ">=",
-            #                 "description": tp.description,
-            #             }
-            #         )
+                labels.append(f"noc::module::{p.module}")
+            for tp in c.cfg_thresholds:
+                if tp.name.startswith(p.name):
+                    cfg_thresholds.append(
+                        {
+                            "param": tp.threshold_param,
+                            "value": tp.value,
+                            "scopes": [{"scope": "Sensor", "value": p.name}],
+                            # "id": tp.name,
+                            # "value": tp.value,
+                            # "realtion": "<=" if tp.name.endswith("Min") else ">=",
+                            # "description": tp.description,
+                        }
+                    )
             r += [
                 {
                     "name": p.name,
@@ -152,7 +158,7 @@ class Script(BaseScript):
                     # "thresholds": thresholds,
                 }
             ]
-        return r
+        return r, cfg_thresholds
 
     def get_cfg_param_data(self, c: Component) -> List[Dict[str, str]]:
         """
@@ -252,6 +258,7 @@ class Script(BaseScript):
             components = Component.get_components(params=params)
             common = components["common"]
             c_fru = self.get_fru(common)
+            sensors, cfgs = self.get_sensors(common, slot)
             card = {
                 "type": "LINECARD",
                 "number": num,
@@ -259,7 +266,9 @@ class Script(BaseScript):
                 "part_no": c_fru.part_no,
                 "serial": c_fru.serial,
                 "revision": c_fru.revision,
-                "sensors": self.get_sensors(common, slot),
+                "sensors": sensors,
+                "param_data": cfgs,
+                "data": [{"interface": "hw_path", "attr": "slot", "value": str(slot)}]
                 # "param_data": self.get_cfg_param_data(common),
             }
             r += [card]
@@ -268,10 +277,13 @@ class Script(BaseScript):
                 if c.is_common:
                     continue
                 elif not fru:
-                    card["sensors"] += self.get_sensors(c, slot)
+                    sensors, cfgs = self.get_sensors(c, slot)
+                    card["sensors"] += sensors
+                    card["param_data"] += cfgs
                     continue
                 self.logger.info("[%s] Parse FRU", fru)
                 # card["param_data"] += self.get_cfg_param_data(c)
+                sensors, cfgs = self.get_sensors(c, slot)
                 r += [
                     {
                         "type": fru.type,
@@ -280,7 +292,8 @@ class Script(BaseScript):
                         "part_no": fru.part_no,
                         "serial": fru.serial,
                         "revision": fru.revision,
-                        "sensors": self.get_sensors(c, slot),
+                        "sensors": sensors,
+                        "param_data": cfgs,
                     }
                 ]
         return r

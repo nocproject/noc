@@ -667,3 +667,42 @@ table {
 .noc-state-enabled {
     background: lightgreen;
 }
+
+.noc-metric-container {
+    position: relative;
+    z-index: 5;
+    display: flex;
+    align-items: center;
+}
+
+.noc-metric-value {
+    position: relative;
+    width: 1px;
+    height: 7px; 
+    margin-top: 6px;
+    background: black;
+}
+
+.noc-metric-value::before {
+    display: block;
+    content: attr(data-value);
+    transform: translate(120%, -70%);
+}
+
+.noc-metric-range {
+    height: 3px;
+    position: absolute;
+}
+
+.noc-metric-green-range {
+    width: 100%; 
+    background: green;
+}
+
+.noc-metric-tick {
+    background: gray;
+    height: 8px;
+    width: 5px;
+    border: 1px solid black;
+    position: absolute;
+}

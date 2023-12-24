@@ -79,16 +79,6 @@ class IGetInventory(BaseInterface):
                     "snmp_oid": OIDParameter(required=False),
                     # ID for IPMI collected
                     "ipmi_id": StringParameter(required=False),
-                    # Optional internals Thresholds ?
-                    # "thresolds": DictListParameter(
-                    #     attrs={
-                    #         "id": StringParameter(required=True),
-                    #         "value": FloatParameter(required=True),
-                    #         "realtion": StringParameter(choices=["<", "<=", ">", ">=", "=", "!="], default="="),
-                    #         "description": StringParameter(required=False),
-                    #     },
-                    #     required=False
-                    # )
                 },
                 required=False,
             ),
