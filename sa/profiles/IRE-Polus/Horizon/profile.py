@@ -349,9 +349,9 @@ class Component:
         if p.prefix not in self.crossing:
             self.crossing[p.prefix] = []
         if d_desc:
-            d_odu = f"{d_odu}::{d_desc.strip('_')}"
+            d_odu = f"odu::{d_odu}::{d_desc.strip('_')}"
         else:
-            d_odu = f"{d_odu}::0"
+            d_odu = f"odu::{d_odu}::0"
         if p.code == "SetSrc":
             self.crossing[p.prefix].insert(0, (d_port, d_odu))
         elif p.code == "SetDst":
