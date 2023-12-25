@@ -130,6 +130,8 @@ class InvApplication(ExtApplication):
                 n["plugins"] += [self.get_plugin_data("managedobject")]
             if o.get_data("contacts", "has_contacts"):
                 n["plugins"] += [self.get_plugin_data("contacts")]
+            if o.cross or o.model.cross:
+                n["plugins"] += [self.get_plugin_data("cross")]
             if o.model.sensors or Sensor.objects.filter(object=o.id).first():
                 n["plugins"] += [self.get_plugin_data("sensor")]
                 n["plugins"] += [self.get_plugin_data("metric")]
