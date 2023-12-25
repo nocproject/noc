@@ -158,18 +158,13 @@ class Script(BaseScript):
         subifaces = self.get_subifaces_cli()
         tagged_vlans = {}
         v = self.cli("show vlan shub-port-vlan-map", cached=True)
-        network_0_found = False
         for match in self.rx_vlan_map.finditer(v):
             ifname = match.group("ifname")
             ifname = ifname.replace("lt:", "atm-if:")
             if ifname == "network:0":
-                ifname = "ethernet:1"
-                network_0_found = True
+                ifname = "ethernet:0"
             if ifname == "network:1":
-                if network_0_found:
-                    ifname = "ethernet:2"
-                else:
-                    ifname = "ethernet:1"
+                ifname = "ethernet:1"
             if ifname == "network:2":
                 ifname = "ethernet:2"
             if ifname == "network:3":
@@ -180,6 +175,8 @@ class Script(BaseScript):
                 ifname = "ethernet:5"
             if ifname == "network:6":
                 ifname = "ethernet:6"
+            if ifname == "network:7":
+                ifname = "ethernet:7"
             if ifname in tagged_vlans:
                 tagged_vlans[ifname] += [match.group("vlan_id")]
             else:
