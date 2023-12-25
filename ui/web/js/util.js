@@ -779,3 +779,44 @@ NOC.helpOpener = function(topic) {
         NOC.openHelp(topic)
     }
 };
+
+NOC.generateDiagram = function(data) {
+    var aliases = Ext.Array.reduce(data.connections, function(acc, item, index) {
+        acc[item.name] = index;
+        return acc;
+    }, {}),
+        diagram = "graph LR\n";
+    diagram += Ext.Array.map(
+        data.cross,
+        function(item) {
+            if(!aliases.hasOwnProperty(item.input) || !aliases.hasOwnProperty(item.output)) {
+                return "";
+            }
+            var row = "s" + aliases[item.input] + "[[" + item.input + "]]\ns" + aliases[item.output] + "[[" + item.output + "]]";
+            if(!Ext.isEmpty(item.input_discriminator)) {
+                row += "\ns" + aliases[item.input] + "_s:::hidden\ns" + aliases[item.input] + "_s -- " + item.input_discriminator + " --> s" + aliases[item.input];
+            }
+            if(Ext.isEmpty(item.output_discriminator)) {
+                row += "\ns" + aliases[item.input] + " --> s" + aliases[item.output];
+            } else {
+                row += "\ns" + aliases[item.input] + " -- " + item.output_discriminator + " --> s" + aliases[item.output];
+            }
+            return row;
+        }).join("\n");
+    return diagram;
+};
+
+NOC.drawDiagram = function(code, diagPanel) {
+    var panel = diagPanel,
+        rule = Ext.util.CSS.getRule('.x-panel-body-default'),
+        fontSize = rule.style.getPropertyValue('font-size'),
+        mermaidConfig = window.mermaid.mermaidAPI.getConfig();
+
+    mermaidConfig.themeVariables.fontSize = fontSize;
+    mermaidConfig.flowchart.rankSpacing = 5;
+    mermaidConfig.flowchart.nodeSpacing = 5;
+    mermaid.initialize(mermaidConfig);
+    window.mermaid.render("diag", code).then(({svg}) => {
+        panel.setHtml(svg);
+    });
+};

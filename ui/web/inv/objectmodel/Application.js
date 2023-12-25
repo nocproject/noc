@@ -1,7 +1,7 @@
 //---------------------------------------------------------------------
 // inv.objectmodel application
 //---------------------------------------------------------------------
-// Copyright (C) 2007-2020 The NOC Project
+// Copyright (C) 2007-2023 The NOC Project
 // See LICENSE for details
 //---------------------------------------------------------------------
 console.debug("Defining NOC.inv.objectmodel.Application");
@@ -47,7 +47,7 @@ Ext.define("NOC.inv.objectmodel.Application", {
         }
     ],
 
-    initComponent: function () {
+    initComponent: function() {
         var me = this;
 
         // JSON Panel
@@ -355,10 +355,10 @@ Ext.define("NOC.inv.objectmodel.Application", {
                                     editor: "textfield"
                                 }
                             ],
-                            onBeforeEdit: function (editor, context) {
-                                if (["input", "output"].includes(context.column.dataIndex)) {
+                            onBeforeEdit: function(editor, context) {
+                                if(["input", "output"].includes(context.column.dataIndex)) {
                                     var connectionsField = context.view.up("[xtype=form]").down("[name=connections]"),
-                                        data = Ext.Array.map(connectionsField.value, function (value) { return { id: value.name, text: value.name } }),
+                                        data = Ext.Array.map(connectionsField.value, function(value) {return {id: value.name, text: value.name}}),
                                         combo = editor.getEditor(context.record, context.column).field;
                                     combo.getStore().loadData(data);
                                 }
@@ -368,18 +368,18 @@ Ext.define("NOC.inv.objectmodel.Application", {
                                 scope: me,
                                 delete: me.onDeleteRow,
                             },
-                            onCellEdit: function (editor, context) {
+                            onCellEdit: function(editor, context) {
                                 var me = this,
                                     app = this.up("[appId=inv.objectmodel]"),
                                     ed = context.grid.columns[context.colIdx].getEditor(),
                                     field = context.grid.columns[context.colIdx].field;
-                                if (ed.rawValue) {
+                                if(ed.rawValue) {
                                     context.record.set(context.field + "__label", ed.rawValue);
                                 }
-                                if (field.xtype === "labelfield") {
+                                if(field.xtype === "labelfield") {
                                     context.value = field.valueCollection.items;
                                 }
-                                app.drawDiagram(app.generateDiagram());
+                                NOC.drawDiagram(NOC.generateDiagram(app.getFormData()), app.down("[itemId=diagram]"));
                             },
                         },
                         {
@@ -476,40 +476,40 @@ Ext.define("NOC.inv.objectmodel.Application", {
         me.callParent();
     },
     //
-    onJSON: function () {
+    onJSON: function() {
         var me = this;
         me.showItem(me.ITEM_JSON);
         me.jsonPanel.preview(me.currentRecord);
     },
     //
-    onTest: function () {
+    onTest: function() {
         var me = this;
         Ext.Ajax.request({
             url: "/inv/objectmodel/" + me.currentRecord.get("id") + "/compatible/",
             method: "GET",
             scope: me,
-            success: function (response) {
+            success: function(response) {
                 var data = Ext.decode(response.responseText);
                 me.showItem(me.ITEM_TEST).preview(me.currentRecord, data);
             },
-            failure: function () {
+            failure: function() {
                 NOC.error(__("Failed to get data"));
             }
         });
     },
     //
-    cleanData: function (v) {
+    cleanData: function(v) {
         var me = this,
             i, c, x;
-        for (i in v.connections) {
+        for(i in v.connections) {
             c = v.connections[i];
-            if (!Ext.isArray(c.protocols)) {
-                if (!Ext.isEmpty(c.protocols)) {
+            if(!Ext.isArray(c.protocols)) {
+                if(!Ext.isEmpty(c.protocols)) {
                     x = c.protocols.trim();
-                    if (x === "" || x === undefined || x === null) {
+                    if(x === "" || x === undefined || x === null) {
                         c.protocols = [];
                     } else {
-                        c.protocols = c.protocols.split(",").map(function (v) {
+                        c.protocols = c.protocols.split(",").map(function(v) {
                             return v.trim();
                         });
                     }
@@ -518,55 +518,22 @@ Ext.define("NOC.inv.objectmodel.Application", {
         }
     },
     //
-    onCloneConnection: function (record) {
+    onCloneConnection: function(record) {
         var me = this,
             v = record.get("name"),
             m = v.match(/(.*?)(\d+)/);
-        if (m === null) {
+        if(m === null) {
             return;
         }
         var n = +m[2] + 1;
         record.set("name", m[1] + n);
     },
-    editRecord: function (record) {
+    editRecord: function(record) {
         this.callParent([record]);
-        var diagram = this.generateDiagram();
-        this.drawDiagram(diagram);
+        var diagram = NOC.generateDiagram(this.getFormData());
+        NOC.drawDiagram(diagram, this.down("[itemId=diagram]"));
     },
-    drawDiagram: function (code) {
-        var panel = this.down("[itemId=diagram]");
-
-        window.mermaid.render("diag", code).then(({ svg }) => {
-            panel.setHtml(svg);
-        });
-    },
-    generateDiagram: function () {
-        var data = this.getFormData(),
-            aliases = Ext.Array.reduce(data.connections, function (acc, item, index) {
-                acc[item.name] = index;
-                return acc;
-            }, {}),
-            diagram = "graph LR\n";
-        diagram += Ext.Array.map(
-            data.cross,
-            function (item) {
-                if (!aliases.hasOwnProperty(item.input) || !aliases.hasOwnProperty(item.output)) {
-                    return "";
-                }
-                var row = "s" + aliases[item.input] + "[[" + item.input + "]]\ns" + aliases[item.output] + "[[" + item.output + "]]";
-                if (!Ext.isEmpty(item.input_discriminator)) {
-                    row += "\ns" + aliases[item.input] + "_s:::hidden\ns" + aliases[item.input] + "_s -- " + item.input_discriminator + " --> s" + aliases[item.input];
-                }
-                if (Ext.isEmpty(item.output_discriminator)) {
-                    row += "\ns" + aliases[item.input] + " --> s" + aliases[item.output];
-                } else {
-                    row += "\ns" + aliases[item.input] + " -- " + item.output_discriminator + " --> s" + aliases[item.output];
-                }
-                return row;
-            }).join("\n");
-        return diagram;
-    },
-    onDeleteRow: function () {
-        this.drawDiagram(this.generateDiagram());
+    onDeleteRow: function() {
+        NOC.drawDiagram(NOC.generateDiagram(this.getFormData()), this.down("[itemId=diagram]"));
     }
 });
