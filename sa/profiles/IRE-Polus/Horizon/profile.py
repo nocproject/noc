@@ -46,6 +46,7 @@ rx_module = re.compile(
 rx_channel = re.compile(r"\S+Lane_(\d+)\S+")
 rx_threshold = re.compile(r"(?P<param>\S+)(?P<type>CMax|WMax|WMin|CMin)$")
 rx_num = re.compile(r"\S+(\d+)")
+rx_cross_dst = re.compile(r"(?:ODU\d+)?(?P<port>(?:Ln|Cl)_\d+)_(?P<odu>ODU\d+)(?P<odu_idx>_\d+)?")
 
 METRIC_MAP = {
     "Time": "s",
@@ -213,6 +214,14 @@ class PolusParam:
         return "1"
 
     @property
+    def is_cross(self) -> bool:
+        return (
+            self.name.endswith("SetSrc")
+            or self.name.endswith("SetDst")
+            or self.name.endswith("SetIn")
+        )
+
+    @property
     def component_type(self) -> Optional[str]:
         if rx_transceiver.match(self.name):
             return "XCVR"
@@ -263,27 +272,27 @@ class PolusParam:
         """
         Parse param code
 
-        >>> Param.from_code("FAN1SrNumber", 0000)
+        >>> PolusParam.from_code("FAN1SrNumber", 0000)
         Param(name='SrNumber', value=0, prefix='FAN1', description=None)
-        >>> Param.from_code("FAN1State", 0)
+        >>> PolusParam.from_code("FAN1State", 0)
         Param(name='State', value=0, prefix='FAN1', description=None)
-        >>> Param.from_code("DiskSpace", 0)
+        >>> PolusParam.from_code("DiskSpace", 0)
         Param(name='DiskSpace', value=0, prefix=None, description=None)
-        >>> Param.from_code("ClOutSetAtt", 0)
+        >>> PolusParam.from_code("ClOutSetAtt", 0)
         Param(name='SetAtt', value=0, prefix='ClOut', description=None)
-        >>> Param.from_code("ptDirInCat", 0)
+        >>> PolusParam.from_code("ptDirInCat", 0)
         Param(name='Cat', value=0, prefix='DirIn', description=None)
-        >>> Param.from_code("Cl_1_SetState", 0)
+        >>> PolusParam.from_code("Cl_1_SetState", 0)
         Param(name='SetState', value=0, prefix='Cl_1', description=None)
-        >>> Param.from_code("Cl_1_SetState", 0).port
+        >>> PolusParam.from_code("Cl_1_SetState", 0).port
         'Cl_1'
-        >>> Param.from_code("ptDirInCat", 0).port
+        >>> PolusParam.from_code("ptDirInCat", 0).port
         'DirIn'
-        >>> Param.from_code("SetFactory", 0).port
+        >>> PolusParam.from_code("SetFactory", 0).port
 
-        >>> Param.from_code("Cl_2_QSFP28_Lane_3_RxPwr", -2).channel
+        >>> PolusParam.from_code("Cl_2_QSFP28_Lane_3_RxPwr", -2).channel
         '3'
-        >>> Param.from_code("Cl_2_QSFP28_Lane_3_RxPwr", -2).component
+        >>> PolusParam.from_code("Cl_2_QSFP28_Lane_3_RxPwr", -2).component
         'XCVR'
         """
         name, value, description = name.strip(), value.strip(), description.strip()
@@ -291,6 +300,8 @@ class PolusParam:
         if name.endswith("Max") or name.endswith("Min"):
             # Threshold param
             pass
+        if value == "None":
+            value = None
         prefix, *param = name.rsplit("_", 1)
         if param:
             return PolusParam(name, value, code=param[0], prefix=prefix, description=description)
@@ -310,6 +321,7 @@ class Component:
     cfg_thresholds: List[PolusParam] = None
     info_params: List[PolusParam] = None
     cfg_params: List[PolusParam] = None
+    crossing: Dict[str, List[Tuple[str, str]]] = None
 
     @property
     def is_common(self) -> bool:
@@ -323,6 +335,27 @@ class Component:
         if match:
             return match.groups()[0]
         return ""
+
+    def add_cross(self, p: PolusParam):
+        if not p.value:
+            return
+        # xc_index, xc_type = p.name.rsplit("_", 1)
+        d_port, d_odu, d_desc = rx_cross_dst.match(p.value).groups()
+        if not d_port:
+            print(f"Unknown port on crossing {p.value}")
+            return
+        if self.crossing is None:
+            self.crossing = {}
+        if p.prefix not in self.crossing:
+            self.crossing[p.prefix] = []
+        if d_desc:
+            d_odu = f"{d_odu}::{d_desc.strip('_')}"
+        else:
+            d_odu = f"{d_odu}::0"
+        if p.code == "SetSrc":
+            self.crossing[p.prefix].insert(0, (d_port, d_odu))
+        elif p.code == "SetDst":
+            self.crossing[p.prefix].append((d_port, d_odu))
 
     @classmethod
     def get_components(cls, params: List[PolusParam]) -> Dict[str, "Component"]:
@@ -341,6 +374,8 @@ class Component:
                 c.cfg_params.append(p)
             elif p.is_metric:
                 c.metrics.append(p)
+            elif p.is_cross:
+                c.add_cross(p)
             if p.code == "State" and not p.value and p.component:
                 ignored_components.add(c_name)
         for ic in ignored_components:

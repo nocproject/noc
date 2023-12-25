@@ -21,7 +21,7 @@ import cachetools
 from noc.services.discovery.jobs.base import DiscoveryCheck
 from noc.main.models.label import Label
 from noc.inv.models.modelinterface import ModelInterface, ModelDataError
-from noc.inv.models.objectmodel import ObjectModel, ConnectionRule
+from noc.inv.models.objectmodel import ObjectModel, ConnectionRule, Crossing
 from noc.inv.models.object import Object, ObjectAttr
 from noc.inv.models.vendor import Vendor
 from noc.inv.models.unknownmodel import UnknownModel
@@ -108,6 +108,7 @@ class AssetCheck(DiscoveryCheck):
                 sensors=o.get("sensors"),
                 sa_data=o.get("data"),
                 param_data=o.get("param_data"),
+                crossing=o.get("crossing"),
             )
             # cpe_objects
         # Assign stack members
@@ -149,6 +150,7 @@ class AssetCheck(DiscoveryCheck):
         sa_data: List[Dict[str, Any]] = None,
         param_data: List[Dict[str, Any]] = None,
         cpe_id: Optional[str] = None,
+        crossing: List[Dict[str, str]] = None,
     ):
         # Check the vendor and the serial are sane
         # OEM transceivers return binary trash often
@@ -372,6 +374,27 @@ class AssetCheck(DiscoveryCheck):
         self.sync_data(o, data)
         if param_data:
             self.object_param_artifacts[str(o.id)] = param_data
+        if not crossing:
+            return
+        for c in crossing:
+            if not o.has_connection(c["input"]):
+                self.logger.warning("[%s] Unkown crossing input: %s", o.model.name, c["input"])
+                continue
+            if not o.has_connection(c["output"]):
+                self.logger.warning("[%s] Unkown crossing output: %s", o.model.name, c["output"])
+                continue
+            o.cross += [
+                Crossing(
+                    **{
+                        "input": o.model.get_model_connection(c["input"]).name,
+                        "input_discriminator": c.get("input_discriminator"),
+                        "output": o.model.get_model_connection(c["output"]).name,
+                        "output_discriminator": c.get("output_discriminator"),
+                        "gain_db": c["gain"],
+                    }
+                )
+            ]
+        o.save()
 
     def clean_sa_data(
         self, data: List[Dict[str, str]]

@@ -271,6 +271,19 @@ class Script(BaseScript):
                 "data": [{"interface": "hw_path", "attr": "slot", "value": str(slot)}]
                 # "param_data": self.get_cfg_param_data(common),
             }
+            if common.crossing:
+                card["crossing"] = []
+                for cross in common.crossing.values():
+                    c_in, c_out = cross[:2]
+                    card["crossing"] += [
+                        {
+                            "input": c_in[0],
+                            "input_discriminator": c_in[1],
+                            "output": c_out[0],
+                            "output_discriminator": c_out[1],
+                            # "gain":
+                        }
+                    ]
             r += [card]
             for c_name, c in components.items():
                 fru = self.get_fru(c)
@@ -281,9 +294,11 @@ class Script(BaseScript):
                     card["sensors"] += sensors
                     card["param_data"] += cfgs
                     continue
-                self.logger.info("[%s] Parse FRU", fru)
+                self.logger.debug("[%s] Parse FRU", fru)
                 # card["param_data"] += self.get_cfg_param_data(c)
                 sensors, cfgs = self.get_sensors(c, slot)
+                card["sensors"] += sensors
+                card["param_data"] += cfgs
                 r += [
                     {
                         "type": fru.type,
@@ -292,8 +307,8 @@ class Script(BaseScript):
                         "part_no": fru.part_no,
                         "serial": fru.serial,
                         "revision": fru.revision,
-                        "sensors": sensors,
-                        "param_data": cfgs,
+                        # "sensors": sensors,
+                        # "param_data": cfgs,
                     }
                 ]
         return r

@@ -57,7 +57,7 @@ class IGetInventory(BaseInterface):
                     # Output signal mapping
                     "output_discriminator": StringParameter(required=False),
                     # Power gain, in dB
-                    "gain": FloatParameter(),
+                    "gain": FloatParameter(default=1),
                 },
                 required=False,
             ),
