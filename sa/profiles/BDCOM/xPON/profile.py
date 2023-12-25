@@ -2,7 +2,7 @@
 # Vendor: BDCOM
 # OS:     xPON
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2021 The NOC Project
+# Copyright (C) 2007-2023 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -26,13 +26,28 @@ class Profile(BaseProfile):
     config_volatile = ["^%.*?$"]
 
     def convert_interface_name(self, interface):
-        if interface.startswith("gpon"):
+        if interface.startswith("TGigaEthernet"):
+            return interface
+        elif interface.startswith("GigaEthernet"):
+            return interface
+
+        if interface.startswith("f"):
+            return interface.replace("f", "FastEthernet")
+        elif interface.startswith("g"):
+            return interface.replace("g", "GigaEthernet")
+        elif interface.startswith("Gig"):
+            return interface.replace("Gig", "GigaEthernet")
+        elif interface.startswith("TGi"):
+            return interface.replace("TGi", "TGigaEthernet")
+        elif interface.startswith("tg"):
+            return interface.replace("tg", "TGigaEthernet")
+        elif interface.startswith("gpon"):
             return "GPON" + interface[4:]
         elif interface.startswith("epon"):
             return "EPON" + interface[4:]
-        elif interface.startswith("g"):
-            return "GigaEthernet" + interface[1:]
-        elif interface.startswith("tg"):
-            return "TGigaEthernet" + interface[2:]
+        elif interface.startswith("v"):
+            return interface.replace("v", "VLAN")
+        elif interface.startswith("n"):
+            return interface.replace("n", "Null")
         else:
             return interface
