@@ -377,12 +377,20 @@ class PydanticField(models.JSONField):
         super().__init__(verbose_name, name, encoder, decoder, **kwargs)
 
     def get_db_prep_value(self, value, connection, prepared=False):
+        def unquote(s: str): -> str
+            if s[0] == s[-1] and s[0] in "'\"":
+                return s[1:-1]
+            return s
+
         if not prepared:
             try:
                 self.schema.model_validate(value)
             except ValidationError as e:
                 raise ValueError(e)
-        return super().get_db_prep_value(value, connection, prepared=prepared)
+        prep_value = super().get_db_prep_value(value, connection, prepared=prepared)
+        if isinstance(prep_value, psycopg2._json.Json):
+            prep_value = unquote(unquote(str(prep_value)))
+        return prep_value
 
     def get_prep_value(self, value):
         if value is None:
