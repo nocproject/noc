@@ -377,7 +377,7 @@ class PydanticField(models.JSONField):
         super().__init__(verbose_name, name, encoder, decoder, **kwargs)
 
     def get_db_prep_value(self, value, connection, prepared=False):
-        def unquote(s: str): -> str
+        def unquote(s: str) -> str:
             if s[0] == s[-1] and s[0] in "'\"":
                 return s[1:-1]
             return s
