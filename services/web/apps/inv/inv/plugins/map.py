@@ -9,6 +9,7 @@
 from noc.gis.map import map
 from noc.gis.models.layer import Layer
 from noc.gis.models.layerusersettings import LayerUserSettings
+from noc.config import config
 from noc.sa.models.managedobject import ManagedObject
 from noc.inv.models.objectmodel import ObjectModel
 from noc.inv.models.object import Object, ObjectAttr
@@ -107,8 +108,8 @@ class MapPlugin(InvPlugin):
         return {
             "id": str(o.id),
             "zoom": map.get_default_zoom(o.get_data("geopoint", "layer"), object=o),
-            "x": x,
-            "y": y,
+            "x": x if x is not None else config.web.map_lon,
+            "y": y if y is not None else config.web.map_lat,
             "layer": o.get_data("geopoint", "layer"),
             "layers": layers,
             "add_menu": self.get_add_menu(),
