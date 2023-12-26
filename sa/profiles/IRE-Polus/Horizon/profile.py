@@ -47,6 +47,15 @@ rx_channel = re.compile(r"\S+Lane_(\d+)\S+")
 rx_threshold = re.compile(r"(?P<param>\S+)(?P<type>CMax|WMax|WMin|CMin)$")
 rx_num = re.compile(r"\S+(\d+)")
 rx_cross_dst = re.compile(r"(?:ODU\d+)?(?P<port>(?:Ln|Cl)_\d+)_(?P<odu>ODU\d+)(?P<odu_idx>_\d+)?")
+rx_param_match = re.compile(
+    r"(?:pt)?(?P<port>Ln_\d+|Cl_\d+|Line\d+|Client\d+|Port\d+|OSC|H\d+|C\d+)?(?P<c_name>\w+\d)*(\w*)"
+    r"(?P<code>Set\S+|EnableTx|TxInfo|TxCat|RxCat|RxInfo|Source|Destination)"
+)
+rx_metric_match = re.compile(
+    r"(?P<port>Ln_\d+|Cl_\d+|Line\d+|Client\d+|Port\d+)?(?P<c_name>\w+\d)*(\w*?)"
+    r"(?P<direction>In|Out|Rx|Tx)?(?P<metric>OSCPwr|AttPwr|PwrDrift|Pwr|SigPwr|Att|Gain|GainTilt|ILD|ITEC|"
+    r"Temp|Time|Speed|CPUUsage|MemLoad|DiskSpace|SNR|CD|DGD|Q|FECBER|EB|ES|SES|BBE|UAS|V)"
+)
 
 METRIC_MAP = {
     "Time": "s",
@@ -116,6 +125,18 @@ THRESHOLD_PARAM_MAP = {
 }
 
 
+cfg_param_map = {
+    "Destination": "port_destination",
+    "SetTxFreqSp": "tx_frequency",
+    "SetTxPwr": "tx_power",
+    "EnableTx": "enable_tx",
+    "SetState": "optical_state",
+    "SetDataType": "otn_data_type",
+    "SetFECType": "otn_fec_type",
+    "SetPayload": "otn_payload",
+}
+
+
 @dataclass
 class PolusParam:
     name: str
@@ -123,6 +144,36 @@ class PolusParam:
     code: Optional[str] = None
     prefix: Optional[str] = None
     description: Optional[str] = None
+
+    def get_param_scopes(self) -> Optional[List[Dict[str, str]]]:
+        r = []
+        match = rx_param_match.match(self.name)
+        if not match:
+            return None
+        port, module, p_type, code = match.groups()
+        if port and port.lower().startswith("ln"):
+            r.append({"scope": "OpticalLinePort", "value": f"LINE{port[3:]}"})
+        elif port and port.lower().startswith("cl"):
+            r.append({"scope": "OpticalPort", "value": f"CLIENT{port[3:]}"})
+        elif port and port.lower().startswith("po"):
+            r.append({"scope": "EthernetPort", "value": f"Port{port[4:]}"})
+        elif port and (port.lower().startswith("h") or port.lower().startswith("c")):
+            r.append({"scope": "OpticalPort", "value": port})
+        if port and module:
+            r.append({"scope": "OTN", "value": module.strip("_")})
+        # if port and p_type:
+        #    r.append({"scope": "Module", "value": p_type.strip("_")})
+        elif not port and module:
+            r.append({"scope": "Module", "value": module.strip("_")})
+        elif not port and p_type:
+            r.append({"scope": "Module", "value": p_type.strip("_")})
+        return r
+
+    def get_param_code(self) -> Optional[str]:
+        match = rx_param_match.match(self.name)
+        if not match or match.group("code") not in cfg_param_map:
+            return None
+        return cfg_param_map[match.group("code")]
 
     @property
     def is_info(self) -> bool:
@@ -171,15 +222,12 @@ class PolusParam:
     def is_config(self) -> bool:
         """
         Return if param is_config
+        self.name.startswith("Set")
+        self.name.endswith("EnableTx")
+        self.name.endswith("Cat")
+        self.name.endswith("Info")
         """
-        if (
-            self.name.startswith("Set")
-            or self.name.endswith("EnableTx")
-            or self.name.endswith("Cat")
-            or self.name.endswith("Info")
-        ):
-            return True
-        return False
+        return bool(rx_param_match.match(self.name))
 
     @property
     def is_metric(self) -> bool:
@@ -349,9 +397,9 @@ class Component:
         if p.prefix not in self.crossing:
             self.crossing[p.prefix] = []
         if d_desc:
-            d_odu = f"odu::{d_odu}::{d_desc.strip('_')}"
+            d_odu = f"odu::ODU2::{d_odu}-{d_desc.strip('_')}"
         else:
-            d_odu = f"odu::{d_odu}::0"
+            d_odu = f"odu::ODU2::{d_odu}-0"
         if p.code == "SetSrc":
             self.crossing[p.prefix].insert(0, (d_port, d_odu))
         elif p.code == "SetDst":
@@ -362,6 +410,8 @@ class Component:
         r = {}
         ignored_components = set()
         for p in params:
+            if p.value is None:
+                continue
             c_name = p.component or "common"
             if c_name not in r:
                 r[c_name] = Component(p.component, True, [], [], [], [])
@@ -370,12 +420,12 @@ class Component:
                 c.info_params.append(p)
             elif p.is_threshold:
                 c.cfg_thresholds.append(p)
+            elif p.is_cross:
+                c.add_cross(p)
             elif p.is_config:
                 c.cfg_params.append(p)
             elif p.is_metric:
                 c.metrics.append(p)
-            elif p.is_cross:
-                c.add_cross(p)
             if p.code == "State" and not p.value and p.component:
                 ignored_components.add(c_name)
         for ic in ignored_components:

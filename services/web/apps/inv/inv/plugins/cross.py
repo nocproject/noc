@@ -31,7 +31,7 @@ class CrossPlugin(InvPlugin):
                 }
                 for c in o.model.cross
             ]
-        if o.model.cross:
+        if o.cross:
             data += [
                 {
                     "input": c.input,

@@ -77,7 +77,7 @@ class VlanDiscriminator(object):
 ODU_LIMITS = {
     "ODU0": {},
     "ODU1": {"ODU0": 2},
-    "ODU2": {"ODU0": 8},
+    "ODU2": {"ODU0": 8, "ODU1": 4},
     "ODU2e": {},
     "ODU3": {"ODU0": 32, "ODU1": 16},
     "ODU3e2": {"ODU2e": 4},
