@@ -756,6 +756,8 @@ class Config(BaseConfig):
         heatmap_lon = StringParameter(default="108.567849")
         heatmap_lat = StringParameter(default="66.050063")
         heatmap_zoom = StringParameter(default="4")
+        map_lon = StringParameter(default="108.567849")
+        map_lat = StringParameter(default="66.050063")
         max_image_size = BytesParameter(default="2M")
         topology_map_grid_size = IntParameter(min=5, default=25)
         report_csv_delimiter = StringParameter(choices=[";", ","], default=";")
