@@ -8,6 +8,7 @@
 # NOC modules
 from noc.sa.profiles.Generic.get_metrics import Script as GetMetricsScript, metrics
 from noc.core.mib import mib
+from noc.core.script.metrics import scale
 
 
 class Script(GetMetricsScript):
@@ -25,6 +26,7 @@ class Script(GetMetricsScript):
         if oid:
             try:
                 cpu = self.snmp.get(oid)
+                self.logger.debug("[CPU OID %s] ", cpu)
                 if cpu is not None:
                     self.set_metric(id=("CPU | Usage", None), value=round(float(cpu)), units="%")
             except Exception:
@@ -75,6 +77,32 @@ class Script(GetMetricsScript):
                     ts=ts,
                     labels=mc.labels,
                     type="gauge",
-                    scale=1000000,
+                    scale=scale(1000000),
                     units="bit/s",
                 )
+
+    @metrics(
+        [
+            "Memory | Usage",
+            "Memory | Total",
+        ],
+        access="S",
+        volatile=False,
+        matcher="is_des3200",
+    )
+    def get_memory_usage(self, metrics):
+        mem_total = self.snmp.get("1.3.6.1.4.1.171.12.1.1.9.1.2")
+        if not mem_total:
+            mem_total = self.snmp.get("1.3.6.1.4.1.171.10.75.10.2.1.2.1")
+        if mem_total:
+            self.set_metric(id=("Memory | Total", None), value=mem_total, multi=True, units="byte")
+
+        mem_usage_prc = self.snmp.get("1.3.6.1.4.1.171.10.75.15.2.100.2.1")
+        if not mem_usage_prc and mem_total:
+            mem_usage = self.snmp.get("1.3.6.1.4.1.171.12.1.1.9.1.3")
+            mem_usage_prc = mem_usage / mem_total * 100
+
+        if mem_usage_prc:
+            self.set_metric(
+                id=("Memory | Usage", None), value=int(mem_usage), multi=True, units="%"
+            )
