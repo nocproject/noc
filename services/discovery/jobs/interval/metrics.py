@@ -141,9 +141,9 @@ class MetricsCheck(DiscoveryCheck):
                     data[m_id]["sla_probe"] = rr["sla_probe"]
                 if rr.get("service"):
                     data[m_id]["service"] = rr["service"]
-                if rr.get("cpe"):
-                    # For CPE used ID as ManagedObject
-                    data[m_id]["managed_object"] = rr["cpe"]
+                # if rr.get("cpe"):
+                # For CPE used ID as ManagedObject
+                #    data[m_id]["managed_object"] = rr["cpe"]
             data[m_id][mt.field_name] = rr["value"]
             data[m_id]["_units"][mt.field_name] = rr["units"]
         return list(data.values())

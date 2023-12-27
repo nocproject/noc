@@ -217,6 +217,39 @@ Ext.define("NOC.inv.cpe.Application", {
                 //    ]
                 //},
                 {
+                    name: "controllers",
+                    xtype: "gridfield",
+                    fieldLabel: __("Controllers"),
+                    allowBlank: true,
+                    columns: [
+                        {
+                            text: __("Name"),
+                            dataIndex: "managed_object",
+                            renderer: NOC.render.Lookup("managed_object"),
+                            width: 250,
+                            editor: "sa.managed_object.LookupField"
+                        },
+                        {
+                            text: __("LocalID"),
+                            dataIndex: "local_id",
+                            width: 100,
+                            editor: "textfield"
+                        },
+                        {
+                            text: __("Active"),
+                            dataIndex: "is_active",
+                            width: 25,
+                            renderer: NOC.render.Bool
+                        },
+                        {
+                            text: __("Interface"),
+                            dataIndex: "interface",
+                            width: 100,
+                            editor: "textfield"
+                        }
+                    ]
+                },
+                {
                     name: "caps",
                     xtype: "gridfield",
                     fieldLabel: __("Capabilities"),

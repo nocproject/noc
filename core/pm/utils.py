@@ -356,8 +356,8 @@ class QueryField:
         """
         Format requested Metrics
         """
-        r = self.metric_proxy.query_metrics([self])
-        return "\n".join(str(x) for x in r)
+        r = self.values()
+        return "<br/>".join(str(x) for x in r)
 
     @property
     def query_expr(self) -> str:
@@ -374,7 +374,7 @@ class QueryField:
         return f"{self.field}_{self.function.alias}"
 
     @property
-    def group_key(self):
+    def group_key(self) -> Tuple[str, ...]:
         if not self.group_by:
             return tuple()
         return tuple(self.group_by)
@@ -387,13 +387,13 @@ class QueryField:
             self.function = self.function_map[item]
         return self
 
-    def __call__(self, *args, **kwargs) -> "str":  # MetricValue
+    def __call__(self, *args, **kwargs) -> "QueryField":  # MetricValue
         """
         scale = convert value by scale
         """
         if "group_by" in kwargs:
             self.group_by = kwargs["group_by"]
-        return str(self)
+        return self
 
     def values(self, **kwargs) -> List["MetricValue"]:
         return self.metric_proxy.query_metrics([self])
@@ -415,9 +415,10 @@ class MetricScopeProxy:
             QueryField, Dict[MetricKey, List["MetricValue"]]
         ] = {}  # Cached return values
 
-    def get_metric_key(self, **kwargs) -> "MetricKey":
+    def get_metric_key(self, fields: Set[str] = None, **kwargs) -> "MetricKey":
         """
         Getting requested MetricKey. Contains Key Field and Key Label. Unique for Metric Instances
+        :param fields:
         :param kwargs: Map - KeyFieldName -> KeyFieldValue
         """
         keys = []
@@ -427,18 +428,28 @@ class MetricScopeProxy:
                 keys.append((k.field_name, int(kwargs[k.field_name])))
         for ll in self.scope.labels:
             if ll.store_column in kwargs:
-                keys.append((ll.store_column, f"{str(kwargs[ll.store_column])}"))
+                f = ll.store_column
             elif ll.view_column in kwargs:
-                keys.append((ll.view_column, f"{str(kwargs[ll.view_column])}"))
+                f = ll.view_column
             elif ll.field_name in kwargs:
-                keys.append((ll.field_name, f"{str(kwargs[ll.field_name])}"))
+                f = ll.field_name
+            else:
+                continue
+            if fields and f in fields:
+                continue
+            keys.append((f, f"{str(kwargs[f])}"))
         if "labels" in kwargs:
             labels = tuple(kwargs["labels"])
         else:
             labels = tuple([])
         return tuple(keys), labels
 
-    def get_query(self, req_metrics: List[QueryField], **kwargs) -> Iterable[str]:
+    def get_query(
+        self,
+        req_metrics: List[QueryField],
+        req_conditions: Set[MetricKey],
+        **kwargs,
+    ) -> Iterable[str]:
         """
         Build Clickhouse Query by QueryField
         """
@@ -451,7 +462,7 @@ class MetricScopeProxy:
             # fields.add(q.field)
             group[q.group_key].append(q)
         # Processed query conditions (where)
-        for mk in self.query_conditions:
+        for mk in req_conditions:
             key, values = [], []
             # Keys field
             for field, value in mk[0]:
@@ -507,22 +518,32 @@ class MetricScopeProxy:
             raise ValueError("Not selected Object for request metrics")
         r: List[MetricValue] = []
         query_map = {}
+        query_conditions = set()
         # Proecessed requested metrics for cache check.
         for qf in req_metrics:
             # Get chache
-            if qf in self.query_cache and mk in self.query_cache[qf]:
+            if qf not in self.query_cache:
+                self.query_cache[qf] = defaultdict(list)
+                for q in self.query_conditions:
+                    query_conditions.add(q)
+                    self.query_cache[qf][q] = []
+            elif mk in self.query_cache[qf]:
                 r += self.query_cache[qf][mk]
                 continue
-            elif qf in self.query_cache and mk in self.query_conditions:
-                # Nothinп metric on DB for mk
-                continue
+            elif mk not in self.query_cache[qf]:
+                self.query_cache[qf][mk] = []
+                query_conditions.add(mk)
+            # elif qf in self.query_cache and mk in self.query_conditions:
+            #     # Nothinп metric on DB for mk
+            #     print("Nothinп metric on DB for mk")
+            #     continue
             query_map[qf.alias] = qf
         if not query_map:
             return r
         ch = ch_connection()
         # @todo Custom requested interval by DiscoveryInterval
-        from_date = datetime.datetime.now().replace(microsecond=0) - datetime.timedelta(hours=1)
-        for query in self.get_query(list(query_map.values()), **kwargs):
+        from_date = datetime.datetime.now().replace(microsecond=0) - datetime.timedelta(minutes=30)
+        for query in self.get_query(list(query_map.values()), query_conditions, **kwargs):
             print(query)
             result = ch.execute(
                 sql=query,
@@ -531,18 +552,21 @@ class MetricScopeProxy:
             )
             for row in result.splitlines():
                 row = orjson.loads(row)
-                mk = self.get_metric_key(**row)
                 for name, value in row.items():
                     if name not in query_map:
                         continue
                     q = query_map[name]
+                    mk = self.get_metric_key(**row)
                     mv = MetricValue(value, dict(mk[0]), value_scale=q.scale, value_units=q.units)
-                    r.append(mv)
+                    # Exclude group by for cached values
+                    cache_key = self.get_metric_key(fields=set(q.group_key), **row)
+                    if not self.current_metric_key or self.current_metric_key == cache_key:
+                        r.append(mv)
                     # Append to Cache
                     if q not in self.query_cache:
                         self.query_cache[q] = defaultdict(list)
                     if mv not in self.query_cache[q][mk]:
-                        self.query_cache[q][mk] += [mv]
+                        self.query_cache[q][cache_key] += [mv]
         return r
 
     def add_keys(self, keys: List[Dict[str, Any]]):
