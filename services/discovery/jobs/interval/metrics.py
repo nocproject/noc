@@ -142,7 +142,7 @@ class MetricsCheck(DiscoveryCheck):
                 if rr.get("service"):
                     data[m_id]["service"] = rr["service"]
                 # if rr.get("cpe"):
-                    # For CPE used ID as ManagedObject
+                # For CPE used ID as ManagedObject
                 #    data[m_id]["managed_object"] = rr["cpe"]
             data[m_id][mt.field_name] = rr["value"]
             data[m_id]["_units"][mt.field_name] = rr["units"]

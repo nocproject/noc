@@ -522,16 +522,17 @@ class MetricScopeProxy:
         # Proecessed requested metrics for cache check.
         for qf in req_metrics:
             # Get chache
-            if qf in self.query_cache and mk in self.query_cache[qf]:
+            if qf not in self.query_cache:
+                self.query_cache[qf] = defaultdict(list)
+                for q in self.query_conditions:
+                    query_conditions.add(q)
+                    self.query_cache[qf][q] = []
+            elif mk in self.query_cache[qf]:
                 r += self.query_cache[qf][mk]
                 continue
-            elif qf in self.query_cache and mk not in self.query_cache[qf]:
+            elif mk not in self.query_cache[qf]:
                 self.query_cache[qf][mk] = []
                 query_conditions.add(mk)
-            elif qf not in self.query_cache:
-                query_conditions.update(self.query_conditions)
-                # For not repeat query when bulk mode
-                self.query_cache[qf] = {k: [] for k in self.query_conditions}
             # elif qf in self.query_cache and mk in self.query_conditions:
             #     # Nothinп metric on DB for mk
             #     print("Nothinп metric on DB for mk")
