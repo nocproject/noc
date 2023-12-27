@@ -67,11 +67,28 @@ class Script(BaseScript):
     def has_metric_cpu_usage_oid(self):
         # DLINK-AGENT-MIB::agentCPUutilizationIn5sec
         cpu_oids = ["1.3.6.1.4.1.171.12.1.1.6.1.0"]
+
         if self.is_des_3200:  # need testing
             cpu_oids += ["1.3.6.1.4.1.171.12.1.1.6.1"]
+        # elif self.is_des_1210:
+        elif self.is_des_1210_20:
+            cpu_oids += ["1.3.6.1.4.1.171.10.76.31.2.100.1.2", "1.3.6.1.4.1.171.10.76.31.1.100.1.2"]
+        elif self.is_des_1210_28:
+            cpu_oids += [
+                "1.3.6.1.4.1.171.10.76.28.1.100.1.2",
+                "1.3.6.1.4.1.171.10.76.28.2.100.1.2",
+                "1.3.6.1.4.1.171.10.75.15.3.100.2.2",
+            ]
+        elif self.is_des_3010:
+            cpu_oids += ["1.3.6.1.4.1.171.11.63.1.2.2.1.3.2"]
+        elif self.is_des_3018:
+            cpu_oids += ["1.3.6.1.4.1.171.11.63.2.2.1.3.2"]
+        elif self.is_des_3026:
+            cpu_oids += ["1.3.6.1.4.1.171.11.63.3.2.1.3.2"]
         elif self.is_dgs_32_33:
             cpu_oids += ["1.3.6.1.4.1.171.11.55.2.2.1.4.1.0"]
         cpu_oids += ["1.3.6.1.4.1.171.10.75.15.2.100.1.1.0"]
+
         for oid in cpu_oids:
             try:
                 r = self.snmp.get(oid)
