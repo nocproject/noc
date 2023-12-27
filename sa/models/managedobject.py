@@ -2531,9 +2531,12 @@ class ManagedObject(NOCModel):
             )
             if interval and mi.is_run(d_interval, int(self.bi_id), 1, run):
                 metrics.append(mi)
+        cpe = None
+        if self.cpe_id:
+            cpe = CPE.get_by_id(self.cpe_id)
         if metrics:
             logger.debug("Object metrics: %s", ",".join(m.name for m in metrics))
-            yield MetricCollectorConfig(collector="managed_object", metrics=tuple(metrics))
+            yield MetricCollectorConfig(collector="managed_object", metrics=tuple(metrics), cpe=cpe.bi_id if cpe else None)
         yield from CPE.iter_collected_metrics(self, run=run, d_interval=d_interval)
         yield from SLAProbe.iter_collected_metrics(self, run=run, d_interval=d_interval)
         yield from Interface.iter_collected_metrics(self, run=run, d_interval=d_interval)

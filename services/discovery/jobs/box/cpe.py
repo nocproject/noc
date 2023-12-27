@@ -107,7 +107,7 @@ class CPECheck(DiscoveryCheck):
         """
         from django.db.models.query_utils import Q
 
-        name = f"cpe-{cpe.global_id}"
+        name = cpe.label or f"CPE-{cpe.type.upper()}-{cpe.global_id}"
 
         mo = ManagedObject.objects.filter(Q(cpe_id=str(cpe.id)) | Q(name=name)).first()
         if mo and not mo.cpe_id:

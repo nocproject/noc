@@ -527,27 +527,29 @@ class MapApplication(ExtApplication):
         if not cpes:
             return r
         # CPE
-        env = Environment()
-        env.globals["metric"] = MetricProxy()
-        # metric_keys = []
+        cpe_map = {}
         for cpe in CPE.objects.filter(id__in=list(cpes)):
             o = str(cpe.id)
+            cpe_map[cpe.bi_id] = o
             if cpe.oper_status is None:
                 r[o]["status_code"] = self.ST_UNKNOWN
             elif not cpe.oper_status:
                 r[o]["status_code"] = self.ST_ALARM
             else:
                 r[o]["status_code"] = self.ST_OK
-            if str(cpe.id) not in metrics_template:
+        env = Environment()
+        env.globals["metric"] = MetricProxy(metric_keys=[{"cpe": x} for x in cpe_map])
+        for cpe_bi_id, cpe_id in cpe_map.items():
+            if cpe_id not in metrics_template:
                 continue
             try:
-                r[o]["metrics_label"] = env.from_string(metrics_template[o]).render(
-                    {"managed_object": cpe.bi_id}
+                r[cpe_id]["metrics_label"] = env.from_string(metrics_template[cpe_id]).render(
+                    {"managed_object": cpe_bi_id}
                 )
             except (ValueError, TemplateError) as e:
-                r[o]["metrics_label"] = "#ERROR#"
+                r[cpe_id]["metrics_label"] = "#ERROR#"
                 self.logger.error(
-                    "[%s] Error when processed MetricTemplate: %s", metrics_template[o], e
+                    "[%s] Error when processed MetricTemplate: %s", metrics_template[cpe_id], e
                 )
         return r
 
