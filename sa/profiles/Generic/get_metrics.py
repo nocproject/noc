@@ -505,7 +505,7 @@ class Script(BaseScript, metaclass=MetricScriptBase):
                     data[mm]["service"] = rr["service"]
                 if rr.get("cpe"):
                     # For CPE used ID as ManagedObject
-                    data[mm]["managed_object"] = rr["cpe"]
+                    data[mm]["cpe"] = rr["cpe"]
                 if "time_delta" in s_data[data_mt]:
                     data[mm]["time_delta"] = s_data[data_mt]["time_delta"]
                 self.script_metrics["n_metrics"] += 1
