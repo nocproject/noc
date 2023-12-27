@@ -544,7 +544,7 @@ class MapApplication(ExtApplication):
                 continue
             try:
                 r[cpe_id]["metrics_label"] = env.from_string(metrics_template[cpe_id]).render(
-                    {"managed_object": cpe_bi_id}
+                    {"cpe": cpe_bi_id}
                 )
             except (ValueError, TemplateError) as e:
                 r[cpe_id]["metrics_label"] = "#ERROR#"
