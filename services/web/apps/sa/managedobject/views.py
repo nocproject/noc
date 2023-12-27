@@ -211,7 +211,11 @@ class ManagedObjectApplication(ExtModelApplication):
         )
         # Apply oper_state
         for x in data:
-            if x["oper_state"] not in {"failed", "disabled"} and x["id"] in alarms:
+            if (
+                "oper_state" in x
+                and x["oper_state"] not in {"failed", "disabled"}
+                and x["id"] in alarms
+            ):
                 x["oper_state"] = "degraded"
                 x["oper_state__label"] = _("Warning")
         return data
