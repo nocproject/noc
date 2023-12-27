@@ -118,11 +118,11 @@ Ext.define("NOC.inv.inv.plugins.contacts.ContactsPanel", {
         var me = this;
         me.currentId = data.id;
         me.displayAdminField.update(data.contacts_administrative);
-        me.editAdminField.update(data.contacts_administrative);
+        me.editAdminField.setValue(data.contacts_administrative);
         me.displayBillField.update(data.contacts_billing);
-        me.editBillField.update(data.contacts_billing);
+        me.editBillField.setValue(data.contacts_billing);
         me.displayTechField.update(data.contacts_technical);
-        me.editTechField.update(data.contacts_technical);
+        me.editTechField.setValue(data.contacts_technical);
     },
     //
     onEdit: function() {
