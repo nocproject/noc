@@ -12,6 +12,7 @@ import errno
 
 # Third-party modules
 import orjson
+import json
 
 # NOC modules
 from noc.core.management.base import BaseCommand
@@ -20,6 +21,8 @@ from noc.core.profile.loader import loader as profile_loader
 from noc.core.mongo.connection import connect
 from noc.inv.models.objectmodel import ObjectModel, ModelAttr
 from noc.inv.models.object import ObjectAttr
+
+from noc.core.prettyjson import to_json
 
 from noc.core.collection.base import Collection
 from noc.models import get_model
@@ -84,7 +87,21 @@ class Command(BaseCommand):
                 raise
 
         with open(fname, "w") as f:
-            f.write(orjson.dumps(o).decode("UTF-8"))
+            f.write(
+                to_json(o, order=[
+                "name",
+                "$collection",
+                "uuid",
+                "vendor__code",
+                "description",
+                "connection_rule__name",
+                "cr_context",
+                "plugins",
+                "labels",
+                "connections",
+                "data",
+                ],)
+            )
 
         return
 
@@ -132,7 +149,7 @@ class Command(BaseCommand):
 
         re.compile(r"(?:\s|^)rx-(?P<rx>\d+)/tx-(?P<tx>\d+)(?:\s|$)"),
         re.compile(r"(?:\s|^)tx-(?P<tx>\d+)/rx-(?P<rx>\d+)(?:\s|$)"),
-        
+
         re.compile(r"(?:\s|^)rx(?P<rx>\d+)/tx(?P<tx>\d+)(?:\s|$)"),
         re.compile(r"(?:\s|^)tx(?P<tx>\d+)/rx(?P<rx>\d+)(?:\s|$)"),
         re.compile(r"(?:\s|^)(?P<tx>\d+)-tx/(?P<rx>\d+)-rx(?:\s|$)"),
@@ -222,7 +239,7 @@ class Command(BaseCommand):
                 # self.stdout.write("%s\n" % cdata[x].path)
                 # self.stdout.write("%s\n" % cdata[x].data)
                 items[x] = cdata[x]
-        
+
         return items
 
 
@@ -241,7 +258,7 @@ class Command(BaseCommand):
         #                 jdata = orjson.loads(data)
         #             except ValueError as e:
         #                 raise ValueError("Error load %s: %s" % (fp, e))
-        
+
 
     def parse_description(self, description):
         for p in self.connector_patterns:
@@ -352,7 +369,7 @@ class Command(BaseCommand):
         connect()
 
         items = self.load_collections_from_files()
-                    
+
 
         for i in items:
             o = items[i].data
@@ -381,7 +398,7 @@ class Command(BaseCommand):
                     "attr": "rx_wavelength",
                     "value": res["rx"]
                 }]
-                
+
             if res["distance"]:
                 o["data"] += [{
                     "interface": "optical",
@@ -405,7 +422,7 @@ class Command(BaseCommand):
             # self.stdout.write("%s\n" % o.to_json())
             continue
 
-                    
+
 
         return
 
@@ -511,7 +528,7 @@ class Command(BaseCommand):
 
             if distance:
                 o.data += [ModelAttr(interface="optical", attr="distance_max", value=distance)]
-            
+
             o.data += [ModelAttr(interface="optical", attr="bidi", value=isbidi)]
             o.data += [ModelAttr(interface="optical", attr="xwdm", value=isxwdm)]
 
