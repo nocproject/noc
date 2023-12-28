@@ -6,14 +6,27 @@
 # ----------------------------------------------------------------------
 
 # Third-party modules
+import orjson
 import psycopg2
 from django.db.backends.postgresql.base import DatabaseWrapper as PGDatabaseWrapper
+from django.db.backends.postgresql.operations import DatabaseOperations as PGDatabaseOperations
+from django.db.backends.postgresql.psycopg_any import Jsonb
 
 # NOC modules
 from .monitor import SpanCursor
 
 
+class DatabaseOperations(PGDatabaseOperations):
+    def adapt_json_value(self, value, encoder):
+        def dumps(obj):
+            return orjson.dumps(obj).decode("utf-8")
+
+        return Jsonb(value, dumps=dumps)
+
+
 class DatabaseWrapper(PGDatabaseWrapper):
+    ops_class = DatabaseOperations
+
     def _savepoint_allowed(self):
         return False
 
