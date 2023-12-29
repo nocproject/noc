@@ -203,6 +203,7 @@ _MODELS = {
     "sa.CredentialCheckRule": "noc.sa.models.credentialcheckrule.CredentialCheckRule",
     "sa.GroupAccess": "noc.sa.models.groupaccess.GroupAccess",
     "sa.InteractionLog": "noc.sa.models.interactionlog.InteractionLog",
+    "sa.Job": "noc.sa.models.job.Job",
     "sa.ManagedObject": "noc.sa.models.managedobject.ManagedObject",
     "sa.ManagedObjectAttribute": "noc.sa.models.managedobject.ManagedObjectAttribute",
     "sa.ManagedObjectProfile": "noc.sa.models.managedobjectprofile.ManagedObjectProfile",

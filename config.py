@@ -559,6 +559,9 @@ class Config(BaseConfig):
         async_connect_timeout = SecondsParameter(default="20s")
         async_request_timeout = SecondsParameter(default="1h")
 
+    class runner(ConfigSection):
+        max_running = IntParameter(default=10)
+
     class sae(ConfigSection):
         db_threads = IntParameter(default=20)
         activator_resolution_retries = IntParameter(default=5)
@@ -692,6 +695,13 @@ class Config(BaseConfig):
             auto_pause_disable_if_subscribers = BooleanParameter(default=False)
 
         class jobs(ConfigSection):
+            retention_max_age = SecondsParameter(default="24h")
+            retention_max_bytes = BytesParameter(default=0)
+            segment_max_age = SecondsParameter(default="1h")
+            segment_max_bytes = BytesParameter(default=0)
+            auto_pause_time = SecondsParameter(default=0)
+
+        class submit(ConfigSection):
             retention_max_age = SecondsParameter(default="24h")
             retention_max_bytes = BytesParameter(default=0)
             segment_max_age = SecondsParameter(default="1h")

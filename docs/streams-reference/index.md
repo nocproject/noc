@@ -34,3 +34,13 @@ graph LR
    datatream -->|mx| mx
    mx -->|kafkasender| kafkasender([kafkasender])
 ```
+
+## Orchestration Pipeline
+Orchestration pipeline processes requests for short and long-termed
+jobs.
+
+```mermaid
+graph LR
+  System((System)) -->|jobs| worker
+  System((System)) -->|submit| runner
+```
