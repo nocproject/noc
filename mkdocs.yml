@@ -545,6 +545,7 @@ nav:
           - mx: services-reference/mx.md
           - nbi: services-reference/nbi.md
           - ping: services-reference/ping.md
+          - runner: services-reference/runner.md
           - sae: services-reference/sae.md
           - scheduler: services-reference/scheduler.md
           - selfmon: services-reference/selfmon.md
@@ -609,6 +610,7 @@ nav:
           - "[proxy] section": config-reference/proxy.md
           - "[redis] section": config-reference/redis.md
           - "[rpc] section": config-reference/rpc.md
+          - "[runner] section": config-reference/runner.md
           - "[sae] section": config-reference/sae.md
           - "[scheduler] section": config-reference/scheduler.md
           - "[script] section": config-reference/script.md
@@ -823,10 +825,11 @@ nav:
           - ch.TABLE: streams-reference/ch.md
           - dispose.POOL: streams-reference/dispose.md
           - events.POOL: streams-reference/events.md
+          - jobs: streams-reference/jobs.md
           - kafkasender: streams-reference/kafkasender.md
           - metrics: streams-reference/metrics.md
-          - jobs: streams-reference/jobs.md
           - mx: streams-reference/mx.md
+          - submit: streams-reference/submit.md
       - Alarm Reference Format: alarm-reference-format/index.md
       - Date and Time Formats: datetime-format/index.md
       - Man Pages:
@@ -1138,6 +1141,8 @@ markdown_extensions:
         - name: mermaid
           class: mermaid
           format: !!python/name:pymdownx.superfences.fence_code_format
+  - pymdownx.tabbed:
+      alternate_style: true
 watch:
   - docs/
   - mkdocs.yml
