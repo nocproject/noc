@@ -28,119 +28,6 @@ from noc.core.collection.base import Collection
 from noc.models import get_model
 
 class Command(BaseCommand):
-    def add_arguments(self, parser):
-        parser.add_argument(
-            "--apply",
-            action="store_true",
-            default=False,
-            dest="apply_mongo",
-            help="store changes to mongo",
-        )
-        parser.add_argument(
-            "--backup-dir",
-            dest="backup_dir",
-            help="save collections backup to specified directory before apply",
-        )
-        parser.add_argument(
-            "--output-dir",
-            dest="output_dir",
-            help="save changed collections to specified directory",
-        )
-
-    def gen_filename(self, output_dir: str, o: ObjectModel)-> str:
-        name_parts = o.name.split("|")
-        name_parts = [s.strip().replace(" ", "_") for s in name_parts]
-        name_parts[-1] += ".json"
-
-        file_name = os.path.join(output_dir, *name_parts)
-
-        return file_name
-
-    def save_json(self, o_dir, o) -> None:
-        fname = self.gen_filename(o_dir, o)
-        dir_name = os.path.dirname(fname)
-
-        try:
-            os.makedirs(dir_name)
-        except OSError as e:
-            if e.errno != errno.EEXIST:
-                raise
-
-        with open(fname, "w") as f:
-            f.write(o.to_json())
-
-        return
-
-    def save_json(self, o_dir, path_, o) -> None:
-        # fname = self.gen_filename(o_dir, o)
-        # dir_name = os.path.dirname(fname)
-
-        fname = os.path.join(o_dir, *path_.split("/")[2:])
-        dir_name = os.path.dirname(fname)
-
-        self.stdout.write("%s\n" % fname)
-
-        try:
-            os.makedirs(dir_name)
-        except OSError as e:
-            if e.errno != errno.EEXIST:
-                raise
-
-        with open(fname, "w") as f:
-            f.write(
-                to_json(o, order=[
-                "name",
-                "$collection",
-                "uuid",
-                "vendor__code",
-                "description",
-                "connection_rule__name",
-                "cr_context",
-                "plugins",
-                "labels",
-                "connections",
-                "data",
-                ],)
-            )
-
-        return
-
-    def print_csv(self, profile_list, metric_list):
-        self.stdout.write(f";{';'.join(m for m in metric_list)};\n")
-
-        for p in profile_list:
-            if not p["metrics"]:
-                continue
-            self.stdout.write(f"{p['name']};")
-            for m in metric_list:
-                metric = p["metrics"].get(m)
-                if metric:
-                    self.stdout.write(metric)
-                else:
-                    self.stdout.write("x")
-                self.stdout.write(";")
-            self.stdout.write("\n")
-
-    def print_json(self, profile_list, metric_list):
-        for p in profile_list:
-            if not p["metrics"]:
-                continue
-            p_name = p["name"]
-            metrics = p["metrics"]
-            self.stdout.write("%s\n" % orjson.dumps({"name": p_name, **metrics}).decode())
-
-    def get_metric_source(self, func_list):
-        res = ""
-        for mf in func_list:
-            func_name = mf.__name__
-            metric_src = "S" if func_name.startswith("get_snmp_json") else "C"
-
-            if (metric_src == "S" and res == "C") or (metric_src == "C" and res == "S"):
-                res = "SC"
-            if not res:
-                res = metric_src
-        return res
-
     wav_patterns = [
         re.compile(r"(?:\s|^)(?P<rx>\d+)\s+rx\s+(?P<tx>\d+)\s+tx(?:\s|$)"),
         re.compile(r"(?:\s|^)(?P<tx>\d+)\s+tx\s+(?P<rx>\d+)\s+rx(?:\s|$)"),
@@ -225,42 +112,127 @@ class Command(BaseCommand):
         re.compile(r"(?:\s|^)epon(?:\S|$)"),
     ]
 
-    def load_collections_from_files(self):
+    def add_arguments(self, parser) -> None:
+        parser.add_argument(
+            "--mongo",
+            action="store_true",
+            default=False,
+            dest="mongo",
+            help="Use MongoDB as collection source.",
+        )
+        parser.add_argument(
+            "--apply",
+            action="store_true",
+            default=False,
+            dest="apply_mongo",
+            help="Store changes to mongo. Make effect only with --mongo.",
+        )
+        parser.add_argument(
+            "--backup-dir",
+            dest="backup_dir",
+            help="Save collections backup to specified directory before apply.",
+        )
+        parser.add_argument(
+            "--output-dir",
+            dest="output_dir",
+            help="Save changed collections to specified directory.",
+        )
+
+    def makedirs(self, path_: str) -> None:
+        """
+        Trying to create directories in path_
+        """
+        try:
+            os.makedirs(path_)
+        except OSError as e:
+            if e.errno != errno.EEXIST:
+                raise
+
+    def gen_filename(self, output_dir: str, o: ObjectModel)-> str:
+        """
+        Generate file name from "output_dir" and object name.
+
+        Example:
+        output_dir: "/opt/test"
+        o.name: "Avaya | Transceiver | 10G | SFP+"
+
+        res: "/opt/test/Avaya/Transceiver/10G/SFP+.json"
+        """
+        name_parts = o.name.split("|")
+        name_parts = [s.strip().replace(" ", "_") for s in name_parts]
+        name_parts[-1] += ".json"
+
+        file_name = os.path.join(output_dir, *name_parts)
+
+        return file_name
+
+    def save_json(self, o_dir: str, o: ObjectModel) -> None:
+        """
+        Save "o" object as JSON to "o_dir"
+        """
+        fname = self.gen_filename(o_dir, o)
+        dir_name = os.path.dirname(fname)
+
+        self.makedirs(dir_name)
+
+        with open(fname, "w") as f:
+            f.write(o.to_json())
+
+        return
+
+    def save_json(self, o_dir: str, path_: str, o: dict) -> None:
+        """
+        Save "o" dictionary as JSON to "o_dir"
+        """
+        fname = os.path.join(o_dir, *path_.split("/")[2:])
+        dir_name = os.path.dirname(fname)
+
+        self.stdout.write("%s\n" % fname)
+
+        self.makedirs(dir_name)
+
+        with open(fname, "w") as f:
+            f.write(
+                to_json(o, order=[
+                    "name",
+                    "$collection",
+                    "uuid",
+                    "vendor__code",
+                    "description",
+                    "connection_rule__name",
+                    "cr_context",
+                    "plugins",
+                    "labels",
+                    "connections",
+                    "data",
+                ])
+            )
+
+        return
+
+    def load_collections_from_files(self) -> dict:
+        """
+        Returns dictionary of collection items
+        that have "transceiver" in file path
+        """
         items = {}
         cm = get_model("inv.ObjectModel")
         cn = cm._meta["json_collection"]
         c = Collection(cn)
 
-        # self.stdout.write("%s\n" % c.get_path())
-
         cdata = c.get_items()
         for x in cdata:
             if "transceiver" in cdata[x].data["name"].lower():
-                # self.stdout.write("%s\n" % cdata[x].path)
-                # self.stdout.write("%s\n" % cdata[x].data)
                 items[x] = cdata[x]
 
         return items
 
-
-        # for p in c.get_path():
-        #     for root, dirs, files in os.walk(p):
-        #         for cf in files:
-        #             if not cf.endswith(".json"):
-        #                 continue
-        #             fp = os.path.join(root, cf)
-        #             if not "Transceiver" in fp:
-        #                 continue
-        #             self.stdout.write("%s\n" % fp)
-        #             with open(fp) as f:
-        #                 data = f.read()
-        #             try:
-        #                 jdata = orjson.loads(data)
-        #             except ValueError as e:
-        #                 raise ValueError("Error load %s: %s" % (fp, e))
-
-
     def parse_description(self, description):
+        """
+        Parse description string by applying patterns
+        then return object with data
+        """
+
         for p in self.connector_patterns:
             match = p.search(description)
             if match:
@@ -357,19 +329,22 @@ class Command(BaseCommand):
 
         return res
 
-    def handle(self, apply_mongo, backup_dir, output_dir):
+    def handle(self, mongo, apply_mongo, output_dir, backup_dir):
+        if apply_mongo and not mongo:
+            self.stdout.write("\"--apply\" can used only with \"--mongo\"\n")
+            return
+
         if output_dir and not os.path.isdir(output_dir) and os.access(output_dir, os.W_OK):
-            self.stdout.write("Output dir not exists or not writeable '%s'" % output_dir)
+            self.stdout.write("Output dir not exists or not writeable '%s'\n" % output_dir)
             return
 
         if backup_dir and not os.path.isdir(backup_dir) and os.access(backup_dir, os.W_OK):
-            self.stdout.write("Backup dir not exists or not writeable '%s'" % backup_dir)
+            self.stdout.write("Backup dir not exists or not writeable '%s'\n" % backup_dir)
             return
 
         connect()
 
         items = self.load_collections_from_files()
-
 
         for i in items:
             o = items[i].data
