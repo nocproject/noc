@@ -130,7 +130,7 @@ class Script(BaseScript):
             ]
         ):
             if att_pc and att_pc != int(ifindex):
-                if sel_pc > 0:
+                if int(sel_pc) > 0:
                     r[int(ifindex)] = int(att_pc)
         return r
 
