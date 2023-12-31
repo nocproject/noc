@@ -22,12 +22,12 @@ class Script(BaseScript):
     always_prefer = "S"
 
     rx_ver = re.compile(
-        r"^(?:HP|ProCurve)\s+(?:\w+)\s+(?:ProCurve\s+)?Switch\s+(?P<platform>\S+),"
+        r"^(?:HP|ProCurve|Aruba)\s+(?:\w+)\s+(?:ProCurve\s+)?Switch\s+(?P<platform>\S+),"
         r"\s+revision\s+(?P<version>\S+),\s+ROM\s+(?P<bootprom>\S+)",
         re.MULTILINE,
     )
     rx_ver_new = re.compile(
-        r"^HP\s+(?:\S+\s+)?(?P<platform>\S+)\s+Switch(?: Stack)?,"
+        r"^(?:HP|ProCurve|Aruba)\s+(?:\S+\s+)?(?P<platform>\S+)\s+Switch(?: Stack)?,"
         r"\s+revision\s+(?P<version>\S+),\s+ROM\s+(?P<bootprom>\S+)",
         re.MULTILINE,
     )
