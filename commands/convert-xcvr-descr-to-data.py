@@ -38,7 +38,7 @@ class Command(BaseCommand):
         re.compile(r"(?:\s|^)tx-(?P<tx>\d+)/rx-(?P<rx>\d+)(?:\s|$)"),
 
         re.compile(r"(?:\s|^)rx(?P<rx>\d+)/tx(?P<tx>\d+)(?:\s|$)"),
-        re.compile(r"(?:\s|^)tx(?P<tx>\d+)/rx(?P<rx>\d+)(?:\s|$)"),
+        re.compile(r"(?:\s|^)tx(?P<tx>\d+)(nm)?/rx(?P<rx>\d+)(nm)?(?:\s|$)"),
         re.compile(r"(?:\s|^)(?P<tx>\d+)-tx/(?P<rx>\d+)-rx(?:\s|$)"),
         re.compile(r"(?:\s|^)(?P<tx>\d+)nm-tx/(?P<rx>\d+)nm-rx(?:\s|$)"),
 
@@ -80,11 +80,14 @@ class Command(BaseCommand):
         re.compile(r"(?:\s|^)10g\s+(?P<ttype10g>cr|sr|srl|lr|lrm|cx4|lx4|er|zr)(?:\s|$)"),
         re.compile(r"(?:\s|^)xfp\s+(?P<ttype10g>cr|sr|srl|lr|lrm|cx4|lx4|er|zr)(?:\s|$)"),
 
-        re.compile(r"(?:\s|^)1000base-(?P<ttype1g>sx|t)(?:\s|$)"),
-        re.compile(r"(?:\s|^)sfp\s+(?P<ttype1g>sx|t)(?:\s|$)"),
+        re.compile(r"(?:\s|^)10g\s+base-(?P<ttype10g>t)(?:\s|$)"),
 
+        re.compile(r"(?:\s|^)1000base-(?P<ttype1g>lx|sx|t)(?:\s|$)"),
+        re.compile(r"(?:\s|^)sfp\s+(?P<ttype1g>lx|lh|ex|sx|zx|t|tx)(?:\s|$)"),
 
         re.compile(r"(?:\s|^)(?P<ttype1g>lh/lx)\s+transceiver(?:\s|$)"),
+
+        re.compile(r"(?:\s|^)1g\s+gbic\s+(?P<ttype1g>lx|lh|sx|ex|zx|t|tx)(?:\s|$)"),
     ]
 
     bidi_patterns = [
@@ -94,6 +97,7 @@ class Command(BaseCommand):
 
         re.compile(r"(?:\s|^)bi-directional(?:\s|$)"),
         re.compile(r"(?:\s|^)bidirectional(?:\s|$)"),
+        re.compile(r"(?:\s|^)bidi(?:\s|$)"),
         re.compile(r"(?:\s|^)wdm(?:\s|$)"),
 
         re.compile(r"(?:\s|^)gepon(?:\s|$)"),
@@ -110,6 +114,7 @@ class Command(BaseCommand):
         re.compile(r"(?:\s|^)gepon(?:\s|$)"),
         re.compile(r"(?:\s|^)epon(?:\s|$)"),
         re.compile(r"(?:\s|^)epon(?:\S|$)"),
+        re.compile(r"(?:\s|^)xpon(?:\s|$)"),
     ]
 
     def add_arguments(self, parser) -> None:
@@ -318,30 +323,28 @@ class Command(BaseCommand):
 
         self.stdout.write("\n")
 
-        res = {
-            "tx": tx,
-            "rx": rx,
-            "distance": distance,
-            "isbidi": isbidi,
-            "isxwdm": isxwdm,
-            "isxpon": isxpon,
-        }
+        return tx, rx, distance, isbidi, isxwdm, isxpon
 
-        return res
+        # res = {
+        #     "tx": tx,
+        #     "rx": rx,
+        #     "distance": distance,
+        #     "isbidi": isbidi,
+        #     "isxwdm": isxwdm,
+        #     "isxpon": isxpon,
+        # }
 
-    def handle(self, mongo, apply_mongo, output_dir, backup_dir):
-        if apply_mongo and not mongo:
-            self.stdout.write("\"--apply\" can used only with \"--mongo\"\n")
-            return
+        # return res
+    
+    def clear_description(self, description: str) -> str:
+        description = description.lower()
+        description = description.replace("(", "")
+        description = description.replace(")", "")
+        description = description.replace(",", "")
 
-        if output_dir and not os.path.isdir(output_dir) and os.access(output_dir, os.W_OK):
-            self.stdout.write("Output dir not exists or not writeable '%s'\n" % output_dir)
-            return
+        return description
 
-        if backup_dir and not os.path.isdir(backup_dir) and os.access(backup_dir, os.W_OK):
-            self.stdout.write("Backup dir not exists or not writeable '%s'\n" % backup_dir)
-            return
-
+    def handle_files(self, output_dir, backup_dir):
         connect()
 
         items = self.load_collections_from_files()
@@ -350,150 +353,61 @@ class Command(BaseCommand):
             o = items[i].data
             fp = items[i].path
             description = o.get("description", "").strip()
+            description = self.clear_description(description)
 
-            description = description.lower()
-            description = description.replace("(", "")
-            description = description.replace(")", "")
-            description = description.replace(",", "")
             self.stdout.write("%s\n" % o)
             self.stdout.write("    %s\n" % description)
 
-            res = self.parse_description(description)
+            if backup_dir:
+                self.save_json(backup_dir, fp, o)
 
-            if res["tx"]:
+            tx, rx, distance, isbidi, isxwdm, isxpon = self.parse_description(description)
+
+            if tx:
                 o["data"] += [{
                     "interface": "optical",
                     "attr": "tx_wavelength",
-                    "value": res["tx"]
+                    "value": tx
                 }]
 
-            if res["rx"]:
+            if rx:
                 o["data"] += [{
                     "interface": "optical",
                     "attr": "rx_wavelength",
-                    "value": res["rx"]
+                    "value": rx
                 }]
 
-            if res["distance"]:
+            if distance:
                 o["data"] += [{
                     "interface": "optical",
                     "attr": "distance_max",
-                    "value": res["distance"]
+                    "value": distance
                 }]
 
             o["data"] += [{
                 "interface": "optical",
                 "attr": "bidi",
-                "value": res["isbidi"]
+                "value": isbidi
             }]
             o["data"] += [{
                 "interface": "optical",
                 "attr": "xwdm",
-                "value": res["isxwdm"]
+                "value": isxwdm
             }]
 
             if output_dir:
                 self.save_json(output_dir, fp, o)
-            # self.stdout.write("%s\n" % o.to_json())
-            continue
 
-
-
-        return
+    def handle_mongo(self, apply, output_dir, backup_dir):
+        connect()
 
         for o in ObjectModel.objects.filter(name={"$regex": ".*Transceiver.*"}):
             description = o.description.strip()
-            description = description.lower()
-            description = description.replace("(", "")
-            description = description.replace(")", "")
-            description = description.replace(",", "")
+            description = self.clear_description(description)
             self.stdout.write("%s\n" % o)
             self.stdout.write("    %s\n" % description)
 
-            for p in self.connector_patterns:
-                match = p.search(description)
-                if match:
-                    if "connector" in match.groupdict():
-                        self.stdout.write("        CONNECTOR: %s\n" % match.group("connector"))
-
-            for p in self.transceiver_patterns:
-                match = p.search(description)
-                if match:
-                    if "ttype10g" in match.groupdict():
-                        self.stdout.write("        TTYPE10G: %s\n" % match.group("ttype10g"))
-
-                    if "ttype1g" in match.groupdict():
-                        self.stdout.write("        TTYPE1G: %s\n" % match.group("ttype1g"))
-
-            isbidi = False
-            for p in self.bidi_patterns:
-                match = p.search(description)
-                if match:
-                    isbidi = True
-                    break
-
-            isxwdm = False
-            for p in self.xwdm_patterns:
-                match = p.search(description)
-                if match:
-                    isxwdm = True
-                    break
-
-            isxpon = False
-            for p in self.xpon_patterns:
-                match = p.search(description)
-                if match:
-                    isxpon = True
-                    break
-
-            tx = 0
-            rx = 0
-            for p in self.wav_patterns:
-                match = p.search(description)
-                if match:
-                    if not rx and "rx" in match.groupdict():
-                        rx = int(match.group("rx"))
-                        if tx:
-                            break
-                    if not tx and "tx" in match.groupdict():
-                        tx = int(match.group("tx"))
-                        if rx:
-                            break
-                    if "txrx" in match.groupdict():
-                        tx = int(match.group("txrx"))
-                        rx = int(match.group("txrx"))
-                        break
-
-            # if tx and rx and tx != rx:
-            #     isbidi = True
-
-            distance = 0
-            for p in self.dist_patterns:
-                match = p.search(description)
-                if match:
-                    if "km" in match.groupdict():
-                        distance = int(match.group("km")) * 1000
-                        break
-                    if "m" in match.groupdict():
-                        distance = int(match.group("m"))
-                        break
-
-            if not (rx and tx) and isxpon:
-                tx = 1490
-                rx = 1310
-
-            if distance:
-                self.stdout.write("        Distance: %sm\n" % distance)
-            if rx:
-                self.stdout.write("        RX: %s\n" % rx)
-            if tx:
-                self.stdout.write("        TX: %s\n" % tx)
-            self.stdout.write("        BIDI: %s\n" % isbidi)
-            self.stdout.write("        XWDM: %s\n" % isxwdm)
-            self.stdout.write("\n")
-            self.stdout.write("        XPON: %s\n" % isxpon)
-
-            self.stdout.write("\n")
+            tx, rx, distance, isbidi, isxwdm, isxpon = self.parse_description(description)
 
             if tx:
                 o.data += [ModelAttr(interface="optical", attr="tx_wavelength", value=tx)]
@@ -512,7 +426,25 @@ class Command(BaseCommand):
             # self.stdout.write("%s\n" % o.to_json())
             continue
 
-        return
+
+    def handle(self, mongo, apply_mongo, output_dir, backup_dir):
+        if apply_mongo and not mongo:
+            self.stdout.write("\"--apply\" can used only with \"--mongo\"\n")
+            return
+
+        if output_dir and not os.path.isdir(output_dir) and os.access(output_dir, os.W_OK):
+            self.stdout.write("Output dir not exists or not writeable '%s'\n" % output_dir)
+            return
+
+        if backup_dir and not os.path.isdir(backup_dir) and os.access(backup_dir, os.W_OK):
+            self.stdout.write("Backup dir not exists or not writeable '%s'\n" % backup_dir)
+            return
+
+        if mongo:
+            self.handle_mongo(apply_mongo, output_dir, backup_dir)
+        else:
+            self.handle_files(output_dir, backup_dir)
+
 
 class ServiceStub(object):
     class ServiceConfig(object):
