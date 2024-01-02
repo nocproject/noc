@@ -27,6 +27,11 @@ from noc.core.prettyjson import to_json
 from noc.core.collection.base import Collection
 from noc.models import get_model
 
+class Dict2Class(object):
+    def __init__(self, d: dict):
+        for k, v in d.items():
+            setattr(self, k, v)
+
 class Command(BaseCommand):
     wav_patterns = [
         re.compile(r"(?:\s|^)(?P<rx>\d+)\s+rx\s+(?P<tx>\d+)\s+tx(?:\s|$)"),
@@ -238,20 +243,23 @@ class Command(BaseCommand):
         then return object with data
         """
 
+        connector = ""
         for p in self.connector_patterns:
             match = p.search(description)
             if match:
                 if "connector" in match.groupdict():
-                    self.stdout.write("        CONNECTOR: %s\n" % match.group("connector"))
+                    connector = match.group("connector")
 
+        ttype1g = ""
+        ttype10g = ""
         for p in self.transceiver_patterns:
             match = p.search(description)
             if match:
                 if "ttype10g" in match.groupdict():
-                    self.stdout.write("        TTYPE10G: %s\n" % match.group("ttype10g"))
+                    ttype10g = match.group("ttype10g")
 
                 if "ttype1g" in match.groupdict():
-                    self.stdout.write("        TTYPE1G: %s\n" % match.group("ttype1g"))
+                    ttype1g = match.group("ttype1g")
 
         isbidi = False
         for p in self.bidi_patterns:
@@ -292,9 +300,6 @@ class Command(BaseCommand):
                     rx = int(match.group("txrx"))
                     break
 
-        # if tx and rx and tx != rx:
-        #     isbidi = True
-
         distance = 0
         for p in self.dist_patterns:
             match = p.search(description)
@@ -309,33 +314,46 @@ class Command(BaseCommand):
         if not (rx and tx) and isxpon:
             tx = 1490
             rx = 1310
+        
+        res = Dict2Class({
+            "tx": tx,
+            "rx": rx,
+            "distance": distance,
+            "isbidi": isbidi,
+            "isxwdm": isxwdm,
+            "isxpon": isxpon,
+            "connector": connector,
+            "ttype1g": ttype1g,
+            "ttype10g": ttype10g,
+        })
 
-        if distance:
-            self.stdout.write("        Distance: %sm\n" % distance)
-        if rx:
-            self.stdout.write("        RX: %s\n" % rx)
-        if tx:
-            self.stdout.write("        TX: %s\n" % tx)
-        self.stdout.write("        BIDI: %s\n" % isbidi)
-        self.stdout.write("        XWDM: %s\n" % isxwdm)
+        return res
+
+        # return tx, rx, distance, isbidi, isxwdm, isxpon, connector, ttype1g, ttype10g
+
+    def print_debug(self, rec) -> None:
+        if rec.connector:
+            self.stdout.write("        CONNECTOR: %s\n" % rec.connector)
+
+        if rec.ttype1g:
+            self.stdout.write("        TTYPE1G: %s\n" % rec.ttype1g)
+
+        if rec.ttype10g:
+            self.stdout.write("        TTYPE10G: %s\n" % rec.ttype10g)
+
+        if rec.distance:
+            self.stdout.write("        Distance: %sm\n" % rec.distance)
+        if rec.rx:
+            self.stdout.write("        RX: %s\n" % rec.rx)
+        if rec.tx:
+            self.stdout.write("        TX: %s\n" % rec.tx)
+        self.stdout.write("        BIDI: %s\n" % rec.isbidi)
+        self.stdout.write("        XWDM: %s\n" % rec.isxwdm)
         self.stdout.write("\n")
-        self.stdout.write("        XPON: %s\n" % isxpon)
+        self.stdout.write("        XPON: %s\n" % rec.isxpon)
 
         self.stdout.write("\n")
 
-        return tx, rx, distance, isbidi, isxwdm, isxpon
-
-        # res = {
-        #     "tx": tx,
-        #     "rx": rx,
-        #     "distance": distance,
-        #     "isbidi": isbidi,
-        #     "isxwdm": isxwdm,
-        #     "isxpon": isxpon,
-        # }
-
-        # return res
-    
     def clear_description(self, description: str) -> str:
         description = description.lower()
         description = description.replace("(", "")
@@ -344,7 +362,7 @@ class Command(BaseCommand):
 
         return description
 
-    def handle_files(self, output_dir, backup_dir):
+    def handle_files(self) -> None:
         connect()
 
         items = self.load_collections_from_files()
@@ -355,79 +373,90 @@ class Command(BaseCommand):
             description = o.get("description", "").strip()
             description = self.clear_description(description)
 
-            self.stdout.write("%s\n" % o)
-            self.stdout.write("    %s\n" % description)
+            res = self.parse_description(description)
+            if self.is_debug:
+                self.stdout.write("%s\n" % o.get("name", ""))
+                self.stdout.write("    %s\n" % description)
+                self.print_debug(res)
 
-            if backup_dir:
-                self.save_json(backup_dir, fp, o)
+            if self.__backup_dir:
+                self.save_json(self.__backup_dir, fp, o)
 
-            tx, rx, distance, isbidi, isxwdm, isxpon = self.parse_description(description)
-
-            if tx:
+            if res.tx:
                 o["data"] += [{
                     "interface": "optical",
                     "attr": "tx_wavelength",
-                    "value": tx
+                    "value": res.tx
                 }]
 
-            if rx:
+            if res.rx:
                 o["data"] += [{
                     "interface": "optical",
                     "attr": "rx_wavelength",
-                    "value": rx
+                    "value": res.rx
                 }]
 
-            if distance:
+            if res.distance:
                 o["data"] += [{
                     "interface": "optical",
                     "attr": "distance_max",
-                    "value": distance
+                    "value": res.distance
                 }]
 
             o["data"] += [{
                 "interface": "optical",
                 "attr": "bidi",
-                "value": isbidi
+                "value": res.isbidi
             }]
             o["data"] += [{
                 "interface": "optical",
                 "attr": "xwdm",
-                "value": isxwdm
+                "value": res.isxwdm
             }]
 
-            if output_dir:
-                self.save_json(output_dir, fp, o)
+            if self.__output_dir:
+                self.save_json(self.__output_dir, fp, o)
 
-    def handle_mongo(self, apply, output_dir, backup_dir):
+    def handle_mongo(self) -> None:
         connect()
 
         for o in ObjectModel.objects.filter(name={"$regex": ".*Transceiver.*"}):
             description = o.description.strip()
             description = self.clear_description(description)
-            self.stdout.write("%s\n" % o)
-            self.stdout.write("    %s\n" % description)
 
-            tx, rx, distance, isbidi, isxwdm, isxpon = self.parse_description(description)
+            res = self.parse_description(description)
+            if self.is_debug:
+                self.stdout.write("%s\n" % o.name)
+                self.stdout.write("    %s\n" % description)
+                self.print_debug(res)
+            
+            if self.__backup_dir:
+                self.save_json(self.__backup_dir, o)
 
-            if tx:
-                o.data += [ModelAttr(interface="optical", attr="tx_wavelength", value=tx)]
+            if res.tx:
+                o.data += [ModelAttr(interface="optical", attr="tx_wavelength", value=res.tx)]
 
-            if rx:
-                o.data += [ModelAttr(interface="optical", attr="rx_wavelength", value=rx)]
+            if res.rx:
+                o.data += [ModelAttr(interface="optical", attr="rx_wavelength", value=res.rx)]
 
-            if distance:
-                o.data += [ModelAttr(interface="optical", attr="distance_max", value=distance)]
+            if res.distance:
+                o.data += [ModelAttr(interface="optical", attr="distance_max", value=res.distance)]
 
-            o.data += [ModelAttr(interface="optical", attr="bidi", value=isbidi)]
-            o.data += [ModelAttr(interface="optical", attr="xwdm", value=isxwdm)]
+            o.data += [ModelAttr(interface="optical", attr="bidi", value=res.isbidi)]
+            o.data += [ModelAttr(interface="optical", attr="xwdm", value=res.isxwdm)]
 
-            if output_dir:
-                self.save_json(output_dir, o)
+            if self.__output_dir:
+                self.save_json(self.__output_dir, o)
             # self.stdout.write("%s\n" % o.to_json())
             continue
 
 
     def handle(self, mongo, apply_mongo, output_dir, backup_dir):
+        self.__mongo = mongo
+        self.__apply_mongo = apply_mongo
+        self.__output_dir = output_dir
+        self.__backup_dir = backup_dir
+
         if apply_mongo and not mongo:
             self.stdout.write("\"--apply\" can used only with \"--mongo\"\n")
             return
@@ -441,9 +470,9 @@ class Command(BaseCommand):
             return
 
         if mongo:
-            self.handle_mongo(apply_mongo, output_dir, backup_dir)
+            self.handle_mongo()
         else:
-            self.handle_files(output_dir, backup_dir)
+            self.handle_files()
 
 
 class ServiceStub(object):
