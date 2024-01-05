@@ -35,6 +35,21 @@
             "attr": "part_no",
             "interface": "asset",
             "value": ["SP7041", "SP7041-E", "SP7041-R", "SP7041_R", "SP7041_Rev_F"]
+        },
+        {
+            "attr": "distance_max",
+            "interface": "optical",
+            "value": 100
+        },
+        {
+            "attr": "bidi",
+            "interface": "optical",
+            "value": false
+        },
+        {
+            "attr": "xwdm",
+            "interface": "optical",
+            "value": false
         }
     ]
 }

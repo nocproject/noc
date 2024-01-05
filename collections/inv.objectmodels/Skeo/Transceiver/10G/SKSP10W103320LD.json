@@ -42,6 +42,31 @@
             "attr": "part_no",
             "interface": "asset",
             "value": ["SKSP10W103320LD"]
+        },
+        {
+            "attr": "tx_wavelength",
+            "interface": "optical",
+            "value": 1330
+        },
+        {
+            "attr": "rx_wavelength",
+            "interface": "optical",
+            "value": 1270
+        },
+        {
+            "attr": "distance_max",
+            "interface": "optical",
+            "value": 20000
+        },
+        {
+            "attr": "bidi",
+            "interface": "optical",
+            "value": true
+        },
+        {
+            "attr": "xwdm",
+            "interface": "optical",
+            "value": false
         }
     ]
 }

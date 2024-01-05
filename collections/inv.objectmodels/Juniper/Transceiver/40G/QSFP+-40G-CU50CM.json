@@ -77,6 +77,16 @@
             "attr": "twinax",
             "interface": "twinax",
             "value": true
+        },
+        {
+            "attr": "bidi",
+            "interface": "optical",
+            "value": false
+        },
+        {
+            "attr": "xwdm",
+            "interface": "optical",
+            "value": false
         }
     ],
     "cross": [

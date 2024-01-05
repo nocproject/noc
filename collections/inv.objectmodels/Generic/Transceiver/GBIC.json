@@ -11,11 +11,11 @@
             "description": null,
             "direction": "o",
             "gender": "m",
-            "type__name": "Transceiver | GBIC",
             "protocols": [{
                 "direction": "*",
                 "protocol__code": "TransEth1G"
-            }]
+            }],
+            "type__name": "Transceiver | GBIC"
         },
         {
             "name": "rx",
@@ -40,5 +40,16 @@
             "type__name": "Optical | SC"
         }
     ],
-    "data": []
+    "data": [
+        {
+            "attr": "bidi",
+            "interface": "optical",
+            "value": false
+        },
+        {
+            "attr": "xwdm",
+            "interface": "optical",
+            "value": false
+        }
+    ]
 }

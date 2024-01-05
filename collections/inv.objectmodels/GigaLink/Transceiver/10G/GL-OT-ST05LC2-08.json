@@ -45,6 +45,26 @@
             "attr": "part_no",
             "interface": "asset",
             "value": ["GL-OT-ST05LC2-08"]
+        },
+        {
+            "attr": "tx_wavelength",
+            "interface": "optical",
+            "value": 850
+        },
+        {
+            "attr": "distance_max",
+            "interface": "optical",
+            "value": 300
+        },
+        {
+            "attr": "bidi",
+            "interface": "optical",
+            "value": false
+        },
+        {
+            "attr": "xwdm",
+            "interface": "optical",
+            "value": false
         }
     ]
 }

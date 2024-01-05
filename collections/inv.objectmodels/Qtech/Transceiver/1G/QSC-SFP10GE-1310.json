@@ -54,6 +54,11 @@
             "value": ["QSC-SFP10.0GE-1310", "QSC-SFP10GE-1310"]
         },
         {
+            "attr": "tx_wavelength",
+            "interface": "optical",
+            "value": 1310
+        },
+        {
             "attr": "distance_max",
             "interface": "optical",
             "value": 10000
@@ -64,9 +69,19 @@
             "value": 1310
         },
         {
-            "attr": "tx_wavelength",
+          "attr": "tx_wavelength",
+          "interface": "optical",
+          "value": 1310
+        },
+        {
+            "attr": "bidi",
             "interface": "optical",
-            "value": 1310
+            "value": false
+        },
+        {
+            "attr": "xwdm",
+            "interface": "optical",
+            "value": false
         }
     ]
 }

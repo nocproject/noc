@@ -43,6 +43,31 @@
             "attr": "part_no",
             "interface": "asset",
             "value": ["SFP-WDM51.36"]
+        },
+        {
+            "attr": "tx_wavelength",
+            "interface": "optical",
+            "value": 1510
+        },
+        {
+            "attr": "rx_wavelength",
+            "interface": "optical",
+            "value": 1570
+        },
+        {
+            "attr": "distance_max",
+            "interface": "optical",
+            "value": 140000
+        },
+        {
+            "attr": "bidi",
+            "interface": "optical",
+            "value": true
+        },
+        {
+            "attr": "xwdm",
+            "interface": "optical",
+            "value": false
         }
     ]
 }

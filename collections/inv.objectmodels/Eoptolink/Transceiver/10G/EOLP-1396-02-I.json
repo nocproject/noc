@@ -51,6 +51,21 @@
             "attr": "part_no",
             "interface": "asset",
             "value": ["EOLP-1396-02-I"]
+        },
+        {
+            "attr": "distance_max",
+            "interface": "optical",
+            "value": 2000
+        },
+        {
+            "attr": "bidi",
+            "interface": "optical",
+            "value": false
+        },
+        {
+            "attr": "xwdm",
+            "interface": "optical",
+            "value": false
         }
     ]
 }

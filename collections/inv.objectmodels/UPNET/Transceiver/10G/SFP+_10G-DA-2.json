@@ -63,6 +63,21 @@
             "attr": "twinax",
             "interface": "twinax",
             "value": true
+        },
+        {
+            "attr": "distance_max",
+            "interface": "optical",
+            "value": 2
+        },
+        {
+            "attr": "bidi",
+            "interface": "optical",
+            "value": false
+        },
+        {
+            "attr": "xwdm",
+            "interface": "optical",
+            "value": false
         }
     ],
     "cross": [

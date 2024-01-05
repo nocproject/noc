@@ -42,6 +42,26 @@
             "attr": "part_no",
             "interface": "asset",
             "value": ["LTE4302M-BC+DM"]
+        },
+        {
+            "attr": "tx_wavelength",
+            "interface": "optical",
+            "value": 1490
+        },
+        {
+            "attr": "rx_wavelength",
+            "interface": "optical",
+            "value": 1310
+        },
+        {
+            "attr": "bidi",
+            "interface": "optical",
+            "value": true
+        },
+        {
+            "attr": "xwdm",
+            "interface": "optical",
+            "value": false
         }
     ]
 }

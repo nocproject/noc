@@ -57,6 +57,21 @@
             "attr": "order_part_no",
             "interface": "asset",
             "value": ["FWDM-16217D51CSC", "FWDM-16217D55CSC", "FWDM-1621-7D-55"]
+        },
+        {
+            "attr": "tx_wavelength",
+            "interface": "optical",
+            "value": 1610
+        },
+        {
+            "attr": "bidi",
+            "interface": "optical",
+            "value": false
+        },
+        {
+            "attr": "xwdm",
+            "interface": "optical",
+            "value": false
         }
     ]
 }

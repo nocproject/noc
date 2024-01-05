@@ -43,6 +43,26 @@
             "attr": "part_no",
             "interface": "asset",
             "value": ["GESM60KMBIDI1513"]
+        },
+        {
+            "attr": "tx_wavelength",
+            "interface": "optical",
+            "value": 1550
+        },
+        {
+            "attr": "distance_max",
+            "interface": "optical",
+            "value": 60000
+        },
+        {
+            "attr": "bidi",
+            "interface": "optical",
+            "value": true
+        },
+        {
+            "attr": "xwdm",
+            "interface": "optical",
+            "value": false
         }
     ]
 }

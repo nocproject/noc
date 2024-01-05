@@ -48,6 +48,21 @@
             "attr": "order_part_no",
             "interface": "asset",
             "value": ["SFP-1000BASE-BX10-D"]
+        },
+        {
+            "attr": "distance_max",
+            "interface": "optical",
+            "value": 5000
+        },
+        {
+            "attr": "bidi",
+            "interface": "optical",
+            "value": true
+        },
+        {
+            "attr": "xwdm",
+            "interface": "optical",
+            "value": false
         }
     ]
 }

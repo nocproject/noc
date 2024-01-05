@@ -46,6 +46,21 @@
             "attr": "part_no",
             "interface": "asset",
             "value": ["FTLF8519P2BNL-CS", "FTLF8519P3BNL-CS", "FTLF8519P2BNL-HW"]
+        },
+        {
+            "attr": "distance_max",
+            "interface": "optical",
+            "value": 500
+        },
+        {
+            "attr": "bidi",
+            "interface": "optical",
+            "value": false
+        },
+        {
+            "attr": "xwdm",
+            "interface": "optical",
+            "value": false
         }
     ]
 }

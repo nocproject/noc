@@ -38,6 +38,26 @@
             "attr": "part_no",
             "interface": "asset",
             "value": ["RTXM191-502"]
+        },
+        {
+            "attr": "tx_wavelength",
+            "interface": "optical",
+            "value": 1550
+        },
+        {
+            "attr": "distance_max",
+            "interface": "optical",
+            "value": 80000
+        },
+        {
+            "attr": "bidi",
+            "interface": "optical",
+            "value": false
+        },
+        {
+            "attr": "xwdm",
+            "interface": "optical",
+            "value": false
         }
     ]
 }

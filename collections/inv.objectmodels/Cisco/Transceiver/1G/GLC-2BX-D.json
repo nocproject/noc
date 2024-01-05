@@ -61,6 +61,21 @@
             "attr": "part_no",
             "interface": "asset",
             "value": ["GLC-2BX-D"]
+        },
+        {
+            "attr": "distance_max",
+            "interface": "optical",
+            "value": 5000
+        },
+        {
+            "attr": "bidi",
+            "interface": "optical",
+            "value": true
+        },
+        {
+            "attr": "xwdm",
+            "interface": "optical",
+            "value": false
         }
     ]
 }

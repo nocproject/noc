@@ -56,6 +56,21 @@
                 "FTLF8519P2BCL-C5",
                 "FTLF8519P2BCL-C"
             ]
+        },
+        {
+            "attr": "distance_max",
+            "interface": "optical",
+            "value": 300
+        },
+        {
+            "attr": "bidi",
+            "interface": "optical",
+            "value": false
+        },
+        {
+            "attr": "xwdm",
+            "interface": "optical",
+            "value": false
         }
     ]
 }

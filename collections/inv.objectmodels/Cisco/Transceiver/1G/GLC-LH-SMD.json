@@ -56,6 +56,21 @@
             "attr": "order_part_no",
             "interface": "asset",
             "value": ["SFCT-5716PZ", "SFCT-5716PZ-CS1"]
+        },
+        {
+            "attr": "distance_max",
+            "interface": "optical",
+            "value": 20000
+        },
+        {
+            "attr": "bidi",
+            "interface": "optical",
+            "value": false
+        },
+        {
+            "attr": "xwdm",
+            "interface": "optical",
+            "value": false
         }
     ]
 }

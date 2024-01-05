@@ -52,6 +52,16 @@
             "attr": "part_no",
             "interface": "asset",
             "value": ["SPT-PB531G-L20"]
+        },
+        {
+            "attr": "bidi",
+            "interface": "optical",
+            "value": false
+        },
+        {
+            "attr": "xwdm",
+            "interface": "optical",
+            "value": false
         }
     ]
 }

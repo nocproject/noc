@@ -52,6 +52,26 @@
             "attr": "part_no",
             "interface": "asset",
             "value": ["QSC-SFP40GEW-1", "QSCSFP40GEW-1-LC"]
+        },
+        {
+            "attr": "tx_wavelength",
+            "interface": "optical",
+            "value": 1550
+        },
+        {
+            "attr": "distance_max",
+            "interface": "optical",
+            "value": 40000
+        },
+        {
+            "attr": "bidi",
+            "interface": "optical",
+            "value": false
+        },
+        {
+            "attr": "xwdm",
+            "interface": "optical",
+            "value": false
         }
     ]
 }

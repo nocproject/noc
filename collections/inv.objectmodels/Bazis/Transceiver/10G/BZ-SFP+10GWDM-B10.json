@@ -42,6 +42,31 @@
             "attr": "part_no",
             "interface": "asset",
             "value": ["BZ-SFP+10GWDM-B10", "SFP+10G-WDM-B-10"]
+        },
+        {
+            "attr": "tx_wavelength",
+            "interface": "optical",
+            "value": 1330
+        },
+        {
+            "attr": "rx_wavelength",
+            "interface": "optical",
+            "value": 1270
+        },
+        {
+            "attr": "distance_max",
+            "interface": "optical",
+            "value": 10000
+        },
+        {
+            "attr": "bidi",
+            "interface": "optical",
+            "value": true
+        },
+        {
+            "attr": "xwdm",
+            "interface": "optical",
+            "value": false
         }
     ]
 }
