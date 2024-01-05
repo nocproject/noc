@@ -80,19 +80,20 @@ class Command(BaseCommand):
     ]
 
     transceiver_patterns = [
-        re.compile(r"(?:\s|^)10gbase-(?P<ttype10g>cr|sr|srl|lr|lrm|cx4|lx4|er|zr)(?:/|\s|$)"),
-        re.compile(r"(?:\s|^)sfp\+\s+(?P<ttype10g>cr|sr|srl|lr|lrm|cx4|lx4|er|zr)(?:\s|$)"),
-        re.compile(r"(?:\s|^)10g\s+(?P<ttype10g>cr|sr|srl|lr|lrm|cx4|lx4|er|zr)(?:\s|$)"),
-        re.compile(r"(?:\s|^)xfp\s+(?P<ttype10g>cr|sr|srl|lr|lrm|cx4|lx4|er|zr)(?:\s|$)"),
+        re.compile(r"(?:\s|^)(10gbase-|sfp\+\s+|10g\s+|xfp\s+|10g\s+base-)(?P<ttype10g>cr|sr|srl|lr|lrm|cx4|lx4|er|zr|t)(?:/|\s|$)"),
+        # re.compile(r"(?:\s|^)sfp\+\s+(?P<ttype10g>cr|sr|srl|lr|lrm|cx4|lx4|er|zr)(?:\s|$)"),
+        # re.compile(r"(?:\s|^)10g\s+(?P<ttype10g>cr|sr|srl|lr|lrm|cx4|lx4|er|zr)(?:\s|$)"),
+        # re.compile(r"(?:\s|^)xfp\s+(?P<ttype10g>cr|sr|srl|lr|lrm|cx4|lx4|er|zr)(?:\s|$)"),
 
-        re.compile(r"(?:\s|^)10g\s+base-(?P<ttype10g>t)(?:\s|$)"),
+        # re.compile(r"(?:\s|^)10g\s+base-(?P<ttype10g>t)(?:\s|$)"),
 
-        re.compile(r"(?:\s|^)1000base-(?P<ttype1g>lx|sx|t)(?:\s|$)"),
-        re.compile(r"(?:\s|^)sfp\s+(?P<ttype1g>lx|lh|ex|sx|zx|t|tx)(?:\s|$)"),
+        re.compile(r"(?:\s|^)(1000base-*|sfp\s+|1g\s+gbic\s+)(?P<ttype1g>bx|lx|lh|ex|sx|zx|t|tx)\S*(?:\s|$)"),
+        # re.compile(r"(?:\s|^)1000base-(?P<ttype1g>bx)\S*(?:\s|$)"),
+        # re.compile(r"(?:\s|^)sfp\s+(?P<ttype1g>bx|lx|lh|ex|sx|zx|t|tx)\S*(?:\s|$)"),
 
         re.compile(r"(?:\s|^)(?P<ttype1g>lh/lx)\s+transceiver(?:\s|$)"),
 
-        re.compile(r"(?:\s|^)1g\s+gbic\s+(?P<ttype1g>lx|lh|sx|ex|zx|t|tx)(?:\s|$)"),
+        # re.compile(r"(?:\s|^)1g\s+gbic\s+(?P<ttype1g>lx|lh|sx|ex|zx|t|tx)(?:\s|$)"),
     ]
 
     bidi_patterns = [
@@ -103,11 +104,7 @@ class Command(BaseCommand):
         re.compile(r"(?:\s|^)bi-directional(?:\s|$)"),
         re.compile(r"(?:\s|^)bidirectional(?:\s|$)"),
         re.compile(r"(?:\s|^)bidi(?:\s|$)"),
-        re.compile(r"(?:\s|^)wdm(?:\s|$)"),
-
-        re.compile(r"(?:\s|^)gepon(?:\s|$)"),
-        re.compile(r"(?:\s|^)epon(?:\s|$)"),
-        re.compile(r"(?:\s|^)gpon(?:\s|$)"),
+        re.compile(r"(?:\s|^)wdm\S*(?:\s|$)"),
     ]
 
     xwdm_patterns = [
@@ -176,7 +173,7 @@ class Command(BaseCommand):
 
         return file_name
 
-    def save_json(self, o_dir: str, o: ObjectModel) -> None:
+    def save_obj_json(self, o_dir: str, o: ObjectModel) -> None:
         """
         Save "o" object as JSON to "o_dir"
         """
@@ -242,6 +239,34 @@ class Command(BaseCommand):
         Parse description string by applying patterns
         then return object with data
         """
+
+        ttype1g_bidi = [
+            "bx",
+        ]
+
+        ttype1g_distance_map = {
+            "t": 100,
+            "tx": 100,
+            "sx": 300,
+            "bx": 5000,
+            "lx": 5000,
+            "lh": 10000,
+            "lh/lx": 20000,
+            "ex": 40000,
+            "zx": 80000,
+        }
+
+        ttype10g_distance_map = {
+            "t": 100,
+            "tx": 100,
+            "cx4": 15,
+            "sr": 300,
+            "lr": 10000,
+            "lrm": 10000,
+            "lx4": 10000,
+            "er": 40000,
+            "zr": 80000,
+        }
 
         connector = ""
         for p in self.connector_patterns:
@@ -311,9 +336,26 @@ class Command(BaseCommand):
                     distance = int(match.group("m"))
                     break
 
+        # XPON is always bidirectional
+        if not isbidi:
+            isbidi = isxpon
+
+        # Check transceiver type for bidi
+        if not isbidi:
+            if ttype1g:
+                isbidi = ttype1g in ttype1g_bidi
+
+        # GPON and GEPON have tx=1490 and rx=1310
         if not (rx and tx) and isxpon:
             tx = 1490
             rx = 1310
+
+        # Check transceiver type for distance
+        if not distance:
+            if ttype1g:
+                distance = ttype1g_distance_map.get(ttype1g, 0)
+            if ttype10g:
+                distance = ttype10g_distance_map.get(ttype10g, 0)
         
         res = Dict2Class({
             "tx": tx,
@@ -431,7 +473,7 @@ class Command(BaseCommand):
                 self.print_debug(res)
             
             if self.__backup_dir:
-                self.save_json(self.__backup_dir, o)
+                self.save_obj_json(self.__backup_dir, o)
 
             if res.tx:
                 o.data += [ModelAttr(interface="optical", attr="tx_wavelength", value=res.tx)]
@@ -446,7 +488,7 @@ class Command(BaseCommand):
             o.data += [ModelAttr(interface="optical", attr="xwdm", value=res.isxwdm)]
 
             if self.__output_dir:
-                self.save_json(self.__output_dir, o)
+                self.save_obj_json(self.__output_dir, o)
             # self.stdout.write("%s\n" % o.to_json())
             continue
 
