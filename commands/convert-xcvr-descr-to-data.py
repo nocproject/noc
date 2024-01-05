@@ -27,10 +27,12 @@ from noc.core.prettyjson import to_json
 from noc.core.collection.base import Collection
 from noc.models import get_model
 
+
 class Dict2Class(object):
     def __init__(self, d: dict):
         for k, v in d.items():
             setattr(self, k, v)
+
 
 class Command(BaseCommand):
     wav_patterns = [
@@ -38,23 +40,18 @@ class Command(BaseCommand):
         re.compile(r"(?:\s|^)(?P<tx>\d+)\s+tx\s+(?P<rx>\d+)\s+rx(?:\s|$)"),
         re.compile(r"(?:\s|^)rx (?P<rx>\d+) tx (?P<tx>\d+)(?:\s|$)"),
         re.compile(r"(?:\s|^)tx/rx: (?P<tx>\d+)/(?P<rx>\d+)nm(?:\s|$)"),
-
         re.compile(r"(?:\s|^)rx-(?P<rx>\d+)/tx-(?P<tx>\d+)(?:\s|$)"),
         re.compile(r"(?:\s|^)tx-(?P<tx>\d+)/rx-(?P<rx>\d+)(?:\s|$)"),
-
         re.compile(r"(?:\s|^)rx(?P<rx>\d+)/tx(?P<tx>\d+)(?:\s|$)"),
         re.compile(r"(?:\s|^)tx(?P<tx>\d+)(nm)?/rx(?P<rx>\d+)(nm)?(?:\s|$)"),
         re.compile(r"(?:\s|^)(?P<tx>\d+)-tx/(?P<rx>\d+)-rx(?:\s|$)"),
         re.compile(r"(?:\s|^)(?P<tx>\d+)nm-tx/(?P<rx>\d+)nm-rx(?:\s|$)"),
-
         re.compile(r"(?:\s|^)wavelength: (?P<tx>\d+)-(?P<rx>\d+) nm(?:\s|$)"),
         re.compile(r"(?:\s|^)wavelength:(?P<tx>\d+) nm(?:\s|$)"),
         re.compile(r"(?:\s|^)wavelength: (?P<tx>\d+)tx(?:\s|$)"),
-
         re.compile(r"(?:\s|^)(?P<txrx>\d+) txrx(?:\s|$)"),
         re.compile(r"(?:\s|^)tx (?P<tx>\d+)(?:\s|$)"),
         re.compile(r"(?:\s|^)rx (?P<rx>\d+)(?:\s|$)"),
-
         re.compile(r"(?:\s|^)(?P<tx>\d+)nm(?:\s|$)"),
         re.compile(r"(?:\s|^)(?P<tx>\d+)-nm(?:\s|$)"),
         re.compile(r"(?:\s|^)(?P<tx>\d+) nm(?:\s|$)"),
@@ -65,12 +62,9 @@ class Command(BaseCommand):
 
     dist_patterns = [
         re.compile(r"(?::|;|\s|^)(?P<km>\d+)km(?::|;|\s|$)"),
-
         re.compile(r"(?::|;|\s|^)(?P<km>\d+)\s+km(?::|;|\s|$)"),
-
         re.compile(r"(?::|;|\s|^)(?P<m>\d+)m(?::|;|\s|$)"),
         re.compile(r"(?::|;|\s|^)(?P<m>\d+)\s+meter(?::|;|\s|$)"),
-
         re.compile(r"(?::|;|\s|^)(?P<m>\d+)\s+m(?::|;|\s|$)"),
         re.compile(r"(?::|;|\s|^)mmf/smf.*/(?P<km>\d+)km(?::|;|\s|$)"),
     ]
@@ -81,11 +75,13 @@ class Command(BaseCommand):
     ]
 
     transceiver_patterns = [
-        re.compile(r"(?:\s|^)(10gbase-|sfp\+\s+|10g\s+|xfp\s+|10g\s+base-)(?P<ttype10g>cr|sr|srl|lr|lrm|cx4|lx4|er|zr|t)(?:/|\s|$)"),
-
-        re.compile(r"(?:\s|^)(1000base-*|sfp\s+|1g\s+gbic\s+)(?P<ttype1g>bx|lx|lh|ex|sx|zx)\S*(?:\s|$)"),
+        re.compile(
+            r"(?:\s|^)(10gbase-|sfp\+\s+|10g\s+|xfp\s+|10g\s+base-)(?P<ttype10g>cr|sr|srl|lr|lrm|cx4|lx4|er|zr|t)(?:/|\s|$)"
+        ),
+        re.compile(
+            r"(?:\s|^)(1000base-*|sfp\s+|1g\s+gbic\s+)(?P<ttype1g>bx|lx|lh|ex|sx|zx)\S*(?:\s|$)"
+        ),
         re.compile(r"(?:\s|^)(1000base-*|sfp\s+|1g\s+gbic\s+)(?P<ttype1g>t|tx)(?:\s|$)"),
-
         re.compile(r"(?:\s|^)(?P<ttype1g>lh/lx)\s+transceiver(?:\s|$)"),
     ]
 
@@ -93,7 +89,6 @@ class Command(BaseCommand):
         re.compile(r"(?:\s|^)sfp wdm(?:\s|$)"),
         re.compile(r"(?:\s|^)sfp\+ wdm(?:\s|$)"),
         re.compile(r"(?:\s|^)wdm-1g\S+(?:\s|$)"),
-
         re.compile(r"(?:\s|^)bi-directional(?:\s|$)"),
         re.compile(r"(?:\s|^)bidirectional(?:\s|$)"),
         re.compile(r"(?:\s|^)bidi(?:\s|$)"),
@@ -148,7 +143,7 @@ class Command(BaseCommand):
             if e.errno != errno.EEXIST:
                 raise
 
-    def gen_filename(self, output_dir: str, o: ObjectModel)-> str:
+    def gen_filename(self, output_dir: str, o: ObjectModel) -> str:
         """
         Generate file name from "output_dir" and object name.
 
@@ -191,19 +186,22 @@ class Command(BaseCommand):
 
         with open(fname, "w") as f:
             f.write(
-                to_json(o, order=[
-                    "name",
-                    "$collection",
-                    "uuid",
-                    "vendor__code",
-                    "description",
-                    "connection_rule__name",
-                    "cr_context",
-                    "plugins",
-                    "labels",
-                    "connections",
-                    "data",
-                ])
+                to_json(
+                    o, 
+                    order=[
+                        "name",
+                        "$collection",
+                        "uuid",
+                        "vendor__code",
+                        "description",
+                        "connection_rule__name",
+                        "cr_context",
+                        "plugins",
+                        "labels",
+                        "connections",
+                        "data",
+                    ]
+                )
             )
 
         return
@@ -348,17 +346,19 @@ class Command(BaseCommand):
             if ttype10g:
                 distance = ttype10g_distance_map.get(ttype10g, 0)
         
-        res = Dict2Class({
-            "tx": tx,
-            "rx": rx,
-            "distance": distance,
-            "isbidi": isbidi,
-            "isxwdm": isxwdm,
-            "isxpon": isxpon,
-            "connector": connector,
-            "ttype1g": ttype1g,
-            "ttype10g": ttype10g,
-        })
+        res = Dict2Class(
+            {
+                "tx": tx,
+                "rx": rx,
+                "distance": distance,
+                "isbidi": isbidi,
+                "isxwdm": isxwdm,
+                "isxpon": isxpon,
+                "connector": connector,
+                "ttype1g": ttype1g,
+                "ttype10g": ttype10g,
+            }
+        )
 
         return res
 
@@ -390,14 +390,12 @@ class Command(BaseCommand):
         description = description.replace("(", "")
         description = description.replace(")", "")
         description = description.replace(",", "")
-
         return description
-    
+
     def is_list_contain_attr(self, list_, attr) -> bool:
         for o in list_:
             if o["interface"] == "optical" and o["attr"] == attr:
                 return True
-            
         return False
 
     def handle_files(self) -> None:
@@ -421,38 +419,20 @@ class Command(BaseCommand):
                 self.save_json(self.__backup_dir, fp, o)
 
             if res.tx and not self.is_list_contain_attr(o["data"], "tx_wavelength"):
-                o["data"] += [{
-                    "interface": "optical",
-                    "attr": "tx_wavelength",
-                    "value": res.tx
-                }]
+                o["data"] += [{"interface": "optical", "attr": "tx_wavelength", "value": res.tx}]
 
             if res.rx and not self.is_list_contain_attr(o["data"], "rx_wavelength"):
-                o["data"] += [{
-                    "interface": "optical",
-                    "attr": "rx_wavelength",
-                    "value": res.rx
-                }]
+                o["data"] += [{"interface": "optical", "attr": "rx_wavelength", "value": res.rx}]
 
             if res.distance and not self.is_list_contain_attr(o["data"], "distance_max"):
-                o["data"] += [{
-                    "interface": "optical",
-                    "attr": "distance_max",
-                    "value": res.distance
-                }]
+                o["data"] += [
+                    {"interface": "optical", "attr": "distance_max", "value": res.distance}
+                ]
 
             if not self.is_list_contain_attr(o["data"], "bidi"):
-                o["data"] += [{
-                    "interface": "optical",
-                    "attr": "bidi",
-                    "value": res.isbidi
-                }]
+                o["data"] += [{"interface": "optical", "attr": "bidi", "value": res.isbidi}]
             if not self.is_list_contain_attr(o["data"], "xwdm"):
-                o["data"] += [{
-                    "interface": "optical",
-                    "attr": "xwdm",
-                    "value": res.isxwdm
-                }]
+                o["data"] += [{"interface": "optical", "attr": "xwdm", "value": res.isxwdm}]
 
             if self.__output_dir:
                 self.save_json(self.__output_dir, fp, o)
@@ -496,7 +476,6 @@ class Command(BaseCommand):
             if self.__apply_mongo:
                 o.save()
 
-
     def handle(self, mongo, apply_mongo, output_dir, backup_dir):
         self.__mongo = mongo
         self.__apply_mongo = apply_mongo
@@ -504,7 +483,7 @@ class Command(BaseCommand):
         self.__backup_dir = backup_dir
 
         if apply_mongo and not mongo:
-            self.stdout.write("\"--apply\" can used only with \"--mongo\"\n")
+            self.stdout.write('"--apply" can used only with "--mongo"\n')
             return
 
         if output_dir and not os.path.isdir(output_dir) and os.access(output_dir, os.W_OK):
