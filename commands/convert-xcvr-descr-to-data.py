@@ -187,8 +187,6 @@ class Command(BaseCommand):
         fname = os.path.join(o_dir, *path_.split("/")[2:])
         dir_name = os.path.dirname(fname)
 
-        self.stdout.write("%s\n" % fname)
-
         self.makedirs(dir_name)
 
         with open(fname, "w") as f:
@@ -364,8 +362,6 @@ class Command(BaseCommand):
 
         return res
 
-        # return tx, rx, distance, isbidi, isxwdm, isxpon, connector, ttype1g, ttype10g
-
     def print_debug(self, rec) -> None:
         if rec.connector:
             self.stdout.write("        CONNECTOR: %s\n" % rec.connector)
@@ -409,8 +405,8 @@ class Command(BaseCommand):
             description = self.clear_description(description)
 
             res = self.parse_description(description)
+            self.stdout.write("%s\n" % o.get("name", ""))
             if self.is_debug:
-                self.stdout.write("%s\n" % o.get("name", ""))
                 self.stdout.write("    %s\n" % description)
                 self.print_debug(res)
 
@@ -460,8 +456,8 @@ class Command(BaseCommand):
             description = self.clear_description(description)
 
             res = self.parse_description(description)
+            self.stdout.write("%s\n" % o.name)
             if self.is_debug:
-                self.stdout.write("%s\n" % o.name)
                 self.stdout.write("    %s\n" % description)
                 self.print_debug(res)
             
