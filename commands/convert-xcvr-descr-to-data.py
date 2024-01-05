@@ -72,6 +72,7 @@ class Command(BaseCommand):
         re.compile(r"(?::|;|\s|^)(?P<m>\d+)\s+meter(?::|;|\s|$)"),
 
         re.compile(r"(?::|;|\s|^)(?P<m>\d+)\s+m(?::|;|\s|$)"),
+        re.compile(r"(?::|;|\s|^)mmf/smf.*/(?P<km>\d+)km(?::|;|\s|$)"),
     ]
 
     connector_patterns = [
@@ -81,19 +82,11 @@ class Command(BaseCommand):
 
     transceiver_patterns = [
         re.compile(r"(?:\s|^)(10gbase-|sfp\+\s+|10g\s+|xfp\s+|10g\s+base-)(?P<ttype10g>cr|sr|srl|lr|lrm|cx4|lx4|er|zr|t)(?:/|\s|$)"),
-        # re.compile(r"(?:\s|^)sfp\+\s+(?P<ttype10g>cr|sr|srl|lr|lrm|cx4|lx4|er|zr)(?:\s|$)"),
-        # re.compile(r"(?:\s|^)10g\s+(?P<ttype10g>cr|sr|srl|lr|lrm|cx4|lx4|er|zr)(?:\s|$)"),
-        # re.compile(r"(?:\s|^)xfp\s+(?P<ttype10g>cr|sr|srl|lr|lrm|cx4|lx4|er|zr)(?:\s|$)"),
 
-        # re.compile(r"(?:\s|^)10g\s+base-(?P<ttype10g>t)(?:\s|$)"),
-
-        re.compile(r"(?:\s|^)(1000base-*|sfp\s+|1g\s+gbic\s+)(?P<ttype1g>bx|lx|lh|ex|sx|zx|t|tx)\S*(?:\s|$)"),
-        # re.compile(r"(?:\s|^)1000base-(?P<ttype1g>bx)\S*(?:\s|$)"),
-        # re.compile(r"(?:\s|^)sfp\s+(?P<ttype1g>bx|lx|lh|ex|sx|zx|t|tx)\S*(?:\s|$)"),
+        re.compile(r"(?:\s|^)(1000base-*|sfp\s+|1g\s+gbic\s+)(?P<ttype1g>bx|lx|lh|ex|sx|zx)\S*(?:\s|$)"),
+        re.compile(r"(?:\s|^)(1000base-*|sfp\s+|1g\s+gbic\s+)(?P<ttype1g>t|tx)(?:\s|$)"),
 
         re.compile(r"(?:\s|^)(?P<ttype1g>lh/lx)\s+transceiver(?:\s|$)"),
-
-        # re.compile(r"(?:\s|^)1g\s+gbic\s+(?P<ttype1g>lx|lh|sx|ex|zx|t|tx)(?:\s|$)"),
     ]
 
     bidi_patterns = [
@@ -345,7 +338,7 @@ class Command(BaseCommand):
             if ttype1g:
                 isbidi = ttype1g in ttype1g_bidi
 
-        # GPON and GEPON have tx=1490 and rx=1310
+        # GPON and GEPON(EPON) have tx=1490 and rx=1310
         if not (rx and tx) and isxpon:
             tx = 1490
             rx = 1310
@@ -489,8 +482,9 @@ class Command(BaseCommand):
 
             if self.__output_dir:
                 self.save_obj_json(self.__output_dir, o)
-            # self.stdout.write("%s\n" % o.to_json())
-            continue
+
+            if self.__apply_mongo:
+                o.save()
 
 
     def handle(self, mongo, apply_mongo, output_dir, backup_dir):
