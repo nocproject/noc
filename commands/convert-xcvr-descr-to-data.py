@@ -11,16 +11,11 @@ import os
 import errno
 
 # Third-party modules
-import orjson
-import json
 
 # NOC modules
 from noc.core.management.base import BaseCommand
-from noc.core.script.loader import loader as script_loader
-from noc.core.profile.loader import loader as profile_loader
 from noc.core.mongo.connection import connect
 from noc.inv.models.objectmodel import ObjectModel, ModelAttr
-from noc.inv.models.object import ObjectAttr
 
 from noc.core.prettyjson import to_json
 
