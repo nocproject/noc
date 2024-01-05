@@ -187,7 +187,7 @@ class Command(BaseCommand):
         with open(fname, "w") as f:
             f.write(
                 to_json(
-                    o, 
+                    o,
                     order=[
                         "name",
                         "$collection",
@@ -200,7 +200,7 @@ class Command(BaseCommand):
                         "labels",
                         "connections",
                         "data",
-                    ]
+                    ],
                 )
             )
 
@@ -345,7 +345,7 @@ class Command(BaseCommand):
                 distance = ttype1g_distance_map.get(ttype1g, 0)
             if ttype10g:
                 distance = ttype10g_distance_map.get(ttype10g, 0)
-        
+
         res = Dict2Class(
             {
                 "tx": tx,
@@ -449,7 +449,7 @@ class Command(BaseCommand):
             if self.is_debug:
                 self.stdout.write("    %s\n" % description)
                 self.print_debug(res)
-            
+
             if self.__backup_dir:
                 self.save_obj_json(self.__backup_dir, o)
 
