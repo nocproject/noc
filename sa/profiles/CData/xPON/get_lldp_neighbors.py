@@ -1,5 +1,5 @@
 # ---------------------------------------------------------------------
-# CDATA.xPON.get_lldp_neighbors
+# CData.xPON.get_lldp_neighbors
 # ---------------------------------------------------------------------
 # Copyright (C) 2007-2024 The NOC Project
 # See LICENSE for details
@@ -24,7 +24,7 @@ from noc.core.lldp import (
 
 
 class Script(BaseScript):
-    name = "CDATA.xPON.get_lldp_neighbors"
+    name = "CData.xPON.get_lldp_neighbors"
     interface = IGetLLDPNeighbors
 
     rx_local_port = re.compile(
