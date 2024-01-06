@@ -40,6 +40,7 @@ class Script(BaseScript):
         "10Giga-FX": "physical",
         "10Giga-FX-SFP": "physical",
         "EtherSVI": "SVI",
+        "PortAggregator": "aggregated",
         "Null": "null",
     }
 
