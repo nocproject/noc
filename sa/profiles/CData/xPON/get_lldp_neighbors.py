@@ -29,7 +29,7 @@ class Script(BaseScript):
 
     rx_local_port = re.compile(
         r"\s*LLDP neighbor-information of (?P<port_type>xge|ge)(?P<port_num>\d+/\d+/\d+).*\n",
-        re.MULTILINE
+        re.MULTILINE,
     )
     rx_remote = re.compile(
         r"has (?P<neigh_count>\d+) neighbors\:\n"
@@ -86,7 +86,6 @@ class Script(BaseScript):
                     else:
                         neighbor["remote_port_subtype"] = LLDP_PORT_SUBTYPE_ALIAS
                         neighbor["remote_port"] = port_descr
-
 
                     r += [{"local_interface": local_interface, "neighbors": [neighbor]}]
         return r
