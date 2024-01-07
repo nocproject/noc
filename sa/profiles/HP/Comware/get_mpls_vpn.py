@@ -26,8 +26,8 @@ class Script(BaseScript):
             v = self.cli("display ip vpn-instance")
         except self.CLISyntaxError:
             return []
-        for l in v.splitlines():
-            match = self.rx_line.match(l)
+        for ll in v.splitlines():
+            match = self.rx_line.match(ll)
             if match:
                 vrf = match.group("vrf")
                 v1 = self.cli("display ip vpn-instance instance-name %s" % vrf)
