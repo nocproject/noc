@@ -36,8 +36,8 @@ class Script(BaseScript):
         except self.CLISyntaxError:
             raise self.NotSupportedError()
         r = []
-        for l in macs.splitlines():
-            match = self.rx_line.match(l.strip())
+        for ll in macs.splitlines():
+            match = self.rx_line.match(ll.strip())
             if not match:
                 continue
             if match.group("if_type") == "Learned":
