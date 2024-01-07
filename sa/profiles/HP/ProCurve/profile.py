@@ -16,6 +16,8 @@ from noc.core.profile.base import BaseProfile
 class Profile(BaseProfile):
     name = "HP.ProCurve"
 
+    pattern_username = rb"(Please Enter)?\s*(Login Name|Username):"
+    pattern_password = rb"(Please Enter)?\s*Password:"
     pattern_prompt = rb"^[a-zA-Z0-9- _/.]+?(\(\S+\))?# "
     pattern_unprivileged_prompt = rb"^[a-zA-Z0-9- _/.]+?> "
     pattern_more = [
@@ -29,6 +31,7 @@ class Profile(BaseProfile):
     command_leave_config = "exit"
     command_save_config = "write memory\n"
     command_exit = "exit"
+    matchers = {"is_old_cli": {"caps": {"$in": ["HP | ProCurve | CLI | Old"]}}}
 
     #
     # Compare versions
