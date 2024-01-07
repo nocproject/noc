@@ -16,7 +16,9 @@ class Script(BaseScript):
 
     def execute_cli(self, policy="r", **kwargs):
         assert policy in ("r", "s")
-        if policy == "s":
+        if self.is_old_cli:
+            config = self.cli("show config")
+        elif policy == "s":
             config = self.cli("display saved-configuration")
         else:
             config = self.cli("display current-configuration")

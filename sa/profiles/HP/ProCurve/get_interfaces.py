@@ -53,9 +53,10 @@ class Script(BaseScript):
         vlans = []
         for vlan_block in v.split("\n\n"):
             params = {}
+            param = None
             for ll in vlan_block.splitlines():
                 p1, *p2 = ll.split(":")
-                if not p2:
+                if not p2 and param:
                     params[param] += [x.strip() for x in p1.split()]
                     continue
                 param = p1.strip()
@@ -90,6 +91,8 @@ class Script(BaseScript):
         return r, vlan_address
 
     def execute_cli(self):
+        if self.is_old_cli:
+            raise NotImplementedError("Old CLI with SNMP only access")
         interfaces = {}
         switchports, addresses = self.get_switchport_cli()
         v = self.cli("show trunks")

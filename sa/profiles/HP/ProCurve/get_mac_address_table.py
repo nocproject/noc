@@ -23,6 +23,8 @@ class Script(BaseScript):
     rx_if = re.compile(r"ifName\.(\d+)\s*=\s*(\S+)")
 
     def execute_cli(self, **kwargs):
+        if self.is_old_cli:
+            raise NotImplementedError("Old CLI with SNMP only access")
         r = []
         v = self.cli("display mac-address")
         for row in v.split("\n\n")[0].splitlines()[1:]:
