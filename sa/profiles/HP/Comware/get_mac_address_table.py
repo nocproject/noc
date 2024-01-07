@@ -1,16 +1,15 @@
 # ---------------------------------------------------------------------
 # HP.Comware.get_arp
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2016 The NOC Project
+# Copyright (C) 2007-2023 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
-
+# Python modules
 import re
 
 # NOC modules
-# NOC modules
-from noc.core.script.base import BaseScript
+from noc.sa.profiles.Generic.get_mac_address_table import Script as BaseScript
 from noc.sa.interfaces.igetmacaddresstable import IGetMACAddressTable
 
 
@@ -24,7 +23,7 @@ class Script(BaseScript):
         re.IGNORECASE | re.DOTALL | re.MULTILINE,
     )
 
-    def execute(self, interface=None, vlan=None, mac=None):
+    def execute_cli(self, interface=None, vlan=None, mac=None):
         cmd = "display mac-address"
         if mac is not None:
             cmd += " %s" % self.profile.convert_mac(mac)
@@ -37,8 +36,8 @@ class Script(BaseScript):
         except self.CLISyntaxError:
             raise self.NotSupportedError()
         r = []
-        for l in macs.splitlines():
-            match = self.rx_line.match(l.strip())
+        for ll in macs.splitlines():
+            match = self.rx_line.match(ll.strip())
             if not match:
                 continue
             if match.group("if_type") == "Learned":
