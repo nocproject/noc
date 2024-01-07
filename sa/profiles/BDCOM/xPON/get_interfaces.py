@@ -51,6 +51,7 @@ class Script(BaseScript):
         "GPON": "physical",  # GPON port
         "GPON-ONUID": "other",  # GPON ONU port
         "EtherSVI": "SVI",
+        "PortAggregator": "aggregated",
         "Null": "null",
     }
 
