@@ -16,8 +16,8 @@ class Profile(BaseProfile):
     # INTERFACE_TYPES = {6: "physical", 53: "SVI"}
 
     pattern_username = rb"Username: ?"
-    pattern_unprivileged_prompt = rb"^(?P<hostname>\S+)\s*>\s*"
-    pattern_prompt = rb"^(?P<hostname>\S+)\s*#"
+    pattern_unprivileged_prompt = rb"^(?P<hostname>\S+[^#])\s*>\s*"
+    pattern_prompt = rb"^(?P<hostname>\S+[^#])\s*#"
     pattern_syntax_error = rb"% Ambiguous command."
     command_disable_pager = "no page"
     command_super = b"enable"
