@@ -24,7 +24,7 @@ class Script(BaseScript):
         re.MULTILINE,
     )
     rx_mac = re.compile(r"MAC Address: (?P<mac>\S+)")
-    rx_description = re.compile(r"Description:\s+(?P<description>.+)\s*")
+    rx_description = re.compile(r"Description:\s*(?P<description>.+)?")
     rx_mtu = re.compile(r"MTU\s+(?P<mtu>\d+)")
     rx_aggregated = re.compile(r"Aggregated-interfaces\s+:\s+(?P<port>\S+)")
     rx_access_vlan = re.compile(r"Access VLAN:\s+(?P<access_vlan>\d+)")
@@ -62,16 +62,13 @@ class Script(BaseScript):
                 portchannel_members[m] = (i, t)
         ifaces = {}
         v = self.cli("show interface")
-        prev = None
-        for match in self.rx_interface_splitter.finditer(v):
-            if not prev:
-                prev = match
+        for ll in v.split("\n\n"):
+            match = self.rx_interface_splitter.search(ll)
+            if not match:
                 continue
-            ll = v[prev.end() : match.start()]
             r = {}
             for rx in [
                 self.rx_mac,
-                self.rx_description,
                 self.rx_mtu,
                 self.rx_access_vlan,
                 self.rx_native_vlan,
@@ -82,12 +79,12 @@ class Script(BaseScript):
                 m = rx.search(ll)
                 if m:
                     r.update(m.groupdict())
-            ifname = prev.group("name")
+            ifname = self.profile.convert_interface_name(match.group("name"))
             iftype = self.profile.get_interface_type(ifname)
             subiface = {
                 "name": ifname,
-                "admin_status": prev.group("admin"),
-                "oper_status": prev.group("oper") == "up",
+                "admin_status": match.group("admin"),
+                "oper_status": match.group("oper") == "up",
                 "enabled_afi": [],
                 # "mac": mac,
                 # "snmp_ifindex": self.scripts.get_ifindex(interface=name)
@@ -95,12 +92,17 @@ class Script(BaseScript):
             iface = {
                 "name": ifname,
                 "type": iftype,
-                "admin_status": not prev.group("admin"),
-                "oper_status": prev.group("oper") == "up",
+                "admin_status": not match.group("admin"),
+                "oper_status": match.group("oper") == "up",
                 "mac": r.get("mac"),
                 "enabled_protocols": [],
                 "subinterfaces": [],
             }
+            d_match = self.rx_description.search(ll)
+            if d_match and not d_match.group("description").startswith("Hardware"):
+                iface["description"] = d_match.group("description")
+            if "mtu" in r:
+                iface["mtu"] = r["mtu"]
             if r.get("vlan_mode") == "access" and "access_vlan" in r:
                 subiface["untagged_vlan"] = r["access_vlan"]
                 subiface["enabled_afi"] += ["BRIDGE"]
@@ -108,7 +110,7 @@ class Script(BaseScript):
                 subiface["untagged_vlan"] = r["native_vlan"]
                 subiface["enabled_afi"] += ["BRIDGE"]
                 if "allowed_vlan" in r:
-                    subiface["tagged_vlan"] = (
+                    subiface["tagged_vlans"] = (
                         all_vlans
                         if r["allowed_vlan"] == "all"
                         else ranges_to_list(r["allowed_vlan"])
@@ -126,5 +128,4 @@ class Script(BaseScript):
                     iface["enabled_protocols"] += ["LACP"]
             iface["subinterfaces"] += [subiface]
             ifaces[ifname] = iface
-            prev = match
         return [{"interfaces": list(ifaces.values())}]
