@@ -128,5 +128,4 @@ class Script(BaseScript):
                     iface["enabled_protocols"] += ["LACP"]
             iface["subinterfaces"] += [subiface]
             ifaces[ifname] = iface
-            prev = match
         return [{"interfaces": list(ifaces.values())}]
