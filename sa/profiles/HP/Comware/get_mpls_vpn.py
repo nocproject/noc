@@ -9,7 +9,7 @@
 import re
 
 # NOC modules
-from noc.core.script.base import BaseScript
+from noc.sa.profiles.Generic.get_mpls_vpn import Script as BaseScript
 from noc.sa.interfaces.igetmplsvpn import IGetMPLSVPN
 
 
@@ -20,7 +20,7 @@ class Script(BaseScript):
     rx_line = re.compile(r"^\s+(?P<vrf>\S+)\s+(?P<rd>\S+:\S+|<not set>)\s+", re.MULTILINE)
     rx_if = re.compile(r"^\s+Interfaces : (?P<ifaces>.+)", re.MULTILINE | re.DOTALL)
 
-    def execute(self):
+    def execute_cli(self):
         vpns = []
         try:
             v = self.cli("display ip vpn-instance")

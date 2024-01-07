@@ -34,6 +34,9 @@ class Script(BaseScript):
         re.MULTILINE,
     )
 
+    rx_snmp_sw_version = re.compile(r"Software Version (?P<version>(?:\d+.?)+),?")
+    rx_snmp_platform = re.compile(r"(?:HPE\s+)?(?P<platform>.+Switch)")
+
     def execute_cli(self, **kwargs):
         platform = "Comware"
         version = "Unknown"
@@ -71,3 +74,19 @@ class Script(BaseScript):
         if s:
             r["attributes"]["Serial Number"] = s
         return r
+
+    def execute_snmp(self, **kwargs):
+        v = self.snmp.get(mib["SNMPv2-MIB::sysDescr", 0], cached=True)
+        # v, _ = v.splitlines()
+        match = self.rx_snmp_sw_version.search(v)
+        if match:
+            version = match.group("version")
+        match = self.rx_snmp_platform.search(v)
+        if match:
+            platform = match.group("platform")
+        return {
+            "vendor": "HP",
+            "platform": platform.strip(),
+            "version": version.strip(", "),
+            "attributes": {},
+        }
