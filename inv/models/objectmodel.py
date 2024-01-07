@@ -23,7 +23,6 @@ from mongoengine.fields import (
     EmbeddedDocumentListField,
     ObjectIdField,
     FloatField,
-    EmbeddedDocumentField,
 )
 from mongoengine.errors import ValidationError
 import cachetools
@@ -309,7 +308,7 @@ class ObjectModel(Document):
     data: List["ModelAttr"] = EmbeddedDocumentListField(ModelAttr)
     connections: List["ObjectModelConnection"] = EmbeddedDocumentListField(ObjectModelConnection)
     # Static crossings
-    cross = ListField(EmbeddedDocumentField(Crossing))
+    cross = EmbeddedDocumentListField(Crossing)
     sensors: List["ObjectModelSensor"] = EmbeddedDocumentListField(ObjectModelSensor)
     plugins = ListField(StringField(), required=False)
     # Labels

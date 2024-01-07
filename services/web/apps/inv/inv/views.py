@@ -1,7 +1,7 @@
 # ---------------------------------------------------------------------
 # inv.inv application
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2024 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -27,7 +27,6 @@ from noc.sa.interfaces.base import (
 )
 from noc.core.inv.path import find_path
 from noc.core.translation import ugettext as _
-from noc.core.comp import smart_text
 
 translation_map = str.maketrans("<>", "><")
 
@@ -282,13 +281,13 @@ class InvApplication(ExtApplication):
             right_filter,
             cable_filter,
         )
-        lo: Object = self.get_object_or_404(Object, id=o1)
-        ro: Optional[Object] = None
+        lo: Object = self.get_object_or_404(Object, id=o1)  # Left Object
+        ro: Optional[Object] = None  # Right Object
         if o2:
             ro = self.get_object_or_404(Object, id=o2)
-        id_ports_left = {}
+        id_ports_left = {}  # Left ports
         checking_ports = []
-        lcs: List[Dict[str, Any]] = []
+        lcs: List[Dict[str, Any]] = []  # Left connections
         cable: Optional[ObjectModel] = None
         # Getting cable
         cables = ObjectModel.objects.filter(
@@ -296,8 +295,9 @@ class InvApplication(ExtApplication):
         )
         if cable_filter:
             cable = ObjectModel.get_by_name(cable_filter)
+        # Left Object Processed
         for c in lo.model.connections:
-            valid, disable_reason = True, ""
+            valid, valid_cross, disable_reason = True, False, ""
             if cable_filter:
                 # If select cable_filter - check every connection to cable
                 cable_connections = [
@@ -314,7 +314,7 @@ class InvApplication(ExtApplication):
                     [c for c in lo.model.get_connection_proposals(c.name) if c[0] == ro.model.id]
                 )
             oc, oo, _ = lo.get_p2p_connection(c.name)
-            left_id = f"{smart_text(lo.id)}{c.name}"
+            left_id = f"{str(lo.id)}{c.name}"
             is_employed = bool(oc)
             if is_employed:
                 checking_ports.append(c)
@@ -331,14 +331,16 @@ class InvApplication(ExtApplication):
                     valid,
                     disable_reason,
                     lo,
+                    valid_cross,
                 )
             ]
             id_ports_left[c.name] = left_id
+        # Right object processed
         id_ports_right = {}
         rcs: List[Dict[str, Any]] = []
         if ro:
             for c in ro.model.connections:
-                valid, disable_reason = True, ""
+                valid, valid_cross, disable_reason = True, False, ""
                 if cable_filter:
                     cable_connections = [
                         c for c in ro.model.get_connection_proposals(c.name) if c[0] == cable.id
@@ -358,7 +360,7 @@ class InvApplication(ExtApplication):
                         ]
                     )
                 oc, oo, _ = ro.get_p2p_connection(c.name)
-                right_id = f"{smart_text(ro.id)}{c.name}"
+                right_id = f"{str(ro.id)}{c.name}"
                 rcs += [
                     self.get_cs_item(
                         right_id,
@@ -372,16 +374,18 @@ class InvApplication(ExtApplication):
                         valid,
                         disable_reason,
                         ro,
+                        valid_cross,
                     )
                 ]
                 id_ports_right[c.name] = right_id
         wires = []
         device_left = {}
         device_right = {}
+        # Wired (external) connections check
         if lcs and rcs:
-            device_left["id"] = smart_text(lo.id)
+            device_left["id"] = str(lo.id)
             device_left["name"] = lo.name
-            device_right["id"] = smart_text(ro.id)
+            device_right["id"] = str(ro.id)
             device_right["name"] = ro.name
             for p in checking_ports:
                 remote = self.get_remote_slot(p, lo, ro)
@@ -395,13 +399,22 @@ class InvApplication(ExtApplication):
                             },
                         }
                     )
+        left_cross = self.get_cross(lo, id_ports_left)
+        right_cross = []
+        if ro:
+            right_cross = self.get_cross(ro, id_ports_right)
         # Forming cable
         return {
-            "left": {"connections": lcs, "device": device_left},
-            "right": {"connections": rcs, "device": device_right},
+            "left": {"connections": lcs, "device": device_left, "internal_connections": left_cross},
+            "right": {
+                "connections": rcs,
+                "device": device_right,
+                "internal_connections": right_cross,
+            },
             "cable": [{"name": c.name, "available": True} for c in cables],
             "valid": lcs and rcs and left_filter and right_filter,
             "wires": wires,
+            "discriminators": [],
         }
 
     @view(
@@ -416,6 +429,7 @@ class InvApplication(ExtApplication):
             "remote_name": StringParameter(required=True),
             # "cable": ObjectIdParameter(required=False),
             "cable": StringParameter(required=False),
+            "internal": BooleanParameter(default=False),
             "reconnect": BooleanParameter(default=False, required=False),
         },
     )
@@ -427,6 +441,7 @@ class InvApplication(ExtApplication):
         remote_object,
         remote_name,
         cable: Optional[str] = None,
+        internal=False,
         reconnect=False,
     ):
         lo: Object = self.get_object_or_404(Object, id=object)
@@ -497,11 +512,13 @@ class InvApplication(ExtApplication):
         valid,
         disable_reason,
         o,
+        valid_cross,
     ):
         """
         Creating member of cs dict
         :return:
         """
+
         cs = {
             "id": id,
             "name": name,
@@ -511,6 +528,8 @@ class InvApplication(ExtApplication):
             "direction": direction,
             "protocols": protocols,
             "free": free,
+            "allow_internal": bool(protocols),  # Allowed crossed input
+            "valid_internal": valid_cross,
             "valid": valid,
             "disable_reason": disable_reason,
         }
@@ -519,10 +538,31 @@ class InvApplication(ExtApplication):
             if rd:
                 cs["remote_device"] = {
                     "name": rd.obj.name,
-                    "id": smart_text(rd.obj.id),
+                    "id": str(rd.obj.id),
                     "slot": rd.connection,
                 }
         return cs
+
+    def get_cross(self, o: Object, port_map: Dict[str, str]) -> List[Dict[str, Any]]:
+        r = []
+        for s, ss in [("model", o.model), ("object", o)]:
+            for c in ss.cross:
+                r += [
+                    {
+                        "input": {
+                            "id": port_map[c.input],
+                            "name": c.input,
+                            "discriminator": c.input_discriminator or "",
+                        },
+                        "output": {
+                            "id": port_map[c.output],
+                            "name": c.output,
+                            "output_discriminator": c.output_discriminator or "",
+                        },
+                        "gain_db": c.gain_db or 1.0,
+                    }
+                ]
+        return r
 
     @view(url=r"^(?P<oid>[0-9a-f]{24})/map_lookup/$", method=["GET"], access="read", api=True)
     def api_map_lookup(self, request, oid):
