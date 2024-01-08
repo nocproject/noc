@@ -32,7 +32,7 @@ class Script(BaseScript):
     @false_on_cli_error
     def has_lacp_cli(self):
         """
-        Check box has lldp enabled
+        Check box has lacp enabled
         """
         r = self.cli("show lacp")
         return "Yes" in r
