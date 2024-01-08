@@ -27,7 +27,7 @@ class Profile(BaseProfile):
     pattern_syntax_error = rb"bad command name"
     config_volatile = [r"^#.*?$", r"^\s?"]
     default_parser = "noc.cm.parsers.MikroTik.RouterOS.base.RouterOSParser"
-    rogue_chars = [b"\r", b"\x00"]
+    rogue_chars = [re.compile(rb"(.+)\x1b\[K"), b"\r", b"\x00"]
     config_tokenizer = "routeros"
     config_normalizer = "RouterOSNormalizer"
     confdb_defaults = [
