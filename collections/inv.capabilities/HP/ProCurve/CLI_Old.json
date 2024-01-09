@@ -1,0 +1,8 @@
+{
+    "name": "HP | ProCurve | CLI | Old",
+    "$collection": "inv.capabilities",
+    "uuid": "e0709265-df2e-4bd1-a46b-1f490b7c9c8e",
+    "description": "Supported Old HPE CLI Syntax on HP.ProCurve profile",
+    "type": "bool",
+    "card_template": null
+}
