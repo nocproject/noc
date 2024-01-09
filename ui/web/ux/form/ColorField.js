@@ -16,7 +16,8 @@ Ext.define("Ext.ux.form.ColorField", {
         }
     },
     width: 190,
-    //vtype: "color",
+    regex: /^(#|0x)?[0-9A-Fa-f]+$/,
+    regexText: __("Enter integer number or hex value starting with # or 0x"),
 
     onTriggerClick: function() {
         var me = this;
@@ -96,5 +97,9 @@ Ext.define("Ext.ux.form.ColorField", {
             hex = "0" + hex;
         }
         return "#" + hex;
+    },
+    getValue: function() {
+        var me = this;
+        return me.toHexColor(me.callParent());
     }
 });
