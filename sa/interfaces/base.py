@@ -1003,11 +1003,15 @@ class ColorParameter(Parameter):
         if isinstance(value, str):
             if value.startswith("#"):
                 value = value[1:]
-            if len(value) == 6:
-                try:
-                    return int(value, 16)
-                except ValueError:
-                    self.raise_error(value)
+                if len(value) == 6:
+                    try:
+                        return int(value, 16)
+                    except ValueError:
+                        self.raise_error(value)
+            try:
+                return int(value, 10)
+            except ValueError:
+                self.raise_error(value)
         self.raise_error(value)
 
 
