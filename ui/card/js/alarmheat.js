@@ -14,19 +14,25 @@ Heatmap.prototype.initialize = function (lon, lat, zoom) {
         lon = q.lon ? parseFloat(q.lon) : lon || 37.5077,
         lat = q.lat ? parseFloat(q.lat) : lat || 55.7766,
         scale = q.zoom ? parseInt(q.zoom) : zoom || 11;
-    this.map = L.map("map");
-    // Subscribe to events
-    this.map.on("moveend", function() {me.poll_data();});
+
     this.heatmap = null;
     this.topology = null;
     this.pops = null;
-    // Set up OSM layer
-    var osm = L.tileLayer(
-        "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
-        });
-    this.map.addLayer(osm);
+    this.map = L.map("map");
+
+    // Subscribe to events
+    this.map.on("moveend", function() {me.poll_data();});
+
     // Select view, trigger moveend to poll data
     this.map.setView([lat, lon], scale);
+
+    settings = settingsLoader.run()
+
+    mapLayersCreator.run(L, this, {
+        default_layer: settings.gis.default_layer, 
+        allowed_layers: settings.gis.base,
+        yandex_supported: settings.gis.yandex_supported,
+    });
 };
 
 Heatmap.prototype.parseQuerystring = function() {

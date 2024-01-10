@@ -25,11 +25,16 @@ PathMap.prototype.run = function(path) {
     var scale = 12;
     //
     this.map = L.map("map");
-    // Set up OSM layer
-    L.tileLayer(
-        "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
-        }).addTo(this.map);
-    // Links layer
+
+    settings = settingsLoader.run()
+
+    mapLayersCreator.run(L, this, {
+        default_layer: settings.gis.default_layer, 
+        allowed_layers: settings.gis.base,
+        yandex_supported: settings.gis.yandex_supported,
+        layersControl : {"position": "bottomright"},
+    });
+    
     var linkFeatures = [];
     for(i = 0; i < path.length - 1; i++) {
         linkFeatures.push({

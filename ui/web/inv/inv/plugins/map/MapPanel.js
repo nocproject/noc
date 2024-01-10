@@ -103,11 +103,21 @@ Ext.define("NOC.inv.inv.plugins.map.MapPanel", {
     },
     //
     preview: function(data) {
-        var me = this,
+        var me = this
+        var urls = [
+            "/ui/pkg/leaflet/leaflet.js",
+            "/ui/pkg/leaflet/leaflet.css",
+            "/ui/common/map_layer_creator.js"
+        ]
+
+        if (NOC.settings.gis.yandex_supported) {
             urls = [
-                "/ui/pkg/leaflet/leaflet.js",
-                "/ui/pkg/leaflet/leaflet.css"
-            ];
+                ...urls,
+                "/ui/pkg/leaflet/yapi.js",
+                "/ui/pkg/leaflet/Yandex.js",
+            ]
+        }
+
         me.currentId = data.id;
         new_load_scripts(urls, me, function() {
             me.createMap(data);
@@ -199,10 +209,8 @@ Ext.define("NOC.inv.inv.plugins.map.MapPanel", {
     //
     createMap: function(data) {
         var me = this,
-            osm,
             mapDiv = "leaf-map-" + me.id,
             mapDom = Ext.select("#" + mapDiv).elements[0];
-        osm = L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {});
         me.center = [data.y, data.x];
         me.contextMenuData = data.add_menu;
         me.initScale = data.zoom;
@@ -210,7 +218,7 @@ Ext.define("NOC.inv.inv.plugins.map.MapPanel", {
         me.map = L.map(mapDom, {
             zoomControl: false
         }).setView(me.center, me.initScale);
-        me.map.addLayer(osm);
+
         me.map.on("contextmenu", Ext.bind(me.onContextMenu, me));
         me.map.on("moveend", Ext.bind(me.onRefresh, me));
         me.map.on("zoomend", Ext.bind(me.onZoomEnd, me));
@@ -221,41 +229,14 @@ Ext.define("NOC.inv.inv.plugins.map.MapPanel", {
             zoomOutTitle: __("Zoom out...")
         }).addTo(me.map);
         //
-        me.layersControl = L.control.layers();
-        me.layersControl.addBaseLayer(osm, __("OpenStreetMap"));
-        me.layersControl.addBaseLayer(
-            L.tileLayer(
-                'http://{s}.google.com/vt/lyrs=m&x={x}&y={y}&z={z}',
-                {
-                    // maxZoom: 20,
-                    subdomains: ['mt0', 'mt1', 'mt2', 'mt3']
-                }
-            ), __("Google Roadmap"));
-        me.layersControl.addBaseLayer(
-            L.tileLayer(
-                'http://{s}.google.com/vt/lyrs=s,h&x={x}&y={y}&z={z}',
-                {
-                    // maxZoom: 20,
-                    subdomains: ['mt0', 'mt1', 'mt2', 'mt3']
-                }
-            ), __("Google Hybrid"));
-        me.layersControl.addBaseLayer(
-            L.tileLayer(
-                'http://{s}.google.com/vt/lyrs=s&x={x}&y={y}&z={z}',
-                {
-                    // maxZoom: 20,
-                    subdomains: ['mt0', 'mt1', 'mt2', 'mt3']
-                }
-            ), __("Google Satellite"));
-        me.layersControl.addBaseLayer(
-            L.tileLayer(
-                'http://{s}.google.com/vt/lyrs=p&x={x}&y={y}&z={z}',
-                {
-                    // maxZoom: 20,
-                    subdomains: ['mt0', 'mt1', 'mt2', 'mt3']
-                }
-            ), __("Google Terrain"));
-        me.layersControl.addTo(me.map);
+
+        mapLayersCreator.run(L, this, {
+            default_layer: NOC.settings.gis.default_layer, 
+            allowed_layers: NOC.settings.gis.base,
+            yandex_supported: NOC.settings.gis.yandex_supported,
+            translator: __,
+        });
+
         me.layers = [];
         Ext.each(data.layers, function(cfg) {
             me.layers.push(me.createLayer(cfg, data.layer));

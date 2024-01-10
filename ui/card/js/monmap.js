@@ -21,12 +21,19 @@ Monmap.prototype.initialize = function(lon, lat, zoom) {
     // scale = q.zoom ? parseInt(q.zoom) : zoom || 11;
     this.objectId = (window.location.pathname.split("/").slice(-2))[0];
     this.map = L.map("map");
-    // Set up OSM layer
-    var osm = L.tileLayer(
-        "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {});
-    this.map.addLayer(osm);
+
     // Select view, trigger moveend to poll data
     this.map.setView([lat, lon], scale);
+
+    settings = settingsLoader.run()
+
+    mapLayersCreator.run(L, this, {
+        default_layer: settings.gis.default_layer, 
+        allowed_layers: settings.gis.base,
+        yandex_supported: settings.gis.yandex_supported,
+        layersControl : {"position": "bottomright"},
+    });
+
     // Init markerCluster
     // doc: https://github.com/Leaflet/Leaflet.markercluster
     this.markerClusterGroup = L.markerClusterGroup({
