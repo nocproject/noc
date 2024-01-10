@@ -347,6 +347,16 @@ class Label(Document):
         Deny rename Labels
         :return:
         """
+
+        def int_color(color):
+            if isinstance(color, str) and color.startswith("#"):
+                return int(color[1:], 16)
+            return color
+
+        def clean_color_fields(*fields):
+            for f in fields:
+                setattr(self, f, int_color(getattr(self, f)))
+
         if hasattr(self, "_changed_fields") and "name" in self._changed_fields:
             raise ValueError("Rename label is not allowed operation")
         if hasattr(self, "_changed_fields") and self._changed_fields:
@@ -361,6 +371,7 @@ class Label(Document):
             settings = self.effective_settings
             for key, value in settings.items():
                 setattr(self, key, value)
+        clean_color_fields("bg_color1", "bg_color2", "fg_color1", "fg_color2")
 
     def on_save(self):
         if self.is_scoped and not self.is_wildcard and not self.is_matched:
