@@ -452,7 +452,7 @@ class InvApplication(ExtApplication):
             cable_o = Object(
                 name=f"Wire {lo.name}:{name} <-> {ro.name}:{remote_name}",
                 model=cable,
-                container=lo.container.id,
+                container=lo.container.id if lo.container else None,
             )
             cable_o.save()
         try:
@@ -549,15 +549,17 @@ class InvApplication(ExtApplication):
             for c in ss.cross:
                 r += [
                     {
-                        "input": {
+                        "from": {
                             "id": port_map[c.input],
                             "name": c.input,
+                            "has_arrow": False,
                             "discriminator": c.input_discriminator or "",
                         },
-                        "output": {
+                        "to": {
                             "id": port_map[c.output],
                             "name": c.output,
-                            "output_discriminator": c.output_discriminator or "",
+                            "has_arrow": True,
+                            "discriminator": c.output_discriminator or "",
                         },
                         "gain_db": c.gain_db or 1.0,
                     }
