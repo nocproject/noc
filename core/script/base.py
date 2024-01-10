@@ -256,6 +256,10 @@ class BaseScript(object, metaclass=BaseScriptMetaclass):
                     from .snmp.gufosnmp import GufoSNMP
 
                     self._snmp = GufoSNMP(self, rate=snmp_rate_limit)
+                elif config.activator.snmp_backend == "pysnmp":
+                    from .snmp.pysnmp import PySNMP
+
+                    self._snmp = PySNMP(self, rate=snmp_rate_limit)
                 else:
                     raise ValueError(f"Invalid snmp_backend: {config.activator.snmp_backend}")
         return self._snmp
@@ -1117,16 +1121,23 @@ class BaseScript(object, metaclass=BaseScriptMetaclass):
     def has_snmp_only_access(self):
         return not self.has_cli_access() and self.has_snmp_access()
 
-    def has_snmp(self):
+    def has_snmp(self) -> bool:
         """
         Check whether equipment has SNMP enabled
         """
-        if self.has_capability("SNMP", allow_zero=True):
-            # If having SNMP caps - check it and credential
-            return bool(self.credentials.get("snmp_ro")) and self.has_capability("SNMP")
-        else:
-            # if SNMP caps not exist check credential
-            return bool(self.credentials.get("snmp_ro"))
+        # Check Credential
+        snmp_version = self.credentials.get("snmp_version") or "v2c"
+        if snmp_version != "v3" and not self.credentials.get("snmp_ro"):
+            # V1,V2 credential check
+            return False
+        elif snmp_version == "v3" and not self.credentials.get("snmp_username"):
+            # V3 credential check
+            return False
+        # Check Caps
+        if "SNMP" not in self.capabilities:
+            return True
+        # If having SNMP caps
+        return self.has_capability("SNMP")
 
     def has_snmp_v1(self):
         return self.has_capability("SNMP | v1")

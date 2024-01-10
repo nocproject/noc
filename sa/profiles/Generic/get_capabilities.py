@@ -60,15 +60,14 @@ class Script(BaseScript):
         """
         Check SNMP GET response to oid
         """
-        if self.credentials.get("snmp_ro"):
-            try:
-                r = self.snmp.get(oid, version=version)
-                if r is not None and oid == mib["SNMPv2-MIB::sysObjectID", 0]:
-                    # For EnterpriseID Caps
-                    self._ent_id = r
-                return r is not None
-            except (self.snmp.TimeOutError, SNMPError):
-                pass
+        try:
+            r = self.snmp.get(oid, version=version)
+            if r is not None and oid == mib["SNMPv2-MIB::sysObjectID", 0]:
+                # For EnterpriseID Caps
+                self._ent_id = r
+            return r is not None
+        except (self.snmp.TimeOutError, SNMPError):
+            pass
         return False
 
     def check_snmp_getnext(self, oid, bulk=False, only_first=True, version=None):
@@ -309,7 +308,7 @@ class Script(BaseScript):
         :param version:
         :return:
         """
-        if self.credentials.get("snmp_ro"):
+        if self.has_snmp():
             try:
                 r = getattr(self, "_ent_id", None)
                 if r is None:
@@ -332,7 +331,7 @@ class Script(BaseScript):
         :param version
         :return:
         """
-        if self.credentials.get("snmp_ro"):
+        if self.has_snmp():
             r = self.snmp.get(mib["SNMPv2-MIB::sysDescr", 0], version=version)
             if not r:
                 return None
@@ -390,6 +389,14 @@ class Script(BaseScript):
                         caps["SNMP | Bulk"] = True
                 else:
                     caps["SNMP | v2c"] = False
+            if self.is_requested("snmp_v2c"):
+                if self.check_snmp_get(self.SNMP_GET_CHECK_OID, version=SNMP_v3):
+                    caps["SNMP | v3"] = True
+                    snmp_version = SNMP_v3
+                    if self.has_snmp_bulk():
+                        caps["SNMP | Bulk"] = True
+                else:
+                    caps["SNMP | v3"] = False
             if snmp_version is not None:
                 # SNMP is enabled
                 caps["SNMP"] = True
