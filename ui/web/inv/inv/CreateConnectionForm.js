@@ -20,6 +20,7 @@ Ext.define("NOC.inv.inv.CreateConnectionForm", {
     SELECTED_WIRE_COLOR: "#f5d63c",
     requires: [
         "NOC.core.Pin",
+        "NOC.core.PinInternal",
         "NOC.core.ComboBox"
     ],
     viewModel: {
@@ -144,7 +145,7 @@ Ext.define("NOC.inv.inv.CreateConnectionForm", {
     load: function() {
         var params, title,
             mainPanel = this,
-            cabel = mainPanel.cableCombo.getValue(),
+            cable = mainPanel.cableCombo.getValue(),
             leftSelected = mainPanel.getViewModel().get("leftSelectedPin"),
             rightSelected = mainPanel.getViewModel().get("rightSelectedPin"),
             leftObject = mainPanel.getViewModel().get("leftObject"),
@@ -155,7 +156,7 @@ Ext.define("NOC.inv.inv.CreateConnectionForm", {
         params = "o1=" + leftObject.get("id") + (rightObject ? "&o2=" + rightObject.get("id") : "");
         params += leftSelected ? "&left_filter=" + leftSelected : "";
         params += rightSelected ? "&right_filter=" + rightSelected : "";
-        params += cabel ? "&cable_filter=" + cabel : "";
+        params += cable ? "&cable_filter=" + cable : "";
         mainPanel.mask(__("Loading..."));
         Ext.Ajax.request({
             url: "/inv/inv/crossing_proposals/?" + params,
@@ -245,7 +246,7 @@ Ext.define("NOC.inv.inv.CreateConnectionForm", {
                 if(port.remote_device) {
                     remoteId = port.remote_device.id;
                     remoteName = port.remote_device.name;
-                    if (labelAlign === "left") {
+                    if(labelAlign === "left") {
                         name = port.remote_device.name + "/" + port.remote_device.slot + " <= " + port.name;
                     } else {
                         name += " => " + port.remote_device.name + "/" + port.remote_device.slot;
@@ -273,6 +274,17 @@ Ext.define("NOC.inv.inv.CreateConnectionForm", {
                 y: index * (boxHeight + gap) + gap,
                 zIndex: 5
             });
+            if(port.allow_internal) {
+                sprites.push({
+                    type: "pininternal",
+                    boxWidth: boxWidth,
+                    boxHeight: boxHeight,
+                    fontSize: 12,
+                    x: xOffset - boxWidth - 5,
+                    y: index * (boxHeight + gap) + gap + boxHeight / 2,
+                    zIndex: 5
+                });
+            }
         }, me);
         // add legend
         sprites = sprites.concat(me.legend(__("Free and valid slot"), me.AVAILABLE_COLOR, 2.5, containerHeight));
