@@ -107,7 +107,6 @@ Ext.define("Ext.ux.form.ColorField", {
     //
     getContrastColor: function(color) {
         var avgBrightness = ((color >> 16) & 255) * 0.299 + ((color >> 8) & 255) * 0.587 + (color & 255) * 0.114;
-
         return contrastColor = (avgBrightness > 130) ? '#000000' : '#FFFFFF';
     }
 });
