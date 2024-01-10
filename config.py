@@ -319,8 +319,15 @@ class Config(BaseConfig):
     class gis(ConfigSection):
         ellipsoid = StringParameter(default="PZ-90")
         enable_osm = BooleanParameter(default=True)
-        enable_google_sat = BooleanParameter(default=False)
         enable_google_roadmap = BooleanParameter(default=False)
+        enable_google_hybrid = BooleanParameter(default=False)
+        enable_google_sat = BooleanParameter(default=False)
+        enable_google_terrain = BooleanParameter(default=False)
+        yandex_supported = BooleanParameter(default=False)
+        enable_yandex_roadmap = BooleanParameter(default=False)
+        enable_yandex_hybrid = BooleanParameter(default=False)
+        enable_yandex_sat = BooleanParameter(default=False)
+        default_layer = StringParameter(default="osm")
         tile_size = IntParameter(default=256, help="Tile size 256x256")
         tilecache_padding = IntParameter(default=0)
 

@@ -142,11 +142,18 @@ class DesktopApplication(ExtApplication):
             "enable_search": enable_search,
             "collections": {"allow_sharing": config.collections.allow_sharing},
             "gis": {
+                "yandex_supported": config.gis.yandex_supported,
                 "base": {
                     "enable_osm": config.gis.enable_osm,
                     "enable_google_sat": config.gis.enable_google_sat,
                     "enable_google_roadmap": config.gis.enable_google_roadmap,
-                }
+                    "enable_google_hybrid": config.gis.enable_google_hybrid,
+                    "enable_google_terrain": config.gis.enable_google_terrain,
+                    "enable_yandex_sat": config.gis.enable_yandex_sat,
+                    "enable_yandex_hybrid": config.gis.enable_yandex_hybrid,
+                    "enable_yandex_roadmap": config.gis.enable_yandex_roadmap,
+                },
+                "default_layer": config.gis.default_layer,
             },
             "traceExtJSEvents": False,
             "helpUrl": config.help.base_url,

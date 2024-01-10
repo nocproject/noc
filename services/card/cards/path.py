@@ -7,19 +7,40 @@
 
 # Third-party modules
 import orjson
+from typing import List
 
 # NOC modules
 from .base import BaseCard
 from noc.sa.models.managedobject import ManagedObject
 from noc.core.topology.path import get_shortest_path
 from noc.core.comp import smart_text
+from noc.config import config
 
 
 class PathCard(BaseCard):
     name = "path"
     default_template_name = "path"
     card_css = ["/ui/pkg/leaflet/leaflet.css", "/ui/card/css/path.css"]
-    card_js = ["/ui/pkg/leaflet/leaflet.js", "/ui/card/js/path.js"]
+
+    @property
+    def card_js(self) -> List[str]:
+        res = [
+            "/ui/pkg/leaflet/leaflet.js",
+        ]
+
+        if config.gis.yandex_supported:
+            res += [
+                "/ui/pkg/leaflet/yapi.js",
+                "/ui/pkg/leaflet/Yandex.js",
+            ]
+
+        res += [
+            "/ui/common/map_layer_creator.js",
+            "/ui/common/settings_loader.js",
+            "/ui/card/js/path.js",
+        ]
+
+        return res
 
     def get_data(self):
         mo1, mo2 = self.id.split("-")
