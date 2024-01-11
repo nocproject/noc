@@ -173,11 +173,3 @@ class MeasurementUnits(Document):
 
     def get_json_path(self) -> str:
         return f"{quote_safe_path(self.name)}.json"
-
-    def clean(self):
-        def int_color(color):
-            if isinstance(color, str) and color.startswith("#"):
-                return int(color[1:], 16)
-            return color
-
-        self.dashboard_sr_color = int_color(self.dashboard_sr_color)
