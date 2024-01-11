@@ -110,12 +110,14 @@ class Profile(BaseProfile):
     "D-Link DES-3200-28 R1.87 Port 9" -> "9"
     "D-Link DGS-1510-28XS/ME R1.00.B023 Port 24" -> "24"
     "RMON Port  9 on Unit 1" -> "9" - DES-3526/3550 DGS-3200
+    "D-Link Corporation DGS-3130-30S HW B1 firmware 2.00.B032 Port 30 on Unit 1" -> "1:30"
     """
 
     rx_interface_name = re.compile(
-        r"^((?P<re_vendor>(RMON|D-Link))\s)?"
+        r"^((?P<re_vendor>(RMON|D-Link(\s+Corporation)?))\s)?"
         r"((?P<re_platform>(D[EXG]S\S+))\s)?"
-        r"((?P<re_firmware>R\S+)\s)?"
+        r"(HW \S+\s)?"
+        r"((firmware\s+(?P<re_firmware_dgs3130>\S+)\s)|((?P<re_firmware>R\S+)\s))?"
         r"Port\s*(?P<re_port>\d+)?"
         r"( on Unit (?P<re_slot>\d+))?$"
     )
