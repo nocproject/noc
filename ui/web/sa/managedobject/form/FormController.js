@@ -236,7 +236,7 @@ Ext.define('NOC.sa.managedobject.form.FormController', {
             if(field.type === 'date') {field.type = "string"}
             return field;
         }));
-        record = NOC.sa.managedobject.Model.create(cust_field_model);
+        record = NOC.sa.managedobject.Model.create(data);
 
         record.self.setProxy({type: "managedobject"});
         record.getProxy().getWriter().setWriteAllFields(true);
