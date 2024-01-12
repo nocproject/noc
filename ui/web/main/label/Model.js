@@ -25,20 +25,22 @@ Ext.define("NOC.main.label.Model", {
         },
         {
             name: "bg_color1",
-            type: "int"
+            type: "auto",
+            defaultValue: 0
         },
         {
             name: "fg_color1",
-            type: "int",
+            type: "auto",
             defaultValue: 16777215
         },
         {
             name: "bg_color2",
-            type: "int"
+            type: "auto",
+            defaultValue: 0
         },
         {
             name: "fg_color2",
-            type: "int",
+            type: "auto",
             defaultValue: 16777215
         },
         {
@@ -112,8 +114,8 @@ Ext.define("NOC.main.label.Model", {
             type: "boolean"
         },
         {
-          name: "enable_alarm",
-          type: "boolean"
+            name: "enable_alarm",
+            type: "boolean"
         },
         {
             name: "enable_authprofile",
