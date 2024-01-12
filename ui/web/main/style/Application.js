@@ -53,12 +53,14 @@ Ext.define("NOC.main.style.Application", {
         {
             name: "font_color",
             xtype: "colorfield",
+            uiStyle: "medium",
             fieldLabel: __("Font Color"),
             allowBlank: false
         },
         {
             name: "background_color",
             xtype: "colorfield",
+            uiStyle: "medium",
             fieldLabel: __("Background Color"),
             allowBlank: false
         },
