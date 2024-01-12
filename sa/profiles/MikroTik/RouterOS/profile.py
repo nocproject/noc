@@ -27,7 +27,7 @@ class Profile(BaseProfile):
     pattern_syntax_error = rb"bad command name"
     config_volatile = [r"^#.*?$", r"^\s?"]
     default_parser = "noc.cm.parsers.MikroTik.RouterOS.base.RouterOSParser"
-    rogue_chars = [b"\r", b"\x00"]
+    rogue_chars = [b"\x1b[9999B", b"\r", b"\x00"]
     config_tokenizer = "routeros"
     config_normalizer = "RouterOSNormalizer"
     confdb_defaults = [
@@ -77,6 +77,13 @@ class Profile(BaseProfile):
 
     rx_p_new = re.compile(r"^\s{0,1}(?P<line>\d+)\s+")
     rx_key = re.compile(r"([0-9a-zA-Z\-]+)=")
+
+    def cleaned_input(self, s):
+        # ESC[K erase from cursor to end of line
+        if b"\x1b[K" in s:
+            s = b""
+
+        return s
 
     def parse_detail(self, s):
         """
