@@ -1,7 +1,7 @@
 # ----------------------------------------------------------------------
 # Abstract script interfaces
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2020 The NOC Project
+# Copyright (C) 2007-2024 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -1003,11 +1003,15 @@ class ColorParameter(Parameter):
         if isinstance(value, str):
             if value.startswith("#"):
                 value = value[1:]
-            if len(value) == 6:
-                try:
-                    return int(value, 16)
-                except ValueError:
-                    self.raise_error(value)
+                if len(value) == 6:
+                    try:
+                        return int(value, 16)
+                    except ValueError:
+                        self.raise_error(value)
+            try:
+                return int(value, 10)
+            except ValueError:
+                self.raise_error(value)
         self.raise_error(value)
 
 
