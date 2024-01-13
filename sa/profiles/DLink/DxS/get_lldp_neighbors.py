@@ -15,24 +15,14 @@ from noc.sa.interfaces.base import MACAddressParameter
 from noc.sa.interfaces.base import IPv4Parameter
 from noc.core.mac import MAC
 from noc.core.comp import smart_text
+from noc.core.snmp.render import render_utf8
 from noc.core.snmp.render import render_bin
+from noc.core.snmp.render import render_mac
 from noc.core.lldp import (
     LLDP_PORT_SUBTYPE_MAC,
     LLDP_PORT_SUBTYPE_NAME,
     LLDP_PORT_SUBTYPE_LOCAL,
 )
-
-
-def render_smart_mac(oid: str, value: bytes) -> bytes:
-    """
-    Try render 6 octets as MAC address. Render UTF-8 string on length mismatch
-    :param oid:
-    :param value:
-    :return:
-    """
-    if len(value) != 6:
-        return smart_text(value, errors="ignore")
-    return "%02X:%02X:%02X:%02X:%02X:%02X" % tuple(value)
 
 
 class Script(BaseScript):
@@ -75,8 +65,13 @@ class Script(BaseScript):
                 "1.0.8802.1.1.2.1.3.7.1.3",  # LLDP-MIB::lldpLocPortId
                 "1.0.8802.1.1.2.1.3.7.1.4",  # LLDP-MIB::lldpLocPortDesc
             ],
-            display_hints={"1.0.8802.1.1.2.1.3.7.1.3": render_smart_mac},
+            display_hints={"1.0.8802.1.1.2.1.3.7.1.3": render_bin},
         ):
+            if port_subtype == LLDP_PORT_SUBTYPE_MAC:
+                port_id = render_mac("", port_id)
+            else:
+                port_id = render_utf8("", port_id)
+
             local_interface = ""
             ifname_desc = self.profile.convert_interface_name(port_desc)
 
@@ -95,13 +90,12 @@ class Script(BaseScript):
                 # Some old switches or switches with old firmware
                 self.logger.debug(
                     "'%s' We cannot match local interface by MAC. Use '%s' as local ifname",
-                    port_id,
-                    ifname_desc,
+                    port_num,
                 )
-                local_interface = ifname_desc
+                local_interface = port_num
             else:
                 self.logger.debug(
-                    "Unknown PortIdSubtype '%s'. Set ifname to PortId", port_subtype, port_id
+                    "Unknown PortIdSubtype '%s'. Set ifname to PortId '%s'", port_subtype, port_id
                 )
                 local_interface = port_id
 
