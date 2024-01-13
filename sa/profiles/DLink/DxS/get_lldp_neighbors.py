@@ -50,11 +50,11 @@ class Script(BaseScript):
         re.MULTILINE | re.DOTALL | re.IGNORECASE,
     )
 
-    rx_ifname_valid = re.compile(r"^\d+(/\d+)|(\:\d+)$")
+    rx_ifname_valid = re.compile(r"^\d+((/\d+)|(\:\d+))?$")
 
     def is_valid_ifname(self, name):
         m = self.rx_ifname_valid.search(name)
-        return name.isdigit() or m is not None
+        return m is not None
 
     def get_local_iface(self):
         r = {}
