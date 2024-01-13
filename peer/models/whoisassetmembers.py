@@ -41,10 +41,6 @@ class WhoisASSetMembers(Document):
         """
         c = cls._get_collection()
         c.drop()
-        c.insert_many(
-            [{"_id": k.upper(), "members": data[k]} for k in data],
-            manipulate=False,
-            check_keys=False,
-        )
+        c.insert_many([{"_id": k.upper(), "members": data[k]} for k in data])
         # Implicit reindex
         return cls.objects.count()
