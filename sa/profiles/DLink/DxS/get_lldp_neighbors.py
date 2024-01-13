@@ -60,6 +60,12 @@ class Script(BaseScript):
         re.MULTILINE | re.DOTALL | re.IGNORECASE,
     )
 
+    rx_ifname_valid = re.compile(r"^\d+(/\d+)|(\:\d+)$")
+
+    def is_valid_ifname(self, name):
+        m = self.rx_ifname_valid.search(name)
+        return name.isdigit() or m is not None
+
     def get_local_iface(self):
         r = {}
         
@@ -75,18 +81,23 @@ class Script(BaseScript):
             }
         ):
             local_interface = ""
-            if port_subtype == LLDP_PORT_SUBTYPE_LOCAL:
+            ifname_desc = self.profile.convert_interface_name(port_desc)
+
+            # Old behavior
+            if self.is_valid_ifname(ifname_desc):
+                local_interface = ifname_desc
+            elif port_subtype == LLDP_PORT_SUBTYPE_LOCAL:
                 # DGS-3120-24SC   - 1/24
                 # DGS-3000-28SC   - 1/24
-                # DES3200-28F     - 1/24
                 # DGS1210-12TS/ME - 12
                 local_interface = port_id
             elif port_subtype == LLDP_PORT_SUBTYPE_NAME:
                 # DGS3130-30S - eth1/0/30
                 local_interface = port_id
             elif port_subtype == LLDP_PORT_SUBTYPE_MAC:
-                self.logger.debug("'%s' We cannot match interface by MAC. Try parse PortDesc '%s'", port_id, port_desc)
-                local_interface = self.profile.convert_interface_name(port_desc)
+                # Some old switches or switches with old firmware
+                self.logger.debug("'%s' We cannot match local interface by MAC. Use '%s' as local ifname", port_id, ifname_desc)
+                local_interface = ifname_desc
             else:
                 self.logger.debug("Unknown PortIdSubtype '%s'. Set ifname to PortId", port_subtype, port_id)
                 local_interface = port_id
