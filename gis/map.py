@@ -73,7 +73,7 @@ class Map(object):
         cx1, cy1 = pyproj.transform(src_proj, self.db_proj, x1, y1)
         return get_bbox(cx0, cx1, cy0, cy1)
 
-    def get_layer_objects(self, layer:str, x0: float, y0: float, x1: float, y1: float, srid: str):
+    def get_layer_objects(self, layer: str, x0: float, y0: float, x1: float, y1: float, srid: str):
         """
         Extract GeoJSON from bounding box
         """
@@ -120,7 +120,9 @@ class Map(object):
             data["coordinates"] = [pyproj.transform(src, dst, x, y) for x, y in data["coordinates"]]
         return data
 
-    def get_connection_layer(self, layer: "Layer", x0: float, y0: float, x1: float, y1: float, srid: str):
+    def get_connection_layer(
+        self, layer: "Layer", x0: float, y0: float, x1: float, y1: float, srid: str
+    ):
         """
         Build line connections
         """
