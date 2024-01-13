@@ -77,7 +77,7 @@ class Script(BaseScript):
                 "1.0.8802.1.1.2.1.3.7.1.3",  # LLDP-MIB::lldpLocPortId
                 "1.0.8802.1.1.2.1.3.7.1.4",  # LLDP-MIB::lldpLocPortDesc
             ],
-            display_hints={"1.0.8802.1.1.2.1.3.7.1.3": render_smart_mac}
+            display_hints={"1.0.8802.1.1.2.1.3.7.1.3": render_smart_mac},
         ):
             local_interface = ""
             ifname_desc = self.profile.convert_interface_name(port_desc)
