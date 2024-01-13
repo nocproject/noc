@@ -24,6 +24,7 @@ from noc.core.lldp import (
     LLDP_PORT_SUBTYPE_UNSPECIFIED,
 )
 
+
 def render_smart_mac(oid: str, value: bytes) -> bytes:
     """
     Try render 6 octets as MAC address. Render UTF-8 string on length mismatch
@@ -34,6 +35,7 @@ def render_smart_mac(oid: str, value: bytes) -> bytes:
     if len(value) != 6:
         return smart_text(value, errors="ignore")
     return "%02X:%02X:%02X:%02X:%02X:%02X" % tuple(value)
+
 
 class Script(BaseScript):
     name = "DLink.DxS.get_lldp_neighbors"
@@ -68,7 +70,6 @@ class Script(BaseScript):
 
     def get_local_iface(self):
         r = {}
-        
         # Get LocalPort Table
         for port_num, port_subtype, port_id, port_desc in self.snmp.get_tables(
             [
@@ -76,9 +77,7 @@ class Script(BaseScript):
                 "1.0.8802.1.1.2.1.3.7.1.3",  # LLDP-MIB::lldpLocPortId
                 "1.0.8802.1.1.2.1.3.7.1.4",  # LLDP-MIB::lldpLocPortDesc
             ],
-            display_hints={
-                "1.0.8802.1.1.2.1.3.7.1.3": render_smart_mac
-            }
+            display_hints={"1.0.8802.1.1.2.1.3.7.1.3": render_smart_mac}
         ):
             local_interface = ""
             ifname_desc = self.profile.convert_interface_name(port_desc)
@@ -96,10 +95,16 @@ class Script(BaseScript):
                 local_interface = port_id
             elif port_subtype == LLDP_PORT_SUBTYPE_MAC:
                 # Some old switches or switches with old firmware
-                self.logger.debug("'%s' We cannot match local interface by MAC. Use '%s' as local ifname", port_id, ifname_desc)
+                self.logger.debug(
+                    "'%s' We cannot match local interface by MAC. Use '%s' as local ifname",
+                    port_id,
+                    ifname_desc,
+                )
                 local_interface = ifname_desc
             else:
-                self.logger.debug("Unknown PortIdSubtype '%s'. Set ifname to PortId", port_subtype, port_id)
+                self.logger.debug(
+                    "Unknown PortIdSubtype '%s'. Set ifname to PortId", port_subtype, port_id
+                )
                 local_interface = port_id
 
             r[port_num] = {
