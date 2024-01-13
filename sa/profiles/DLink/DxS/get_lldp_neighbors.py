@@ -17,11 +17,9 @@ from noc.core.mac import MAC
 from noc.core.comp import smart_text
 from noc.core.snmp.render import render_bin
 from noc.core.lldp import (
-    LLDP_PORT_SUBTYPE_ALIAS,
     LLDP_PORT_SUBTYPE_MAC,
     LLDP_PORT_SUBTYPE_NAME,
     LLDP_PORT_SUBTYPE_LOCAL,
-    LLDP_PORT_SUBTYPE_UNSPECIFIED,
 )
 
 
