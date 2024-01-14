@@ -1,7 +1,7 @@
 # ----------------------------------------------------------------------
 # ExtModelApplication implementation
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2020 The NOC Project
+# Copyright (C) 2007-2024 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -499,7 +499,7 @@ class ExtModelApplication(ExtApplication):
         """
         if self.file_fields_mask:
             fdata = defaultdict(dict)
-            for f in pdata:
+            for f in pdata.copy():
                 match = self.file_fields_mask.match(f)
                 if match:
                     fdata[match.group("findex")][match.group("fname")] = pdata[f]
