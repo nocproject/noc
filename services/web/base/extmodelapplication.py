@@ -499,7 +499,7 @@ class ExtModelApplication(ExtApplication):
         """
         if self.file_fields_mask:
             fdata = defaultdict(dict)
-            for f in pdata.copy():
+            for f in list(pdata.keys()):
                 match = self.file_fields_mask.match(f)
                 if match:
                     fdata[match.group("findex")][match.group("fname")] = pdata[f]
