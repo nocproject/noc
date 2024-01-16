@@ -10,6 +10,7 @@ from noc.core.migration.base import BaseMigration
 
 # Third-party modules
 from pymongo import UpdateOne
+from pymongo.errors import OperationFailure
 
 
 class Migration(BaseMigration):
@@ -17,7 +18,10 @@ class Migration(BaseMigration):
         db = self.mongo_db
         # Migrate profiles
         cpe_coll = db["cpes"]
-        # cpe_coll.drop_index("controller_1")
+        try:
+            cpe_coll.drop_index("controller_1_local_id_1")
+        except OperationFailure:
+            pass
         bulk = []
         # DropIndex
         for cpe in cpe_coll.find({"controller": {"$exists": True}}):
