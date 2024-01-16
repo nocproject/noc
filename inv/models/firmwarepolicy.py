@@ -171,13 +171,13 @@ class FirmwarePolicy(Document):
             return None
         fp = FirmwarePolicy.objects.filter(platform=platform.id, status=FS_RECOMMENDED).first()
         if fp:
-            return fp.firmware.version
+            return fp.firmware
         versions = []
         for fp in FirmwarePolicy.objects.filter(platform=platform.id, status=FS_ACCEPTABLE):
-            versions += [fp.firmware.version]
+            versions += [fp.firmware]
         if versions:
             # Get latest acceptable version
-            return list(sorted(versions))[-1]
+            return sorted(versions, key=operator.attrgetter("version"))[-1]
         return None
 
     def is_fw_match(self, firmware: "Firmware"):
