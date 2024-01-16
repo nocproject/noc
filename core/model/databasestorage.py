@@ -1,7 +1,7 @@
 # ---------------------------------------------------------------------
 # Database File Storage (PostgreSQL only)
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2022 The NOC Project
+# Copyright (C) 2007-2024 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -131,10 +131,11 @@ class DatabaseStorage(Storage):
         cursor = self.get_cursor()
         cursor.execute(f"DELETE FROM {self.db_table} WHERE {self.name_field}=%s", [name])
 
-    def get_available_name(self, name):
+    def get_available_name(self, name, max_length=None):
         """
         Returns converted file name (Required by Storage API)
         :param name:
+        :param max_length:
         :return:
         """
         return name
