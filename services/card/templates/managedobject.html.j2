@@ -186,8 +186,8 @@
                                 {% endif %}
                                 {% if version %}
                                     </br>Version: <a href="/api/card/view/firmware/{{ object.version.id }}/">{{ version }}</a>
-                                    {% if firmware_recommended and firmware_recommended != version %}
-                                        ({{ _("Recommended") }}: {{ firmware_recommended }})
+                                    {% if firmware_recommended and firmware_recommended.version != version %}
+                                        ({{ _("Recommended") }}: {{ firmware_recommended.version }})
                                     {% endif %}
                                 {% endif %}
                             {% endif %}
