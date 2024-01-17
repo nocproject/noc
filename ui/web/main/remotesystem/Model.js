@@ -121,6 +121,10 @@ Ext.define("NOC.main.remotesystem.Model", {
             type: "boolean"
         },
         {
+            name: "enable_discoveredobject",
+            type: "boolean"
+        },
+        {
             name: "enable_street",
             type: "boolean"
         }

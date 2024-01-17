@@ -31,6 +31,7 @@ class BaseRemoteSystem(object):
         "l2domain",
         "ttsystem",
         "project",
+        "discoveredobject",
         "managedobject",
         "link",
         "sensor",

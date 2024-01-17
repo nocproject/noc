@@ -120,6 +120,7 @@ class RemoteSystem(Document):
     enable_project = BooleanField()
     enable_l2domain = BooleanField()
     enable_label = BooleanField()
+    enable_discoveredobject = BooleanField()
     # Usage statistics
     last_extract = DateTimeField()
     last_successful_extract = DateTimeField()
