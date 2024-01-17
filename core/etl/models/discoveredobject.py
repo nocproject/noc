@@ -6,15 +6,10 @@
 # ----------------------------------------------------------------------
 
 # Python modules
-from typing import Optional, List, Any
+from typing import Optional, Dict, Any
 
 # NOC modules
-from .base import BaseModel, _BaseModel
-
-
-class ObjectData(_BaseModel):
-    attr: str
-    value: Any
+from .base import BaseModel
 
 
 class DiscoveredObject(BaseModel):
@@ -23,6 +18,5 @@ class DiscoveredObject(BaseModel):
     pool: str
     hostname: Optional[str] = None
     chassis_id: Optional[str] = None
-    data: List[ObjectData] = []
+    data: Dict[str, str] = None
     checkpoint: Optional[str] = None
-    

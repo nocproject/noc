@@ -54,6 +54,6 @@ class Purgatorium(Model):
     remote_system = StringField(description="Remote System")
     remote_id = StringField(description="Remote System Id")
     # Maybe fields for detect hints
-    # alailabels_ports - detect open TCP port
+    # available_ports - detect open TCP port
     # maybe_agent
     # maybe_managed_object - bool
