@@ -7,59 +7,54 @@
 
 # Python modules
 import inspect
-from typing import Optional, ForwardRef
+from typing import Optional, ForwardRef, Union
 
 # Third-party modules
 from bson import ObjectId
 import pytest
 
 # NOC modules
-from .util import get_models, get_documents
+from noc.models import is_document
+from .util import get_all_models
 
 
-@pytest.mark.parametrize("model", get_models())
-def test_models(model):
-    if hasattr(model, "get_by_id"):
-        sig = inspect.signature(model.get_by_id)
-        # parameters
-        if "id" not in sig.parameters:
-            pytest.fail(f"Method '{model.__name__}.get_by_id' must have 'id' parameter")
+@pytest.mark.parametrize("model", get_all_models())
+def test_get_by_id(model):
+    if not hasattr(model, "get_by_id"):
+        raise pytest.skip("Not implemented")
+    sig = inspect.signature(model.get_by_id)
+    # parameters
+    if "id" not in sig.parameters:
+        pytest.fail(f"Method '{model.__name__}.get_by_id' must have 'id' parameter")
+    if is_document(model):
+        assert sig.parameters["id"].annotation == Union[str, ObjectId]
+    else:
         assert sig.parameters["id"].annotation is int
-        # result
-        assert sig.return_annotation == Optional[ForwardRef(model.__name__)]
-    if hasattr(model, "get_by_bi_id"):
-        sig = inspect.signature(model.get_by_bi_id)
-        # parameters
-        if "id" not in sig.parameters:
-            pytest.fail(f"Method '{model.__name__}.get_by_bi_id' must have 'id' parameter")
-        assert sig.parameters["id"].annotation is int
-        # result
-        assert sig.return_annotation == Optional[ForwardRef(model.__name__)]
+    # result
+    assert sig.return_annotation == Optional[ForwardRef(model.__name__)]
 
 
-@pytest.mark.parametrize("document", get_documents())
-def test_documents(document):
-    if hasattr(document, "get_by_id"):
-        sig = inspect.signature(document.get_by_id)
-        # parameters
-        if "id" not in sig.parameters:
-            pytest.fail(f"Method '{document.__name__}.get_by_id' must have 'id' parameter")
-        assert sig.parameters["id"].annotation is ObjectId
-        # result
-        assert sig.return_annotation == Optional[ForwardRef(document.__name__)]
-    if hasattr(document, "get_by_bi_id"):
-        sig = inspect.signature(document.get_by_bi_id)
-        # parameters
-        if "id" not in sig.parameters:
-            pytest.fail(f"Method '{document.__name__}.get_by_bi_id' must have 'id' parameter")
-        assert sig.parameters["id"].annotation is int
-        # result
-        assert sig.return_annotation == Optional[ForwardRef(document.__name__)]
-    if hasattr(document, "get_by_code"):
-        sig = inspect.signature(document.get_by_code)
-        # parameters
-        if "code" not in sig.parameters:
-            pytest.fail(f"Method '{document.__name__}.get_by_code' must have 'code' parameter")
-        assert sig.parameters["code"].annotation is str
-        # result
-        assert sig.return_annotation == Optional[ForwardRef(document.__name__)]
+@pytest.mark.parametrize("model", get_all_models())
+def test_get_by_bi_id(model):
+    if not hasattr(model, "get_by_bi_id"):
+        raise pytest.skip("Not implemented")
+    sig = inspect.signature(model.get_by_bi_id)
+    # parameters
+    if "id" not in sig.parameters:
+        pytest.fail(f"Method '{model.__name__}.get_by_bi_id' must have 'id' parameter")
+    assert sig.parameters["id"].annotation is int
+    # result
+    assert sig.return_annotation == Optional[ForwardRef(model.__name__)]
+
+
+@pytest.mark.parametrize("model", get_all_models())
+def test_get_by_code(model):
+    if not hasattr(model, "get_by_code"):
+        raise pytest.skip("Not implemented")
+    sig = inspect.signature(model.get_by_code)
+    # parameters
+    if "code" not in sig.parameters:
+        pytest.fail(f"Method '{model.__name__}.get_by_code' must have 'code' parameter")
+    assert sig.parameters["code"].annotation is str
+    # result
+    assert sig.return_annotation == Optional[ForwardRef(model.__name__)]
