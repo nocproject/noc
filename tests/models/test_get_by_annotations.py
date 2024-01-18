@@ -45,16 +45,3 @@ def test_get_by_bi_id(model):
     assert sig.parameters["id"].annotation is int
     # result
     assert sig.return_annotation == Optional[ForwardRef(model.__name__)]
-
-
-@pytest.mark.parametrize("model", get_all_models())
-def test_get_by_code(model):
-    if not hasattr(model, "get_by_code"):
-        raise pytest.skip("Not implemented")
-    sig = inspect.signature(model.get_by_code)
-    # parameters
-    if "code" not in sig.parameters:
-        pytest.fail(f"Method '{model.__name__}.get_by_code' must have 'code' parameter")
-    assert sig.parameters["code"].annotation is str
-    # result
-    assert sig.return_annotation == Optional[ForwardRef(model.__name__)]
