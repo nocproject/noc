@@ -12,7 +12,10 @@
             "description": "SFP Connector",
             "direction": "o",
             "gender": "m",
-            "protocols": ["TransEth1G"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "TransEth1G"
+            }],
             "type__name": "Transceiver | SFP"
         },
         {
@@ -20,7 +23,13 @@
             "description": "RX Port",
             "direction": "s",
             "gender": "f",
-            "protocols": [">1000BASELX-1310"],
+            "protocols": [
+                {
+                    "direction": ">",
+                    "discriminator": "1310",
+                    "protocol__code": "1000BASELX"
+                }
+            ],
             "type__name": "Optical | LC"
         },
         {
@@ -28,18 +37,36 @@
             "description": "TX Port",
             "direction": "s",
             "gender": "f",
-            "protocols": ["<1000BASELX-1550"],
+            "protocols": [
+                {
+                    "direction": "<",
+                    "discriminator": "1550",
+                    "protocol__code": "1000BASELX"
+                }
+            ],
             "type__name": "Optical | LC"
         }
     ],
-    "data": {
-        "asset": {
-            "part_no": ["QSC-SFP20GEW-1", "QSCSFP20GEW1", "QSC-SFP20GEW", "QSCSFP20GEW"]
+    "data" : [
+        {
+            "attr": "part_no",
+            "interface": "asset",
+            "value": ["QSC-SFP20GEW-1", "QSCSFP20GEW1", "QSC-SFP20GEW", "QSCSFP20GEW"]
         },
-        "optical": {
-            "distance_max": "20000",
-            "rx_wawelength": "1310",
-            "tx_wawelength": "1550"
+        {
+            "attr": "distance_max",
+            "interface": "optical",
+            "value": 20000
+        },
+        {
+            "attr": "tx_wavelength",
+            "interface": "optical",
+            "value": 1550
+        },
+        {
+            "attr": "rx_wavelength",
+            "interface": "optical",
+            "value": 1310
         }
-    }
+    ]
 }
