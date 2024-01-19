@@ -8,30 +8,56 @@
     "labels": ["noc::inv::xcvr"],
     "connections": [
         {
-            "name": "rxtx",
-            "description": "RxTx SC Port",
-            "direction": "i",
-            "gender": "f",
-            "protocols": [">1000BASELX-1310", "<1000BASELX-1550"],
-            "type__name": "Optical | SC"
-        },
-        {
             "name": "in",
             "description": "SFP Connector",
             "direction": "o",
             "gender": "m",
-            "protocols": ["TransEth1G"],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "TransEth1G"
+            }],
             "type__name": "Transceiver | SFP"
+        },
+        {
+            "name": "rxtx",
+            "description": "RxTx SC Port",
+            "direction": "i",
+            "gender": "f",
+            "protocols": [
+                {
+                    "direction": ">",
+                    "discriminator": "1310",
+                    "protocol__code": "1000BASELX"
+                },
+                {
+                    "direction": "<",
+                    "discriminator": "1550",
+                    "protocol__code": "1000BASELX"
+                }
+            ],
+            "type__name": "Optical | SC"
         }
     ],
-    "data": {
-        "asset": {
-            "part_no": ["FH-SB3512CDL20"]
+    "data": [
+        {
+            "attr": "part_no",
+            "interface": "asset",
+            "value": ["FH-SB3512CDL20"]
         },
-        "optical": {
-            "distance_max": "20000",
-            "rx_wawelength": "1550",
-            "tx_wawelength": "1310"
+        {
+            "attr": "distance_max",
+            "interface": "optical",
+            "value": 20000
+        },
+        {
+            "attr": "tx_wavelength",
+            "interface": "optical",
+            "value": 1310
+        },
+        {
+            "attr": "rx_wavelength",
+            "interface": "optical",
+            "value": 1550
         }
-    }
+    ]
 }
