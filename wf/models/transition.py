@@ -6,9 +6,10 @@
 # ----------------------------------------------------------------------
 
 # Python modules
+import os
 import operator
 import logging
-from typing import List
+from typing import List, Dict, Any
 from threading import Lock
 
 # Third-party modules
@@ -21,6 +22,7 @@ from mongoengine.fields import (
     BooleanField,
     IntField,
     EmbeddedDocumentField,
+    UUIDField,
 )
 import cachetools
 
@@ -32,6 +34,8 @@ from noc.core.bi.decorator import bi_sync
 from noc.main.models.remotesystem import RemoteSystem
 from noc.core.handler import get_handler
 
+from noc.core.prettyjson import to_json
+
 logger = logging.getLogger(__name__)
 id_lock = Lock()
 
@@ -42,6 +46,13 @@ class RequiredRule(EmbeddedDocument):
 
     def __str__(self):
         return f'{", ".join(self.labels)}'
+
+    def json_data(self) -> Dict[str, Any]:
+        r = {
+            "labels": [l for l in self.labels],
+            "exclude_labels": [e for e in self.exclude_labels],
+        }
+        return r
 
     def is_match(self, labels: List[str]):
         if self.exclude_labels and not set(self.exclude_labels) - set(labels):
@@ -59,6 +70,13 @@ class TransitionVertex(EmbeddedDocument):
     def __str__(self):
         return "%s, %s" % (self.x, self.y)
 
+    def json_data(self) -> Dict[str, Any]:
+        r = {
+            "x": self.x,
+            "y": self.y,
+        }
+        return r
+
     def __eq__(self, other):
         return self.x == other.x and self.y == other.y
 
@@ -67,13 +85,19 @@ class TransitionVertex(EmbeddedDocument):
 class Transition(Document):
     meta = {
         "collection": "transitions",
-        "indexes": ["from_state", "to_state", "required_rules.labels"],
+        "indexes": [
+            {"fields": ["from_state", "to_state", "required_rules.labels"], "unique": True}
+        ],
         "strict": False,
         "auto_create_index": False,
+        "json_collection": "wf.transitions",
+        "json_depends_on": ["wf.workflows", "wf.states"],
+        "json_unique_fields": ["uuid"],
     }
     workflow: Workflow = PlainReferenceField(Workflow)
     from_state: State = PlainReferenceField(State)
     to_state: State = PlainReferenceField(State)
+    uuid = UUIDField(binary=True)
     is_active = BooleanField(default=True)
     # Event name
     # Some predefined names exists:
@@ -112,6 +136,51 @@ class Transition(Document):
             self.to_state.name,
             self.label,
         )
+
+    @property
+    def json_data(self) -> Dict[str, Any]:
+        r = {
+            "workflow__name": self.workflow.name,
+            "from_state__name": self.from_state.name,
+            "to_state__name": self.to_state.name,
+            "uuid": self.uuid,
+            "is_active": self.is_active,
+            "$collection": self._meta["json_collection"],
+            "label": self.label,
+            "enable_manual": self.enable_manual,
+        }
+        if self.description:
+            r["description"] = self.description
+        if self.event:
+            r["event"] = self.event
+        if self.handlers:
+            r["handlers"] = [h for h in self.handlers]
+        if self.required_rules:
+            r["required_rules"] = [r.json_data for r in self.required_rules]
+        return r
+
+    def to_json(self) -> str:
+        return to_json(
+            self.json_data,
+            order=[
+                "workflow__name",
+                "from_state__name",
+                "to_state__name",
+                "uuid",
+                "is_active",
+                "$collection",
+                "event",
+                "label",
+                "description",
+                "enable_manual",
+                "handlers",
+                "required_rules",
+            ],
+        )
+
+    def get_json_path(self) -> str:
+        name = self.label + "_" + str(self.uuid)[:4]
+        return os.path.join(name) + ".json"
 
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_id_cache"), lock=lambda _: id_lock)
