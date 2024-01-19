@@ -49,7 +49,7 @@ class RequiredRule(EmbeddedDocument):
 
     def json_data(self) -> Dict[str, Any]:
         r = {
-            "labels": [l for l in self.labels],
+            "labels": [h for h in self.labels],
             "exclude_labels": [e for e in self.exclude_labels],
         }
         return r
