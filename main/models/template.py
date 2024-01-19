@@ -7,6 +7,7 @@
 
 # Python modules
 from threading import Lock
+from typing import Optional
 import operator
 
 # Third-party modules
@@ -71,7 +72,7 @@ class Template(NOCModel):
 
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_id_cache"), lock=lambda _: id_lock)
-    def get_by_id(cls, id):
+    def get_by_id(cls, id: int) -> Optional["Template"]:
         t = Template.objects.filter(id=id)[:1]
         if t:
             return t[0]

@@ -154,8 +154,8 @@ class AuthProfile(NOCModel):
 
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_id_cache"), lock=lambda _: id_lock)
-    def get_by_id(cls, aid) -> Optional["AuthProfile"]:
-        return AuthProfile.objects.filter(id=aid).first()
+    def get_by_id(cls, id: int) -> Optional["AuthProfile"]:
+        return AuthProfile.objects.filter(id=id).first()
 
     def on_save(self):
         from .managedobject import CREDENTIAL_CACHE_VERSION

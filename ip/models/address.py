@@ -145,8 +145,8 @@ class Address(NOCModel):
         return f"{self.vrf.name}({self.afi}): {self.address}"
 
     @classmethod
-    def get_by_id(cls, oid) -> Optional["Address"]:
-        address = Address.objects.filter(id=oid)[:1]
+    def get_by_id(cls, id: int) -> Optional["Address"]:
+        address = Address.objects.filter(id=id)[:1]
         if address:
             return address[0]
         return None

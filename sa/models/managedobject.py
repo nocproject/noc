@@ -841,14 +841,14 @@ class ManagedObject(NOCModel):
         lock=lambda _: id_lock,
         version=MANAGEDOBJECT_CACHE_VERSION,
     )
-    def get_by_id(cls, oid: int) -> "Optional[ManagedObject]":
+    def get_by_id(cls, id: int) -> Optional["ManagedObject"]:
         """
         Get ManagedObject by id. Cache returned instance for future use.
 
         :param oid: Managed Object's id
         :return: ManagedObject instance
         """
-        mo = ManagedObject.objects.filter(id=oid)[:1]
+        mo = ManagedObject.objects.filter(id=id)[:1]
         if mo:
             return mo[0]
         return None

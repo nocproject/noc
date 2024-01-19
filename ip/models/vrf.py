@@ -8,6 +8,7 @@
 # Python modules
 import operator
 from threading import Lock
+from typing import Optional
 
 # Third-party modules
 from noc.core.translation import ugettext as _
@@ -150,7 +151,7 @@ class VRF(NOCModel):
 
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_id_cache"), lock=lambda _: id_lock)
-    def get_by_id(cls, id):
+    def get_by_id(cls, id: int) -> Optional["VRF"]:
         vrf = VRF.objects.filter(id=id)[:1]
         if vrf:
             return vrf[0]

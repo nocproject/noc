@@ -175,7 +175,7 @@ class Prefix(NOCModel):
 
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_id_cache"), lock=lambda _: id_lock)
-    def get_by_id(cls, id) -> Optional["Prefix"]:
+    def get_by_id(cls, id: int) -> Optional["Prefix"]:
         mo = Prefix.objects.filter(id=id)[:1]
         if mo:
             return mo[0]

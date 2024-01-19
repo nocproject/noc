@@ -745,7 +745,7 @@ class ManagedObjectProfile(NOCModel):
 
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_id_cache"), lock=lambda _: id_lock)
-    def get_by_id(cls, id: int) -> "Optional[ManagedObjectProfile]":
+    def get_by_id(cls, id: int) -> Optional["ManagedObjectProfile"]:
         return ManagedObjectProfile.objects.filter(id=id).first()
 
     @classmethod
