@@ -1,7 +1,7 @@
 {
-    "name": "Raisecom | ROS | ISCOM2110EA-MA-PWR-DC",
+    "name": "Raisecom | ROS | ISCOM2110EA-MA-PWR-AC",
     "$collection": "inv.objectmodels",
-    "uuid": "2bf166dd-ada6-4dec-a0b4-511e2fc9eaaf",
+    "uuid": "f8802559-5512-485c-959f-382a521172d9",
     "vendor__code": "RAISECOM",
     "description": "The ISCOM2100 series offers 8 Fast Ethernet downlink access interfaces with 1/2 x Gigabit combo uplinks and a power supply for power demand (PD) devices",
     "connection_rule__name": "Raisecom | ISCOM",
@@ -16,14 +16,20 @@
     "connections": [
         {
             "name": "power",
-            "description": "-48V",
+            "description": "Power outlet",
             "direction": "s",
-            "gender": "f",
-            "protocols": [{
-                "direction": ">",
-                "protocol__code": "-48VDC"
-            }],
-            "type__name": "Power | TB Barrier Screw 2 Pin"
+            "gender": "m",
+            "protocols": [
+                {
+                    "direction": ">",
+                    "protocol__code": "220VAC"
+                },
+                {
+                    "direction": ">",
+                    "protocol__code": "110VAC"
+                }
+            ],
+            "type__name": "Power | IEC 60320 C14"
         },
         {
             "name": "console",
@@ -347,7 +353,7 @@
         {
             "attr": "part_no",
             "interface": "asset",
-            "value": ["ISCOM2110EA-MA-PWR-DC"]
+            "value": ["ISCOM2110EA-MA-PWR-AC"]
         },
         {
             "attr": "managed",

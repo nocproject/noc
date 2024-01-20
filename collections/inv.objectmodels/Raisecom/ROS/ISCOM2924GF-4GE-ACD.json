@@ -1,7 +1,7 @@
 {
-    "name": "Raisecom | ROS | ISCOM2924GF-4GE-AC_DC",
+    "name": "Raisecom | ROS | ISCOM2924GF-4GE-ACD",
     "$collection": "inv.objectmodels",
-    "uuid": "d9bbee51-a57b-4f08-b2de-f3303750bf39",
+    "uuid": "03fbb6cf-8e4f-4a2d-8bc7-508bb1003d3f",
     "vendor__code": "RAISECOM",
     "description": "The ISCOM2924GF-4GE is an aggregation layer switch and has 24 x 100/1000 Mbps optical SFP ports and 4 x Combo GE ports for uplink. AC 220 Volt or DC -48 Volt power redundancy is supported.",
     "connection_rule__name": "Raisecom | ISCOM",
@@ -27,10 +27,23 @@
                 {
                     "direction": ">",
                     "protocol__code": "110VAC"
+                }
+            ],
+            "type__name": "Power | IEC 60320 C14"
+        },
+        {
+            "name": "power",
+            "description": "Power outlet",
+            "direction": "s",
+            "gender": "m",
+            "protocols": [
+                {
+                    "direction": ">",
+                    "protocol__code": "220VAC"
                 },
                 {
                     "direction": ">",
-                    "protocol__code": "-48VDC"
+                    "protocol__code": "110VAC"
                 }
             ],
             "type__name": "Power | IEC 60320 C14"
@@ -750,7 +763,7 @@
         {
             "attr": "part_no",
             "interface": "asset",
-            "value": ["ISCOM2924GF-4GE-AC_DC"]
+            "value": ["ISCOM2924GF-4GE-AC/D"]
         },
         {
             "attr": "managed",
