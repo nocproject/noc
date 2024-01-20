@@ -27,6 +27,10 @@
                 {
                     "direction": "*",
                     "protocol__code": "100BASETX"
+                },
+                {
+                    "direction": "<",
+                    "protocol__code": "POE"
                 }
             ],
             "type__name": "Electrical | RJ45"
@@ -44,6 +48,10 @@
                 {
                     "direction": "*",
                     "protocol__code": "100BASETX"
+                },
+                {
+                    "direction": "<",
+                    "protocol__code": "POE"
                 }
             ],
             "type__name": "Electrical | RJ45"
@@ -61,6 +69,10 @@
                 {
                     "direction": "*",
                     "protocol__code": "100BASETX"
+                },
+                {
+                    "direction": "<",
+                    "protocol__code": "POE"
                 }
             ],
             "type__name": "Electrical | RJ45"
@@ -78,6 +90,10 @@
                 {
                     "direction": "*",
                     "protocol__code": "100BASETX"
+                },
+                {
+                    "direction": "<",
+                    "protocol__code": "POE"
                 }
             ],
             "type__name": "Electrical | RJ45"
@@ -95,6 +111,10 @@
                 {
                     "direction": "*",
                     "protocol__code": "100BASETX"
+                },
+                {
+                    "direction": "<",
+                    "protocol__code": "POE"
                 }
             ],
             "type__name": "Electrical | RJ45"
@@ -112,6 +132,10 @@
                 {
                     "direction": "*",
                     "protocol__code": "100BASETX"
+                },
+                {
+                    "direction": "<",
+                    "protocol__code": "POE"
                 }
             ],
             "type__name": "Electrical | RJ45"
@@ -129,6 +153,10 @@
                 {
                     "direction": "*",
                     "protocol__code": "100BASETX"
+                },
+                {
+                    "direction": "<",
+                    "protocol__code": "POE"
                 }
             ],
             "type__name": "Electrical | RJ45"
@@ -146,6 +174,10 @@
                 {
                     "direction": "*",
                     "protocol__code": "100BASETX"
+                },
+                {
+                    "direction": "<",
+                    "protocol__code": "POE"
                 }
             ],
             "type__name": "Electrical | RJ45"
