@@ -1,0 +1,798 @@
+{
+    "name": "Raisecom | ROS | ISCOM2924GF-4GE-AC_DC",
+    "$collection": "inv.objectmodels",
+    "uuid": "d9bbee51-a57b-4f08-b2de-f3303750bf39",
+    "vendor__code": "RAISECOM",
+    "description": "The ISCOM2924GF-4GE is an aggregation layer switch and has 24 x 100/1000 Mbps optical SFP ports and 4 x Combo GE ports for uplink. AC 220 Volt or DC -48 Volt power redundancy is supported.",
+    "connection_rule__name": "Raisecom | ISCOM",
+    "cr_context": "CHASSIS",
+    "labels": [
+        "noc::inv::chassis",
+        "noc::inv::psu",
+        "noc::inv::sup",
+        "noc::inv::fabric",
+        "noc::inv::port"
+    ],
+    "connections": [
+        {
+            "name": "1/1/1",
+            "description": "gigaethernet 1/1/1 port",
+            "direction": "s",
+            "gender": "f",
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth100M"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth1G"
+                }
+            ],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "name": "1/1/2",
+            "description": "gigaethernet 1/1/2 port",
+            "direction": "s",
+            "gender": "f",
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth100M"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth1G"
+                }
+            ],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "name": "1/1/3",
+            "description": "gigaethernet 1/1/3 port",
+            "direction": "s",
+            "gender": "f",
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth100M"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth1G"
+                }
+            ],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "name": "1/1/4",
+            "description": "gigaethernet 1/1/4 port",
+            "direction": "s",
+            "gender": "f",
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth100M"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth1G"
+                }
+            ],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "name": "1/1/5",
+            "description": "gigaethernet 1/1/5 port",
+            "direction": "s",
+            "gender": "f",
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth100M"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth1G"
+                }
+            ],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "name": "1/1/6",
+            "description": "gigaethernet 1/1/6 port",
+            "direction": "s",
+            "gender": "f",
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth100M"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth1G"
+                }
+            ],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "name": "1/1/7",
+            "description": "gigaethernet 1/1/7 port",
+            "direction": "s",
+            "gender": "f",
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth100M"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth1G"
+                }
+            ],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "name": "1/1/8",
+            "description": "gigaethernet 1/1/8 port",
+            "direction": "s",
+            "gender": "f",
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth100M"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth1G"
+                }
+            ],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "name": "1/1/9",
+            "description": "gigaethernet 1/1/9 port",
+            "direction": "s",
+            "gender": "f",
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth100M"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth1G"
+                }
+            ],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "name": "1/1/10",
+            "description": "gigaethernet 1/1/10 port",
+            "direction": "s",
+            "gender": "f",
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth100M"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth1G"
+                }
+            ],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "name": "1/1/11",
+            "description": "gigaethernet 1/1/11 port",
+            "direction": "s",
+            "gender": "f",
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth100M"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth1G"
+                }
+            ],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "name": "1/1/12",
+            "description": "gigaethernet 1/1/12 port",
+            "direction": "s",
+            "gender": "f",
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth100M"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth1G"
+                }
+            ],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "name": "1/1/13",
+            "description": "gigaethernet 1/1/13 port",
+            "direction": "s",
+            "gender": "f",
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth100M"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth1G"
+                }
+            ],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "name": "1/1/14",
+            "description": "gigaethernet 1/1/14 port",
+            "direction": "s",
+            "gender": "f",
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth100M"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth1G"
+                }
+            ],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "name": "1/1/15",
+            "description": "gigaethernet 1/1/15 port",
+            "direction": "s",
+            "gender": "f",
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth100M"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth1G"
+                }
+            ],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "name": "1/1/16",
+            "description": "gigaethernet 1/1/16 port",
+            "direction": "s",
+            "gender": "f",
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth100M"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth1G"
+                }
+            ],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "name": "1/1/17",
+            "description": "gigaethernet 1/1/17 port",
+            "direction": "s",
+            "gender": "f",
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth100M"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth1G"
+                }
+            ],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "name": "1/1/18",
+            "description": "gigaethernet 1/1/18 port",
+            "direction": "s",
+            "gender": "f",
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth100M"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth1G"
+                }
+            ],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "name": "1/1/19",
+            "description": "gigaethernet 1/1/19 port",
+            "direction": "s",
+            "gender": "f",
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth100M"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth1G"
+                }
+            ],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "name": "1/1/20",
+            "description": "gigaethernet 1/1/20 port",
+            "direction": "s",
+            "gender": "f",
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth100M"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth1G"
+                }
+            ],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "name": "1/1/21",
+            "description": "gigaethernet 1/1/21 port",
+            "direction": "s",
+            "gender": "f",
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth100M"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth1G"
+                }
+            ],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "name": "1/1/22",
+            "description": "gigaethernet 1/1/22 port",
+            "direction": "s",
+            "gender": "f",
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth100M"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth1G"
+                }
+            ],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "name": "1/1/23",
+            "description": "gigaethernet 1/1/23 port",
+            "direction": "s",
+            "gender": "f",
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth100M"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth1G"
+                }
+            ],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "name": "1/1/24",
+            "description": "gigaethernet 1/1/24 port",
+            "direction": "s",
+            "gender": "f",
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth100M"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth1G"
+                }
+            ],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "name": "1/1/25",
+            "description": "gigaethernet 1/1/25 port",
+            "direction": "s",
+            "gender": "s",
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "10BASET"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "100BASETX"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "1000BASETX"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth100M"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth1G"
+                }
+            ],
+            "type__name": "Combined"
+        },
+        {
+            "name": "1/1/25_rj",
+            "description": "gigaethernet 1/1/25 port",
+            "direction": "s",
+            "gender": "f",
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "10BASET"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "100BASETX"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "1000BASETX"
+                }
+            ],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "name": "1/1/25_sfp",
+            "description": "gigaethernet 1/1/25 SFP port",
+            "direction": "i",
+            "gender": "f",
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth100M"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth1G"
+                }
+            ],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "name": "1/1/26",
+            "description": "gigaethernet 1/1/26 port",
+            "direction": "s",
+            "gender": "s",
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "10BASET"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "100BASETX"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "1000BASETX"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth100M"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth1G"
+                }
+            ],
+            "type__name": "Combined"
+        },
+        {
+            "name": "1/1/26_rj",
+            "description": "gigaethernet 1/1/26 port",
+            "combo": "1/1/26",
+            "direction": "s",
+            "gender": "f",
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "10BASET"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "100BASETX"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "1000BASETX"
+                }
+            ],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "name": "1/126_sfp",
+            "description": "gigaethernet 1/1/26 SFP port",
+            "combo": "1/1/26",
+            "direction": "i",
+            "gender": "f",
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth100M"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth1G"
+                }
+            ],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "name": "1/1/27",
+            "description": "gigaethernet 1/1/27 port",
+            "direction": "s",
+            "gender": "s",
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "10BASET"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "100BASETX"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "1000BASETX"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth100M"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth1G"
+                }
+            ],
+            "type__name": "Combined"
+        },
+        {
+            "name": "1/1/27_rj",
+            "description": "gigaethernet 1/1/27 port",
+            "combo": "1/1/27",
+            "direction": "s",
+            "gender": "f",
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "10BASET"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "100BASETX"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "1000BASETX"
+                }
+            ],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "name": "1/1/27_sfp",
+            "description": "gigaethernet 1/1/27 SFP port",
+            "combo": "1/1/27",
+            "direction": "i",
+            "gender": "f",
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth100M"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth1G"
+                }
+            ],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "name": "1/1/28",
+            "description": "gigaethernet 1/1/28 port",
+            "direction": "s",
+            "gender": "s",
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "10BASET"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "100BASETX"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "1000BASETX"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth100M"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth1G"
+                }
+            ],
+            "type__name": "Combined"
+        },
+        {
+            "name": "1/1/28_rj",
+            "description": "gigaethernet 1/1/28 port",
+            "combo": "1/1/28",
+            "direction": "s",
+            "gender": "f",
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "10BASET"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "100BASETX"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "1000BASETX"
+                }
+            ],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "name": "1/1/28_sfp",
+            "description": "gigaethernet 1/1/28 SFP port",
+            "combo": "1/1/28",
+            "direction": "i",
+            "gender": "f",
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth100M"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth1G"
+                }
+            ],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "name": "console",
+            "description": "Console port",
+            "direction": "s",
+            "gender": "f",
+            "protocols": [{
+                "direction": ">",
+                "protocol__code": "RS232"
+            }],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "name": "power",
+            "description": "Power outlet",
+            "direction": "s",
+            "gender": "m",
+            "protocols": [
+                {
+                    "direction": ">",
+                    "protocol__code": "220VAC"
+                },
+                {
+                    "direction": ">",
+                    "protocol__code": "110VAC"
+                }
+            ],
+            "type__name": "Power | IEC 60320 C14"
+        },
+        {
+            "name": "power",
+            "description": "-48V",
+            "direction": "s",
+            "gender": "f",
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "-48VDC"
+            }],
+            "type__name": "Power | TB Barrier Screw 2 Pin"
+        },
+        {
+            "name": "1/0/1",
+            "description": " SNMP out-of-band management interface",
+            "direction": "s",
+            "gender": "f",
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "10BASET"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "100BASETX"
+                }
+            ],
+            "type__name": "Electrical | RJ45"
+        }
+    ],
+    "data": [
+        {
+            "attr": "part_no",
+            "interface": "asset",
+            "value": ["ISCOM2924GF-4GE-AC_DC"]
+        },
+        {
+            "attr": "managed",
+            "interface": "management",
+            "value": true
+        },
+        {
+            "attr": "width",
+            "interface": "dimensions",
+            "value": 440
+        },
+        {
+            "attr": "depth",
+            "interface": "dimensions",
+            "value": 360
+        },
+        {
+            "attr": "height",
+            "interface": "dimensions",
+            "value": 44
+        },
+        {
+            "attr": "power",
+            "interface": "power",
+            "value": 45.0
+        },
+        {
+            "attr": "weight",
+            "interface": "weight",
+            "value": 5.5
+        },
+        {
+            "attr": "units",
+            "interface": "rackmount",
+            "value": 1.0
+        }
+    ]
+}
