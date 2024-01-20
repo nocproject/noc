@@ -27,13 +27,22 @@
                 {
                     "direction": ">",
                     "protocol__code": "110VAC"
-                },
+                }
+            ],
+            "type__name": "Power | IEC 60320 C14"
+        },
+        {
+            "name": "power",
+            "description": "Power outlet",
+            "direction": "s",
+            "gender": "m",
+            "protocols": [
                 {
                     "direction": ">",
                     "protocol__code": "-48VDC"
                 }
             ],
-            "type__name": "Power | IEC 60320 C14"
+            "type__name": "Power | MSTB 2.5/3-G-5.08"
         },
         {
             "name": "console",
