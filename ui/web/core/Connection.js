@@ -15,8 +15,10 @@ Ext.define("NOC.core.Connection", {
             processors: {
                 connectionType: "string",
                 labelAlign: "string",
+                fromPort: "string",
                 fromPortId: "string",
                 toPortId: "string",
+                toPort: "string",
                 path: "string",
                 toXY: "data",
                 fromXY: "data",

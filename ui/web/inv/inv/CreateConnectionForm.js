@@ -210,8 +210,8 @@ Ext.define("NOC.inv.inv.CreateConnectionForm", {
                     },
                     left = [data.left.connections,
                     mainPanel.getWidth() / 2 - 100,
-                        // "right",
-                        "left",
+                        "right",
+                        // "left",
                         maxPins],
                     right = [data.right.connections,
                     mainPanel.getWidth() / 2 + 100,
@@ -370,7 +370,9 @@ Ext.define("NOC.inv.inv.CreateConnectionForm", {
                             type: "connection",
                             connectionType: "internal",
                             labelAlign: args[2],
+                            fromPort: from.pinName,
                             fromPortId: from.id,
+                            toPort: to.pinName,
                             toPortId: to.id,
                             actualScale: me.scale,
                             toXY: t,
@@ -653,6 +655,10 @@ Ext.define("NOC.inv.inv.CreateConnectionForm", {
         var canvas = Ext.ComponentQuery.query("#connectionDiag")[0],
             sprite = canvas.selectedSprite;
         console.log("deleteInternalConnection", sprite.fromPortId, sprite.toPortId, this);
-        sprite.remove();
+        Ext.Msg.confirm(__("Confirm"), __("Are you sure you want to delete this connection") + " " + sprite.fromPort + "=>" + sprite.toPort, function(btn) {
+            if(btn === 'yes') {
+                sprite.remove();
+            }
+        });
     }
 });
