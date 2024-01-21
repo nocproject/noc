@@ -14,6 +14,7 @@ Ext.define("NOC.core.Pin", {
         def: {
             processors: {
                 pinColor: "string",
+                internalColor: "string",
                 pinName: "string",
                 labelAlign: "string",
                 remoteId: "string",
@@ -21,30 +22,35 @@ Ext.define("NOC.core.Pin", {
                 isSelected: "bool",
                 labelBold: "bool",
                 enabled: "bool",
+                allowInternal: "bool",
                 x: "number",
                 y: "number",
                 scale: "number"
             },
             triggers: {
                 pinColor: "recalculate",
+                internalColor: "recalculate",
+                isSelected: "recalculate",
+                labelBold: "recalculate",
                 pinName: "recalculate",
                 labelAlign: "recalculate",
                 remoteId: "recalculate",
                 remoteName: "recalculate",
-                isSelected: "recalculate",
-                labelBold: "recalculate",
+                allowInternal: "recalculate",
                 x: "translate",
                 y: "translate",
                 scale: "rescale"
             },
             defaults: {
                 pinColor: "#2c3e50",
+                internalColor: "#2c3e50",
                 pinName: "Undefined",
                 remoteId: "none",
                 remoteName: "none",
                 isSelected: false,
                 labelBold: false,
                 enabled: true,
+                allowInternal: false,
                 labelAlign: "left", // "left" | "right"
                 scale: 1
             },
@@ -58,10 +64,19 @@ Ext.define("NOC.core.Pin", {
                         stroke: attr.isSelected ? "lightgreen" : "black",
                         lineWidth: attr.isSelected ? 3 : 1
                     });
+                    if(me.internal) {
+                        me.internal.setAttributes({
+                            fillStyle: attr.internalColor,
+                            stroke: attr.isSelected ? "lightgreen" : "black",
+                            lineWidth: attr.isSelected ? 3 : 1
+                        });
+                    }
                     me.label.setAttributes({
                         text: attr.pinName,
                         textAlign: attr.labelAlign === "left" ? "end" : "start",
-                        fontWeight: fontWeight
+                        fontWeight: fontWeight,
+                        fontFamily: me.defaultConfig.fontFamily,
+                        fontSize: me.defaultConfig.fontSize,
                     });
                 },
                 translate: function(attr) {
@@ -72,10 +87,15 @@ Ext.define("NOC.core.Pin", {
                         translationX: attr.x,
                         translationY: attr.y
                     });
-                    me.label.attr.x = me.attr.labelAlign === "left" ? -10 : me.getBoxWidth() + 10
+                    if(me.internal) {
+                        me.internal.setAttributes({
+                            translationX: ((me.attr.labelAlign === "left" ? 2.25 : -1.25) * me.getBoxWidth()) + attr.x,
+                            translationY: attr.y + me.getBoxHeight() / 2
+                        });
+                    }
                     me.label.setAttributes({
-                        translationX: attr.x,
-                        translationY: attr.y
+                        translationX: ((me.attr.labelAlign === "left" ? -0.25 : 1.25) * me.getBoxWidth()) + attr.x,
+                        translationY: attr.y - me.getBoxHeight() / 2
                     });
                 },
                 rescale: function(attr) {
@@ -94,6 +114,12 @@ Ext.define("NOC.core.Pin", {
                         scalingX: attr.scale,
                         scalingY: attr.scale
                     });
+                    if(me.internal) {
+                        me.internal.setAttributes({
+                            scalingX: attr.scale,
+                            scalingY: attr.scale
+                        });
+                    }
                 }
             }
         }
@@ -102,6 +128,12 @@ Ext.define("NOC.core.Pin", {
         boxWidth: 15,
         boxHeight: 15,
         fontSize: 12,
+        fontFamily: "arial",
+        fontWeight: "normal",
+        // pinName: "Undefined",
+        // pinColor: "#2c3e50",
+        // labelAlign: "left",
+        // allowInternal: false,
     },
     hitTest: function(point, options) {
         // Removed the isVisible check since pin will always be visible.
@@ -131,13 +163,21 @@ Ext.define("NOC.core.Pin", {
             });
             me.label = me.add({
                 type: "text",
-                fontFamily: "arial",
-                fontWeight: "normal",
+                fontFamily: me.getFontFamily(),
+                fontWeight: me.getFontWeight(),
                 fontSize: me.getFontSize(),
                 textBaseline: "middle",
                 x: 0,
                 y: me.box.height / 2
             });
+            if(me.allowInternal) {
+                me.internal = me.add({
+                    type: "circle",
+                    radius: me.getBoxWidth() / 2,
+                    stroke: "black",
+                    lineWidth: 2
+                });
+            }
         }
     }
 });
