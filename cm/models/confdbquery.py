@@ -7,10 +7,12 @@
 
 # Python modules
 import threading
+from typing import Optional, Union
 import operator
 import os
 
 # Third-party modules
+from bson import ObjectId
 from mongoengine.document import Document, EmbeddedDocument
 from mongoengine.fields import (
     StringField,
@@ -104,7 +106,7 @@ class ConfDBQuery(Document):
 
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_id_cache"), lock=lambda _: id_lock)
-    def get_by_id(cls, id):
+    def get_by_id(cls, id: Union[str, ObjectId]) -> Optional["ConfDBQuery"]:
         return ConfDBQuery.objects.filter(id=id).first()
 
     def get_json_path(self) -> str:

@@ -8,10 +8,11 @@
 # Python modules
 import operator
 from collections import defaultdict
-from typing import List, Dict, Any, Optional, Tuple, Set
+from typing import List, Dict, Any, Optional, Tuple, Set, Union
 from threading import Lock
 
 # Third-party modules
+from bson import ObjectId
 import cachetools
 from mongoengine.document import Document, EmbeddedDocument
 from mongoengine.fields import (
@@ -142,8 +143,8 @@ class MetricRule(Document):
 
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_id_cache"), lock=lambda _: id_lock)
-    def get_by_id(cls, oid) -> Optional["MetricRule"]:
-        return MetricRule.objects.filter(id=oid).first()
+    def get_by_id(cls, id: Union[str, ObjectId]) -> Optional["MetricRule"]:
+        return MetricRule.objects.filter(id=id).first()
 
     def iter_changed_datastream(self, changed_fields=None):
         from noc.inv.models.interface import Interface

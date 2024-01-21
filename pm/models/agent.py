@@ -8,9 +8,10 @@
 # Python modules
 import operator
 from threading import Lock
-from typing import Optional, List, Iterable
+from typing import Optional, List, Iterable, Union
 
 # Third-party modules
+from bson import ObjectId
 from mongoengine import Document, EmbeddedDocument
 from mongoengine.fields import StringField, IntField, LongField, ListField, EmbeddedDocumentField
 import cachetools
@@ -100,7 +101,7 @@ class Agent(Document):
 
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_id_cache"), lock=lambda _: id_lock)
-    def get_by_id(cls, id) -> Optional["AgentProfile"]:
+    def get_by_id(cls, id: Union[str, ObjectId]) -> Optional["Agent"]:
         return Agent.objects.filter(id=id).first()
 
     @classmethod

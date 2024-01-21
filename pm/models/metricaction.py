@@ -7,10 +7,11 @@
 
 # Python modules
 import os
-from typing import Any, Dict, Optional, List
+from typing import Any, Dict, Optional, List, Union
 from collections import defaultdict
 
 # Third-party modules
+from bson import ObjectId
 from mongoengine.document import Document, EmbeddedDocument
 from mongoengine.fields import (
     StringField,
@@ -184,8 +185,8 @@ class MetricAction(Document):
         return self.name
 
     @classmethod
-    def get_by_id(cls, oid) -> Optional["MetricAction"]:
-        return MetricAction.objects.filter(id=oid).first()
+    def get_by_id(cls, id: Union[str, ObjectId]) -> Optional["MetricAction"]:
+        return MetricAction.objects.filter(id=id).first()
 
     def clean(self):
         if not self.compose_inputs or not self.compose_inputs[0].metric_type:

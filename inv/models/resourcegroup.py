@@ -13,6 +13,7 @@ from typing import List, Union, Optional, Tuple
 
 # Third-party modules
 import bson
+from bson import ObjectId
 import cachetools
 import orjson
 from django.db import connection as pg_connection
@@ -147,7 +148,7 @@ class ResourceGroup(Document):
 
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_id_cache"), lock=lambda _: id_lock)
-    def get_by_id(cls, id):
+    def get_by_id(cls, id: Union[str, ObjectId]) -> Optional["ResourceGroup"]:
         return ResourceGroup.objects.filter(id=id).first()
 
     @classmethod

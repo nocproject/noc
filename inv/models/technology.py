@@ -9,8 +9,10 @@
 import os
 import operator
 import threading
+from typing import Optional, Union
 
 # Third-party modules
+from bson import ObjectId
 from mongoengine.document import Document
 from mongoengine.fields import StringField, UUIDField, BooleanField, LongField
 import cachetools
@@ -62,7 +64,7 @@ class Technology(Document):
 
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_id_cache"), lock=lambda _: id_lock)
-    def get_by_id(cls, id):
+    def get_by_id(cls, id: Union[str, ObjectId]) -> Optional["Technology"]:
         return Technology.objects.filter(id=id).first()
 
     @classmethod

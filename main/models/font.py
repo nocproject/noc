@@ -8,7 +8,7 @@
 # Python modules
 from threading import Lock
 import operator
-from typing import Any, Dict, Union
+from typing import Any, Dict, Optional, Union
 
 # Third-party modules
 from mongoengine.document import Document
@@ -45,7 +45,7 @@ class Font(Document):
 
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_id_cache"), lock=lambda _: id_lock)
-    def get_by_id(cls, id: Union[str, bson.ObjectId]) -> "Font":
+    def get_by_id(cls, id: Union[str, bson.ObjectId]) -> Optional["Font"]:
         return Font.objects.filter(id=id).first()
 
     @property

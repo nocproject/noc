@@ -7,9 +7,11 @@
 
 # Python modules
 from threading import Lock
+from typing import Optional, Union
 import operator
 
 # Third-party modules
+import bson
 from mongoengine.document import Document
 from mongoengine.fields import StringField, LongField, ListField
 import cachetools
@@ -50,7 +52,7 @@ class AllocationGroup(Document):
 
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_id_cache"), lock=lambda _: id_lock)
-    def get_by_id(cls, id):
+    def get_by_id(cls, id: Union[str, bson.ObjectId]) -> Optional["AllocationGroup"]:
         return AllocationGroup.objects.filter(id=id).first()
 
     @classmethod

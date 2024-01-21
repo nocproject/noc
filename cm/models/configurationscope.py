@@ -7,10 +7,12 @@
 
 # Python modules
 import threading
+from typing import Optional, Union
 import operator
 import os
 
 # Third-party modules
+from bson import ObjectId
 from mongoengine.document import Document
 from mongoengine.fields import (
     StringField,
@@ -53,7 +55,7 @@ class ConfigurationScope(Document):
 
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_id_cache"), lock=lambda _: id_lock)
-    def get_by_id(cls, id):
+    def get_by_id(cls, id: Union[str, ObjectId]) -> Optional["ConfigurationScope"]:
         return ConfigurationScope.objects.filter(id=id).first()
 
     @classmethod

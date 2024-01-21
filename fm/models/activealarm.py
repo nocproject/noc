@@ -10,9 +10,10 @@ import datetime
 import logging
 from collections import defaultdict
 from itertools import chain
-from typing import Optional, Set, Any, Dict, Iterable, Protocol, runtime_checkable, Generic
+from typing import Optional, Set, Any, Dict, Iterable, Protocol, runtime_checkable, Generic, Union
 
 # Third-party modules
+from bson import ObjectId
 from jinja2 import Template as Jinja2Template
 from pymongo import UpdateOne
 from mongoengine.document import Document
@@ -168,7 +169,7 @@ class ActiveAlarm(Document):
         return str(self.id)
 
     @classmethod
-    def get_by_id(cls, id) -> Optional["ActiveAlarm"]:
+    def get_by_id(cls, id: Union[str, ObjectId]) -> Optional["ActiveAlarm"]:
         return ActiveAlarm.objects.filter(id=id).first()
 
     def iter_changed_datastream(self, changed_fields=None):

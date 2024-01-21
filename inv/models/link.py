@@ -8,9 +8,10 @@
 # Python modules
 from collections import defaultdict
 import datetime
-from typing import Optional
+from typing import Optional, Union
 
 # Third-party modules
+from bson import ObjectId
 from mongoengine.document import Document
 from mongoengine.fields import StringField, DateTimeField, ListField, IntField, ObjectIdField
 
@@ -88,7 +89,7 @@ class Link(Document):
             return "Stale link (%s)" % self.id
 
     @classmethod
-    def get_by_id(cls, id) -> Optional["Link"]:
+    def get_by_id(cls, id: Union[str, ObjectId]) -> Optional["Link"]:
         return Link.objects.filter(id=id).first()
 
     def iter_changed_datastream(self, changed_fields=None):

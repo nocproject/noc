@@ -10,9 +10,10 @@ import datetime
 import logging
 import operator
 from threading import Lock
-from typing import Any, Dict, Optional, Iterable, List
+from typing import Any, Dict, Optional, Iterable, List, Union
 
 # Third-party modules
+from bson import ObjectId
 from mongoengine.document import Document
 from mongoengine.fields import (
     StringField,
@@ -144,7 +145,7 @@ class Service(Document):
 
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_id_cache"), lock=lambda _: id_lock)
-    def get_by_id(cls, id) -> Optional["Service"]:
+    def get_by_id(cls, id: Union[str, ObjectId]) -> Optional["Service"]:
         return Service.objects.filter(id=id).first()
 
     @classmethod

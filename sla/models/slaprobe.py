@@ -9,10 +9,11 @@
 import re
 import operator
 import datetime
-from typing import List, Iterable, Optional, Dict, Any
+from typing import List, Iterable, Optional, Dict, Any, Union
 from threading import Lock
 
 # Third-party modules
+from bson import ObjectId
 import cachetools
 from mongoengine.document import Document
 from mongoengine.fields import (
@@ -106,7 +107,7 @@ class SLAProbe(Document):
 
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_id_cache"), lock=lambda _: id_lock)
-    def get_by_id(cls, id) -> Optional["SLAProbe"]:
+    def get_by_id(cls, id: Union[str, ObjectId]) -> Optional["SLAProbe"]:
         return SLAProbe.objects.filter(id=id).first()
 
     @classmethod

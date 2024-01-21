@@ -7,9 +7,11 @@
 
 # Python modules
 from threading import Lock
+from typing import Optional, Union
 import operator
 
 # Third-party modules
+import bson
 from mongoengine.document import Document
 from mongoengine.fields import StringField, BooleanField
 import cachetools
@@ -66,7 +68,7 @@ class Handler(Document):
 
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_id_cache"), lock=lambda _: id_lock)
-    def get_by_id(cls, id):
+    def get_by_id(cls, id: Union[str, bson.ObjectId]) -> Optional["Handler"]:
         return Handler.objects.filter(id=id).first()
 
     def get_handler(self):

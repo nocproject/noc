@@ -13,6 +13,7 @@ from threading import Lock
 from typing import Optional, Union, Iterable, Dict, Any
 
 # Third-party modules
+from bson import ObjectId
 from mongoengine.document import Document, EmbeddedDocument
 from mongoengine.fields import (
     StringField,
@@ -218,7 +219,7 @@ class State(Document):
 
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_id_cache"), lock=lambda _: id_lock)
-    def get_by_id(cls, id) -> Optional["State"]:
+    def get_by_id(cls, id: Union[str, ObjectId]) -> Optional["State"]:
         return State.objects.filter(id=id).first()
 
     @classmethod

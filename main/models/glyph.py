@@ -9,7 +9,7 @@
 import os
 from threading import Lock
 import operator
-from typing import Any, Dict, Union
+from typing import Any, Dict, Optional, Union
 
 # Third-party modules
 from mongoengine.document import Document
@@ -53,7 +53,7 @@ class Glyph(Document):
 
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_id_cache"), lock=lambda _: id_lock)
-    def get_by_id(cls, id: Union[str, bson.ObjectId]) -> "Glyph":
+    def get_by_id(cls, id: Union[str, bson.ObjectId]) -> Optional["Glyph"]:
         return Glyph.objects.filter(id=id).first()
 
     @property

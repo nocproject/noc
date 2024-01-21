@@ -13,6 +13,7 @@ from threading import Lock
 from typing import Optional, Iterable, List, Any, Dict, Union
 
 # Third-party modules
+from bson import ObjectId
 import cachetools
 from mongoengine.queryset.base import NULLIFY
 from mongoengine.document import Document, EmbeddedDocument
@@ -218,8 +219,8 @@ class Protocol(Document):
 
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_id_cache"), lock=lambda _: id_lock)
-    def get_by_id(cls, oid) -> Optional["Protocol"]:
-        return Protocol.objects.filter(id=oid).first()
+    def get_by_id(cls, id: Union[str, ObjectId]) -> Optional["Protocol"]:
+        return Protocol.objects.filter(id=id).first()
 
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_bi_id_cache"), lock=lambda _: id_lock)

@@ -13,6 +13,7 @@ import uuid
 from typing import Dict, Optional, Union
 
 # Third-party modules
+import bson
 from mongoengine.document import Document
 from mongoengine.fields import StringField, LongField, UUIDField
 from mongoengine.errors import NotUniqueError
@@ -119,7 +120,7 @@ class Firmware(Document):
 
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_id_cache"), lock=lambda _: id_lock)
-    def get_by_id(cls, id) -> Optional["Firmware"]:
+    def get_by_id(cls, id: Union[str, bson.ObjectId]) -> Optional["Firmware"]:
         return Firmware.objects.filter(id=id).first()
 
     @classmethod

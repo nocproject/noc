@@ -7,10 +7,12 @@
 
 # Python modules
 from threading import Lock
+from typing import Optional, Union
 import operator
 import logging
 
 # Third-party modules
+from bson import ObjectId
 from mongoengine.document import Document, EmbeddedDocument
 from mongoengine.fields import (
     StringField,
@@ -77,7 +79,7 @@ class VLANTemplate(Document):
 
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_id_cache"), lock=lambda _: id_lock)
-    def get_by_id(cls, id) -> Optional["VLANTemplate"]:
+    def get_by_id(cls, id: Union[str, ObjectId]) -> Optional["VLANTemplate"]:
         return VLANTemplate.objects.filter(id=id).first()
 
     def on_save(self):

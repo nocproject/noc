@@ -9,9 +9,10 @@
 import os
 from threading import Lock
 import operator
-from typing import Any, Dict
+from typing import Any, Dict, Optional, Union
 
 # Third-party modules
+import bson
 from mongoengine.document import Document
 from mongoengine.fields import StringField, UUIDField, IntField, BooleanField
 import cachetools
@@ -83,7 +84,7 @@ class Layer(Document):
 
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_id_cache"), lock=lambda _: id_lock)
-    def get_by_id(cls, id):
+    def get_by_id(cls, id: Union[str, bson.ObjectId]) -> Optional["Layer"]:
         try:
             return Layer.objects.get(id=id)
         except Layer.DoesNotExist:

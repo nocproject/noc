@@ -7,6 +7,7 @@
 
 # Python modules
 from threading import Lock
+from typing import Optional, Union
 import operator
 
 # Third-party modules
@@ -15,6 +16,7 @@ from mongoengine.fields import StringField
 from fs import open_fs
 from fs.errors import FSError
 import cachetools
+from bson import ObjectId
 
 # NOC modules
 from noc.core.model.decorator import on_delete_check
@@ -55,7 +57,7 @@ class ExtStorage(Document):
 
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_id_cache"), lock=lambda _: id_lock)
-    def get_by_id(cls, id):
+    def get_by_id(cls, id: Union[str, ObjectId]) -> Optional["ExtStorage"]:
         return ExtStorage.objects.filter(id=id).first()
 
     @classmethod

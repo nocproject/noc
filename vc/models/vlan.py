@@ -9,9 +9,10 @@
 from threading import Lock
 import operator
 import logging
-from typing import Optional, Iterator, Set
+from typing import Optional, Iterator, Set, Union
 
 # Third-party modules
+from bson import ObjectId
 from mongoengine.document import Document
 from mongoengine.fields import (
     StringField,
@@ -98,7 +99,7 @@ class VLAN(Document):
 
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_id_cache"), lock=lambda _: id_lock)
-    def get_by_id(cls, id) -> Optional["VLAN"]:
+    def get_by_id(cls, id: Union[str, ObjectId]) -> Optional["VLAN"]:
         return VLAN.objects.filter(id=id).first()
 
     @classmethod

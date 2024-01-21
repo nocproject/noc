@@ -13,6 +13,7 @@ import re
 from typing import Any, Dict, Optional, List, Tuple, Union
 
 # Third-party modules
+from bson import ObjectId
 from mongoengine.document import Document, EmbeddedDocument
 from mongoengine.fields import (
     StringField,
@@ -351,7 +352,7 @@ class ObjectModel(Document):
 
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_id_cache"), lock=lambda _: id_lock)
-    def get_by_id(cls, id) -> Optional["ObjectModel"]:
+    def get_by_id(cls, id: Union[str, ObjectId]) -> Optional["ObjectModel"]:
         return ObjectModel.objects.filter(id=id).first()
 
     @classmethod

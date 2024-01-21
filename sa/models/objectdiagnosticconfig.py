@@ -8,10 +8,11 @@
 # Python modules
 import operator
 from threading import Lock
-from typing import Optional, Dict, Any, Iterable, List
+from typing import Optional, Dict, Any, Iterable, List, Union
 
 
 # Third-party modules
+from bson import ObjectId
 from mongoengine.document import Document, EmbeddedDocument
 from mongoengine.fields import (
     StringField,
@@ -119,8 +120,8 @@ class ObjectDiagnosticConfig(Document):
 
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_id_cache"), lock=lambda _: id_lock)
-    def get_by_id(cls, oid) -> Optional["ObjectDiagnosticConfig"]:
-        return ObjectDiagnosticConfig.objects.filter(id=oid).first()
+    def get_by_id(cls, id: Union[str, ObjectId]) -> Optional["ObjectDiagnosticConfig"]:
+        return ObjectDiagnosticConfig.objects.filter(id=id).first()
 
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_bi_id_cache"), lock=lambda _: id_lock)

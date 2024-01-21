@@ -9,9 +9,10 @@
 import operator
 from threading import Lock
 from collections import defaultdict
-from typing import Dict, Any, Optional, List, Set
+from typing import Dict, Any, Optional, List, Set, Union
 
 # Third-party modules
+import bson
 from mongoengine.document import Document
 from mongoengine.document import EmbeddedDocument
 from mongoengine.fields import (
@@ -215,7 +216,7 @@ class Report(Document):
 
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_id_cache"), lock=lambda _: id_lock)
-    def get_by_id(cls, id) -> Optional["Report"]:
+    def get_by_id(cls, id: Union[str, bson.ObjectId]) -> Optional["Report"]:
         return Report.objects.filter(id=id).first()
 
     @classmethod

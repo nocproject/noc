@@ -7,9 +7,11 @@
 
 # Python modules
 from threading import Lock
+from typing import Optional, Union
 import operator
 
 # Third-party modules
+from bson import ObjectId
 from mongoengine.document import Document
 from mongoengine.fields import StringField, ListField, LongField
 import cachetools
@@ -68,7 +70,7 @@ class Subscriber(Document):
 
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_id_cache"), lock=lambda _: id_lock)
-    def get_by_id(cls, id):
+    def get_by_id(cls, id: Union[str, ObjectId]) -> Optional["Subscriber"]:
         return Subscriber.objects.filter(id=id).first()
 
     @classmethod

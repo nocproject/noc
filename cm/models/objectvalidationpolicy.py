@@ -7,9 +7,11 @@
 
 # Python modules
 import threading
+from typing import Iterable, Optional, Union
 import operator
 
 # Third-party modules
+from bson import ObjectId
 from mongoengine.document import Document, EmbeddedDocument
 from mongoengine.fields import (
     StringField,
@@ -20,7 +22,6 @@ from mongoengine.fields import (
 )
 from jinja2 import Template
 import cachetools
-from typing import Iterable
 
 # NOC modules
 from noc.core.mongo.fields import PlainReferenceField
@@ -62,7 +63,7 @@ class ObjectValidationPolicy(Document):
 
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_id_cache"), lock=lambda _: id_lock)
-    def get_by_id(cls, id):
+    def get_by_id(cls, id: Union[str, ObjectId]) -> Optional["ObjectValidationPolicy"]:
         return ObjectValidationPolicy.objects.filter(id=id).first()
 
     def iter_problems(self, engine) -> Iterable[ProblemItem]:

@@ -6,11 +6,12 @@
 # ----------------------------------------------------------------------
 
 # Python modules
-from typing import List, Optional
+from typing import List, Optional, Union
 import threading
 import operator
 
 # Third-party modules
+import bson
 import cachetools
 from mongoengine.document import Document, EmbeddedDocument
 from mongoengine.fields import StringField, BooleanField, IntField, ListField, EmbeddedDocumentField
@@ -100,7 +101,7 @@ class MessageRoute(Document):
 
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_id_cache"), lock=lambda _: id_lock)
-    def get_by_id(cls, id) -> Optional["MessageRoute"]:
+    def get_by_id(cls, id: Union[str, bson.ObjectId]) -> Optional["MessageRoute"]:
         return MessageRoute.objects.filter(id=id).first()
 
     def iter_changed_datastream(self, changed_fields=None):

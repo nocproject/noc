@@ -14,6 +14,7 @@ from collections import namedtuple
 from typing import Optional, Any, Dict, Union, List, Set, Iterator
 
 # Third-party modules
+from bson import ObjectId
 from pymongo import ReadPreference
 from mongoengine.document import Document, EmbeddedDocument
 from mongoengine.fields import (
@@ -226,7 +227,7 @@ class Object(Document):
 
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_id_cache"), lock=lambda _: id_lock)
-    def get_by_id(cls, id) -> Optional["Object"]:
+    def get_by_id(cls, id: Union[str, ObjectId]) -> Optional["Object"]:
         return Object.objects.filter(id=id).first()
 
     @classmethod

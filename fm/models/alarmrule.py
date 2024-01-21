@@ -8,9 +8,10 @@
 # Python modules
 import operator
 from threading import Lock
-from typing import Optional, List
+from typing import Optional, List, Union
 
 # Third-party modules
+from bson import ObjectId
 import cachetools
 from mongoengine.document import Document, EmbeddedDocument
 from mongoengine.fields import (
@@ -127,7 +128,7 @@ class AlarmRule(Document):
 
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_id_cache"), lock=lambda _: id_lock)
-    def get_by_id(cls, id) -> Optional["AlarmRule"]:
+    def get_by_id(cls, id: Union[str, ObjectId]) -> Optional["AlarmRule"]:
         return AlarmRule.objects.filter(id=id).first()
 
     @classmethod

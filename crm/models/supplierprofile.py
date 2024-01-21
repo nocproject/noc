@@ -8,8 +8,10 @@
 # Python modules
 import operator
 from threading import Lock
+from typing import Optional, Union
 
 # Third-party modules
+from bson import ObjectId
 from mongoengine.document import Document
 from mongoengine.fields import StringField, ListField, LongField
 import cachetools
@@ -53,7 +55,7 @@ class SupplierProfile(Document):
 
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_id_cache"), lock=lambda _: id_lock)
-    def get_by_id(cls, id):
+    def get_by_id(cls, id: Union[str, ObjectId]) -> Optional["SupplierProfile"]:
         return SupplierProfile.objects.filter(id=id).first()
 
     @classmethod

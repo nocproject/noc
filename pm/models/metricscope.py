@@ -9,9 +9,10 @@
 import operator
 from threading import Lock
 from dataclasses import dataclass
-from typing import Any, Dict, Optional, List, Callable
+from typing import Any, Dict, Optional, List, Callable, Union
 
 # Third-party modules
+from bson import ObjectId
 from mongoengine.document import Document, EmbeddedDocument
 from mongoengine.fields import (
     StringField,
@@ -140,7 +141,7 @@ class MetricScope(Document):
 
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_id_cache"), lock=lambda _: id_lock)
-    def get_by_id(cls, id) -> Optional["MetricScope"]:
+    def get_by_id(cls, id: Union[str, ObjectId]) -> Optional["MetricScope"]:
         return MetricScope.objects.filter(id=id).first()
 
     @classmethod

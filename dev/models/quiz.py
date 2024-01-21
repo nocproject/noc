@@ -8,9 +8,10 @@
 # Python modules
 import operator
 from threading import Lock
-from typing import Any, Dict
+from typing import Any, Dict, Optional, Union
 
 # Third-party modules
+import bson
 from mongoengine.document import Document, EmbeddedDocument
 from mongoengine.fields import (
     StringField,
@@ -89,7 +90,7 @@ class Quiz(Document):
 
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_id_cache"), lock=lambda _: id_lock)
-    def get_by_id(cls, id):
+    def get_by_id(cls, id: Union[str, bson.ObjectId]) -> Optional["Quiz"]:
         return Quiz.objects.filter(id=id).first()
 
     @classmethod

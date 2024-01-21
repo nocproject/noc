@@ -8,8 +8,10 @@
 # Python modules
 import operator
 from threading import Lock
+from typing import Optional, Union
 
 # Third-party modules
+from bson import ObjectId
 from mongoengine.document import Document, EmbeddedDocument
 from mongoengine.fields import (
     StringField,
@@ -156,7 +158,7 @@ class ThresholdProfile(Document):
 
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_id_cache"), lock=lambda _: id_lock)
-    def get_by_id(cls, id):
+    def get_by_id(cls, id: Union[str, ObjectId]) -> Optional["ThresholdProfile"]:
         return ThresholdProfile.objects.filter(id=id).first()
 
     def get_window_function(self):

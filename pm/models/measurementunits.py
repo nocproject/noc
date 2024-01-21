@@ -8,9 +8,10 @@
 # Python modules
 import operator
 from threading import Lock
-from typing import Any, Dict, Optional
+from typing import Any, Dict, Optional, Union
 
 # Third-party modules
+from bson import ObjectId
 from mongoengine.document import Document, EmbeddedDocument
 from mongoengine.fields import StringField, IntField, UUIDField, ListField, EmbeddedDocumentField
 from mongoengine.errors import ValidationError
@@ -113,7 +114,7 @@ class MeasurementUnits(Document):
 
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_id_cache"), lock=lambda _: id_lock)
-    def get_by_id(cls, id) -> Optional["MeasurementUnits"]:
+    def get_by_id(cls, id: Union[str, ObjectId]) -> Optional["MeasurementUnits"]:
         return MeasurementUnits.objects.filter(id=id).first()
 
     @classmethod

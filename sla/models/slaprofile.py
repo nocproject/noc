@@ -10,7 +10,7 @@ from threading import Lock
 import operator
 from functools import partial
 from dataclasses import dataclass
-from typing import Optional, Dict, List
+from typing import Optional, Dict, List, Union
 
 # Third-party modules
 from mongoengine.document import Document, EmbeddedDocument
@@ -108,7 +108,7 @@ class SLAProfile(Document):
 
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_id_cache"), lock=lambda _: id_lock)
-    def get_by_id(cls, id) -> Optional["SLAProfile"]:
+    def get_by_id(cls, id: Union[str, ObjectId]) -> Optional["SLAProfile"]:
         return SLAProfile.objects.filter(id=id).first()
 
     @classmethod

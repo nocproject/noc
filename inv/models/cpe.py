@@ -10,9 +10,10 @@ import operator
 import datetime
 import logging
 from threading import Lock
-from typing import Optional, Iterable, List, Any, Dict
+from typing import Optional, Iterable, List, Any, Dict, Union
 
 # Third-party modules
+import bson
 import cachetools
 from pymongo import UpdateOne, ReadPreference
 from mongoengine.document import Document, EmbeddedDocument
@@ -148,8 +149,8 @@ class CPE(Document):
 
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_id_cache"), lock=lambda _: id_lock)
-    def get_by_id(cls, cpe_id) -> Optional["CPE"]:
-        return CPE.objects.filter(id=cpe_id).first()
+    def get_by_id(cls, id: Union[str, bson.ObjectId]) -> Optional["CPE"]:
+        return CPE.objects.filter(id=id).first()
 
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_bi_id_cache"), lock=lambda _: id_lock)

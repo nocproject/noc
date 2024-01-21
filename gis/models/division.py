@@ -8,8 +8,10 @@
 # Python modules
 import operator
 from threading import Lock
+from typing import Optional, Union
 
 # Third-party modules
+import bson
 from mongoengine.document import Document
 from mongoengine.fields import (
     StringField,
@@ -73,7 +75,7 @@ class Division(Document):
 
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_id_cache"), lock=lambda _: id_lock)
-    def get_by_id(cls, id):
+    def get_by_id(cls, id: Union[str, bson.ObjectId]) -> Optional["Division"]:
         return Division.objects.filter(id=id).first()
 
     def __str__(self):

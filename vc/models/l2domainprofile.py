@@ -7,11 +7,12 @@
 
 # Python modules
 from threading import Lock
-from typing import Optional
+from typing import Optional, Union
 import itertools
 import operator
 
 # Third-party modules
+from bson import ObjectId
 from mongoengine.document import Document, EmbeddedDocument
 from mongoengine.fields import (
     StringField,
@@ -101,7 +102,7 @@ class L2DomainProfile(Document):
 
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_id_cache"), lock=lambda _: id_lock)
-    def get_by_id(cls, id) -> Optional["L2DomainProfile"]:
+    def get_by_id(cls, id: Union[str, ObjectId]) -> Optional["L2DomainProfile"]:
         return L2DomainProfile.objects.filter(id=id).first()
 
     @classmethod

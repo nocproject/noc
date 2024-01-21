@@ -9,9 +9,10 @@
 import os
 from threading import Lock
 import operator
-from typing import Optional, List, Dict, Any
+from typing import Optional, List, Dict, Any, Union
 
 # Third-party modules
+from bson import ObjectId
 from mongoengine.document import Document, EmbeddedDocument
 from mongoengine.fields import (
     StringField,
@@ -130,7 +131,7 @@ class ModelInterface(Document):
 
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_id_cache"), lock=lambda _: id_lock)
-    def get_by_id(cls, id) -> Optional["ModelInterface"]:
+    def get_by_id(cls, id: Union[str, ObjectId]) -> Optional["ModelInterface"]:
         return ModelInterface.objects.filter(id=id).first()
 
     @classmethod

@@ -8,8 +8,10 @@
 # Python modules
 import datetime
 import logging
+from typing import Optional, Iterable, List, Union
 
 # Third-party modules
+from bson import ObjectId
 from mongoengine.document import Document
 from mongoengine.fields import (
     StringField,
@@ -22,7 +24,6 @@ from mongoengine.fields import (
     DictField,
 )
 from pymongo import ReadPreference
-from typing import Optional, Iterable, List
 
 # NOC Modules
 from noc.config import config
@@ -147,7 +148,7 @@ class Interface(Document):
         return "%s: %s" % (self.managed_object.name, self.name)
 
     @classmethod
-    def get_by_id(cls, id) -> Optional["Interface"]:
+    def get_by_id(cls, id: Union[str, ObjectId]) -> Optional["Interface"]:
         return Interface.objects.filter(id=id).first()
 
     def clean(self):

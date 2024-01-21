@@ -9,9 +9,10 @@
 import threading
 import time
 import operator
-from typing import Optional
+from typing import Optional, Union
 
 # Third-party modules
+from bson import ObjectId
 from mongoengine.document import Document
 from mongoengine.fields import StringField, IntField, LongField
 import cachetools
@@ -60,7 +61,7 @@ class Pool(Document):
 
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_id_cache"), lock=lambda _: id_lock)
-    def get_by_id(cls, id) -> Optional["Pool"]:
+    def get_by_id(cls, id: Union[str, ObjectId]) -> Optional["Pool"]:
         return Pool.objects.filter(id=id).first()
 
     @classmethod
