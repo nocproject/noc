@@ -7,7 +7,7 @@
 
 # Python modules
 from threading import Lock
-from typing import Optional, Union
+from typing import Iterable, Optional, Tuple, Union
 import operator
 import logging
 
@@ -21,7 +21,6 @@ from mongoengine.fields import (
     ReferenceField,
 )
 from mongoengine.queryset.visitor import Q
-from typing import Optional, Iterable, Tuple
 from jinja2 import Template
 import cachetools
 
