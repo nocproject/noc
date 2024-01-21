@@ -505,6 +505,7 @@ Ext.define("NOC.inv.inv.CreateConnectionForm", {
                 me.drawPanel.getSurface(element.sprite.labelAlign + "_internal_conn").renderFrame();
             }
             if(element.sprite.type === "connection" && element.sprite.connectionType === "internal") {
+                me.drawPanel.selectedSprite = element.sprite;
                 element.sprite.setAttributes(me.drawPanel.selectedWire);
                 me.drawPanel.getSurface(element.sprite.labelAlign + "_internal_conn").renderFrame();
             }
@@ -537,6 +538,7 @@ Ext.define("NOC.inv.inv.CreateConnectionForm", {
                 me.drawPanel.getSurface(element.sprite.labelAlign + "_internal_conn").renderFrame();
             }
             if(element.sprite.type === "connection" && element.sprite.connectionType === "internal") {
+                me.drawPanel.selectedSprite = undefined;
                 element.sprite.setAttributes(me.drawPanel.wire);
                 me.drawPanel.getSurface(element.sprite.labelAlign + "_internal_conn").renderFrame();
             }
@@ -632,32 +634,24 @@ Ext.define("NOC.inv.inv.CreateConnectionForm", {
         });
     },
     showMenu: function(event) {
-        var canvas = Ext.ComponentQuery.query("#connectionDiag")[0],
-            isConnectionSprite = function(name) {
-                var canvasXY = canvas.getXY(),
-                    items = canvas.getSurface(name).getItems();
+        var canvas = Ext.ComponentQuery.query("#connectionDiag")[0];
 
-                for(var i = 0; i < items.length; i++) {
-                    if(items[i].line.isPointInPath(event.pageX - canvasXY[0], event.pageY - canvasXY[1]))
-                        return items[i];
-                }
-            },
-            sprite = isConnectionSprite("left_internal_conn") || isConnectionSprite("right_internal_conn");
-
-        if(sprite) {
+        if(canvas.selectedSprite) {
             canvas.isMenuOpen = true;
-            canvas.selectedSprite = sprite;
             event.preventDefault();
             canvas.up().menu.showAt(event.pageX, event.pageY);
         }
     },
     deleteInternalConnection: function() {
-        var canvas = Ext.ComponentQuery.query("#connectionDiag")[0],
-            sprite = canvas.selectedSprite;
+        var drawPanel = Ext.ComponentQuery.query("#connectionDiag")[0],
+            sprite = drawPanel.selectedSprite;
         console.log("deleteInternalConnection", sprite.fromPortId, sprite.toPortId, this);
+        drawPanel.selectedSprite.setAttributes(drawPanel.selectedWire);
+        drawPanel.renderFrame();
         Ext.Msg.confirm(__("Confirm"), __("Are you sure you want to delete this connection") + " " + sprite.fromPort + "=>" + sprite.toPort, function(btn) {
             if(btn === 'yes') {
                 sprite.remove();
+                drawPanel.renderFrame();
             }
         });
     }
