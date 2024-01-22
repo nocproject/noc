@@ -137,8 +137,8 @@ class Sensor(Document):
 
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_bi_id_cache"), lock=lambda _: id_lock)
-    def get_by_bi_id(cls, s_id):
-        return Sensor.objects.filter(bi_id=s_id).first()
+    def get_by_bi_id(cls, id: int) -> Optional["Sensor"]:
+        return Sensor.objects.filter(bi_id=id).first()
 
     def iter_changed_datastream(self, changed_fields=None):
         if config.datastream.enable_cfgmetricsources:

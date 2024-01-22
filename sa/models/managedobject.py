@@ -855,8 +855,8 @@ class ManagedObject(NOCModel):
 
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_bi_id_cache"), lock=lambda _: id_lock)
-    def get_by_bi_id(cls, bi_id) -> "Optional[ManagedObject]":
-        mo = ManagedObject.objects.filter(bi_id=bi_id)[:1]
+    def get_by_bi_id(cls, id: int) -> Optional["ManagedObject"]:
+        mo = ManagedObject.objects.filter(bi_id=id)[:1]
         if mo:
             return mo[0]
         else:

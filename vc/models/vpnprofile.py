@@ -90,7 +90,7 @@ class VPNProfile(Document):
 
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_bi_id_cache"), lock=lambda _: id_lock)
-    def get_by_bi_id(cls, id):
+    def get_by_bi_id(cls, id: int) -> Optional["VPNProfile"]:
         return VPNProfile.objects.filter(bi_id=id).first()
 
     def clean(self):

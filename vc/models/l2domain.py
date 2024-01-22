@@ -118,7 +118,7 @@ class L2Domain(Document):
 
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_bi_id_cache"), lock=lambda _: id_lock)
-    def get_by_bi_id(cls, id) -> Optional["L2Domain"]:
+    def get_by_bi_id(cls, id: int) -> Optional["L2Domain"]:
         return L2Domain.objects.filter(bi_id=id).first()
 
     @classmethod

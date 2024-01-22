@@ -66,7 +66,7 @@ class Pool(Document):
 
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_bi_id_cache"), lock=lambda _: id_lock)
-    def get_by_bi_id(cls, id) -> Optional["Pool"]:
+    def get_by_bi_id(cls, id: int) -> Optional["Pool"]:
         return Pool.objects.filter(bi_id=id).first()
 
     @classmethod

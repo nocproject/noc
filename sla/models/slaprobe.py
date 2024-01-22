@@ -112,7 +112,7 @@ class SLAProbe(Document):
 
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_bi_id_cache"), lock=lambda _: id_lock)
-    def get_by_bi_id(cls, id) -> Optional["SLAProbe"]:
+    def get_by_bi_id(cls, id: int) -> Optional["SLAProbe"]:
         return SLAProbe.objects.filter(bi_id=id).first()
 
     def iter_changed_datastream(self, changed_fields=None):

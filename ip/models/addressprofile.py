@@ -90,7 +90,7 @@ class AddressProfile(Document):
 
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_bi_id_cache"), lock=lambda _: id_lock)
-    def get_by_bi_id(cls, id):
+    def get_by_bi_id(cls, id: int) -> Optional["AddressProfile"]:
         return AddressProfile.objects.filter(bi_id=id).first()
 
     @classmethod

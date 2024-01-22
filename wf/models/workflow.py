@@ -136,7 +136,7 @@ class Workflow(Document):
 
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_bi_id_cache"), lock=lambda _: id_lock)
-    def get_by_bi_id(cls, id) -> Optional["Workflow"]:
+    def get_by_bi_id(cls, id: int) -> Optional["Workflow"]:
         return Workflow.objects.filter(bi_id=id).first()
 
     @classmethod

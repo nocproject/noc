@@ -150,8 +150,8 @@ class Service(Document):
 
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_bi_id_cache"), lock=lambda _: id_lock)
-    def get_by_bi_id(cls, bi_id) -> Optional["Service"]:
-        return Service.objects.filter(bi_id=bi_id).first()
+    def get_by_bi_id(cls, id: int) -> Optional["Service"]:
+        return Service.objects.filter(bi_id=id).first()
 
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_id_bi_id_map_cache"))

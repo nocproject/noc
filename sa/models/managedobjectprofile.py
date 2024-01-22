@@ -750,7 +750,7 @@ class ManagedObjectProfile(NOCModel):
 
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_bi_id_cache"), lock=lambda _: id_lock)
-    def get_by_bi_id(cls, id: int) -> "Optional[ManagedObjectProfile]":
+    def get_by_bi_id(cls, id: int) -> Optional["ManagedObjectProfile"]:
         return ManagedObjectProfile.objects.filter(bi_id=id).first()
 
     def iter_changed_datastream(self, changed_fields=None):

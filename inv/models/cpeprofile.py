@@ -144,7 +144,7 @@ class CPEProfile(Document):
 
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_bi_id_cache"), lock=lambda _: id_lock)
-    def get_by_bi_id(cls, id) -> "CPEProfile":
+    def get_by_bi_id(cls, id: int) -> Optional["CPEProfile"]:
         return CPEProfile.objects.filter(bi_id=id).first()
 
     @classmethod

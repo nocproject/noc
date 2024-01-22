@@ -125,8 +125,8 @@ class ObjectDiagnosticConfig(Document):
 
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_bi_id_cache"), lock=lambda _: id_lock)
-    def get_by_bi_id(cls, oid) -> Optional["ObjectDiagnosticConfig"]:
-        return ObjectDiagnosticConfig.objects.filter(bi_id=oid).first()
+    def get_by_bi_id(cls, id: int) -> Optional["ObjectDiagnosticConfig"]:
+        return ObjectDiagnosticConfig.objects.filter(bi_id=id).first()
 
     @classmethod
     @cachetools.cachedmethod(
