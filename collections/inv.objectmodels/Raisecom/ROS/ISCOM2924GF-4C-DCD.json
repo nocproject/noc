@@ -52,7 +52,7 @@
             "type__name": "Electrical | RJ45"
         },
         {
-            "name": "1/0/1",
+            "name": "management",
             "description": " SNMP out-of-band management interface",
             "direction": "s",
             "gender": "f",
@@ -69,8 +69,8 @@
             "type__name": "Electrical | RJ45"
         },
         {
-            "name": "1/1/1",
-            "description": "gigaethernet 1/1/1 port",
+            "name": "1",
+            "description": "1 port",
             "direction": "i",
             "gender": "f",
             "protocols": [
@@ -86,8 +86,8 @@
             "type__name": "Transceiver | SFP"
         },
         {
-            "name": "1/1/2",
-            "description": "gigaethernet 1/1/2 port",
+            "name": "2",
+            "description": "2 port",
             "direction": "i",
             "gender": "f",
             "protocols": [
@@ -103,8 +103,8 @@
             "type__name": "Transceiver | SFP"
         },
         {
-            "name": "1/1/3",
-            "description": "gigaethernet 1/1/3 port",
+            "name": "3",
+            "description": "3 port",
             "direction": "i",
             "gender": "f",
             "protocols": [
@@ -120,8 +120,8 @@
             "type__name": "Transceiver | SFP"
         },
         {
-            "name": "1/1/4",
-            "description": "gigaethernet 1/1/4 port",
+            "name": "4",
+            "description": "4 port",
             "direction": "i",
             "gender": "f",
             "protocols": [
@@ -137,8 +137,8 @@
             "type__name": "Transceiver | SFP"
         },
         {
-            "name": "1/1/5",
-            "description": "gigaethernet 1/1/5 port",
+            "name": "5",
+            "description": "5 port",
             "direction": "i",
             "gender": "f",
             "protocols": [
@@ -154,8 +154,8 @@
             "type__name": "Transceiver | SFP"
         },
         {
-            "name": "1/1/6",
-            "description": "gigaethernet 1/1/6 port",
+            "name": "6",
+            "description": "6 port",
             "direction": "i",
             "gender": "f",
             "protocols": [
@@ -171,8 +171,8 @@
             "type__name": "Transceiver | SFP"
         },
         {
-            "name": "1/1/7",
-            "description": "gigaethernet 1/1/7 port",
+            "name": "7",
+            "description": "7 port",
             "direction": "i",
             "gender": "f",
             "protocols": [
@@ -188,8 +188,8 @@
             "type__name": "Transceiver | SFP"
         },
         {
-            "name": "1/1/8",
-            "description": "gigaethernet 1/1/8 port",
+            "name": "8",
+            "description": "8 port",
             "direction": "i",
             "gender": "f",
             "protocols": [
@@ -205,8 +205,8 @@
             "type__name": "Transceiver | SFP"
         },
         {
-            "name": "1/1/9",
-            "description": "gigaethernet 1/1/9 port",
+            "name": "9",
+            "description": "9 port",
             "direction": "i",
             "gender": "f",
             "protocols": [
@@ -222,8 +222,8 @@
             "type__name": "Transceiver | SFP"
         },
         {
-            "name": "1/1/10",
-            "description": "gigaethernet 1/1/10 port",
+            "name": "10",
+            "description": "10 port",
             "direction": "i",
             "gender": "f",
             "protocols": [
@@ -239,8 +239,8 @@
             "type__name": "Transceiver | SFP"
         },
         {
-            "name": "1/1/11",
-            "description": "gigaethernet 1/1/11 port",
+            "name": "11",
+            "description": "11 port",
             "direction": "i",
             "gender": "f",
             "protocols": [
@@ -256,8 +256,8 @@
             "type__name": "Transceiver | SFP"
         },
         {
-            "name": "1/1/12",
-            "description": "gigaethernet 1/1/12 port",
+            "name": "12",
+            "description": "12 port",
             "direction": "i",
             "gender": "f",
             "protocols": [
@@ -273,8 +273,8 @@
             "type__name": "Transceiver | SFP"
         },
         {
-            "name": "1/1/13",
-            "description": "gigaethernet 1/1/13 port",
+            "name": "13",
+            "description": "13 port",
             "direction": "i",
             "gender": "f",
             "protocols": [
@@ -290,8 +290,8 @@
             "type__name": "Transceiver | SFP"
         },
         {
-            "name": "1/1/14",
-            "description": "gigaethernet 1/1/14 port",
+            "name": "14",
+            "description": "14 port",
             "direction": "i",
             "gender": "f",
             "protocols": [
@@ -307,8 +307,8 @@
             "type__name": "Transceiver | SFP"
         },
         {
-            "name": "1/1/15",
-            "description": "gigaethernet 1/1/15 port",
+            "name": "15",
+            "description": "15 port",
             "direction": "i",
             "gender": "f",
             "protocols": [
@@ -324,8 +324,8 @@
             "type__name": "Transceiver | SFP"
         },
         {
-            "name": "1/1/16",
-            "description": "gigaethernet 1/1/16 port",
+            "name": "16",
+            "description": "16 port",
             "direction": "i",
             "gender": "f",
             "protocols": [
@@ -341,8 +341,8 @@
             "type__name": "Transceiver | SFP"
         },
         {
-            "name": "1/1/17",
-            "description": "gigaethernet 1/1/17 port",
+            "name": "17",
+            "description": "17 port",
             "direction": "i",
             "gender": "f",
             "protocols": [
@@ -358,8 +358,8 @@
             "type__name": "Transceiver | SFP"
         },
         {
-            "name": "1/1/18",
-            "description": "gigaethernet 1/1/18 port",
+            "name": "18",
+            "description": "18 port",
             "direction": "i",
             "gender": "f",
             "protocols": [
@@ -375,8 +375,8 @@
             "type__name": "Transceiver | SFP"
         },
         {
-            "name": "1/1/19",
-            "description": "gigaethernet 1/1/19 port",
+            "name": "19",
+            "description": "19 port",
             "direction": "i",
             "gender": "f",
             "protocols": [
@@ -392,8 +392,8 @@
             "type__name": "Transceiver | SFP"
         },
         {
-            "name": "1/1/20",
-            "description": "gigaethernet 1/1/20 port",
+            "name": "20",
+            "description": "20 port",
             "direction": "i",
             "gender": "f",
             "protocols": [
@@ -409,8 +409,8 @@
             "type__name": "Transceiver | SFP"
         },
         {
-            "name": "1/1/21",
-            "description": "gigaethernet 1/1/21 port",
+            "name": "21",
+            "description": "21 port",
             "direction": "i",
             "gender": "f",
             "protocols": [
@@ -426,8 +426,8 @@
             "type__name": "Transceiver | SFP"
         },
         {
-            "name": "1/1/22",
-            "description": "gigaethernet 1/1/22 port",
+            "name": "22",
+            "description": "22 port",
             "direction": "i",
             "gender": "f",
             "protocols": [
@@ -443,8 +443,8 @@
             "type__name": "Transceiver | SFP"
         },
         {
-            "name": "1/1/23",
-            "description": "gigaethernet 1/1/23 port",
+            "name": "23",
+            "description": "23 port",
             "direction": "i",
             "gender": "f",
             "protocols": [
@@ -460,8 +460,8 @@
             "type__name": "Transceiver | SFP"
         },
         {
-            "name": "1/1/24",
-            "description": "gigaethernet 1/1/24 port",
+            "name": "24",
+            "description": "24 port",
             "direction": "i",
             "gender": "f",
             "protocols": [
@@ -477,8 +477,8 @@
             "type__name": "Transceiver | SFP"
         },
         {
-            "name": "1/1/25",
-            "description": "Fiber port 1/1/25 SFP+",
+            "name": "25",
+            "description": "port 25 SFP+",
             "direction": "i",
             "gender": "f",
             "protocols": [
@@ -490,8 +490,8 @@
             "type__name": "Transceiver | SFP+"
         },
         {
-            "name": "1/1/26",
-            "description": "Fiber port 1/1/26 SFP+",
+            "name": "26",
+            "description": "port 26 SFP+",
             "direction": "i",
             "gender": "f",
             "protocols": [
@@ -503,8 +503,8 @@
             "type__name": "Transceiver | SFP+"
         },
         {
-            "name": "1/1/27",
-            "description": "Fiber port 1/1/27 SFP+",
+            "name": "27",
+            "description": "port 27 SFP+",
             "direction": "i",
             "gender": "f",
             "protocols": [
@@ -516,8 +516,8 @@
             "type__name": "Transceiver | SFP+"
         },
         {
-            "name": "1/1/28",
-            "description": "Fiber port 1/1/28 SFP+",
+            "name": "28",
+            "description": "port 28 SFP+",
             "direction": "i",
             "gender": "f",
             "protocols": [
