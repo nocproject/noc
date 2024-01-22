@@ -1,7 +1,7 @@
 # ---------------------------------------------------------------------
 # Huawei.VRP.get_metrics
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2023 The NOC Project
+# Copyright (C) 2007-2024 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -41,7 +41,7 @@ class Script(GetMetricsScript):
         ),
         "SLA | Packets | Loss | Ratio": ProfileMetricConfig(
             metric="SLA | Packets | Loss | Ratio",
-            oid="NQA-MIB::nqaJitterCollectStatsPacketLossRatio",
+            oid="NQA-MIB::nqaJitterStatsPacketLossRatio",
             sla_types=["udp-jitter"],
             scale=1,
             units="%",
@@ -367,8 +367,8 @@ class Script(GetMetricsScript):
                 mc = self.SLA_METRICS_CONFIG[m]
                 if status_oid == "NQA-MIB::nqaResultsCompletions":
                     oid = mib[mc.oid, key, stat_index[key], 1]
-                elif mc.oid == "NQA-MIB::nqaJitterCollectStatsPacketLossRatio":
-                    oid = mib[mc.oid, key, 1]
+                elif mc.oid == "NQA-MIB::nqaJitterStatsPacketLossRatio":
+                    oid = mib[mc.oid, key, stat_index[key]]
                 else:
                     oid = mib[mc.oid, key, stat_index[key]]
                 oids[oid] = (probe, mc)
