@@ -1,0 +1,17 @@
+{
+    "workflow__name": "Agent Default",
+    "name": "New",
+    "uuid": "2771d7d2-aa7e-463e-9542-9d50d176cbc9",
+    "$collection": "wf.states",
+    "description": "New registered agent on System",
+    "is_default": true,
+    "is_productive": false,
+    "is_wiping": false,
+    "hide_with_state": false,
+    "update_last_seen": false,
+    "ttl": 0,
+    "update_expired": false,
+    "x": 50,
+    "y": 50,
+    "disable_all_interaction": false
+}

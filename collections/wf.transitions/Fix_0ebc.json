@@ -1,0 +1,10 @@
+{
+    "workflow__name": "Service Default",
+    "from_state__name": "Removing Failed",
+    "to_state__name": "Removing",
+    "uuid": "0ebcae1d-9f97-432b-8c55-da02563b8efb",
+    "is_active": true,
+    "$collection": "wf.transitions",
+    "label": "Fix",
+    "enable_manual": true
+}

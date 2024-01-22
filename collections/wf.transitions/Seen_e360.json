@@ -1,0 +1,11 @@
+{
+    "workflow__name": "Default Resource",
+    "from_state__name": "Cooldown",
+    "to_state__name": "Ready",
+    "uuid": "e3601720-5aa8-4e0d-9203-4d4da133f38e",
+    "is_active": true,
+    "$collection": "wf.transitions",
+    "event": "seen",
+    "label": "Seen",
+    "enable_manual": true
+}

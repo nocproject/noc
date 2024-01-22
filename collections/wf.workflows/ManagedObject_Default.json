@@ -1,7 +1,8 @@
 {
     "name": "ManagedObject Default",
-    "uuid": "f5893700-8b61-4d15-b605-bde2e045119a",
+    "uuid": "4846517b-4786-4216-a7bc-fbde24336afb",
     "$collection": "wf.workflows",
     "is_active": true,
-    "description": "ManagedObject Default Workflow"
+    "description": "ManagedObject Default Workflow",
+    "allowed_models": ["sa.ManagedObject"]
 }

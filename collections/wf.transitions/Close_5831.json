@@ -1,0 +1,10 @@
+{
+    "workflow__name": "Service Default",
+    "from_state__name": "Removing",
+    "to_state__name": "Closed",
+    "uuid": "583103f2-68c6-4880-a8cf-98d88f6aa5ad",
+    "is_active": true,
+    "$collection": "wf.transitions",
+    "label": "Close",
+    "enable_manual": true
+}

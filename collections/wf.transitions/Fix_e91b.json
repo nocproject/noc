@@ -1,0 +1,10 @@
+{
+    "workflow__name": "Service Default",
+    "from_state__name": "Provisioning Failed",
+    "to_state__name": "Provisioning",
+    "uuid": "e91be14a-4911-41ad-8838-a61e1f09cd38",
+    "is_active": true,
+    "$collection": "wf.transitions",
+    "label": "Fix",
+    "enable_manual": true
+}

@@ -1,0 +1,11 @@
+{
+    "workflow__name": "Agent Default",
+    "from_state__name": "Suspended",
+    "to_state__name": "Ready",
+    "uuid": "c568ad12-0693-487f-9799-3394b0205fe3",
+    "is_active": true,
+    "$collection": "wf.transitions",
+    "event": "resume",
+    "label": "Resume",
+    "enable_manual": true
+}

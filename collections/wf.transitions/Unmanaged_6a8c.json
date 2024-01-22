@@ -1,0 +1,11 @@
+{
+    "workflow__name": "ManagedObject Default",
+    "from_state__name": "Managed",
+    "to_state__name": "Not Managed",
+    "uuid": "6a8ccf70-536e-4ce3-a4ea-9f86047132ee",
+    "is_active": true,
+    "$collection": "wf.transitions",
+    "event": "unmanaged",
+    "label": "Unmanaged",
+    "enable_manual": true
+}

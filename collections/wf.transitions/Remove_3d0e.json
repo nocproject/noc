@@ -1,0 +1,11 @@
+{
+    "workflow__name": "ManagedObject Default",
+    "from_state__name": "Not Managed",
+    "to_state__name": "Removing",
+    "uuid": "3d0e86c3-9bb3-4d0e-8b9e-5845918befb3",
+    "is_active": true,
+    "$collection": "wf.transitions",
+    "event": "expired",
+    "label": "Remove",
+    "enable_manual": true
+}

@@ -1,0 +1,11 @@
+{
+    "workflow__name": "Sensor Default",
+    "from_state__name": "Ok",
+    "to_state__name": "Missed",
+    "uuid": "f78f97a1-8e36-4bf6-a204-48d424b6a865",
+    "is_active": true,
+    "$collection": "wf.transitions",
+    "event": "missed",
+    "label": "missed",
+    "enable_manual": true
+}

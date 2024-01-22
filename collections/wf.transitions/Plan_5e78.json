@@ -1,0 +1,10 @@
+{
+    "workflow__name": "Service Default",
+    "from_state__name": "Unknown",
+    "to_state__name": "Planned",
+    "uuid": "5e78079f-25ee-430b-8671-5a49ad4b523b",
+    "is_active": true,
+    "$collection": "wf.transitions",
+    "label": "Plan",
+    "enable_manual": true
+}

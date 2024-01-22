@@ -1,0 +1,11 @@
+{
+    "workflow__name": "Sensor Default",
+    "from_state__name": "Non-operational",
+    "to_state__name": "Ok",
+    "uuid": "2682c7f3-73cf-4bb2-af72-83e7a289a5c4",
+    "is_active": false,
+    "$collection": "wf.transitions",
+    "event": "up",
+    "label": "Fixed",
+    "enable_manual": false
+}

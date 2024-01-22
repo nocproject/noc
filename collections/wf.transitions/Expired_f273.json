@@ -1,0 +1,11 @@
+{
+    "workflow__name": "Default Resource",
+    "from_state__name": "Cooldown",
+    "to_state__name": "Free",
+    "uuid": "f273c3c5-ba92-4ed9-a980-501e546d7bd2",
+    "is_active": true,
+    "$collection": "wf.transitions",
+    "event": "expired",
+    "label": "Expired",
+    "enable_manual": true
+}

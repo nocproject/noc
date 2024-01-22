@@ -1,6 +1,6 @@
 {
     "name": "Agent Default",
-    "uuid": "8fc3dfd9-3804-4db9-b8eb-0947212c8ba5",
+    "uuid": "d5aedf53-abc4-4725-9111-a6e7a77e416a",
     "$collection": "wf.workflows",
     "is_active": true,
     "description": "Agent Default Workflow",

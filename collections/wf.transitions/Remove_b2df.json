@@ -1,0 +1,10 @@
+{
+    "workflow__name": "Agent Default",
+    "from_state__name": "Suspended",
+    "to_state__name": "Removing",
+    "uuid": "b2df7b3e-c32e-4e0d-8437-02cd68e5b4c7",
+    "is_active": true,
+    "$collection": "wf.transitions",
+    "label": "Remove",
+    "enable_manual": true
+}

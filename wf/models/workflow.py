@@ -106,8 +106,8 @@ class Workflow(Document):
         }
         if self.is_active:
             r["is_active"] = self.is_active
-        # if self.allowed_models:
-        #     r["allowed_models"] = [m for m in self.allowed_models]
+        if self.allowed_models:
+            r["allowed_models"] = list(self.allowed_models)
         return r
 
     def to_json(self) -> str:

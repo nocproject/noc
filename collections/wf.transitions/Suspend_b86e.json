@@ -1,0 +1,11 @@
+{
+    "workflow__name": "Default Resource",
+    "from_state__name": "Ready",
+    "to_state__name": "Suspended",
+    "uuid": "b86e486a-1b4c-4f94-a697-69d05ca066b4",
+    "is_active": true,
+    "$collection": "wf.transitions",
+    "event": "suspend",
+    "label": "Suspend",
+    "enable_manual": true
+}

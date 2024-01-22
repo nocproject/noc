@@ -1,0 +1,17 @@
+{
+    "workflow__name": "Service Default",
+    "name": "Provisioning Failed",
+    "uuid": "df479c21-d60c-46e8-8acb-ca2969725127",
+    "$collection": "wf.states",
+    "description": "Service configuration error",
+    "is_default": false,
+    "is_productive": false,
+    "is_wiping": false,
+    "hide_with_state": false,
+    "update_last_seen": false,
+    "ttl": 0,
+    "update_expired": false,
+    "x": 90,
+    "y": 170,
+    "disable_all_interaction": false
+}
