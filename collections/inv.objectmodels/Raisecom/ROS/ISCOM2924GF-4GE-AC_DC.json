@@ -599,7 +599,7 @@
             "type__name": "Electrical | RJ45"
         },
         {
-            "name": "1/126_sfp",
+            "name": "1/1/26_sfp",
             "description": "gigaethernet 1/1/26 SFP port",
             "combo": "1/1/26",
             "direction": "i",
