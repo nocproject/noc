@@ -256,10 +256,6 @@ class BaseScript(object, metaclass=BaseScriptMetaclass):
                     from .snmp.gufosnmp import GufoSNMP
 
                     self._snmp = GufoSNMP(self, rate=snmp_rate_limit)
-                elif config.activator.snmp_backend == "pysnmp":
-                    from .snmp.pysnmp import PySNMP
-
-                    self._snmp = PySNMP(self, rate=snmp_rate_limit)
                 else:
                     raise ValueError(f"Invalid snmp_backend: {config.activator.snmp_backend}")
         return self._snmp

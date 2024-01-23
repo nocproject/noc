@@ -211,7 +211,9 @@ class Command(BaseCommand):
             "access_preference": obj.get_access_preference(),
             "snmp_rate_limit": obj.snmp_rate_limit or None,
         }
-        if (not creds.snmp_security_level or creds.snmp_security_level == "Community") and creds.snmp_ro:
+        if (
+            not creds.snmp_security_level or creds.snmp_security_level == "Community"
+        ) and creds.snmp_ro:
             credentials["snmp_version"] = "v2c"
             credentials["snmp_ro"] = creds.snmp_ro
         elif creds.snmp_security_level in {"noAuthNoPriv", "authNoPriv", "authPriv"}:
