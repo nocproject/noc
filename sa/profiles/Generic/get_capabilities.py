@@ -7,6 +7,7 @@
 
 # Python modules
 import functools
+from typing import Optional
 
 # NOC modules
 from noc.core.script.base import BaseScript
@@ -337,6 +338,20 @@ class Script(BaseScript):
                 return None
             return filter_non_printable(r)
 
+    @false_on_snmp_error
+    def get_engine_id(self):
+        """
+        Return SNMPv3 EngineId
+        """
+        try:
+            engine_id = self.snmp.get_engine_id()
+        except NotImplementedError:
+            return None
+        self.logger.debug("EngineID: %s", engine_id)
+        if engine_id:
+            return engine_id.hex()
+        return None
+
     def execute_platform_cli(self, caps):
         """
         Method to be overriden in subclasses. Execute if C preffered
@@ -393,6 +408,9 @@ class Script(BaseScript):
                 if self.check_snmp_get(self.SNMP_GET_CHECK_OID, version=SNMP_v3):
                     caps["SNMP | v3"] = True
                     snmp_version = SNMP_v3
+                    engine_id = self.get_engine_id()
+                    if engine_id:
+                        caps["SNMP | EngineID"] = engine_id
                     if self.has_snmp_bulk():
                         caps["SNMP | Bulk"] = True
                 else:

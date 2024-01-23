@@ -418,3 +418,9 @@ class SNMP(object):
             except self.SNMPError as e:
                 self.logger.error("SNMP error code %s", e.code)
         return results
+
+    def get_engine_id(self, *args):
+        """
+        Getting SNMPv3 EngineId from address
+        """
+        raise NotImplementedError("Not supported SNMPv3")

@@ -72,7 +72,7 @@ class GufoSNMP(SNMP):
         engine_id = self.script.capabilities.get("SNMP | EngineID")
         if not engine_id:
             return None
-        return bytes.fromhex(engine_id[2:])
+        return bytes.fromhex(engine_id)
 
     def _get_snmp_credential(self, version):
         version = self._get_snmp_version(version)
@@ -307,3 +307,19 @@ class GufoSNMP(SNMP):
             "Method `set` is not yet implemented in gufo SNMP implementation."
             "Use native SNMP implementation. Set config.activator.snmp_backend to 'native'"
         )
+
+    def get_engine_id(self, *args):
+        """
+        Getting SNMPv3 EngineId from address
+        """
+
+        async def run():
+            address = self.script.credentials["address"]
+            self.logger.debug("[%s] SNMP GET EngineID", address)
+            session = await self.get_session()
+            try:
+                return session.get_engine_id()
+            except self.TimeOutError:
+                return None
+
+        return run_sync(run, close_all=False)
