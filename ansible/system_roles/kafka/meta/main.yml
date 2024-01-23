@@ -1,0 +1,5 @@
+---
+galaxy_info:
+  author: Simon Leigh/Ivan Strelnikov
+  description: Kafka cluster role
+  license: BSD
