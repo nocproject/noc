@@ -118,6 +118,12 @@ class ProtocolVariantItem(EmbeddedDocument):
             return r
         return r and self.discriminator == other.discriminator
 
+    def __contains__(self, item) -> bool:
+        r = self.protocol.id == item.protocol.id and self.direction != item.direction
+        if not self.discriminator:
+            return r
+        return r and self.discriminator == item.discriminator
+
 
 class Crossing(EmbeddedDocument):
     """

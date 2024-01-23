@@ -62,6 +62,12 @@ class ProtocolVariant(object):
             return r
         return r and self.discriminator == other.discriminator
 
+    def __contains__(self, item: "ProtocolVariant") -> bool:
+        r = self.protocol.id == item.protocol.id and self.direction != item.direction
+        if not self.discriminator:
+            return r
+        return r and self.discriminator == item.discriminator
+
     def __hash__(self):
         return hash(self.code)
 
