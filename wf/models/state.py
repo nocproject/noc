@@ -224,8 +224,8 @@ class State(Document):
 
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_bi_id_cache"), lock=lambda _: id_lock)
-    def get_by_bi_id(cls, id: int) -> Optional["State"]:
-        return State.objects.filter(bi_id=id).first()
+    def get_by_bi_id(cls, bi_id: int) -> Optional["State"]:
+        return State.objects.filter(bi_id=bi_id).first()
 
     def on_save(self):
         chenged_fields = getattr(self, "_changed_fields", None)

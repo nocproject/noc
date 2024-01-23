@@ -40,8 +40,8 @@ def test_get_by_bi_id(model):
         raise pytest.skip("Not implemented")
     sig = inspect.signature(model.get_by_bi_id)
     # parameters
-    if "id" not in sig.parameters:
-        pytest.fail(f"Method '{model.__name__}.get_by_bi_id' must have 'id' parameter")
-    assert sig.parameters["id"].annotation is int
+    if "bi_id" not in sig.parameters:
+        pytest.fail(f"Method '{model.__name__}.get_by_bi_id' must have 'bi_id' parameter")
+    assert sig.parameters["bi_id"].annotation is int
     # result
     assert sig.return_annotation == Optional[ForwardRef(model.__name__)]

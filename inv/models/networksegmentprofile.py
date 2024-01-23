@@ -245,8 +245,8 @@ class NetworkSegmentProfile(Document):
 
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_bi_id_cache"), lock=lambda _: id_lock)
-    def get_by_bi_id(cls, id: int) -> Optional["NetworkSegmentProfile"]:
-        return NetworkSegmentProfile.objects.filter(bi_id=id).first()
+    def get_by_bi_id(cls, bi_id: int) -> Optional["NetworkSegmentProfile"]:
+        return NetworkSegmentProfile.objects.filter(bi_id=bi_id).first()
 
     def on_save(self):
         if hasattr(self, "_changed_fields") and "discovery_interval" in self._changed_fields:

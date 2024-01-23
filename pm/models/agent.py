@@ -106,8 +106,8 @@ class Agent(Document):
 
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_bi_id_cache"), lock=lambda _: id_lock)
-    def get_by_bi_id(cls, id: int) -> Optional["Agent"]:
-        return Agent.objects.filter(bi_id=id).first()
+    def get_by_bi_id(cls, bi_id: int) -> Optional["Agent"]:
+        return Agent.objects.filter(bi_id=bi_id).first()
 
     def get_effective_check_interval(self) -> int:
         if self.zk_check_interval:

@@ -202,8 +202,8 @@ class Transition(Document):
 
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_bi_id_cache"), lock=lambda _: id_lock)
-    def get_by_bi_id(cls, id: int) -> Optional["Transition"]:
-        return Transition.objects.filter(bi_id=id).first()
+    def get_by_bi_id(cls, bi_id: int) -> Optional["Transition"]:
+        return Transition.objects.filter(bi_id=bi_id).first()
 
     def clean(self):
         if not self.from_state or not self.to_state:
