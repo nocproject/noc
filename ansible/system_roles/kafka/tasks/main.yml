@@ -1,4 +1,10 @@
 ---
+#- name: "Include OS-specific tasks"
+#  include_tasks: "os/{{ ansible_distribution }}_{{ ansible_distribution_major_version }}/main.yml"
+#  tags:
+#    - requirements
+#    - config
+
 - name: Add Kafka group
   group:
     name: "{{ kafka_group }}"
@@ -13,28 +19,9 @@
     comment: "Kafka user"
     group: "{{ kafka_group }}"
     system: "True"
-    home: "{{ kafka_home }}"
-    shell: "/bin/sh"
+    createhome: no
   tags:
     - config
-
-#- name: Create kafka directories
-#  file:
-#    dest: "{{ item }}"
-#    state: directory
-#    owner: "{{ kafka_user }}"
-#    group: "{{ kafka_group }}"
-#  with_items:
-#    - /var/consul
-#    - /var/run/consul
-#    - "{{ consul_configd_path }}"
-#    - "{{ consul_scripts_path }}"
-
-#- name: "Include OS-specific tasks"
-#  include_tasks: "os/{{ ansible_distribution }}_{{ ansible_distribution_major_version }}/main.yml"
-#  tags:
-#    - requirements
-#    - config
 
 - name: Check if Kafka has already been downloaded and unpacked
   stat:
@@ -48,8 +35,7 @@
     validate_certs: '{{ not kafka_insecure_certs }}'
     mode: 0644
   when: not dir.stat.exists
-  tags:
-    - kafka_download
+
 
 - name: Unpack Apache Kafka
   unarchive:
@@ -59,8 +45,7 @@
     group: '{{ kafka_group }}'
     owner: '{{ kafka_user }}'
   when: not dir.stat.exists
-  tags:
-    - kafka_unpack
+
 
 - name: Create symlink to kafka installation directory
   ansible.builtin.file:
@@ -70,7 +55,7 @@
     group: '{{ kafka_group }}'
     owner: '{{ kafka_user }}'
   tags:
-    - kafka_dirs
+    - dirs
 
 - name: Create directory for kafka data log files
   ansible.builtin.file:
@@ -81,7 +66,7 @@
     mode: 0755
   with_items: "{{ kafka_data_log_dirs.split(',') }}"
   tags:
-    - kafka_dirs
+    - dirs
 
 - name: Create directory for kafka application logs
   ansible.builtin.file:
@@ -91,14 +76,14 @@
     owner: '{{ kafka_user }}'
     mode: 0755
   tags:
-    - kafka_dirs
+    - dirs
 
 - name: Register directory status for application log files
   ansible.builtin.stat:
     path: '{{ kafka_dir }}/logs'
   register: application_logs_dir
   tags:
-    - kafka_dirs
+    - dirs
 
 - name: Create symlink to application log directory
   ansible.builtin.file:
@@ -111,7 +96,7 @@
     follow: no
   when: not application_logs_dir.stat.exists
   tags:
-    - kafka_dirs
+    - dirs
 
 - name: Create directory for symlink to kafka configuration files
   ansible.builtin.file:
@@ -121,79 +106,20 @@
     owner: '{{ kafka_user }}'
     mode: 0755
   tags:
-    - kafka_dirs
+    - dirs
 
 - name: Template configuration file to server.properties
   ansible.builtin.template:
     src: server.properties.j2
-    dest: '{{ kafka_dir }}/config/server.properties'
+    dest: '{{ kafka_dir }}/config/kraft/server.properties'
     group: '{{ kafka_group }}'
     owner: '{{ kafka_user }}'
     mode: 0644
   notify:
     - Restart kafka service
   tags:
-    - kafka_config
+    - config
 
-- name: Template configuration file to zookeeper.properties
-  ansible.builtin.template:
-    src: zookeeper.properties.j2
-    dest: '{{ kafka_dir }}/config/zookeeper.properties'
-    group: '{{ kafka_group }}'
-    owner: '{{ kafka_user }}'
-    mode: 0644
-  tags:
-    - kafka_config
-
-- name: Template configuration file to connect-standalone.properties
-  ansible.builtin.template:
-    src: connect-standalone.properties.j2
-    dest: '{{ kafka_dir }}/config/connect-standalone.properties'
-    group: '{{ kafka_group }}'
-    owner: '{{ kafka_user }}'
-    mode: 0644
-  tags:
-    - kafka_config
-
-- name: Template configuration file to connect-distributed.properties
-  ansible.builtin.template:
-    src: connect-distributed.properties.j2
-    dest: '{{ kafka_dir }}/config/connect-distributed.properties'
-    group: '{{ kafka_group }}'
-    owner: '{{ kafka_user }}'
-    mode: 0644
-  tags:
-    - kafka_config
-
-- name: Template configuration file to producer.properties
-  ansible.builtin.template:
-    src: producer.properties.j2
-    dest: '{{ kafka_dir }}/config/producer.properties'
-    group: '{{ kafka_group }}'
-    owner: '{{ kafka_user }}'
-    mode: 0644
-  tags:
-    - kafka_config
-
-- name: Template configuration file to consumer.properties
-  ansible.builtin.template:
-    src: consumer.properties.j2
-    dest: '{{ kafka_dir }}/config/consumer.properties'
-    group: '{{ kafka_group }}'
-    owner: '{{ kafka_user }}'
-    mode: 0644
-  tags:
-    - kafka_config
-
-- name: Template configuration file to log4j.properties
-  ansible.builtin.template:
-    src: log4j.properties.j2
-    dest: '{{ kafka_dir }}/config/log4j.properties'
-    group: '{{ kafka_group }}'
-    owner: '{{ kafka_user }}'
-    mode: 0644
-  tags:
-    - kafka_config
 
 - name: Create symlink to kafka server properties file
   ansible.builtin.file:
@@ -203,74 +129,10 @@
     group: '{{ kafka_group }}'
     owner: '{{ kafka_user }}'
   tags:
-    - kafka_config
-
-- name: Create symlink to kafka connect standalone properties file
-  ansible.builtin.file:
-    src: '{{ kafka_dir }}/config/connect-standalone.properties'
-    dest: /etc/kafka/connect-standalone.properties
-    state: link
-    group: '{{ kafka_group }}'
-    owner: '{{ kafka_user }}'
-  tags:
-    - kafka_config
-
-- name: Create symlink to kafka connect distributed properties file
-  ansible.builtin.file:
-    src: '{{ kafka_dir }}/config/connect-distributed.properties'
-    dest: /etc/kafka/connect-distributed.properties
-    state: link
-    group: '{{ kafka_group }}'
-    owner: '{{ kafka_user }}'
-  tags:
-    - kafka_config
-
-- name: Create symlink to kafka producer properties file
-  ansible.builtin.file:
-    src: '{{ kafka_dir }}/config/producer.properties'
-    dest: /etc/kafka/producer.properties
-    state: link
-    group: '{{ kafka_group }}'
-    owner: '{{ kafka_user }}'
-  tags:
-    - kafka_config
-
-- name: Create symlink to kafka consumer properties file
-  ansible.builtin.file:
-    src: '{{ kafka_dir }}/config/consumer.properties'
-    dest: /etc/kafka/consumer.properties
-    state: link
-    group: '{{ kafka_group }}'
-    owner: '{{ kafka_user }}'
-  tags:
-    - kafka_config
-
-- name: Create symlink to kafka log4j properties file
-  ansible.builtin.file:
-    src: '{{ kafka_dir }}/config/log4j.properties'
-    dest: /etc/kafka/log4j.properties
-    state: link
-    group: '{{ kafka_group }}'
-    owner: '{{ kafka_user }}'
-  tags:
-    - kafka_config
-
-- name: Template Kafka init.d service file
-  ansible.builtin.template:
-    src: kafka.initd.j2
-    dest: /etc/init.d/kafka
-    group: '{{ kafka_group }}'
-    owner: '{{ kafka_user }}'
-    mode: 0644
-  notify:
-    - Reload initd
-    - Restart kafka service
-  when: ansible_os_family == "RedHat" and ansible_distribution_major_version == '6'
-  tags:
-    - kafka_service
+    - config
 
 - name: Template kafka systemd service
-  ansible.builtin.template:
+  template:
     src: kafka.service.j2
     dest: '{{ kafka_unit_path }}'
     group: '{{ kafka_group }}'
@@ -278,22 +140,17 @@
     mode: 0644
   notify:
     - Restart kafka systemd
-  when: ansible_os_family == "RedHat" and ansible_distribution_major_version > '6' or ansible_os_family == "Debian"
-  tags:
-    - kafka_service
+
 
 - name: Install and start the kafka service
-  ansible.builtin.service:
+  service:
     name: kafka
     state: started
     enabled: yes
   when: kafka_start
-  tags:
-    - kafka_service
+
 
 - name: Delete the kafka archive file
   ansible.builtin.file:
     path: /tmp/kafka_{{ kafka_scala_version }}-{{ kafka_version }}.tgz
     state: absent
-  tags:
-    - kafka_cleanup

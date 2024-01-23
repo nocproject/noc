@@ -9,29 +9,38 @@ kafka_log_dir: "/var/log/kafka"
 kafka_data_log_dirs: /var/lib/kafka/logs
 
 
-
 kafka_home: "/opt/kafka"
 kafka_install_dir: "kafka_install_dir"
 
-kafka_version: "3.6.1"
+kafka_version: "3.6.0"
 kafka_scala_version: "2.13"
 kafka_download_url: "http://downloads.apache.org/kafka/{{ kafka_version }}/kafka_{{ kafka_scala_version }}-{{ kafka_version }}.tgz"
 kafka_insecure_certs: true
 
+kafka_bootstrap_port: 9092
+kafka_controller_port: 9093
 kafka_java_heap: "-Xms1G -Xmx1G"
-# The send buffer (SO_SNDBUF) used by the socket server
 kafka_socket_send_buffer_bytes: 102400
-# The receive buffer (SO_RCVBUF) used by the socket server
 kafka_socket_receive_buffer_bytes: 102400
-# The maximum size of a request that the socket server will accept (protection against OOM)
 kafka_socket_request_max_bytes: 104857600
-# The socket receive buffer for network requests
 kafka_replica_socket_receive_buffer_bytes: 65536
 
 
-# Enable auto creation of topic on the server
+kafka_node_id: {{ groups['kafka'].index(inventory_hostname) }}
 kafka_auto_create_topics_enable: true
-
-# Enables delete topic. Delete topic through the admin tool will have no
-# effect if this config is turned off
-kafka_delete_topic_enable: false
+kafka_delete_topic_enable: true
+kafka_default_replication_factor: 1
+kafka_background_threads: 10
+kafka_num_network_threads: 3
+kafka_num_io_threads: 8
+kafka_num_replica_fetchers: 1
+kafka_num_partitions: 1
+kafka_num_recovery_threads_per_data_dir: 1
+kafka_log_cleaner_threads: 1
+kafka_offsets_topic_replication_factor: 1
+kafka_transaction_state_log_replication_factor: 1
+kafka_transaction_state_log_min_isr: 1
+kafka_log_retention_hours: 72 #168?
+kafka_log_segment_bytes: 1073741824
+kafka_log_retention_check_interval_ms: 300000
+kafka_group_initial_rebalance_delay_ms: 0
