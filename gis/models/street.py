@@ -68,8 +68,8 @@ class Street(Document):
 
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_id_cache"), lock=lambda _: id_lock)
-    def get_by_id(cls, id: Union[str, bson.ObjectId]) -> Optional["Street"]:
-        return Street.objects.filter(id=id).first()
+    def get_by_id(cls, oid: Union[str, bson.ObjectId]) -> Optional["Street"]:
+        return Street.objects.filter(id=oid).first()
 
     def __str__(self):
         if self.short_name:

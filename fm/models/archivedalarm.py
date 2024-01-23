@@ -125,8 +125,8 @@ class ArchivedAlarm(Document):
         return str(self.id)
 
     @classmethod
-    def get_by_id(cls, id: Union[str, ObjectId]) -> Optional["ArchivedAlarm"]:
-        return ArchivedAlarm.objects.filter(id=id).first()
+    def get_by_id(cls, oid: Union[str, ObjectId]) -> Optional["ArchivedAlarm"]:
+        return ArchivedAlarm.objects.filter(id=oid).first()
 
     def iter_changed_datastream(self, changed_fields=None):
         if config.datastream.enable_alarm:

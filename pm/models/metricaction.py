@@ -185,8 +185,8 @@ class MetricAction(Document):
         return self.name
 
     @classmethod
-    def get_by_id(cls, id: Union[str, ObjectId]) -> Optional["MetricAction"]:
-        return MetricAction.objects.filter(id=id).first()
+    def get_by_id(cls, oid: Union[str, ObjectId]) -> Optional["MetricAction"]:
+        return MetricAction.objects.filter(id=oid).first()
 
     def clean(self):
         if not self.compose_inputs or not self.compose_inputs[0].metric_type:

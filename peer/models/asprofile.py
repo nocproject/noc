@@ -42,5 +42,5 @@ class ASProfile(Document):
 
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_id_cache"), lock=lambda _: id_lock)
-    def get_by_id(cls, id: Union[str, ObjectId]) -> Optional["ASProfile"]:
-        return ASProfile.objects.filter(id=id).first()
+    def get_by_id(cls, oid: Union[str, ObjectId]) -> Optional["ASProfile"]:
+        return ASProfile.objects.filter(id=oid).first()

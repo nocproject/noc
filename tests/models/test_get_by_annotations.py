@@ -24,11 +24,13 @@ def test_get_by_id(model):
         raise pytest.skip("Not implemented")
     sig = inspect.signature(model.get_by_id)
     # parameters
-    if "id" not in sig.parameters:
-        pytest.fail(f"Method '{model.__name__}.get_by_id' must have 'id' parameter")
     if is_document(model):
-        assert sig.parameters["id"].annotation == Union[str, ObjectId]
+        if "oid" not in sig.parameters:
+            pytest.fail(f"Method '{model.__name__}.get_by_id' must have 'oid' parameter")
+        assert sig.parameters["oid"].annotation == Union[str, ObjectId]
     else:
+        if "id" not in sig.parameters:
+            pytest.fail(f"Method '{model.__name__}.get_by_id' must have 'id' parameter")
         assert sig.parameters["id"].annotation is int
     # result
     assert sig.return_annotation == Optional[ForwardRef(model.__name__)]

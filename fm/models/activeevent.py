@@ -74,8 +74,8 @@ class ActiveEvent(Document):
 
     @classmethod
     @cachedmethod(key="activeevent-%s", lock=lambda _: id_lock, ttl=900)
-    def get_by_id(cls, id: Union[str, ObjectId]) -> Optional["ActiveEvent"]:
-        return ActiveEvent.objects.filter(id=id).first()
+    def get_by_id(cls, oid: Union[str, ObjectId]) -> Optional["ActiveEvent"]:
+        return ActiveEvent.objects.filter(id=oid).first()
 
     def mark_as_new(self, message=None):
         """

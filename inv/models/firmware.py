@@ -120,8 +120,8 @@ class Firmware(Document):
 
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_id_cache"), lock=lambda _: id_lock)
-    def get_by_id(cls, id: Union[str, bson.ObjectId]) -> Optional["Firmware"]:
-        return Firmware.objects.filter(id=id).first()
+    def get_by_id(cls, oid: Union[str, bson.ObjectId]) -> Optional["Firmware"]:
+        return Firmware.objects.filter(id=oid).first()
 
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_bi_id_cache"), lock=lambda _: id_lock)

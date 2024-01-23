@@ -112,8 +112,8 @@ class Maintenance(Document):
 
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_id_cache"), lock=lambda _: id_lock)
-    def get_by_id(cls, id: Union[str, ObjectId]) -> Optional["Maintenance"]:
-        return Maintenance.objects.filter(id=id).first()
+    def get_by_id(cls, oid: Union[str, ObjectId]) -> Optional["Maintenance"]:
+        return Maintenance.objects.filter(id=oid).first()
 
     def update_affected_objects_maintenance(self):
         call_later(

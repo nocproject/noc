@@ -66,8 +66,8 @@ class ObjectConnection(Document):
         return "<%s>" % ", ".join(smart_text(c) for c in self.connection)
 
     @classmethod
-    def get_by_id(cls, id: Union[str, ObjectId]) -> Optional["ObjectConnection"]:
-        return ObjectConnection.objects.filter(id=id).first()
+    def get_by_id(cls, oid: Union[str, ObjectId]) -> Optional["ObjectConnection"]:
+        return ObjectConnection.objects.filter(id=oid).first()
 
     def iter_changed_datastream(self, changed_fields=None):
         if config.datastream.enable_managedobject:

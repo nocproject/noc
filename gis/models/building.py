@@ -94,8 +94,8 @@ class Building(Document):
 
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_id_cache"), lock=lambda _: id_lock)
-    def get_by_id(cls, id: Union[str, bson.ObjectId]) -> Optional["Building"]:
-        return Building.objects.filter(id=id).first()
+    def get_by_id(cls, oid: Union[str, bson.ObjectId]) -> Optional["Building"]:
+        return Building.objects.filter(id=oid).first()
 
     @property
     def primary_address(self):

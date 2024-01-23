@@ -103,8 +103,8 @@ class FirmwarePolicy(Document):
 
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_id_cache"), lock=lambda _: id_lock)
-    def get_by_id(cls, id: Union[str, bson.ObjectId]) -> Optional["FirmwarePolicy"]:
-        return FirmwarePolicy.objects.filter(id=id).first()
+    def get_by_id(cls, oid: Union[str, bson.ObjectId]) -> Optional["FirmwarePolicy"]:
+        return FirmwarePolicy.objects.filter(id=oid).first()
 
     @classmethod
     def get_status(

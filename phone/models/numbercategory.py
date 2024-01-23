@@ -50,8 +50,8 @@ class NumberCategory(Document):
 
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_id_cache"), lock=lambda _: id_lock)
-    def get_by_id(cls, id: Union[str, ObjectId]) -> Optional["NumberCategory"]:
-        return NumberCategory.objects.filter(id=id).first()
+    def get_by_id(cls, oid: Union[str, ObjectId]) -> Optional["NumberCategory"]:
+        return NumberCategory.objects.filter(id=oid).first()
 
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_rule_cache"), lock=lambda _: id_lock)

@@ -148,8 +148,8 @@ class Interface(Document):
         return "%s: %s" % (self.managed_object.name, self.name)
 
     @classmethod
-    def get_by_id(cls, id: Union[str, ObjectId]) -> Optional["Interface"]:
-        return Interface.objects.filter(id=id).first()
+    def get_by_id(cls, oid: Union[str, ObjectId]) -> Optional["Interface"]:
+        return Interface.objects.filter(id=oid).first()
 
     def clean(self):
         if self.extra_labels:

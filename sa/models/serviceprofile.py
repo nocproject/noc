@@ -98,8 +98,8 @@ class ServiceProfile(Document):
 
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_id_cache"), lock=lambda _: id_lock)
-    def get_by_id(cls, id: Union[str, ObjectId]) -> Optional["ServiceProfile"]:
-        return ServiceProfile.objects.filter(id=id).first()
+    def get_by_id(cls, oid: Union[str, ObjectId]) -> Optional["ServiceProfile"]:
+        return ServiceProfile.objects.filter(id=oid).first()
 
     def on_save(self):
         if not hasattr(self, "_changed_fields") or "interface_profile" in self._changed_fields:

@@ -84,9 +84,9 @@ class Layer(Document):
 
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_id_cache"), lock=lambda _: id_lock)
-    def get_by_id(cls, id: Union[str, bson.ObjectId]) -> Optional["Layer"]:
+    def get_by_id(cls, oid: Union[str, bson.ObjectId]) -> Optional["Layer"]:
         try:
-            return Layer.objects.get(id=id)
+            return Layer.objects.get(id=oid)
         except Layer.DoesNotExist:
             return None
 

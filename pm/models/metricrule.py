@@ -143,8 +143,8 @@ class MetricRule(Document):
 
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_id_cache"), lock=lambda _: id_lock)
-    def get_by_id(cls, id: Union[str, ObjectId]) -> Optional["MetricRule"]:
-        return MetricRule.objects.filter(id=id).first()
+    def get_by_id(cls, oid: Union[str, ObjectId]) -> Optional["MetricRule"]:
+        return MetricRule.objects.filter(id=oid).first()
 
     def iter_changed_datastream(self, changed_fields=None):
         from noc.inv.models.interface import Interface
