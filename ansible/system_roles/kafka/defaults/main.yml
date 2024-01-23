@@ -26,7 +26,7 @@ kafka_socket_request_max_bytes: 104857600
 kafka_replica_socket_receive_buffer_bytes: 65536
 
 
-kafka_node_id: {{ groups['kafka'].index(inventory_hostname) }}
+kafka_node_id: "{{ groups['kafka'].index(inventory_hostname) }}"
 kafka_auto_create_topics_enable: true
 kafka_delete_topic_enable: true
 kafka_default_replication_factor: 1

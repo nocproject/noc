@@ -120,7 +120,6 @@
   tags:
     - config
 
-
 - name: Create symlink to kafka server properties file
   ansible.builtin.file:
     src: '{{ kafka_dir }}/config/server.properties'
@@ -141,14 +140,12 @@
   notify:
     - Restart kafka systemd
 
-
 - name: Install and start the kafka service
   service:
     name: kafka
     state: started
     enabled: yes
   when: kafka_start
-
 
 - name: Delete the kafka archive file
   ansible.builtin.file:
