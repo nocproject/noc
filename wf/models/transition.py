@@ -160,7 +160,7 @@ class Transition(Document):
             r["required_rules"] = [r.json_data for r in self.required_rules]
         if self.vertices:
             ls = list(self.vertices)
-            r["vertices"] = [{"x":ls[0]["x"], "y":ls[0]["y"]}]
+            r["vertices"] = [{"x": ls[0]["x"], "y": ls[0]["y"]}]
         return r
 
     def to_json(self) -> str:
@@ -180,7 +180,7 @@ class Transition(Document):
                 "handlers",
                 "required_rules",
                 "vertices",
-                "bi_id"
+                "bi_id",
             ],
         )
 
