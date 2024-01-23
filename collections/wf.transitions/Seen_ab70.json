@@ -1,0 +1,12 @@
+{
+    "workflow__name": "Default Resource",
+    "from_state__uuid": "327b39b1-e697-4809-aeaa-ae47018e4ac2",
+    "to_state__uuid": "6e7100c1-df18-4555-b833-81da6fc16ff9",
+    "uuid": "ab70af73-5531-4233-b3ed-67412d96b047",
+    "is_active": true,
+    "$collection": "wf.transitions",
+    "event": "seen",
+    "label": "Seen",
+    "enable_manual": true,
+    "bi_id": 2585664142032130717
+}

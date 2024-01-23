@@ -1,6 +1,6 @@
 {
     "name": "Service Default",
-    "uuid": "138f6fb0-be83-43ff-846e-b7236c03163d",
+    "uuid": "87927629-6acf-426e-8787-071d7203b322",
     "$collection": "wf.workflows",
     "is_active": true,
     "description": "Service Default workflow",

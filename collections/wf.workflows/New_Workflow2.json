@@ -1,0 +1,7 @@
+{
+    "name": "New Workflow2",
+    "uuid": "4a8ddcdd-7ff7-4869-a30e-1ccdc1b6c584",
+    "$collection": "wf.workflows",
+    "is_active": true,
+    "description": "New Workflow diagram"
+}

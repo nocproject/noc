@@ -1,0 +1,11 @@
+{
+    "workflow__name": "New Workflow1",
+    "from_state__uuid": "0868ea75-29a9-4551-a3f3-aca786ea07dc",
+    "to_state__uuid": "4d4622e3-36ae-4af0-a77a-b8085de13409",
+    "uuid": "75e69df2-b301-4134-9580-7cea00f4581c",
+    "is_active": false,
+    "$collection": "wf.transitions",
+    "label": "New Link",
+    "enable_manual": false,
+    "bi_id": 1625372070094175939
+}

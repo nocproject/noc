@@ -1,0 +1,11 @@
+{
+    "workflow__name": "Service Default",
+    "from_state__uuid": "86174466-065c-4a01-af4a-7f4bb751a0ed",
+    "to_state__uuid": "bfe61f22-e4ed-4f4c-816d-f9a31411198f",
+    "uuid": "4d837fea-044f-4563-a705-b2bf09d63ea6",
+    "is_active": true,
+    "$collection": "wf.transitions",
+    "label": "Check",
+    "enable_manual": true,
+    "bi_id": 2635841525332586998
+}

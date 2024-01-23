@@ -132,8 +132,8 @@ class Transition(Document):
     def __str__(self):
         return "%s: %s -> %s [%s]" % (
             self.workflow.name,
-            self.from_state.name,
-            self.to_state.name,
+            str(self.from_state.uuid),
+            str(self.to_state.uuid),
             self.label,
         )
 
@@ -141,13 +141,14 @@ class Transition(Document):
     def json_data(self) -> Dict[str, Any]:
         r = {
             "workflow__name": self.workflow.name,
-            "from_state__name": self.from_state.name,
-            "to_state__name": self.to_state.name,
+            "from_state__uuid": str(self.from_state.uuid),
+            "to_state__uuid": str(self.to_state.uuid),
             "uuid": self.uuid,
             "is_active": self.is_active,
             "$collection": self._meta["json_collection"],
             "label": self.label,
             "enable_manual": self.enable_manual,
+            "bi_id": self.bi_id,
         }
         if self.description:
             r["description"] = self.description
@@ -157,6 +158,9 @@ class Transition(Document):
             r["handlers"] = [h for h in self.handlers]
         if self.required_rules:
             r["required_rules"] = [r.json_data for r in self.required_rules]
+        if self.vertices:
+            ls = list(self.vertices)
+            r["vertices"] = [{"x":ls[0]["x"], "y":ls[0]["y"]}]
         return r
 
     def to_json(self) -> str:
@@ -164,8 +168,8 @@ class Transition(Document):
             self.json_data,
             order=[
                 "workflow__name",
-                "from_state__name",
-                "to_state__name",
+                "from_state__uuid",
+                "to_state__uuid",
                 "uuid",
                 "is_active",
                 "$collection",
@@ -175,6 +179,8 @@ class Transition(Document):
                 "enable_manual",
                 "handlers",
                 "required_rules",
+                "vertices",
+                "bi_id"
             ],
         )
 

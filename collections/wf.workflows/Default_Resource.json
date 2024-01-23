@@ -1,6 +1,6 @@
 {
     "name": "Default Resource",
-    "uuid": "b9a2da77-ac66-439c-b801-71ba83fd4978",
+    "uuid": "2d41c135-44db-4234-92eb-9ccbebbd9389",
     "$collection": "wf.workflows",
     "is_active": true,
     "description": "Default resource workflow with external provisioning",
