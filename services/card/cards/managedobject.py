@@ -558,6 +558,7 @@ class ManagedObjectCard(BaseCard):
             "model": o.model.name,
             "children": [],
         }
+        if_map = {c.name: c.interface_name for c in o.connections}
         for n in o.model.connections:
             if n.direction == "i":
                 c, r_object, _ = o.get_p2p_connection(n.name)
@@ -569,6 +570,7 @@ class ManagedObjectCard(BaseCard):
                             "serial": "",
                             "description": "--- EMPTY ---",
                             "model": "",
+                            "interface": if_map.get(n.name) or "",
                         }
                     ]
                 else:
@@ -583,6 +585,7 @@ class ManagedObjectCard(BaseCard):
                         "serial": "",
                         "description": n.description,
                         "model": ", ".join(str(p) for p in n.protocols),
+                        "interface": if_map.get(n.name) or "",
                     }
                 ]
         return r
