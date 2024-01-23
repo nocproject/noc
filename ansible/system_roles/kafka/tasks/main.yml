@@ -109,7 +109,7 @@
     - dirs
 
 - name: Template configuration file to server.properties
-  ansible.builtin.template:
+  template:
     src: server.properties.j2
     dest: '{{ kafka_dir }}/config/kraft/server.properties'
     group: '{{ kafka_group }}'
@@ -121,7 +121,7 @@
     - config
 
 - name: Create symlink to kafka server properties file
-  ansible.builtin.file:
+  file:
     src: '{{ kafka_dir }}/config/server.properties'
     dest: /etc/kafka/server.properties
     state: link
