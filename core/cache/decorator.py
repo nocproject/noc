@@ -134,6 +134,6 @@ def cachedmethod(cache=None, key="cache-%s", lock=None, ttl=None, version=0):
                 # Done
                 return v
 
-        return functools.update_wrapper(wrapper, method)
+        return wrapper
 
     return decorator
