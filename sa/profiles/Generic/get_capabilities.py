@@ -7,7 +7,6 @@
 
 # Python modules
 import functools
-from typing import Optional
 
 # NOC modules
 from noc.core.script.base import BaseScript
