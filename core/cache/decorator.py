@@ -5,9 +5,6 @@
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
-# Python modules
-import functools
-
 # NOC modules
 from noc.core.perf import metrics
 from .base import cache as x_cache
