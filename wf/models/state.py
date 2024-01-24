@@ -93,7 +93,7 @@ class State(Document):
         "auto_create_index": False,
         "json_collection": "wf.states",
         "json_depends_on": ["wf.workflows"],
-        "json_unique_fields": [("workflow", "name"), "uuid"],
+        "json_unique_fields": [("workflow", "name")],
     }
     workflow: "Workflow" = PlainReferenceField(Workflow)
     name = StringField()

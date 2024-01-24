@@ -70,7 +70,7 @@ class Workflow(Document):
         "strict": False,
         "auto_create_index": False,
         "json_collection": "wf.workflows",
-        "json_unique_fields": ["name", "uuid"],
+        "json_unique_fields": ["name"],
     }
     name = StringField(unique=True)
     uuid = UUIDField(binary=True)
