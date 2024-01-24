@@ -141,12 +141,11 @@
     - reload systemd
     - restart kafka
 
-- name: Install and start the kafka service
+- name: Start the kafka service
   service:
     name: kafka
     state: started
     enabled: yes
-  when: kafka_start
 
 - name: Delete the kafka archive file
   ansible.builtin.file:
