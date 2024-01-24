@@ -43,6 +43,7 @@ from noc.models import get_model_id, LABEL_MODELS, get_model, is_document
 from noc.main.models.remotesystem import RemoteSystem
 from noc.main.models.label import Label
 
+from noc.core.text import quote_safe_path
 from noc.core.prettyjson import to_json
 
 logger = logging.getLogger(__name__)
@@ -92,7 +93,7 @@ class State(Document):
         "auto_create_index": False,
         "json_collection": "wf.states",
         "json_depends_on": ["wf.workflows"],
-        "json_unique_fields": ["name", "uuid"],
+        "json_unique_fields": [("workflow", "name"), "uuid"],
     }
     workflow: "Workflow" = PlainReferenceField(Workflow)
     name = StringField()
@@ -201,8 +202,8 @@ class State(Document):
         )
 
     def get_json_path(self) -> str:
-        name = self.name + "_" + str(self.uuid)[:4]
-        return os.path.join(name) + ".json"
+        name_coll = quote_safe_path(self.workflow.name + " " + self.name)
+        return os.path.join(name_coll) + ".json"
 
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_id_cache"), lock=lambda _: id_lock)

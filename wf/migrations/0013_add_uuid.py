@@ -16,4 +16,5 @@ class Migration(BaseMigration):
             coll = self.mongo_db[coll_name]
             for p in coll.find({}):
                 u = uuid.uuid4()
-                self.mongo_db[coll_name].update_one({"_id": p["_id"]}, {"$set": {"uuid": u}})
+                query = {"_id": p["_id"], "$or": [{"uuid": {"$exists": False}}, {"uuid": ""}]}
+                self.mongo_db[coll_name].update_one(query, {"$set": {"uuid": u}})

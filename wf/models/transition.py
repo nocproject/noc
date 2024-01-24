@@ -34,6 +34,7 @@ from noc.core.bi.decorator import bi_sync
 from noc.main.models.remotesystem import RemoteSystem
 from noc.core.handler import get_handler
 
+from noc.core.text import quote_safe_path
 from noc.core.prettyjson import to_json
 
 logger = logging.getLogger(__name__)
@@ -92,7 +93,7 @@ class Transition(Document):
         "auto_create_index": False,
         "json_collection": "wf.transitions",
         "json_depends_on": ["wf.workflows", "wf.states"],
-        "json_unique_fields": ["uuid"],
+        "json_unique_fields": [("from_state", "to_state"), "uuid"],
     }
     workflow: Workflow = PlainReferenceField(Workflow)
     from_state: State = PlainReferenceField(State)
@@ -185,8 +186,18 @@ class Transition(Document):
         )
 
     def get_json_path(self) -> str:
-        name = self.label + "_" + str(self.uuid)[:4]
-        return os.path.join(name) + ".json"
+        name_coll = quote_safe_path(
+            self.workflow.name
+            + " "
+            + self.to_state.name
+            + " "
+            + self.from_state.name
+            + " "
+            + self.label
+            + " "
+            + str(self.bi_id)
+        )
+        return os.path.join(name_coll) + ".json"
 
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_id_cache"), lock=lambda _: id_lock)
