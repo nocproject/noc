@@ -116,7 +116,7 @@
     owner: '{{ kafka_user }}'
     mode: 0644
   notify:
-    - Restart kafka service
+    - restart kafka
   tags:
     - config
 
@@ -138,7 +138,8 @@
     owner: '{{ kafka_user }}'
     mode: 0644
   notify:
-    - Restart kafka systemd
+    - reload systemd
+    - restart kafka
 
 - name: Install and start the kafka service
   service:
