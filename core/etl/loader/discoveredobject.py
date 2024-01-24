@@ -30,7 +30,7 @@ class DiscoveredObjectLoader(BaseLoader):
             source="etl",
             remote_system=self.system.remote_system.bi_id,
             remote_id=item.id,
-            **item.data,
+            **(item.data or {}),
         )
 
     def purge(self):
@@ -48,9 +48,13 @@ class DiscoveredObjectLoader(BaseLoader):
                 remote_system=self.system.remote_system.bi_id,
                 remote_id=item.id,
                 is_delete=True,
-                **item.data,
+                **(item.data or {}),
             )
         self.pending_deletes = []
 
     def on_change(self, o: DiscoveredObject, n: DiscoveredObject):
         self.on_add(n)
+
+    def check(self, chain):
+        self.logger.info("Checking")
+        return 0
