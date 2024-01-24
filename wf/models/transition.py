@@ -93,7 +93,7 @@ class Transition(Document):
         "auto_create_index": False,
         "json_collection": "wf.transitions",
         "json_depends_on": ["wf.workflows", "wf.states"],
-        "json_unique_fields": [("from_state", "to_state"), "uuid"],
+        "json_unique_fields": [("from_state", "to_state", "required_rules.labels"), "uuid"],
     }
     workflow: Workflow = PlainReferenceField(Workflow)
     from_state: State = PlainReferenceField(State)
