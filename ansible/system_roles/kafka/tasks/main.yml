@@ -122,7 +122,7 @@
 
 - name: Create symlink to kafka server properties file
   file:
-    src: '{{ kafka_dir }}/config/server.properties'
+    src: '{{ kafka_dir }}/config/kraft/server.properties'
     dest: /etc/kafka/server.properties
     state: link
     group: '{{ kafka_group }}'

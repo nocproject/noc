@@ -2,6 +2,7 @@
 kafka_group: "kafka"
 kafka_user: "kafka"
 kafka_system_service: "kafka"
+kafka_unit_path: /lib/systemd/system/kafka.service
 kafka_root_dir: /opt
 kafka_dir: "{{ kafka_root_dir }}/kafka"
 
