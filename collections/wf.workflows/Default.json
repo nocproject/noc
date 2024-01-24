@@ -1,0 +1,7 @@
+{
+    "name": "Default",
+    "uuid": "0a85ee31-354e-44c3-9c0b-2746a7c1b20d",
+    "$collection": "wf.workflows",
+    "is_active": true,
+    "description": "Default workflow with Ready state"
+}

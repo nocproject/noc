@@ -1,0 +1,16 @@
+{
+    "workflow__name": "Sensor Default",
+    "from_state__uuid": "d2920107-c379-4d23-9500-e3fbfee58516",
+    "to_state__uuid": "0d94e36e-9edd-4420-812a-510965be75cb",
+    "uuid": "9d8156a0-3719-45e3-8abd-94d1eb0957a0",
+    "is_active": true,
+    "$collection": "wf.transitions",
+    "event": "missed",
+    "label": "Missed",
+    "enable_manual": true,
+    "vertices": [{
+        "x": 390,
+        "y": 230
+    }],
+    "bi_id": 5981567621944996631
+}

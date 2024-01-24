@@ -1,0 +1,16 @@
+{
+    "workflow__name": "VLAN Workflow",
+    "name": "New State5",
+    "uuid": "caa96968-985f-4c13-8982-0e8fed1ade6b",
+    "$collection": "wf.states",
+    "is_default": false,
+    "is_productive": false,
+    "is_wiping": false,
+    "hide_with_state": false,
+    "update_last_seen": false,
+    "ttl": 0,
+    "update_expired": false,
+    "x": 420,
+    "y": 80,
+    "disable_all_interaction": false
+}

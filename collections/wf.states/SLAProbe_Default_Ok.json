@@ -1,0 +1,16 @@
+{
+    "workflow__name": "SLAProbe Default",
+    "name": "Ok",
+    "uuid": "e4914a68-baba-40ec-9c30-581d2925cbe8",
+    "$collection": "wf.states",
+    "is_default": true,
+    "is_productive": true,
+    "is_wiping": false,
+    "hide_with_state": false,
+    "update_last_seen": true,
+    "ttl": 0,
+    "update_expired": false,
+    "x": 390,
+    "y": 110,
+    "disable_all_interaction": false
+}
