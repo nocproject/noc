@@ -1,7 +1,7 @@
 # ---------------------------------------------------------------------
 # Activator API
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2022 The NOC Project
+# Copyright (C) 2007-2024 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -215,6 +215,80 @@ class ActivatorAPI(JSONRPCAPI):
 
     @staticmethod
     def snmp_v2_get_get_label(address: str, community: str, oid: str):
+        return f"{address} {oid}"
+
+    @api
+    async def snmp_v3_get(
+        self,
+        address: str,
+        username: str,
+        oid: str,
+        auth_proto: Optional[str] = None,
+        auth_key: Optional[str] = None,
+        priv_proto: Optional[str] = None,
+        priv_key: Optional[str] = None,
+        timeout: Optional[int] = 10,
+        return_error: bool = False,
+    ):
+        """
+        Perform SNMP v2c GET and return result
+        :param address: IP address
+        :param username: SNMP v3 username
+        :param oid: Resolved oid
+        :param auth_proto: SNMPv3 Authentication Protocol
+        :param auth_key: SNMPv3 Authentication Key
+        :param priv_key: SNMPv3 Private Key
+        :param priv_proto: SNMPv3 Private Protocol: DES/AES
+        :param timeout: Timeout request
+        :param return_error:
+        :returns: Result as a string, or None, when no response
+        """
+        from gufo.snmp import SnmpSession, SnmpVersion, SnmpError
+        from gufo.snmp.user import User, Aes128Key, DesKey, Md5Key, Sha1Key, KeyType
+
+        auth_proto_map = {"SHA": Sha1Key, "MD5": Md5Key}
+        priv_proto_map = {"AES": Aes128Key, "DES": DesKey}
+        self.logger.debug("SNMP v3 GET %s %s", address, oid)
+        message = ""
+        if auth_key and auth_proto in auth_proto_map:
+            auth_key = auth_proto_map[auth_proto](
+                auth_key.encode("utf-8"), key_type=KeyType.Password
+            )
+        if priv_key and priv_proto in priv_proto_map:
+            priv_key = priv_proto_map[priv_proto](
+                priv_key.encode("utf-8"), key_type=KeyType.Password
+            )
+        if auth_key and priv_key:
+            user = User(name=username, auth_key=auth_key, priv_key=priv_key)
+        elif auth_key:
+            user = User(name=username, auth_key=auth_key)
+        else:
+            user = User(name=username)
+        session = SnmpSession(
+            addr=address,
+            user=user,
+            version=SnmpVersion.v3,
+            tos=config.activator.tos,
+            timeout=int(timeout),
+        )
+        try:
+            await session.refresh()
+            result = await session.get(oid)
+            self.logger.debug("SNMP GET %s %s returns %s", address, oid, result)
+            result = smart_text(result, errors="replace") if result else result
+        except (SnmpError, TimeoutError) as e:
+            metrics["error", ("type", "snmp_v3_error")] += 1
+            result, message = None, repr(e)
+            self.logger.debug("SNMP GET %s %s returns error %s", address, oid, e)
+        except Exception as e:
+            result, message = None, str(e)
+            self.logger.debug("SNMP GET %s %s returns unknown error %s", address, oid, e)
+        if return_error:
+            return result, message
+        return result
+
+    @staticmethod
+    def snmp_v3_get_get_label(address: str, community: str, oid: str):
         return f"{address} {oid}"
 
     @api

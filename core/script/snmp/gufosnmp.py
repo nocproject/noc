@@ -15,6 +15,7 @@ from gufo.snmp.user import User, Aes128Key, DesKey, Md5Key, Sha1Key, KeyType
 
 
 # NOC modules
+from noc.core.snmp.version import SNMP_v1, SNMP_v2c, SNMP_v3
 from noc.core.snmp.error import SNMPError, BAD_VALUE
 from noc.core.error import ERR_SNMP_BAD_COMMUNITY
 from noc.core.ioloop.util import run_sync
@@ -22,9 +23,9 @@ from noc.core.mib import mib
 from .base import SNMP
 
 GUFO_SNMP_VERSION_MAP = {
-    0: SnmpVersion.v1,
-    1: SnmpVersion.v2c,
-    3: SnmpVersion.v3,
+    SNMP_v1: SnmpVersion.v1,
+    SNMP_v2c: SnmpVersion.v2c,
+    SNMP_v3: SnmpVersion.v3,
 }
 BULK_MAX_REPETITIONS = 20
 
@@ -94,10 +95,10 @@ class GufoSNMP(SNMP):
             )
         return User(name=str(self.script.credentials["snmp_username"]))
 
-    async def get_session(self) -> "SnmpSession":
+    async def get_session(self, version=None) -> "SnmpSession":
         if not self.socket:
             self.logger.debug("Create UDP Session")
-            version = self._get_snmp_version()
+            version = self._get_snmp_version(version)
             config = {
                 "addr": self.script.credentials["address"],
                 "limit_rps": self.rate_limit,
@@ -145,7 +146,7 @@ class GufoSNMP(SNMP):
         async def run():
             address = self.script.credentials["address"]
             self.logger.debug("[%s] SNMP GET %s", address, oids)
-            session = await self.get_session()
+            session = await self.get_session(version)
             try:
                 data = await session.get_many(oids)
             except TimeoutError:
@@ -230,7 +231,7 @@ class GufoSNMP(SNMP):
         async def run(max_retries, filter):
             address = self.script.credentials["address"]
             self.logger.debug("[%s] SNMP GETNEXT %s", address, oid)
-            session = await self.get_session()
+            session = await self.get_session(version)
             oids_iter = session.getnext(oid)
             if bulk:
                 oids_iter = session.getbulk(
@@ -278,7 +279,7 @@ class GufoSNMP(SNMP):
         async def run(filter: Callable):
             address = self.script.credentials["address"]
             self.logger.debug("[%s] SNMP COUNT %s", address, oid)
-            session = await self.get_session()
+            session = await self.get_session(version)
             result = 0
             oids_iter = session.getnext(oid)
             if self.script.has_snmp_bulk():
@@ -316,7 +317,7 @@ class GufoSNMP(SNMP):
         async def run():
             address = self.script.credentials["address"]
             self.logger.debug("[%s] SNMP GET EngineID", address)
-            session = await self.get_session()
+            session = await self.get_session(SNMP_v3)
             try:
                 return session.get_engine_id()
             except self.TimeOutError:
