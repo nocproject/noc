@@ -186,7 +186,9 @@ class CPE(Document):
     @classmethod
     def _reset_caches(cls, cpe_id: int):
         try:
-            del cls._id_cache[str(cpe_id),]
+            del cls._id_cache[
+                str(cpe_id),
+            ]
         except KeyError:
             pass
 
