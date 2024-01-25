@@ -444,6 +444,20 @@ class Label(Document):
     def get_effective_setting(cls, label: str, setting: str) -> bool:
         wildcards = cls.get_wildcards(label)
         coll = cls._get_collection()
+        if setting in cls.ENABLE_MODEL_ID_MAP:
+            # for backward compatible
+            return bool(
+                next(
+                    coll.find(
+                        {
+                            "name": {"$in": [label] + wildcards},
+                            "allow_models": cls.ENABLE_MODEL_ID_MAP[setting],
+                        },
+                        {},
+                    ),
+                    None,
+                )
+            )
         r = next(
             coll.aggregate(
                 [
@@ -485,7 +499,7 @@ class Label(Document):
                                 }
                             }
                             for ff in cls._fields
-                            if ff[:2] in {"en", "ex", "bg", "fg"} or ff == "is_protected"
+                            if ff[:2] in {"al", "ex", "bg", "fg"} or ff == "is_protected"
                         }
                     },
                     {"$group": {"_id": None, "settings": {"$mergeObjects": "$$ROOT"}}},

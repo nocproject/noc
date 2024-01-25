@@ -80,7 +80,7 @@ class InterfaceCheck(PolicyDiscoveryCheck):
         self.interface_assigned_vlans: Set[int] = set()  # @todo l2domain
         self.is_confdb_source = False  # Set True if Interface source is ConfDB
         self.allowed_labels = set(
-            Label.objects.filter(enable_interface=True)
+            Label.objects.filter(allow_models=["inv.Interface"])
             .read_preference(ReadPreference.SECONDARY_PREFERRED)
             .values_list("name")
         )

@@ -220,6 +220,12 @@ Ext.define("NOC.main.label.Application", {
                     allowBlank: false
                 },
                 {
+                    name: "uuid",
+                    xtype: "displayfield",
+                    fieldLabel: __("UUID"),
+                    allowBlank: true
+                },
+                {
                     name: "description",
                     xtype: "textarea",
                     fieldLabel: __("Description"),
