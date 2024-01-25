@@ -702,7 +702,7 @@ class AssetCheck(DiscoveryCheck):
             )
         if labels is not None:
             for ll in labels:
-                Label.ensure_label(ll)
+                Label.ensure_label(ll, ["inv.Sensor"])
             s.labels = [ll for ll in labels if Sensor.can_set_label(ll)]
             s.extra_labels = {"sa": s.labels}
         s.save()
@@ -741,7 +741,7 @@ class AssetCheck(DiscoveryCheck):
             if ll in sa_labels:
                 continue
             self.logger.info("[%s] Ensure Sensor label: %s", sensor.id, ll)
-            Label.ensure_label(ll, enable_sensor=True)
+            Label.ensure_label(ll, ["inv.Sensor"])
         if labels != sa_labels:
             remove_labels = set(sa_labels).difference(set(labels))
             if remove_labels:

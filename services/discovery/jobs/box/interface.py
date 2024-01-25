@@ -266,7 +266,7 @@ class InterfaceCheck(PolicyDiscoveryCheck):
         for ll in labels:
             if Interface.can_set_label(ll):
                 if ll not in self.allowed_labels:
-                    Label.ensure_label(ll, enable_interface=True)
+                    Label.ensure_label(ll, ["inv.Interface"])
                 extra_labels.append(ll)
         if iface:
             ignore_empty = ["ifindex"]

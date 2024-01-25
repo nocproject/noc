@@ -1,7 +1,7 @@
 # ----------------------------------------------------------------------
 # ManagedObject
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2022 The NOC Project
+# Copyright (C) 2007-2024 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -2271,13 +2271,13 @@ class ManagedObject(NOCModel):
             yield ResourceGroup.get_lazy_labels(instance.effective_service_groups)
         yield Label.get_effective_regex_labels("managedobject_name", instance.name)
         lazy_profile_labels = list(Profile.iter_lazy_labels(instance.profile))
-        yield Label.ensure_labels(lazy_profile_labels, enable_managedobject=True)
+        yield Label.ensure_labels(lazy_profile_labels, ["sa.ManagedObject"])
         if instance.vendor:
             lazy_vendor_labels = list(Vendor.iter_lazy_labels(instance.vendor))
-            yield Label.ensure_labels(lazy_vendor_labels, enable_managedobject=True)
+            yield Label.ensure_labels(lazy_vendor_labels, ["sa.ManagedObject"])
         if instance.platform:
             lazy_platform_labels = list(Platform.iter_lazy_labels(instance.platform))
-            yield Label.ensure_labels(lazy_platform_labels, enable_managedobject=True)
+            yield Label.ensure_labels(lazy_platform_labels, ["sa.ManagedObject"])
         if instance.address:
             yield Label.get_effective_prefixfilter_labels("managedobject_address", instance.address)
             yield Label.get_effective_regex_labels("managedobject_address", instance.address)
@@ -2300,8 +2300,7 @@ class ManagedObject(NOCModel):
         if instance.diagnostics:
             for d in instance.diagnostic:
                 yield Label.ensure_labels(
-                    [f"{DIAGNOCSTIC_LABEL_SCOPE}::{d.diagnostic}::{d.state}"],
-                    enable_managedobject=True,
+                    [f"{DIAGNOCSTIC_LABEL_SCOPE}::{d.diagnostic}::{d.state}"], ["sa.ManagedObject"],
                 )
 
     @classmethod

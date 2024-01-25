@@ -69,7 +69,7 @@ class CPECheck(DiscoveryCheck):
             labels = r.get("labels")
             if labels is not None:
                 for ll in labels:
-                    Label.ensure_label(ll)
+                    Label.ensure_label(ll, ["inv.CPE"])
                 cpe.labels = [ll for ll in labels if CPE.can_set_label(ll)]
                 cpe.extra_labels = {"sa": cpe.labels}
             # Update Caps

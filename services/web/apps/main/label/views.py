@@ -40,6 +40,14 @@ class LabelApplication(ExtDocApplication):
     not_matched_re = re.compile(r"[^=<>&]$")
     matched_re = re.compile(r"[=<>&]$")
 
+    def instance_to_dict(self, o, fields=None, nocustom=False):
+        r = super().instance_to_dict(o, fields=fields, nocustom=nocustom)
+        if not isinstance(o, Label):
+            return r
+        for s, model_id in Label.ENABLE_MODEL_ID_MAP.items():
+            r[s] = model_id in o.allow_models
+        return r
+
     def field_is_builtin(self, o: "Label"):
         return bool(o.is_builtin)
 
