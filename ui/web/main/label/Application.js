@@ -274,6 +274,11 @@ Ext.define("NOC.main.label.Application", {
                     },
                 },
                 {
+                    name: "allow_auto_create",
+                    xtype: "checkbox",
+                    boxLabel: __("Allow Auto Create"),
+                },
+                {
                     name: "is_matching",
                     xtype: "checkbox",
                     bind: {

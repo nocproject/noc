@@ -249,7 +249,7 @@ Ext.define('NOC.core.filter.Filter', {
             toBufferTrigger: false,
             filterProtected: false,
             query: {
-                "enable_managedobject": true
+                "allow_models": ["sa.ManagedObject"]
             },
             listeners: {
                 change: 'setFilter'

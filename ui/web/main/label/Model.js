@@ -86,6 +86,10 @@ Ext.define("NOC.main.label.Model", {
             persist: false
         },
         {
+            name: "allow_auto_create",
+            type: "boolean",
+        },
+        {
             name: "enable_agent",
             type: "boolean"
         },
