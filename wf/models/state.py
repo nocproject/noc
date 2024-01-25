@@ -168,6 +168,10 @@ class State(Document):
         }
         if self.description:
             r["description"] = self.description
+        if self.interaction_settings:
+            r["interaction_settings"] = {
+                key: val.json_data for key, val in self.interaction_settings.items()
+            }
         if self.on_enter_handlers:
             r["on_enter_handlers"] = [h for h in self.on_enter_handlers]
         if self.job_handler:
@@ -198,6 +202,7 @@ class State(Document):
                 "x",
                 "y",
                 "disable_all_interaction",
+                "interaction_settings",
             ],
         )
 

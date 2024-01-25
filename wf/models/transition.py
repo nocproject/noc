@@ -149,7 +149,6 @@ class Transition(Document):
             "$collection": self._meta["json_collection"],
             "label": self.label,
             "enable_manual": self.enable_manual,
-            "bi_id": self.bi_id,
         }
         if self.description:
             r["description"] = self.description
@@ -181,7 +180,6 @@ class Transition(Document):
                 "handlers",
                 "required_rules",
                 "vertices",
-                "bi_id",
             ],
         )
 
