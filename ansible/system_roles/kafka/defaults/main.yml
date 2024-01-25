@@ -24,7 +24,7 @@ kafka_socket_send_buffer_bytes: 102400
 kafka_socket_receive_buffer_bytes: 102400
 kafka_socket_request_max_bytes: 104857600
 kafka_replica_socket_receive_buffer_bytes: 65536
-
+kafka_opts: "-Djava.net.preferIPv4Stack=True"
 
 kafka_node_id: "{{ groups['svc-kafka-exec'].index(inventory_hostname) }}"
 kafka_auto_create_topics_enable: true
