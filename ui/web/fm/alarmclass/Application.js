@@ -144,7 +144,7 @@ Ext.define('NOC.fm.alarmclass.Application', {
                                     allowBlank: true,
                                     uiStyle: "medium",
                                     query: {
-                                        "enable_alarm": true
+                                        "allow_models": ["fm.Alarm"]
                                     },
                                 },
                                 {

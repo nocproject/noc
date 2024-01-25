@@ -53,7 +53,7 @@ class SLACheck(DiscoveryCheck):
         for p in self.object.scripts.get_sla_probes():
             new_probes[p.get("group", ""), p["name"]] = p
             for ll in p.get("tags", []):
-                Label.ensure_label(ll, enable_slaprobe=True)
+                Label.ensure_label(ll, ["sla.SLAProbe"])
         # Check existing probes
         for p in SLAProbe.objects.filter(managed_object=self.object.id):
             group = p.group or ""
@@ -68,7 +68,7 @@ class SLACheck(DiscoveryCheck):
                 if ll in extra_labels:
                     continue
                 self.logger.info("[%s] Ensure SLA label: %s", p.id, ll)
-                Label.ensure_label(ll, enable_slaprobe=True)
+                Label.ensure_label(ll, ["sla.SLAProbe"])
             self.update_if_changed(
                 p,
                 {

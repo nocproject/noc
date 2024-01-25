@@ -139,7 +139,7 @@ Ext.define("NOC.sa.administrativedomain.Application", {
             allowBlank: true,
             uiStyle: "extra",
             query: {
-                "enable_administrativedomain": true
+                "allow_models": ["sa.AdministrativeDomain"]
             }
         }
     ],

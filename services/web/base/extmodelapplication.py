@@ -376,12 +376,10 @@ class ExtModelApplication(ExtApplication):
                     r[f.name] = v.id
                     r["%s__label" % f.name] = smart_text(v.title)
             elif f.name in {"labels", "effective_labels"} and isinstance(f, ArrayField):
-                r[f.name] = [
-                    self.format_label(ll)
-                    for ll in Label.objects.filter(name__in=getattr(o, f.name, [])).order_by(
-                        "display_order"
-                    )
-                ]
+                r[f.name] = sorted(
+                    [self.format_label(ll) for ll in Label.from_names(getattr(o, f.name, []))],
+                    key=lambda x: x["display_order"],
+                )
             elif hasattr(f, "document"):
                 # DocumentReferenceField
                 v = getattr(o, f.name)

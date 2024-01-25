@@ -148,6 +148,7 @@ class Label(Document):
         "strict": False,
         "auto_create_index": False,
         "indexes": [
+            "allow_models",
             ("is_matching", "match_regex.scope"),
             (
                 "match_vlanfilter.vlan_filter",
@@ -177,59 +178,8 @@ class Label(Document):
     # For scoped - to propagating settings on own labels
     propagate = BooleanField(default=False)
     # Label scope
-    enable_agent = BooleanField(default=False)
-    enable_service = BooleanField(default=False)
-    enable_serviceprofile = BooleanField(default=False)
-    enable_managedobject = BooleanField(default=False)
-    enable_managedobjectprofile = BooleanField(default=False)
-    enable_administrativedomain = BooleanField(default=False)
-    enable_authprofile = BooleanField(default=False)
-    enable_commandsnippet = BooleanField(default=False)
-    enable_firmwarepolicy = BooleanField(default=False)
-    #
-    enable_allocationgroup = BooleanField(default=False)
-    enable_networksegment = BooleanField(default=False)
-    enable_object = BooleanField(default=False)
-    enable_objectmodel = BooleanField(default=False)
-    enable_platform = BooleanField(default=False)
-    enable_resourcegroup = BooleanField(default=False)
-    enable_sensor = BooleanField(default=False)
-    enable_sensorprofile = BooleanField(default=False)
-    enable_interface = BooleanField(default=False)
-    #
-    enable_subscriber = BooleanField(default=False)
-    enable_supplier = BooleanField(default=False)
-    #
-    enable_dnszone = BooleanField(default=False)
-    enable_dnszonerecord = BooleanField(default=False)
-    #
-    enable_division = BooleanField(default=False)
-    #
-    enable_kbentry = BooleanField(default=False)
-    # IP
-    enable_ipaddress = BooleanField(default=False)
-    enable_addressprofile = BooleanField(default=False)
-    enable_ipaddressrange = BooleanField(default=False)
-    enable_ipprefix = BooleanField(default=False)
-    enable_prefixprofile = BooleanField(default=False)
-    enable_vrf = BooleanField(default=False)
-    enable_vrfgroup = BooleanField(default=False)
-    # Peer
-    enable_asn = BooleanField(default=False)
-    enable_assetpeer = BooleanField(default=False)
-    enable_peer = BooleanField(default=False)
-    # VC
-    enable_vlan = BooleanField(default=False)
-    enable_vlanprofile = BooleanField(default=False)
-    enable_vpn = BooleanField(default=False)
-    enable_vpnprofile = BooleanField(default=False)
-    # SLA
-    enable_slaprobe = BooleanField(default=False)
-    enable_slaprofile = BooleanField(default=False)
-    # FM
-    enable_alarm = BooleanField(default=False)
-    # Enable Workflow State
-    enable_workflowstate = BooleanField(default=False)
+    allow_models = ListField(StringField())
+    allow_auto_create = BooleanField(default=False)
     # Exposition scope
     expose_metric = BooleanField(default=False)
     expose_datastream = BooleanField(default=False)
@@ -249,10 +199,12 @@ class Label(Document):
     remote_id = StringField()
     # Caches
     _id_cache = cachetools.TTLCache(maxsize=100, ttl=120)
-    _name_cache = cachetools.TTLCache(maxsize=1000, ttl=120)
+    _name_cache = cachetools.TTLCache(maxsize=1000, ttl=300)
     _setting_cache = cachetools.TTLCache(maxsize=1000, ttl=300)
     _rx_labels_cache = cachetools.TTLCache(maxsize=100, ttl=120)
     _rx_cache = cachetools.TTLCache(maxsize=100, ttl=600)
+    # Enable -> Model_id map
+    ENABLE_MODEL_ID_MAP = {v: k for k, v in LABEL_MODELS.items()}
 
     def __str__(self):
         return self.name
@@ -322,6 +274,27 @@ class Label(Document):
         except KeyError:
             pass
 
+    @classmethod
+    def from_names(self, labels: List[str]) -> List["Label"]:
+        """
+        Conert list names to Labels list
+        """
+        r = []
+        for ll in labels:
+            ll = Label.get_by_name(ll)
+            if not ll:
+                continue
+            r.append(ll)
+        return r
+
+    def __getattr__(self, item):
+        """
+        Check enable_XX settings for backward compatible
+        """
+        if item in self.ENABLE_MODEL_ID_MAP:
+            return self.ENABLE_MODEL_ID_MAP[item] in self.allow_models
+        raise AttributeError("'{}' object has no attribute '{}'".format(type(self).__name__, item))
+
     def iter_changed_datastream(self, changed_fields=None):
         from noc.sa.models.managedobject import ManagedObject
 
@@ -349,12 +322,11 @@ class Label(Document):
         """
         if hasattr(self, "_changed_fields") and "name" in self._changed_fields:
             raise ValueError("Rename label is not allowed operation")
-        if hasattr(self, "_changed_fields") and self._changed_fields:
-            for model_id, setting in LABEL_MODELS.items():
-                if setting in self._changed_fields and not getattr(self, setting, None):
-                    r = self.check_label(model_id, self.name)
-                    if r:
-                        raise ValueError(f"Referred from model {model_id}: {r!r} (id={r.id})")
+        if hasattr(self, "_changed_fields") and "allow_models" in self._changed_fields:
+            for model_id in self.allow_models:
+                r = self.check_label(model_id, self.name)
+                if r:
+                    raise ValueError(f"Referred from model {model_id}: {r!r} (id={r.id})")
         # Wildcard labels are protected
         if not self.is_wildcard and self.is_scoped:
             # Check propagate
@@ -512,13 +484,9 @@ class Label(Document):
     def ensure_label(
         cls,
         name,
+        model_ids: List[str],
         description=None,
         is_protected=False,
-        is_autogenerated=False,
-        enable_managedobject=False,
-        enable_slaprobe=False,
-        enable_interface=False,
-        enable_sensor=False,
         bg_color1=0xFFFFFF,
         fg_color1=0x000000,
         bg_color2=0xFFFFFF,
@@ -531,11 +499,7 @@ class Label(Document):
         :param name:
         :param description:
         :param is_protected:
-        :param is_autogenerated:
-        :param enable_managedobject:
-        :param enable_slaprobe:
-        :param enable_interface:
-        :param enable_sensor:
+        :param model_ids:
         :param bg_color1:
         :param fg_color1:
         :param bg_color2:
@@ -551,19 +515,14 @@ class Label(Document):
             return  # Exists
         logger.info("[%s] Create label by ensure", name)
         settings = cls.get_effective_settings(name)
+        if not settings.get("allow_auto_create"):
+            logger.warning("[%s] Not allowed autocreate label", name)
+            return
         settings["name"] = name
         settings["description"] = description or "Auto-created"
         settings["is_protected"] = settings.get("is_protected") or is_protected
-        if is_autogenerated:
-            settings["is_autogenerated"] = is_autogenerated
-        if enable_managedobject:
-            settings["enable_managedobject"] = enable_managedobject
-        if enable_slaprobe:
-            settings["enable_slaprobe"] = enable_slaprobe
-        if enable_interface:
-            settings["enable_interface"] = enable_interface
-        if enable_sensor:
-            settings["enable_sensor"] = enable_sensor
+        settings["allow_models"] = list(set(model_ids) + set(settings["allow_models"] or []))
+        settings["is_autogenerated"] = True
         if bg_color1 and bg_color1 != 0xFFFFFF:
             settings["bg_color1"] = bg_color1
         if fg_color1:
@@ -580,7 +539,9 @@ class Label(Document):
 
     @classmethod
     def ensure_labels(
-        cls, labels: List[str], enable_managedobject=False, enable_interface=False
+        cls,
+        labels: List[str],
+        model_ids: List[str],
     ) -> List[str]:
         """
         Yields all scopes
@@ -589,10 +550,8 @@ class Label(Document):
         for ll in labels:
             cls.ensure_label(
                 name=ll,
-                is_autogenerated=True,
+                model_ids=model_ids,
                 is_protected=False,
-                enable_managedobject=enable_managedobject,
-                enable_interface=enable_interface,
             )
         return labels
 
@@ -605,6 +564,7 @@ class Label(Document):
             # Ensure wildcard
             Label.ensure_label(
                 f"{scope}::*",
+                [],
                 description=f"Wildcard label for scope {scope}",
                 is_protected=False,
                 bg_color1=self.bg_color1,
@@ -655,7 +615,7 @@ class Label(Document):
                 Label.remove_model_labels(model_id, [self.name])
         regxs = defaultdict(list)
         for model_id, field in r:
-            if not getattr(self, LABEL_MODELS[model_id], False):
+            if model_id not in self.allow_models:
                 continue
             model = get_model(model_id)
             regxs[model] += [(field, r[(model_id, field)])]
@@ -832,11 +792,13 @@ class Label(Document):
                         for pop in parent_op:
                             Label.ensure_label(
                                 f"noc::{category}::{instance.parent.name}::{matched_scope}{pop}",
+                                [get_model_id(instance)],
                                 is_protected=False,
                                 is_autogenerated=True,
                             )
                     Label.ensure_label(
                         f"noc::{category}::{instance.name}::{matched_scope}{op}",
+                        [get_model_id(instance)],
                         is_protected=False,
                         is_autogenerated=True,
                     )

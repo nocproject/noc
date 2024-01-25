@@ -174,7 +174,7 @@ Ext.define("NOC.sa.serviceprofile.Application", {
                     allowBlank: true,
                     uiStyle: "extra",
                     query: {
-                        "enable_serviceprofile": true
+                        "allow_models": ["sa.ServiceProfile"]
                     }
                 },
                 {

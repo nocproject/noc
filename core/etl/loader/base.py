@@ -24,6 +24,7 @@ from noc.config import config
 from noc.core.comp import smart_text
 from noc.core.debug import error_report
 from noc.core.etl.compression import compressor
+from noc.models import get_model_id
 from ..models.base import BaseModel
 
 logger = logging.getLogger(__name__)
@@ -533,7 +534,7 @@ class BaseLoader(object):
         if not labels:
             return
         for ll in set(labels or []) - self.ensured_labels:
-            Label.ensure_label(**{"name": ll, self.label_enable_setting: True})
+            Label.ensure_label(ll, [get_model_id(self.model)])
 
     def purge(self):
         """

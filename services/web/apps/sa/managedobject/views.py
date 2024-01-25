@@ -332,10 +332,10 @@ class ManagedObjectApplication(ExtModelApplication):
             "description": o.description or "",
             "row_class": o.object_profile.style.css_class_name if o.object_profile.style else "",
             "link_count": len(o.links),
-            "labels": [
-                self.format_label(ll)
-                for ll in Label.objects.filter(name__in=o.labels).order_by("display_order")
-            ]
+            "labels": sorted(
+                [self.format_label(ll) for ll in Label.from_names(o.labels)],
+                key=lambda x: x["display_order"],
+            ),
             # "row_class": ""
         }
 

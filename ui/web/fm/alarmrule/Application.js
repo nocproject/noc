@@ -120,7 +120,7 @@ Ext.define("NOC.fm.alarmrule.Application", {
                             editor: {
                                 xtype: "labelfield",
                                 query: {
-                                    "enable_alarm": true
+                                    "allow_models": ["fm.Alarm"]
                                 }},
                             width: 200
                         }
