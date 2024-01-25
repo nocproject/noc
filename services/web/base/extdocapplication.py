@@ -7,7 +7,6 @@
 
 # Python modules
 import uuid
-import operator
 from functools import reduce
 import os
 
