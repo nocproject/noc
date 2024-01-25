@@ -19,7 +19,7 @@
     comment: "Kafka user"
     group: "{{ kafka_group }}"
     system: "True"
-    createhome: no
+    shell: "/bin/false"
   tags:
     - config
 
@@ -32,6 +32,9 @@
 
 - name: Creating configs
   import_tasks: config.yml
+
+- name: Creating configs
+  import_tasks: init.yml
 
 - name: Start the kafka service
   service:
