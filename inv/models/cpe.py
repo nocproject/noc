@@ -90,7 +90,7 @@ class CPE(Document):
             "labels",
             "effective_labels",
             {
-                "fields": ["controllers.controller"],
+                "fields": ["controllers.managed_object"],
                 "partialFilterExpression": {"controllers.active": True},
             },
             # {"fields": ("controllers.controller", "controllers.local_id"), "unique": True},
@@ -515,7 +515,7 @@ class CPE(Document):
         coll = cls._get_collection()
         r = coll.aggregate(
             [
-                {"controllers": {"$elemMatch": {"controller": mo.id, "is_active": True}}},
+                {"$match": {"controllers": {"$elemMatch": {"managed_object": mo.id, "is_active": True}}}},
                 {
                     "$lookup": {
                         "from": "cpeprofiles",
