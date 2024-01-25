@@ -108,7 +108,7 @@ Ext.define("NOC.wf.state.Application", {
                     fieldLabel: __("Labels"),
                     allowBlank: true,
                     query: {
-                        "enable_workflowstate": true
+                        "allow_models": ["wf.WorkflowState"]
                     },
                 },
                 {

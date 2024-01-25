@@ -106,7 +106,7 @@ Ext.define("NOC.crm.supplierprofile.Application", {
                     fieldLabel: __("Labels"),
                     allowBlank: true,
                     query: {
-                        "enable_supplierprofile": true
+                        "allow_models": ["crm.SupplierProfile"]
                     },
                 }
             ]

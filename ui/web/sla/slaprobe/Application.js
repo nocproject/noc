@@ -166,7 +166,7 @@ Ext.define("NOC.sla.slaprobe.Application", {
                     allowBlank: true,
                     uiStyle: "extra",
                     query: {
-                        "enable_slaprobe": true
+                        "allow_models": ["sla.SLAProbe"]
                     },
                 },
                 {
