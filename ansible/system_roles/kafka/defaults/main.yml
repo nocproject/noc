@@ -6,9 +6,8 @@ kafka_unit_path: /lib/systemd/system/kafka.service
 kafka_root_dir: /opt
 kafka_dir: "{{ kafka_root_dir }}/kafka"
 
-kafka_log_dir: "/var/log/kafka"
-kafka_data_log_dirs: /var/lib/kafka/logs
-
+kafka_log_dir: /var/lib/kafka/logs
+kafka_server_conf: /etc/kafka/server.properties
 
 kafka_home: "/opt/kafka"
 kafka_install_dir: "kafka_install_dir"

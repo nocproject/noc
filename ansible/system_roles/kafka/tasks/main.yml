@@ -1,9 +1,9 @@
 ---
-#- name: "Include OS-specific tasks"
-#  include_tasks: "os/{{ ansible_distribution }}_{{ ansible_distribution_major_version }}/main.yml"
-#  tags:
-#    - requirements
-#    - config
+- name: "Include OS-specific tasks"
+  include_tasks: "os/{{ ansible_distribution }}_{{ ansible_distribution_major_version }}/main.yml"
+  tags:
+    - requirements
+    - config
 
 - name: Add Kafka group
   group:
@@ -23,123 +23,15 @@
   tags:
     - config
 
-- name: Check if Kafka has already been downloaded and unpacked
-  stat:
-    path: '{{ kafka_dir }}_{{ kafka_scala_version }}-{{ kafka_version }}'
-  register: dir
 
-- name: Download Apache Kafka
-  get_url:
-    url: '{{ kafka_download_url }}'
-    dest: /tmp
-    validate_certs: '{{ not kafka_insecure_certs }}'
-    mode: 0644
-  when: not dir.stat.exists
+- name: Download kafka
+  import_tasks: install.yml
 
+- name: Creating directories
+  import_tasks: dirs.yml
 
-- name: Unpack Apache Kafka
-  unarchive:
-    src: /tmp/kafka_{{ kafka_scala_version }}-{{ kafka_version }}.tgz
-    dest: '{{ kafka_root_dir }}'
-    copy: no
-    group: '{{ kafka_group }}'
-    owner: '{{ kafka_user }}'
-  when: not dir.stat.exists
-
-
-- name: Create symlink to kafka installation directory
-  ansible.builtin.file:
-    src: '{{ kafka_root_dir }}/kafka_{{ kafka_scala_version }}-{{ kafka_version }}'
-    dest: '{{ kafka_dir }}'
-    state: link
-    group: '{{ kafka_group }}'
-    owner: '{{ kafka_user }}'
-  tags:
-    - dirs
-
-- name: Create directory for kafka data log files
-  ansible.builtin.file:
-    path: '{{ item }}'
-    state: directory
-    group: '{{ kafka_group }}'
-    owner: '{{ kafka_user }}'
-    mode: 0755
-  with_items: "{{ kafka_data_log_dirs.split(',') }}"
-  tags:
-    - dirs
-
-- name: Create directory for kafka application logs
-  ansible.builtin.file:
-    path: '{{ kafka_log_dir }}'
-    state: directory
-    group: '{{ kafka_group }}'
-    owner: '{{ kafka_user }}'
-    mode: 0755
-  tags:
-    - dirs
-
-- name: Register directory status for application log files
-  ansible.builtin.stat:
-    path: '{{ kafka_dir }}/logs'
-  register: application_logs_dir
-  tags:
-    - dirs
-
-- name: Create symlink to application log directory
-  ansible.builtin.file:
-    src: '{{ kafka_log_dir }}'
-    dest: '{{ kafka_dir }}/logs'
-    state: link
-    group: '{{ kafka_group }}'
-    owner: '{{ kafka_user }}'
-    mode: 0755
-    follow: no
-  when: not application_logs_dir.stat.exists
-  tags:
-    - dirs
-
-- name: Create directory for symlink to kafka configuration files
-  ansible.builtin.file:
-    path: /etc/kafka
-    state: directory
-    group: '{{ kafka_group }}'
-    owner: '{{ kafka_user }}'
-    mode: 0755
-  tags:
-    - dirs
-
-- name: Template configuration file to server.properties
-  template:
-    src: server.properties.j2
-    dest: '{{ kafka_dir }}/config/kraft/server.properties'
-    group: '{{ kafka_group }}'
-    owner: '{{ kafka_user }}'
-    mode: 0644
-  notify:
-    - restart kafka
-  tags:
-    - config
-
-- name: Create symlink to kafka server properties file
-  file:
-    src: '{{ kafka_dir }}/config/kraft/server.properties'
-    dest: /etc/kafka/server.properties
-    state: link
-    group: '{{ kafka_group }}'
-    owner: '{{ kafka_user }}'
-  tags:
-    - config
-
-- name: Template kafka systemd service
-  template:
-    src: kafka.service.j2
-    dest: '{{ kafka_unit_path }}'
-    group: '{{ kafka_group }}'
-    owner: '{{ kafka_user }}'
-    mode: 0644
-  notify:
-    - reload systemd
-    - restart kafka
+- name: Creating configs
+  import_tasks: config.yml
 
 - name: Start the kafka service
   service:
@@ -148,6 +40,6 @@
     enabled: yes
 
 - name: Delete the kafka archive file
-  ansible.builtin.file:
+  file:
     path: /tmp/kafka_{{ kafka_scala_version }}-{{ kafka_version }}.tgz
     state: absent
