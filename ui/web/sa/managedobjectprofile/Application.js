@@ -229,7 +229,7 @@ Ext.define("NOC.sa.managedobjectprofile.Application", {
                                     allowBlank: true,
                                     uiStyle: "extra",
                                     query: {
-                                        "enable_managedobjectprofile": true
+                                        "allow_models": ["sa.ManagedObjectProfile"]
                                     },
                                 },
                                 {

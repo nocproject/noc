@@ -70,7 +70,7 @@ Ext.define("NOC.inv.cpeprofile.Application", {
           fieldLabel: __("Labels"),
           allowBlank: true,
           query: {
-            "enable_cpeprofile": true
+              "allow_models": ["inv.CPEProfile"]
           }
         },
         {

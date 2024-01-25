@@ -80,7 +80,7 @@ Ext.define("NOC.sa.service.Application", {
                     xtype: "labelfield",
                     fieldLabel: __("Labels"),
                     query: {
-                        "enable_service": true
+                        "allow_models": ["sa.Service"]
                     },
                 },
                 {

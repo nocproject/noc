@@ -120,14 +120,8 @@ Ext.define("NOC.main.label.Application", {
                         if(item.data.enable_subscriber) {
                             r.push(__("Subscriber"));
                         }
-                        if(item.data.enable_subscriberprofile) {
-                            r.push(__("Subscriber Profile"));
-                        }
                         if(item.data.enable_supplier) {
                             r.push(__("Supplier"));
-                        }
-                        if(item.data.enable_supplierprofile) {
-                            r.push(__("Supplier Profile"));
                         }
                         if(item.data.enable_dnszone) {
                             r.push(__("DNS Zone"));
@@ -170,9 +164,6 @@ Ext.define("NOC.main.label.Application", {
                         }
                         if(item.data.enable_peer) {
                             r.push(__("Peer"));
-                        }
-                        if(item.data.enable_vc) {
-                            r.push(__("VC"));
                         }
                         if(item.data.enable_vlan) {
                             r.push(__("VLAN"));
@@ -272,6 +263,11 @@ Ext.define("NOC.main.label.Application", {
                     bind: {
                         value: "{is_builtin}"
                     },
+                },
+                {
+                    name: "allow_auto_create",
+                    xtype: "checkbox",
+                    boxLabel: __("Allow Auto Create"),
                 },
                 {
                     name: "is_matching",
@@ -769,11 +765,6 @@ Ext.define("NOC.main.label.Application", {
                             },
                             items: [
                                 {
-                                    name: "enable_vc",
-                                    xtype: "checkbox",
-                                    boxLabel: __("VC")
-                                },
-                                {
                                     name: "enable_vlan",
                                     xtype: "checkbox",
                                     boxLabel: __("VLAN")
@@ -828,19 +819,9 @@ Ext.define("NOC.main.label.Application", {
                                     boxLabel: __("Subscriber")
                                 },
                                 {
-                                    name: "enable_subscriberprofile",
-                                    xtype: "checkbox",
-                                    boxLabel: __("Subscriber Profile")
-                                },
-                                {
                                     name: "enable_supplier",
                                     xtype: "checkbox",
                                     boxLabel: __("Supplier")
-                                },
-                                {
-                                    name: "enable_supplierprofile",
-                                    xtype: "checkbox",
-                                    boxLabel: __("Supplier Profile")
                                 },
                                 {
                                     name: "enable_kbentry",

@@ -480,7 +480,7 @@ class Interface(Document):
         yield list(instance.labels or [])
         # if instance.hints:
         #     # Migrate to labels
-        #     yield Label.ensure_labels(instance.hints, enable_interface=True)
+        #     yield Label.ensure_labels(instance.hints, ["inv.Interface"])
         if instance.profile.labels:
             yield list(instance.profile.labels)
         yield list(InterfaceProfile.iter_lazy_labels(instance.profile))

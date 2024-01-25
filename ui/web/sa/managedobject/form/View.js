@@ -133,7 +133,7 @@ Ext.define('NOC.sa.managedobject.form.View', {
                                     allowBlank: true,
                                     minWidth: 100,
                                     query: {
-                                        "enable_managedobject": true
+                                        "allow_models": ["sa.ManagedObject"]
                                     }
                                 },
                                 {

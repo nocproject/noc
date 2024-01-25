@@ -88,7 +88,7 @@ Ext.define("NOC.inv.cpe.Application", {
                     xtype: "labelfield",
                     fieldLabel: __("Labels"),
                     query: {
-                        "enable_service": true
+                        "allow_models": ["inv.CPE"]
                     },
                 },
                 {
