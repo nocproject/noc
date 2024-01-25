@@ -388,7 +388,8 @@ class Label(Document):
         if hasattr(self, "_changed_fields") and "name" in self._changed_fields:
             raise ValueError("Rename label is not allowed operation")
         if hasattr(self, "_changed_fields") and "allow_models" in self._changed_fields:
-            for model_id in self.allow_models:
+            am = set(Label.objects.filter(name=self.name).scalar("allow_models").first())
+            for model_id in (am - set(self.allow_models)):
                 r = self.check_label(model_id, self.name)
                 if r:
                     raise ValueError(f"Referred from model {model_id}: {r!r} (id={r.id})")
