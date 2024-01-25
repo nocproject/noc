@@ -413,6 +413,7 @@ LABEL_MODELS = {
     "inv.Sensor": "enable_sensor",
     "inv.SensorProfile": "enable_sensorprofile",
     "inv.Interface": "enable_interface",
+    "inv.FirmwarePolicy": "enable_firmwarepolicy",
     #
     "crm.Subscriber": "enable_subscriber",
     "crm.SubscriberProfile": "enable_subscriber",

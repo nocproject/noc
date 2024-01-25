@@ -72,6 +72,14 @@ class LabelApplication(ExtDocApplication):
             del q["is_matched"]
         return q
 
+    def clean(self, data):
+        data["allow_models"] = []
+        for k in list(data):
+            if k in Label.ENABLE_MODEL_ID_MAP:
+                if data.pop(k):
+                    data["allow_models"].append(Label.ENABLE_MODEL_ID_MAP[k])
+        return super().clean(data)
+
     @view(url="^ac_lookup/", method=["GET"], access=True)
     def api_ac_lookup(self, request):
         """

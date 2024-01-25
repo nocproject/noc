@@ -170,15 +170,7 @@ Ext.define("NOC.main.label.Model", {
             type: "boolean"
         },
         {
-            name: "enable_subscriberprofile",
-            type: "boolean"
-        },
-        {
             name: "enable_supplier",
-            type: "boolean"
-        },
-        {
-            name: "enable_supplierprofile",
             type: "boolean"
         },
         {
@@ -235,10 +227,6 @@ Ext.define("NOC.main.label.Model", {
         },
         {
             name: "enable_peer",
-            type: "boolean"
-        },
-        {
-            name: "enable_vc",
             type: "boolean"
         },
         {

@@ -150,6 +150,7 @@ class ExtApplication(Application):
             "name": ll.name,
             "value": ll.value,
             "badges": ll.badges,
+            "display_order": ll.display_order or 0,
             "bg_color1": f"#{ll.bg_color1:06x}",
             "fg_color1": f"#{ll.fg_color1:06x}",
             "bg_color2": f"#{ll.bg_color2:06x}",

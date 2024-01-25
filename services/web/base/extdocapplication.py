@@ -7,6 +7,7 @@
 
 # Python modules
 import uuid
+import operator
 from functools import reduce
 import os
 
@@ -355,10 +356,10 @@ class ExtDocApplication(ExtApplication):
                     and isinstance(f.field, StringField)
                 ):
                     # isinstance(f.field, StringField) for exclude pm.scope labels
-                    v = [
-                        self.format_label(ll)
-                        for ll in Label.objects.filter(name__in=v).order_by("display_order")
-                    ]
+                    v = sorted(
+                        [self.format_label(ll) for ll in Label.from_names(v)],
+                        key=lambda x: x["display_order"],
+                    )
                 elif isinstance(f, (ListField, EmbeddedDocumentListField)):
                     if hasattr(f, "field") and isinstance(f.field, EmbeddedDocumentField):
                         v = [self.instance_to_dict(vv, nocustom=True) for vv in v]
