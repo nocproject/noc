@@ -10,8 +10,10 @@
     dest: /tmp
     validate_certs: '{{ not kafka_insecure_certs }}'
     mode: 0644
+  environment:
+    http_proxy: "{{ http_proxy }}"
+    https_proxy: "{{ http_proxy }}"
   when: not dir.stat.exists
-
 
 - name: Unpack Apache Kafka
   unarchive:
