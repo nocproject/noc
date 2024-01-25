@@ -204,7 +204,7 @@ class Label(Document):
     _rx_labels_cache = cachetools.TTLCache(maxsize=100, ttl=120)
     _rx_cache = cachetools.TTLCache(maxsize=100, ttl=600)
     # Enable -> Model_id map
-    ENABLE_MODEL_ID_MAP = {v: k for k, v in LABEL_MODELS}
+    ENABLE_MODEL_ID_MAP = {v: k for k, v in LABEL_MODELS.items()}
 
     def __str__(self):
         return self.name
@@ -281,7 +281,6 @@ class Label(Document):
         if item in self.ENABLE_MODEL_ID_MAP:
             return self.ENABLE_MODEL_ID_MAP[item] in self.allow_models
 
-        LABEL_MODELS
     def iter_changed_datastream(self, changed_fields=None):
         from noc.sa.models.managedobject import ManagedObject
 
@@ -526,7 +525,9 @@ class Label(Document):
 
     @classmethod
     def ensure_labels(
-        cls, labels: List[str], model_ids: List[str],
+        cls,
+        labels: List[str],
+        model_ids: List[str],
     ) -> List[str]:
         """
         Yields all scopes

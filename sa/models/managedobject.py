@@ -2300,7 +2300,8 @@ class ManagedObject(NOCModel):
         if instance.diagnostics:
             for d in instance.diagnostic:
                 yield Label.ensure_labels(
-                    [f"{DIAGNOCSTIC_LABEL_SCOPE}::{d.diagnostic}::{d.state}"], ["sa.ManagedObject"],
+                    [f"{DIAGNOCSTIC_LABEL_SCOPE}::{d.diagnostic}::{d.state}"],
+                    ["sa.ManagedObject"],
                 )
 
     @classmethod
