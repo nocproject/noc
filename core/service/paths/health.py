@@ -25,4 +25,7 @@ async def health(service: Optional[str] = None):
     if service and not svc.is_valid_health_check(service):
         return PlainTextResponse(content="Invalid service id", status_code=400)
     status, message = svc.get_health_status()
+    # Watchdog
+    if svc.watchdog_waiter and not svc.watchdog_waiter.is_set():
+        svc.watchdog_waiter.set()
     return PlainTextResponse(content=message, status_code=status)

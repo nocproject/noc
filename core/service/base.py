@@ -13,6 +13,7 @@ import signal
 import uuid
 import argparse
 import threading
+import random
 from time import perf_counter
 import asyncio
 import cachetools
@@ -103,6 +104,8 @@ class BaseService(object):
     # Use service based consul check timeout
     dcs_check_interval: Optional[int] = None
     dcs_check_timeout: Optional[int] = None
+    # Use wachdog for check Service health
+    use_watchdog = False
 
     LOG_FORMAT = config.log_format
 
@@ -150,6 +153,8 @@ class BaseService(object):
         #
         self.active_subscribers = 0
         self.subscriber_shutdown_waiter: Optional[asyncio.Event] = None
+        #
+        self.watchdog_waiter: Optional[asyncio.Event] = None
         # Metrics partitions
         self.n_metrics_partitions = len(config.clickhouse.cluster_topology.split(","))
         #
@@ -488,6 +493,11 @@ class BaseService(object):
             # Finally call on_activate
             await self.on_activate()
             self.logger.info("Service is active (in %.2fms)", self.uptime() * 1000)
+            if self.use_watchdog:
+                # Run Watchdog
+                self.logger.info("Start Watchdog")
+                self.watchdog_waiter = asyncio.Event()
+                self.loop.create_task(self.watchdog())
         else:
             raise self.RegistrationError()
 
@@ -1010,3 +1020,18 @@ class BaseService(object):
         Called when all Router rules are ready.
         """
         return
+
+    async def watchdog(self):
+        failed, delay, deviation = 0, 10, 0.5
+        while True:
+            await asyncio.sleep(delay - deviation + 2 * deviation * random.random())
+            self.logger.info("WatchDog loop")
+            if not self.watchdog_waiter.is_set() and failed > 3:
+                self.logger.warning("WatchDog is more %s failed. Deactivate proccess", failed)
+                self.loop.create_task(self.deactivate())
+                return
+            elif not self.watchdog_waiter.is_set():
+                failed += 1
+                continue
+            self.watchdog_waiter.clear()
+            failed = 0
