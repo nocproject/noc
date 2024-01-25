@@ -27,7 +27,9 @@ class Migration(BaseMigration):
                 if ff in ll and ll[ff]:
                     allow_models.append(setting_map[ff])
             bulk += [
-                UpdateOne({"_id": ll["_id"]}, {"$set": {"allow_models": allow_models}, "$unset": unset_s}),
+                UpdateOne(
+                    {"_id": ll["_id"]}, {"$set": {"allow_models": allow_models}, "$unset": unset_s}
+                ),
             ]
         if bulk:
             l_coll.bulk_write(bulk)
