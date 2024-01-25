@@ -1,12 +1,12 @@
 ---
 - name: Check already format (1/2)
   stat:
-    path: "{{ kafka_data_log_dirs }}/bootstrap.checkpoint"
+    path: "{{ kafka_log_dir }}/bootstrap.checkpoint"
   register: boot_result
   failed_when: false
 - name: Check already format (2/2)
   stat:
-    path: "{{ kafka_data_log_dirs }}/meta.properties"
+    path: "{{ kafka_log_dir }}/meta.properties"
   register: meta_result
   failed_when: false
 - name: Create Kafka Cluster ID
