@@ -1,0 +1,12 @@
+{
+    "workflow__name": "Sensor Default",
+    "from_state__id": "5fca627e890f55564231e1fd",
+    "to_state__id": "5fca627e890f55564231e1f7",
+    "uuid": "7eca7633-141a-4ebf-972d-23a2c0a61a96",
+    "is_active": false,
+    "$collection": "wf.transitions",
+    "event": "up",
+    "label": "Fixed",
+    "enable_manual": false,
+    "bi_id": 1720440267695078397
+}

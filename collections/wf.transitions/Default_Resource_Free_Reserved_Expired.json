@@ -1,0 +1,12 @@
+{
+    "workflow__name": "Default Resource",
+    "from_state__id": "5a17f6c51bb6270001bd0333",
+    "to_state__id": "5a17f61b1bb6270001bd0328",
+    "uuid": "ac90ded2-c8fb-430d-a6e4-920e71802a3f",
+    "is_active": true,
+    "$collection": "wf.transitions",
+    "event": "expired",
+    "label": "Expired",
+    "enable_manual": true,
+    "bi_id": 6910421850576189953
+}

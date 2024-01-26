@@ -93,7 +93,7 @@ class Transition(Document):
         "auto_create_index": False,
         "json_collection": "wf.transitions",
         "json_depends_on": ["wf.workflows", "wf.states"],
-        "json_unique_fields": [("from_state", "to_state", "required_rules.labels")],
+        "json_unique_fields": [("from_state", "to_state"), "uuid"],
     }
     workflow: Workflow = PlainReferenceField(Workflow)
     from_state: State = PlainReferenceField(State)
@@ -142,13 +142,14 @@ class Transition(Document):
     def json_data(self) -> Dict[str, Any]:
         r = {
             "workflow__name": self.workflow.name,
-            "from_state__uuid": str(self.from_state.uuid),
-            "to_state__uuid": str(self.to_state.uuid),
+            "from_state__id": str(self.from_state.id),
+            "to_state__id": str(self.to_state.id),
             "uuid": self.uuid,
             "is_active": self.is_active,
             "$collection": self._meta["json_collection"],
             "label": self.label,
             "enable_manual": self.enable_manual,
+            "bi_id": self.bi_id,
         }
         if self.description:
             r["description"] = self.description
@@ -168,8 +169,8 @@ class Transition(Document):
             self.json_data,
             order=[
                 "workflow__name",
-                "from_state__uuid",
-                "to_state__uuid",
+                "from_state__id",
+                "to_state__id",
                 "uuid",
                 "is_active",
                 "$collection",
@@ -180,6 +181,7 @@ class Transition(Document):
                 "handlers",
                 "required_rules",
                 "vertices",
+                "bi_id",
             ],
         )
 
@@ -192,8 +194,6 @@ class Transition(Document):
             + self.from_state.name
             + " "
             + self.label
-            + " "
-            + str(self.bi_id)
         )
         return os.path.join(name_coll) + ".json"
 

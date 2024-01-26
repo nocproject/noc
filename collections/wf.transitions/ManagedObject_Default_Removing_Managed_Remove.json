@@ -1,0 +1,16 @@
+{
+    "workflow__name": "ManagedObject Default",
+    "from_state__id": "641b35e6fa01fd032a1f61f1",
+    "to_state__id": "641b371eb846e3cc661ea8b3",
+    "uuid": "49151dc6-c8b1-4d85-a2b9-3b6ad386dbc6",
+    "is_active": true,
+    "$collection": "wf.transitions",
+    "event": "remove",
+    "label": "Remove",
+    "enable_manual": true,
+    "vertices": [{
+        "x": 390,
+        "y": 480
+    }],
+    "bi_id": 6196188485054338054
+}
