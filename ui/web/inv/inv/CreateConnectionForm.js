@@ -219,8 +219,7 @@ Ext.define("NOC.inv.inv.CreateConnectionForm", {
         params += cable ? "&cable_filter=" + cable : "";
         mainPanel.mask(__("Loading..."));
         Ext.Ajax.request({
-            // url: "/inv/inv/crossing_proposals/?" + params,
-            url: "http://localhost:3000/crossing_proposals/?" + params,
+            url: "/inv/inv/crossing_proposals/?" + params,
             method: "GET",
             success: function(response) {
                 var sprites, data = Ext.decode(response.responseText),
