@@ -7,6 +7,5 @@
     "$collection": "wf.transitions",
     "event": "unmanage",
     "label": "Unmanaged",
-    "enable_manual": true,
-    "bi_id": 7078692477969553649
+    "enable_manual": true
 }

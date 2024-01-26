@@ -7,6 +7,5 @@
     "$collection": "wf.transitions",
     "event": "reserve",
     "label": "Reserve",
-    "enable_manual": true,
-    "bi_id": 7126984897086158544
+    "enable_manual": true
 }

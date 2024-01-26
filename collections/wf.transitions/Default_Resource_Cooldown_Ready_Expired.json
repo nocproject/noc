@@ -7,6 +7,5 @@
     "$collection": "wf.transitions",
     "event": "expired",
     "label": "Expired",
-    "enable_manual": true,
-    "bi_id": 2244054006097306867
+    "enable_manual": true
 }

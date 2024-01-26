@@ -6,6 +6,5 @@
     "is_active": true,
     "$collection": "wf.transitions",
     "label": "Close",
-    "enable_manual": true,
-    "bi_id": 8285922265787176674
+    "enable_manual": true
 }

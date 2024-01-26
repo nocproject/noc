@@ -7,6 +7,5 @@
     "$collection": "wf.transitions",
     "event": "seen",
     "label": "Seen",
-    "enable_manual": true,
-    "bi_id": 5922870540207143342
+    "enable_manual": true
 }

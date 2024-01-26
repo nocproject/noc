@@ -7,6 +7,5 @@
     "$collection": "wf.transitions",
     "event": "approve",
     "label": "Approve",
-    "enable_manual": true,
-    "bi_id": 1894890040029769162
+    "enable_manual": true
 }

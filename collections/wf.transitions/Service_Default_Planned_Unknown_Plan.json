@@ -6,6 +6,5 @@
     "is_active": true,
     "$collection": "wf.transitions",
     "label": "Plan",
-    "enable_manual": true,
-    "bi_id": 6767346548535942781
+    "enable_manual": true
 }

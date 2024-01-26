@@ -7,6 +7,5 @@
     "$collection": "wf.transitions",
     "event": "suspend",
     "label": "Suspend",
-    "enable_manual": true,
-    "bi_id": 3471543641155941751
+    "enable_manual": true
 }

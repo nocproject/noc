@@ -7,6 +7,5 @@
     "$collection": "wf.transitions",
     "event": "resume",
     "label": "Resume",
-    "enable_manual": true,
-    "bi_id": 81389710212083104
+    "enable_manual": true
 }
