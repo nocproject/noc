@@ -1,7 +1,7 @@
 {
     "workflow__name": "Service Default",
-    "from_state__id": "606eb01dd179a5da7e340a43",
-    "to_state__id": "606eb02ed179a5da7e340a45",
+    "from_state__uuid": "c8ec9495-c486-4cdd-845a-8ec5b3701efb",
+    "to_state__uuid": "86174466-065c-4a01-af4a-7f4bb751a0ed",
     "uuid": "e119d7f8-767f-49e1-bbce-98718ef4ae8c",
     "is_active": true,
     "$collection": "wf.transitions",

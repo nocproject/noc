@@ -1,7 +1,7 @@
 {
     "workflow__name": "ManagedObject Default",
-    "from_state__id": "641b371eb846e3cc661ea8b5",
-    "to_state__id": "641b371eb846e3cc661ea8b3",
+    "from_state__uuid": "f99d77bf-b5fa-45ff-841e-ae47b0c63b53",
+    "to_state__uuid": "b17865c6-1ef5-422f-b7a9-adc02420a63c",
     "uuid": "47099642-8c6e-4742-b8ac-8df5ab65b58a",
     "is_active": true,
     "$collection": "wf.transitions",

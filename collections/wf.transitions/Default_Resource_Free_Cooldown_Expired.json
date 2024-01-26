@@ -1,7 +1,7 @@
 {
     "workflow__name": "Default Resource",
-    "from_state__id": "5a17f7391bb6270001bd033e",
-    "to_state__id": "5a17f61b1bb6270001bd0328",
+    "from_state__uuid": "327b39b1-e697-4809-aeaa-ae47018e4ac2",
+    "to_state__uuid": "2ca76368-a9df-4a01-b542-a7eed7ae0c86",
     "uuid": "d08c84d8-288d-4f6c-a7b6-ef717d90261f",
     "is_active": true,
     "$collection": "wf.transitions",

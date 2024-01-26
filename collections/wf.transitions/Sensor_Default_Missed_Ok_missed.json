@@ -1,7 +1,7 @@
 {
     "workflow__name": "Sensor Default",
-    "from_state__id": "5fca627e890f55564231e1f7",
-    "to_state__id": "5fca627e890f55564231e1fb",
+    "from_state__uuid": "74a1b7a9-da70-48dc-878c-0d8c299c4197",
+    "to_state__uuid": "0d94e36e-9edd-4420-812a-510965be75cb",
     "uuid": "b18559d1-9ada-43fe-bf90-efadbf18a115",
     "is_active": true,
     "$collection": "wf.transitions",

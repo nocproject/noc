@@ -142,8 +142,8 @@ class Transition(Document):
     def json_data(self) -> Dict[str, Any]:
         r = {
             "workflow__name": self.workflow.name,
-            "from_state__id": str(self.from_state.id),
-            "to_state__id": str(self.to_state.id),
+            "from_state__uuid": str(self.from_state.uuid),
+            "to_state__uuid": str(self.to_state.uuid),
             "uuid": self.uuid,
             "is_active": self.is_active,
             "$collection": self._meta["json_collection"],
@@ -168,8 +168,8 @@ class Transition(Document):
             self.json_data,
             order=[
                 "workflow__name",
-                "from_state__id",
-                "to_state__id",
+                "from_state__uuid",
+                "to_state__uuid",
                 "uuid",
                 "is_active",
                 "$collection",
