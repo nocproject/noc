@@ -23,6 +23,7 @@ Ext.define("NOC.core.Connection", {
                 toXY: "data",
                 fromXY: "data",
                 connectionColor: "string",
+                isDeleted: "bool",
                 fromHasArrow: "bool",
                 toHasArrow: "bool",
                 actualScale: "number"

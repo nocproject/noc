@@ -20,8 +20,11 @@ Ext.define("NOC.core.Pin", {
                 remoteId: "string",
                 remoteName: "string",
                 isSelected: "bool",
+                isInternalFixed: "bool",
+                cursorOn: "string",
                 labelBold: "bool",
                 enabled: "bool",
+                internalEnabled: "bool",
                 allowInternal: "bool",
                 x: "number",
                 y: "number",
@@ -31,6 +34,7 @@ Ext.define("NOC.core.Pin", {
                 pinColor: "recalculate",
                 internalColor: "recalculate",
                 isSelected: "recalculate",
+                isInternalFixed: "recalculate",
                 labelBold: "recalculate",
                 pinName: "recalculate",
                 labelAlign: "recalculate",
@@ -48,8 +52,10 @@ Ext.define("NOC.core.Pin", {
                 remoteId: "none",
                 remoteName: "none",
                 isSelected: false,
+                isInternalFixed: false,
                 labelBold: false,
                 enabled: true,
+                internalEnabled: true,
                 allowInternal: false,
                 labelAlign: "left", // "left" | "right"
                 scale: 1
@@ -61,13 +67,13 @@ Ext.define("NOC.core.Pin", {
                     me.createSprites();
                     me.box.setAttributes({
                         fillStyle: attr.pinColor,
-                        stroke: attr.isSelected ? "lightgreen" : "black",
+                        stroke: attr.isSelected && !attr.isInternalFixed ? "lightgreen" : "black",
                         lineWidth: attr.isSelected ? 3 : 1
                     });
                     if(me.internal) {
                         me.internal.setAttributes({
                             fillStyle: attr.internalColor,
-                            stroke: attr.isSelected ? "lightgreen" : "black",
+                            stroke: attr.isSelected && attr.isInternalFixed ? "lightgreen" : "black",
                             lineWidth: attr.isSelected ? 3 : 1
                         });
                     }
@@ -137,15 +143,23 @@ Ext.define("NOC.core.Pin", {
     },
     hitTest: function(point, options) {
         // Removed the isVisible check since pin will always be visible.
-        var me = this,
+        var bbox, me = this,
             x = point[0],
-            y = point[1],
-            bbox = me.getBBox(),
-            isBBoxHit = bbox && x >= bbox.x && x <= (bbox.x + bbox.width) && y >= bbox.y && y <= (bbox.y + bbox.height);
-
-        if(isBBoxHit) {
+            y = point[1];
+        if(me.internal) {
+            bbox = me.internal.getBBox();
+            if(bbox && x >= bbox.x && x <= (bbox.x + bbox.width) && y >= bbox.y && y <= (bbox.y + bbox.height)) {
+                me.setAttributes({cursorOn: "internal"});
+                return {
+                    sprite: me
+                }
+            }
+        }
+        bbox = me.getBBox();
+        if(bbox && x >= bbox.x && x <= (bbox.x + bbox.width) && y >= bbox.y && y <= (bbox.y + bbox.height)) {
+            me.setAttributes({cursorOn: "external"});
             return {
-                sprite: this
+                sprite: me
             };
         }
         return null;
