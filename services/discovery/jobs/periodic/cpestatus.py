@@ -41,7 +41,7 @@ class CPEStatusCheck(DiscoveryCheck):
         ).read_preference(ReadPreference.SECONDARY_PREFERRED):
             if not cpe.state.is_productive:
                 continue
-            cpe_cache[cpe.local_id] = cpe
+            cpe_cache[cpe.controller.local_id] = cpe
         if not cpe_cache:
             self.logger.info("No CPE with status discovery enabled. Skipping")
             return

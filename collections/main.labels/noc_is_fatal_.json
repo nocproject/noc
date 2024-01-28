@@ -1,0 +1,19 @@
+{
+    "name": "noc::is_fatal::=",
+    "$collection": "main.labels",
+    "uuid": "ebbf24ab-31e8-4759-918c-1e57792060d3",
+    "description": "Builtin Labels mark for Alarm that fatal affected",
+    "bg_color1": 16777215,
+    "fg_color1": 0,
+    "bg_color2": 16777215,
+    "fg_color2": 0,
+    "display_order": 0,
+    "allow_models": ["fm.ActiveAlarm"],
+    "allow_auto_create": false,
+    "propagate": false,
+    "is_protected": false,
+    "is_matching": false,
+    "expose_metric": false,
+    "expose_datastream": false,
+    "expose_alarm": false
+}

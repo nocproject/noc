@@ -348,6 +348,7 @@ _MODELS = {
 FTS_MODELS = ["ip.Address", "ip.Prefix", "ip.VRF", "sa.ManagedObject", "cpe.CPE"]
 
 COLLECTIONS = [
+    "main.Label",
     "main.Font",
     "main.Glyph",
     "fm.SyntaxAlias",
