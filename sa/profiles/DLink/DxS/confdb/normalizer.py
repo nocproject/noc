@@ -60,11 +60,8 @@ class DLinkDxSNormalizer(BaseNormalizer):
         flow_control disable learning enable state enable mdix auto description SOMEDESCR
         """
 
-        # print(f"tokens {tokens}")
         for port_num in iter_ports(tokens[2]):
             if_name = self.interface_name(port_num)
-            # print(f"ifname {if_name}")
-            print(self.make_interface(interface=if_name))
             yield self.make_interface(interface=if_name)
 
             rest_tokens = tokens[3:]
@@ -77,7 +74,6 @@ class DLinkDxSNormalizer(BaseNormalizer):
                     skip = True
                     adm_status = "on" if rest_tokens[i + 1] == "enable" else "off"
 
-                    print(if_name, adm_status)
                     yield self.make_interface_admin_status(
                         interface=if_name, admin_status=adm_status
                     )
@@ -85,13 +81,11 @@ class DLinkDxSNormalizer(BaseNormalizer):
                     skip = True
                     desc = rest_tokens[i + 1]
 
-                    print(if_name, desc)
                     yield self.make_interface_description(interface=if_name, description=desc)
                 elif t == "flow_control":
                     skip = True
                     flow_state = "on" if rest_tokens[i + 1] == "enable" else "off"
 
-                    print(if_name, flow_state)
                     yield self.make_interface_flow_control(
                         interface=if_name, flow_control=flow_state
                     )
@@ -109,22 +103,34 @@ class DLinkDxSNormalizer(BaseNormalizer):
         """
         config time_zone operator + hour 3 min 0
         """
-        offset = f"{tokens[-5]}{tokens[-3]}{tokens[-1]}"
+        offset = f"{tokens[-5]}{tokens[-3]}:{tokens[-1]}"
         yield self.make_tz_offset(tz_name="", tz_offset=offset)
 
-    @match("config", "sntp", "primary", IP_ADDRESS, "poll-interval", INTEGER)
+    @match(
+        "config", "sntp", "primary", IP_ADDRESS, "secondary", IP_ADDRESS, "poll-interval", INTEGER
+    )
+    def normalize_sntp_primary_secondary(self, tokens):
+        """
+        config sntp primary 172.25.0.126 secondary 22.22.22.22 poll-interval 720
+        """
+        yield self.make_ntp_server_address(name=tokens[3], address=tokens[3])
+        yield self.make_ntp_server_prefer(name=tokens[3])
+        yield self.make_ntp_server_address(name=tokens[5], address=tokens[5])
+
+    @match("config", "sntp", "primary", IP_ADDRESS, REST)
     def normalize_sntp_primary(self, tokens):
         """
         config sntp primary 172.25.0.126 poll-interval 720
         """
-        yield self.make_ntp_server_address(name=tokens[-1], address=tokens[-1])
+        yield self.make_ntp_server_address(name=tokens[3], address=tokens[3])
+        yield self.make_ntp_server_prefer(name=tokens[3])
 
     @match("create", "syslog", "host", INTEGER, "ipaddress", IP_ADDRESS, REST)
     def normalize_syslog_server(self, tokens):
         """
         create syslog host 1 ipaddress 172.16.0.1 severity critical facility local7 udp_port 514 state enable
         """
-        yield self.make_protocols_syslog_server(ip=tokens[3])
+        yield self.make_protocols_syslog_server(ip=tokens[5])
 
     @match("config", "loopdetect", "ports", ANY, "state", ANY)
     def normalize_loopdetect(self, tokens):
@@ -142,8 +148,7 @@ class DLinkDxSNormalizer(BaseNormalizer):
         """
         create vlan VLAN401 tag 401
         """
-        yield self.make_vlan_id(vlan_id=tokens[-1])
-        yield self.make_vlan_name(name=tokens[2])
+        yield self.make_vlan_name(vlan_id=tokens[-1], name=tokens[2])
 
     @match("enable", "stp")
     def normalize_disable_stp(self, tokens):
