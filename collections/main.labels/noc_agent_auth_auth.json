@@ -1,0 +1,19 @@
+{
+    "name": "noc::agent::auth::auth",
+    "$collection": "main.labels",
+    "uuid": "f880af48-57ab-4e6d-9569-1f391a5f16f1",
+    "description": "Agent is authenticate and allow getting collector config",
+    "bg_color1": 10181046,
+    "fg_color1": 16777215,
+    "bg_color2": 3447003,
+    "fg_color2": 16777215,
+    "display_order": 0,
+    "allow_models": ["pm.Agent", "wf.State"],
+    "allow_auto_create": false,
+    "propagate": false,
+    "is_protected": true,
+    "is_matching": false,
+    "expose_metric": false,
+    "expose_datastream": false,
+    "expose_alarm": false
+}
