@@ -6,7 +6,6 @@
 # ----------------------------------------------------------------------
 
 # Python modules
-import os
 import logging
 import operator
 import re
