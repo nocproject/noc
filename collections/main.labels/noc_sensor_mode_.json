@@ -1,0 +1,19 @@
+{
+    "name": "noc::sensor::mode::*",
+    "$collection": "main.labels",
+    "uuid": "b53112a4-28ad-4fbf-889b-d9b9fd394f89",
+    "description": "Builtin Labels Scope for Sensor mode hints: temperature, voltage, current, impedance, frequence, counter",
+    "bg_color1": 15965202,
+    "fg_color1": 16777215,
+    "bg_color2": 9323693,
+    "fg_color2": 16777215,
+    "display_order": 0,
+    "allow_models": ["inv.Sensor"],
+    "allow_auto_create": true,
+    "propagate": true,
+    "is_protected": true,
+    "is_matching": false,
+    "expose_metric": false,
+    "expose_datastream": false,
+    "expose_alarm": false
+}

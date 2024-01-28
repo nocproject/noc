@@ -1,7 +1,7 @@
 //---------------------------------------------------------------------
 // main.label application
 //---------------------------------------------------------------------
-// Copyright (C) 2007-2021 The NOC Project
+// Copyright (C) 2007-2024 The NOC Project
 // See LICENSE for details
 //---------------------------------------------------------------------
 console.debug("Defining NOC.main.label.Application");
@@ -14,7 +14,8 @@ Ext.define("NOC.main.label.Application", {
         "Ext.ux.form.ColorField",
         "Ext.ux.form.GridField",
         "NOC.main.prefixtable.LookupField",
-        "NOC.vc.vlanfilter.LookupField"
+        "NOC.vc.vlanfilter.LookupField",
+        "NOC.core.JSONPreview"
     ],
     model: "NOC.main.label.Model",
     search: true,
@@ -36,6 +37,15 @@ Ext.define("NOC.main.label.Application", {
     },
     initComponent: function() {
         var me = this;
+
+        me.jsonPanel = Ext.create("NOC.core.JSONPreview", {
+            app: me,
+            restUrl: new Ext.XTemplate('/main/label/{id}/json/'),
+            previewName: new Ext.XTemplate('Profile: {name}')
+        });
+
+        me.ITEM_JSON = me.registerItem(me.jsonPanel);
+
         Ext.apply(me, {
             columns: [
                 {
@@ -59,6 +69,13 @@ Ext.define("NOC.main.label.Application", {
                     dataIndex: "is_protected",
                     width: 50,
                     renderer: NOC.render.Bool
+                },
+                {
+                    text: __("Builtin"),
+                    dataIndex: "is_builtin",
+                    width: 30,
+                    renderer: NOC.render.Bool,
+                    sortable: false
                 },
                 {
                     text: __("Allow"),
@@ -218,6 +235,12 @@ Ext.define("NOC.main.label.Application", {
                     fieldLabel: __("Label"),
                     uiStyle: "medium",
                     allowBlank: false
+                },
+                {
+                    name: "uuid",
+                    xtype: "displayfield",
+                    fieldLabel: __("UUID"),
+                    allowBlank: true
                 },
                 {
                     name: "description",
@@ -887,10 +910,29 @@ Ext.define("NOC.main.label.Application", {
                         }
                     ]
                 }
+            ],
+
+            formToolbar: [
+                {
+                    text: __("JSON"),
+                    glyph: NOC.glyph.file,
+                    tooltip: __("Show JSON"),
+                    hasAccess: NOC.hasPermission("read"),
+                    scope: me,
+                    handler: me.onJSON
+                }
             ]
+
         });
         me.callParent();
     },
+
+    onJSON: function() {
+        var me = this;
+        me.showItem(me.ITEM_JSON);
+        me.jsonPanel.preview(me.currentRecord);
+    },
+
     filters: [
         {
             title: __("Manual"),

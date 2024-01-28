@@ -22,6 +22,7 @@ from mongoengine.queryset.visitor import Q as m_Q
 from mongoengine.fields import (
     StringField,
     IntField,
+    UUIDField,
     BooleanField,
     ReferenceField,
     ListField,
@@ -41,6 +42,8 @@ from noc.main.models.prefixtable import PrefixTable
 from noc.models import get_model, is_document, get_model_id, LABEL_MODELS
 from noc.vc.models.vlanfilter import VLANFilter
 
+from noc.core.text import quote_safe_path
+from noc.core.prettyjson import to_json
 
 MATCH_OPS = {"=", "<", ">", "&"}
 
@@ -74,6 +77,7 @@ id_lock = Lock()
 re_lock = Lock()
 rx_labels_lock = Lock()
 setting_lock = Lock()
+allow_model_lock = Lock()
 
 logger = logging.getLogger(__name__)
 
@@ -147,6 +151,8 @@ class Label(Document):
         "collection": "labels",
         "strict": False,
         "auto_create_index": False,
+        "json_collection": "main.labels",
+        "json_unique_fields": ["name"],
         "indexes": [
             "allow_models",
             ("is_matching", "match_regex.scope"),
@@ -164,6 +170,7 @@ class Label(Document):
     }
 
     name = StringField(unique=True)
+    uuid = UUIDField(binary=True)
     description = StringField()
     bg_color1 = IntField(default=0x000000)
     fg_color1 = IntField(default=0xFFFFFF)
@@ -208,6 +215,63 @@ class Label(Document):
 
     def __str__(self):
         return self.name
+
+    @property
+    def json_data(self) -> Dict[str, Any]:
+        r = {
+            "name": self.name,
+            "$collection": self._meta["json_collection"],
+            "uuid": self.uuid,
+            "description": self.description,
+            "bg_color1": self.bg_color1,
+            "fg_color1": self.fg_color1,
+            "bg_color2": self.bg_color2,
+            "fg_color2": self.fg_color2,
+            # Order
+            "display_order": self.display_order,
+            #
+            "allow_models": list(self.allow_models),
+            "allow_auto_create": self.allow_auto_create,
+            # Restrict UI operations
+            "is_protected": self.is_protected,
+            "is_matching": self.is_matching,
+            # For scoped - to propagating settings on own labels
+            "propagate": self.propagate,
+            # Label scope
+            # Exposition scope
+            "expose_metric": self.expose_metric,
+            "expose_datastream": self.expose_datastream,
+            "expose_alarm": self.expose_alarm,
+            # Regex
+        }
+        return r
+
+    def to_json(self) -> str:
+        return to_json(
+            self.json_data,
+            order=[
+                "name",
+                "$collection",
+                "uuid",
+                "description",
+                "bg_color1",
+                "fg_color1",
+                "bg_color2",
+                "fg_color2",
+                "display_order",
+                "allow_models",
+                "allow_auto_create",
+                "propagate",
+                "is_protected",
+                "is_matching",
+                "expose_metric",
+                "expose_datastream",
+                "expose_alarm",
+            ],
+        )
+
+    def get_json_path(self) -> str:
+        return quote_safe_path(self.name.strip("*")) + ".json"
 
     @property
     def scope(self):
@@ -287,13 +351,13 @@ class Label(Document):
             r.append(ll)
         return r
 
-    def __getattr__(self, item):
-        """
-        Check enable_XX settings for backward compatible
-        """
-        if item in self.ENABLE_MODEL_ID_MAP:
-            return self.ENABLE_MODEL_ID_MAP[item] in self.allow_models
-        raise AttributeError("'{}' object has no attribute '{}'".format(type(self).__name__, item))
+    # def __getattr__(self, item):
+    #     """
+    #     Check enable_XX settings for backward compatible
+    #     """
+    #     if item in self.ENABLE_MODEL_ID_MAP:
+    #         return self.ENABLE_MODEL_ID_MAP[item] in self.allow_models
+    #     raise AttributeError("'{}' object has no attribute '{}'".format(type(self).__name__, item))
 
     def iter_changed_datastream(self, changed_fields=None):
         from noc.sa.models.managedobject import ManagedObject
@@ -323,7 +387,8 @@ class Label(Document):
         if hasattr(self, "_changed_fields") and "name" in self._changed_fields:
             raise ValueError("Rename label is not allowed operation")
         if hasattr(self, "_changed_fields") and "allow_models" in self._changed_fields:
-            for model_id in self.allow_models:
+            am = set(Label.objects.filter(name=self.name).scalar("allow_models").first())
+            for model_id in am - set(self.allow_models):
                 r = self.check_label(model_id, self.name)
                 if r:
                     raise ValueError(f"Referred from model {model_id}: {r!r} (id={r.id})")
@@ -373,12 +438,36 @@ class Label(Document):
             f"{ll}::*" for ll in accumulate(label.split("::")[:-1], lambda acc, x: f"{acc}::{x}")
         ]
 
-    # has_effective_settings
+    @classmethod
+    @cachetools.cachedmethod(operator.attrgetter("_setting_cache"), lock=lambda _: allow_model_lock)
+    def has_model(cls, label: str, model_id: str) -> bool:
+        coll = cls._get_collection()
+        wildcards = cls.get_wildcards(label)
+        return bool(
+            next(
+                coll.find(
+                    {
+                        "name": {"$in": [label] + wildcards},
+                        "allow_models": model_id,
+                    },
+                    {},
+                ),
+                None,
+            )
+        )
+
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_setting_cache"), lock=lambda _: setting_lock)
     def get_effective_setting(cls, label: str, setting: str) -> bool:
+        """
+        # has_effective_settings
+        """
         wildcards = cls.get_wildcards(label)
         coll = cls._get_collection()
+        if setting in cls.ENABLE_MODEL_ID_MAP:
+            pass
+            # for backward compatible
+
         r = next(
             coll.aggregate(
                 [
@@ -420,7 +509,7 @@ class Label(Document):
                                 }
                             }
                             for ff in cls._fields
-                            if ff[:2] in {"en", "ex", "bg", "fg"} or ff == "is_protected"
+                            if ff[:2] in {"al", "ex", "bg", "fg"} or ff == "is_protected"
                         }
                     },
                     {"$group": {"_id": None, "settings": {"$mergeObjects": "$$ROOT"}}},
@@ -687,6 +776,7 @@ class Label(Document):
             # Clean up labels
             labels = Label.merge_labels(default_iter_effective_labels(instance))
             instance.labels = labels
+            model_id = get_model_id(instance)
             # Check Match labels
             match_labels = set()
             for ml in getattr(instance, "match_rules", []):
@@ -695,7 +785,11 @@ class Label(Document):
                 else:
                     match_labels |= set(ml.get("labels", []))
             # Validate instance labels
-            can_set_label = getattr(sender, "can_set_label", lambda x: False)
+            can_set_label = getattr(
+                sender,
+                "can_set_label",
+                partial(cls.has_model, model_id=model_id),
+            )
             for label in set(instance.labels):
                 if not can_set_label(label):
                     # Check can_set_label method

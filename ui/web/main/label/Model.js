@@ -24,6 +24,11 @@ Ext.define("NOC.main.label.Model", {
             type: "string"
         },
         {
+            name: "uuid",
+            type: "string",
+            persist: false
+        },
+        {
             name: "bg_color1",
             type: "auto",
             defaultValue: 0

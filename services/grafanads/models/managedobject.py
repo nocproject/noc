@@ -40,7 +40,7 @@ class LabelTarget(BaseModel):
         # Labels
         return [
             {"__text": ll, "__value": ll}
-            for ll in Label.objects.filter(enable_managedobject=True).values_list("name")
+            for ll in Label.objects.filter(allow_models=["sa.ManagedObject"]).values_list("name")
         ]
 
 
