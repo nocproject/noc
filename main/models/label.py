@@ -78,6 +78,7 @@ id_lock = Lock()
 re_lock = Lock()
 rx_labels_lock = Lock()
 setting_lock = Lock()
+allow_model_lock = Lock()
 
 logger = logging.getLogger(__name__)
 
@@ -352,13 +353,13 @@ class Label(Document):
             r.append(ll)
         return r
 
-    def __getattr__(self, item):
-        """
-        Check enable_XX settings for backward compatible
-        """
-        if item in self.ENABLE_MODEL_ID_MAP:
-            return self.ENABLE_MODEL_ID_MAP[item] in self.allow_models
-        raise AttributeError("'{}' object has no attribute '{}'".format(type(self).__name__, item))
+    # def __getattr__(self, item):
+    #     """
+    #     Check enable_XX settings for backward compatible
+    #     """
+    #     if item in self.ENABLE_MODEL_ID_MAP:
+    #         return self.ENABLE_MODEL_ID_MAP[item] in self.allow_models
+    #     raise AttributeError("'{}' object has no attribute '{}'".format(type(self).__name__, item))
 
     def iter_changed_datastream(self, changed_fields=None):
         from noc.sa.models.managedobject import ManagedObject
@@ -389,7 +390,7 @@ class Label(Document):
             raise ValueError("Rename label is not allowed operation")
         if hasattr(self, "_changed_fields") and "allow_models" in self._changed_fields:
             am = set(Label.objects.filter(name=self.name).scalar("allow_models").first())
-            for model_id in (am - set(self.allow_models)):
+            for model_id in am - set(self.allow_models):
                 r = self.check_label(model_id, self.name)
                 if r:
                     raise ValueError(f"Referred from model {model_id}: {r!r} (id={r.id})")
@@ -439,26 +440,36 @@ class Label(Document):
             f"{ll}::*" for ll in accumulate(label.split("::")[:-1], lambda acc, x: f"{acc}::{x}")
         ]
 
-    # has_effective_settings
+    @classmethod
+    @cachetools.cachedmethod(operator.attrgetter("_setting_cache"), lock=lambda _: allow_model_lock)
+    def has_model(cls, label: str, model_id: str) -> bool:
+        coll = cls._get_collection()
+        wildcards = cls.get_wildcards(label)
+        return bool(
+            next(
+                coll.find(
+                    {
+                        "name": {"$in": [label] + wildcards},
+                        "allow_models": model_id,
+                    },
+                    {},
+                ),
+                None,
+            )
+        )
+
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_setting_cache"), lock=lambda _: setting_lock)
     def get_effective_setting(cls, label: str, setting: str) -> bool:
+        """
+        # has_effective_settings
+        """
         wildcards = cls.get_wildcards(label)
         coll = cls._get_collection()
         if setting in cls.ENABLE_MODEL_ID_MAP:
+            pass
             # for backward compatible
-            return bool(
-                next(
-                    coll.find(
-                        {
-                            "name": {"$in": [label] + wildcards},
-                            "allow_models": cls.ENABLE_MODEL_ID_MAP[setting],
-                        },
-                        {},
-                    ),
-                    None,
-                )
-            )
+
         r = next(
             coll.aggregate(
                 [
@@ -767,6 +778,7 @@ class Label(Document):
             # Clean up labels
             labels = Label.merge_labels(default_iter_effective_labels(instance))
             instance.labels = labels
+            model_id = get_model_id(instance)
             # Check Match labels
             match_labels = set()
             for ml in getattr(instance, "match_rules", []):
@@ -775,7 +787,7 @@ class Label(Document):
                 else:
                     match_labels |= set(ml.get("labels", []))
             # Validate instance labels
-            can_set_label = getattr(sender, "can_set_label", lambda x: False)
+            can_set_label = getattr(sender, "can_set_label", partial(cls.has_model, model_id=model_id))
             for label in set(instance.labels):
                 if not can_set_label(label):
                     # Check can_set_label method
