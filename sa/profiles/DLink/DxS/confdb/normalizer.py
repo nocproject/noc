@@ -11,121 +11,153 @@ from noc.core.confdb.syntax.patterns import IP_ADDRESS, INTEGER
 from noc.core.validators import is_int
 
 
-def iter_ports(first, last):
-    first = first.replace("/", ":")
-    last = last.replace("/", ":")
+def iter_ports(port_list):
+    port_list = port_list.replace("/", ":")
 
-    slot_num = None
-    if not is_int(first):
-        slot_num = first.split(":")[0]
-
-    if slot_num:
-        first = first.replace(f"{slot_num}:", "")
-        last = last.replace(f"{slot_num}:", "")
-
-    first = int(first)
-    last = int(last)
-
-    for port_num in range(first, last+1):
-        if slot_num:
-            yield "%s:%s" % (slot_num, port_num)
+    raw_port_ranges = port_list.split(",")
+    port_ranges = []
+    for r in raw_port_ranges:
+        if "-" in r:
+            ports = r.split("-")
         else:
-            yield "%s" % port_num
+            ports = (r, r)
+
+        port_ranges.append(ports)
+
+    for r in port_ranges:
+        first = r[0]
+        last = r[1]
+
+        slot_num = None
+        if not is_int(first):
+            slot_num = first.split(":")[0]
+
+        if slot_num:
+            first = first.replace(f"{slot_num}:", "")
+            last = last.replace(f"{slot_num}:", "")
+
+        first = int(first)
+        last = int(last)
+
+        for port_num in range(first, last+1):
+            if slot_num:
+                yield "%s:%s" % (slot_num, port_num)
+            else:
+                yield "%s" % port_num
 
 
 class DLinkDxSNormalizer(BaseNormalizer):
     @match("config", "command_prompt", ANY)
     def normalize_hostname(self, tokens):
-        yield self.make_hostname(tokens[2].strip('"'))
-
+        yield self.make_hostname(tokens[2])
+        yield self.make_prompt(tokens[2])
 
     @match("config", "ports", REST)
     def normalize_interface(self, tokens):
+        '''
+        config ports 1:1-1:5,1:8 medium_type copper speed auto
+        capability_advertised  10_half 10_full 100_half 100_full 1000_full 
+        flow_control disable learning enable state enable mdix auto description SOMEDESCR
+        '''
 
-        print(f"tokens {tokens}")
-        if "-" in tokens[2]:
-            port_range = tokens[2].split("-")
-        else:
-            port_range = (tokens[2], tokens[2])
-
-        for port_num in iter_ports(port_range[0], port_range[1]):
+        # print(f"tokens {tokens}")
+        for port_num in iter_ports(tokens[2]):
             if_name = self.interface_name(port_num)
-            print(f"ifname {if_name}")
+            # print(f"ifname {if_name}")
             print(self.make_interface(interface=if_name))
             yield self.make_interface(interface=if_name)
 
-#        if_name = self.interface_name(tokens[1], tokens[2])
-#        yield self.make_interface(interface=if_name)
+            rest_tokens = tokens[3:]
+            skip = False
+            for i, t in enumerate(rest_tokens):
+                if skip:
+                    skip = False
+                    continue
+                if t == "state":
+                    skip = True
+                    adm_status = "on" if rest_tokens[i+1] == "enable" else "off"
 
+                    print(if_name, adm_status)
+                    yield self.make_interface_admin_status(
+                        interface=if_name, admin_status=adm_status
+                    )
+                elif t == "description":
+                    skip = True
+                    desc = rest_tokens[i+1]
 
-#    @match("username", ANY, "password", "encrypted", ANY, "privilege", ANY)
-#    def normalize_username_access_level(self, tokens):
-#        yield self.make_user_encrypted_password(username=tokens[1], password=" ".join(tokens[4]))
-#        yield self.make_user_class(username=tokens[1], class_name="level-%s" % tokens[6])
+                    print(if_name, desc)
+                    yield self.make_interface_description(
+                        interface=if_name, description=desc
+                    )
+                elif t == "flow_control":
+                    skip = True
+                    flow_state = "on" if rest_tokens[i+1] == "enable" else "off"
 
-#    @match("no", "spanning-tree")
-#    def normalize_no_spanning_tree(self, tokens):
-#        self.set_context("spanning_tree_disabled", True)
-#        yield self.make_global_spanning_tree_status(status=False)
+                    print(if_name, flow_state)
+                    yield self.make_interface_flow_control(
+                        interface=if_name, flow_control=flow_state
+                    )
 
-#    @match("interface", "gigabitethernet", ANY)
-#    @match("interface", "vlan", ANY)
-#    def normalize_interface(self, tokens):
-#        if_name = self.interface_name(tokens[1], tokens[2])
-#        yield self.make_interface(interface=if_name)
+    @match("enable", "sntp")
+    def normalize_enable_sntp(self, tokens):
+        yield self.make_clock_source(source="ntp")
 
-#    @match("interface", "gigabitethernet", ANY, "no", "shutdown")
-#    @match("interface", "vlan", ANY, "no", "shutdown")
-#    def normalize_interface_shutdown(self, tokens):
-#        yield self.make_interface_admin_status(
-#            interface=self.interface_name(tokens[1], tokens[2]), admin_status="on"
-#        )
+    @match("disable", "sntp")
+    def normalize_disable_sntp(self, tokens):
+        yield self.make_clock_source(source="local")
 
-#    @match("interface", "gigabitethernet", ANY, "description", REST)
-#    @match("interface", "vlan", ANY, "description", REST)
-#    def normalize_interface_description(self, tokens):
-#        yield self.make_interface_description(
-#            interface=self.interface_name(tokens[1], tokens[2]), description=" ".join(tokens[4:])
-#        )
+    @match("config", "time_zone", "operator", ANY, "hour", INTEGER, "min", INTEGER)
+    def normalize_tzoffset(self, tokens):
+        '''
+        config time_zone operator + hour 3 min 0
+        '''
+        offset = f"{tokens[-5]}{tokens[-3]}{tokens[-1]}"
+        yield self.make_tz_offset(tz_name="", tz_offset=offset)
 
-#    @match(
-#        "interface", "gigabitethernet", ANY, "storm-control", "broadcast", "level", "kbps", INTEGER
-#    )
-#    def normalize_port_storm_control_broadcast(self, tokens):
-#        yield self.make_interface_storm_control_broadcast_level(
-#            interface=self.interface_name(tokens[1], tokens[2]), level=tokens[-1]
-#        )
+    @match("config", "sntp", "primary", IP_ADDRESS, "poll-interval", INTEGER)
+    def normalize_sntp_primary(self, tokens):
+        '''
+        config sntp primary 172.25.0.126 poll-interval 720
+        '''
+        yield self.make_ntp_server_address(name=tokens[-1], address=tokens[-1])
 
-#    @match(
-#        "interface", "gigabitethernet", ANY, "storm-control", "multicast", "level", "kbps", INTEGER
-#    )
-#    def normalize_port_storm_control_multicast(self, tokens):
-#        yield self.make_interface_storm_control_multicast_level(
-#            interface=self.interface_name(tokens[1], tokens[2]), level=tokens[-1]
-#        )
+    @match("create", "syslog", "host", INTEGER, "ipaddress", IP_ADDRESS, REST)
+    def normalize_syslog_server(self, tokens):
+        '''
+        create syslog host 1 ipaddress 172.16.0.1 severity critical facility local7 udp_port 514 state enable
+        '''
+        yield self.make_protocols_syslog_server(ip=tokens[3])
 
-#    @match("interface", "gigabitethernet", ANY, "loopback-detection", "enable")
-#    def normalize_interface_no_loop_detect(self, tokens):
-#        if not self.get_context("loop_detect_disabled"):
-#            if_name = self.interface_name(tokens[1], tokens[2])
-#            yield self.make_loop_detect_interface(interface=if_name)
+    @match("config", "loopdetect", "ports", ANY, "state", ANY)
+    def normalize_loopdetect(self, tokens):
+        '''
+        config loopdetect ports 1:1 state disable
+        config loopdetect ports 1:2 state enable
+        '''
+        if tokens[-1] == "enable":
+            for port_num in iter_ports(tokens[3]):
+                if_name = self.interface_name(port_num)
+                yield self.make_loop_detect_interface(interface=if_name)
 
-#    @match("interface", "vlan", ANY, "ip", "address", ANY, ANY)
-#    def normalize_vlan_ip(self, tokens):
-#        if_name = self.interface_name(tokens[1], tokens[2])
-#        yield self.make_unit_inet_address(
-#            interface=if_name, unit=if_name, address=self.to_prefix(tokens[-2], tokens[-1])
-#        )
+    @match("create", "vlan", ANY, "tag", INTEGER)
+    def normalize_vlans(self, tokens):
+        '''
+        create vlan VLAN401 tag 401
+        '''
+        yield self.make_vlan_id(vlan_id=tokens[-1])
+        yield self.make_vlan_name(name=tokens[2])
 
-#    @match("ip", "route", "0.0.0.0", "0.0.0.0", IP_ADDRESS)
-#    def normalize_default_gateway(self, tokens):
-#        yield self.make_inet_static_route_next_hop(route="0.0.0.0/0", next_hop=tokens[-1])
+    @match("enable", "stp")
+    def normalize_disable_stp(self, tokens):
+        yield self.make_global_spanning_tree_status(status="on")
 
-#    @match("clock", "time", "source", ANY)
-#    def normalize_timesource(self, tokens):
-#        clock_source = "ntp" if tokens[-1] == "sntp" else tokens[-1]
-#        yield self.make_clock_source(source=clock_source)
+    @match("disable", "stp")
+    def normalize_disable_stp(self, tokens):
+        yield self.make_global_spanning_tree_status(status="off")
 
-#    @match("sntp", "set", "sntp", "unicast-server", "ipv4", IP_ADDRESS)
-#    def normalize_ntp_server(self, tokens):
-#        yield self.make_ntp_server_address(name=tokens[-1], address=tokens[-1])
+    @match("create", "iproute", "default", IP_ADDRESS, REST)
+    def normalize_def_gateway(self, tokens):
+        '''
+        create iproute default 172.25.0.126 1 primary
+        '''
+        yield self.make_inet_static_route_next_hop(route="0.0.0.0/0", next_hop=tokens[3])
