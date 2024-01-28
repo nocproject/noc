@@ -71,6 +71,13 @@ Ext.define("NOC.main.label.Application", {
                     renderer: NOC.render.Bool
                 },
                 {
+                    text: __("Builtin"),
+                    dataIndex: "is_builtin",
+                    width: 30,
+                    renderer: NOC.render.Bool,
+                    sortable: false
+                },
+                {
                     text: __("Allow"),
                     dataIndex: "enable_agent",
                     flex: 1,
@@ -903,10 +910,29 @@ Ext.define("NOC.main.label.Application", {
                         }
                     ]
                 }
+            ],
+
+            formToolbar: [
+                {
+                    text: __("JSON"),
+                    glyph: NOC.glyph.file,
+                    tooltip: __("Show JSON"),
+                    hasAccess: NOC.hasPermission("read"),
+                    scope: me,
+                    handler: me.onJSON
+                }
             ]
+
         });
         me.callParent();
     },
+
+    onJSON: function() {
+        var me = this;
+        me.showItem(me.ITEM_JSON);
+        me.jsonPanel.preview(me.currentRecord);
+    },
+
     filters: [
         {
             title: __("Manual"),

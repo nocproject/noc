@@ -272,8 +272,7 @@ class Label(Document):
         )
 
     def get_json_path(self) -> str:
-        p = [quote_safe_path(n.strip()) for n in self.name.split("|")]
-        return os.path.join(*p) + ".json"
+        return quote_safe_path(self.name.strip("*")) + ".json"
 
     @property
     def scope(self):
@@ -787,7 +786,9 @@ class Label(Document):
                 else:
                     match_labels |= set(ml.get("labels", []))
             # Validate instance labels
-            can_set_label = getattr(sender, "can_set_label", partial(cls.has_model, model_id=model_id))
+            can_set_label = getattr(
+                sender, "can_set_label", partial(cls.has_model, model_id=model_id),
+            )
             for label in set(instance.labels):
                 if not can_set_label(label):
                     # Check can_set_label method

@@ -1,0 +1,19 @@
+{
+    "name": "noc::is_linked::=",
+    "$collection": "main.labels",
+    "uuid": "83990908-53ed-41af-84de-2917f4e1b10b",
+    "description": "Builtin Labels mark if ManagedObject or Interface has link",
+    "bg_color1": 2719929,
+    "fg_color1": 16777215,
+    "bg_color2": 13849600,
+    "fg_color2": 16777215,
+    "display_order": 0,
+    "allow_models": [],
+    "allow_auto_create": false,
+    "propagate": false,
+    "is_protected": true,
+    "is_matching": false,
+    "expose_metric": false,
+    "expose_datastream": false,
+    "expose_alarm": true
+}
