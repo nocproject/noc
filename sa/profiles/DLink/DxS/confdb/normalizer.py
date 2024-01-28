@@ -39,7 +39,7 @@ def iter_ports(port_list):
         first = int(first)
         last = int(last)
 
-        for port_num in range(first, last+1):
+        for port_num in range(first, last + 1):
             if slot_num:
                 yield "%s:%s" % (slot_num, port_num)
             else:
@@ -54,11 +54,11 @@ class DLinkDxSNormalizer(BaseNormalizer):
 
     @match("config", "ports", REST)
     def normalize_interface(self, tokens):
-        '''
+        """
         config ports 1:1-1:5,1:8 medium_type copper speed auto
-        capability_advertised  10_half 10_full 100_half 100_full 1000_full 
+        capability_advertised  10_half 10_full 100_half 100_full 1000_full
         flow_control disable learning enable state enable mdix auto description SOMEDESCR
-        '''
+        """
 
         # print(f"tokens {tokens}")
         for port_num in iter_ports(tokens[2]):
@@ -75,7 +75,7 @@ class DLinkDxSNormalizer(BaseNormalizer):
                     continue
                 if t == "state":
                     skip = True
-                    adm_status = "on" if rest_tokens[i+1] == "enable" else "off"
+                    adm_status = "on" if rest_tokens[i + 1] == "enable" else "off"
 
                     print(if_name, adm_status)
                     yield self.make_interface_admin_status(
@@ -83,15 +83,13 @@ class DLinkDxSNormalizer(BaseNormalizer):
                     )
                 elif t == "description":
                     skip = True
-                    desc = rest_tokens[i+1]
+                    desc = rest_tokens[i + 1]
 
                     print(if_name, desc)
-                    yield self.make_interface_description(
-                        interface=if_name, description=desc
-                    )
+                    yield self.make_interface_description(interface=if_name, description=desc)
                 elif t == "flow_control":
                     skip = True
-                    flow_state = "on" if rest_tokens[i+1] == "enable" else "off"
+                    flow_state = "on" if rest_tokens[i + 1] == "enable" else "off"
 
                     print(if_name, flow_state)
                     yield self.make_interface_flow_control(
@@ -108,32 +106,32 @@ class DLinkDxSNormalizer(BaseNormalizer):
 
     @match("config", "time_zone", "operator", ANY, "hour", INTEGER, "min", INTEGER)
     def normalize_tzoffset(self, tokens):
-        '''
+        """
         config time_zone operator + hour 3 min 0
-        '''
+        """
         offset = f"{tokens[-5]}{tokens[-3]}{tokens[-1]}"
         yield self.make_tz_offset(tz_name="", tz_offset=offset)
 
     @match("config", "sntp", "primary", IP_ADDRESS, "poll-interval", INTEGER)
     def normalize_sntp_primary(self, tokens):
-        '''
+        """
         config sntp primary 172.25.0.126 poll-interval 720
-        '''
+        """
         yield self.make_ntp_server_address(name=tokens[-1], address=tokens[-1])
 
     @match("create", "syslog", "host", INTEGER, "ipaddress", IP_ADDRESS, REST)
     def normalize_syslog_server(self, tokens):
-        '''
+        """
         create syslog host 1 ipaddress 172.16.0.1 severity critical facility local7 udp_port 514 state enable
-        '''
+        """
         yield self.make_protocols_syslog_server(ip=tokens[3])
 
     @match("config", "loopdetect", "ports", ANY, "state", ANY)
     def normalize_loopdetect(self, tokens):
-        '''
+        """
         config loopdetect ports 1:1 state disable
         config loopdetect ports 1:2 state enable
-        '''
+        """
         if tokens[-1] == "enable":
             for port_num in iter_ports(tokens[3]):
                 if_name = self.interface_name(port_num)
@@ -141,9 +139,9 @@ class DLinkDxSNormalizer(BaseNormalizer):
 
     @match("create", "vlan", ANY, "tag", INTEGER)
     def normalize_vlans(self, tokens):
-        '''
+        """
         create vlan VLAN401 tag 401
-        '''
+        """
         yield self.make_vlan_id(vlan_id=tokens[-1])
         yield self.make_vlan_name(name=tokens[2])
 
@@ -157,7 +155,7 @@ class DLinkDxSNormalizer(BaseNormalizer):
 
     @match("create", "iproute", "default", IP_ADDRESS, REST)
     def normalize_def_gateway(self, tokens):
-        '''
+        """
         create iproute default 172.25.0.126 1 primary
-        '''
+        """
         yield self.make_inet_static_route_next_hop(route="0.0.0.0/0", next_hop=tokens[3])
