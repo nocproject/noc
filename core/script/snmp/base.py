@@ -92,7 +92,7 @@ class SNMP(object):
             self.display_hints = self.script.profile.get_snmp_display_hints(self.script)
         return self.display_hints
 
-    def _get_snmp_credentials(self, version: Optional[int] = None) -> Tuple[str, str]:
+    def _get_snmp_credentials(self, version: Optional[int] = None) -> Tuple[str, int]:
         version = self._get_snmp_version(version)
         if version < SNMP_v3 and "snmp_ro" not in self.script.credentials:
             raise SNMPError(code=ERR_SNMP_BAD_COMMUNITY)
@@ -147,7 +147,7 @@ class SNMP(object):
                 else:
                     raise
 
-        version, community = self._get_snmp_credentials(version)
+        community, version = self._get_snmp_credentials(version)
         if display_hints is None:
             display_hints = self._get_display_hints()
         return run_sync(run, close_all=False)
@@ -215,7 +215,7 @@ class SNMP(object):
                 else:
                     raise
 
-        version, community = self._get_snmp_credentials(version)
+        community, version = self._get_snmp_credentials(version)
         return run_sync(run, close_all=False)
 
     def getnext(
@@ -277,7 +277,7 @@ class SNMP(object):
                 else:
                     raise
 
-        version, community = self._get_snmp_credentials(version)
+        community, version = self._get_snmp_credentials(version)
         if display_hints is None:
             display_hints = self._get_display_hints()
         return run_sync(run, close_all=False)
