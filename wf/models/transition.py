@@ -190,6 +190,10 @@ class Transition(Document):
         )
         return os.path.join(name_coll) + ".json"
 
+    @property
+    def json_name(self):
+        return str(self)
+
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_id_cache"), lock=lambda _: id_lock)
     def get_by_id(cls, id):
