@@ -1,0 +1,17 @@
+{
+    "workflow__name": "Sensor Default",
+    "name": "Missed",
+    "uuid": "98befc82-699e-4655-a7dc-a812694379c1",
+    "$collection": "wf.states",
+    "description": "Sensor is missed",
+    "is_default": false,
+    "is_productive": false,
+    "is_wiping": false,
+    "hide_with_state": false,
+    "update_last_seen": false,
+    "ttl": 0,
+    "update_expired": false,
+    "x": 140,
+    "y": 160,
+    "disable_all_interaction": false
+}

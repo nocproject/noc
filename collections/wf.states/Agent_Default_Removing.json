@@ -1,0 +1,18 @@
+{
+    "workflow__name": "Agent Default",
+    "name": "Removing",
+    "uuid": "896af420-f298-4abb-a2c2-0d5b81d184c1",
+    "$collection": "wf.states",
+    "description": "Agent is removed from system use",
+    "is_default": false,
+    "is_productive": false,
+    "is_wiping": false,
+    "hide_with_state": false,
+    "update_last_seen": false,
+    "ttl": 0,
+    "update_expired": false,
+    "x": 350,
+    "y": 370,
+    "disable_all_interaction": false,
+    "labels": ["noc::agent::auth::none"]
+}

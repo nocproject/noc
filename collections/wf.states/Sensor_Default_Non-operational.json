@@ -1,0 +1,17 @@
+{
+    "workflow__name": "Sensor Default",
+    "name": "Non-operational",
+    "uuid": "78ccc244-747b-4f22-9c8b-355bc43177dc",
+    "$collection": "wf.states",
+    "description": "Sensor is broken or non-operational",
+    "is_default": false,
+    "is_productive": false,
+    "is_wiping": false,
+    "hide_with_state": false,
+    "update_last_seen": false,
+    "ttl": 0,
+    "update_expired": false,
+    "x": 440,
+    "y": 150,
+    "disable_all_interaction": false
+}

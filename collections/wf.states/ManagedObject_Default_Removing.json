@@ -1,0 +1,16 @@
+{
+    "workflow__name": "ManagedObject Default",
+    "name": "Removing",
+    "uuid": "1908c695-6829-4c34-9732-3436516e85c1",
+    "$collection": "wf.states",
+    "is_default": false,
+    "is_productive": false,
+    "is_wiping": true,
+    "hide_with_state": false,
+    "update_last_seen": false,
+    "ttl": 1800,
+    "update_expired": false,
+    "x": 540,
+    "y": 460,
+    "disable_all_interaction": false
+}

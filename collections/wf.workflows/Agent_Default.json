@@ -1,0 +1,8 @@
+{
+    "name": "Agent Default",
+    "uuid": "8fc3dfd9-3804-4db9-b8eb-0947212c8ba5",
+    "$collection": "wf.workflows",
+    "is_active": true,
+    "description": "Agent Default Workflow",
+    "allowed_models": ["pm.Agent"]
+}

@@ -343,12 +343,17 @@ _MODELS = {
     "wf.Workflow": "noc.wf.models.workflow.Workflow",
     "wf.State": "noc.wf.models.state.State",
     "wf.Transition": "noc.wf.models.transition.Transition",
+    "wf.WFMigration": "noc.wf.models.wfmigration.WFMigration",
 }
 
 FTS_MODELS = ["ip.Address", "ip.Prefix", "ip.VRF", "sa.ManagedObject", "cpe.CPE"]
 
 COLLECTIONS = [
     "main.Label",
+    "wf.Workflow",
+    "wf.State",
+    "wf.Transition",
+    "wf.WFMigration",
     "main.Font",
     "main.Glyph",
     "fm.SyntaxAlias",

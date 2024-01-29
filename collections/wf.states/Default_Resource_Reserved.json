@@ -1,0 +1,17 @@
+{
+    "workflow__name": "Default Resource",
+    "name": "Reserved",
+    "uuid": "a4b54358-52f7-4423-a0f1-8d518069c027",
+    "$collection": "wf.states",
+    "description": "Resource is temporary reserved/booked.                                     It must be approved explicitly during TTL to became used",
+    "is_default": false,
+    "is_productive": false,
+    "is_wiping": false,
+    "hide_with_state": false,
+    "update_last_seen": false,
+    "ttl": 604800,
+    "update_expired": false,
+    "x": 0,
+    "y": 0,
+    "disable_all_interaction": false
+}

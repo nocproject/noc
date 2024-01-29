@@ -1,0 +1,8 @@
+{
+    "name": "Sensor Default",
+    "uuid": "9206b08b-6e2d-4ea6-a7b6-30637ba21fa7",
+    "$collection": "wf.workflows",
+    "is_active": true,
+    "description": "Sensor default workflow",
+    "allowed_models": ["inv.Sensor"]
+}

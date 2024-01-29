@@ -1,0 +1,17 @@
+{
+    "workflow__name": "Service Default",
+    "name": "Ready",
+    "uuid": "b76321f4-7cc3-4f56-b92f-481078af2340",
+    "$collection": "wf.states",
+    "description": "Service is in productive usage",
+    "is_default": false,
+    "is_productive": true,
+    "is_wiping": false,
+    "hide_with_state": false,
+    "update_last_seen": true,
+    "ttl": 0,
+    "update_expired": false,
+    "x": 240,
+    "y": 410,
+    "disable_all_interaction": false
+}

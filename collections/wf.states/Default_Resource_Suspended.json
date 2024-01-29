@@ -1,0 +1,17 @@
+{
+    "workflow__name": "Default Resource",
+    "name": "Suspended",
+    "uuid": "12be00cb-c495-42d3-ace0-60a0e076df30",
+    "$collection": "wf.states",
+    "description": "Resource is temporary suspended/blocked for organisational reasons",
+    "is_default": false,
+    "is_productive": false,
+    "is_wiping": false,
+    "hide_with_state": false,
+    "update_last_seen": false,
+    "ttl": 0,
+    "update_expired": false,
+    "x": 0,
+    "y": 0,
+    "disable_all_interaction": false
+}
