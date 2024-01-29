@@ -10,6 +10,7 @@ Ext.define("NOC.wf.transition.Application", {
     extend: "NOC.core.ModelApplication",
     requires: [
         "NOC.wf.transition.Model",
+        "NOC.core.JSONPreview",
         "NOC.wf.workflow.LookupField",
         "NOC.wf.state.LookupField",
         "NOC.main.remotesystem.LookupField",
@@ -20,6 +21,14 @@ Ext.define("NOC.wf.transition.Application", {
     model: "NOC.wf.transition.Model",
     initComponent: function() {
         var me = this;
+        me.jsonPanel = Ext.create("NOC.core.JSONPreview", {
+            app: me,
+            restUrl: new Ext.XTemplate('/sa/profile/{id}/json/'),
+            previewName: new Ext.XTemplate('Profile: {name}')
+        });
+
+        me.ITEM_JSON = me.registerItem(me.jsonPanel);
+
         Ext.apply(me, {
             columns: [
                 {
@@ -82,6 +91,11 @@ Ext.define("NOC.wf.transition.Application", {
                     xtype: "wf.state.LookupField",
                     fieldLabel: __("To State"),
                     allowBlank: false
+                },
+                {
+                    name: "uuid",
+                    xtype: "displayfield",
+                    fieldLabel: __("UUID")
                 },
                 {
                     name: "label",
@@ -207,5 +221,11 @@ Ext.define("NOC.wf.transition.Application", {
             ftype: "lookup",
             lookup: "wf.state"
         }
-    ]
+    ],
+    //
+    onJSON: function() {
+        var me = this;
+        me.showItem(me.ITEM_JSON);
+        me.jsonPanel.preview(me.currentRecord);
+    }
 });

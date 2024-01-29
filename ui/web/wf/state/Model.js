@@ -16,6 +16,11 @@ Ext.define("NOC.wf.state.Model", {
             type: "string"
         },
         {
+            name: "uuid",
+            type: "string",
+            persist: false
+        },
+        {
             name: "update_expired",
             type: "boolean"
         },
