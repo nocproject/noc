@@ -315,6 +315,20 @@ class Script(BaseScript):
     rx_vlan_untagged = re.compile(r"\s+Untagged interfaces:\s*(.+)", re.MULTILINE | re.DOTALL)
     rx_vlan_tagged = re.compile(r"\s+Tagged interfaces:\s*(.+)", re.MULTILINE | re.DOTALL)
 
+
+    """
+    Routing instance: default-switch
+    VLAN Name: v0552                          State: Active
+    Tag: 552
+    Internal index: 654, Generation Index: 655, Origin: Static
+    MAC aging time: 300 seconds
+    VXLAN Enabled : No  
+    Interfaces:
+        ae1.0*,tagged,trunk
+        xe-0/0/7.0*,tagged,trunk
+    Number of interfaces: Tagged 2    , Untagged 0
+    Total MAC count: 2 
+    """
     rx_vlan_sep1 = re.compile(r"^\nRouting instance:", re.MULTILINE)
     rx_802_1Q_tag1 = re.compile(r"^Tag:\s+(?P<tag>\d+)", re.MULTILINE)
     rx_l3_iface = re.compile(r"^Layer 3 interface: (?P<iface>\S+)", re.MULTILINE)
