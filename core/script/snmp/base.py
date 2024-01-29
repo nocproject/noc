@@ -98,7 +98,7 @@ class SNMP(object):
             raise SNMPError(code=ERR_SNMP_BAD_COMMUNITY)
         elif version < SNMP_v3:
             return str(self.script.credentials["snmp_ro"]), version
-        raise NotImplementedError("SNMPv3 is not supported")
+        raise NotImplementedError("Native SNMP backend is not supported v3")
 
     def get(
         self,
@@ -147,7 +147,7 @@ class SNMP(object):
                 else:
                     raise
 
-        version, community = self._get_snmp_version(version)
+        version, community = self._get_snmp_credentials(version)
         if display_hints is None:
             display_hints = self._get_display_hints()
         return run_sync(run, close_all=False)
