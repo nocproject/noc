@@ -1,7 +1,7 @@
 {
     "workflow__name": "Agent Default",
     "name": "Ready",
-    "uuid": "4107c859-2c59-4e3d-b31e-cb665af068eb",
+    "uuid": "8bed6920-347c-41b4-bfde-95242b150c47",
     "$collection": "wf.states",
     "description": "Agent is in productive usage",
     "is_default": false,

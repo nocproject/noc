@@ -1,7 +1,7 @@
 {
     "workflow__name": "ManagedObject Default",
     "name": "Managed",
-    "uuid": "7b0934e9-6b20-4420-8c01-220049699f14",
+    "uuid": "929cf1ec-d3ac-433c-90e8-dfb129cc7a12",
     "$collection": "wf.states",
     "is_default": true,
     "is_productive": true,

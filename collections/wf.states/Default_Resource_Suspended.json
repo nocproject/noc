@@ -1,7 +1,7 @@
 {
     "workflow__name": "Default Resource",
     "name": "Suspended",
-    "uuid": "86d83cd8-31aa-4d84-ab8a-88ea48d2d69b",
+    "uuid": "12be00cb-c495-42d3-ace0-60a0e076df30",
     "$collection": "wf.states",
     "description": "Resource is temporary suspended/blocked for organisational reasons",
     "is_default": false,

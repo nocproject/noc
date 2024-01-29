@@ -1,7 +1,7 @@
 {
     "workflow__name": "Service Default",
     "name": "Removing",
-    "uuid": "998b899d-ed8b-4758-a291-a2caa97e3f7c",
+    "uuid": "91161c1a-a418-44e5-8ef4-97ff643b1b43",
     "$collection": "wf.states",
     "description": "Service is removed from configuration use",
     "is_default": false,

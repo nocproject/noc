@@ -1,7 +1,7 @@
 {
     "workflow__name": "Agent Default",
     "name": "Approved",
-    "uuid": "d3f3f5ac-6991-44ba-8488-d140020d3dda",
+    "uuid": "d8b07951-55b0-4103-9d82-841f07c1f3f5",
     "$collection": "wf.states",
     "description": "Agent is approved for ready",
     "is_default": false,

@@ -1,7 +1,7 @@
 {
     "workflow__name": "Service Default",
     "name": "Planned",
-    "uuid": "c8ec9495-c486-4cdd-845a-8ec5b3701efb",
+    "uuid": "84551dee-7a44-4019-9365-f7e985d8d57f",
     "$collection": "wf.states",
     "description": "The service is scheduled to be configured",
     "is_default": false,

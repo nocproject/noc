@@ -1,7 +1,7 @@
 {
     "workflow__name": "Service Default",
     "name": "Provisioning",
-    "uuid": "86174466-065c-4a01-af4a-7f4bb751a0ed",
+    "uuid": "dc258f9d-6999-45d3-943b-c10a6f1bd41f",
     "$collection": "wf.states",
     "description": "The service is saved to the configuration.",
     "is_default": false,

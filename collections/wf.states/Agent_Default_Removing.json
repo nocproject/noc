@@ -1,7 +1,7 @@
 {
     "workflow__name": "Agent Default",
     "name": "Removing",
-    "uuid": "cf85bc18-5eb6-4e34-bacf-be89bfdc3b24",
+    "uuid": "896af420-f298-4abb-a2c2-0d5b81d184c1",
     "$collection": "wf.states",
     "description": "Agent is removed from system use",
     "is_default": false,

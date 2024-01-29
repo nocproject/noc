@@ -1,7 +1,7 @@
 {
     "workflow__name": "Sensor Default",
     "name": "Non-operational",
-    "uuid": "d2920107-c379-4d23-9500-e3fbfee58516",
+    "uuid": "78ccc244-747b-4f22-9c8b-355bc43177dc",
     "$collection": "wf.states",
     "description": "Sensor is broken or non-operational",
     "is_default": false,

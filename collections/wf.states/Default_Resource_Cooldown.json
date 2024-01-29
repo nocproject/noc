@@ -1,7 +1,7 @@
 {
     "workflow__name": "Default Resource",
     "name": "Cooldown",
-    "uuid": "327b39b1-e697-4809-aeaa-ae47018e4ac2",
+    "uuid": "a8e2d3ca-ad9d-4ab9-b455-d94022814c5f",
     "$collection": "wf.states",
     "description": "Cooldown stage for released resources to prevent reuse collisions",
     "is_default": false,

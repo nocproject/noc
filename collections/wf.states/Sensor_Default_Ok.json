@@ -1,7 +1,7 @@
 {
     "workflow__name": "Sensor Default",
     "name": "Ok",
-    "uuid": "74a1b7a9-da70-48dc-878c-0d8c299c4197",
+    "uuid": "0608c350-e183-44c3-8b5e-abfea6ad89e7",
     "$collection": "wf.states",
     "is_default": true,
     "is_productive": true,

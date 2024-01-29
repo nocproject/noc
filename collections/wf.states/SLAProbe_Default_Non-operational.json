@@ -1,7 +1,7 @@
 {
     "workflow__name": "SLAProbe Default",
     "name": "Non-operational",
-    "uuid": "42c510a3-e758-42d2-b40a-dbee1a723fba",
+    "uuid": "8c87ccf2-e833-42c0-be9a-93436c0f545f",
     "$collection": "wf.states",
     "description": "Sensor is broken or non-operational",
     "is_default": false,

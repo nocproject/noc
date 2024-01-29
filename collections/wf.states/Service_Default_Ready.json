@@ -1,7 +1,7 @@
 {
     "workflow__name": "Service Default",
     "name": "Ready",
-    "uuid": "e8039138-eccb-4f25-a1f4-4fcd336d0508",
+    "uuid": "b76321f4-7cc3-4f56-b92f-481078af2340",
     "$collection": "wf.states",
     "description": "Service is in productive usage",
     "is_default": false,

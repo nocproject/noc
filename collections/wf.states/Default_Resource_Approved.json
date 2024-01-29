@@ -1,7 +1,7 @@
 {
     "workflow__name": "Default Resource",
     "name": "Approved",
-    "uuid": "0dffc190-7794-4ade-836e-b6787ebba6c9",
+    "uuid": "5094bb75-d6c5-4f0f-a7c2-f345048d4a96",
     "$collection": "wf.states",
     "description": "Resource reservation is approved.                                     Resource will became ready when it will be discovered",
     "is_default": false,

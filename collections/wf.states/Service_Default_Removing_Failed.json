@@ -1,7 +1,7 @@
 {
     "workflow__name": "Service Default",
     "name": "Removing Failed",
-    "uuid": "db2a8ade-55e8-472c-87d7-d48c9b4e3610",
+    "uuid": "b82fe3cc-c834-40ae-b3a3-857ae18752d1",
     "$collection": "wf.states",
     "description": "Service removing failed",
     "is_default": false,

@@ -1,7 +1,7 @@
 {
     "workflow__name": "Service Default",
     "name": "Closed",
-    "uuid": "d5f1dcc5-1f87-433c-a564-f7af59f7a8fb",
+    "uuid": "f5dccac7-646b-47a8-9adb-fa23e71e4aa0",
     "$collection": "wf.states",
     "is_default": false,
     "is_productive": false,

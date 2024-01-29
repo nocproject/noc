@@ -1,7 +1,7 @@
 {
     "workflow__name": "Default",
     "name": "Ready",
-    "uuid": "f7b7660a-79e6-4e88-91f4-821bbe143441",
+    "uuid": "69f26400-f207-4a79-9530-d6f8a6e5ff7d",
     "$collection": "wf.states",
     "description": "Resource is in productive usage",
     "is_default": true,

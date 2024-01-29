@@ -1,7 +1,7 @@
 {
     "workflow__name": "Service Default",
     "name": "Testing",
-    "uuid": "bfe61f22-e4ed-4f4c-816d-f9a31411198f",
+    "uuid": "cc4dcb38-54af-415c-88ee-d94cdd95419d",
     "$collection": "wf.states",
     "description": "Checking the service configuration",
     "is_default": false,

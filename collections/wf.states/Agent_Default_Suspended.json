@@ -1,7 +1,7 @@
 {
     "workflow__name": "Agent Default",
     "name": "Suspended",
-    "uuid": "3a42a8f6-1962-4a9b-bc68-98567a794cad",
+    "uuid": "c80cdc40-dc8c-44df-bf35-c293623d4169",
     "$collection": "wf.states",
     "description": "Agent is temporary suspended/blocked for organisational reasons",
     "is_default": false,
