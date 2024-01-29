@@ -315,7 +315,6 @@ class Script(BaseScript):
     rx_vlan_untagged = re.compile(r"\s+Untagged interfaces:\s*(.+)", re.MULTILINE | re.DOTALL)
     rx_vlan_tagged = re.compile(r"\s+Tagged interfaces:\s*(.+)", re.MULTILINE | re.DOTALL)
 
-
     """
     Routing instance: default-switch
     VLAN Name: v0552                          State: Active
