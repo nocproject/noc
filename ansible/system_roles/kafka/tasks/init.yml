@@ -4,11 +4,13 @@
     path: "{{ kafka_log_dir }}/bootstrap.checkpoint"
   register: boot_result
   failed_when: false
+
 - name: Check already format (2/2)
   stat:
     path: "{{ kafka_log_dir }}/meta.properties"
   register: meta_result
   failed_when: false
+
 - name: Create Kafka Cluster ID
   command: "{{ kafka_dir }}/bin/kafka-storage.sh random-uuid"
   register: cluster_uuid
