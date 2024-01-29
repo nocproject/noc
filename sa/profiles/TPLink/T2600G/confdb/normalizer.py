@@ -9,5 +9,5 @@
 from noc.core.confdb.normalizer.base import BaseNormalizer
 
 
-class TPLinkxT2600GNormalizer(BaseNormalizer):
+class TPLinkT2600GNormalizer(BaseNormalizer):
     pass
