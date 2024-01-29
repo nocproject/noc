@@ -86,14 +86,12 @@ class TransitionVertex(EmbeddedDocument):
 class Transition(Document):
     meta = {
         "collection": "transitions",
-        "indexes": [
-            {"fields": ["from_state", "to_state", "required_rules.labels"], "unique": True}
-        ],
+        "indexes": [{"fields": ["workflow", "from_state", "to_state", "labels"], "unique": True}],
         "strict": False,
         "auto_create_index": False,
         "json_collection": "wf.transitions",
         "json_depends_on": ["wf.workflows", "wf.states"],
-        "json_unique_fields": [("from_state", "to_state"), "uuid"],
+        "json_unique_fields": [("workflow", "from_state", "to_state", "labels"), "uuid"],
     }
     workflow: Workflow = PlainReferenceField(Workflow)
     from_state: State = PlainReferenceField(State)
@@ -157,10 +155,9 @@ class Transition(Document):
         if self.handlers:
             r["handlers"] = [h for h in self.handlers]
         if self.required_rules:
-            r["required_rules"] = [r.json_data for r in self.required_rules]
+            r["required_rules"] = [r.json_data() for r in self.required_rules]
         if self.vertices:
-            ls = list(self.vertices)
-            r["vertices"] = [{"x": ls[0]["x"], "y": ls[0]["y"]}]
+            r["vertices"] = [r.json_data() for r in self.vertices]
         return r
 
     def to_json(self) -> str:
