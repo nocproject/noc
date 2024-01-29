@@ -8,16 +8,12 @@ forms:
       <strong>Scale Recommendations</strong>: At least one per system, or 3 like cluster. <br/>
       <strong>docs</strong>: <a href=https://kafka.apache.org/documentation/ target=_blank>Apache Kafka docs</a> <br/>
       <strong>Placement constraint</strong>: On node with classifiers/correlators <br/>
-    loglevel:
-      default: info
-      label: Loglevel
-      type: list
-      options:
-        - debug
-        - info
-        - warn
-        - error
-    kafka_insecure_certs:
+    cluster_id:
+      description: "uuidgen --time | tr -d '-' | base64 | cut -b 1-22"
+      label: "Kafka Cluster Id"
+      type: str
+      common: environment
+    insecure_certs:
       label: "don't check certificates"
       type: bool
       default: false

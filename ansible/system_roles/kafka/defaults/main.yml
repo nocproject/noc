@@ -27,6 +27,7 @@ kafka_replica_socket_receive_buffer_bytes: 65536
 kafka_opts: "-Djava.net.preferIPv4Stack=True"
 
 kafka_node_id: "{{ groups['svc-kafka-exec'].index(inventory_hostname) }}"
+kafka_cluster_id: ""
 kafka_auto_create_topics_enable: true
 kafka_delete_topic_enable: true
 kafka_default_replication_factor: 1
@@ -40,7 +41,7 @@ kafka_log_cleaner_threads: 1
 kafka_offsets_topic_replication_factor: 1
 kafka_transaction_state_log_replication_factor: 1
 kafka_transaction_state_log_min_isr: 1
-kafka_log_retention_hours: 72 #168?
+kafka_log_retention_hours: 72  #168?
 kafka_log_segment_bytes: 1073741824
 kafka_log_retention_check_interval_ms: 300000
 kafka_group_initial_rebalance_delay_ms: 0

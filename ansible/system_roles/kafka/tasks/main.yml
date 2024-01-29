@@ -40,7 +40,7 @@
   service:
     name: kafka
     state: started
-    enabled: yes
+    enabled: true
 
 - name: Delete the kafka archive file
   file:

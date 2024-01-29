@@ -19,7 +19,7 @@
   unarchive:
     src: /tmp/kafka_{{ kafka_scala_version }}-{{ kafka_version }}.tgz
     dest: '{{ kafka_root_dir }}'
-    copy: no
+    copy: false
     group: '{{ kafka_group }}'
     owner: '{{ kafka_user }}'
   when: not dir.stat.exists

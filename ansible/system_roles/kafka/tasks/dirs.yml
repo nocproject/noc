@@ -45,7 +45,7 @@
     group: '{{ kafka_group }}'
     owner: '{{ kafka_user }}'
     mode: 0755
-    follow: no
+    follow: false
   when: not application_logs_dir.stat.exists
   tags:
     - dirs
