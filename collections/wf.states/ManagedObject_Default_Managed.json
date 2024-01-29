@@ -7,10 +7,11 @@
     "is_productive": true,
     "is_wiping": false,
     "hide_with_state": false,
-    "update_last_seen": false,
+    "update_last_seen": true,
     "ttl": 0,
     "update_expired": false,
     "x": 280,
     "y": 360,
-    "disable_all_interaction": false
+    "disable_all_interaction": false,
+    "labels": ["noc::is_managed::="]
 }

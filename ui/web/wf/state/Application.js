@@ -1,7 +1,7 @@
 //---------------------------------------------------------------------
 // wf.state application
 //---------------------------------------------------------------------
-// Copyright (C) 2007-2017 The NOC Project
+// Copyright (C) 2007-2024 The NOC Project
 // See LICENSE for details
 //---------------------------------------------------------------------
 console.debug("Defining NOC.wf.state.Application");
@@ -22,8 +22,8 @@ Ext.define("NOC.wf.state.Application", {
 
         me.jsonPanel = Ext.create("NOC.core.JSONPreview", {
             app: me,
-            restUrl: new Ext.XTemplate('/sa/profile/{id}/json/'),
-            previewName: new Ext.XTemplate('Profile: {name}')
+            restUrl: new Ext.XTemplate('/wf/state/{id}/json/'),
+            previewName: new Ext.XTemplate('Workflow State: {name}')
         });
 
         me.ITEM_JSON = me.registerItem(me.jsonPanel);
@@ -251,10 +251,27 @@ Ext.define("NOC.wf.state.Application", {
                     fieldLabel: __("On Leave Handlers"),
                     allowBlank: true
                 }
+            ],
+            formToolbar: [
+                {
+                    text: __("JSON"),
+                    glyph: NOC.glyph.file,
+                    tooltip: __("Show JSON"),
+                    hasAccess: NOC.hasPermission("read"),
+                    scope: me,
+                    handler: me.onJSON
+                }
             ]
         });
         me.callParent();
     },
+
+    onJSON: function() {
+        var me = this;
+        me.showItem(me.ITEM_JSON);
+        me.jsonPanel.preview(me.currentRecord);
+    },
+
     filters: [
         {
             title: __("By Workflow"),
@@ -272,10 +289,5 @@ Ext.define("NOC.wf.state.Application", {
             name: "is_productive",
             ftype: "boolean"
         }
-    ],
-    onJSON: function() {
-        var me = this;
-        me.showItem(me.ITEM_JSON);
-        me.jsonPanel.preview(me.currentRecord);
-    }
+    ]
 });

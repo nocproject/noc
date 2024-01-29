@@ -58,10 +58,7 @@ class InteractionSetting(EmbeddedDocument):
     # raise_alarm = BooleanField(default=True)
 
     def json_data(self) -> Dict[str, Any]:
-        r = {
-            "enable": self.enable,
-        }
-        return r
+        return {"enable": self.enable}
 
 
 @bi_sync
@@ -184,6 +181,8 @@ class State(Document):
             r["job_handler"] = self.job_handler
         if self.on_leave_handlers:
             r["on_leave_handlers"] = [h for h in self.on_leave_handlers]
+        if self.labels:
+            r["labels"] = list(self.labels)
         return r
 
     def to_json(self) -> str:

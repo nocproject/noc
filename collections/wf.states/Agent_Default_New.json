@@ -1,18 +1,18 @@
 {
     "workflow__name": "Agent Default",
-    "name": "Approved",
-    "uuid": "d3f3f5ac-6991-44ba-8488-d140020d3dda",
+    "name": "New",
+    "uuid": "7b854933-7938-4fc8-91d3-680f4d628fd6",
     "$collection": "wf.states",
-    "description": "Agent is approved for ready",
-    "is_default": false,
+    "description": "New registered agent on System",
+    "is_default": true,
     "is_productive": false,
     "is_wiping": false,
     "hide_with_state": false,
     "update_last_seen": false,
     "ttl": 0,
     "update_expired": false,
-    "x": 260,
+    "x": 50,
     "y": 50,
     "disable_all_interaction": false,
-    "labels": ["noc::agent::auth::pre"]
+    "labels": ["noc::agent::auth::none"]
 }

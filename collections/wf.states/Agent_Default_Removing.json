@@ -13,5 +13,6 @@
     "update_expired": false,
     "x": 350,
     "y": 370,
-    "disable_all_interaction": false
+    "disable_all_interaction": false,
+    "labels": ["noc::agent::auth::none"]
 }

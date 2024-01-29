@@ -86,12 +86,16 @@ class TransitionVertex(EmbeddedDocument):
 class Transition(Document):
     meta = {
         "collection": "transitions",
-        "indexes": [{"fields": ["workflow", "from_state", "to_state", "label"], "unique": True}],
+        "indexes": [
+            {"fields": ["workflow", "from_state", "to_state", "label"], "unique": True},
+            "to_state",
+            "required_rules.labels",
+        ],
         "strict": False,
         "auto_create_index": False,
         "json_collection": "wf.transitions",
         "json_depends_on": ["wf.workflows", "wf.states"],
-        "json_unique_fields": [("workflow", "from_state", "to_state", "label"), "uuid"],
+        "json_unique_fields": [("workflow", "from_state", "to_state", "label")],
     }
     workflow: Workflow = PlainReferenceField(Workflow)
     from_state: State = PlainReferenceField(State)
@@ -129,11 +133,11 @@ class Transition(Document):
     _active_transition_cache = cachetools.TTLCache(maxsize=100, ttl=600)
 
     def __str__(self):
-        return "%s: %s -> %s [%s]" % (
+        return "%s[%s]: %s -> %s" % (
             self.workflow.name,
-            str(self.from_state.uuid),
-            str(self.to_state.uuid),
             self.label,
+            str(self.from_state.name),
+            str(self.to_state.name),
         )
 
     @property
@@ -182,13 +186,7 @@ class Transition(Document):
 
     def get_json_path(self) -> str:
         name_coll = quote_safe_path(
-            self.workflow.name
-            + " "
-            + self.to_state.name
-            + " "
-            + self.from_state.name
-            + " "
-            + self.label
+            " ".join([self.workflow.name, self.from_state.name, self.to_state.name, self.label])
         )
         return os.path.join(name_coll) + ".json"
 

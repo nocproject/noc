@@ -1,7 +1,7 @@
 //---------------------------------------------------------------------
 // wf.workflow application
 //---------------------------------------------------------------------
-// Copyright (C) 2007-2017 The NOC Project
+// Copyright (C) 2007-2024 The NOC Project
 // See LICENSE for details
 //---------------------------------------------------------------------
 console.debug("Defining NOC.wf.workflow.Application");
@@ -26,8 +26,8 @@ Ext.define("NOC.wf.workflow.Application", {
 
         me.jsonPanel = Ext.create("NOC.core.JSONPreview", {
             app: me,
-            restUrl: new Ext.XTemplate('/sa/profile/{id}/json/'),
-            previewName: new Ext.XTemplate('Profile: {name}')
+            restUrl: new Ext.XTemplate('/wf/workflow/{id}/json/'),
+            previewName: new Ext.XTemplate('Workflow: {name}')
         });
 
         me.ITEM_JSON = me.registerItem(me.jsonPanel);
@@ -111,6 +111,16 @@ Ext.define("NOC.wf.workflow.Application", {
                             uiStyle: "medium"
                         }
                     ]
+                }
+            ],
+            formToolbar: [
+                {
+                    text: __("JSON"),
+                    glyph: NOC.glyph.file,
+                    tooltip: __("Show JSON"),
+                    hasAccess: NOC.hasPermission("read"),
+                    scope: me,
+                    handler: me.onJSON
                 }
             ]
         });
