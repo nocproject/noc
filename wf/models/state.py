@@ -436,7 +436,8 @@ class State(Document):
             model = get_model(model_id)
             state_id = self.id
             if not is_document(model):
-                state_id = set(self.id)
+                # For DjangoModel, on DB save string ObjectId
+                state_id = str(self.id)
             removed, add_labels = [], []
             for ll in Label.objects.filter(allow_models__all=["wf.State", model_id]):
                 # @todo more precisely
