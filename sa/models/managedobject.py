@@ -136,7 +136,22 @@ MANAGEDOBJECT_CACHE_VERSION = 48
 CREDENTIAL_CACHE_VERSION = 7
 
 Credentials = namedtuple(
-    "Credentials", ["user", "password", "super_password", "snmp_ro", "snmp_rw", "snmp_rate_limit"]
+    "Credentials",
+    [
+        "user",
+        "password",
+        "super_password",
+        "snmp_ro",
+        "snmp_rw",
+        "snmp_rate_limit",
+        "snmp_security_level",
+        "snmp_username",
+        "snmp_ctx_name",
+        "snmp_auth_key",
+        "snmp_auth_proto",
+        "snmp_priv_key",
+        "snmp_priv_proto",
+    ],
 )
 
 
@@ -1565,6 +1580,13 @@ class ManagedObject(NOCModel):
                 snmp_ro=self.auth_profile.snmp_ro or self.snmp_ro,
                 snmp_rw=self.auth_profile.snmp_rw or self.snmp_rw,
                 snmp_rate_limit=self.get_effective_snmp_rate_limit(),
+                snmp_security_level=self.auth_profile.snmp_security_level,
+                snmp_username=self.auth_profile.snmp_username,
+                snmp_ctx_name=self.auth_profile.snmp_ctx_name,
+                snmp_auth_proto=self.auth_profile.snmp_auth_proto,
+                snmp_auth_key=self.auth_profile.snmp_auth_key,
+                snmp_priv_proto=self.auth_profile.snmp_priv_proto,
+                snmp_priv_key=self.auth_profile.snmp_priv_key,
             )
         else:
             return Credentials(
@@ -1574,6 +1596,13 @@ class ManagedObject(NOCModel):
                 snmp_ro=self.snmp_ro,
                 snmp_rw=self.snmp_rw,
                 snmp_rate_limit=self.get_effective_snmp_rate_limit(),
+                snmp_security_level=self.snmp_security_level,
+                snmp_username=self.snmp_username,
+                snmp_ctx_name=self.snmp_ctx_name,
+                snmp_auth_proto=self.snmp_auth_proto,
+                snmp_auth_key=self.snmp_auth_key,
+                snmp_priv_proto=self.snmp_priv_proto,
+                snmp_priv_key=self.snmp_priv_key,
             )
 
     @property
