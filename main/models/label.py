@@ -465,9 +465,8 @@ class Label(Document):
         wildcards = cls.get_wildcards(label)
         coll = cls._get_collection()
         if setting in cls.ENABLE_MODEL_ID_MAP:
-            pass
             # for backward compatible
-
+            return cls.has_model(label, cls.ENABLE_MODEL_ID_MAP[setting])
         r = next(
             coll.aggregate(
                 [

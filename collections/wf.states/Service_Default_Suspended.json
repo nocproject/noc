@@ -1,0 +1,17 @@
+{
+    "workflow__name": "Service Default",
+    "name": "Suspended",
+    "uuid": "82f4feda-10b5-4389-99ca-bb4e54ca7a3b",
+    "$collection": "wf.states",
+    "description": "Service is temporary suspended/blocked for organisational reasons",
+    "is_default": false,
+    "is_productive": false,
+    "is_wiping": false,
+    "hide_with_state": false,
+    "update_last_seen": false,
+    "ttl": 0,
+    "update_expired": false,
+    "x": 370,
+    "y": 520,
+    "disable_all_interaction": false
+}

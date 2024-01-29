@@ -1,0 +1,18 @@
+{
+    "workflow__name": "Agent Default",
+    "name": "Ready",
+    "uuid": "8bed6920-347c-41b4-bfde-95242b150c47",
+    "$collection": "wf.states",
+    "description": "Agent is in productive usage",
+    "is_default": false,
+    "is_productive": true,
+    "is_wiping": false,
+    "hide_with_state": false,
+    "update_last_seen": true,
+    "ttl": 0,
+    "update_expired": false,
+    "x": 260,
+    "y": 200,
+    "disable_all_interaction": false,
+    "labels": ["noc::agent::auth::auth"]
+}

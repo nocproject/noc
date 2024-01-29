@@ -1,0 +1,11 @@
+{
+    "workflow__name": "SLAProbe Default",
+    "from_state__uuid": "4c439061-8703-4d88-9136-08d55b141814",
+    "to_state__uuid": "d82fa12b-141b-4500-8699-cbae069cfe2a",
+    "uuid": "b33eeb3b-ccbd-42d2-810f-5dea2ff9b78f",
+    "is_active": true,
+    "$collection": "wf.transitions",
+    "event": "missed",
+    "label": "Missed",
+    "enable_manual": true
+}

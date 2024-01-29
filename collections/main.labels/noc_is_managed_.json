@@ -8,7 +8,7 @@
     "bg_color2": 13849600,
     "fg_color2": 16777215,
     "display_order": 0,
-    "allow_models": ["sa.ManagedObject"],
+    "allow_models": ["sa.ManagedObject", "wf.State"],
     "allow_auto_create": false,
     "propagate": false,
     "is_protected": true,

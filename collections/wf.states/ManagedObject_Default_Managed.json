@@ -1,0 +1,17 @@
+{
+    "workflow__name": "ManagedObject Default",
+    "name": "Managed",
+    "uuid": "929cf1ec-d3ac-433c-90e8-dfb129cc7a12",
+    "$collection": "wf.states",
+    "is_default": true,
+    "is_productive": true,
+    "is_wiping": false,
+    "hide_with_state": false,
+    "update_last_seen": true,
+    "ttl": 0,
+    "update_expired": false,
+    "x": 280,
+    "y": 360,
+    "disable_all_interaction": false,
+    "labels": ["noc::is_managed::="]
+}

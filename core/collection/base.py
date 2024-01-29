@@ -93,9 +93,12 @@ class Collection(object):
             if hasattr(self.model, "name"):
                 self._name_field = "name"
                 return "name"
+            elif hasattr(self.model, "json_name"):
+                self._name_field = "json_name"
+                return "json_name"
             else:
                 for spec in self.model._meta["index_specs"]:
-                    if spec["unique"] and len(spec["fields"]) == 1:
+                    if spec.get("unique") and len(spec["fields"]) == 1:
                         nf = spec["fields"][0][0]
                         self._name_field = nf
                         return nf
