@@ -433,9 +433,7 @@ class State(Document):
             if not is_document(model):
                 state_id = set(self.id)
             removed, add_labels = [], []
-            for ll in Label.objects.filter(
-                **{"enable_workflowstate": True, LABEL_MODELS[model_id]: True}
-            ):
+            for ll in Label.objects.filter(allow_models__all=["wf.State", model_id]):
                 # @todo more precisely
                 if ll.name not in self.labels:
                     removed.append(ll.name)
