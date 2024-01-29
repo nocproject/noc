@@ -151,7 +151,7 @@ class DLinkDxSNormalizer(BaseNormalizer):
         yield self.make_vlan_name(vlan_id=tokens[-1], name=tokens[2])
 
     @match("enable", "stp")
-    def normalize_disable_stp(self, tokens):
+    def normalize_enable_stp(self, tokens):
         yield self.make_global_spanning_tree_status(status="on")
 
     @match("disable", "stp")
