@@ -1,0 +1,11 @@
+{
+    "workflow__name": "Default Resource",
+    "from_state__uuid": "a4b54358-52f7-4423-a0f1-8d518069c027",
+    "to_state__uuid": "5094bb75-d6c5-4f0f-a7c2-f345048d4a96",
+    "uuid": "78dd4eb7-798c-443a-8ffd-23d067c2a484",
+    "is_active": true,
+    "$collection": "wf.transitions",
+    "event": "approve",
+    "label": "Approve",
+    "enable_manual": true
+}
