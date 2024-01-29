@@ -86,12 +86,12 @@ class TransitionVertex(EmbeddedDocument):
 class Transition(Document):
     meta = {
         "collection": "transitions",
-        "indexes": [{"fields": ["workflow", "from_state", "to_state", "labels"], "unique": True}],
+        "indexes": [{"fields": ["workflow", "from_state", "to_state", "label"], "unique": True}],
         "strict": False,
         "auto_create_index": False,
         "json_collection": "wf.transitions",
         "json_depends_on": ["wf.workflows", "wf.states"],
-        "json_unique_fields": [("workflow", "from_state", "to_state", "labels"), "uuid"],
+        "json_unique_fields": [("workflow", "from_state", "to_state", "label"), "uuid"],
     }
     workflow: Workflow = PlainReferenceField(Workflow)
     from_state: State = PlainReferenceField(State)
