@@ -19,7 +19,8 @@ kafka_insecure_certs: true
 
 kafka_bootstrap_port: 9092
 kafka_controller_port: 9093
-kafka_java_heap: "-Xms1G -Xmx1G"
+kafka_memory_limit: 1
+kafka_java_heap: "-Xms{{ kafka_memory_limit }}G -Xmx{{ kafka_memory_limit }}G"
 kafka_socket_send_buffer_bytes: 102400
 kafka_socket_receive_buffer_bytes: 102400
 kafka_socket_request_max_bytes: 104857600

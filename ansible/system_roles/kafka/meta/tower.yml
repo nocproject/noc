@@ -13,6 +13,10 @@ forms:
       label: "Kafka Cluster Id"
       type: str
       common: environment
+    memory_limit:
+      label: "JVM Heap limit in Gb"
+      type: int
+      default: 1
     insecure_certs:
       label: "don't check certificates"
       type: bool
