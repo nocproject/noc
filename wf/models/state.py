@@ -39,7 +39,7 @@ from noc.core.change.decorator import change
 from noc.core.wf.interaction import Interaction
 from noc.core.wf.diagnostic import DiagnosticConfig, DiagnosticState, SA_DIAG, ALARM_DIAG
 from noc.config import config
-from noc.models import get_model_id, LABEL_MODELS, get_model, is_document
+from noc.models import get_model_id, get_model, is_document
 from noc.main.models.remotesystem import RemoteSystem
 from noc.main.models.label import Label
 
