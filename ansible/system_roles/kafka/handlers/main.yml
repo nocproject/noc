@@ -10,6 +10,7 @@
   service:
     name: "{{ kafka_system_service }}"
     state: restarted
+    daemon_reload: "True"
 
 - name: start kafka
   become: "True"

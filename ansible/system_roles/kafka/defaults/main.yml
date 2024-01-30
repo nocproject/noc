@@ -39,9 +39,9 @@ kafka_num_replica_fetchers: 1
 kafka_num_partitions: 1
 kafka_num_recovery_threads_per_data_dir: 1
 kafka_log_cleaner_threads: 1
-kafka_offsets_topic_replication_factor: 1
-kafka_transaction_state_log_replication_factor: 1
-kafka_transaction_state_log_min_isr: 1
+kafka_offsets_topic_replication_factor: "{% if groups['svc-kafka-exec'] | length > 2 %}3{% else %}1{% endif %}"
+kafka_transaction_state_log_replication_factor: "{% if groups['svc-kafka-exec'] | length > 2 %}3{% else %}1{% endif %}"
+kafka_transaction_state_log_min_isr: "{% if groups['svc-kafka-exec'] | length > 2 %}3{% else %}1{% endif %}"
 kafka_log_retention_hours: 72  #168?
 kafka_log_segment_bytes: 1073741824
 kafka_log_retention_check_interval_ms: 300000
