@@ -1,7 +1,7 @@
 # ----------------------------------------------------------------------
 # SNMP based on gufo_snmp library
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2023 The NOC Project
+# Copyright (C) 2007-2024 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -11,9 +11,11 @@ from typing import Any, Callable, Dict, List, Optional, Tuple, Union
 
 # Third-party modules
 from gufo.snmp import SnmpSession, SnmpVersion, SnmpError as GSNMPError
+from gufo.snmp.user import User, Aes128Key, DesKey, Md5Key, Sha1Key, KeyType
 
 
 # NOC modules
+from noc.core.snmp.version import SNMP_v1, SNMP_v2c, SNMP_v3
 from noc.core.snmp.error import SNMPError, BAD_VALUE
 from noc.core.error import ERR_SNMP_BAD_COMMUNITY
 from noc.core.ioloop.util import run_sync
@@ -21,14 +23,105 @@ from noc.core.mib import mib
 from .base import SNMP
 
 GUFO_SNMP_VERSION_MAP = {
-    0: SnmpVersion.v1,
-    1: SnmpVersion.v2c,
+    SNMP_v1: SnmpVersion.v1,
+    SNMP_v2c: SnmpVersion.v2c,
+    SNMP_v3: SnmpVersion.v3,
 }
 BULK_MAX_REPETITIONS = 20
+
+AUTH_PROTO_MAP = {
+    "MD5": Md5Key,
+    "SHA": Sha1Key,
+}
+
+PRIV_PROTO_MAP = {
+    "DES": DesKey,
+    "AES": Aes128Key,
+}
 
 
 class GufoSNMP(SNMP):
     name = "gufo_snmp"
+
+    def _get_auth_key(self) -> Union[Md5Key, Sha1Key]:
+        """
+        Getting SNMPv3 Authenticate Key
+        """
+        if not self.script.credentials["snmp_auth_key"]:
+            raise SNMPError("Unknown Authentication Key")
+        passphrase = self.script.credentials["snmp_auth_key"].encode("utf-8")
+        return AUTH_PROTO_MAP[self.script.credentials["snmp_auth_proto"]](
+            passphrase, key_type=KeyType.Password
+        )
+
+    def _get_private_key(self) -> Union[DesKey, Aes128Key]:
+        """
+        Getting SNMPv3 Private Key
+        """
+        if not self.script.credentials["snmp_priv_key"]:
+            raise SNMPError("Unknown Private Key")
+        passphrase = self.script.credentials["snmp_priv_key"].encode("utf-8")
+        return PRIV_PROTO_MAP[self.script.credentials["snmp_priv_proto"]](
+            passphrase, key_type=KeyType.Password
+        )
+
+    def _get_engine_id(self) -> Optional[bytes]:
+        """
+        Get SNMPv3 EngineId from Capabilities 'SNMP | EngineID'
+        bytes.fromhex(engine_id[2:])
+        """
+        engine_id = self.script.capabilities.get("SNMP | EngineID")
+        if not engine_id:
+            return None
+        return bytes.fromhex(engine_id)
+
+    def _get_snmp_credential(self, version):
+        version = self._get_snmp_version(version)
+        if version < 3 and "snmp_ro" not in self.script.credentials:
+            raise SNMPError(code=ERR_SNMP_BAD_COMMUNITY)
+        elif version < 3:
+            return str(self.script.credentials["snmp_ro"])
+        elif "snmp_username" not in self.script.credentials:
+            raise SNMPError(code=ERR_SNMP_BAD_COMMUNITY)
+        elif "snmp_priv_proto" in self.script.credentials:
+            return User(
+                name=str(self.script.credentials["snmp_username"]),
+                auth_key=self._get_auth_key(),
+                priv_key=self._get_private_key(),
+            )
+        elif "snmp_auth_proto" in self.script.credentials:
+            return User(
+                name=str(self.script.credentials["snmp_username"]), auth_key=self._get_auth_key()
+            )
+        return User(name=str(self.script.credentials["snmp_username"]))
+
+    async def get_session(self, version=None) -> "SnmpSession":
+        if not self.socket:
+            self.logger.debug("Create UDP Session")
+            version = self._get_snmp_version(version)
+            config = {
+                "addr": self.script.credentials["address"],
+                "limit_rps": self.rate_limit,
+                "version": GUFO_SNMP_VERSION_MAP[version],
+                "timeout": 10,
+                "tos": self.script.tos,
+            }
+            cred = self._get_snmp_credential(version)
+            if isinstance(cred, str):
+                config["community"] = cred
+            else:
+                config["community"] = ""
+                config["user"] = cred
+                config["engine_id"] = self._get_engine_id()
+            self.socket = SnmpSession(**config)
+            await self.socket.refresh()
+        return self.socket
+
+    def close(self):
+        if self.socket:
+            self.logger.debug("Closing UDP socket")
+            # self.socket.close()
+            self.socket = None
 
     def get(
         self,
@@ -51,26 +144,20 @@ class GufoSNMP(SNMP):
         """
 
         async def run():
+            address = self.script.credentials["address"]
             self.logger.debug("[%s] SNMP GET %s", address, oids)
-            async with SnmpSession(
-                addr=address,
-                community=str(self.script.credentials["snmp_ro"]),
-                version=GUFO_SNMP_VERSION_MAP[version],
-                timeout=timeout,
-                tos=self.script.tos,
-                limit_rps=self.rate_limit,
-            ) as session:
-                try:
-                    data = await session.get_many(oids)
-                except TimeoutError:
-                    if self.timeouts_limit:
-                        self.timeouts -= 1
-                        if not self.timeouts:
-                            raise self.FatalTimeoutError()
-                    raise self.TimeOutError()
-                except GSNMPError as e:
-                    self.logger.error("SNMP error code %s", e.code)
-                    raise self.SNMPError(code=e.code)
+            session = await self.get_session(version)
+            try:
+                data = await session.get_many(oids)
+            except TimeoutError:
+                if self.timeouts_limit:
+                    self.timeouts -= 1
+                    if not self.timeouts:
+                        raise self.FatalTimeoutError()
+                raise self.TimeOutError()
+            except GSNMPError as e:
+                self.logger.error("SNMP error code %s", e)
+                raise self.SNMPError(code=e)
             # Render data if it has display hint
             for k in data:
                 if isinstance(data[k], bytes):
@@ -96,7 +183,7 @@ class GufoSNMP(SNMP):
                 "`raw_varbinds` parameter is not supported in gufo SNMP implementation."
                 "Use native SNMP implementation. Set config.activator.snmp_backend to 'native'"
             )
-        address = self.script.credentials["address"]
+
         oid_map = {}
         if isinstance(oids, str):
             oids = [oids]
@@ -105,13 +192,8 @@ class GufoSNMP(SNMP):
             oids = list(oids.values())
         else:
             raise ValueError("oids must be either string or dict")
-        if "snmp_ro" not in self.script.credentials:
-            raise SNMPError(code=ERR_SNMP_BAD_COMMUNITY)
         if display_hints is None:
             display_hints = self._get_display_hints()
-        version = self._get_snmp_version(version)
-        if version not in GUFO_SNMP_VERSION_MAP:
-            raise ValueError(f"SNMP-version ({version}) is not supported by GufoSNMP library")
         return run_sync(run, close_all=False)
 
     def getnext(
@@ -147,63 +229,44 @@ class GufoSNMP(SNMP):
         """
 
         async def run(max_retries, filter):
-            def true(x, y):
-                return True
-
+            address = self.script.credentials["address"]
             self.logger.debug("[%s] SNMP GETNEXT %s", address, oid)
-            if not filter:
-                filter = true
-            async with SnmpSession(
-                addr=address,
-                community=str(self.script.credentials["snmp_ro"]),
-                version=GUFO_SNMP_VERSION_MAP[version],
-                timeout=timeout,
-                tos=self.script.tos,
-                limit_rps=self.rate_limit,
-            ) as session:
-                oids_iter = session.getnext(oid)
-                if bulk:
-                    oids_iter = session.getbulk(
-                        oid, max_repetitions=max_repetitions or BULK_MAX_REPETITIONS
-                    )
-                result = []
-                while True:
-                    try:
-                        async for oid_, v in oids_iter:
-                            if filter(oid_, v):
-                                v = (
-                                    mib.render(oid_, v, display_hints)
-                                    if isinstance(v, bytes)
-                                    else v
-                                )
-                                result += [(oid_, v)]
-                        if only_first and result:
-                            result = result[0:1]
-                        self.logger.debug("[%s] GETNEXT result: %s", address, result)
-                        return result
-                    except TimeoutError:
-                        if not max_retries:
-                            raise self.TimeOutError()
-                        max_retries -= 1
-                    except GSNMPError as e:
-                        self.logger.error("SNMP error code %s", e.code)
-                        raise self.SNMPError(code=e.code)
+            session = await self.get_session(version)
+            oids_iter = session.getnext(oid)
+            if bulk:
+                oids_iter = session.getbulk(
+                    oid, max_repetitions=max_repetitions or BULK_MAX_REPETITIONS
+                )
+            result = []
+            while True:
+                try:
+                    async for oid_, v in oids_iter:
+                        if not filter(oid_, v):
+                            continue
+                        if isinstance(v, bytes):
+                            v = mib.render(oid_, v, display_hints)
+                        result += [(oid_, v)]
+                    if only_first and result:
+                        result = result[0:1]
+                    self.logger.debug("[%s] GETNEXT result: %s", address, result)
+                    return result
+                except TimeoutError:
+                    if not max_retries:
+                        raise self.TimeOutError()
+                    max_retries -= 1
+                except GSNMPError as e:
+                    self.logger.error("SNMP error code %s", e.code)
+                    raise self.SNMPError(code=e.code)
 
         if raw_varbinds:
             raise NotImplementedError(
                 "`raw_varbinds` parameter is not supported in gufo SNMP implementation."
                 "Use native SNMP implementation. Set config.activator.snmp_backend to 'native'"
             )
-        address = self.script.credentials["address"]
         bulk = self.script.has_snmp_bulk() if bulk is None else bulk
-        if "snmp_ro" not in self.script.credentials:
-            raise SNMPError(code=ERR_SNMP_BAD_COMMUNITY)
         if display_hints is None:
             display_hints = self._get_display_hints()
-        version = self._get_snmp_version(version)
-        if version not in GUFO_SNMP_VERSION_MAP:
-            raise ValueError(f"SNMP-version ({version}) is not supported by GufoSNMP library")
-        return run_sync(partial(run, max_retries, filter), close_all=False)
+        return run_sync(partial(run, max_retries, filter or (lambda x, y: True)), close_all=False)
 
     def count(self, oid, filter=None, version=None, timeout: int = 10) -> int:
         """
@@ -213,44 +276,27 @@ class GufoSNMP(SNMP):
         :param timeout: Timeout for SNMP Response
         """
 
-        async def run(filter):
-            def true(x, y):
-                return True
-
+        async def run(filter: Callable):
+            address = self.script.credentials["address"]
             self.logger.debug("[%s] SNMP COUNT %s", address, oid)
-            if not filter:
-                filter = true
+            session = await self.get_session(version)
             result = 0
-            async with SnmpSession(
-                addr=address,
-                community=str(self.script.credentials["snmp_ro"]),
-                version=GUFO_SNMP_VERSION_MAP[version],
-                timeout=timeout,
-                tos=self.script.tos,
-                limit_rps=self.rate_limit,
-            ) as session:
-                oids_iter = session.getnext(oid)
-                if self.script.has_snmp_bulk():
-                    oids_iter = session.getbulk(oid, max_repetitions=BULK_MAX_REPETITIONS)
-                try:
-                    async for oid_, v in oids_iter:
-                        if filter(oid_, v):
-                            result += 1
-                except TimeoutError:
-                    raise self.TimeOutError()
-                except GSNMPError as e:
-                    self.logger.error("SNMP error code %s", e.code)
-                    raise self.SNMPError(code=e.code)
+            oids_iter = session.getnext(oid)
+            if self.script.has_snmp_bulk():
+                oids_iter = session.getbulk(oid, max_repetitions=BULK_MAX_REPETITIONS)
+            try:
+                async for oid_, v in oids_iter:
+                    if filter(oid_, v):
+                        result += 1
+            except TimeoutError:
+                raise self.TimeOutError()
+            except GSNMPError as e:
+                self.logger.error("SNMP error code %s", e.code)
+                raise self.SNMPError(code=e.code)
             self.logger.debug("[%s] COUNT result: %s", address, result)
             return result
 
-        address = self.script.credentials["address"]
-        if "snmp_ro" not in self.script.credentials:
-            raise SNMPError(code=ERR_SNMP_BAD_COMMUNITY)
-        version = self._get_snmp_version(version)
-        if version not in GUFO_SNMP_VERSION_MAP:
-            raise ValueError(f"SNMP-version ({version}) is not supported by GufoSNMP library")
-        return run_sync(partial(run, filter), close_all=False)
+        return run_sync(partial(run, filter or (lambda x, y: True)), close_all=False)
 
     def set(self, *args):
         """
@@ -263,47 +309,18 @@ class GufoSNMP(SNMP):
             "Use native SNMP implementation. Set config.activator.snmp_backend to 'native'"
         )
 
-    def get_chunked(self, oids, chunk_size=20, timeout_limits=3):
+    def get_engine_id(self, *args):
         """
-        Fetch list of oids splitting to several operations when necessary
-
-        :param oids: List of oid
-        :param chunk_size: Maximal GET chunk size
-        :param timeout_limits: SNMP timeout limits
-        :return: dict of oid -> value for all retrieved values
+        Getting SNMPv3 EngineId from address
         """
 
         async def run():
-            results = {}
-            oo = oids[:]
-            async with SnmpSession(
-                addr=self.script.credentials["address"],
-                community=str(self.script.credentials["snmp_ro"]),
-                version=SnmpVersion.v2c if version == 1 else SnmpVersion.v1,
-                tos=self.script.tos,
-            ) as session:
-                while oo:
-                    chunk, oo = oo[:chunk_size], oo[chunk_size:]
-                    try:
-                        results.update(await session.get_many(chunk))
-                    except TimeoutError:
-                        if self.timeouts_limit:
-                            self.timeouts -= 1
-                            if not self.timeouts:
-                                # Fatal SNMP Timeout
-                                self.logger.error("Fatal timeout error on: %s", oids)
-                                break
-                        self.logger.error("Failed to get SNMP OIDs %s", chunk)
-                        # raise self.TimeOutError()
-                    except GSNMPError as e:
-                        self.logger.error("SNMP error code %s", e.code)
-                        raise self.SNMPError(code=e.code)
-            return results
+            address = self.script.credentials["address"]
+            self.logger.debug("[%s] SNMP GET EngineID", address)
+            session = await self.get_session(SNMP_v3)
+            try:
+                return session.get_engine_id()
+            except self.TimeOutError:
+                return None
 
-        self.set_timeout_limits(timeout_limits)
-        if "snmp_ro" not in self.script.credentials:
-            raise SNMPError(code=ERR_SNMP_BAD_COMMUNITY)
-        # if display_hints is None:
-        #     display_hints = self._get_display_hints()
-        version = self._get_snmp_version()
         return run_sync(run, close_all=False)

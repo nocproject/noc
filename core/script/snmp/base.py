@@ -6,7 +6,7 @@
 # ----------------------------------------------------------------------
 
 # Python modules
-from typing import Optional, Dict, Callable, List, Union
+from typing import Optional, Dict, Callable, List, Union, Tuple
 import weakref
 
 # NOC modules
@@ -92,6 +92,14 @@ class SNMP(object):
             self.display_hints = self.script.profile.get_snmp_display_hints(self.script)
         return self.display_hints
 
+    def _get_snmp_credentials(self, version: Optional[int] = None) -> Tuple[str, int]:
+        version = self._get_snmp_version(version)
+        if version < SNMP_v3 and "snmp_ro" not in self.script.credentials:
+            raise SNMPError(code=ERR_SNMP_BAD_COMMUNITY)
+        elif version < SNMP_v3:
+            return str(self.script.credentials["snmp_ro"]), version
+        raise NotImplementedError("Native SNMP backend is not supported v3")
+
     def get(
         self,
         oids: Union[List[str], str],
@@ -117,7 +125,7 @@ class SNMP(object):
                 r = await snmp_get(
                     address=self.script.credentials["address"],
                     oids=oids,
-                    community=str(self.script.credentials["snmp_ro"]),
+                    community=community,
                     tos=self.script.tos,
                     udp_socket=self.get_socket(),
                     version=version,
@@ -139,11 +147,9 @@ class SNMP(object):
                 else:
                     raise
 
-        if "snmp_ro" not in self.script.credentials:
-            raise SNMPError(code=ERR_SNMP_BAD_COMMUNITY)
+        community, version = self._get_snmp_credentials(version)
         if display_hints is None:
             display_hints = self._get_display_hints()
-        version = self._get_snmp_version(version)
         return run_sync(run, close_all=False)
 
     def set(self, *args):
@@ -193,7 +199,7 @@ class SNMP(object):
                 r = await snmp_count(
                     address=self.script.credentials["address"],
                     oid=oid,
-                    community=str(self.script.credentials["snmp_ro"]),
+                    community=community,
                     bulk=self.script.has_snmp_bulk(),
                     filter=filter,
                     tos=self.script.tos,
@@ -209,9 +215,7 @@ class SNMP(object):
                 else:
                     raise
 
-        if "snmp_ro" not in self.script.credentials:
-            raise SNMPError(code=ERR_SNMP_BAD_COMMUNITY)
-        version = self._get_snmp_version(version)
+        community, version = self._get_snmp_credentials(version)
         return run_sync(run, close_all=False)
 
     def getnext(
@@ -273,11 +277,9 @@ class SNMP(object):
                 else:
                     raise
 
-        if "snmp_ro" not in self.script.credentials:
-            raise SNMPError(code=ERR_SNMP_BAD_COMMUNITY)
+        community, version = self._get_snmp_credentials(version)
         if display_hints is None:
             display_hints = self._get_display_hints()
-        version = self._get_snmp_version(version)
         return run_sync(run, close_all=False)
 
     def get_table(self, oid, community_suffix=None, cached=False, display_hints=None):
@@ -416,3 +418,9 @@ class SNMP(object):
             except self.SNMPError as e:
                 self.logger.error("SNMP error code %s", e.code)
         return results
+
+    def get_engine_id(self, *args):
+        """
+        Getting SNMPv3 EngineId from address
+        """
+        raise NotImplementedError("Not supported SNMPv3")
