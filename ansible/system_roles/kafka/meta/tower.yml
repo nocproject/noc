@@ -11,6 +11,7 @@ forms:
     cluster_id:
       description: "uuidgen --time | tr -d '-' | base64 | cut -b 1-22"
       label: "Kafka Cluster Id"
+      default: ""
       type: str
       common: environment
     memory_limit:
