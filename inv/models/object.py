@@ -191,7 +191,7 @@ class Object(Document):
         EmbeddedDocumentField(ObjectConnectionData)
     )
     # Dynamic crossings
-    cross = ListField(EmbeddedDocumentField(Crossing))
+    cross: List[Crossing] = ListField(EmbeddedDocumentField(Crossing))
     # Labels
     labels = ListField(StringField())
     effective_labels = ListField(StringField())
@@ -1282,6 +1282,41 @@ class Object(Document):
                 if item.input == name and item.output not in seen and is_passable(item):
                     yield item.output
                     seen.add(item.output)
+
+    def set_internal_connection(self, input: str, output: str, data: Dict[str, str] = None):
+        """
+
+        """
+        input = self.model.get_model_connection(input)
+        if not input:
+            raise ValueError("Not found connection: %s" % input)
+        output = self.model.get_model_connection(output)
+        for c in self.cross:
+            if c.input != input:
+                continue
+            # Update
+            c.update_params(**data)
+            break
+        else:
+            self.cross += [
+                Crossing(
+                    **{
+                        "input": input.name,
+                        "input_discriminator": data.get("input_discriminator"),
+                        "output": output.name,
+                        "output_discriminator": data.get("output_discriminator"),
+                        "gain_db": data.get("gain"),
+                    }
+                )
+            ]
+
+    def disconnect_internal(self, name: str):
+        """
+        Remove internal crossing
+        """
+        if not self.model.has_connection(name):
+            raise ValueError("Unknown input")
+        self.cross = [c for c in self.cross if c.input != name]
 
 
 signals.pre_delete.connect(Object.detach_children, sender=Object)

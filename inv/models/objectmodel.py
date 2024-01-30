@@ -152,6 +152,15 @@ class Crossing(EmbeddedDocument):
             r += [f": {self.output_discriminator}"]
         return "".join(r)
 
+    def update_params(self, input_discriminator: str, output_discriminator: str, gain_db):
+        if self.input_discriminator != input_discriminator:
+            self.input_discriminator == input_discriminator
+        if self.output_discriminator != output_discriminator:
+            self.output_discriminator = input_discriminator
+        if self.gain_db != gain_db:
+            self.gain_db = gain_db
+        self.clean()
+
     def clean(self) -> None:
         if self.input_discriminator:
             try:

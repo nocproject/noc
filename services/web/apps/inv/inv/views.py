@@ -439,11 +439,12 @@ class InvApplication(ExtApplication):
         validate={
             "object": ObjectIdParameter(required=True),
             "name": StringParameter(required=True),
-            "remote_object": ObjectIdParameter(required=True),
+            "remote_object": ObjectIdParameter(required=False),
             "remote_name": StringParameter(required=True),
             # "cable": ObjectIdParameter(required=False),
             "cable": StringParameter(required=False),
             "reconnect": BooleanParameter(default=False, required=False),
+            "is_internal": BooleanParameter(default=False, required=False),
         },
     )
     def api_connect(
@@ -451,13 +452,27 @@ class InvApplication(ExtApplication):
         request,
         object,
         name,
-        remote_object,
         remote_name,
+        remote_object: Optional[str] = None,
         cable: Optional[str] = None,
         reconnect=False,
+        is_internal: bool = False,
     ):
         lo: Object = self.get_object_or_404(Object, id=object)
-        ro: Object = self.get_object_or_404(Object, id=remote_object)
+        if is_internal:
+            try:
+                lo.set_internal_connection(name, remote_name)
+                return self.render_json({"status": True, "text": ""})
+            except ConnectionError as e:
+                self.logger.warning("Connection Error: %s", str(e))
+                return self.render_json({"status": False, "text": str(e)})
+        elif remote_object:
+            ro: Object = self.get_object_or_404(Object, id=remote_object)
+        elif name == remote_name:
+            return self.render_json({"status": False, "text": "Same slot connection is not Allowed"})
+        else:
+            # Connect same
+            ro = lo
         cable_o: Optional[Object] = None
         if cable:
             cable = ObjectModel.get_by_name(cable)
@@ -480,33 +495,41 @@ class InvApplication(ExtApplication):
         except ConnectionError as e:
             self.logger.warning("Connection Error: %s", str(e))
             return self.render_json({"status": False, "text": str(e)})
-        return True
+        return self.render_json({"status": True, "text": ""})
 
     @view(
-        "^cross_connect/$",
+        "^disconnect/$",
         method=["POST"],
         access="connect",
         api=True,
         validate={
             "object": ObjectIdParameter(required=True),
-            "from": StringParameter(required=True),
-            "to": ObjectIdParameter(required=True),
-            "from_discriminator": StringParameter(required=False),
-            "to_discriminator": StringParameter(required=False),
-            "delete": BooleanParameter(default=False, required=False),
+            "name": StringParameter(required=True),
+            "remote_object": ObjectIdParameter(required=False),
+            "remote_name": StringParameter(required=True),
+            "is_internal": BooleanParameter(default=False, required=False),
         },
     )
-    def api_cross_connect(
+    def api_disconnect(
         self,
         request,
         object,
-        **kwargs,
+        name,
+        remote_name,
+        remote_object: Optional[str] = None,
+        is_internal: bool = False,
     ):
-        return True
+        lo: Object = self.get_object_or_404(Object, id=object)
+        if is_internal:
+            # Cross-connect
+            lo.disconnect_internal(name)
+        else:
+            lo.disconnect_p2p(name)
+        return self.render_json({"status": True, "text": ""})
 
     def get_remote_slot(self, left_slot, lo, ro):
         """
-        Determing right device's slot with find_path method
+        Determine right device's slot with find_path method
         :return:
         """
         for path in (
