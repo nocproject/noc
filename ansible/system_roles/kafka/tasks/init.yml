@@ -24,9 +24,9 @@
       command: "{{ kafka_home }}/bin/kafka-storage.sh format -t {{ hostvars[groups['svc-kafka-exec'][0]]['cluster_uuid']['stdout'] }} -c {{ kafka_server_conf }}"
       when: hostvars[groups['svc-kafka-exec'][0]]['cluster_uuid']['stdout'] is defined
   when:
-    - kafka_cluster_id is defined and (kafka_cluster_id | length < 10)
+    - kafka_cluster_id is defined and not kafka_cluster_id
 
 - name: Format log directory with tower cluster_id
-  command: "{{ kafka_home }}/bin/kafka-storage.sh format -t {{ kafka_cluster_uuid }} -c {{ kafka_server_conf }}"
+  command: "{{ kafka_home }}/bin/kafka-storage.sh format -t {{ kafka_cluster_id }} -c {{ kafka_server_conf }}"
   when:
-    - kafka_cluster_id is defined and (kafka_cluster_id | length < 10)
+    - kafka_cluster_id is defined and kafka_cluster_id
