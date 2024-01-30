@@ -28,7 +28,7 @@ process.roles=broker,controller
 # The node id associated with this instance's roles
 node.id={{ kafka_node_id }}
 # The connect string for the controller quorum
-controller.quorum.voters={% for k in groups['svc-kafka-exec'] %}{% if k != groups['svc-kafka-exec'][0] %},{% endif %}{{ groups['svc-kafka-exec'].index(k) }}@{{ k }}:{{ kafka_controller_port }}{% endfor %}
+controller.quorum.voters={% for k in groups['svc-kafka-exec'] %}{% if k != groups['svc-kafka-exec'][0] %},{% endif %}{{ groups['svc-kafka-exec'].index(k) +1 }}@{{ k }}:{{ kafka_controller_port }}{% endfor %}
 
 ############################# Socket Server Settings #############################
 
