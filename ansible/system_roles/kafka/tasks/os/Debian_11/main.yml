@@ -1,11 +1,10 @@
 ---
 - name: Install java
-  yum:
+  apt:
     name:
       - default-jre
     state: present
     update_cache: "True"
-    allow_downgrade: "True"
   tags:
     - requirements
   environment:
