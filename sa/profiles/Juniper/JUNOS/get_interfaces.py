@@ -329,7 +329,7 @@ class Script(BaseScript):
     rx_vlan_sep1 = re.compile(r"^\nRouting instance:", re.MULTILINE)
     rx_802_1Q_tag1 = re.compile(r"^Tag:\s+(?P<tag>\d+)", re.MULTILINE)
     rx_l3_iface = re.compile(r"^Layer 3 interface: (?P<iface>\S+)", re.MULTILINE)
-    rx_iface_vlan = re.compile(r"^\s+(?P<iface>\S+),(?P<type>tagged|untagged)", re.MULTILINE)
+    rx_iface_vlan = re.compile(r"^\s+(?P<iface>\S\S\-\S+|ae\S+),(?P<type>tagged|untagged)", re.MULTILINE)
 
     def get_vlan_port_mapping(self, v):
         """
