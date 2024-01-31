@@ -16,8 +16,6 @@ group:
 file:
   {{ kafka_server_conf }}:
     exists: true
-    mode: "0644"
-    owner: {{ kafka_user }}
-    group: {{ kafka_group }}
+    mode: "0777"
     linked-to: /opt/kafka/config/kraft/server.properties
     filetype: symlink
