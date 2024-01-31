@@ -91,6 +91,7 @@ all:
           has_svc_nbi: true
           has_svc_nginx: true
           has_svc_noc: true
+          has_svc_kafka: true
           has_svc_kafkasender: true
           has_svc_pgbouncer: true
           has_svc_ping: true
@@ -1168,6 +1169,15 @@ all:
             noc-node-debian10: {}
         svc-pgbouncer-read: {}
     svc-pgbouncer-exec:
+      hosts:
+        noc-node-debian10: {}
+    svc-kafka:
+      children:
+        cfg-kafka-noc-node-debian10:
+          hosts:
+            noc-node-debian10: {}
+        svc-kafka-read: {}
+    svc-kafka-exec:
       hosts:
         noc-node-debian10: {}
     svc-kafkasender:

@@ -91,6 +91,7 @@ all:
           has_svc_nbi: true
           has_svc_nginx: true
           has_svc_noc: true
+          has_svc_kafka: true
           has_svc_kafkasender: true
           has_svc_pgbouncer: true
           has_svc_ping: true
@@ -1167,6 +1168,15 @@ all:
           hosts:
             noc-node-ubuntu22: {}
         svc-pgbouncer-read: {}
+    svc-kafka:
+      children:
+        cfg-kafka-noc-node-ubuntu22:
+          hosts:
+            noc-node-ubuntu22: {}
+        svc-kafka-read: {}
+    svc-kafka-exec:
+      hosts:
+        noc-node-ubuntu22: {}
     svc-kafkasender:
       children:
         cfg-kafkasender-noc-node-ubuntu22:
