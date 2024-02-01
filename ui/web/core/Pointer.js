@@ -1,5 +1,5 @@
 //---------------------------------------------------------------------
-// NOC.core.Pin
+// NOC.core.Pointer
 // Render SVG pointer for make connections
 //---------------------------------------------------------------------
 // Copyright (C) 2007-2023 The NOC Project
@@ -8,8 +8,8 @@
 console.debug("Defining NOC.core.Pointer");
 
 Ext.define("NOC.core.Pointer", {
-    extend: 'Ext.draw.sprite.Composite',
-    alias: 'sprite.pointer',
+    extend: "Ext.draw.sprite.Composite",
+    alias: "sprite.pointer",
 
     inheritableStatics: {
         def: {
@@ -18,64 +18,28 @@ Ext.define("NOC.core.Pointer", {
                 fromY: "number",
                 toX: "number",
                 toY: "number",
-                arrowLength: 'number',
-                arrowAngle: 'number',
+                arrowLength: "number",
+                arrowAngle: "number",
+                lineType: "string",
+                side: "string",
+                actualScale: "number",
             },
             triggers: {
-                fromX: "recalculate1",
-                fromY: "recalculate1",
-                toX: "recalculate1",
-                toY: "recalculate1",
-                arrowLength: 'recalculate1',
-                arrowAngle: 'recalculate1',
+                fromX: "recalculate",
+                fromY: "recalculate",
+                toX: "recalculate",
+                toY: "recalculate",
+                arrowLength: "recalculate",
+                arrowAngle: "recalculate",
+                lineType: "recalculate",
             },
             defaults: {
-                arrowLength: 10,
-                arrowAngle: Math.PI / 8
+                arrowLength: 20,
+                lineType: "line",
+                arrowAngle: Math.PI / 8,
+                actualScale: 1,
             },
             updaters: {
-                recalculate1: function(attr) {
-                    var me = this,
-                        fromX = attr.fromX,
-                        fromY = attr.fromY,
-                        toX = attr.toX,
-                        toY = attr.toY,
-                        dx = toX - fromX,
-                        dy = toY - fromY;
-                    // if(dx === 0 || dy === 0) {
-                    //     return;
-                    // }
-
-                    var alpha = Math.atan2(dy, dx),
-                        sin = Math.sin,
-                        cos = Math.cos,
-                        beta = Math.PI - attr.arrowAngle,
-                        x = attr.arrowLength * cos(beta),
-                        y = attr.arrowLength * sin(beta),
-                        mat = Ext.draw.Matrix.fly([cos(alpha), sin(alpha), -sin(alpha), cos(alpha), toX, toY]);
-
-                    me.createSprites();
-                    me.baseLine.setAttributes({
-                        fromX: attr.fromX,
-                        fromY: attr.fromY,
-                        toX: attr.toX,
-                        toY: attr.toY,
-                    });
-                    me.arrowLeft.setAttributes({
-                        fromX: toX,
-                        fromY: toY,
-                        toX: mat.x(x, y),
-                        toY: mat.y(x, y),
-                        strokeStyle: attr.strokeStyle
-                    });
-                    me.arrowRight.setAttributes({
-                        fromX: toX,
-                        fromY: toY,
-                        toX: mat.x(x, -y),
-                        toY: mat.y(x, -y),
-                        strokeStyle: attr.strokeStyle
-                    });
-                },
                 recalculate: function(attr) {
                     var me = this,
                         fromX = attr.fromX,
@@ -84,113 +48,40 @@ Ext.define("NOC.core.Pointer", {
                         toY = attr.toY,
                         dx = toX - fromX,
                         dy = toY - fromY,
-                        PI = Math.PI,
-                        radius = Math.sqrt(dx * dx + dy * dy);
-
-                    if(dx === 0 || dy === 0) {
-                        return;
-                    }
-
-                    var alpha = Math.atan2(dy, dx),
+                        alpha = Math.atan2(dy, dx),
                         sin = Math.sin,
                         cos = Math.cos,
-                        arcRadius = attr.arcRadius,
-                        beta = PI - attr.arrowAngle,
-                        x = attr.arrowLength * cos(beta),
-                        y = attr.arrowLength * sin(beta),
-                        // Coordinates of the arc arrow tip.
-                        ax = arcRadius * cos(alpha) + fromX,
-                        ay = arcRadius * sin(alpha) + fromY,
-                        mat = Ext.draw.Matrix.fly([cos(alpha), sin(alpha), -sin(alpha), cos(alpha), toX, toY]),
-                        angleArrowThreshold = Ext.draw.Draw.radian * me.getAngleArrowThreshold(),
-                        isSmallAngle = alpha < angleArrowThreshold && alpha > -angleArrowThreshold,
-                        angleTextRadius = arcRadius * 1.2,
-                        isSmallRadius = radius < angleTextRadius,
-                        radiusTextFlip, fontSize,
-                        theta = 0;
-
-                    if(alpha > 0) {
-                        theta = alpha + PI / 2 - attr.arrowAngle / (arcRadius * 0.1);
-                    } else if(alpha < 0) {
-                        theta = alpha - PI / 2 + attr.arrowAngle / (arcRadius * 0.1);
-                    }
+                        beta = Math.PI - attr.arrowAngle,
+                        x = attr.arrowLength * cos(beta) * attr.actualScale,
+                        y = attr.arrowLength * sin(beta) * attr.actualScale,
+                        mat = Ext.draw.Matrix.fly([cos(alpha), sin(alpha), -sin(alpha), cos(alpha), toX, toY]);
 
                     me.createSprites();
-
+                    var offset = (attr.side === "left" ? -50 : 50) * attr.actualScale,
+                        baselinePath = Ext.String.format("M{0} {1} L{2} {3}", fromX, fromY, toX, toY),
+                        arrowLeftPath = Ext.String.format("M{0} {1} L{2} {3}", toX, toY, mat.x(x, y), mat.y(x, y)),
+                        arrowRightPath = Ext.String.format("M{0} {1} L{2} {3}", toX, toY, mat.x(x, -y), mat.y(x, -y));
+                    if(attr.lineType === "path") {
+                        var arrowX = (attr.side === "left" ? 1 : -1) * attr.arrowLength * cos(attr.arrowAngle) * attr.actualScale,
+                            arrowY = attr.arrowLength * sin(attr.arrowAngle) * attr.actualScale;
+                        baselinePath = Ext.String.format("M{0},{1} L{2},{3} L{4},{5} L{6},{7}",
+                            fromX, fromY, fromX + offset, fromY, fromX + offset, toY, toX, toY);
+                        arrowLeftPath = Ext.String.format("M{0} {1} L{2} {3}", toX, toY, toX - arrowX, toY + arrowY);
+                        arrowRightPath = Ext.String.format("M{0} {1} L{2} {3}", toX, toY, toX - arrowX, toY - arrowY);
+                    }
                     me.baseLine.setAttributes({
-                        fromX: fromX,
-                        fromY: fromY,
-                        toX: fromX + attr.baseLineLength,
-                        toY: fromY,
-                        hidden: isSmallRadius
+                        path: baselinePath,
+                        strokeStyle: "black"
                     });
-                    me.radiusLine.setAttributes({
-                        fromX: fromX,
-                        fromY: fromY,
-                        toX: toX,
-                        toY: toY,
+                    me.arrowLeft.setAttributes({
+                        path: arrowLeftPath,
                         strokeStyle: attr.strokeStyle
                     });
-                    me.radiusArrowLeft.setAttributes({
-                        fromX: toX,
-                        fromY: toY,
-                        toX: mat.x(x, y),
-                        toY: mat.y(x, y),
+                    me.arrowRight.setAttributes({
+                        path: arrowRightPath,
                         strokeStyle: attr.strokeStyle
                     });
-                    me.radiusArrowRight.setAttributes({
-                        fromX: toX,
-                        fromY: toY,
-                        toX: mat.x(x, -y),
-                        toY: mat.y(x, -y),
-                        strokeStyle: attr.strokeStyle
-                    });
-
-                    mat = Ext.draw.Matrix.fly([cos(theta), sin(theta), -sin(theta), cos(theta), ax, ay]);
-
-                    me.angleLine.setAttributes({
-                        startAngle: 0,
-                        endAngle: alpha,
-                        cx: fromX,
-                        cy: fromY,
-                        r: arcRadius,
-                        anticlockwise: alpha < 0,
-                        hidden: isSmallRadius
-                    });
-                    me.angleArrowLeft.setAttributes({
-                        fromX: ax,
-                        fromY: ay,
-                        toX: mat.x(x, y),
-                        toY: mat.y(x, y),
-                        hidden: isSmallAngle || isSmallRadius
-                    });
-                    me.angleArrowRight.setAttributes({
-                        fromX: ax,
-                        fromY: ay,
-                        toX: mat.x(x, -y),
-                        toY: mat.y(x, -y),
-                        hidden: isSmallAngle || isSmallRadius
-                    });
-                    me.angleText.setAttributes({
-                        x: angleTextRadius * cos(alpha / 2) + fromX,
-                        y: angleTextRadius * sin(alpha / 2) + fromY,
-                        text: me.getAngleText() + ': ' + (alpha * 180 / PI).toFixed(me.getPrecision()) + '°',
-                        hidden: isSmallRadius
-                    });
-                    radiusTextFlip = ((alpha > -0.5 * PI && alpha < 0.5 * PI) || (alpha > 1.5 * PI && alpha < 2 * PI)) ? 1 : -1;
-                    fontSize = parseInt(me.radiusText.attr.fontSize, 10);
-                    x = 0.5 * radius * cos(alpha) + fromX + radiusTextFlip * fontSize * sin(alpha);
-                    y = 0.5 * radius * sin(alpha) + fromY - radiusTextFlip * fontSize * cos(alpha);
-                    me.radiusText.setAttributes({
-                        x: x,
-                        y: y,
-                        rotationRads: radiusTextFlip === 1 ? alpha : alpha - PI,
-                        rotationCenterX: x,
-                        rotationCenterY: y,
-                        text: me.getRadiusText() + ': ' + radius.toFixed(me.getPrecision()),
-                        hidden: isSmallRadius
-                    });
-                }
+                },
             }
         }
     },
@@ -200,14 +91,16 @@ Ext.define("NOC.core.Pointer", {
         // Only create sprites if they haven't been created yet.
         if(!me.baseLine) {
             me.baseLine = me.add({
-                type: 'line',
-                lineDash: [2, 2]
+                type: "path",
+                lineDash: [2, 2],
+                // lineWidth: 2,
+                // zIndex: 100
             });
             me.arrowLeft = me.add({
-                type: 'line'
+                type: "path"
             });
             me.arrowRight = me.add({
-                type: 'line'
+                type: "path"
             });
         }
     }

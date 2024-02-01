@@ -1,5 +1,5 @@
 //---------------------------------------------------------------------
-// NOC.core.ConnectionInternal
+// NOC.core.Connection
 // Render SVG connection
 //---------------------------------------------------------------------
 // Copyright (C) 2007-2023 The NOC Project
@@ -14,26 +14,31 @@ Ext.define("NOC.core.Connection", {
         def: {
             processors: {
                 connectionType: "string",
-                labelAlign: "string",
-                fromPort: "string",
+                side: "string",
                 fromPortId: "string",
+                fromPort: "string",
+                fromXY: "data",
+                fromHasArrow: "bool",
+                fromDiscriminator: "string",
                 toPortId: "string",
                 toPort: "string",
-                path: "string",
                 toXY: "data",
-                fromXY: "data",
-                connectionColor: "string",
-                isDeleted: "bool",
-                fromHasArrow: "bool",
                 toHasArrow: "bool",
-                actualScale: "number"
+                toDiscriminator: "string",
+                isDeleted: "bool",
+                gainDb: "number",
+                actualScale: "number",
+                trace: "number",
+                path: "string",
+                connectionColor: "string",
+                length: "number",
             },
             triggers: {
                 path: "recalculate",
                 connectionColor: "recalculate",
             },
             defaults: {
-                labelAlign: "left", // "left" | "right"
+                side: "left", // "left" | "right"
             },
             updaters: {
                 recalculate: function(attr) {
@@ -41,12 +46,13 @@ Ext.define("NOC.core.Connection", {
 
                     me.createSprites(attr);
                     me.line.setAttributes({
-                        labelAlign: attr.labelAlign,
+                        side: attr.side,
                         fromPortId: attr.fromPortId,
                         toPortId: attr.toPortId,
                         connectionType: attr.connectionType,
                         path: attr.path,
                         strokeStyle: attr.connectionColor,
+                        zIndex: attr.zIndex,
                         "marker-end": "url(#arrow)"
                     });
 
@@ -92,17 +98,17 @@ Ext.define("NOC.core.Connection", {
                 zIndex: 100,
             });
             if(attr.toHasArrow) {
-                me.toArrowMarker = me.add(me.getMarker("arrow", attr.labelAlign, attr.actualScale));
+                me.toArrowMarker = me.add(me.getMarker("arrow", attr.side, attr.actualScale));
             }
             if(attr.fromHasArrow) {
-                me.fromArrowMarker = me.add(me.getMarker("arrow", attr.labelAlign, attr.actualScale));
+                me.fromArrowMarker = me.add(me.getMarker("arrow", attr.side, attr.actualScale));
             }
         }
     },
 
-    getMarker: function(id, labelAlign, scale) {
-        var point1X = (labelAlign === "left" ? 1 : -1) * scale * 20,
-            point1Y = (labelAlign === "left" ? 1 : -1) * scale * 7.5,
+    getMarker: function(id, side, scale) {
+        var point1X = (side === "left" ? -1 : 1) * scale * 20,
+            point1Y = (side === "left" ? -1 : 1) * scale * 7.5,
             path = Ext.String.format("M{0},{1} L{2},{3} L0,0 Z", point1X, point1Y, point1X, (-1) * point1Y);
         return {
             type: "path",

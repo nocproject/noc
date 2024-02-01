@@ -24,6 +24,7 @@ Ext.define("NOC.core.Pin", {
                 cursorOn: "string",
                 labelBold: "bool",
                 enabled: "bool",
+                pinOver: "bool",
                 internalEnabled: "bool",
                 allowInternal: "bool",
                 x: "number",
@@ -41,6 +42,8 @@ Ext.define("NOC.core.Pin", {
                 remoteId: "recalculate",
                 remoteName: "recalculate",
                 allowInternal: "recalculate",
+                enabled: "recalculate",
+                internalEnabled: "recalculate",
                 x: "translate",
                 y: "translate",
                 scale: "rescale"
@@ -57,7 +60,8 @@ Ext.define("NOC.core.Pin", {
                 enabled: true,
                 internalEnabled: true,
                 allowInternal: false,
-                labelAlign: "left", // "left" | "right"
+                side: "left",
+                labelAlign: "right", // "left" | "right"
                 scale: 1
             },
             updaters: {
@@ -68,13 +72,13 @@ Ext.define("NOC.core.Pin", {
                     me.box.setAttributes({
                         fillStyle: attr.pinColor,
                         stroke: attr.isSelected && !attr.isInternalFixed ? "lightgreen" : "black",
-                        lineWidth: attr.isSelected ? 3 : 1
+                        lineWidth: attr.isSelected && !attr.isInternalFixed ? 3 : 1
                     });
                     if(me.internal) {
                         me.internal.setAttributes({
                             fillStyle: attr.internalColor,
                             stroke: attr.isSelected && attr.isInternalFixed ? "lightgreen" : "black",
-                            lineWidth: attr.isSelected ? 3 : 1
+                            lineWidth: attr.isSelected && attr.isInternalFixed ? 3 : 1
                         });
                     }
                     me.label.setAttributes({
@@ -155,7 +159,7 @@ Ext.define("NOC.core.Pin", {
                 }
             }
         }
-        bbox = me.getBBox();
+        bbox = me.box.getBBox();
         if(bbox && x >= bbox.x && x <= (bbox.x + bbox.width) && y >= bbox.y && y <= (bbox.y + bbox.height)) {
             me.setAttributes({cursorOn: "external"});
             return {
