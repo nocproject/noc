@@ -4,7 +4,7 @@
     "uuid": "c77f3259-06d2-405c-9bfb-f19420b54b87",
     "vendor__code": "RAISECOM",
     "description": "The ISCOM2924GF-4GE is an aggregation layer switch and has 24 x 100/1000 Mbps optical SFP ports and 4 x Combo GE ports for uplink. AC 220 Volt or DC -48 Volt power redundancy is supported.",
-    "connection_rule__name": "Raisecom | ISCOM",
+    "connection_rule__name": "Generic | Switch SFP",
     "cr_context": "CHASSIS",
     "labels": [
         "noc::inv::chassis",
@@ -527,7 +527,7 @@
             "type__name": "Electrical | RJ45"
         },
         {
-            "name": "25_sfp",
+            "name": "sfp25",
             "description": "25 SFP port",
             "direction": "i",
             "gender": "f",
@@ -595,7 +595,7 @@
             "type__name": "Electrical | RJ45"
         },
         {
-            "name": "26_sfp",
+            "name": "sfp26",
             "description": "26 SFP port",
             "combo": "26",
             "direction": "i",
@@ -664,7 +664,7 @@
             "type__name": "Electrical | RJ45"
         },
         {
-            "name": "27_sfp",
+            "name": "sfp27",
             "description": "27 SFP port",
             "combo": "27",
             "direction": "i",
@@ -733,7 +733,7 @@
             "type__name": "Electrical | RJ45"
         },
         {
-            "name": "28_sfp",
+            "name": "sfp28",
             "description": "28 SFP port",
             "combo": "28",
             "direction": "i",
