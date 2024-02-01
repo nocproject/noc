@@ -301,7 +301,7 @@ class InvApplication(ExtApplication):
         internal_used, left_cross = self.get_cross(lo)
         # Left Object Processed
         for c in lo.model.connections:
-            valid, internal_valid, disable_reason = True, False, ""
+            valid, internal_valid, disable_reason = True, not left_filter, ""
             if internal and left_filter:
                 rc = lo.model.get_model_connection(left_filter)
                 internal_valid = any(any(x in c for x in rc.protocols) for c in c.protocols)
@@ -352,7 +352,7 @@ class InvApplication(ExtApplication):
         if ro:
             internal_used, right_cross = self.get_cross(ro)
             for c in ro.model.connections:
-                valid, internal_valid, disable_reason = True, False, ""
+                valid, internal_valid, disable_reason = True, not right_filter, ""
                 if internal and right_filter:
                     rc = ro.model.get_model_connection(right_filter)
                     internal_valid = any(any(x in c for x in rc.protocols) for c in c.protocols)
