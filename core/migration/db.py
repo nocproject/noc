@@ -195,6 +195,7 @@ class DB(object):
         if with_name:
             sql += [self.quote_name(field.column)]
         sql += [field.db_type(connection)]
+        sql += [field.db_type_suffix(connection)]
         # NULL/NOT NULL
         sql += ["NULL" if field.null else "NOT NULL"]
         # PRIMARY KEY/UNIQUE
