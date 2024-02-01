@@ -1,0 +1,61 @@
+---
+- name: Create symlink to kafka installation directory
+  file:
+    src: '{{ kafka_root_dir }}/kafka_{{ kafka_scala_version }}-{{ kafka_version }}'
+    dest: '{{ kafka_dir }}'
+    state: link
+    group: '{{ kafka_group }}'
+    owner: '{{ kafka_user }}'
+  tags:
+    - dirs
+
+- name: Create directory for kafka data log files
+  file:
+    path: '{{ item }}'
+    state: directory
+    group: '{{ kafka_group }}'
+    owner: '{{ kafka_user }}'
+    mode: 0755
+  with_items: "{{ kafka_log_dir.split(',') }}"
+  tags:
+    - dirs
+
+- name: Create directory for kafka application logs
+  file:
+    path: '{{ kafka_log_dir }}'
+    state: directory
+    group: '{{ kafka_group }}'
+    owner: '{{ kafka_user }}'
+    mode: 0755
+  tags:
+    - dirs
+
+- name: Register directory status for application log files
+  stat:
+    path: '{{ kafka_dir }}/logs'
+  register: application_logs_dir
+  tags:
+    - dirs
+
+- name: Create symlink to application log directory
+  file:
+    src: '{{ kafka_log_dir }}'
+    dest: '{{ kafka_dir }}/logs'
+    state: link
+    group: '{{ kafka_group }}'
+    owner: '{{ kafka_user }}'
+    mode: 0755
+    follow: false
+  when: not application_logs_dir.stat.exists
+  tags:
+    - dirs
+
+- name: Create directory for symlink to kafka configuration files
+  file:
+    path: /etc/kafka
+    state: directory
+    group: '{{ kafka_group }}'
+    owner: '{{ kafka_user }}'
+    mode: 0755
+  tags:
+    - dirs

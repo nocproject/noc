@@ -89,6 +89,7 @@ all:
           has_svc_nbi: true
           has_svc_nginx: true
           has_svc_noc: true
+          has_svc_kafka: true
           has_svc_kafkasender: true
           has_svc_pgbouncer: true
           has_svc_ping: true
@@ -103,6 +104,10 @@ all:
           has_svc_worker: true
           install_method: git
           installation_type: eval
+          kafka_cluster_id: ""
+          kafka_kafka_insecure_certs: false
+          kafka_loglevel: info
+          kafka_memory_limit: 1
           login_language: en-us
           login_loglevel: info
           login_methods: local
@@ -1151,6 +1156,15 @@ all:
           hosts:
             noc-node-redos: {}
     svc-noc-exec:
+      hosts:
+        noc-node-redos: {}
+    svc-kafka:
+      children:
+        cfg-kafka-noc-node-redos:
+          hosts:
+            noc-node-redos: {}
+        svc-kafka-read: {}
+    svc-kafka-exec:
       hosts:
         noc-node-redos: {}
     svc-kafkasender:
