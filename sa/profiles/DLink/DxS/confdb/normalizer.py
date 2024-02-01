@@ -45,6 +45,16 @@ def iter_ports(port_list):
             else:
                 yield "%s" % port_num
 
+def get_medium_type(tokens):
+    for i, t in enumerate(tokens):
+        if t == "auto_speed_downgrade":
+            return "c"
+        if t == "medium_type":
+            if tokens[i + 1] == "fiber":
+                return"f"
+            elif tokens[i + 1] == "copper":
+                return "c"
+    return ""
 
 class DLinkDxSNormalizer(BaseNormalizer):
     @match("config", "command_prompt", ANY)
@@ -54,14 +64,14 @@ class DLinkDxSNormalizer(BaseNormalizer):
 
     @match("config", "ports", REST)
     def normalize_interface(self, tokens):
-        """
-        config ports 1:1-1:5,1:8 medium_type copper speed auto
-        capability_advertised  10_half 10_full 100_half 100_full 1000_full
-        flow_control disable learning enable state enable mdix auto description SOMEDESCR
-        """
+        # config ports 1:1-1:5,1:8 medium_type copper speed auto
+        # capability_advertised  10_half 10_full 100_half 100_full 1000_full
+        # flow_control disable learning enable state enable mdix auto description SOMEDESCR
 
+        medium_type = get_medium_type(tokens)
         for port_num in iter_ports(tokens[2]):
-            if_name = self.interface_name(port_num)
+            # Config maybe different for copper and fiber ports
+            if_name = self.interface_name(port_num) + medium_type
             yield self.make_interface(interface=if_name)
 
             rest_tokens = tokens[3:]

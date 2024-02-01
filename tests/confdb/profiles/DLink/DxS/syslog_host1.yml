@@ -1,0 +1,4 @@
+config: |
+  create syslog host 1 ipaddress 172.16.0.1 severity critical facility local7 udp_port 514 state enable
+result:
+  - ["protocols", "syslog", "syslog-server", !IP 172.16.0.1]
