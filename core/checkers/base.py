@@ -45,7 +45,16 @@ class Check(object):
     port: Optional[int] = None  # TCP/UDP port
     arg0: Optional[str] = None  #
     pool: Optional[str] = None  # Address Pool
+    suggests_credential: bool = False
     credentials: Optional[List[Union[SNMPCredential, SNMPv3Credential, CLICredential, HTTPCredential]]] = None  # Credentials List
+
+    @classmethod
+    def from_string(cls, url) -> "Check":
+        """
+
+        :param url:
+        :return:
+        """
 
 
 @dataclass(frozen=True)
@@ -55,12 +64,13 @@ class CheckResult(object):
     arg0: Optional[str] = None  # Checked Argument
     skipped: bool = False  # Check was skipped (Example, no credential)
     is_available: Optional[bool] = None  # Port/Address is available
+    port: Optional[int] = None
     is_access: Optional[bool] = None  # Access to resource for credential
     error: Optional[str] = None  # Description if Fail
     data: Optional[Dict[str, Any]] = None  # Collected check data
     # Action: Set Profile, Credential, Send Notification (Diagnostic Header) ?
     # action: Optional[Union[ProfileSet, CLICredentialSet, SNMPCredentialSet]] = None
-    # Credentials List
+    # Credentials List, Return if suggests flag is set
     credentials: Optional[List[Union[SNMPCredential, SNMPv3Credential, CLICredential, HTTPCredential]]] = None
     caps: Optional[List[CapsItem]] = None
     # Metrics collected
