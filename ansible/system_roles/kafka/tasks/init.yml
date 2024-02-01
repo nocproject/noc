@@ -1,0 +1,33 @@
+---
+- name: Check already format (1/2)
+  stat:
+    path: "{{ kafka_log_dir }}/bootstrap.checkpoint"
+  register: boot_result
+  failed_when: false
+
+- name: Check already format (2/2)
+  stat:
+    path: "{{ kafka_log_dir }}/meta.properties"
+  register: meta_result
+  failed_when: false
+
+- block:
+    - name: Create Kafka Cluster ID
+      command: "{{ kafka_dir }}/bin/kafka-storage.sh random-uuid"
+      register: cluster_uuid
+
+    - name: Format log directory with rnd cluster_id
+      command: "{{ kafka_home }}/bin/kafka-storage.sh format -t {{ hostvars[groups['svc-kafka-exec'][0]]['cluster_uuid']['stdout'] }} -c {{ kafka_server_conf }}"
+      when:
+        - hostvars[groups['svc-kafka-exec'][0]]['cluster_uuid']['stdout'] is defined
+        - kafka_cluster_id is defined and not kafka_cluster_id
+
+    - name: Format log directory with tower cluster_id
+      command: "{{ kafka_home }}/bin/kafka-storage.sh format -t {{ kafka_cluster_id }} -c {{ kafka_server_conf }}"
+      when:
+        - kafka_cluster_id is defined and kafka_cluster_id
+
+  when: >
+    (not boot_result.stat.exists)
+    and
+    (not meta_result.stat.exists)

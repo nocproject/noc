@@ -1,0 +1,33 @@
+---
+- name: Template configuration file to server.properties
+  template:
+    src: server.properties.j2
+    dest: '{{ kafka_dir }}/config/kraft/server.properties'
+    group: '{{ kafka_group }}'
+    owner: '{{ kafka_user }}'
+    mode: 0644
+  notify:
+    - restart kafka
+  tags:
+    - config
+
+- name: Create symlink to kafka server properties file
+  file:
+    src: '{{ kafka_dir }}/config/kraft/server.properties'
+    dest: '{{ kafka_server_conf }}'
+    state: link
+    group: '{{ kafka_group }}'
+    owner: '{{ kafka_user }}'
+  tags:
+    - config
+
+- name: Template kafka systemd service
+  template:
+    src: kafka.service.j2
+    dest: '{{ kafka_unit_path }}'
+    group: '{{ kafka_group }}'
+    owner: '{{ kafka_user }}'
+    mode: 0644
+  notify:
+    - reload systemd
+    - restart kafka

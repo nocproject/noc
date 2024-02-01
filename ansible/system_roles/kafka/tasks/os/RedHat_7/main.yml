@@ -1,0 +1,13 @@
+---
+- name: Install java
+  yum:
+    name:
+      - java
+    state: present
+    update_cache: "True"
+    allow_downgrade: "True"
+  tags:
+    - requirements
+  environment:
+    http_proxy: "{{ http_proxy }}"
+    https_proxy: "{{ http_proxy }}"
