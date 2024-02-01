@@ -1,7 +1,7 @@
 # ---------------------------------------------------------------------
 # Diagnostics check
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2023 The NOC Project
+# Copyright (C) 2007-2024 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -14,19 +14,19 @@ from collections import defaultdict
 # NOC modules
 from noc.services.discovery.jobs.base import DiscoveryCheck
 from noc.core.checkers.base import (
-    ObjectChecker,
     Check,
     CheckResult,
-    CheckData,
     CapsItem,
     CredentialItem,
     MetricValue,
 )
 from noc.core.checkers.loader import loader
-from noc.core.wf.diagnostic import DiagnosticState, DiagnosticHub
+from noc.core.wf.diagnostic import DiagnosticState, DiagnosticHub, CheckData
 from noc.core.debug import error_report
+from noc.core.script.scheme import Protocol, SNMPCredential, CLICredential
 from noc.sa.models.profile import Profile
 from noc.sa.models.managedobject import ManagedObject
+from noc.sa.models.credentialcheckrule import CredentialCheckRule
 from noc.pm.models.metrictype import MetricType
 from noc.config import config
 
@@ -37,28 +37,14 @@ class DiagnosticCheck(DiscoveryCheck):
     """
 
     name = "diagnostic"
-    CHECKERS: Dict[str, ObjectChecker] = {}  # Checkers Instance
-    CHECK_MAP: Dict[str, str] = {}  # CheckName -> CheckerName mapping
-
-    CHECK_CACHE = {}  # Cache check result
 
     def __init__(self, job, run_order: Optional[Literal["S", "E"]] = None):
         super().__init__(job)
         self.run_order = run_order
-
-    def load_checkers(self):
-        """
-        Load available checkers
-        :return:
-        """
-        for checker in loader:
-            self.CHECKERS[checker] = loader[checker]
-            for c in self.CHECKERS[checker].CHECKS:
-                self.CHECK_MAP[c] = self.CHECKERS[checker].name
+        self.proto_check_map = {p.config.check: p for p in Protocol if p.config.enable_suggest}
 
     def handler(self):
         # Loading checkers
-        self.load_checkers()
         metrics: List[MetricValue] = []
         # Diagnostic Data
         d_data: Dict[str, Any] = defaultdict(dict)  # Diagnostic -> Data
@@ -133,19 +119,18 @@ class DiagnosticCheck(DiscoveryCheck):
         # Fire workflow event diagnostic ?
 
     def iter_checks(self, checks: List[Check]) -> Iterable[CheckResult]:
-        # r = []
         # Group check by checker
         do_checks: Dict[str, List[Check]] = defaultdict(list)
-        for c in checks:
-            if c.name not in self.CHECK_MAP:
-                self.logger.warning("[%s] Unknown check. Skipping", c.name)
+        for check in checks:
+            checker = loader[check.name]
+            if not checker:
+                self.logger.warning("[%s] Unknown check. Skipping", check.name)
                 continue
-            if self.CHECK_MAP[c.name] not in self.CHECKERS:
-                self.logger.warning("[%s] Unknown checker. Skipping", c.name)
-                continue
-            do_checks[self.CHECK_MAP[c.name]] += [c]
+            if check.name in self.proto_check_map:
+                check = self.get_credential(check)
+            do_checks[checker.name] += [check]
         for checker, d_checks in do_checks.items():
-            checker = self.CHECKERS[checker](self.object, self.logger, "discovery")
+            checker = loader[checker](self.logger, "discovery")
             self.logger.info("[%s] Run checker", ";".join(f"{c.name}({c.arg0})" for c in d_checks))
             try:
                 for check in checker.iter_result(d_checks):
@@ -154,6 +139,38 @@ class DiagnosticCheck(DiscoveryCheck):
                 if self.logger.isEnabledFor(logging.DEBUG):
                     error_report()
                 self.logger.error("[%s] Error when run checker: %s", checker.name, str(e))
+
+    def get_credential(self, check) -> "Check":
+        r = []
+        protocol = self.proto_check_map[check]
+        if protocol.config.snmp_version and self.object.credentials.snmp_ro:
+            r.append(
+                SNMPCredential(
+                    snmp_ro=self.object.credentials.snmp_ro, snmp_rw=self.object.credentials.snmp_rw
+                )
+            )
+        else:
+            r.append(
+                CLICredential(
+                    username=self.object.credentials.user,
+                    password=self.object.credentials.password,
+                    super_password=self.object.credentials.super_password,
+                )
+            )
+        r += (
+            CredentialCheckRule.get_suggests(
+                self.proto_check_map[check], set(self.object.effective_labels)
+            )
+            or []
+        )
+        return Check(
+            name=check.name,
+            address=check.address,
+            port=check.port,
+            pool=check.pool,
+            arg0=check.arg0,
+            credentials=r,
+        )
 
     def apply_credentials(self, credentials: List[CredentialItem]):
         """

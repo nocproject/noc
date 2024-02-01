@@ -1,14 +1,15 @@
 # ----------------------------------------------------------------------
 # NOC Checker Base class
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2022 The NOC Project
+# Copyright (C) 2007-2024 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
 # Python modules
 import logging
 from dataclasses import dataclass
-from typing import List, Optional, Dict, Any, Union, Iterable, Literal
+from typing import List, Optional, Dict, Any, Iterable, Literal, Union
+from noc.core.script.scheme import SNMPCredential, SNMPv3Credential, CLICredential, HTTPCredential
 
 # NOC modules
 from noc.core.log import PrefixLoggerAdapter
@@ -38,38 +39,32 @@ class CredentialItem(object):
 
 
 @dataclass(frozen=True)
+class Check(object):
+    name: str  # Check name
+    address: str  # IP Address
+    port: Optional[int] = None  # TCP/UDP port
+    arg0: Optional[str] = None  #
+    pool: Optional[str] = None  # Address Pool
+    credentials: Optional[List[Union[SNMPCredential, SNMPv3Credential, CLICredential, HTTPCredential]]] = None  # Credentials List
+
+
+@dataclass(frozen=True)
 class CheckResult(object):
     check: str
     status: bool  # True - OK, False - Fail
     arg0: Optional[str] = None  # Checked Argument
     skipped: bool = False  # Check was skipped (Example, no credential)
+    is_available: Optional[bool] = None  # Port/Address is available
+    is_access: Optional[bool] = None  # Access to resource for credential
     error: Optional[str] = None  # Description if Fail
     data: Optional[Dict[str, Any]] = None  # Collected check data
     # Action: Set Profile, Credential, Send Notification (Diagnostic Header) ?
     # action: Optional[Union[ProfileSet, CLICredentialSet, SNMPCredentialSet]] = None
-    credentials: Optional[List[CredentialItem]] = None
+    # Credentials List
+    credentials: Optional[List[Union[SNMPCredential, SNMPv3Credential, CLICredential, HTTPCredential]]] = None
     caps: Optional[List[CapsItem]] = None
     # Metrics collected
     metrics: Optional[List[MetricValue]] = None
-
-
-@dataclass(frozen=True)
-class CheckData(object):
-    name: str
-    status: bool  # True - OK, False - Fail
-    skipped: bool = False  # Check was skipped (Example, no credential)
-    arg0: Optional[str] = None
-    error: Optional[str] = None  # Description if Fail
-    data: Optional[Dict[str, Any]] = None  # Collected check data
-
-
-@dataclass(frozen=True)
-class Check(object):
-    name: str
-    arg0: Optional[str] = None
-
-    def __str__(self):
-        return f"{self.name}:{self.arg0 or ''}"
 
 
 class Checker(object):
@@ -81,9 +76,14 @@ class Checker(object):
     CHECKS: List[str]
     USER_DISCOVERY_USE: bool = True  # Allow use in User Discovery
 
-    def iter_result(
-        self, checks: Optional[List[Union[Check, str]]] = None
-    ) -> Iterable[CheckResult]:
+    def __init__(self, logger=None, calling_service: Optional[str] = None):
+        self.logger = PrefixLoggerAdapter(
+            logger or logging.getLogger(self.name),
+            f"{calling_service or self.name}]",
+        )
+        self.calling_service = calling_service or self.name
+
+    def iter_result(self, checks: List[Check]) -> Iterable[CheckResult]:
         """
         Iterate over result
         :param checks: List checks param for run
