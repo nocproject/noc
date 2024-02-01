@@ -45,16 +45,18 @@ def iter_ports(port_list):
             else:
                 yield "%s" % port_num
 
+
 def get_medium_type(tokens):
     for i, t in enumerate(tokens):
         if t == "auto_speed_downgrade":
             return "c"
         if t == "medium_type":
             if tokens[i + 1] == "fiber":
-                return"f"
+                return "f"
             elif tokens[i + 1] == "copper":
                 return "c"
     return ""
+
 
 class DLinkDxSNormalizer(BaseNormalizer):
     @match("config", "command_prompt", ANY)
