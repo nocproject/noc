@@ -245,12 +245,27 @@ server {
 
     # UI files
     location ^~ /ui/ {
+    {% if custom_path is defined and custom_path %}
+        root /opt/noc_custom;
+        try_files $uri @noc_ui;
+    {% elif %}
         alias {{ noc_root }}/ui/;
+    {% endif %}
         add_header Cache-Control public;
         add_header Pragma public;
         expires 1w;
         error_page 401 = @error401;
     }
+
+    {% if custom_path is defined and custom_path %}
+    location @noc_ui {
+        root /opt/noc;
+        add_header Cache-Control public;
+        add_header Pragma public;
+        expires 1w;
+        error_page 401 = @error401;
+    }
+    {% endif %}
 
 {% if 'svc-bi-exec' in groups and groups['svc-bi-exec'] | length > 0 %}
     location /ui/bi/editor/ {
