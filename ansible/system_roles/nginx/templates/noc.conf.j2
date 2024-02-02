@@ -246,7 +246,7 @@ server {
     # UI files
     location ^~ /ui/ {
     {% if custom_path is defined and custom_path %}
-        root /opt/noc_custom;
+        root {{ custom_path }};
         try_files $uri @noc_ui;
     {% elif custom_path is undefined %}
         alias {{ noc_root }}/ui/;
@@ -259,7 +259,7 @@ server {
 
     {% if custom_path is defined and custom_path %}
     location @noc_ui {
-        root /opt/noc;
+        root {{ noc_root }};
         add_header Cache-Control public;
         add_header Pragma public;
         expires 1w;
