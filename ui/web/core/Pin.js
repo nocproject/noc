@@ -17,6 +17,8 @@ Ext.define("NOC.core.Pin", {
                 internalColor: "string",
                 pinName: "string",
                 labelAlign: "string",
+                internalLabel: "string",
+                internalLabelWidth: "number",
                 remoteId: "string",
                 remoteName: "string",
                 isSelected: "bool",
@@ -29,7 +31,7 @@ Ext.define("NOC.core.Pin", {
                 allowInternal: "bool",
                 x: "number",
                 y: "number",
-                scale: "number"
+                actualScale: "number"
             },
             triggers: {
                 pinColor: "recalculate",
@@ -38,6 +40,7 @@ Ext.define("NOC.core.Pin", {
                 isInternalFixed: "recalculate",
                 labelBold: "recalculate",
                 pinName: "recalculate",
+                internalLabel: "recalculate",
                 labelAlign: "recalculate",
                 remoteId: "recalculate",
                 remoteName: "recalculate",
@@ -46,7 +49,7 @@ Ext.define("NOC.core.Pin", {
                 internalEnabled: "recalculate",
                 x: "translate",
                 y: "translate",
-                scale: "rescale"
+                actualScale: "rescale"
             },
             defaults: {
                 pinColor: "#2c3e50",
@@ -62,7 +65,8 @@ Ext.define("NOC.core.Pin", {
                 allowInternal: false,
                 side: "left",
                 labelAlign: "right", // "left" | "right"
-                scale: 1
+                internalLabelWidth: 10,
+                actualScale: 1
             },
             updaters: {
                 recalculate: function(attr) {
@@ -74,20 +78,42 @@ Ext.define("NOC.core.Pin", {
                         stroke: attr.isSelected && !attr.isInternalFixed ? "lightgreen" : "black",
                         lineWidth: attr.isSelected && !attr.isInternalFixed ? 3 : 1
                     });
+                    me.label.setAttributes({
+                        text: attr.pinName,
+                        textAlign: attr.labelAlign === "left" ? "end" : "start",
+                    });
                     if(me.internal) {
                         me.internal.setAttributes({
                             fillStyle: attr.internalColor,
                             stroke: attr.isSelected && attr.isInternalFixed ? "lightgreen" : "black",
                             lineWidth: attr.isSelected && attr.isInternalFixed ? 3 : 1
                         });
+                        if(attr.internalLabel) {
+                            var font = Ext.String.format("{0} {1}px {2}", me.getFontWeight(), me.getFontSize(), me.getFontFamily()),
+                                width = Ext.draw.TextMeasurer.measureText(attr.internalLabel, font).width,
+                                suffix = "...",
+                                text = attr.internalLabel;
+
+                            if(width > Math.abs(attr.internalLabelWidth)) {
+                                me.fullInternalLabel = attr.internalLabel;
+                                if(!me.internalLabelTooltip) {
+                                    me.internalLabelTooltip = Ext.create("Ext.tip.ToolTip", {
+                                        html: me.fullInternalLabel,
+                                        hidden: true
+                                    });
+                                }
+                                while(width > Math.abs(attr.internalLabelWidth)) {
+                                    text = text.slice(0, -1);
+                                    width = Ext.draw.TextMeasurer.measureText(text + suffix, font).width;
+                                }
+                                text += suffix;
+                            }
+                            me.internalLabel.setAttributes({
+                                text: text,
+                                textAlign: attr.labelAlign === "left" ? "start" : "end",
+                            });
+                        }
                     }
-                    me.label.setAttributes({
-                        text: attr.pinName,
-                        textAlign: attr.labelAlign === "left" ? "end" : "start",
-                        fontWeight: fontWeight,
-                        fontFamily: me.defaultConfig.fontFamily,
-                        fontSize: me.defaultConfig.fontSize,
-                    });
                 },
                 translate: function(attr) {
                     var me = this;
@@ -101,6 +127,10 @@ Ext.define("NOC.core.Pin", {
                         me.internal.setAttributes({
                             translationX: ((me.attr.labelAlign === "left" ? 2.25 : -1.25) * me.getBoxWidth()) + attr.x,
                             translationY: attr.y + me.getBoxHeight() / 2
+                        });
+                        me.internalLabel.setAttributes({
+                            translationX: attr.x + (me.attr.labelAlign === "left" ? me.box.width * 1.5 : 0),
+                            translationY: attr.y + me.getBoxHeight() / 2,
                         });
                     }
                     me.label.setAttributes({
@@ -117,17 +147,17 @@ Ext.define("NOC.core.Pin", {
                         easing: "easeInOut"
                     });
                     me.box.setAttributes({
-                        scalingX: attr.scale,
-                        scalingY: attr.scale
+                        scalingX: attr.actualScale,
+                        scalingY: attr.actualScale
                     });
                     me.label.setAttributes({
-                        scalingX: attr.scale,
-                        scalingY: attr.scale
+                        scalingX: attr.actualScale,
+                        scalingY: attr.actualScale
                     });
                     if(me.internal) {
                         me.internal.setAttributes({
-                            scalingX: attr.scale,
-                            scalingY: attr.scale
+                            scalingX: attr.actualScale,
+                            scalingY: attr.actualScale
                         });
                     }
                 }
@@ -140,10 +170,6 @@ Ext.define("NOC.core.Pin", {
         fontSize: 12,
         fontFamily: "arial",
         fontWeight: "normal",
-        // pinName: "Undefined",
-        // pinColor: "#2c3e50",
-        // labelAlign: "left",
-        // allowInternal: false,
     },
     hitTest: function(point, options) {
         // Removed the isVisible check since pin will always be visible.
@@ -193,7 +219,16 @@ Ext.define("NOC.core.Pin", {
                     type: "circle",
                     radius: me.getBoxWidth() / 2,
                     stroke: "black",
-                    lineWidth: 2
+                    lineWidth: 2,
+                    x: me.internalLabelWidth,
+                    y: 0
+                });
+                me.internalLabel = me.add({
+                    type: "text",
+                    fontFamily: me.getFontFamily(),
+                    fontWeight: me.getFontWeight(),
+                    fontSize: me.getFontSize(),
+                    textBaseline: "middle",
                 });
             }
         }

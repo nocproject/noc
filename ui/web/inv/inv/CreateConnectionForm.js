@@ -26,6 +26,7 @@ Ext.define("NOC.inv.inv.CreateConnectionForm", {
     schemaPadding: undefined,
     gap: undefined,
     scale: undefined,
+    discriminatorWidth: undefined,
     requires: [
         "NOC.core.ComboBox",
         "NOC.core.Connection",
@@ -55,7 +56,7 @@ Ext.define("NOC.inv.inv.CreateConnectionForm", {
             itemId: "canvas",
             region: "center",
             scrollable: false,
-            isMenuOpen: false,
+            isModalOpen: false,
             wire: {
                 connectionColor: me.WIRE_COLOR,
                 lineWidth: 2,
@@ -109,24 +110,6 @@ Ext.define("NOC.inv.inv.CreateConnectionForm", {
             listeners: {
                 scope: me,
                 change: me.load
-            }
-        });
-        me.menu = Ext.create("Ext.menu.Menu", {
-            autoDestroy: true,
-            items: [
-                {
-                    text: __("Delete Connection"),
-                    handler: me.deleteInternalConnection
-                }
-            ],
-            listeners: {
-                scope: me,
-                hide: function() {
-                    var drawPanel = this.drawPanel;
-                    drawPanel.isMenuOpen = false;
-                    drawPanel.selectedSprite.setAttributes(drawPanel.wire);
-                    drawPanel.getSurface(drawPanel.selectedSprite.side + "_internal_conn").renderFrame();
-                }
             }
         });
         Ext.apply(me, {
@@ -197,8 +180,6 @@ Ext.define("NOC.inv.inv.CreateConnectionForm", {
             },
             notifyDrop: Ext.bind(me.onDrop, me),
         });
-
-        me.drawPanel.getEl().on("contextmenu", me.showMenu);
     },
     load: function() {
         var params, title,
@@ -303,12 +284,13 @@ Ext.define("NOC.inv.inv.CreateConnectionForm", {
 
         me.boxWidth = 20;
         me.boxHeight = 20;
+        me.discriminatorWidth = (side === "left" ? -150 : 150);
         me.schemaPadding = me.boxHeight * 3;
         me.gap = 12.5;
         me.scale = 1;
         countInternal = pins.filter(function(pin) {return pin.internal;}).length;
         countInternal = countInternal ? countInternal : me.boxWidth / me.gap + 1;
-        bodyWidth = (side === "left" ? -1 : 1) * (countInternal + 3) * me.gap;
+        bodyWidth = (side === "left" ? -1 : 1) * (countInternal + 3) * me.gap + me.discriminatorWidth;
         bodyOffset = (side === "left" ? 0 : me.boxWidth);
         // calculate needed vertical space for diagram
         // ToDo calculate width of schema, when two objects and select optimal scale factor, need width body of objects
@@ -316,6 +298,7 @@ Ext.define("NOC.inv.inv.CreateConnectionForm", {
         me.scale = Math.min(containerHeight / surfaceHeight, 0.6);
         me.boxHeight *= me.scale;
         me.boxWidth *= me.scale;
+        me.discriminatorWidth *= me.scale;
         me.gap *= me.scale;
         me.schemaPadding *= me.scale;
         bodyWidth *= me.scale;
@@ -375,6 +358,7 @@ Ext.define("NOC.inv.inv.CreateConnectionForm", {
                 side: side,
                 labelAlign: labelAlign,
                 allowInternal: !Ext.isEmpty(port.internal),
+                internalLabelWidth: me.discriminatorWidth,
                 x: xOffset,
                 y: index * (me.boxHeight + me.gap) + me.gap + me.schemaPadding,
                 zIndex: 5
@@ -428,6 +412,12 @@ Ext.define("NOC.inv.inv.CreateConnectionForm", {
 
             from.has_arrow = connection.from.has_arrow;
             to.has_arrow = connection.to.has_arrow;
+            if(connection.from.discriminator) {
+                from.setAttributes({internalLabel: connection.from.discriminator});
+            }
+            if(connection.to.discriminator) {
+                to.setAttributes({internalLabel: connection.to.discriminator});
+            }
             if(conn = me.makeConnection(from, to, side, "internal", connection.is_delete, connection.gain_db)) sprites.push(conn);
         });
         return Ext.Array.map(Ext.Array.sort(sprites, function(a, b) {
@@ -497,7 +487,7 @@ Ext.define("NOC.inv.inv.CreateConnectionForm", {
             from: from
         };
         body = me.drawPanel.getSurface().get("body");
-        bodyWidth = (side === "left" ? -1 : 1) * (countInternal + 3) * me.gap;
+        bodyWidth = (side === "left" ? -1 : 1) * (countInternal + 3) * me.gap + me.discriminatorWidth;
         if(Math.abs(bodyWidth) > Math.abs(body.attr.width)) {
             body.setAttributes({
                 width: bodyWidth,
@@ -602,7 +592,6 @@ Ext.define("NOC.inv.inv.CreateConnectionForm", {
             target.unreg();
             me.formPanelDropTarget = null;
         }
-        me.drawPanel.getEl().un("contextmenu", me.showMenu);
         me.getEl().un("keydown", me.cancelDrawConnection);
         this.callParent();
     },
@@ -611,11 +600,11 @@ Ext.define("NOC.inv.inv.CreateConnectionForm", {
             surface = me.drawPanel.getSurface(),
             sprite = element.sprite;
 
-        if(!me.drawPanel.isMenuOpen) {
+        if(!me.drawPanel.isModalOpen) {
             switch(sprite.type) {
                 case "pin": {
                     sprite.setAttributes({
-                        scale: 1.02,
+                        actualScale: 1.02,
                         labelBold: true,
                     });
                     // illumination of ALL external connections
@@ -630,7 +619,7 @@ Ext.define("NOC.inv.inv.CreateConnectionForm", {
                     });
                     // illumination of ALL internal connections
                     Ext.each(me.drawPanel.getSurface(sprite.side + "_internal_conn").getItems(), function(s) {
-                        if(s.isDeleted && (s.fromPortId === sprite.id || s.toPortId === sprite.id)) {
+                        if(s.fromPortId === sprite.id || s.toPortId === sprite.id) {
                             s.setAttributes(me.drawPanel.selectedWire);
                         }
                     });
@@ -645,12 +634,15 @@ Ext.define("NOC.inv.inv.CreateConnectionForm", {
                             side: sprite.side
                         })
                     }
+                    if(sprite.internalLabelTooltip && sprite.internalLabelTooltip.isHidden()) {
+                        sprite.internalLabelTooltip.showAt([event.pageX, event.pageY + 20]);
+                    }
                     me.drawPanel.getSurface().renderFrame();
                     me.drawPanel.getSurface(sprite.side + "_internal_conn").renderFrame();
                     break;
                 }
                 case "connection": {
-                    if(sprite.connectionType === "internal" && sprite.isDeleted) {
+                    if(sprite.connectionType === "internal") {
                         me.drawPanel.selectedSprite = sprite;
                         sprite.setAttributes(me.drawPanel.selectedWire);
                         me.drawPanel.getSurface(sprite.side + "_internal_conn").renderFrame();
@@ -696,7 +688,7 @@ Ext.define("NOC.inv.inv.CreateConnectionForm", {
             surface = me.drawPanel.getSurface(),
             sprite = element.sprite;
 
-        if(!me.drawPanel.isMenuOpen) {
+        if(!me.drawPanel.isModalOpen) {
             switch(sprite.type) {
                 case "pin": {
                     if(selectedPinId !== sprite.id) {
@@ -712,7 +704,7 @@ Ext.define("NOC.inv.inv.CreateConnectionForm", {
                         }
                     }
                     sprite.setAttributes({
-                        scale: 1,
+                        actualScale: 1,
                         labelBold: false,
                     });
                     // external connections
@@ -727,18 +719,29 @@ Ext.define("NOC.inv.inv.CreateConnectionForm", {
                     });
                     // internal connections
                     Ext.each(me.drawPanel.getSurface(sprite.side + "_internal_conn").getItems(), function(s) {
-                        if(s.isDeleted && (s.fromPortId === sprite.id || s.toPortId === sprite.id)) {
-                            s.setAttributes(me.drawPanel.wire);
+                        if(s.fromPortId === sprite.id || s.toPortId === sprite.id) {
+                            if(s.isDeleted) {
+                                s.setAttributes(me.drawPanel.wire);
+                            } else {
+                                s.setAttributes(me.drawPanel.disabledWire);
+                            }
                         }
                     });
+                    if(sprite.internalLabelTooltip && !sprite.internalLabelTooltip.isHidden()) {
+                        sprite.internalLabelTooltip.hide();
+                    }
                     me.drawPanel.getSurface().renderFrame();
                     me.drawPanel.getSurface(sprite.side + "_internal_conn").renderFrame();
                     break;
                 }
                 case "connection": {
-                    if(sprite.connectionType === "internal" && sprite.isDeleted) {
+                    if(sprite.connectionType === "internal") {
                         me.drawPanel.selectedSprite = undefined;
-                        sprite.setAttributes(me.drawPanel.wire);
+                        if(sprite.isDeleted) {
+                            sprite.setAttributes(me.drawPanel.wire);
+                        } else {
+                            sprite.setAttributes(me.drawPanel.disabledWire);
+                        }
                         me.drawPanel.getSurface(sprite.side + "_internal_conn").renderFrame();
                     }
                     break;
@@ -762,22 +765,6 @@ Ext.define("NOC.inv.inv.CreateConnectionForm", {
             isInternal = sprite.attr.cursorOn === "internal",
             isExternal = sprite.attr.cursorOn === "external";
 
-        // if(sprite.remoteId !== "none") {
-        //     var leftObject, rightObject;
-        //     if(sprite.config.labelAlign === "left") {
-        //         leftObject = mainPanel.getViewModel().get("leftObject");
-        //         rightObject = Ext.create("Ext.data.Model", {id: sprite.remoteId, name: sprite.remoteName});
-        //     } else {
-        //         rightObject = mainPanel.getViewModel().get("rightObject");
-        //         leftObject = Ext.create("Ext.data.Model", {id: sprite.remoteId, name: sprite.remoteName});
-        //     }
-        //     mainPanel.getViewModel().set("leftObject", rightObject);
-        //     mainPanel.getViewModel().set("rightObject", leftObject);
-        //     mainPanel.getViewModel().set("leftSelectedPin", null);
-        //     mainPanel.getViewModel().set("rightSelectedPin", null);
-        //     // mainPanel.load();
-        //     return;
-        // }
         if(!sprite.enabled && isExternal) {
             return;
         }
@@ -789,53 +776,65 @@ Ext.define("NOC.inv.inv.CreateConnectionForm", {
             mainPanel.createInternalConnection(prevSprite, sprite, side);
         }
 
-        mainPanel.selectPin(element, prevSelectPinId, isInternal, prevIsInternal);
-        sprite.setAttributes({
-            isInternalFixed: isInternal
-        });
-        // add pointer
-        if(isInternal) {
-            pointerX = sprite.internal.attr.translationX;
-            pointerY = sprite.internal.attr.translationY;
-            offset = (side === "left" ? -50 : 50)
-        }
-        if(isExternal) {
-            pointerX = sprite.box.attr.translationX + sprite.box.attr.width / 2;
-            pointerY = sprite.box.attr.translationY + sprite.box.attr.height / 2;
-            offset = (side === "left" ? 50 : -50)
-        }
-        if(!pointer) {
-            pointer = surface.add({
-                type: "pointer",
-                id: "pointer",
-                fromX: pointerX,
-                fromY: pointerY,
-                toX: pointerX + offset,
-                toY: pointerY,
-                actualScale: mainPanel.scale,
-                strokeStyle: "red",
-                zIndex: 150,
-            });
-        } else {
-            pointer.setAttributes({
-                fromX: pointerX,
-                fromY: pointerY,
-                toX: pointerX + offset,
-                toY: pointerY,
-            });
-        }
-        if(sprite.attr.isSelected) {
-            viewModel.set("selectedPinId", sprite.id);
-            viewModel.set("selectedPin", sprite.pinName);
-            viewModel.set("isSelectedPinInternal", isInternal);
-            viewModel.set("side", side);
-        } else {
-            // self selected
-            viewModel.set("selectedPinId", null);
-            viewModel.set("selectedPin", null);
-            viewModel.set("isSelectedPinInternal", null);
-            viewModel.set("side", null);
-            surface.get("pointer").remove();
+        switch(sprite.type) {
+            case "pin": {
+                mainPanel.selectPin(element, prevSelectPinId, isInternal, prevIsInternal);
+                sprite.setAttributes({
+                    isInternalFixed: isInternal
+                });
+                // add pointer
+                if(isInternal) {
+                    pointerX = sprite.internal.attr.translationX + mainPanel.discriminatorWidth;
+                    pointerY = sprite.internal.attr.translationY;
+                    offset = (side === "left" ? -50 : 50)
+                }
+                if(isExternal) {
+                    pointerX = sprite.box.attr.translationX + sprite.box.attr.width / 2;
+                    pointerY = sprite.box.attr.translationY + sprite.box.attr.height / 2;
+                    offset = (side === "left" ? 50 : -50)
+                }
+                if(!pointer) {
+                    pointer = surface.add({
+                        type: "pointer",
+                        id: "pointer",
+                        fromX: pointerX,
+                        fromY: pointerY,
+                        toX: pointerX + offset,
+                        toY: pointerY,
+                        actualScale: mainPanel.scale,
+                        strokeStyle: "red",
+                        zIndex: 150,
+                    });
+                } else {
+                    pointer.setAttributes({
+                        fromX: pointerX,
+                        fromY: pointerY,
+                        toX: pointerX + offset,
+                        toY: pointerY,
+                    });
+                }
+                if(sprite.attr.isSelected) {
+                    viewModel.set("selectedPinId", sprite.id);
+                    viewModel.set("selectedPin", sprite.pinName);
+                    viewModel.set("isSelectedPinInternal", isInternal);
+                    viewModel.set("side", side);
+                } else {
+                    // self selected
+                    viewModel.set("selectedPinId", null);
+                    viewModel.set("selectedPin", null);
+                    viewModel.set("isSelectedPinInternal", null);
+                    viewModel.set("side", null);
+                    surface.get("pointer").remove();
+                }
+                break;
+            }
+            case "connection": {
+                if(mainPanel.drawPanel.selectedSprite.isDeleted && !pointer) {
+                    mainPanel.drawPanel.isModalOpen = true;
+                    mainPanel.deleteInternalConnection();
+                }
+                break;
+            }
         }
         surface.renderFrame();
         // mainPanel.load();
@@ -889,30 +888,24 @@ Ext.define("NOC.inv.inv.CreateConnectionForm", {
         //     }
         // });
     },
-    showMenu: function(event) {
-        var canvas = Ext.ComponentQuery.query("#canvas")[0];
-
-        if(canvas.selectedSprite) {
-            canvas.isMenuOpen = true;
-            event.preventDefault();
-            canvas.up().menu.showAt(event.pageX, event.pageY);
-        }
-    },
     deleteInternalConnection: function() {
         var drawPanel = Ext.ComponentQuery.query("#canvas")[0],
-            me = drawPanel.up(),
-            sprite = drawPanel.selectedSprite;
+            me = this,
+            drawPanel = me.drawPanel,
+            sprite = drawPanel.selectedSprite,
+            surface = sprite.getSurface();
         console.log("deleteInternalConnection", sprite.fromPortId, sprite.toPortId);
-        drawPanel.selectedSprite.setAttributes(drawPanel.selectedWire);
-        drawPanel.getSurface().renderFrame();
+        // sprite.setAttributes(drawPanel.selectedWire);
+        // surface.renderFrame();
         Ext.Msg.confirm(__("Confirm"), __("Are you sure you want to delete this connection") + " " + sprite.fromPort + "=>" + sprite.toPort, function(btn) {
             if(btn === "yes") {
-                var surface = sprite.getSurface(),
-                    side = sprite.side;
+                var side = sprite.side;
+
                 sprite.remove();
                 me.drawConnections(me.getInternalConnections(surface), surface, undefined, side);
                 // drawPanel.renderFrame();
             }
+            drawPanel.isModalOpen = false;
         });
     },
     onMouseMove: function(event) {
@@ -964,39 +957,10 @@ Ext.define("NOC.inv.inv.CreateConnectionForm", {
         }
         canvas.getSurface().renderFrame();
     },
-    pinCheck: function() {
-        var me = this,
-            selectedPin = me.getViewModel().get("selectedPin"),
-            selectedPinId = me.getViewModel().get("selectedPinId"),
-            side = me.getViewModel().get("side"),
-            isSelectedPinInternal = me.getViewModel().get("isSelectedPinInternal"),
-            surface = me.drawPanel.getSurface(),
-            pins = Ext.Array.filter(surface.getItems(), function(sprite) {return sprite.type === "pin"});
-
-        // console.log(isSelectedPinInternal, labelAlign);
-        // Ext.Array.each(pins, function(pin) {
-        //     if(!isSelectedPinInternal && pin.internal) {
-        //         // console.log(pin.internalColor, me.INVALID_COLOR);
-        //         pin.setAttributes({
-        //             internalEnabled: false,
-        //             internalColor: me.INVALID_COLOR,
-        //         });
-        //         if(pin.id !== selectedPinId) {
-        //             pin.setAttributes({
-        //                 enabled: false,
-        //                 pinColor: me.INVALID_COLOR,
-        //             });
-        //         }
-        //         // console.log(pin.internalColor);
-        //     }
-        //     // console.log(pin.labelAlign, pin.id);
-        // });
-        // surface.renderFrame();
-    },
     xOffset: function(side, pins) {
         if(side === "left") {
-            return pins * this.gap + 100;
+            return pins * this.gap + 100 - this.discriminatorWidth;
         }
-        return this.getWidth() - pins * this.gap - 100;
+        return this.getWidth() - pins * this.gap - 100 - this.discriminatorWidth;
     }
 });
