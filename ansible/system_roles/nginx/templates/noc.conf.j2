@@ -248,7 +248,7 @@ server {
     {% if custom_path is defined and custom_path %}
         root /opt/noc_custom;
         try_files $uri @noc_ui;
-    {% elif %}
+    {% elif custom_path is undefined %}
         alias {{ noc_root }}/ui/;
     {% endif %}
         add_header Cache-Control public;
