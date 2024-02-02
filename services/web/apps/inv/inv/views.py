@@ -234,6 +234,13 @@ class InvApplication(ExtApplication):
     def api_get_path(self, request, id):
         o = self.get_object_or_404(Object, id=id)
         path = [{"id": str(o.id), "name": o.name}]
+        while not o.container:
+            # Check outer connections
+            oc = next(o.iter_outer_connections(), None)
+            if not oc:
+                break
+            o = oc[1]
+            path.insert(0, {"id": str(o.id), "name": o.name})
         while o.container:
             o = o.container
             path.insert(0, {"id": str(o.id), "name": o.name})
@@ -469,7 +476,9 @@ class InvApplication(ExtApplication):
         elif remote_object:
             ro: Object = self.get_object_or_404(Object, id=remote_object)
         elif name == remote_name:
-            return self.render_json({"status": False, "text": "Same slot connection is not Allowed"})
+            return self.render_json(
+                {"status": False, "text": "Same slot connection is not Allowed"}
+            )
         else:
             # Connect same
             ro = lo
@@ -591,8 +600,8 @@ class InvApplication(ExtApplication):
             "allow_internal": bool(protocols),  # Allowed crossed input
             "internal": {
                 "valid": internal_valid,
-                "allow_discriminators": [],
                 "free": internal_free,
+                "allow_discriminators": [],
             },
             "valid": valid,
             "disable_reason": disable_reason,
@@ -607,6 +616,15 @@ class InvApplication(ExtApplication):
                 }
         return cs
 
+    @staticmethod
+    def format_discriminator(d) -> str:
+        if not d:
+            return d
+        prefix, d = d.split("::", 1)
+        if prefix == "lambda":
+            return f"{chr(955)}{d}"
+        return d
+
     def get_cross(self, o: Object) -> Tuple[Set[str], List[Dict[str, Any]]]:
         r, used = [], set()
         for s, ss in [("model", o.model), ("object", o)]:
@@ -617,13 +635,15 @@ class InvApplication(ExtApplication):
                             "id": f"{str(o.id)}{c.input}",
                             "name": c.input,
                             "has_arrow": False,
-                            "discriminator": c.input_discriminator or "",
+                            "discriminator": self.format_discriminator(c.input_discriminator or ""),
                         },
                         "to": {
                             "id": f"{str(o.id)}{c.output}",
                             "name": c.output,
                             "has_arrow": True,
-                            "discriminator": c.output_discriminator or "",
+                            "discriminator": self.format_discriminator(
+                                c.output_discriminator or ""
+                            ),
                         },
                         "gain_db": c.gain_db or 1.0,
                         "is_delete": s == "object",
