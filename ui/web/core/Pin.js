@@ -80,6 +80,7 @@ Ext.define("NOC.core.Pin", {
                     });
                     me.label.setAttributes({
                         text: attr.pinName,
+                        fontWeight: fontWeight,
                         textAlign: attr.labelAlign === "left" ? "end" : "start",
                     });
                     if(me.internal) {
@@ -111,6 +112,7 @@ Ext.define("NOC.core.Pin", {
                             me.internalLabel.setAttributes({
                                 text: text,
                                 textAlign: attr.labelAlign === "left" ? "start" : "end",
+                                fontWeight: fontWeight
                             });
                         }
                     }
@@ -177,22 +179,38 @@ Ext.define("NOC.core.Pin", {
             x = point[0],
             y = point[1];
         if(me.internal) {
-            bbox = me.internal.getBBox();
-            if(bbox && x >= bbox.x && x <= (bbox.x + bbox.width) && y >= bbox.y && y <= (bbox.y + bbox.height)) {
-                me.setAttributes({cursorOn: "internal"});
+            if(me.isOnSprite(me.internal.getBBox(), x, y, "internal")) {
                 return {
                     sprite: me
-                }
+                };
+            }
+            if(me.isOnSprite(me.internalLabel.getBBox(), x, y, "internal")) {
+                return {
+                    sprite: me
+                };
             }
         }
-        bbox = me.box.getBBox();
-        if(bbox && x >= bbox.x && x <= (bbox.x + bbox.width) && y >= bbox.y && y <= (bbox.y + bbox.height)) {
-            me.setAttributes({cursorOn: "external"});
+        if(me.isOnSprite(me.box.getBBox(), x, y, "external")) {
             return {
                 sprite: me
             };
         }
+        if(me.isOnSprite(me.label.getBBox(), x, y, "external")) {
+            return {
+                sprite: me
+            };
+        }
+
         return null;
+    },
+    isOnSprite: function(bbox, x, y, on) {
+        var me = this;
+
+        if(bbox && x >= bbox.x && x <= (bbox.x + bbox.width) && y >= bbox.y && y <= (bbox.y + bbox.height)) {
+            me.setAttributes({cursorOn: on});
+            return true;
+        }
+        return false;
     },
     createSprites: function() {
         var me = this;

@@ -290,7 +290,7 @@ Ext.define("NOC.inv.inv.CreateConnectionForm", {
         me.scale = 1;
         countInternal = pins.filter(function(pin) {return pin.internal;}).length;
         countInternal = countInternal ? countInternal : me.boxWidth / me.gap + 1;
-        bodyWidth = (side === "left" ? -1 : 1) * (countInternal + 3) * me.gap + me.discriminatorWidth;
+        bodyWidth = me.getBodyWidth(me, side, countInternal);
         bodyOffset = (side === "left" ? 0 : me.boxWidth);
         // calculate needed vertical space for diagram
         // ToDo calculate width of schema, when two objects and select optimal scale factor, need width body of objects
@@ -487,7 +487,7 @@ Ext.define("NOC.inv.inv.CreateConnectionForm", {
             from: from
         };
         body = me.drawPanel.getSurface().get("body");
-        bodyWidth = (side === "left" ? -1 : 1) * (countInternal + 3) * me.gap + me.discriminatorWidth;
+        bodyWidth = me.getBodyWidth(me, side, countInternal);
         if(Math.abs(bodyWidth) > Math.abs(body.attr.width)) {
             body.setAttributes({
                 width: bodyWidth,
@@ -962,5 +962,8 @@ Ext.define("NOC.inv.inv.CreateConnectionForm", {
             return pins * this.gap + 100 - this.discriminatorWidth;
         }
         return this.getWidth() - pins * this.gap - 100 - this.discriminatorWidth;
+    },
+    getBodyWidth: function(me, side, countInternal) {
+        return (side === "left" ? -1 : 1) * (countInternal + 3) * me.gap + me.discriminatorWidth;
     }
 });
