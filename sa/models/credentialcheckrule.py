@@ -177,7 +177,9 @@ class CredentialCheckRule(Document):
         return r
 
     @classmethod
-    def get_suggests(cls, protocol: Protocol, labels: Set[str]) -> List[Union[SNMPCredential, CLICredential]]:
+    def get_suggests(
+        cls, protocol: Protocol, labels: Set[str]
+    ) -> List[Union[SNMPCredential, CLICredential]]:
         r = []
         if not protocol.config.enable_suggest:
             return r

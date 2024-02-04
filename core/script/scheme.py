@@ -1,7 +1,7 @@
 # ----------------------------------------------------------------------
 # Access schemes constants
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2018 The NOC Project
+# Copyright (C) 2007-2024 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -43,9 +43,16 @@ class ProtoConfig(object):
 
 @dataclass(frozen=True)
 class SNMPCredential(object):
-    snmp_ro: str = None
+    snmp_ro: str
     snmp_rw: Optional[str] = None
     oids: Optional[List[str]] = None
+    snmp_v1_only: bool = False
+
+    @property
+    def protocol(self) -> "Protocol":
+        if self.snmp_v1_only:
+            return Protocol(6)
+        return Protocol(7)
 
 
 @dataclass(frozen=True)
@@ -58,18 +65,30 @@ class SNMPv3Credential(object):
     private_proto: Literal["DES", "AES"] = "DES"
     oids: Optional[List[str]] = None
 
+    @property
+    def protocol(self) -> "Protocol":
+        return Protocol(8)
+
 
 @dataclass(frozen=True)
 class CLICredential(object):
     username: str
     password: Optional[str] = None
     super_password: Optional[str] = None
+    raise_privilege: bool = False
 
 
 @dataclass
 class HTTPCredential(object):
-    username: str
+    username: str  # api_key, username
     password: Optional[str] = None
+    http_only: bool = True
+
+    @property
+    def protocol(self) -> "Protocol":
+        if self.http_only:
+            return Protocol(3)
+        return Protocol(4)
 
 
 CONFIGS = {
@@ -80,7 +99,7 @@ CONFIGS = {
     5: ProtoConfig("beef", is_cli=True, enable_suggest=False),
     6: ProtoConfig("snmp_v1", snmp_version=0, check="SNMPv1", credential=SNMPCredential),
     7: ProtoConfig("snmp_v2c", snmp_version=1, check="SNMPv2c", credential=SNMPCredential),
-    8: ProtoConfig("snmp_v3", snmp_version=3, enable_suggest=False, credential=SNMPv3Credential),
+    8: ProtoConfig("snmp_v3", snmp_version=3, check="SNMPv3", credential=SNMPv3Credential),
 }
 
 
