@@ -44,8 +44,8 @@ class ProtoConfig(object):
 @dataclass(frozen=True)
 class SNMPCredential(object):
     snmp_ro: str
-    snmp_rw: Optional[str] = field(hash=True)
-    oids: Optional[List[str]] = field(hash=False)
+    snmp_rw: Optional[str] = field(default=None, hash=True)
+    oids: Optional[List[str]] = field(default=None, hash=False)
     snmp_v1_only: bool = field(default=False, hash=False)
 
     @property
