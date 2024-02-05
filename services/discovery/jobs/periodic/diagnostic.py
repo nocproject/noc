@@ -138,7 +138,7 @@ class DiagnosticCheck(DiscoveryCheck):
         for checker, d_checks in do_checks.items():
             if checker == "profile":
                 kwargs["rules"] = ProfileCheckRule.get_profile_check_rules()
-            elif checker == "suggest_snmp":
+            elif checker == "snmp":
                 kwargs["rules"] = CredentialCheckRule.get_suggests(self.object)
             checker = loader[checker](**kwargs)
             self.logger.info("[%s] Run checker", ";".join(f"{c.name}({c.arg0})" for c in d_checks))

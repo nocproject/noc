@@ -38,16 +38,16 @@ class CredentialItem(object):
     value: Optional[str] = None
 
 
-@dataclass(frozen=True)
+@dataclass(frozen=True, eq=True)
 class Check(object):
     name: str = field(hash=True)  # Check name
-    address: str = field(default=None, hash=True)  # IP Address
     port: Optional[int] = field(default=None, hash=True)  # TCP/UDP port
     arg0: Optional[str] = field(default=None, hash=True)  #
     # pool: Optional[str] = field(default=None, hash=False)  # Address Pool
+    address: str = field(default=None, compare=False)  # IP Address
     credentials: Optional[
         List[Union[SNMPCredential, SNMPv3Credential, CLICredential, HTTPCredential]]
-    ] = field(default=None, hash=False)
+    ] = field(default=None, compare=False)
 
     @classmethod
     def from_string(cls, url) -> "Check":

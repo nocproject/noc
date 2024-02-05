@@ -87,6 +87,8 @@ class SNMPProtocolChecker(Checker):
                     if c in result:
                         continue
                     r = run_sync(partial(self.do_snmp_check, c, cred))
+                    if not r:
+                        continue
                     result[c] = r
         for c in checks:
             for c in self.iter_suggest_check(c):
@@ -101,7 +103,7 @@ class SNMPProtocolChecker(Checker):
 
     async def do_snmp_check(
         self, check: Check, cred: Union[SNMPCredential, SNMPv3Credential]
-    ) -> CheckResult:
+    ) -> Optional[CheckResult]:
         """
 
         :param check:
@@ -141,7 +143,7 @@ class SNMPProtocolChecker(Checker):
                 check.port,
                 cred.oids or CHECK_OIDS,
                 cred.snmp_ro,
-                Protocol(7) if check.name == "SNMPv2c" else Protocol(6),
+                protocol,
                 self.SNMP_TIMEOUT_SEC,
             )
         elif protocol.config.snmp_version != SNMP_v3 and isinstance(cred, SNMPCredential):
@@ -150,15 +152,11 @@ class SNMPProtocolChecker(Checker):
                 check.port,
                 cred.oids or CHECK_OIDS,
                 cred.snmp_ro,
-                Protocol(7) if check.name == "SNMPv2c" else Protocol(6),
+                protocol,
                 self.SNMP_TIMEOUT_SEC,
             )
         else:
-            return CheckResult(
-                check=check.name,
-                status=True,
-                skipped=True,
-            )
+            return None
         if not status and not message:
             message = "Nothing value in MIB View"
         # self.logger.info(

@@ -59,7 +59,6 @@ from noc.sa.interfaces.base import (
     BooleanParameter,
     IntParameter,
 )
-from noc.core.script.scheme import SNMPCredential, CLICredential, SNMPv3Credential
 from noc.ip.models.prefixprofile import PrefixProfile
 from noc.ip.models.addressprofile import AddressProfile
 from noc.main.models.extstorage import ExtStorage
@@ -1017,10 +1016,20 @@ class ManagedObjectProfile(NOCModel):
                 display_description="Check Device response by SNMP request",
                 checks=[
                     Check(
-                        name="SUGGEST_SNMP",
+                        name="SNMPv1",
                         address=o.address,
                         credentials=[snmp_cred] if snmp_cred else [],
-                    )
+                    ),
+                    Check(
+                        name="SNMPv2c",
+                        address=o.address,
+                        credentials=[snmp_cred] if snmp_cred else [],
+                    ),
+                    Check(
+                        name="SNMPv3",
+                        address=o.address,
+                        credentials=[snmp_cred] if snmp_cred else [],
+                    ),
                 ],
                 blocked=ac == "C",
                 run_policy="F",
