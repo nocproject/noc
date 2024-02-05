@@ -67,21 +67,21 @@ Ext.define("NOC.core.Connection", {
                             translationX: parseFloat(attr.fromXY[0], 10) + me.getBoxWidth() * (attr.side === "left" ? 1 : -1),
                             translationY: parseFloat(attr.fromXY[1], 10),
                         });
-                        if(!me.fromDiscriminatorTooltip && attr.fromDiscriminator.length > me.fromDiscriminator.attr.text.length) {
+                        if(!me.fromDiscriminatorTooltip && me.measureText(attr.fromDiscriminator) > me.measureText(me.fromDiscriminator.attr.text)) {
                             me.fromDiscriminatorTooltip = Ext.create("Ext.tip.ToolTip", {
                                 html: attr.fromDiscriminator,
                                 hidden: true
                             });
                         }
                     }
-                    if(!Ext.isEmpty(attr.toDiscriminator, attr.toDiscriminator.length, me.toDiscriminator.attr.text.length)) {
+                    if(!Ext.isEmpty(attr.toDiscriminator)) {
                         me.toDiscriminator.setAttributes({
                             text: me.makeEllipses(attr.toDiscriminator, attr.discriminatorWidth),
                             textAlign: attr.side === "left" ? "start" : "end",
                             translationX: parseFloat(attr.toXY[0], 10) + me.getBoxWidth() * (attr.side === "left" ? 1 : -1),
                             translationY: parseFloat(attr.toXY[1], 10),
                         });
-                        if(!me.toDiscriminatorTooltip && attr.toDiscriminator.length > me.toDiscriminator.attr.text.length) {
+                        if(!me.toDiscriminatorTooltip && me.measureText(attr.toDiscriminator) > me.measureText(me.toDiscriminator.attr.text)) {
                             me.toDiscriminatorTooltip = Ext.create("Ext.tip.ToolTip", {
                                 html: attr.toDiscriminator,
                                 hidden: true
@@ -111,7 +111,7 @@ Ext.define("NOC.core.Connection", {
     config: {
         boxWidth: 15,
         boxHeight: 15,
-        fontSize: 12,
+        fontSize: 10,
         fontFamily: "arial",
         fontWeight: "normal",
     },
@@ -193,8 +193,7 @@ Ext.define("NOC.core.Connection", {
     },
     makeEllipses: function(text, reservedWidth) {
         var me = this,
-            font = Ext.String.format("{0} {1}px {2}", me.getFontWeight(), me.getFontSize(), me.getFontFamily()),
-            width = Ext.draw.TextMeasurer.measureText(text, font).width,
+            width = me.measureText(text),
             suffix = "...",
             reservedWidth = Math.abs(reservedWidth) - me.getBoxWidth();
 
@@ -207,10 +206,15 @@ Ext.define("NOC.core.Connection", {
             }
             while(width > reservedWidth) {
                 text = text.slice(0, -1);
-                width = Ext.draw.TextMeasurer.measureText(text + suffix, font).width;
+                width = me.measureText(text + suffix);
             }
             text += suffix;
         }
         return text;
+    },
+    measureText: function(text) {
+        var me = this,
+            font = Ext.String.format("{0} {1}px {2}", me.getFontWeight(), me.getFontSize(), me.getFontFamily());
+        return Ext.draw.TextMeasurer.measureText(text, font).width;
     }
 });

@@ -27,7 +27,7 @@ Ext.define("NOC.inv.inv.CreateConnectionForm", {
     gap: 12.5,
     scale: 1,
     notScaled: true,
-    discriminatorWidth: {left: -170, right: 170},
+    discriminatorWidth: {left: -150, right: 150},
     legendHeight: 20,
     firstTrace: 3,
     requires: [
