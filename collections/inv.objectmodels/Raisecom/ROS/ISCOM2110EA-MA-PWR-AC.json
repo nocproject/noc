@@ -1,0 +1,394 @@
+{
+    "name": "Raisecom | ROS | ISCOM2110EA-MA-PWR-AC",
+    "$collection": "inv.objectmodels",
+    "uuid": "f8802559-5512-485c-959f-382a521172d9",
+    "vendor__code": "RAISECOM",
+    "description": "The ISCOM2100 series offers 8 Fast Ethernet downlink access interfaces with 1/2 x Gigabit combo uplinks and a power supply for power demand (PD) devices",
+    "connection_rule__name": "Generic | Switch SFP",
+    "cr_context": "CHASSIS",
+    "labels": [
+        "noc::inv::chassis",
+        "noc::inv::psu",
+        "noc::inv::sup",
+        "noc::inv::fabric",
+        "noc::inv::port"
+    ],
+    "connections": [
+        {
+            "name": "power",
+            "description": "Power outlet",
+            "direction": "s",
+            "gender": "m",
+            "protocols": [
+                {
+                    "direction": ">",
+                    "protocol__code": "220VAC"
+                },
+                {
+                    "direction": ">",
+                    "protocol__code": "110VAC"
+                }
+            ],
+            "type__name": "Power | IEC 60320 C14"
+        },
+        {
+            "name": "console",
+            "description": "Console port",
+            "direction": "s",
+            "gender": "f",
+            "protocols": [{
+                "direction": ">",
+                "protocol__code": "RS232"
+            }],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "name": "1",
+            "description": "port 1",
+            "direction": "s",
+            "gender": "f",
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "10BASET"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "100BASETX"
+                },
+                {
+                    "direction": "<",
+                    "protocol__code": "POE"
+                }
+            ],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "name": "2",
+            "description": "port 2",
+            "direction": "s",
+            "gender": "f",
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "10BASET"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "100BASETX"
+                },
+                {
+                    "direction": "<",
+                    "protocol__code": "POE"
+                }
+            ],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "name": "3",
+            "description": "port 3",
+            "direction": "s",
+            "gender": "f",
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "10BASET"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "100BASETX"
+                },
+                {
+                    "direction": "<",
+                    "protocol__code": "POE"
+                }
+            ],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "name": "4",
+            "description": "port 4",
+            "direction": "s",
+            "gender": "f",
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "10BASET"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "100BASETX"
+                },
+                {
+                    "direction": "<",
+                    "protocol__code": "POE"
+                }
+            ],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "name": "5",
+            "description": "port 5",
+            "direction": "s",
+            "gender": "f",
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "10BASET"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "100BASETX"
+                },
+                {
+                    "direction": "<",
+                    "protocol__code": "POE"
+                }
+            ],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "name": "6",
+            "description": "port 6",
+            "direction": "s",
+            "gender": "f",
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "10BASET"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "100BASETX"
+                },
+                {
+                    "direction": "<",
+                    "protocol__code": "POE"
+                }
+            ],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "name": "7",
+            "description": "port 7",
+            "direction": "s",
+            "gender": "f",
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "10BASET"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "100BASETX"
+                },
+                {
+                    "direction": "<",
+                    "protocol__code": "POE"
+                }
+            ],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "name": "8",
+            "description": "port 8",
+            "direction": "s",
+            "gender": "f",
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "10BASET"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "100BASETX"
+                },
+                {
+                    "direction": "<",
+                    "protocol__code": "POE"
+                }
+            ],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "name": "9",
+            "description": "port 9",
+            "direction": "s",
+            "gender": "s",
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "10BASET"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "100BASETX"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "1000BASETX"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth100M"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth1G"
+                }
+            ],
+            "type__name": "Combined"
+        },
+        {
+            "name": "9_rj",
+            "description": "port 9",
+            "combo": "9",
+            "direction": "s",
+            "gender": "f",
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "10BASET"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "100BASETX"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "1000BASETX"
+                }
+            ],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "name": "sfp9",
+            "description": "Fiber port 9",
+            "combo": "9",
+            "direction": "i",
+            "gender": "f",
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth100M"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth1G"
+                }
+            ],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "name": "10",
+            "description": "port 10",
+            "direction": "s",
+            "gender": "s",
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "10BASET"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "100BASETX"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "1000BASETX"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth100M"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth1G"
+                }
+            ],
+            "type__name": "Combined"
+        },
+        {
+            "name": "10_rj",
+            "description": "port 10",
+            "combo": "10",
+            "direction": "s",
+            "gender": "f",
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "10BASET"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "100BASETX"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "1000BASETX"
+                }
+            ],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "name": "sfp10",
+            "description": "Fiber port 10",
+            "combo": "10",
+            "direction": "i",
+            "gender": "f",
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth100M"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth1G"
+                }
+            ],
+            "type__name": "Transceiver | SFP"
+        }
+    ],
+    "data": [
+        {
+            "attr": "part_no",
+            "interface": "asset",
+            "value": ["ISCOM2110EA-MA-PWR-AC"]
+        },
+        {
+            "attr": "managed",
+            "interface": "management",
+            "value": true
+        },
+        {
+            "attr": "width",
+            "interface": "dimensions",
+            "value": 300
+        },
+        {
+            "attr": "depth",
+            "interface": "dimensions",
+            "value": 220
+        },
+        {
+            "attr": "height",
+            "interface": "dimensions",
+            "value": 44
+        },
+        {
+            "attr": "power",
+            "interface": "power",
+            "value": 150
+        },
+        {
+            "attr": "weight",
+            "interface": "weight",
+            "value": 2.1
+        },
+        {
+            "attr": "units",
+            "interface": "rackmount",
+            "value": 1.0
+        }
+    ]
+}
