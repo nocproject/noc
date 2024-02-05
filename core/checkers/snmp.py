@@ -15,7 +15,7 @@ from .base import Checker, CheckResult, Check
 from ..script.scheme import Protocol, SNMPCredential, SNMPv3Credential
 from noc.core.ioloop.snmp import snmp_get, SNMPError
 from noc.core.ioloop.util import run_sync
-from noc.core.snmp.version import SNMP_v1, SNMP_v2c
+from noc.core.snmp.version import SNMP_v3
 from noc.core.service.client import open_sync_rpc
 from noc.core.service.error import RPCError
 from noc.core.text import safe_shadow
@@ -32,13 +32,14 @@ class SNMPProtocolChecker(Checker):
     """
 
     name = "snmp"
-    CHECKS: List[str] = ["SNMPv1", "SNMPv2c", "SNMPv3", "SUGGEST_SNMP"]
+    CHECKS: List[str] = ["SNMPv1", "SNMPv2c", "SNMPv3"]
+    SUGGEST_CHECK = "SUGGEST_SNMP"
     PROTO_CHECK_MAP: Dict[str, Protocol] = {p.config.check: p for p in Protocol if p.config.check}
     SNMP_TIMEOUT_SEC = 3
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
-        self.rules: Optional[List[Union[SNMPCredential, SNMPv3Credential]]] = self.load_suggests(
+        self.rules: List[Union[SNMPCredential, SNMPv3Credential]] = self.load_suggests(
             kwargs.get("rules")
         )
 
@@ -48,26 +49,53 @@ class SNMPProtocolChecker(Checker):
             return []
         return [x for x in credentials if isinstance(x, (SNMPCredential, SNMPv3Credential))]
 
+    def iter_suggest_check(self, check: Check) -> Iterable[Check]:
+        if check.name != self.SUGGEST_CHECK:
+            yield check
+            return
+        for c in self.CHECKS:
+            yield Check(
+                name=c,
+                address=check.address,
+                port=check.port,
+                arg0=check.arg0,
+                credentials=check.credentials,
+            )
+
     def iter_result(self, checks: List[Check]) -> Iterable[CheckResult]:
         """ """
         # Group by address
         processed = {}
         for c in checks:
-            if c.name not in self.CHECKS:
-                continue
-            key = (c.address, c.port)
-            if key not in processed:
-                processed[key] = defaultdict(set)
-            for cred in c.credentials:
-                processed[key][cred].add(c)
-            for cred in self.rules:
-                processed[key][cred].add(c)
+            for c in self.iter_suggest_check(c):
+                if c.name not in self.CHECKS:
+                    continue
+                key = (c.address, c.port)
+                if key not in processed:
+                    processed[key] = defaultdict(set)
+                for cred in c.credentials:
+                    processed[key][cred].add(c)
+                for cred in self.rules:
+                    processed[key][cred].add(c)
         # Process checks
-        for (address, port), cc in processed.items():
-            for cred, checks in cc.items():
-                for c in checks:
+        result = {}
+        for cc in processed.values():
+            for cred, ccs in cc.items():
+                for c in ccs:
+                    if c in result:
+                        continue
                     r = run_sync(partial(self.do_snmp_check, c, cred))
-                    yield r
+                    result[c] = r
+        for c in checks:
+            for c in self.iter_suggest_check(c):
+                if c in result:
+                    yield result[c]
+                else:
+                    yield CheckResult(
+                        check=c.name,
+                        status=True,
+                        skipped=True,
+                    )
 
     async def do_snmp_check(
         self, check: Check, cred: Union[SNMPCredential, SNMPv3Credential]
@@ -78,37 +106,56 @@ class SNMPProtocolChecker(Checker):
         :param cred:
         :return:
         """
-        if self.pool and isinstance(cred, SNMPv3Credential):
+        protocol = self.PROTO_CHECK_MAP[check.name]
+        if (
+            protocol.config.snmp_version == SNMP_v3
+            and self.pool
+            and isinstance(cred, SNMPv3Credential)
+        ):
             status, message = self.check_v3_oid_on_pool(
                 check.address,
                 check.port,
                 cred.oids or CHECK_OIDS,
                 cred.username,
-                cred.snmp_auth_proto,
+                cred.auth_proto,
                 cred.auth_key,
                 cred.private_proto,
                 cred.private_key,
                 self.SNMP_TIMEOUT_SEC,
             )
-        elif not self.pool and isinstance(cred, SNMPv3Credential):
+        elif (
+            protocol.config.snmp_version == SNMP_v3
+            and not self.pool
+            and isinstance(cred, SNMPv3Credential)
+        ):
             raise NotImplementedError("Direct SNMPv3 is not implemented yet")
-        elif not self.pool and isinstance(cred, SNMPCredential):
+        elif (
+            protocol.config.snmp_version != SNMP_v3
+            and not self.pool
+            and isinstance(cred, SNMPCredential)
+        ):
             status, message = await self.check_v2_oid(
                 check.address,
                 check.port,
                 cred.oids or CHECK_OIDS,
                 cred.snmp_ro,
-                SNMP_v2c if check.name == "SNMPv2c" else SNMP_v1,
+                Protocol(7) if check.name == "SNMPv2c" else Protocol(6),
                 self.SNMP_TIMEOUT_SEC,
             )
-        else:
+        elif protocol.config.snmp_version != SNMP_v3 and isinstance(cred, SNMPCredential):
             status, message = self.check_v2_oid_on_pool(
                 check.address,
                 check.port,
                 cred.oids or CHECK_OIDS,
                 cred.snmp_ro,
-                SNMP_v2c if check.name == "SNMPv2c" else SNMP_v1,
+                Protocol(7) if check.name == "SNMPv2c" else Protocol(6),
                 self.SNMP_TIMEOUT_SEC,
+            )
+        else:
+            return CheckResult(
+                check=check.name,
+                status=True,
+                skipped=True,
             )
         if not status and not message:
             message = "Nothing value in MIB View"
@@ -132,7 +179,7 @@ class SNMPProtocolChecker(Checker):
         port,
         oids: List[str],
         community: str,
-        version: int = SNMP_v2c,
+        protocol: Protocol = Protocol(7),
         timeout: int = 3,
     ) -> Tuple[bool, str]:
         """
@@ -146,9 +193,14 @@ class SNMPProtocolChecker(Checker):
         :return:
         """
         self.logger.info(
-            "Trying community '%s': %s, version: %s", safe_shadow(community), oids, version
+            "Trying community '%s': %s, version: %s",
+            safe_shadow(community),
+            oids,
+            protocol.config.alias,
         )
-        self.logger.debug("Trying community '%s': %s, version: %s", community, oids, version)
+        self.logger.debug(
+            "Trying community '%s': %s, version: %s", community, oids, protocol.config.alias
+        )
         self.logger.debug("SNMP v2c GET %s %s", address, oids)
         message = ""
         try:
@@ -156,7 +208,7 @@ class SNMPProtocolChecker(Checker):
                 address=address,
                 oids={o: o for o in oids},
                 community=community,
-                version=SNMP_v2c,
+                version=protocol.config.snmp_version,
                 tos=config.activator.tos,
                 timeout=timeout,
             )
@@ -176,7 +228,7 @@ class SNMPProtocolChecker(Checker):
         port,
         oids: List[str],
         community: str,
-        version: int = SNMP_v2c,
+        protocol: Protocol = Protocol(7),
         timeout: int = 3,
     ) -> Tuple[bool, str]:
         """
@@ -184,19 +236,24 @@ class SNMPProtocolChecker(Checker):
         todo mass check
         :param oids:
         :param community:
-        :param version:
+        :param protocol:
         :param timeout:
         :return:
         """
         oid = oids[0]
         self.logger.info(
-            "Trying community '%s': %s, version: %s", safe_shadow(community), oid, version
+            "Trying community '%s': %s, version: %s",
+            safe_shadow(community),
+            oid,
+            protocol.config.alias,
         )
-        self.logger.debug("Trying community '%s': %s, version: %s", community, oid, version)
+        self.logger.debug(
+            "Trying community '%s': %s, version: %s", community, oid, protocol.config.alias
+        )
         try:
             result, message = open_sync_rpc(
                 "activator", pool=self.pool, calling_service=self.calling_service
-            ).__getattr__(version)(address, community, oid, timeout, True)
+            ).__getattr__(f"{protocol.config.alias}_get")(address, community, oid, timeout, True)
             if message.startswith("<"):
                 message = message.strip("<>")
             self.logger.info("Result: %s (%s)", result, message)

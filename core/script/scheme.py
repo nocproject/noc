@@ -7,7 +7,7 @@
 
 # Python modules
 import enum
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from typing import Optional, List, Literal, Any, Tuple
 
 TELNET = 1
@@ -44,9 +44,9 @@ class ProtoConfig(object):
 @dataclass(frozen=True)
 class SNMPCredential(object):
     snmp_ro: str
-    snmp_rw: Optional[str] = None
-    oids: Optional[List[str]] = None
-    snmp_v1_only: bool = False
+    snmp_rw: Optional[str] = field(hash=True)
+    oids: Optional[List[str]] = field(hash=False)
+    snmp_v1_only: bool = field(default=False, hash=False)
 
     @property
     def protocol(self) -> "Protocol":
@@ -67,7 +67,7 @@ class SNMPv3Credential(object):
     auth_proto: Literal["MD5", "SHA"] = "MD5"
     private_key: Optional[str] = None
     private_proto: Literal["DES", "AES"] = "DES"
-    oids: Optional[List[str]] = None
+    oids: Optional[List[str]] = field(default=None, hash=False)
 
     @property
     def protocol(self) -> "Protocol":
