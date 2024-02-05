@@ -185,8 +185,9 @@ class CredentialCheckRule(Document):
     @classmethod
     def get_suggests(cls, o) -> List[Union[SNMPCredential, CLICredential]]:
         r = []
+        labels = set(o.effective_labels)
         for s in cls.get_suggest_rules():
-            if not s.is_match(o.effectiva_labels):
+            if not s.is_match(labels):
                 continue
             for c in s.credentials:
                 if isinstance(c, CLICredential) and c.raise_privilege != o.to_raise_privileges:

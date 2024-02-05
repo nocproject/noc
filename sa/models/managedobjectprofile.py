@@ -1011,19 +1011,7 @@ class ManagedObjectProfile(NOCModel):
             ac = self.access_preference
         if not o or Interaction.ServiceActivation in o.interactions:
             # SNMP Diagnostic
-            snmp_cred = []
-            if o.credentials.snmp_security_level == "Community" and o.credentials.snmp_ro:
-                snmp_cred = [SNMPCredential(snmp_ro=o.credentials.snmp_ro)]
-            elif o.credentials.snmp_security_level != "Community" and o.credentials.snmp_username:
-                snmp_cred = [
-                    SNMPv3Credential(
-                        username=o.credentials.snmp_username,
-                        auth_proto=o.credentials.snmp_auth_proto,
-                        auth_key=o.credentials.snmp_auth_key,
-                        private_proto=o.credentials.snmp_priv_proto,
-                        private_key=o.credentials.snmp_priv_key,
-                    )
-                ]
+            snmp_cred = o.credentials.get_snmp_credential()
             yield DiagnosticConfig(
                 SNMP_DIAG,
                 display_description="Check Device response by SNMP request",
@@ -1031,7 +1019,7 @@ class ManagedObjectProfile(NOCModel):
                     Check(
                         name="SUGGEST_SNMP",
                         address=o.address,
-                        credentials=snmp_cred,
+                        credentials=[snmp_cred] if snmp_cred else [],
                     )
                 ],
                 blocked=ac == "C",
@@ -1042,6 +1030,7 @@ class ManagedObjectProfile(NOCModel):
                 alarm_labels=["noc::access::method::SNMP"],
                 reason="Blocked by AccessPreference" if ac == "C" else None,
             )
+            snmp_cred = o.credentials.get_snmp_credential()
             yield DiagnosticConfig(
                 PROFILE_DIAG,
                 display_description="Check device profile",
@@ -1050,7 +1039,7 @@ class ManagedObjectProfile(NOCModel):
                     Check(
                         name="PROFILE",
                         address=o.address,
-                        credentials=[SNMPCredential(snmp_ro=o.credentials.snmp_ro)],
+                        credentials=[snmp_cred] if snmp_cred else [],
                     ),
                 ],
                 alarm_class="Discovery | Guess | Profile",
@@ -1064,12 +1053,23 @@ class ManagedObjectProfile(NOCModel):
             if o:
                 blocked |= o.scheme not in {1, 2}
             # CLI Diagnostic
+            cli_cred = o.credentials.get_cli_credential()
             yield DiagnosticConfig(
                 CLI_DIAG,
                 display_description="Check Device response by CLI (TELNET/SSH) request",
                 checks=[
-                    Check(name="TELNET", address=o.address, arg0=o.profile.name),
-                    Check(name="SSH", address=o.address, arg0=o.profile.name),
+                    Check(
+                        name="TELNET",
+                        address=o.address,
+                        arg0=o.profile.name,
+                        credentials=[cli_cred] if cli_cred else [],
+                    ),
+                    Check(
+                        name="SSH",
+                        address=o.address,
+                        arg0=o.profile.name,
+                        credentials=[cli_cred] if cli_cred else [],
+                    ),
                 ],
                 discovery_box=True,
                 alarm_class="NOC | Managed Object | Access Lost",
