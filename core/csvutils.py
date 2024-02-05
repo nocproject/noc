@@ -75,7 +75,7 @@ def get_model_fields(model):
                 if fi.name != k and fi.unique and fi.name not in IGNORED_FIELDS:
                     k = fi.name
                     break
-            fields += [(f.name, required, f.document, k)]
+            fields += [(f.name, required, document, k)]
         else:
             fields += [(f.name, required, None, None)]
     return fields
