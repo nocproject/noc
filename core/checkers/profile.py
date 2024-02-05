@@ -136,7 +136,7 @@ class ProfileChecker(Checker):
                 except NOCError as e:
                     unsupported_method.add(method)
                     error = str(e)
-                    self.logger.error(e)
+                    self.logger.error("[%s] Error when doing check: %s", method, error)
                     self.logger.warning("Add method: %s to unsupported", method)
                     continue
             result_cache[key] = result
@@ -182,7 +182,7 @@ class ProfileChecker(Checker):
             self.logger.error("Cannot resolve OID '%s'. Ignoring", param)
             return None
         if not credential:
-            raise NOCError("Not credential for check")
+            raise NOCError(msg="Not credential for check")
         snmp_community = credential.snmp_ro
         if credential.snmp_v1_only:
             snmp_version = [Protocol(6)]

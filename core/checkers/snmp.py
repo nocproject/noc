@@ -32,7 +32,7 @@ class SNMPProtocolChecker(Checker):
     """
 
     name = "snmp"
-    CHECKS: List[str] = ["SNMPv1", "SNMPv2c", "SNMPv3"]
+    CHECKS: List[str] = ["SNMPv1", "SNMPv2c", "SNMPv3", "SUGGEST_SNMP"]
     SUGGEST_CHECK = "SUGGEST_SNMP"
     PROTO_CHECK_MAP: Dict[str, Protocol] = {p.config.check: p for p in Protocol if p.config.check}
     SNMP_TIMEOUT_SEC = 3
@@ -54,6 +54,8 @@ class SNMPProtocolChecker(Checker):
             yield check
             return
         for c in self.CHECKS:
+            if c == self.SUGGEST_CHECK:
+                continue
             yield Check(
                 name=c,
                 address=check.address,

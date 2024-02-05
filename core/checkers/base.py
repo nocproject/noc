@@ -41,7 +41,7 @@ class CredentialItem(object):
 @dataclass(frozen=True)
 class Check(object):
     name: str = field(hash=True)  # Check name
-    address: str = field(hash=True)  # IP Address
+    address: str = field(default=None, hash=True)  # IP Address
     port: Optional[int] = field(default=None, hash=True)  # TCP/UDP port
     arg0: Optional[str] = field(default=None, hash=True)  #
     # pool: Optional[str] = field(default=None, hash=False)  # Address Pool

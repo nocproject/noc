@@ -121,10 +121,14 @@ class DiagnosticCheck(DiscoveryCheck):
         self.logger.debug("Object Diagnostics: %s", self.object.diagnostics)
         # Fire workflow event diagnostic ?
 
-    def iter_checks(self, checks: List[Check], credentials: List[SNMPCredential]) -> Iterable[CheckResult]:
+    def iter_checks(self, checks: List[Check]) -> Iterable[CheckResult]:
         # Group check by checker
         do_checks: Dict[str, List[Check]] = defaultdict(list)
-        kwargs = {"logger": self.logger, "calling_service": "discovery", "pool": self.object.pool.name}
+        kwargs = {
+            "logger": self.logger,
+            "calling_service": "discovery",
+            "pool": self.object.pool.name,
+        }
         for check in checks:
             checker = loader[check.name]
             if not checker:
@@ -133,9 +137,9 @@ class DiagnosticCheck(DiscoveryCheck):
             do_checks[checker.name] += [check]
         for checker, d_checks in do_checks.items():
             if checker == "profile":
-                kwargs["rule"] = ProfileCheckRule.get_profile_check_rules()
+                kwargs["rules"] = ProfileCheckRule.get_profile_check_rules()
             elif checker == "suggest_snmp":
-                kwargs["rule"] = CredentialCheckRule.get_suggests(self.object)
+                kwargs["rules"] = CredentialCheckRule.get_suggests(self.object)
             checker = loader[checker](**kwargs)
             self.logger.info("[%s] Run checker", ";".join(f"{c.name}({c.arg0})" for c in d_checks))
             try:
@@ -158,11 +162,16 @@ class DiagnosticCheck(DiscoveryCheck):
         self.object.save()
         return True
 
-    def apply_credentials(self, credentials: List[Union[CLICredential, SNMPCredential, SNMPv3Credential]]):
+    def apply_credentials(
+        self, credentials: List[Union[CLICredential, SNMPCredential, SNMPv3Credential]]
+    ):
         changed = {}
         object_credentials = self.object.credentials
         for cred in credentials:
-            if isinstance(cred, (SNMPCredential, SNMPv3Credential)) and object_credentials.snmp_security_level != cred.security_level:
+            if (
+                isinstance(cred, (SNMPCredential, SNMPv3Credential))
+                and object_credentials.snmp_security_level != cred.security_level
+            ):
                 self.object.snmp_security_level = cred.security_level
                 changed["snmp_security_level"] = cred.security_level
             elif isinstance(cred, CLICredential) and self.object.scheme != cred.protocol.value:
