@@ -26,7 +26,7 @@ from pymongo import ReadPreference
 
 # NOC modules
 from noc.core.mongo.fields import ForeignKeyField
-from noc.core.script.scheme import Protocol, SNMPCredential, CLICredential
+from noc.core.script.scheme import Protocol, SNMPCredential, CLICredential, CLI_PROTOCOLS
 from noc.core.validators import is_oid
 from noc.main.models.label import Label
 from noc.sa.models.authprofile import AuthProfile
@@ -127,7 +127,7 @@ class CredentialCheckRule(Document):
                 )
         return r
 
-    def get_suggest_cli(self) -> List[CLICredential]:
+    def get_suggest_cli(self, raise_privilege: bool = True) -> List[CLICredential]:
         r = []
         for ss in self.suggest_credential:
             r.append(
@@ -142,6 +142,7 @@ class CredentialCheckRule(Document):
                         username=au.auth_profile.user,
                         password=au.auth_profile.password,
                         super_password=au.auth_profile.super_password,
+                        raise_privilege=raise_privilege,
                     )
                 )
         return r
@@ -157,12 +158,17 @@ class CredentialCheckRule(Document):
         ):
             sr = rule.get_suggest_snmp()
             labels = [frozenset(ll.labels) for ll in rule.match]
+            protos = rule.get_suggest_proto()
             if sr:
                 r.append(
                     SuggestItem(
                         sr,
                         labels,
-                        {Protocol(6), Protocol(7)},
+                        {
+                            p
+                            for p in Protocol
+                            if p.config.snmp_version and (not protos or p in protos)
+                        },
                     )
                 )
             sr = rule.get_suggest_cli()
@@ -171,22 +177,26 @@ class CredentialCheckRule(Document):
                     SuggestItem(
                         sr,
                         labels,
-                        {Protocol(1), Protocol(1)},
+                        {p for p in CLI_PROTOCOLS if not protos or p in protos},
                     )
                 )
         return r
 
     @classmethod
-    def get_suggests(
-        cls, protocol: Protocol, labels: Set[str]
-    ) -> List[Union[SNMPCredential, CLICredential]]:
+    def get_suggests(cls, o) -> List[Union[SNMPCredential, CLICredential]]:
         r = []
-        if not protocol.config.enable_suggest:
-            return r
         for s in cls.get_suggest_rules():
-            if protocol not in s.protocols or not s.is_match(labels):
+            if not s.is_match(o.effectiva_labels):
                 continue
-            r += s.credentials
+            for c in s.credentials:
+                if isinstance(c, CLICredential) and c.raise_privilege != o.to_raise_privileges:
+                    c = CLICredential(
+                        username=c.username,
+                        password=c.password,
+                        super_password=c.super_password,
+                        raise_privilege=o.to_raise_privileges,
+                    )
+                r.append(c)
         return r
 
     # def clean(self):

@@ -59,7 +59,7 @@ from noc.sa.interfaces.base import (
     BooleanParameter,
     IntParameter,
 )
-
+from noc.core.script.scheme import SNMPCredential, CLICredential, SNMPv3Credential
 from noc.ip.models.prefixprofile import PrefixProfile
 from noc.ip.models.addressprofile import AddressProfile
 from noc.main.models.extstorage import ExtStorage
@@ -1011,22 +1011,28 @@ class ManagedObjectProfile(NOCModel):
             ac = self.access_preference
         if not o or Interaction.ServiceActivation in o.interactions:
             # SNMP Diagnostic
+            snmp_cred = []
+            if o.credentials.snmp_security_level == "Community" and o.credentials.snmp_ro:
+                snmp_cred = [SNMPCredential(snmp_ro=o.credentials.snmp_ro)]
+            elif o.credentials.snmp_security_level != "Community" and o.credentials.snmp_username:
+                snmp_cred = [
+                    SNMPv3Credential(
+                        username=o.credentials.snmp_username,
+                        auth_proto=o.credentials.snmp_auth_proto,
+                        auth_key=o.credentials.snmp_auth_key,
+                        private_proto=o.credentials.snmp_priv_proto,
+                        private_key=o.credentials.snmp_priv_key,
+                    )
+                ]
             yield DiagnosticConfig(
                 SNMP_DIAG,
                 display_description="Check Device response by SNMP request",
                 checks=[
                     Check(
-                        name="SNMPv1",
+                        name="SUGGEST_SNMP",
                         address=o.address,
-                        pool=o.pool.name,
-                        credentials=[],
-                    ),
-                    Check(
-                        name="SNMPv2c",
-                        address=o.address,
-                        pool=o.pool.name,
-                        credentials=[],
-                    ),
+                        credentials=snmp_cred,
+                    )
                 ],
                 blocked=ac == "C",
                 run_policy="F",
@@ -1044,7 +1050,7 @@ class ManagedObjectProfile(NOCModel):
                     Check(
                         name="PROFILE",
                         address=o.address,
-                        pool=o.pool.name,
+                        credentials=[SNMPCredential(snmp_ro=o.credentials.snmp_ro)],
                     ),
                 ],
                 alarm_class="Discovery | Guess | Profile",
@@ -1062,8 +1068,8 @@ class ManagedObjectProfile(NOCModel):
                 CLI_DIAG,
                 display_description="Check Device response by CLI (TELNET/SSH) request",
                 checks=[
-                    Check(name="TELNET", address=o.address, pool=o.pool.name),
-                    Check(name="SSH", address=o.address, pool=o.pool.name),
+                    Check(name="TELNET", address=o.address, arg0=o.profile.name),
+                    Check(name="SSH", address=o.address, arg0=o.profile.name),
                 ],
                 discovery_box=True,
                 alarm_class="NOC | Managed Object | Access Lost",
@@ -1081,8 +1087,8 @@ class ManagedObjectProfile(NOCModel):
                 alarm_class="NOC | Managed Object | Access Lost",
                 alarm_labels=["noc::access::method::HTTP"],
                 checks=[
-                    Check("HTTP", address=o.address, pool=o.pool.name),
-                    Check("HTTPS", address=o.address, pool=o.pool.name),
+                    Check("HTTP", address=o.address),
+                    Check("HTTPS", address=o.address),
                 ],
                 blocked=False,
                 run_policy="D",  # Not supported

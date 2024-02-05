@@ -32,9 +32,21 @@ class SNMPProtocolChecker(Checker):
     """
 
     name = "snmp"
-    CHECKS: List[str] = ["SNMPv1", "SNMPv2c", "SNMPv3"]
+    CHECKS: List[str] = ["SNMPv1", "SNMPv2c", "SNMPv3", "SUGGEST_SNMP"]
     PROTO_CHECK_MAP: Dict[str, Protocol] = {p.config.check: p for p in Protocol if p.config.check}
     SNMP_TIMEOUT_SEC = 3
+
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+        self.rules: Optional[List[Union[SNMPCredential, SNMPv3Credential]]] = self.load_suggests(
+            kwargs.get("rules")
+        )
+
+    @staticmethod
+    def load_suggests(credentials):
+        if not credentials:
+            return []
+        return [x for x in credentials if isinstance(x, (SNMPCredential, SNMPv3Credential))]
 
     def iter_result(self, checks: List[Check]) -> Iterable[CheckResult]:
         """ """
@@ -47,6 +59,8 @@ class SNMPProtocolChecker(Checker):
             if key not in processed:
                 processed[key] = defaultdict(set)
             for cred in c.credentials:
+                processed[key][cred].add(c)
+            for cred in self.rules:
                 processed[key][cred].add(c)
         # Process checks
         for (address, port), cc in processed.items():

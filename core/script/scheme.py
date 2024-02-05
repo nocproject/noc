@@ -8,7 +8,7 @@
 # Python modules
 import enum
 from dataclasses import dataclass
-from typing import Optional, List, Literal, Any
+from typing import Optional, List, Literal, Any, Tuple
 
 TELNET = 1
 SSH = 2
@@ -54,13 +54,17 @@ class SNMPCredential(object):
             return Protocol(6)
         return Protocol(7)
 
+    @property
+    def security_level(self):
+        return "Community"
+
 
 @dataclass(frozen=True)
 class SNMPv3Credential(object):
     username: str
     context: Optional[str] = None
     auth_key: Optional[str] = None
-    snmp_auth_proto: Literal["MD5", "SHA"] = "MD5"
+    auth_proto: Literal["MD5", "SHA"] = "MD5"
     private_key: Optional[str] = None
     private_proto: Literal["DES", "AES"] = "DES"
     oids: Optional[List[str]] = None
@@ -69,6 +73,14 @@ class SNMPv3Credential(object):
     def protocol(self) -> "Protocol":
         return Protocol(8)
 
+    @property
+    def security_level(self):
+        if self.auth_key and self.private_key:
+            return "authPriv"
+        elif self.auth_key:
+            return "authNoPriv"
+        return "noAuthNoPriv"
+
 
 @dataclass(frozen=True)
 class CLICredential(object):
@@ -76,6 +88,11 @@ class CLICredential(object):
     password: Optional[str] = None
     super_password: Optional[str] = None
     raise_privilege: bool = False
+    enable_protocols: Tuple[int] = (1, 2)
+
+    @property
+    def protocol(self) -> "Protocol":
+        return Protocol(self.enable_protocols[0])
 
 
 @dataclass
