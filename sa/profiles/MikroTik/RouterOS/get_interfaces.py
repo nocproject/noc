@@ -403,6 +403,8 @@ class Script(BaseScript):
             ospf_result = self.cli_detail("/routing ospf interface print detail without-paging")
             for n, f, r in ospf_result:
                 self.si = {}
+                if r.get("address") and "%" in r["address"]:
+                    r["interface"] = r["address"].split("%")[1]
                 if r["interface"] in ifaces:
                     i = ifaces[r["interface"]]
                     if not i["subinterfaces"]:
