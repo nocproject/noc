@@ -1,9 +1,9 @@
 {
-    "name": "Raisecom | Transceiver | 1G | USFP-Gb/SS153-D-R",
+    "name": "FANG HANG | Transceiver | 1G | FH-SB3512CDL20",
     "$collection": "inv.objectmodels",
-    "uuid": "e917921d-cae3-439a-9739-cc056d0a9436",
-    "vendor__code": "RAISECOM",
-    "description": "Wavelength: 1550 nm DFB; RX sensitivity:<-23 dBm DFB; TX power:-9 ~ -3 dBm; Distance: 15 km;DDMI; RoHS; Bitrate: 1.25G, LC",
+    "uuid": "6ed3a64f-645b-4a77-8b60-a04279376d90",
+    "vendor__code": "FANG HANG",
+    "description": "FANG HANG RX-1550/TX-1310 nm Singl-mode Bi-directional, 20 km, SC",
     "cr_context": "XCVR",
     "labels": ["noc::inv::xcvr"],
     "connections": [
@@ -19,45 +19,45 @@
             "type__name": "Transceiver | SFP"
         },
         {
-            "name": "txrx",
-            "description": "TX/RX LC",
-            "direction": "s",
+            "name": "rxtx",
+            "description": "RxTx SC Port",
+            "direction": "i",
             "gender": "f",
             "protocols": [
-                {
-                    "direction": "<",
-                    "discriminator": "1550",
-                    "protocol__code": "1000BASELX"
-                },
                 {
                     "direction": ">",
                     "discriminator": "1310",
                     "protocol__code": "1000BASELX"
+                },
+                {
+                    "direction": "<",
+                    "discriminator": "1550",
+                    "protocol__code": "1000BASELX"
                 }
             ],
-            "type__name": "Optical | LC"
+            "type__name": "Optical | SC"
         }
     ],
     "data": [
         {
             "attr": "part_no",
             "interface": "asset",
-            "value": ["USFP-GB/SS153", "USFP-Gb/SS153", "USFP-Gb\\SS153"]
+            "value": ["FH-SB3512CDL20"]
         },
         {
             "attr": "distance_max",
             "interface": "optical",
-            "value": 15000
+            "value": 20000
         },
         {
             "attr": "tx_wavelength",
             "interface": "optical",
-            "value": 1550
+            "value": 1310
         },
         {
             "attr": "rx_wavelength",
             "interface": "optical",
-            "value": 1310
+            "value": 1550
         }
     ]
 }
