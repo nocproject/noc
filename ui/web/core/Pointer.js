@@ -32,6 +32,7 @@ Ext.define("NOC.core.Pointer", {
                 arrowLength: "recalculate",
                 arrowAngle: "recalculate",
                 lineType: "recalculate",
+                actualScale: "recalculate",
             },
             defaults: {
                 arrowLength: 20,
@@ -104,5 +105,4 @@ Ext.define("NOC.core.Pointer", {
             });
         }
     }
-
 });

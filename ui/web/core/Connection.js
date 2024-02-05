@@ -26,6 +26,7 @@ Ext.define("NOC.core.Connection", {
                 toHasArrow: "bool",
                 toDiscriminator: "string",
                 isDeleted: "bool",
+                discriminatorWidth: "number",
                 gainDb: "number",
                 actualScale: "number",
                 trace: "number",
@@ -36,6 +37,9 @@ Ext.define("NOC.core.Connection", {
             triggers: {
                 path: "recalculate",
                 connectionColor: "recalculate",
+                fromDiscriminator: "recalculate",
+                toDiscriminator: "recalculate",
+                discriminatorWidth: "recalculate",
             },
             defaults: {
                 side: "left", // "left" | "right"
@@ -56,6 +60,34 @@ Ext.define("NOC.core.Connection", {
                         "marker-end": "url(#arrow)"
                     });
 
+                    if(!Ext.isEmpty(attr.fromDiscriminator)) {
+                        me.fromDiscriminator.setAttributes({
+                            text: me.makeEllipses(attr.fromDiscriminator, attr.discriminatorWidth),
+                            textAlign: attr.side === "left" ? "start" : "end",
+                            translationX: parseFloat(attr.fromXY[0], 10) + me.getBoxWidth() * (attr.side === "left" ? 1 : -1),
+                            translationY: parseFloat(attr.fromXY[1], 10),
+                        });
+                        if(!me.fromDiscriminatorTooltip && attr.fromDiscriminator.length > me.fromDiscriminator.attr.text.length) {
+                            me.fromDiscriminatorTooltip = Ext.create("Ext.tip.ToolTip", {
+                                html: attr.fromDiscriminator,
+                                hidden: true
+                            });
+                        }
+                    }
+                    if(!Ext.isEmpty(attr.toDiscriminator, attr.toDiscriminator.length, me.toDiscriminator.attr.text.length)) {
+                        me.toDiscriminator.setAttributes({
+                            text: me.makeEllipses(attr.toDiscriminator, attr.discriminatorWidth),
+                            textAlign: attr.side === "left" ? "start" : "end",
+                            translationX: parseFloat(attr.toXY[0], 10) + me.getBoxWidth() * (attr.side === "left" ? 1 : -1),
+                            translationY: parseFloat(attr.toXY[1], 10),
+                        });
+                        if(!me.toDiscriminatorTooltip && attr.toDiscriminator.length > me.toDiscriminator.attr.text.length) {
+                            me.toDiscriminatorTooltip = Ext.create("Ext.tip.ToolTip", {
+                                html: attr.toDiscriminator,
+                                hidden: true
+                            });
+                        }
+                    }
                     if(me.toArrowMarker) {
                         me.toArrowMarker.setAttributes({
                             translationX: parseFloat(attr.toXY[0], 10),
@@ -76,6 +108,13 @@ Ext.define("NOC.core.Connection", {
             }
         }
     },
+    config: {
+        boxWidth: 15,
+        boxHeight: 15,
+        fontSize: 12,
+        fontFamily: "arial",
+        fontWeight: "normal",
+    },
     hitTest: function(point, options) {
         var me = this,
             x = point[0],
@@ -86,7 +125,28 @@ Ext.define("NOC.core.Connection", {
                 sprite: me
             };
         }
+
+        if(me.isOnSprite(me.toDiscriminator.getBBox(), x, y)) {
+            return {
+                sprite: me
+            };
+        }
+
+        if(me.isOnSprite(me.fromDiscriminator.getBBox(), x, y)) {
+            return {
+                sprite: me
+            };
+        }
+
         return null;
+    },
+    isOnSprite: function(bbox, x, y) {
+        var me = this;
+
+        if(bbox && x >= bbox.x && x <= (bbox.x + bbox.width) && y >= bbox.y && y <= (bbox.y + bbox.height)) {
+            return true;
+        }
+        return false;
     },
     createSprites: function(attr) {
         var me = this;
@@ -103,9 +163,22 @@ Ext.define("NOC.core.Connection", {
             if(attr.fromHasArrow) {
                 me.fromArrowMarker = me.add(me.getMarker("arrow", attr.side, attr.actualScale));
             }
+            me.toDiscriminator = me.add({
+                type: "text",
+                fontFamily: me.getFontFamily(),
+                fontWeight: me.getFontWeight(),
+                fontSize: me.getFontSize(),
+                textBaseline: "middle",
+            });
+            me.fromDiscriminator = me.add({
+                type: "text",
+                fontFamily: me.getFontFamily(),
+                fontWeight: me.getFontWeight(),
+                fontSize: me.getFontSize(),
+                textBaseline: "middle",
+            });
         }
     },
-
     getMarker: function(id, side, scale) {
         var point1X = (side === "left" ? -1 : 1) * scale * 20,
             point1Y = (side === "left" ? -1 : 1) * scale * 7.5,
@@ -117,5 +190,27 @@ Ext.define("NOC.core.Connection", {
             path: path,
             hidden: true,
         };
+    },
+    makeEllipses: function(text, reservedWidth) {
+        var me = this,
+            font = Ext.String.format("{0} {1}px {2}", me.getFontWeight(), me.getFontSize(), me.getFontFamily()),
+            width = Ext.draw.TextMeasurer.measureText(text, font).width,
+            suffix = "...",
+            reservedWidth = Math.abs(reservedWidth) - me.getBoxWidth();
+
+        if(reservedWidth > 0 && width > reservedWidth) {
+            if(!me.internalLabelTooltip) {
+                me.internalLabelTooltip = Ext.create("Ext.tip.ToolTip", {
+                    html: me.fullInternalLabel,
+                    hidden: true
+                });
+            }
+            while(width > reservedWidth) {
+                text = text.slice(0, -1);
+                width = Ext.draw.TextMeasurer.measureText(text + suffix, font).width;
+            }
+            text += suffix;
+        }
+        return text;
     }
 });
