@@ -46,8 +46,10 @@ class Profile(BaseProfile):
     snmp_ifstatus_get_chunk = 30
     snmp_ifstatus_get_timeout = 3
 
+    config_normalizer = "DLinkDxSNormalizer"
+
     config_tokenizer = "line"
-    config_tokenizer_settings = {"line_comment": "#"}
+    config_tokenizer_settings = {"line_comment": "#", "string_quote": '"'}
 
     snmp_display_hints = {mib["LLDP-MIB::lldpLocPortId"]: render_mac}
 

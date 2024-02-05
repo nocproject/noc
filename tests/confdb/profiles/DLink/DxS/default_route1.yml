@@ -1,0 +1,4 @@
+config: |
+  create iproute default 172.25.0.126 1 primary
+result:
+  - ['virtual-router', 'default', 'forwarding-instance', 'default', 'route', 'inet', 'static', !IP 0.0.0.0/0, 'next-hop', !IP 172.25.0.126]
