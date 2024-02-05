@@ -17,8 +17,6 @@ import orjson
 
 # NOC services
 from noc.core.service.loader import get_service
-from noc.core.ip import IP
-from noc.core.bi.decorator import bi_hash
 
 
 @dataclass

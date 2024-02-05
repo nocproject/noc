@@ -7,7 +7,6 @@
 
 # Python modules
 import difflib
-from collections import namedtuple
 import logging
 import os
 import re
