@@ -44,7 +44,7 @@ class ProtocolCheckResult:
 
 
 def register(
-    address: str, # 0.0.0.0
+    address: str,  # 0.0.0.0
     pool: int,
     source: str,
     description: Optional[str] = None,
