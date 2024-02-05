@@ -26,7 +26,6 @@ Ext.define("NOC.inv.inv.CreateConnectionForm", {
     schemaPadding: 60, // boxHeight * 3,
     gap: 12.5,
     scale: 1,
-    notScaled: true,
     discriminatorWidth: {left: -150, right: 150},
     legendHeight: 20,
     firstTrace: 3,
@@ -435,9 +434,10 @@ Ext.define("NOC.inv.inv.CreateConnectionForm", {
         ]
     },
     scaleCalculate: function() {
-        if(this.notScaled) {
-            var me = this,
-                containerHeight = me.drawPanel.getHeight() - me.legendHeight;
+        var me = this,
+            surfaceHeight = me.maxPins * (me.boxHeight + me.gap) + me.gap + me.schemaPadding * 4,
+            containerHeight = me.drawPanel.getHeight() - me.legendHeight;
+        if(surfaceHeight > containerHeight) {
             // calculate needed vertical space for diagram
             // ToDo calculate width of schema, when two objects and select optimal scale factor, need width body of objects
             me.surfaceHeight = me.maxPins * (me.boxHeight + me.gap) + me.gap + me.schemaPadding * 4;
@@ -446,11 +446,10 @@ Ext.define("NOC.inv.inv.CreateConnectionForm", {
             me.boxWidth *= me.scale;
             me.gap *= me.scale;
             me.schemaPadding *= me.scale;
-            me.surfaceHeight *= me.scale;
             me.discriminatorWidth.left *= me.scale;
             me.discriminatorWidth.right *= me.scale;
-            me.notScaled = false;
         }
+        me.surfaceHeight = containerHeight;
     },
     createInternalConnection: function(fromSprite, toSprite, side) {
         var me = this,
