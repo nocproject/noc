@@ -24,6 +24,7 @@ from noc.core.mib import mib
 from noc.config import config
 
 CHECK_OIDS = [mib["SNMPv2-MIB::sysObjectID.0"]]
+SUGGEST_CHECK = "SUGGEST_SNMP"
 
 
 class SNMPProtocolChecker(Checker):
@@ -32,8 +33,7 @@ class SNMPProtocolChecker(Checker):
     """
 
     name = "snmp"
-    CHECKS: List[str] = ["SNMPv1", "SNMPv2c", "SNMPv3", "SUGGEST_SNMP"]
-    SUGGEST_CHECK = "SUGGEST_SNMP"
+    CHECKS: List[str] = ["SNMPv1", "SNMPv2c", "SNMPv3", SUGGEST_CHECK]
     PROTO_CHECK_MAP: Dict[str, Protocol] = {p.config.check: p for p in Protocol if p.config.check}
     SNMP_TIMEOUT_SEC = 3
 
@@ -50,11 +50,11 @@ class SNMPProtocolChecker(Checker):
         return [x for x in credentials if isinstance(x, (SNMPCredential, SNMPv3Credential))]
 
     def iter_suggest_check(self, check: Check) -> Iterable[Check]:
-        if check.name != self.SUGGEST_CHECK:
+        if check.name != SUGGEST_CHECK:
             yield check
             return
         for c in self.CHECKS:
-            if c == self.SUGGEST_CHECK:
+            if c == SUGGEST_CHECK:
                 continue
             yield Check(
                 name=c,
@@ -86,7 +86,10 @@ class SNMPProtocolChecker(Checker):
                 for c in ccs:
                     if c in result:
                         continue
-                    r = run_sync(partial(self.do_snmp_check, c, cred))
+                    try:
+                        r = run_sync(partial(self.do_snmp_check, c, cred))
+                    except NotImplementedError:
+                        continue
                     if not r:
                         continue
                     result[c] = r

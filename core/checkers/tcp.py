@@ -15,7 +15,7 @@ from .base import Checker, CheckResult
 TCP_DIAG = "TCP"
 
 
-class RemotePing(Checker):
+class TCPConnect(Checker):
     """
     Check address availability from remote device
     """

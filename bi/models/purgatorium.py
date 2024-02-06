@@ -49,9 +49,8 @@ class Purgatorium(Model):
     border = ReferenceField(ManagedObject, description=_("Object Name"))
     # Set for records on RemoteSystem
     data = MapField(StringField(), description=_("Vars"))
-    checks = (
-        StringField()
-    )  # Json Field  {check: str PING, avail: True/False, access: None, error: None, port}
+    # Json Field  {check: str PING, avail: True/False, access: None, error: None, port}
+    checks = StringField()
     # http, telegraf HTTP and port 3000, regex - status: avail & access & app (regex)
     is_delete = BooleanField(description="Address was removed from RemoteSystem", default=False)
     remote_system = StringField(description="Remote System")
