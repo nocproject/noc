@@ -19,6 +19,7 @@ class IPPrefixLoader(BaseLoader):
     name = "ipprefix"
     model = Prefix
     data_model = IPPrefix
+    ignore_unique = {"bi_id", "ipv6_transition"}
 
     workflow_delete_event = "remove"
     workflow_state_sync = True

@@ -19,6 +19,7 @@ class IPAddressLoader(BaseLoader):
     name = "ipaddress"
     model = Address
     data_model = IPAddress
+    ignore_unique = {"bi_id", "ipv6_transition"}
 
     workflow_delete_event = "remove"
     workflow_state_sync = True

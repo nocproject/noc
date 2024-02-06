@@ -235,8 +235,8 @@ class Prefix(NOCModel):
             check_ipv4_prefix(self.prefix)
         elif self.is_ipv6:
             check_ipv6_prefix(self.prefix)
-        # Set defaults
-        if not self.vrf:
+        # Set defaults, if check self.vrf - raise NotRelatedField
+        if not self.vrf_id:
             self.vrf = VRF.get_global()
         if not self.is_root:
             # Set proper parent

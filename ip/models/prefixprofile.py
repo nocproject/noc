@@ -7,6 +7,7 @@
 
 # Python modules
 from threading import Lock
+from functools import partial
 import operator
 
 # Third-party modules
@@ -53,7 +54,9 @@ class PrefixProfile(Document):
     # Enable nested prefix prefix discovery
     enable_prefix_discovery = BooleanField(default=False)
     # Prefix workflow
-    workflow = PlainReferenceField(Workflow)
+    workflow = PlainReferenceField(
+        Workflow, default=partial(Workflow.get_default_workflow, "ip.Profile")
+    )
     style = ForeignKeyField(Style)
     # Template.subject to render Prefix.name
     name_template = ForeignKeyField(Template)
@@ -81,6 +84,8 @@ class PrefixProfile(Document):
 
     _id_cache = cachetools.TTLCache(maxsize=100, ttl=60)
     _bi_id_cache = cachetools.TTLCache(maxsize=100, ttl=60)
+
+    DEFAULT_WORKFLOW_NAME = "Default Resource"
 
     def __str__(self):
         return self.name
