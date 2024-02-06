@@ -22,10 +22,11 @@ from .ipaddressprofile import IPAddressProfile
 class IPAddress(BaseModel):
     id: str
     name: str
-    prefix: Reference[IPPrefix]
     address: IPvAnyAddress
     profile: Reference["IPAddressProfile"]
+    fqdn: Optional[str] = None
     # Workflow state
+    prefix: Optional[Reference[IPPrefix]]
     state: Optional[str] = None
     # Last state change
     state_changed: Optional[datetime.datetime] = None
