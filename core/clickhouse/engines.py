@@ -80,7 +80,7 @@ class ReplacingMergeTree(BaseEngine):
     def get_create_sql(self):
         f_version = ""
         if self.version_field:
-            f_version = f"ReplacingMergeTree({f_version}) "
+            f_version = ", ".join(self.version_field)
         partition = ""
         if self.date_field:
             partition = f"PARTITION BY toYYYYMM({self.date_field}) "

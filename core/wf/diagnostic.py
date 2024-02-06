@@ -19,8 +19,8 @@ import orjson
 from pydantic import BaseModel, PrivateAttr
 
 # NOC modules
-from noc.core.checkers.base import Check, CheckData
 from noc.core.ioloop.util import run_sync
+from noc.core.checkers.base import Check
 from noc.config import config
 from noc.models import is_document
 
@@ -55,6 +55,16 @@ def json_default(obj):
     elif isinstance(obj, datetime.datetime):
         return obj.replace(microsecond=0).isoformat(sep=" ")
     raise TypeError
+
+
+@dataclass(frozen=True)
+class CheckData(object):
+    name: str
+    status: bool  # True - OK, False - Fail
+    skipped: bool = False  # Check was skipped (Example, no credential)
+    arg0: Optional[str] = None
+    error: Optional[str] = None  # Description if Fail
+    data: Optional[Dict[str, Any]] = None  # Collected check data
 
 
 class DiagnosticEvent(str, enum.Enum):

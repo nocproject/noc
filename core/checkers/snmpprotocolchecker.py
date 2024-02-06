@@ -20,10 +20,10 @@ class SNMPProtocolChecker(ObjectChecker):
     """
 
     name = "snmpprotocolchecker"
-    CHECKS: List[str] = ["SNMPv1", "SNMPv2c"]
+    CHECKS: List[str] = []
     PROTO_CHECK_MAP: Dict[str, Protocol] = {p.config.check: p for p in Protocol if p.config.check}
 
-    def iter_result(self, checks=None) -> Iterable[CheckResult]:
+    def iter_result(self, checks) -> Iterable[CheckResult]:
         credential = None
         if self.object.credentials.snmp_ro or self.object.credentials.snmp_rw:
             credential = [

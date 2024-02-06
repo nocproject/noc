@@ -1,7 +1,7 @@
 # ----------------------------------------------------------------------
 # RemoteSystem model
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2021 The NOC Project
+# Copyright (C) 2007-2024 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -19,12 +19,14 @@ from mongoengine.fields import (
     EmbeddedDocumentField,
     BooleanField,
     DateTimeField,
+    LongField,
 )
 import cachetools
 
 # NOC modules
 from noc.core.model.decorator import on_delete_check
 from noc.core.handler import get_handler
+from noc.core.bi.decorator import bi_sync
 from noc.core.debug import error_report
 
 id_lock = Lock()
@@ -42,6 +44,7 @@ class EnvItem(EmbeddedDocument):
         return self.key
 
 
+@bi_sync
 @on_delete_check(
     check=[
         ("crm.Subscriber", "remote_system"),
@@ -117,6 +120,7 @@ class RemoteSystem(Document):
     enable_project = BooleanField()
     enable_l2domain = BooleanField()
     enable_label = BooleanField()
+    enable_discoveredobject = BooleanField()
     # Usage statistics
     last_extract = DateTimeField()
     last_successful_extract = DateTimeField()
@@ -124,6 +128,8 @@ class RemoteSystem(Document):
     last_load = DateTimeField()
     last_successful_load = DateTimeField()
     load_error = StringField()
+    # Object id in BI
+    bi_id = LongField(unique=True)
 
     _id_cache = cachetools.TTLCache(maxsize=100, ttl=60)
     _name_cache = cachetools.TTLCache(maxsize=100, ttl=60)

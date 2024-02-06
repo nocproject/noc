@@ -1,32 +1,32 @@
 # ---------------------------------------------------------------------
 # Diagnostics check
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2023 The NOC Project
+# Copyright (C) 2007-2024 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
 # Python modules
 import datetime
 import logging
-from typing import Dict, List, Optional, Literal, Iterable, Any
+from typing import Dict, List, Optional, Literal, Iterable, Any, Union
 from collections import defaultdict
 
 # NOC modules
 from noc.services.discovery.jobs.base import DiscoveryCheck
 from noc.core.checkers.base import (
-    ObjectChecker,
     Check,
     CheckResult,
-    CheckData,
     CapsItem,
-    CredentialItem,
     MetricValue,
 )
 from noc.core.checkers.loader import loader
-from noc.core.wf.diagnostic import DiagnosticState, DiagnosticHub
+from noc.core.wf.diagnostic import DiagnosticState, DiagnosticHub, CheckData, PROFILE_DIAG
 from noc.core.debug import error_report
+from noc.core.script.scheme import Protocol, SNMPCredential, CLICredential, SNMPv3Credential
 from noc.sa.models.profile import Profile
 from noc.sa.models.managedobject import ManagedObject
+from noc.sa.models.credentialcheckrule import CredentialCheckRule
+from noc.sa.models.profilecheckrule import ProfileCheckRule
 from noc.pm.models.metrictype import MetricType
 from noc.config import config
 
@@ -37,28 +37,14 @@ class DiagnosticCheck(DiscoveryCheck):
     """
 
     name = "diagnostic"
-    CHECKERS: Dict[str, ObjectChecker] = {}  # Checkers Instance
-    CHECK_MAP: Dict[str, str] = {}  # CheckName -> CheckerName mapping
-
-    CHECK_CACHE = {}  # Cache check result
 
     def __init__(self, job, run_order: Optional[Literal["S", "E"]] = None):
         super().__init__(job)
         self.run_order = run_order
-
-    def load_checkers(self):
-        """
-        Load available checkers
-        :return:
-        """
-        for checker in loader:
-            self.CHECKERS[checker] = loader[checker]
-            for c in self.CHECKERS[checker].CHECKS:
-                self.CHECK_MAP[c] = self.CHECKERS[checker].name
+        self.proto_check_map = {p.config.check: p for p in Protocol if p.config.enable_suggest}
 
     def handler(self):
         # Loading checkers
-        self.load_checkers()
         metrics: List[MetricValue] = []
         # Diagnostic Data
         d_data: Dict[str, Any] = defaultdict(dict)  # Diagnostic -> Data
@@ -89,7 +75,7 @@ class DiagnosticCheck(DiscoveryCheck):
                     continue
                 # Get checker
                 checks: List[CheckResult] = []
-                credentials: List[CredentialItem] = []
+                credentials: List[Union[SNMPCredential, CLICredential, SNMPv3Credential]] = []
                 capabilities: List[CapsItem] = []
                 for cr in self.iter_checks(dc.checks):
                     if cr.credentials:
@@ -108,8 +94,11 @@ class DiagnosticCheck(DiscoveryCheck):
                         metrics += cr.metrics
                     if cr.data:
                         d_data[d.diagnostic].update(cr.data)
+                # Apply Profile
+                if d.diagnostic == PROFILE_DIAG and "profile" in d_data[d.diagnostic]:
+                    self.set_profile(d_data[d.diagnostic]["profile"])
                 # Apply credentials
-                if credentials:
+                if credentials and self.object.auth_profile.enable_suggest:
                     self.logger.debug("Apply credentials: %s", credentials)
                     self.apply_credentials(credentials)
                 # Update diagnostics
@@ -133,19 +122,25 @@ class DiagnosticCheck(DiscoveryCheck):
         # Fire workflow event diagnostic ?
 
     def iter_checks(self, checks: List[Check]) -> Iterable[CheckResult]:
-        # r = []
         # Group check by checker
         do_checks: Dict[str, List[Check]] = defaultdict(list)
-        for c in checks:
-            if c.name not in self.CHECK_MAP:
-                self.logger.warning("[%s] Unknown check. Skipping", c.name)
+        kwargs = {
+            "logger": self.logger,
+            "calling_service": "discovery",
+            "pool": self.object.pool.name,
+        }
+        for check in checks:
+            checker = loader[check.name]
+            if not checker:
+                self.logger.warning("[%s] Unknown check. Skipping", check.name)
                 continue
-            if self.CHECK_MAP[c.name] not in self.CHECKERS:
-                self.logger.warning("[%s] Unknown checker. Skipping", c.name)
-                continue
-            do_checks[self.CHECK_MAP[c.name]] += [c]
+            do_checks[checker.name] += [check]
         for checker, d_checks in do_checks.items():
-            checker = self.CHECKERS[checker](self.object, self.logger, "discovery")
+            if checker == "profile":
+                kwargs["rules"] = ProfileCheckRule.get_profile_check_rules()
+            elif checker == "snmp":
+                kwargs["rules"] = CredentialCheckRule.get_suggests(self.object)
+            checker = loader[checker](**kwargs)
             self.logger.info("[%s] Run checker", ";".join(f"{c.name}({c.arg0})" for c in d_checks))
             try:
                 for check in checker.iter_result(d_checks):
@@ -155,43 +150,36 @@ class DiagnosticCheck(DiscoveryCheck):
                     error_report()
                 self.logger.error("[%s] Error when run checker: %s", checker.name, str(e))
 
-    def apply_credentials(self, credentials: List[CredentialItem]):
-        """
-        Set credentials to ManagedObject
-        :param credentials:
-        :return:
-        """
+    def set_profile(self, profile: str) -> bool:
+        profile = Profile.get_by_name(profile)
+        if self.object.profile.id == profile.id:
+            return False
+        self.invalidate_neighbor_cache()
+        self.object.profile = profile
+        self.object.vendor = None
+        self.object.plarform = None
+        self.object.version = None
+        self.object.save()
+        return True
+
+    def apply_credentials(
+        self, credentials: List[Union[CLICredential, SNMPCredential, SNMPv3Credential]]
+    ):
         changed = {}
         object_credentials = self.object.credentials
         for cred in credentials:
-            if not hasattr(self.object, cred.field):
-                # Unknown attribute
-                continue
             if (
-                hasattr(object_credentials, cred.field)
-                and getattr(object_credentials, cred.field) == cred.value
+                isinstance(cred, (SNMPCredential, SNMPv3Credential))
+                and object_credentials.snmp_security_level != cred.security_level
             ):
-                # Same credential
-                continue
-            # Profile processed
-            if cred.field == "profile":
-                profile = (
-                    Profile.get_default_profile()
-                    if cred.op == "reset"
-                    else Profile.get_by_name(cred.value)
-                )
-                if profile.id == self.object.profile.id:
-                    self.logger.info("Profile is correct: %s", profile)
+                self.object.snmp_security_level = cred.security_level
+                changed["snmp_security_level"] = cred.security_level
+            elif isinstance(cred, CLICredential) and self.object.scheme != cred.protocol.value:
+                changed["scheme"] = cred.protocol.value
+            for f in object_credentials._fields:
+                if not hasattr(cred, f) or getattr(cred, f) == getattr(object_credentials, f):
                     continue
-                changed.update(
-                    {"vendor": None, "platform": None, "version": None, "profile": str(profile.id)}
-                )
-            elif cred.field == "scheme":
-                if self.object.scheme == int(cred.value):
-                    continue
-                changed[cred.field] = int(cred.value) if cred.op == "set" else 1
-            elif getattr(self.object, cred.field) != cred.value:
-                changed[cred.field] = cred.value if cred.op == "set" else None
+                changed[f] = getattr(cred, f)
         if not changed:
             self.logger.info("Nothing credential changed")
             return
@@ -202,9 +190,6 @@ class DiagnosticCheck(DiscoveryCheck):
             self.logger.info("Update field: %s", f)
             setattr(self.object, f, v)
         ManagedObject.objects.filter(id=self.object.id).update(**changed)
-        if "profile" in changed:
-            # Invalidate Neighbor cache, Move to on_save ?
-            self.invalidate_neighbor_cache()
         self.object._reset_caches(self.object.id, credential=True)
         self.object.update_init()
 
