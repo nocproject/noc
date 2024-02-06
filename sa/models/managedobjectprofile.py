@@ -59,7 +59,6 @@ from noc.sa.interfaces.base import (
     BooleanParameter,
     IntParameter,
 )
-
 from noc.ip.models.prefixprofile import PrefixProfile
 from noc.ip.models.addressprofile import AddressProfile
 from noc.main.models.extstorage import ExtStorage
@@ -1011,10 +1010,27 @@ class ManagedObjectProfile(NOCModel):
             ac = self.access_preference
         if not o or Interaction.ServiceActivation in o.interactions:
             # SNMP Diagnostic
+            snmp_cred = o.credentials.get_snmp_credential()
             yield DiagnosticConfig(
                 SNMP_DIAG,
                 display_description="Check Device response by SNMP request",
-                checks=[Check(name="SNMPv1"), Check(name="SNMPv2c")],
+                checks=[
+                    Check(
+                        name="SNMPv1",
+                        address=o.address,
+                        credentials=[snmp_cred] if snmp_cred else [],
+                    ),
+                    Check(
+                        name="SNMPv2c",
+                        address=o.address,
+                        credentials=[snmp_cred] if snmp_cred else [],
+                    ),
+                    Check(
+                        name="SNMPv3",
+                        address=o.address,
+                        credentials=[snmp_cred] if snmp_cred else [],
+                    ),
+                ],
                 blocked=ac == "C",
                 run_policy="F",
                 run_order="S",
@@ -1023,11 +1039,18 @@ class ManagedObjectProfile(NOCModel):
                 alarm_labels=["noc::access::method::SNMP"],
                 reason="Blocked by AccessPreference" if ac == "C" else None,
             )
+            snmp_cred = o.credentials.get_snmp_credential()
             yield DiagnosticConfig(
                 PROFILE_DIAG,
                 display_description="Check device profile",
                 show_in_display=False,
-                checks=[Check(name="PROFILE")],
+                checks=[
+                    Check(
+                        name="PROFILE",
+                        address=o.address,
+                        credentials=[snmp_cred] if snmp_cred else [],
+                    ),
+                ],
                 alarm_class="Discovery | Guess | Profile",
                 blocked=not self.enable_box_discovery_profile,
                 run_policy="A",
@@ -1039,10 +1062,24 @@ class ManagedObjectProfile(NOCModel):
             if o:
                 blocked |= o.scheme not in {1, 2}
             # CLI Diagnostic
+            cli_cred = o.credentials.get_cli_credential()
             yield DiagnosticConfig(
                 CLI_DIAG,
                 display_description="Check Device response by CLI (TELNET/SSH) request",
-                checks=[Check(name="TELNET"), Check(name="SSH")],
+                checks=[
+                    Check(
+                        name="TELNET",
+                        address=o.address,
+                        arg0=o.profile.name,
+                        credentials=[cli_cred] if cli_cred else [],
+                    ),
+                    Check(
+                        name="SSH",
+                        address=o.address,
+                        arg0=o.profile.name,
+                        credentials=[cli_cred] if cli_cred else [],
+                    ),
+                ],
                 discovery_box=True,
                 alarm_class="NOC | Managed Object | Access Lost",
                 alarm_labels=["noc::access::method::CLI"],
@@ -1058,7 +1095,10 @@ class ManagedObjectProfile(NOCModel):
                 show_in_display=False,
                 alarm_class="NOC | Managed Object | Access Lost",
                 alarm_labels=["noc::access::method::HTTP"],
-                checks=[Check("HTTP"), Check("HTTPS")],
+                checks=[
+                    Check("HTTP", address=o.address),
+                    Check("HTTPS", address=o.address),
+                ],
                 blocked=False,
                 run_policy="D",  # Not supported
                 run_order="S",
@@ -1223,11 +1263,13 @@ def apply_discovery_jobs(profile_id, box_changed, periodic_changed, interval_cha
     # No delete, fixed 'ManagedObjectProfile' object has no attribute 'managedobject_set'
     from .managedobject import ManagedObject  # noqa
 
-    try:
-        profile = ManagedObjectProfile.objects.get(id=profile_id)
-    except ManagedObjectProfile.DoesNotExist:
+    profile = ManagedObjectProfile.objects.filter(id=profile_id).first()
+    if not profile:
         return
     for mo_id, is_managed, pool in iter_objects():
+        shard, d_slots = None, config.get_slot_limits(f"discovery-{pool}")
+        if d_slots:
+            shard = mo_id % d_slots
         if box_changed:
             if profile.enable_box_discovery and is_managed:
                 Job.submit(
@@ -1235,6 +1277,7 @@ def apply_discovery_jobs(profile_id, box_changed, periodic_changed, interval_cha
                     "noc.services.discovery.jobs.box.job.BoxDiscoveryJob",
                     key=mo_id,
                     pool=pool,
+                    shard=shard,
                 )
             else:
                 Job.remove(
@@ -1250,6 +1293,7 @@ def apply_discovery_jobs(profile_id, box_changed, periodic_changed, interval_cha
                     "noc.services.discovery.jobs.periodic.job.PeriodicDiscoveryJob",
                     key=mo_id,
                     pool=pool,
+                    shard=shard,
                 )
             else:
                 Job.remove(
@@ -1265,6 +1309,7 @@ def apply_discovery_jobs(profile_id, box_changed, periodic_changed, interval_cha
                     "noc.services.discovery.jobs.interval.job.IntervalDiscoveryJob",
                     key=mo_id,
                     pool=pool,
+                    shard=shard,
                 )
             else:
                 Job.remove(

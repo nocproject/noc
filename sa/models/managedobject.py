@@ -7,7 +7,6 @@
 
 # Python modules
 import difflib
-from collections import namedtuple
 import logging
 import os
 import re
@@ -107,7 +106,7 @@ from noc.core.cache.decorator import cachedmethod
 from noc.core.cache.base import cache
 from noc.core.script.caller import SessionContext, ScriptCaller
 from noc.core.bi.decorator import bi_sync
-from noc.core.script.scheme import SCHEME_CHOICES
+from noc.core.script.scheme import SCHEME_CHOICES, SNMPCredential, SNMPv3Credential, CLICredential
 from noc.core.matcher import match
 from noc.core.change.decorator import change, get_datastreams
 from noc.core.change.policy import change_tracker
@@ -135,24 +134,46 @@ from .objectdiagnosticconfig import ObjectDiagnosticConfig
 MANAGEDOBJECT_CACHE_VERSION = 48
 CREDENTIAL_CACHE_VERSION = 7
 
-Credentials = namedtuple(
-    "Credentials",
-    [
-        "user",
-        "password",
-        "super_password",
-        "snmp_ro",
-        "snmp_rw",
-        "snmp_rate_limit",
-        "snmp_security_level",
-        "snmp_username",
-        "snmp_ctx_name",
-        "snmp_auth_key",
-        "snmp_auth_proto",
-        "snmp_priv_key",
-        "snmp_priv_proto",
-    ],
-)
+
+@dataclass(frozen=True)
+class Credentials(object):
+    user: str
+    password: str
+    super_password: str
+    snmp_ro: str
+    snmp_rw: str
+    snmp_rate_limit: str
+    snmp_security_level: str
+    snmp_username: str
+    snmp_ctx_name: str
+    snmp_auth_key: str
+    snmp_auth_proto: str
+    snmp_priv_key: str
+    snmp_priv_proto: str
+    snmp_rate_limit: int
+
+    def get_snmp_credential(self) -> Optional[Union[SNMPCredential, SNMPv3Credential]]:
+        if self.snmp_security_level == "Community" and self.snmp_ro:
+            return SNMPCredential(snmp_ro=self.snmp_ro, snmp_rw=self.snmp_rw)
+        elif self.snmp_security_level != "Community" and self.snmp_username:
+            return SNMPv3Credential(
+                username=self.snmp_username,
+                auth_proto=self.snmp_auth_proto,
+                auth_key=self.snmp_auth_key,
+                private_proto=self.snmp_priv_proto,
+                private_key=self.snmp_priv_key,
+            )
+        return None
+
+    def get_cli_credential(self) -> Optional[CLICredential]:
+        if not self.user:
+            return None
+        return CLICredential(
+            username=self.user,
+            password=self.password,
+            super_password=self.super_password,
+            raise_privilege=True,
+        )
 
 
 class MaintenanceItem(BaseModel):

@@ -1,7 +1,7 @@
 # ----------------------------------------------------------------------
 # Data Extractor
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2022 The NOC Project
+# Copyright (C) 2007-2024 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -23,7 +23,10 @@ from noc.core.log import PrefixLoggerAdapter
 from noc.config import config
 from noc.core.comp import smart_text
 from noc.core.etl.compression import compressor
+from noc.core.purgatorium import register
+from noc.main.models.pool import Pool
 from ..models.base import BaseModel
+from ..models.discoveredobject import DiscoveredObject
 from ..remotesystem.base import BaseRemoteSystem
 
 logger = logging.getLogger(__name__)
@@ -70,6 +73,7 @@ class BaseExtractor(object):
         self.import_dir = os.path.join(self.PREFIX, system.name, self.name)
         self.fatal_problems: List[Problem] = []
         self.quality_problems: List[Problem] = []
+        self.discovered_address: List[DiscoveredObject] = []
         # Checkpoint
         self._force_checkpoint: Optional[str] = None
 
@@ -213,6 +217,26 @@ class BaseExtractor(object):
             if item.checkpoint and (not cp or item.checkpoint > cp):
                 cp = item.checkpoint
         return cp
+
+    def register_discovered_address(
+        self,
+        address: str,
+        pool: str,
+        rid: str,
+        hostname: Optional[str] = None,
+        chassis_id: Optional[str] = None,
+        **kwargs,
+    ) -> None:
+        self.discovered_address.append(
+            DiscoveredObject(
+                id=rid,
+                address=address,
+                pool=pool,
+                hostname=hostname,
+                chassis_id=chassis_id,
+                data=kwargs,
+            )
+        )
 
     def iter_merge_data(
         self, current: Optional[List[BaseModel]], delta: Optional[List[BaseModel]]
@@ -373,3 +397,16 @@ class BaseExtractor(object):
                 self.logger.error("Error when saved problems %s", e)
         else:
             self.logger.info("No problems detected")
+        # Send Discovered Address
+        if self.system.remote_system.enable_discoveredobject and self.discovered_address:
+            for item in self.discovered_address:
+                pool = Pool.get_by_name(item.pool)
+                register(
+                    address=item.address,
+                    pool=pool.bi_id,
+                    source="etl",
+                    hostname=item.hostname,
+                    remote_system=self.system.remote_system.bi_id,
+                    remote_id=item.id,
+                    **(item.data or {}),
+                )
