@@ -31,7 +31,7 @@ class Migration(BaseMigration):
                 "remote_id",
                 models.CharField(max_length=64, null=True, blank=True),
             )
-            self.db.add_column(table, "bi_id", models.IntegerField(null=True, blank=True))
+            self.db.add_column(table, "bi_id", models.BigIntegerField(null=True, blank=True))
         # Set BI_ID
         for table in TABLES:
             rows = self.db.execute("SELECT id FROM %s WHERE bi_id IS NULL" % table)
