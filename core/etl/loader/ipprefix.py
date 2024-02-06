@@ -13,7 +13,7 @@ from noc.ip.models.prefix import Prefix
 
 class IPPrefixLoader(BaseLoader):
     """
-    IP Prefix loader
+    IP Prefix Loader
     """
 
     name = "ipprefix"
