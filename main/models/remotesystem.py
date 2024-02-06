@@ -119,6 +119,11 @@ class RemoteSystem(Document):
     enable_ttsystem = BooleanField()
     enable_project = BooleanField()
     enable_l2domain = BooleanField()
+    enable_ipvrf = BooleanField()
+    enable_ipprefix = BooleanField()
+    enable_ipprefixprofile = BooleanField()
+    enable_ipaddress = BooleanField()
+    enable_ipaddressprofile = BooleanField()
     enable_label = BooleanField()
     enable_discoveredobject = BooleanField()
     # Usage statistics
