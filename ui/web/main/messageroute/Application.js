@@ -198,7 +198,10 @@ Ext.define("NOC.main.messageroute.Application", {
                             text: __("Value"),
                             dataIndex: "value",
                             flex: 1,
-                            editor: "textfield"
+                            editor: {
+                                xtype: "textfield",
+                                allowBlank: false // Это запретит изменение поля "value" на пустое значение
+                            }
                         }
                     ]
                 },

@@ -66,7 +66,7 @@ class MRMatch(EmbeddedDocument):
 
 class MRAHeader(EmbeddedDocument):
     header = StringField(choices=list(sorted(MESSAGE_HEADERS)))
-    value = StringField()
+    value = StringField(required=True)
 
     def __str__(self):
         return self.header
