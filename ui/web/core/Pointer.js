@@ -58,15 +58,27 @@ Ext.define("NOC.core.Pointer", {
                         mat = Ext.draw.Matrix.fly([cos(alpha), sin(alpha), -sin(alpha), cos(alpha), toX, toY]);
 
                     me.createSprites();
-                    var offset = (attr.side === "left" ? -50 : 50) * attr.actualScale,
+                    var offset = me.getBoxWidth() * (attr.side === "left" ? (-4) : 4),
                         baselinePath = Ext.String.format("M{0} {1} L{2} {3}", fromX, fromY, toX, toY),
                         arrowLeftPath = Ext.String.format("M{0} {1} L{2} {3}", toX, toY, mat.x(x, y), mat.y(x, y)),
                         arrowRightPath = Ext.String.format("M{0} {1} L{2} {3}", toX, toY, mat.x(x, -y), mat.y(x, -y));
-                    if(attr.lineType === "path") {
+
+                    console.log("offset", offset, attr.lineType);
+                    if(attr.lineType === "internal") {
                         var arrowX = (attr.side === "left" ? 1 : -1) * attr.arrowLength * cos(attr.arrowAngle) * attr.actualScale,
                             arrowY = attr.arrowLength * sin(attr.arrowAngle) * attr.actualScale;
+
                         baselinePath = Ext.String.format("M{0},{1} L{2},{3} L{4},{5} L{6},{7}",
                             fromX, fromY, fromX + offset, fromY, fromX + offset, toY, toX, toY);
+                        arrowLeftPath = Ext.String.format("M{0} {1} L{2} {3}", toX, toY, toX - arrowX, toY + arrowY);
+                        arrowRightPath = Ext.String.format("M{0} {1} L{2} {3}", toX, toY, toX - arrowX, toY - arrowY);
+                    }
+                    if(attr.lineType === "wire") {
+                        var arrowX = (attr.side === "left" ? -1 : 1) * attr.arrowLength * cos(attr.arrowAngle) * attr.actualScale,
+                            arrowY = attr.arrowLength * sin(attr.arrowAngle) * attr.actualScale;
+
+                        baselinePath = Ext.String.format("M{0},{1} L{2},{3} L{4},{5} L{6},{7}",
+                            fromX, fromY, fromX + offset, fromY, toX - offset, toY, toX, toY);
                         arrowLeftPath = Ext.String.format("M{0} {1} L{2} {3}", toX, toY, toX - arrowX, toY + arrowY);
                         arrowRightPath = Ext.String.format("M{0} {1} L{2} {3}", toX, toY, toX - arrowX, toY - arrowY);
                     }
@@ -85,6 +97,10 @@ Ext.define("NOC.core.Pointer", {
                 },
             }
         }
+    },
+    config: {
+        boxWidth: 15,
+        boxHeight: 15,
     },
     createSprites: function() {
         var me = this;

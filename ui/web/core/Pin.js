@@ -16,6 +16,7 @@ Ext.define("NOC.core.Pin", {
                 pinColor: "string",
                 internalColor: "string",
                 pinName: "string",
+                pinNameWidth: "number",
                 labelAlign: "string",
                 internalLabelWidth: "number",
                 hasInternalLabel: "bool",
@@ -81,6 +82,7 @@ Ext.define("NOC.core.Pin", {
                         stroke: attr.isSelected && !attr.isInternalFixed ? "lightgreen" : "black",
                         lineWidth: attr.isSelected && !attr.isInternalFixed ? 3 : 1
                     });
+                    me.pinNameWidth = me.measureText(attr.pinName);
                     me.label.setAttributes({
                         text: attr.pinName,
                         fontWeight: fontWeight,
@@ -115,8 +117,14 @@ Ext.define("NOC.core.Pin", {
                     }
                     me.label.setAttributes({
                         translationX: ((me.attr.labelAlign === "left" ? -0.25 : 1.25) * me.getBoxWidth()) + attr.x,
-                        translationY: attr.y - me.getBoxHeight() / 2
+                        translationY: attr.y,
                     });
+                    me.labelBackground.setAttributes({
+                        translationX: (me.attr.side === "left" ? me.getBoxWidth() + 1 : - me.getBoxWidth() - me.pinNameWidth - 1) + attr.x,
+                        translationY: attr.y,
+                        height: me.getBoxHeight(),
+                        width: me.pinNameWidth + (me.side === "left" ? 1 : 1) * me.getBoxWidth(),
+                    })
                 },
                 rescale: function(attr) {
                     var me = this;
@@ -196,6 +204,11 @@ Ext.define("NOC.core.Pin", {
                 stroke: "black",
                 lineWidth: 2
             });
+            me.labelBackground = me.add({
+                type: "rect",
+                fill: "white",
+                // zIndex: 200,
+            })
             me.label = me.add({
                 type: "text",
                 fontFamily: me.getFontFamily(),
@@ -203,7 +216,8 @@ Ext.define("NOC.core.Pin", {
                 fontSize: me.getFontSize(),
                 textBaseline: "middle",
                 x: 0,
-                y: me.box.height / 2
+                y: me.box.height / 2,
+                // zIndex: 250,
             });
             if(me.allowInternal) {
                 me.internal = me.add({
@@ -216,5 +230,10 @@ Ext.define("NOC.core.Pin", {
                 });
             }
         }
+    },
+    measureText: function(text) {
+        var me = this,
+            font = Ext.String.format("{0} {1}px {2}", me.getFontWeight(), me.getFontSize(), me.getFontFamily());
+        return Ext.draw.TextMeasurer.measureText(text, font).width;
     }
 });

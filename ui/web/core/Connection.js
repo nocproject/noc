@@ -126,18 +126,20 @@ Ext.define("NOC.core.Connection", {
             };
         }
 
-        if(me.isOnSprite(me.toDiscriminator.getBBox(), x, y)) {
-            return {
-                sprite: me
-            };
+        if(me.toDiscriminator) {
+            if(me.isOnSprite(me.toDiscriminator.getBBox(), x, y)) {
+                return {
+                    sprite: me
+                };
+            }
         }
-
-        if(me.isOnSprite(me.fromDiscriminator.getBBox(), x, y)) {
-            return {
-                sprite: me
-            };
+        if(me.fromDiscriminator) {
+            if(me.isOnSprite(me.fromDiscriminator.getBBox(), x, y)) {
+                return {
+                    sprite: me
+                };
+            }
         }
-
         return null;
     },
     isOnSprite: function(bbox, x, y) {
@@ -163,20 +165,24 @@ Ext.define("NOC.core.Connection", {
             if(attr.fromHasArrow) {
                 me.fromArrowMarker = me.add(me.getMarker("arrow", attr.side, attr.actualScale));
             }
-            me.toDiscriminator = me.add({
-                type: "text",
-                fontFamily: me.getFontFamily(),
-                fontWeight: me.getFontWeight(),
-                fontSize: me.getFontSize(),
-                textBaseline: "middle",
-            });
-            me.fromDiscriminator = me.add({
-                type: "text",
-                fontFamily: me.getFontFamily(),
-                fontWeight: me.getFontWeight(),
-                fontSize: me.getFontSize(),
-                textBaseline: "middle",
-            });
+            if(attr.toDiscriminator) {
+                me.toDiscriminator = me.add({
+                    type: "text",
+                    fontFamily: me.getFontFamily(),
+                    fontWeight: me.getFontWeight(),
+                    fontSize: me.getFontSize(),
+                    textBaseline: "middle",
+                });
+            }
+            if(attr.fromDiscriminator) {
+                me.fromDiscriminator = me.add({
+                    type: "text",
+                    fontFamily: me.getFontFamily(),
+                    fontWeight: me.getFontWeight(),
+                    fontSize: me.getFontSize(),
+                    textBaseline: "middle",
+                });
+            }
         }
     },
     getMarker: function(id, side, scale) {
