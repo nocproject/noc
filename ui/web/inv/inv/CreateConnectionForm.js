@@ -261,7 +261,7 @@ Ext.define("NOC.inv.inv.CreateConnectionForm", {
     makeWire: function(leftPort, rightPort, leftOffset, rightOffset) {
         var f = [leftPort.x + leftPort.box.width / 2, leftPort.y + leftPort.box.height / 2],
             t = [rightPort.x + rightPort.box.width / 2, rightPort.y + rightPort.box.height / 2],
-            path = Ext.String.format("M{0},{1} L{2},{3} L{4},{5} L{6},{7}", f[0], f[1], f[0] + leftOffset, f[1], t[0] - rightOffset, t[1], t[0], t[1]);
+            path = Ext.String.format("M{0},{1} L{2},{3} L{4},{5} L{6},{7}", f[0], f[1], f[0] + leftOffset + this.boxWidth * 3, f[1], t[0] - rightOffset - this.boxWidth * 3, t[1], t[0], t[1]);
 
         return {
             type: "connection",
