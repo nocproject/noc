@@ -146,6 +146,9 @@ class Workflow(Document):
     def get_default_workflow(cls, model_id):
         from noc.models import get_model
 
+        workflow = Workflow.objects.filter(allowed_models__in=[model_id]).first()
+        if workflow:
+            return workflow
         model = get_model(model_id)
         workflow = getattr(model, "DEFAULT_WORKFLOW_NAME", cls.DEFAULT_WORKFLOW_NAME)
         return Workflow.get_by_name(workflow)
