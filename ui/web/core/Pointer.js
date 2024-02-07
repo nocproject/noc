@@ -22,6 +22,7 @@ Ext.define("NOC.core.Pointer", {
                 arrowAngle: "number",
                 lineType: "string",
                 side: "string",
+                xOffsets: "data",
                 actualScale: "number",
             },
             triggers: {
@@ -32,6 +33,7 @@ Ext.define("NOC.core.Pointer", {
                 arrowLength: "recalculate",
                 arrowAngle: "recalculate",
                 lineType: "recalculate",
+                xOffsets: "recalculate",
                 actualScale: "recalculate",
             },
             defaults: {
@@ -63,7 +65,6 @@ Ext.define("NOC.core.Pointer", {
                         arrowLeftPath = Ext.String.format("M{0} {1} L{2} {3}", toX, toY, mat.x(x, y), mat.y(x, y)),
                         arrowRightPath = Ext.String.format("M{0} {1} L{2} {3}", toX, toY, mat.x(x, -y), mat.y(x, -y));
 
-                    console.log("offset", offset, attr.lineType);
                     if(attr.lineType === "internal") {
                         var arrowX = (attr.side === "left" ? 1 : -1) * attr.arrowLength * cos(attr.arrowAngle) * attr.actualScale,
                             arrowY = attr.arrowLength * sin(attr.arrowAngle) * attr.actualScale;
@@ -77,14 +78,26 @@ Ext.define("NOC.core.Pointer", {
                         var arrowX = (attr.side === "left" ? -1 : 1) * attr.arrowLength * cos(attr.arrowAngle) * attr.actualScale,
                             arrowY = attr.arrowLength * sin(attr.arrowAngle) * attr.actualScale;
 
+                        offset = attr.xOffsets || [offset, offset];
                         baselinePath = Ext.String.format("M{0},{1} L{2},{3} L{4},{5} L{6},{7}",
-                            fromX, fromY, fromX + offset, fromY, toX - offset, toY, toX, toY);
+                            fromX, fromY, fromX + offset[0], fromY, toX - offset[1], toY, toX, toY);
+                        arrowLeftPath = Ext.String.format("M{0} {1} L{2} {3}", toX, toY, toX - arrowX, toY + arrowY);
+                        arrowRightPath = Ext.String.format("M{0} {1} L{2} {3}", toX, toY, toX - arrowX, toY - arrowY);
+                    }
+                    if(attr.lineType === "loopback") {
+                        var arrowX = (attr.side === "left" ? -1 : 1) * attr.arrowLength * cos(attr.arrowAngle) * attr.actualScale,
+                            arrowY = attr.arrowLength * sin(attr.arrowAngle) * attr.actualScale;
+
+                        offset = attr.xOffsets || [offset, offset];
+                        baselinePath = Ext.String.format("M{0},{1} L{2},{3} L{4},{5} L{6},{7}",
+                            fromX, fromY, fromX + offset[0], fromY, fromX + offset[0], toY, toX, toY);
                         arrowLeftPath = Ext.String.format("M{0} {1} L{2} {3}", toX, toY, toX - arrowX, toY + arrowY);
                         arrowRightPath = Ext.String.format("M{0} {1} L{2} {3}", toX, toY, toX - arrowX, toY - arrowY);
                     }
                     me.baseLine.setAttributes({
                         path: baselinePath,
-                        strokeStyle: "black"
+                        strokeStyle: "black",
+                        zIndex: 0,
                     });
                     me.arrowLeft.setAttributes({
                         path: arrowLeftPath,
@@ -101,6 +114,7 @@ Ext.define("NOC.core.Pointer", {
     config: {
         boxWidth: 15,
         boxHeight: 15,
+        xLabelOffsets: [0, 0],
     },
     createSprites: function() {
         var me = this;
@@ -109,8 +123,8 @@ Ext.define("NOC.core.Pointer", {
         if(!me.baseLine) {
             me.baseLine = me.add({
                 type: "path",
-                lineDash: [2, 2],
-                // lineWidth: 2,
+                lineDash: [8, 8],
+                lineWidth: 4,
                 // zIndex: 100
             });
             me.arrowLeft = me.add({

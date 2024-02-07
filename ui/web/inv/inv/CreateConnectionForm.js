@@ -167,49 +167,50 @@ Ext.define("NOC.inv.inv.CreateConnectionForm", {
     },
     load: function() {
         var params, title,
-            mainPanel = this,
-            cable = mainPanel.cableCombo.getValue(),
+            me = this,
+            cable = me.cableCombo.getValue(),
             // leftSelected = mainPanel.getViewModel().get("leftSelectedPin"),
             // rightSelected = mainPanel.getViewModel().get("rightSelectedPin"),
-            leftObject = mainPanel.getViewModel().get("leftObject"),
-            rightObject = mainPanel.getViewModel().get("rightObject");
+            leftObject = me.getViewModel().get("leftObject"),
+            rightObject = me.getViewModel().get("rightObject");
 
         title = leftObject.get("name") + " <==> " + (rightObject ? rightObject.get("name") : __("none"));
-        mainPanel.setTitle(title);
+        me.setTitle(title);
         params = "o1=" + leftObject.get("id") + (rightObject ? "&o2=" + rightObject.get("id") : "");
         // params += leftSelected ? "&left_filter=" + leftSelected : "";
         // params += rightSelected ? "&right_filter=" + rightSelected : "";
         params += cable ? "&cable_filter=" + cable : "";
-        mainPanel.mask(__("Loading..."));
+        me.mask(__("Loading..."));
         Ext.Ajax.request({
-            url: "/inv/inv/crossing_proposals/?" + params,
+            // url: "/inv/inv/crossing_proposals/?" + params,
+            url: "http://localhost:3000/crossing_proposals/?" + params,
             method: "GET",
             success: function(response) {
-                var drawPanel = mainPanel.drawPanel,
+                var drawPanel = me.drawPanel,
                     mainSurface = drawPanel.getSurface(),
                     data = Ext.decode(response.responseText);
 
-                mainPanel.maxPins = Math.max(data.left.connections.length, data.right.connections.length);
-                mainPanel.unmask();
+                me.maxPins = Math.max(data.left.connections.length, data.right.connections.length);
+                me.unmask();
                 NOC.msg.complete(__("The data was successfully loaded"));
                 mainSurface.removeAll(true);
-                mainPanel.cableCombo.getStore().loadData(data.cable);
-                mainPanel.scaleCalculate();
+                me.cableCombo.getStore().loadData(data.cable);
+                me.scaleCalculate();
                 Ext.Array.each(["left", "right"], function(side) {
                     if(data[side].connections && data[side].connections.length) {
-                        var hasDiscriminator = mainPanel.hasDiscriminator(data[side].internal_connections);
+                        var hasDiscriminator = me.hasDiscriminator(data[side].internal_connections);
 
-                        mainPanel.drawObject(data[side].connections, mainSurface, side, hasDiscriminator, mainPanel.maxPins);
-                        mainPanel.drawInternalConnections(data[side], drawPanel.getSurface(side + "_internal_conn"), side, hasDiscriminator);
+                        me.drawObject(data[side].connections, mainSurface, side, hasDiscriminator, me.maxPins);
+                        me.drawInternalConnections(data[side], drawPanel.getSurface(side + "_internal_conn"), side, hasDiscriminator);
                     }
                 });
-                mainPanel.drawWires(data.wires, mainSurface);
-                mainPanel.drawLegend(mainSurface);
+                me.drawWires(data.wires, mainSurface);
+                me.drawLegend(mainSurface);
                 console.log("renderFrame: load");
                 mainSurface.renderFrame();
             },
             failure: function() {
-                mainPanel.unmask();
+                me.unmask();
                 NOC.msg.failed(__("Error loading data"));
             }
         });
@@ -248,28 +249,24 @@ Ext.define("NOC.inv.inv.CreateConnectionForm", {
     makeWires: function(wires) {
         var me = this,
             mainSurface = me.drawPanel.getSurface(),
-            sprites = mainSurface.getItems(),
-            leftPins = Ext.Array.filter(sprites, function(sprite) {return sprite.type === "pin" && sprite.side === "left"}),
-            rightPins = Ext.Array.filter(sprites, function(sprite) {return sprite.type === "pin" && sprite.side === "right"}),
-            leftOffset = Ext.Array.max(Ext.Array.map(leftPins, function(pin) {return pin.pinNameWidth})),
-            rightOffset = Ext.Array.max(Ext.Array.map(rightPins, function(pin) {return pin.pinNameWidth}));
-
+            offsetX = me.getWiresOffset("left", "right");
         return Ext.Array.map(wires, function(wire) {
-            return me.makeWire(mainSurface.get(wire.left.id), mainSurface.get(wire.right.id), leftOffset, rightOffset);
+
+            return me.makeWire(mainSurface.get(wire[0].id), mainSurface.get(wire[1].id), wire[0].side, wire[1].side, offsetX[0], offsetX[1]);
         });
     },
-    makeWire: function(leftPort, rightPort, leftOffset, rightOffset) {
-        var f = [leftPort.x + leftPort.box.width / 2, leftPort.y + leftPort.box.height / 2],
-            t = [rightPort.x + rightPort.box.width / 2, rightPort.y + rightPort.box.height / 2],
-            path = Ext.String.format("M{0},{1} L{2},{3} L{4},{5} L{6},{7}", f[0], f[1], f[0] + leftOffset + this.boxWidth * 3, f[1], t[0] - rightOffset - this.boxWidth * 3, t[1], t[0], t[1]);
-
+    makeWire: function(firstPort, secondPort, firstSide, secondSide, firstOffset, secondOffset) {
         return {
             type: "connection",
-            connectionType: "wire",
-            fromPortId: leftPort.id,
-            toPortId: rightPort.id,
+            connectionType: firstSide === secondSide ? "loopback" : "wire",
+            fromPortId: firstPort.id,
+            toPortId: secondPort.id,
+            fromXY: [firstPort.x + firstPort.box.width / 2, firstPort.y + firstPort.box.height / 2],
+            toXY: [secondPort.x + secondPort.box.width / 2, secondPort.y + secondPort.box.height / 2],
+            fromSide: firstSide,
+            toSide: secondSide,
+            offset: [firstOffset, secondOffset],
             connectionColor: this.WIRE_COLOR,
-            path: path,
         };
     },
     makePins: function(pins, side, hasDiscriminator) {
@@ -471,11 +468,19 @@ Ext.define("NOC.inv.inv.CreateConnectionForm", {
         var me = this,
             mainSurface = me.drawPanel.getSurface(),
             wires = me.getWires(mainSurface),
-            wire = {
-                [prevSprite.side]: {id: prevSprite.id},
-                [sprite.side]: {id: sprite.id},
-            };
-
+            wire = [
+                {id: sprite.id, side: sprite.side},
+                {id: prevSprite.id, side: prevSprite.side},
+            ];
+        Ext.Array.sort(wire, function(a, b) {
+            if(a.side === 'left' && b.side === 'right') {
+                return -1;
+            }
+            if(a.side === 'right' && b.side === 'left') {
+                return 1;
+            }
+            return 0;
+        });
         wires.push(wire);
         me.drawWires(wires, mainSurface);
     },
@@ -664,11 +669,21 @@ Ext.define("NOC.inv.inv.CreateConnectionForm", {
         return Ext.Array.map(
             Ext.Array.filter(surface.getItems(), function(sprite) {return sprite.type === "connection" && sprite.connectType === "wire"}),
             function(wire) {
-                return {
-                    left: {id: wire.left.id},
-                    right: {id: wire.right.id}
-                }
+                return [
+                    {id: wire.fromPortId, side: wire.side[0]},
+                    {id: wire.toPortId, side: wire.side[1]}
+                ]
             });
+    },
+    getWiresOffset: function(firstSide, secondSide) {
+        var me = this,
+            mainSurface = me.drawPanel.getSurface(),
+            sprites = mainSurface.getItems(),
+            firstPins = Ext.Array.filter(sprites, function(sprite) {return sprite.type === "pin" && sprite.side === firstSide}),
+            secondPins = Ext.Array.filter(sprites, function(sprite) {return sprite.type === "pin" && sprite.side === secondSide});
+
+        return [(firstSide === "left" ? 1 : -1) * Ext.Array.max(Ext.Array.map(firstPins, function(pin) {return pin.pinNameWidth})),
+        (firstSide === "left" ? 1 : -1) * Ext.Array.max(Ext.Array.map(secondPins, function(pin) {return pin.pinNameWidth}))];
     },
     selectPin: function(element, prevSelectPinId, isInternal, preIsInternal) {
         var sprite = element.sprite,
@@ -698,22 +713,19 @@ Ext.define("NOC.inv.inv.CreateConnectionForm", {
             firstSide = viewModel.get("side"),
             isSelectedPinInternal = sprite.attr.cursorOn === "internal";
 
-        if(!firstSelectedPinId) {
+        if(!firstSelectedPinId) { // no pin selected
             return false;
         }
-        if(isSelectedPinInternal !== firstIsSelectedPinInternal && firstSide === sprite.side) {
+        if(firstSelectedPinId === sprite.id && firstSide === sprite.side) {
             return false;
         }
-        if(sprite.id === firstSelectedPinId) {
-            return false;
-        }
-        if(isSelectedPinInternal && !sprite.internalEnabled) {
+        if(isSelectedPinInternal === !firstIsSelectedPinInternal) {
             return false;
         }
         if(!isSelectedPinInternal && !sprite.enabled) {
             return false;
         }
-        if(firstSide === sprite.side && !isSelectedPinInternal) {
+        if(isSelectedPinInternal && !sprite.internalEnabled) {
             return false;
         }
         return true;
@@ -729,14 +741,14 @@ Ext.define("NOC.inv.inv.CreateConnectionForm", {
         this.callParent();
     },
     onDrop: function(ddSource, e, data) {
-        var mainPanel = this,
+        var me = this,
             selectedRecord = ddSource.dragData.records[0];
 
-        if(mainPanel.getViewModel().get("leftObject")) {
-            mainPanel.getViewModel().set("rightObject", selectedRecord);
+        if(me.getViewModel().get("leftObject")) {
+            me.getViewModel().set("rightObject", selectedRecord);
         }
-        if(!mainPanel.getViewModel().get("leftObject")) {
-            mainPanel.getViewModel().set("leftObject", selectedRecord);
+        if(!me.getViewModel().get("leftObject")) {
+            me.getViewModel().set("leftObject", selectedRecord);
         }
         this.load();
         return true;
@@ -772,7 +784,7 @@ Ext.define("NOC.inv.inv.CreateConnectionForm", {
                         actualScale: 1.02,
                         labelBold: true,
                     });
-                    // illumination of ALL external connections
+                    // illumination of ALL wire connections
                     Ext.each(surface.getItems(), function(s) {
                         if(s.fromPortId === sprite.id || s.toPortId === sprite.id) {
                             s.setAttributes(me.drawPanel.selectedWire);
@@ -785,14 +797,19 @@ Ext.define("NOC.inv.inv.CreateConnectionForm", {
                         }
                     });
                     if(me.isPinAvailableForSelect(sprite)) {
+                        var viewModel = me.getViewModel(),
+                            pointer = surface.get("pointer"),
+                            firstSide = viewModel.get("side");
+
                         sprite.setAttributes({
                             isSelected: true,
                             isInternalFixed: sprite.attr.cursorOn === "internal",
                             pinOver: true,
                         });
-                        surface.get("pointer").setAttributes({
-                            lineType: sprite.attr.cursorOn === "internal" ? "internal" : "wire",
-                            side: sprite.side
+                        pointer.setAttributes({
+                            lineType: firstSide === sprite.side && sprite.attr.cursorOn !== "internal" ? "loopback" : sprite.attr.cursorOn,
+                            side: sprite.side,
+                            xOffsets: me.getWiresOffset(firstSide, sprite.side),
                         });
                     }
                     console.log("renderFrame (main): onSpriteMouseOver");
@@ -814,7 +831,7 @@ Ext.define("NOC.inv.inv.CreateConnectionForm", {
                             sprite.fromDiscriminatorTooltip.showAt([event.pageX, event.pageY + 20]);
                         }
                     }
-                    if(sprite.connectionType === "wire") {
+                    if(Ext.Array.contains(["wire", "loopback"], sprite.connectionType)) {
                         sprite.setAttributes(me.drawPanel.selectedWire);
                         console.log("renderFrame (main): onSpriteMouseOver");
                         me.drawPanel.getSurface().renderFrame();
@@ -851,7 +868,7 @@ Ext.define("NOC.inv.inv.CreateConnectionForm", {
                         actualScale: 1,
                         labelBold: false,
                     });
-                    // external connections
+                    // wire connections
                     Ext.each(me.drawPanel.getSurface().getItems(), function(s) {
                         if(s.fromPortId === sprite.id || s.toPortId === sprite.id) {
                             s.setAttributes(me.drawPanel.wire);
@@ -890,7 +907,7 @@ Ext.define("NOC.inv.inv.CreateConnectionForm", {
                         console.log("renderFrame (internal): onSpriteMouseOut");
                         me.drawPanel.getSurface(sprite.side + "_internal_conn").renderFrame();
                     }
-                    if(sprite.connectionType === "wire") {
+                    if(Ext.Array.contains(["wire", "loopback"], sprite.connectionType)) {
                         sprite.setAttributes(me.drawPanel.wire);
                         console.log("renderFrame (main): onSpriteMouseOver");
                         me.drawPanel.getSurface().renderFrame();
@@ -903,10 +920,10 @@ Ext.define("NOC.inv.inv.CreateConnectionForm", {
     onSpriteClick: function(element, event) {
         var offset,
             pointerX, pointerY,
-            mainPanel = this,
+            me = this,
             sprite = element.sprite,
-            viewModel = mainPanel.getViewModel(),
-            surface = mainPanel.drawPanel.getSurface(),
+            viewModel = me.getViewModel(),
+            surface = me.drawPanel.getSurface(),
             prevSelectPinId = viewModel.get("selectedPinId"),
             prevIsInternal = viewModel.get("isSelectedPinInternal"),
             side = viewModel.get("side"),
@@ -914,26 +931,30 @@ Ext.define("NOC.inv.inv.CreateConnectionForm", {
             pointer = surface.get("pointer"),
             side = sprite.side,
             isInternal = sprite.attr.cursorOn === "internal",
-            isExternal = sprite.attr.cursorOn === "external";
+            isWire = sprite.attr.cursorOn === "wire";
 
-        if(!sprite.enabled && isExternal) {
+        if(!sprite.enabled && isWire) {
             return;
         }
         if(!sprite.internalEnabled && isInternal) {
             return;
         }
 
+        if(prevSprite && (prevSprite.id === sprite.id)) {
+            return;
+        }
+
         if(isInternal && sprite.attr.isSelected && prevSprite && prevSprite.attr.isSelected) {
-            mainPanel.createInternalConnection(prevSprite, sprite, side);
+            me.createInternalConnection(prevSprite, sprite, side);
         }
 
         if(!isInternal && sprite.attr.isSelected && prevSprite && prevSprite.attr.isSelected) {
-            mainPanel.createWire(prevSprite, sprite, side);
+            me.createWire(prevSprite, sprite, side);
         }
 
         switch(sprite.type) {
             case "pin": {
-                mainPanel.selectPin(element, prevSelectPinId, isInternal, prevIsInternal);
+                me.selectPin(element, prevSelectPinId, isInternal, prevIsInternal);
                 sprite.setAttributes({
                     isInternalFixed: isInternal
                 });
@@ -941,12 +962,12 @@ Ext.define("NOC.inv.inv.CreateConnectionForm", {
                 if(isInternal) {
                     pointerX = sprite.internal.attr.translationX;
                     pointerY = sprite.internal.attr.translationY;
-                    offset = (side === "left" ? -50 : 50)
+                    offset = (side === "left" ? -4 * me.boxWidth : 4 * me.boxWidth);
                 }
-                if(isExternal) {
+                if(isWire) {
                     pointerX = sprite.box.attr.translationX + sprite.box.attr.width / 2;
                     pointerY = sprite.box.attr.translationY + sprite.box.attr.height / 2;
-                    offset = (side === "left" ? 50 : -50)
+                    offset = me.getWiresOffset(side, side)[0];
                 }
                 if(!pointer) {
                     pointer = surface.add({
@@ -956,11 +977,10 @@ Ext.define("NOC.inv.inv.CreateConnectionForm", {
                         fromY: pointerY,
                         toX: pointerX + offset,
                         toY: pointerY,
-                        actualScale: mainPanel.scale,
+                        actualScale: me.scale,
                         strokeStyle: "red",
-                        boxWidth: mainPanel.boxWidth,
-                        boxHeight: mainPanel.boxHeight,
-                        zIndex: 150,
+                        boxWidth: me.boxWidth,
+                        boxHeight: me.boxHeight,
                     });
                 } else {
                     pointer.setAttributes({
@@ -968,7 +988,7 @@ Ext.define("NOC.inv.inv.CreateConnectionForm", {
                         fromY: pointerY,
                         toX: pointerX + offset,
                         toY: pointerY,
-                        actualScale: mainPanel.scale,
+                        actualScale: me.scale,
                     });
                 }
                 if(sprite.attr.isSelected) {
@@ -988,12 +1008,12 @@ Ext.define("NOC.inv.inv.CreateConnectionForm", {
             }
             case "connection": {
                 if(sprite.connectionType === "internal" && sprite.isDeleted) {
-                    mainPanel.drawPanel.isModalOpen = true;
-                    mainPanel.deleteInternalConnection();
+                    me.drawPanel.isModalOpen = true;
+                    me.deleteInternalConnection();
                 }
-                if(sprite.connectionType === "wire") {
-                    mainPanel.drawPanel.isModalOpen = true;
-                    mainPanel.deleteWire(sprite);
+                if(Ext.Array.contains(["wire", "loopback"], sprite.connectionType)) {
+                    me.drawPanel.isModalOpen = true;
+                    me.deleteWire(sprite);
                 }
                 break;
             }

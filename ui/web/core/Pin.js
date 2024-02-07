@@ -171,12 +171,12 @@ Ext.define("NOC.core.Pin", {
                 };
             }
         }
-        if(me.isOnSprite(me.box.getBBox(), x, y, "external")) {
+        if(me.isOnSprite(me.box.getBBox(), x, y, "wire")) {
             return {
                 sprite: me
             };
         }
-        if(me.isOnSprite(me.label.getBBox(), x, y, "external")) {
+        if(me.isOnSprite(me.label.getBBox(), x, y, "wire")) {
             return {
                 sprite: me
             };

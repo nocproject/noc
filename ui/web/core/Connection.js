@@ -20,11 +20,14 @@ Ext.define("NOC.core.Connection", {
                 fromXY: "data",
                 fromHasArrow: "bool",
                 fromDiscriminator: "string",
+                fromSide: "string",
                 toPortId: "string",
                 toPort: "string",
                 toXY: "data",
                 toHasArrow: "bool",
                 toDiscriminator: "string",
+                toSide: "string",
+                offset: "data",
                 isDeleted: "bool",
                 discriminatorWidth: "number",
                 gainDb: "number",
@@ -46,15 +49,30 @@ Ext.define("NOC.core.Connection", {
             },
             updaters: {
                 recalculate: function(attr) {
-                    var me = this;
+                    var me = this,
+                        path = attr.path;
 
                     me.createSprites(attr);
+                    if(attr.connectionType === "wire") {
+                        path = Ext.String.format("M{0},{1} L{2},{3} L{4},{5} L{6},{7}",
+                            attr.fromXY[0], attr.fromXY[1],
+                            attr.fromXY[0] + attr.offset[0], attr.fromXY[1],
+                            attr.toXY[0] - attr.offset[1], attr.toXY[1],
+                            attr.toXY[0], attr.toXY[1]);
+                    }
+                    if(attr.connectionType === "loopback") {
+                        path = Ext.String.format("M{0},{1} L{2},{3} L{4},{5} L{6},{7}",
+                            attr.fromXY[0], attr.fromXY[1],
+                            attr.fromXY[0] + (attr.fromSide === "left" ? attr.offset[0] : -1 * attr.offset[1]), attr.fromXY[1],
+                            attr.fromXY[0] + (attr.fromSide === "left" ? attr.offset[0] : -1 * attr.offset[1]), attr.toXY[1],
+                            attr.toXY[0], attr.toXY[1]);
+                    }
                     me.line.setAttributes({
                         side: attr.side,
                         fromPortId: attr.fromPortId,
                         toPortId: attr.toPortId,
                         connectionType: attr.connectionType,
-                        path: attr.path,
+                        path: path,
                         strokeStyle: attr.connectionColor,
                         zIndex: attr.zIndex,
                         "marker-end": "url(#arrow)"
@@ -201,7 +219,7 @@ Ext.define("NOC.core.Connection", {
         var me = this,
             width = me.measureText(text),
             suffix = "...",
-            reservedWidth = Math.abs(reservedWidth) - me.getBoxWidth();
+            reservedWidth = Math.abs(reservedWidth) - me.getBoxWidth() * 1.1;
 
         if(reservedWidth > 0 && width > reservedWidth) {
             if(!me.internalLabelTooltip) {
