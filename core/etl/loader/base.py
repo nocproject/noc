@@ -24,7 +24,7 @@ from noc.config import config
 from noc.core.comp import smart_text
 from noc.core.debug import error_report
 from noc.core.etl.compression import compressor
-from noc.models import get_model_id
+from noc.models import get_model_id, LABEL_MODELS
 from ..models.base import BaseModel
 
 logger = logging.getLogger(__name__)
@@ -145,7 +145,7 @@ class BaseLoader(object):
         self.has_remote_system: bool = hasattr(self.model, "remote_system")
         if self.workflow_state_sync:
             self.load_wf_state_mappings()
-        if self.label_enable_setting:
+        if self.enable_labels:
             self.load_ensured_labels()
 
     @property
@@ -183,8 +183,8 @@ class BaseLoader(object):
     def load_ensured_labels(self):
         from noc.main.models.label import Label
 
-        self.logger.info("Loading Labels: %s", self.label_enable_setting)
-        for ll in Label.objects.filter(**{self.label_enable_setting: True}):
+        self.logger.info("Loading Labels: %s", self.enable_labels)
+        for ll in Label.objects.filter(allow_models__in=[get_model_id(self.model)]):
             if ll.is_wildcard or ll.is_matched:
                 continue
             self.ensured_labels.add(ll.name)
@@ -371,7 +371,7 @@ class BaseLoader(object):
         data structures
         """
         self.logger.debug("Create object")
-        if self.label_enable_setting and "labels" in v:
+        if self.enable_labels and "labels" in v:
             self.ensure_labels(v["labels"])
         o = self.model(**v)
         try:
@@ -414,7 +414,7 @@ class BaseLoader(object):
         for k, nv in v.items():
             if k == self.checkpoint_field:
                 continue
-            if self.label_enable_setting and k == "labels":
+            if self.enable_labels and k == "labels":
                 self.ensure_labels(nv)
             if inc_changes and k in inc_changes:
                 ov = getattr(o, k, [])
@@ -424,6 +424,12 @@ class BaseLoader(object):
             self.change_workflow(o, state, state_changed)
         o.save()
         return o
+
+    @property
+    def enable_labels(self) -> bool:
+        if not self.model:
+            return False
+        return get_model_id(self.model) in LABEL_MODELS
 
     def on_add(self, item: BaseModel) -> None:
         """

@@ -602,7 +602,7 @@ class Label(Document):
         if label:
             return  # Exists
         logger.info("[%s] Create label by ensure", name)
-        settings = cls.get_effective_settings(name)
+        settings = cls.get_effective_settings(name, all_settings=True)
         if not settings.get("allow_auto_create"):
             logger.warning("[%s] Not allowed autocreate label", name)
             return
