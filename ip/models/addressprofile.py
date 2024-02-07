@@ -7,6 +7,7 @@
 
 # Python modules
 from threading import Lock
+from functools import partial
 import operator
 
 # Third-party modules
@@ -45,7 +46,9 @@ class AddressProfile(Document):
     name = StringField(unique=True)
     description = StringField()
     # Address workflow
-    workflow = PlainReferenceField(Workflow)
+    workflow = PlainReferenceField(
+        Workflow, default=partial(Workflow.get_default_workflow, "ip.Address")
+    )
     style = ForeignKeyField(Style)
     # Template.subject to render Address.name
     name_template = ForeignKeyField(Template)
@@ -67,6 +70,8 @@ class AddressProfile(Document):
     _id_cache = cachetools.TTLCache(maxsize=100, ttl=60)
     _name_cache = cachetools.TTLCache(maxsize=100, ttl=60)
     _bi_id_cache = cachetools.TTLCache(maxsize=100, ttl=60)
+
+    DEFAULT_WORKFLOW_NAME = "Default Resource"
 
     def __str__(self):
         return self.name
