@@ -416,13 +416,21 @@ class InvApplication(ExtApplication):
                 remote = self.get_remote_slot(p, lo, ro)
                 if remote:
                     wires.append(
-                        {
-                            "left": {"id": id_ports_left.get(p.name, 0), "name": p.name},
-                            "right": {
+                        # {
+                        #     "left": {"id": id_ports_left.get(p.name, 0), "name": p.name},
+                        #     "right": {
+                        #         "id": id_ports_right.get(remote.connection, 0),
+                        #         "name": remote.connection,
+                        #     },
+                        # }
+                        [
+                            {"id": id_ports_left.get(p.name, 0), "name": p.name, "side": "left"},
+                            {
                                 "id": id_ports_right.get(remote.connection, 0),
                                 "name": remote.connection,
+                                "side": "right",
                             },
-                        }
+                        ]
                     )
         # Forming cable
         return {
