@@ -74,7 +74,6 @@ Ext.define("NOC.core.Connection", {
                         connectionType: attr.connectionType,
                         path: path,
                         strokeStyle: attr.connectionColor,
-                        zIndex: attr.zIndex,
                         "marker-end": "url(#arrow)"
                     });
 
@@ -110,7 +109,6 @@ Ext.define("NOC.core.Connection", {
                         me.toArrowMarker.setAttributes({
                             translationX: parseFloat(attr.toXY[0], 10),
                             translationY: parseFloat(attr.toXY[1], 10),
-                            zIndex: 100,
                             hidden: false
                         });
                     }
@@ -118,7 +116,6 @@ Ext.define("NOC.core.Connection", {
                         me.fromArrowMarker.setAttributes({
                             translationX: parseFloat(attr.fromXY[0], 10),
                             translationY: parseFloat(attr.fromXY[1], 10),
-                            zIndex: 100,
                             hidden: false
                         });
                     }
@@ -138,7 +135,7 @@ Ext.define("NOC.core.Connection", {
             x = point[0],
             y = point[1];
 
-        if(me.line.isPointInPath(x, y)) {
+        if(me.line.isPointOnPath(x, y)) {
             return {
                 sprite: me
             };
@@ -175,7 +172,6 @@ Ext.define("NOC.core.Connection", {
             me.line = me.add({
                 type: "path",
                 lineWidth: 2,
-                zIndex: 100,
             });
             if(attr.toHasArrow) {
                 me.toArrowMarker = me.add(me.getMarker("arrow", attr.side, attr.actualScale));

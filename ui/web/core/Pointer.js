@@ -96,8 +96,7 @@ Ext.define("NOC.core.Pointer", {
                     }
                     me.baseLine.setAttributes({
                         path: baselinePath,
-                        strokeStyle: "black",
-                        zIndex: 0,
+                        strokeStyle: "black"
                     });
                     me.arrowLeft.setAttributes({
                         path: arrowLeftPath,
@@ -124,14 +123,15 @@ Ext.define("NOC.core.Pointer", {
             me.baseLine = me.add({
                 type: "path",
                 lineDash: [8, 8],
-                lineWidth: 4,
-                // zIndex: 100
+                lineWidth: 2,
             });
             me.arrowLeft = me.add({
-                type: "path"
+                type: "path",
+                lineWidth: 2,
             });
             me.arrowRight = me.add({
-                type: "path"
+                type: "path",
+                lineWidth: 2,
             });
         }
     }

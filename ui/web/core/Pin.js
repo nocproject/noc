@@ -26,7 +26,6 @@ Ext.define("NOC.core.Pin", {
                 isSelected: "bool",
                 isInternalFixed: "bool",
                 cursorOn: "string",
-                labelBold: "bool",
                 enabled: "bool",
                 pinOver: "bool",
                 internalEnabled: "bool",
@@ -41,7 +40,6 @@ Ext.define("NOC.core.Pin", {
                 isSelected: "recalculate",
                 isInternalFixed: "recalculate",
                 hasInternalLabel: "translate",
-                labelBold: "recalculate",
                 pinName: "recalculate",
                 labelAlign: "recalculate",
                 remoteId: "recalculate",
@@ -62,7 +60,6 @@ Ext.define("NOC.core.Pin", {
                 remoteName: "none",
                 isSelected: false,
                 isInternalFixed: false,
-                labelBold: false,
                 enabled: true,
                 internalEnabled: true,
                 allowInternal: false,
@@ -74,25 +71,25 @@ Ext.define("NOC.core.Pin", {
             },
             updaters: {
                 recalculate: function(attr) {
-                    var me = this, fontWeight = (attr.isSelected || attr.labelBold) ? "bold" : "normal";
+                    var me = this;
 
                     me.createSprites();
                     me.box.setAttributes({
                         fillStyle: attr.pinColor,
                         stroke: attr.isSelected && !attr.isInternalFixed ? "lightgreen" : "black",
-                        lineWidth: attr.isSelected && !attr.isInternalFixed ? 3 : 1
+                        lineWidth: attr.isSelected && !attr.isInternalFixed ? 3 : 1,
                     });
                     me.pinNameWidth = me.measureText(attr.pinName);
                     me.label.setAttributes({
                         text: attr.pinName,
-                        fontWeight: fontWeight,
+                        fontWeight: me.getFontWeight(),
                         textAlign: attr.labelAlign === "left" ? "end" : "start",
                     });
                     if(me.internal) {
                         me.internal.setAttributes({
                             fillStyle: attr.internalColor,
                             stroke: attr.isSelected && attr.isInternalFixed ? "lightgreen" : "black",
-                            lineWidth: attr.isSelected && attr.isInternalFixed ? 3 : 1
+                            lineWidth: attr.isSelected && attr.isInternalFixed ? 3 : 1,
                         });
                     }
                 },
@@ -120,10 +117,10 @@ Ext.define("NOC.core.Pin", {
                         translationY: attr.y,
                     });
                     me.labelBackground.setAttributes({
-                        translationX: (me.attr.side === "left" ? me.getBoxWidth() + 1 : - me.getBoxWidth() - me.pinNameWidth - 1) + attr.x,
+                        translationX: (me.attr.side === "left" ? me.getBoxWidth() + 1 : - me.getBoxWidth() / 2 - me.pinNameWidth) + attr.x,
                         translationY: attr.y,
                         height: me.getBoxHeight(),
-                        width: me.pinNameWidth + (me.side === "left" ? 1 : 1) * me.getBoxWidth(),
+                        width: me.pinNameWidth + 0.2 * me.getBoxWidth(),
                     })
                 },
                 rescale: function(attr) {
@@ -202,12 +199,22 @@ Ext.define("NOC.core.Pin", {
                 width: me.getBoxWidth(),
                 height: me.getBoxHeight(),
                 stroke: "black",
-                lineWidth: 2
+                lineWidth: 2,
             });
+            if(me.allowInternal) {
+                me.internal = me.add({
+                    type: "circle",
+                    radius: me.getBoxWidth() / 2,
+                    stroke: "black",
+                    lineWidth: 2,
+                    x: 0,
+                    y: 0,
+                });
+            }
             me.labelBackground = me.add({
                 type: "rect",
                 fill: "white",
-                // zIndex: 200,
+                hidden: true,
             })
             me.label = me.add({
                 type: "text",
@@ -217,18 +224,8 @@ Ext.define("NOC.core.Pin", {
                 textBaseline: "middle",
                 x: 0,
                 y: me.box.height / 2,
-                // zIndex: 250,
+                hidden: true,
             });
-            if(me.allowInternal) {
-                me.internal = me.add({
-                    type: "circle",
-                    radius: me.getBoxWidth() / 2,
-                    stroke: "black",
-                    lineWidth: 2,
-                    x: 0,
-                    y: 0
-                });
-            }
         }
     },
     measureText: function(text) {
