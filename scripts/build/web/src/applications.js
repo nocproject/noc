@@ -7,13 +7,10 @@ const apps = [
     '../../../ui/web/bi/dashboardlayout/Application.js',
     // cm
     '../../../ui/web/cm/confdbquery/Application.js',
-    '../../../ui/web/cm/errortype/Application.js',
+    '../../../ui/web/cm/configurationparam/Application.js',
     '../../../ui/web/cm/interfacevalidationpolicy/Application.js',
     '../../../ui/web/cm/objectnotify/Application.js',
     '../../../ui/web/cm/objectvalidationpolicy/Application.js',
-    '../../../ui/web/cm/validationpolicy/Application.js',
-    '../../../ui/web/cm/validationpolicysettings/Application.js',
-    '../../../ui/web/cm/validationrule/Application.js',
     // crm
     '../../../ui/web/crm/subscriber/Application.js',
     '../../../ui/web/crm/subscriberprofile/Application.js',
