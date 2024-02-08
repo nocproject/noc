@@ -17,6 +17,7 @@ from noc.core.clickhouse.fields import (
     MapField,
     ArrayField,
     MaterializedField,
+    UInt64Field,
 )
 from noc.core.clickhouse.engines import ReplacingMergeTree
 from noc.core.bi.dictionaries.pool import Pool
@@ -29,7 +30,7 @@ class Purgatorium(Model):
         db_table = "purgatorium"
         engine = ReplacingMergeTree(
             "date",
-            ("pool", "ip", "source"),
+            ("pool", "ip", "source", "remote_system"),
         )
 
     date = DateField(description=_("Date"))
@@ -48,6 +49,7 @@ class Purgatorium(Model):
     description = StringField(description="Description")
     chassis_id = StringField(description="Chassis ID")
     hostname = StringField(description="Hostname Discovery")
+    uptime = UInt64Field(description="Host Uptime")
     border = ReferenceField(ManagedObject, description=_("Object Name"))
     # Set for records on RemoteSystem
     data = MapField(StringField(), description=_("Vars"))
@@ -61,6 +63,8 @@ class Purgatorium(Model):
     )
     # http, telegraf HTTP and port 3000, regex - status: avail & access & app (regex)
     is_delete = BooleanField(description="Address was removed from RemoteSystem", default=False)
+    # Labels List
+    labels = ArrayField(StringField(), description=_("Tags"))
     remote_system = StringField(description="Remote System")
     remote_id = StringField(description="Remote System Id")
     # Maybe fields for detect hints

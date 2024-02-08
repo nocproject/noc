@@ -30,8 +30,14 @@ from noc.core.checkers.tcp import TCP_DIAG
 from noc.core.script.scheme import SNMPCredential, SNMPv3Credential
 from noc.main.models.pool import Pool
 from noc.core.purgatorium import ProtocolCheckResult, register
+from noc.core.mib import mib
 
 checker_cache = {}
+HOSTNAME_OID = mib["SNMPv2-MIB::sysName", 0]
+DESCR_OID = mib["SNMPv2-MIB::sysDescr", 0]
+UPTIME_OID = mib["SNMPv2-MIB::sysUpTime", 0]
+CHASSIS_OID = mib["IF-MIB::ifPhysAddress", 1]
+OIDS = [mib["SNMPv2-MIB::sysObjectID", 0], HOSTNAME_OID, DESCR_OID, UPTIME_OID, CHASSIS_OID]
 
 
 class Command(BaseCommand):
@@ -87,10 +93,10 @@ class Command(BaseCommand):
             yield Check(name=TCP_DIAG, address=address, port=p)
         snmp_cred = []
         for c in (community or "").split(","):
-            snmp_cred.append(SNMPCredential(snmp_ro=c))
+            snmp_cred.append(SNMPCredential(snmp_ro=c, oids=OIDS))
         for c in (snmp_user or "").split(","):
             # user:sha:123456:des:123457
-            creds = {}
+            creds = {"oids": OIDS}
             username, *other = c.split(":")
             creds["username"] = username
             if len(other) >= 2:
@@ -153,7 +159,7 @@ class Command(BaseCommand):
                     metrics["address_down"] += 1
                     self.stdout.write(f"{addr} FAIL\n")
                     continue
-                result[addr].append(
+                result[addr]["checks"].append(
                     ProtocolCheckResult(
                         check="ICMP",
                         status=True,
@@ -171,7 +177,17 @@ class Command(BaseCommand):
                         # self.stdout.write(f"{addr} Port {r.port} is open\n")
                         if r.skipped:
                             continue
-                        result[addr].append(
+                        if r.data:
+                            result[addr]["data"].update(r.data)
+                        if r.data and HOSTNAME_OID in r.data:
+                            result[addr]["hostname"] = r.data[HOSTNAME_OID]
+                        if r.data and DESCR_OID in r.data:
+                            result[addr]["description"] = r.data[DESCR_OID]
+                        if r.data and UPTIME_OID in r.data:
+                            result[addr]["uptime"] = int(r.data[UPTIME_OID])
+                        if r.data and CHASSIS_OID in r.data:
+                            result[addr]["chassis_id"] = r.data[CHASSIS_OID]
+                        result[addr]["checks"].append(
                             ProtocolCheckResult(
                                 check=r.check,
                                 status=r.status,
@@ -181,11 +197,11 @@ class Command(BaseCommand):
                                 error=r.error,
                             )
                         )
-                self.print_out(addr, rtt, result[addr])
+                self.print_out(addr, rtt, result[addr]["checks"])
 
         socket.setdefaulttimeout(2)
-        result: Dict[str, List[ProtocolCheckResult]] = defaultdict(list)
-
+        # result: Dict[str, List[ProtocolCheckResult]] = defaultdict(list)
+        result = defaultdict(lambda: {"checks": [], "source": "network-scan", "data": {}})
         addr_list = self.get_addresses(addresses, input)
         lock: Optional[asyncio.Lock] = None
         ping = Ping(tos=config.ping.tos, timeout=1.0)
@@ -197,20 +213,17 @@ class Command(BaseCommand):
         if dry_run:
             return
         pool = self.get_pool(pool=pool)
-        for address, checks in result.items():
-            register(
-                address,
-                pool,
-                "network-scan",
-                checks=checks,
-            )
+        for address, item in result.items():
+            item["address"] = address
+            item["pool"] = pool
+            register(**item)
 
     @staticmethod
     def get_pool(pool: str) -> int:
         """
         Return pool bi_id
         """
-        if pool.isalnum():
+        if pool.isdigit():
             return int(pool)
         connect()
 
