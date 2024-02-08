@@ -98,6 +98,7 @@ const apps = [
     '../../../ui/web/main/extstorage/Application.js',
     '../../../ui/web/main/handler/Application.js',
     '../../../ui/web/main/jsonimport/Application.js',
+    '../../../ui/web/main/label/Application.js',
     '../../../ui/web/main/language/Application.js',
     '../../../ui/web/main/mimetype/Application.js',
     '../../../ui/web/main/notificationgroup/Application.js',
