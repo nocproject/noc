@@ -15,6 +15,8 @@ from noc.core.clickhouse.fields import (
     IPv4Field,
     ReferenceField,
     MapField,
+    ArrayField,
+    MaterializedField,
 )
 from noc.core.clickhouse.engines import ReplacingMergeTree
 from noc.core.bi.dictionaries.pool import Pool
@@ -50,7 +52,13 @@ class Purgatorium(Model):
     # Set for records on RemoteSystem
     data = MapField(StringField(), description=_("Vars"))
     # Json Field  {check: str PING, avail: True/False, access: None, error: None, port}
-    checks = StringField()
+    checks = ArrayField(StringField())
+    #
+    success_checks = MaterializedField(
+        ArrayField(StringField(low_cardinality=True)),
+        "arrayMap(x -> trim(TRAILING ':' from concat(JSONExtractString(x, 'check'), ':', JSONExtractString(x, 'port'))), checks)",
+        low_cardinality=False,
+    )
     # http, telegraf HTTP and port 3000, regex - status: avail & access & app (regex)
     is_delete = BooleanField(description="Address was removed from RemoteSystem", default=False)
     remote_system = StringField(description="Remote System")

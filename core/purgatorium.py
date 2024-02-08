@@ -102,5 +102,5 @@ def register(
     if hostname:
         data["hostname"] = hostname
     if checks:
-        data["checks"] = orjson.dumps(checks).decode("utf-8")
+        data["checks"] = [orjson.dumps(c).decode("utf-8") for c in checks]
     svc.publish(orjson.dumps(data), f"ch.{PURGATORIUM_TABLE}")
