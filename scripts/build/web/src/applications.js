@@ -183,7 +183,7 @@ const apps = [
     // vc
     '../../../ui/web/vc/l2domain/Application.js',
     '../../../ui/web/vc/l2domainprofile/Application.js',
-    '../../../ui/web/vc/vcfilter/Application.js',
+    '../../../ui/web/vc/vlanfilter/Application.js',
     '../../../ui/web/vc/vlan/Application.js',
     '../../../ui/web/vc/vlanprofile/Application.js',
     '../../../ui/web/vc/vpn/Application.js',
