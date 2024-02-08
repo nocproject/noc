@@ -287,38 +287,41 @@ async def fetch(
             return ERR_TIMEOUT, {}, b"Timed out while sending request"
         parser = HttpParser()
         response_body: List[bytes] = []
-        while not parser.is_message_complete():
+        while True:
+            # Get new data
             try:
                 data = await asyncio.wait_for(reader.read(max_buffer_size), request_timeout)
-                is_eof = not data
+                if not data:
+                    break
             except (asyncio.IncompleteReadError, ConnectionResetError):
-                is_eof = True
+                break
             except (asyncio.TimeoutError, TimeoutError):
                 metrics["httpclient_timeouts"] += 1
                 return ERR_READ_TIMEOUT, {}, b"Request timed out"
-            if is_eof:
-                if eof_mark and response_body:
-                    # Check if EOF mark is in received data
-                    response_body = [b"".join(response_body)]
-                    if isinstance(eof_mark, str):
-                        if eof_mark in response_body[0]:
-                            break
-                    else:
-                        found = False
-                        for m in eof_mark:
-                            if m in response_body[0]:
-                                found = True
-                                break
-                        if found:
-                            break
-                metrics["httpclient_timeouts"] += 1
-                return ERR_READ_TIMEOUT, {}, b"Connection reset"
+            # Parse
             received = len(data)
             parsed = parser.execute(data, received)
             if parsed != received:
                 return ERR_PARSE_ERROR, {}, b"Parse error"
             if parser.is_partial_body():
-                response_body += [parser.recv_body()]
+                response_body.append(parser.recv_body())
+            if parser.is_message_complete():
+                break
+        # Process eof_mark mark
+        if eof_mark and response_body:
+            # Check if EOF mark is in received data
+            response_body = [b"".join(response_body)]
+            if isinstance(eof_mark, str):
+                if eof_mark not in response_body[0]:
+                    metrics["httpclient_timeouts"] += 1
+                    return ERR_READ_TIMEOUT, {}, b"Connection reset"
+            else:
+                for m in eof_mark:
+                    if m in response_body[0]:
+                        break
+                else:
+                    metrics["httpclient_timeouts"] += 1
+                    return ERR_READ_TIMEOUT, {}, b"Connection reset"
         code = parser.get_status_code()
         parsed_headers = parser.get_headers()
         logger.debug("HTTP Response %s", code)
