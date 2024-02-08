@@ -744,7 +744,7 @@ Ext.define("NOC.inv.inv.CreateConnectionForm", {
         if(!firstSelectedPinId) { // no pin selected
             return false;
         }
-        if(firstSelectedPinId === sprite.id && firstSide === sprite.side) {
+        if(isSelectedPinInternal && firstSide !== sprite.side) {
             return false;
         }
         if(isSelectedPinInternal === !firstIsSelectedPinInternal) {
