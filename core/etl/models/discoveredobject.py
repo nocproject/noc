@@ -18,5 +18,6 @@ class DiscoveredObject(BaseModel):
     pool: str
     hostname: Optional[str] = None
     chassis_id: Optional[str] = None
+    description: Optional[str] = None
     labels: Optional[List[str]] = None
     data: Dict[str, str] = None

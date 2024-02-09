@@ -226,6 +226,7 @@ class BaseExtractor(object):
         hostname: Optional[str] = None,
         chassis_id: Optional[str] = None,
         labels: Optional[List[str]] = None,
+        description: Optional[str] = None,
         **kwargs,
     ) -> None:
         self.discovered_address.append(
@@ -234,6 +235,7 @@ class BaseExtractor(object):
                 address=address,
                 pool=pool,
                 hostname=hostname,
+                description=description,
                 chassis_id=chassis_id,
                 labels=labels,
                 data=kwargs,
@@ -407,6 +409,7 @@ class BaseExtractor(object):
                     address=item.address,
                     pool=pool.bi_id,
                     source="etl",
+                    description=item.description,
                     hostname=item.hostname,
                     remote_system=self.system.remote_system.bi_id,
                     remote_id=item.id,
