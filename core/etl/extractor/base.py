@@ -225,7 +225,7 @@ class BaseExtractor(object):
         rid: str,
         hostname: Optional[str] = None,
         chassis_id: Optional[str] = None,
-        labels: Optional[str] = None,
+        labels: Optional[List[str]] = None,
         **kwargs,
     ) -> None:
         self.discovered_address.append(
