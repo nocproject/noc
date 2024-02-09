@@ -6,7 +6,7 @@
 # ----------------------------------------------------------------------
 
 # Python modules
-from typing import Optional, Dict
+from typing import Optional, Dict, List
 
 # NOC modules
 from .base import BaseModel
@@ -18,4 +18,5 @@ class DiscoveredObject(BaseModel):
     pool: str
     hostname: Optional[str] = None
     chassis_id: Optional[str] = None
+    labels: Optional[List[str]] = None
     data: Dict[str, str] = None

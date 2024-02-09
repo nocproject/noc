@@ -106,7 +106,7 @@ def register(
     if hostname:
         data["hostname"] = hostname
     if uptime is not None:
-        data["uptime"] = int(hostname)
+        data["uptime"] = int(uptime)
     if labels:
         data["labels"] = list(labels)
     if checks:

@@ -225,6 +225,7 @@ class BaseExtractor(object):
         rid: str,
         hostname: Optional[str] = None,
         chassis_id: Optional[str] = None,
+        labels: Optional[str] = None,
         **kwargs,
     ) -> None:
         self.discovered_address.append(
@@ -234,6 +235,7 @@ class BaseExtractor(object):
                 pool=pool,
                 hostname=hostname,
                 chassis_id=chassis_id,
+                labels=labels,
                 data=kwargs,
             )
         )

@@ -58,7 +58,10 @@ class Purgatorium(Model):
     #
     success_checks = MaterializedField(
         ArrayField(StringField(low_cardinality=True)),
-        "arrayMap(x -> trim(TRAILING ':' from concat(JSONExtractString(x, 'check'), ':', JSONExtractString(x, 'port'))), checks)",
+        """arrayMap(
+             x -> trim(TRAILING ':' from concat(JSONExtractString(x, 'check'), ':', JSONExtractString(x, 'port'))),
+             arrayFilter(c -> JSONExtractBool(c, 'status') ,checks)
+         )""",
         low_cardinality=False,
     )
     # http, telegraf HTTP and port 3000, regex - status: avail & access & app (regex)

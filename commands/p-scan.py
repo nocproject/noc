@@ -184,7 +184,7 @@ class Command(BaseCommand):
                         if r.data and DESCR_OID in r.data:
                             result[addr]["description"] = r.data[DESCR_OID]
                         if r.data and UPTIME_OID in r.data:
-                            result[addr]["uptime"] = int(r.data[UPTIME_OID])
+                            result[addr]["uptime"] = r.data[UPTIME_OID]
                         if r.data and CHASSIS_OID in r.data:
                             result[addr]["chassis_id"] = r.data[CHASSIS_OID]
                         result[addr]["checks"].append(
