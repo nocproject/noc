@@ -45,12 +45,13 @@ Ext.define("NOC.inv.inv.CreateConnectionForm", {
             selectedPin: null,
             selectedPinId: null,
             isSelectedPinInternal: null,
+            isDirty: false,
         },
-        formulas: {
-            isValid: function(get) {
-                return get("leftSelectedPin") && get("rightSelectedPin");
-            }
-        }
+        // formulas: {
+        //     isValid: function(get) {
+        //         return get("leftSelectedPin") && get("rightSelectedPin");
+        //     }
+        // }
     },
     initComponent: function() {
         var me = this;
@@ -152,12 +153,12 @@ Ext.define("NOC.inv.inv.CreateConnectionForm", {
                 me.cableCombo,
                 "->",
                 {
-                    text: __("Connect"),
+                    text: __("Save"),
                     scope: me,
                     bind: {
-                        disabled: "{!isValid}"
+                        disabled: "{!isDirty}"
                     },
-                    handler: me.onConnectClick
+                    handler: me.onSaveClick
                 }
             ],
         });
@@ -191,6 +192,7 @@ Ext.define("NOC.inv.inv.CreateConnectionForm", {
                 me.unmask();
                 NOC.msg.complete(__("The data was successfully loaded"));
                 mainSurface.removeAll(true);
+                me.getViewModel().set("isDirty", false);
                 me.cableCombo.getStore().loadData(data.cable);
                 me.scaleCalculate();
                 Ext.Array.each(["left", "right"], function(side) {
@@ -277,20 +279,22 @@ Ext.define("NOC.inv.inv.CreateConnectionForm", {
             mainSurface = me.drawPanel.getSurface(),
             offsetX = me.getWiresOffset("left", "right");
         return Ext.Array.map(wires, function(wire) {
-
-            return me.makeWire(mainSurface.get(wire[0].id), mainSurface.get(wire[1].id), wire[0].side, wire[1].side, offsetX[0], offsetX[1]);
+            return me.makeWire(mainSurface.get(wire[0].id), mainSurface.get(wire[1].id), wire[0].side, wire[1].side, offsetX[0], offsetX[1], wire[0].isNew);
         });
     },
-    makeWire: function(firstPort, secondPort, firstSide, secondSide, firstOffset, secondOffset) {
+    makeWire: function(firstPort, secondPort, firstSide, secondSide, firstOffset, secondOffset, isNew) {
         return {
             type: "connection",
             connectionType: firstSide === secondSide ? "loopback" : "wire",
             fromPortId: firstPort.id,
+            fromPort: firstPort.pinName,
             toPortId: secondPort.id,
+            toPort: secondPort.pinName,
             fromXY: [firstPort.x + firstPort.box.width / 2, firstPort.y + firstPort.box.height / 2],
             toXY: [secondPort.x + secondPort.box.width / 2, secondPort.y + secondPort.box.height / 2],
             fromSide: firstSide,
             toSide: secondSide,
+            isNew: isNew ? isNew : false,
             offset: [firstOffset, secondOffset],
             connectionColor: this.WIRE_COLOR,
             zIndex: 50,
@@ -444,6 +448,7 @@ Ext.define("NOC.inv.inv.CreateConnectionForm", {
                 discriminatorWidth: me.discriminatorWidth[side],
                 connectionColor: attr.is_delete ? me.WIRE_COLOR : me.DISABLED_WIRE_COLOR,
                 length: Math.abs(f[1] - t[1]),
+                isNew: attr.isNew ? true : false,
                 zIndex: 50,
             };
         }
@@ -497,8 +502,8 @@ Ext.define("NOC.inv.inv.CreateConnectionForm", {
             mainSurface = me.drawPanel.getSurface(),
             wires = me.getWires(mainSurface),
             wire = [
-                {id: sprite.id, side: sprite.side},
-                {id: prevSprite.id, side: prevSprite.side},
+                {id: sprite.id, side: sprite.side, isNew: true},
+                {id: prevSprite.id, side: prevSprite.side, isNew: true},
             ];
         Ext.Array.sort(wire, function(a, b) {
             if(a.side === 'left' && b.side === 'right') {
@@ -511,6 +516,7 @@ Ext.define("NOC.inv.inv.CreateConnectionForm", {
         });
         wires.push(wire);
         me.drawWires(wires, mainSurface);
+        me.getViewModel().set("isDirty", true);
     },
     createInternalConnection: function(fromSprite, toSprite, side) {
         var me = this,
@@ -581,7 +587,8 @@ Ext.define("NOC.inv.inv.CreateConnectionForm", {
                                 gain_db: gainDb,
                                 is_delete: true,
                                 to: to,
-                                from: from
+                                from: from,
+                                isNew: true,
                             };
 
 
@@ -598,6 +605,7 @@ Ext.define("NOC.inv.inv.CreateConnectionForm", {
                             });
                         }
                         me.drawInternalConnections(connections, internalConnectionSurface, side);
+                        me.getViewModel().set("isDirty", true);
                         console.log("renderFrame: createInternalConnections");
                         mainSurface.renderFrame();
                         button.up("window").close();
@@ -687,6 +695,7 @@ Ext.define("NOC.inv.inv.CreateConnectionForm", {
                         has_arrow: sprite.attr.toHasArrow,
 
                     },
+                    isNew: sprite.attr.isNew,
                     gain_db: sprite.attr.gainDb,
                     is_delete: sprite.attr.isDeleted
                 }
@@ -868,10 +877,10 @@ Ext.define("NOC.inv.inv.CreateConnectionForm", {
                         // console.log("renderFrame (internal): onSpriteMouseOver");
                         // me.drawPanel.getSurface(sprite.side + "_internal_conn").renderFrame();
                         if(sprite.toDiscriminatorTooltip && sprite.toDiscriminatorTooltip.isHidden()) {
-                            sprite.toDiscriminatorTooltip.showAt([event.pageX, event.pageY]);
+                            sprite.toDiscriminatorTooltip.showAt([event.pageX, event.pageY + 20]);
                         }
                         if(sprite.fromDiscriminatorTooltip && sprite.fromDiscriminatorTooltip.isHidden()) {
-                            sprite.fromDiscriminatorTooltip.showAt([event.pageX, event.pageY]);
+                            sprite.fromDiscriminatorTooltip.showAt([event.pageX, event.pageY - 20]);
                         }
                     }
                     if(Ext.Array.contains(["wire", "loopback"], sprite.connectionType)) {
@@ -1078,7 +1087,6 @@ Ext.define("NOC.inv.inv.CreateConnectionForm", {
         }
         console.log("renderFrame: onSpriteClick");
         surface.renderFrame();
-        // mainPanel.load();
     },
     onCleanClick: function() {
         var me = this;
@@ -1108,11 +1116,34 @@ Ext.define("NOC.inv.inv.CreateConnectionForm", {
             }
         }
     },
-    onConnectClick: function() {
-        // var me = this,
-        //     cable = me.getViewModel().get("cable"),
-        //     leftObject = me.getViewModel().get("leftObject").get("id"),
-        //     rightObject = me.getViewModel().get("rightObject").get("id"),
+    onSaveClick: function() {
+        var params,
+            me = this,
+            vm = me.getViewModel(),
+            mainSurface = me.drawPanel.getSurface(),
+            surfaceLeft = me.drawPanel.getSurface("left_internal_conn"),
+            surfaceRight = me.drawPanel.getSurface("right_internal_conn"),
+            cable = me.getViewModel().get("cable"),
+            leftObjectId = vm.get("leftObject").get("id"),
+            rightObjectId = vm.get("rightObject").get("id"),
+            newWires = Ext.Array.filter(mainSurface.getItems(), function(sprite) {return sprite.type === "connection" && sprite.isNew}),
+            leftInternal = Ext.Array.filter(surfaceLeft.getItems(), function(sprite) {return sprite.type === "connection" && sprite.isNew}),
+            rightInternal = Ext.Array.filter(surfaceRight.getItems(), function(sprite) {return sprite.type === "connection" && sprite.isNew}),
+            connections = leftInternal.concat(newWires).concat(rightInternal);
+
+        console.log(leftObjectId, rightObjectId);
+        console.log(connections);
+
+        params = Ext.Array.map(connections, function(connection) {
+            return {
+                object: leftObjectId,
+                name: connection.fromPort,
+                remote_object: rightObjectId,
+                remote_name: connection.toPort,
+                is_internal: connection.connectionType === "internal",
+            }
+        });
+        console.log(params);
         //     leftPin = me.getViewModel().get("leftSelectedPin"),
         //     rightPin = me.getViewModel().get("rightSelectedPin"),
         //     leftPinId = me.getViewModel().get("leftSelectedPinId"),
@@ -1127,24 +1158,24 @@ Ext.define("NOC.inv.inv.CreateConnectionForm", {
         // if(cable) {
         //     param.cable = cable;
         // }
-        // Ext.Ajax.request({
-        //     url: "/inv/inv/connect/",
-        //     method: "POST",
-        //     jsonData: param,
-        //     scope: me,
-        //     success: function() {
-        //         this.drawPanel.getSurface().add(this.drawWire([
-        //             {
-        //                 left: {id: leftPinId}, right: {id: rightPinId}
-        //             }
-        //         ]));
-        //         this.drawPanel.renderFrame();
-        //         NOC.msg.complete(__("Objects was successfully connected"));
-        //     },
-        //     failure: function(response) {
-        //         NOC.error(__("Failed to connect objects : ") + response.responseText);
-        //     }
-        // });
+        Ext.Ajax.request({
+            url: "/inv/inv/connect/",
+            method: "POST",
+            jsonData: params,
+            scope: me,
+            success: function() {
+                //         this.drawPanel.getSurface().add(this.drawWire([
+                //             {
+                //                 left: {id: leftPinId}, right: {id: rightPinId}
+                //             }
+                //         ]));
+                //         this.drawPanel.renderFrame();
+                NOC.msg.complete(__("Objects was successfully connected"));
+            },
+            failure: function(response) {
+                NOC.error(__("Failed to connect objects : ") + response.responseText);
+            }
+        });
     },
     cleanViewModel: function() {
         this.getViewModel().set("leftObject", null);

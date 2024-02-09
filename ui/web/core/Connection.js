@@ -36,6 +36,7 @@ Ext.define("NOC.core.Connection", {
                 path: "string",
                 connectionColor: "string",
                 length: "number",
+                isNew: "bool",
             },
             triggers: {
                 path: "recalculate",
@@ -46,6 +47,7 @@ Ext.define("NOC.core.Connection", {
             },
             defaults: {
                 side: "left", // "left" | "right"
+                isNew: false,
             },
             updaters: {
                 recalculate: function(attr) {
