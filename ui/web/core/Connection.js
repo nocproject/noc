@@ -2,7 +2,7 @@
 // NOC.core.Connection
 // Render SVG connection
 //---------------------------------------------------------------------
-// Copyright (C) 2007-2023 The NOC Project
+// Copyright (C) 2007-2024 The NOC Project
 // See LICENSE for details
 //---------------------------------------------------------------------
 console.debug("Defining NOC.core.Connection");
@@ -14,7 +14,6 @@ Ext.define("NOC.core.Connection", {
         def: {
             processors: {
                 connectionType: "string",
-                side: "string",
                 fromPortId: "string",
                 fromPort: "string",
                 fromXY: "data",
@@ -27,6 +26,7 @@ Ext.define("NOC.core.Connection", {
                 toHasArrow: "bool",
                 toDiscriminator: "string",
                 toSide: "string",
+                cable: "string",
                 offset: "data",
                 isDeleted: "bool",
                 discriminatorWidth: "number",
@@ -44,9 +44,9 @@ Ext.define("NOC.core.Connection", {
                 fromDiscriminator: "recalculate",
                 toDiscriminator: "recalculate",
                 discriminatorWidth: "recalculate",
+                cable: "recalculate",
             },
             defaults: {
-                side: "left", // "left" | "right"
                 isNew: false,
             },
             updaters: {
@@ -55,6 +55,8 @@ Ext.define("NOC.core.Connection", {
                         path = attr.path;
 
                     me.createSprites(attr);
+                    me.isNew = attr.isNew;
+                    me.cable = attr.cable;
                     if(attr.connectionType === "wire") {
                         path = Ext.String.format("M{0},{1} L{2},{3} L{4},{5} L{6},{7}",
                             attr.fromXY[0], attr.fromXY[1],
@@ -65,12 +67,12 @@ Ext.define("NOC.core.Connection", {
                     if(attr.connectionType === "loopback") {
                         path = Ext.String.format("M{0},{1} L{2},{3} L{4},{5} L{6},{7}",
                             attr.fromXY[0], attr.fromXY[1],
-                            attr.fromXY[0] + (attr.fromSide === "left" ? attr.offset[0] : -1 * attr.offset[1]), attr.fromXY[1],
-                            attr.fromXY[0] + (attr.fromSide === "left" ? attr.offset[0] : -1 * attr.offset[1]), attr.toXY[1],
+                            attr.fromXY[0] + (attr.fromSide === "left" ? 1 * attr.offset[0] : -1 * attr.offset[1]), attr.fromXY[1],
+                            attr.fromXY[0] + (attr.fromSide === "left" ? 1 * attr.offset[0] : -1 * attr.offset[1]), attr.toXY[1],
                             attr.toXY[0], attr.toXY[1]);
                     }
                     me.line.setAttributes({
-                        side: attr.side,
+                        side: attr.fromSide,
                         fromPortId: attr.fromPortId,
                         toPortId: attr.toPortId,
                         connectionType: attr.connectionType,
@@ -80,13 +82,13 @@ Ext.define("NOC.core.Connection", {
                     });
 
                     if(!Ext.isEmpty(attr.fromDiscriminator)) {
-                        me.fromDiscriminator.setAttributes({
+                        me.fromDisc.setAttributes({
                             text: me.makeEllipses(attr.fromDiscriminator, attr.discriminatorWidth),
-                            textAlign: attr.side === "left" ? "start" : "end",
-                            translationX: parseFloat(attr.fromXY[0], 10) + me.getBoxWidth() * (attr.side === "left" ? 1 : -1),
+                            textAlign: attr.fromSide === "left" ? "start" : "end",
+                            translationX: parseFloat(attr.fromXY[0], 10) + me.getBoxWidth() * (attr.fromSide === "left" ? 1 : -1),
                             translationY: parseFloat(attr.fromXY[1], 10),
                         });
-                        if(!me.fromDiscriminatorTooltip && me.measureText(attr.fromDiscriminator) > me.measureText(me.fromDiscriminator.attr.text)) {
+                        if(!me.fromDiscriminatorTooltip && me.measureText(attr.fromDiscriminator) > me.measureText(me.fromDisc.attr.text)) {
                             me.fromDiscriminatorTooltip = Ext.create("Ext.tip.ToolTip", {
                                 html: attr.fromDiscriminator,
                                 hidden: true
@@ -94,13 +96,13 @@ Ext.define("NOC.core.Connection", {
                         }
                     }
                     if(!Ext.isEmpty(attr.toDiscriminator)) {
-                        me.toDiscriminator.setAttributes({
+                        me.toDisc.setAttributes({
                             text: me.makeEllipses(attr.toDiscriminator, attr.discriminatorWidth),
-                            textAlign: attr.side === "left" ? "start" : "end",
-                            translationX: parseFloat(attr.toXY[0], 10) + me.getBoxWidth() * (attr.side === "left" ? 1 : -1),
+                            textAlign: attr.toSide === "left" ? "start" : "end",
+                            translationX: parseFloat(attr.toXY[0], 10) + me.getBoxWidth() * (attr.fromSide === "left" ? 1 : -1),
                             translationY: parseFloat(attr.toXY[1], 10),
                         });
-                        if(!me.toDiscriminatorTooltip && me.measureText(attr.toDiscriminator) > me.measureText(me.toDiscriminator.attr.text)) {
+                        if(!me.toDiscriminatorTooltip && me.measureText(attr.toDiscriminator) > me.measureText(me.toDisc.attr.text)) {
                             me.toDiscriminatorTooltip = Ext.create("Ext.tip.ToolTip", {
                                 html: attr.toDiscriminator,
                                 hidden: true
@@ -143,15 +145,15 @@ Ext.define("NOC.core.Connection", {
             };
         }
 
-        if(me.toDiscriminator) {
-            if(me.isOnSprite(me.toDiscriminator.getBBox(), x, y)) {
+        if(me.toDisc) {
+            if(me.isOnSprite(me.toDisc.getBBox(), x, y)) {
                 return {
                     sprite: me
                 };
             }
         }
-        if(me.fromDiscriminator) {
-            if(me.isOnSprite(me.fromDiscriminator.getBBox(), x, y)) {
+        if(me.fromDisc) {
+            if(me.isOnSprite(me.fromDisc.getBBox(), x, y)) {
                 return {
                     sprite: me
                 };
@@ -176,13 +178,13 @@ Ext.define("NOC.core.Connection", {
                 lineWidth: 2,
             });
             if(attr.toHasArrow) {
-                me.toArrowMarker = me.add(me.getMarker("arrow", attr.side, attr.actualScale));
+                me.toArrowMarker = me.add(me.getMarker("arrow", attr.toSide, attr.actualScale));
             }
             if(attr.fromHasArrow) {
-                me.fromArrowMarker = me.add(me.getMarker("arrow", attr.side, attr.actualScale));
+                me.fromArrowMarker = me.add(me.getMarker("arrow", attr.fromSide, attr.actualScale));
             }
             if(attr.toDiscriminator) {
-                me.toDiscriminator = me.add({
+                me.toDisc = me.add({
                     type: "text",
                     fontFamily: me.getFontFamily(),
                     fontWeight: me.getFontWeight(),
@@ -191,7 +193,7 @@ Ext.define("NOC.core.Connection", {
                 });
             }
             if(attr.fromDiscriminator) {
-                me.fromDiscriminator = me.add({
+                me.fromDisc = me.add({
                     type: "text",
                     fontFamily: me.getFontFamily(),
                     fontWeight: me.getFontWeight(),
@@ -220,12 +222,6 @@ Ext.define("NOC.core.Connection", {
             reservedWidth = Math.abs(reservedWidth) - me.getBoxWidth() * 1.1;
 
         if(reservedWidth > 0 && width > reservedWidth) {
-            if(!me.internalLabelTooltip) {
-                me.internalLabelTooltip = Ext.create("Ext.tip.ToolTip", {
-                    html: me.fullInternalLabel,
-                    hidden: true
-                });
-            }
             while(width > reservedWidth) {
                 text = text.slice(0, -1);
                 width = me.measureText(text + suffix);

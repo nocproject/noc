@@ -2,7 +2,7 @@
 // NOC.core.Pointer
 // Render SVG pointer for make connections
 //---------------------------------------------------------------------
-// Copyright (C) 2007-2023 The NOC Project
+// Copyright (C) 2007-2024 The NOC Project
 // See LICENSE for details
 //---------------------------------------------------------------------
 console.debug("Defining NOC.core.Pointer");
@@ -80,7 +80,7 @@ Ext.define("NOC.core.Pointer", {
 
                         offset = attr.xOffsets || [offset, offset];
                         baselinePath = Ext.String.format("M{0},{1} L{2},{3} L{4},{5} L{6},{7}",
-                            fromX, fromY, fromX + offset[0], fromY, toX - offset[1], toY, toX, toY);
+                            fromX, fromY, fromX + (attr.side === "left" ? -1 : 1) * offset[0], fromY, toX + (attr.side === "left" ? 1 : -1) * offset[1], toY, toX, toY);
                         arrowLeftPath = Ext.String.format("M{0} {1} L{2} {3}", toX, toY, toX - arrowX, toY + arrowY);
                         arrowRightPath = Ext.String.format("M{0} {1} L{2} {3}", toX, toY, toX - arrowX, toY - arrowY);
                     }
@@ -90,7 +90,7 @@ Ext.define("NOC.core.Pointer", {
 
                         offset = attr.xOffsets || [offset, offset];
                         baselinePath = Ext.String.format("M{0},{1} L{2},{3} L{4},{5} L{6},{7}",
-                            fromX, fromY, fromX + offset[0], fromY, fromX + offset[0], toY, toX, toY);
+                            fromX, fromY, fromX + (attr.side === "left" ? 1 : -1) * offset[0], fromY, fromX + (attr.side === "left" ? 1 : -1) * offset[0], toY, toX, toY);
                         arrowLeftPath = Ext.String.format("M{0} {1} L{2} {3}", toX, toY, toX - arrowX, toY + arrowY);
                         arrowRightPath = Ext.String.format("M{0} {1} L{2} {3}", toX, toY, toX - arrowX, toY - arrowY);
                     }

@@ -106,6 +106,9 @@ Ext.define("NOC.core.Label", {
                 translationY: attr.backgroundTranslationY,
                 width: attr.backgroundWidth,
                 height: attr.backgroundHeight,
+                // stroke: "black",
+                // lineWidth: 1,
+                hidden: false,
             });
             me.label = me.add({
                 type: "text",
@@ -116,6 +119,7 @@ Ext.define("NOC.core.Label", {
                 y: attr.labelY,
                 translationX: attr.labelTranslationX,
                 translationY: attr.labelTranslationY,
+                hidden: false,
             });
         }
     },
