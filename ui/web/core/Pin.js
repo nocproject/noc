@@ -85,7 +85,10 @@ Ext.define("NOC.core.Pin", {
                     me.pinName = attr.pinName;
                     me.pinNameOrig = attr.pinNameOrig;
                     me.pinNameWidth = me.measureText(attr.pinName) + 0.2 * me.getBoxWidth();
-                    me.enabled = attr.enabled
+                    me.enabled = attr.enabled;
+                    me.internalEnabled = attr.internalEnabled;
+                    me.pinColor = attr.pinColor;
+                    me.internalColor = attr.internalColor;
                     me.label.setAttributes({
                         text: attr.pinName,
                         fontWeight: me.getFontWeight(),

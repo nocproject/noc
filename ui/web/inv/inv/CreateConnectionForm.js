@@ -113,7 +113,7 @@ Ext.define("NOC.inv.inv.CreateConnectionForm", {
             },
             listeners: {
                 scope: me,
-                change: me.load
+                change: me.reloadStatuses
             }
         });
         Ext.apply(me, {
@@ -175,12 +175,12 @@ Ext.define("NOC.inv.inv.CreateConnectionForm", {
             leftObject = me.getViewModel().get("leftObject"),
             rightObject = me.getViewModel().get("rightObject");
 
-        title = leftObject.get("name") + " <==> " + (rightObject ? rightObject.get("name") : __("none"));
+        title = (leftObject ? leftObject.get("name") : __("none")) + " <==> " + (rightObject ? rightObject.get("name") : __("none"));
         me.setTitle(title);
         params = "o1=" + leftObject.get("id") + (rightObject ? "&o2=" + rightObject.get("id") : "");
         // params += leftSelected ? "&left_filter=" + leftSelected : "";
         // params += rightSelected ? "&right_filter=" + rightSelected : "";
-        params += cable ? "&cable_filter=" + cable : "";
+        params += cable ? "&cable=" + cable : "";
         me.mask(__("Loading..."));
         Ext.Ajax.request({
             url: "/inv/inv/crossing_proposals/?" + params,
@@ -218,6 +218,38 @@ Ext.define("NOC.inv.inv.CreateConnectionForm", {
             }
         });
     },
+    reloadStatuses: function() {
+        var params, me = this,
+            vm = me.getViewModel(),
+            leftObject = vm.get("leftObject"),
+            rightObject = vm.get("rightObject"),
+            cable = me.cableCombo.getValue(),
+            leftObjectId = leftObject ? leftObject.id : undefined,
+            rightObjectId = rightObject ? rightObject.id : undefined;
+
+        params = "o1=" + leftObjectId + (rightObjectId ? "&o2=" + rightObjectId : "");
+        params += cable ? "&cable=" + cable : "";
+        me.mask(__("Loading..."));
+        Ext.Ajax.request({
+            url: "/inv/inv/crossing_proposals/?" + params,
+            method: "GET",
+            success: function(response) {
+                var data = Ext.decode(response.responseText);
+
+                Ext.Array.each(["left", "right"], function(side) {
+                    if(data[side].connections && data[side].connections.length) {
+                        me.updatePinsStatus(data[side].connections);
+                    }
+                });
+                me.unmask();
+                NOC.msg.complete(__("The data was successfully updated"));
+            },
+            failure: function() {
+                me.unmask();
+                NOC.msg.failed(__("Error updating statuses"));
+            }
+        });
+    },
     drawObject: function(pins, surface, side, hasDiscriminator) {
         var me = this;
 
@@ -249,6 +281,69 @@ Ext.define("NOC.inv.inv.CreateConnectionForm", {
         console.log("renderFrame: drawWire");
         surface.add(me.makeWires(wires));
         surface.renderFrame();
+    },
+    updatePinsStatus: function(pinObjList, side) {
+        var me = this,
+            mainSurface = me.drawPanel.getSurface(),
+            leftSurface = me.drawPanel.getSurface("left_internal_conn"),
+            rightSurface = me.drawPanel.getSurface("right_internal_conn"),
+            newWires = Ext.Array.filter(mainSurface.getItems(), function(sprite) {return sprite.type === "connection" && sprite.isNew}),
+            leftInternal = Ext.Array.filter(leftSurface.getItems(), function(sprite) {return sprite.type === "connection" && sprite.isNew}),
+            rightInternal = Ext.Array.filter(rightSurface.getItems(), function(sprite) {return sprite.type === "connection" && sprite.isNew}),
+            pinsWithNewConnections = me.flattenArray(Ext.Array.map(leftInternal.concat(newWires).concat(rightInternal), function(connection) {
+                var type = connection.connectionType === "internal" ? "internal" : "external";
+                return [{
+                    pin: connection.fromPortId,
+                    type: type,
+                },
+                {
+                    pin: connection.toPortId,
+                    type: type
+                }];
+            }));
+
+        me.cancelDrawConnection();
+        Ext.Array.each(pinObjList, function(pinObj) {
+            var pinStripe = mainSurface.get(pinObj.id),
+                pinHasNewInternalConnection = Ext.Array.filter(pinsWithNewConnections, function(item) {return item.pin === pinObj.id && item.type === "internal"}).length > 0,
+                pinHasNewExternalConnection = Ext.Array.filter(pinsWithNewConnections, function(item) {return item.pin === pinObj.id && item.type === "external"}).length > 0,
+                {
+                    pinColor,
+                    internalColor,
+                    name,
+                    remoteId,
+                    remoteName,
+                    internalEnabled,
+                    enabled
+                } = me.portStatus(pinObj, side),
+                _pinColor = pinHasNewExternalConnection ? pinStripe.pinColor : pinColor,
+                _enabled = pinHasNewExternalConnection ? pinStripe.enabled : enabled,
+                _internalColor = pinHasNewInternalConnection ? pinStripe.internalColor : internalColor,
+                _internalEnabled = pinHasNewInternalConnection ? pinStripe.internalEnabled : internalEnabled;
+
+            console.log(pinHasNewExternalConnection);
+            pinStripe.setAttributes({
+                isSelected: false,
+                pinColor: _pinColor,
+                enabled: _enabled,
+                internalColor: _internalColor,
+                internalEnabled: _internalEnabled,
+            });
+        });
+    },
+    flattenArray: function(array) {
+        var me = this,
+            result = [];
+
+        array.forEach(function(item) {
+            if(Ext.isArray(item)) {
+                result = result.concat(me.flattenArray(item));
+            } else {
+                result.push(item);
+            }
+        });
+
+        return result;
     },
     /**
      * Redraws labels on the given surface, workaround for zIndex, 
@@ -321,42 +416,14 @@ Ext.define("NOC.inv.inv.CreateConnectionForm", {
             sprites = [];
 
         Ext.each(pins, function(port, index) {
-            var pinColor = me.AVAILABLE_COLOR,
-                internalColor = me.AVAILABLE_COLOR,
-                name = port.name,
-                remoteId = "none",
-                remoteName = "none",
-                internalEnabled = true,
-                enabled = true;
+            var {pinColor,
+                internalColor,
+                name,
+                remoteId,
+                remoteName,
+                internalEnabled,
+                enabled} = me.portStatus(port, side);
 
-            if(!port.free) {
-                pinColor = me.OCCUPIED_COLOR;
-                enabled = false;
-                if(port.remote_device) {
-                    var remoteLink = port.remote_device.slot ? port.remote_device.slot : "",
-                        remoteName = port.remote_device.name ? port.remote_device.name + "/" : "";
-                    remoteId = port.remote_device.id;
-                    if(side === "left") {
-                        name += " => " + remoteName + remoteLink;
-                    } else {
-                        name = remoteName + remoteLink + " <= " + port.name;
-                    }
-                }
-            }
-            if(!port.valid) {
-                pinColor = me.INVALID_COLOR;
-                enabled = false;
-            }
-            if(port.internal) {
-                if(!port.internal.valid) {
-                    internalColor = me.INVALID_COLOR;
-                    internalEnabled = false;
-                }
-                if(!port.internal.free) {
-                    internalColor = me.OCCUPIED_COLOR;
-                    internalEnabled = false;
-                }
-            }
             sprites.push({
                 type: "pin",
                 id: port.id,
@@ -494,6 +561,55 @@ Ext.define("NOC.inv.inv.CreateConnectionForm", {
 
             }
         ]
+    },
+    portStatus: function(port, side) {
+        var me = this,
+            pinColor = me.AVAILABLE_COLOR,
+            internalColor = me.AVAILABLE_COLOR,
+            name = port.name,
+            remoteId = "none",
+            remoteName = "none",
+            internalEnabled = true,
+            enabled = true;
+
+        if(!port.free) {
+            pinColor = me.OCCUPIED_COLOR;
+            enabled = false;
+            if(port.remote_device) {
+                var remoteLink = port.remote_device.slot ? port.remote_device.slot : "",
+                    remoteName = port.remote_device.name ? port.remote_device.name + "/" : "";
+                remoteId = port.remote_device.id;
+                if(side === "left") {
+                    name += " => " + remoteName + remoteLink;
+                } else {
+                    name = remoteName + remoteLink + " <= " + port.name;
+                }
+            }
+        }
+        if(!port.valid) {
+            pinColor = me.INVALID_COLOR;
+            enabled = false;
+        }
+        if(port.internal) {
+            if(!port.internal.valid) {
+                internalColor = me.INVALID_COLOR;
+                internalEnabled = false;
+            }
+            if(!port.internal.free) {
+                internalColor = me.OCCUPIED_COLOR;
+                internalEnabled = false;
+            }
+        }
+
+        return {
+            pinColor: pinColor,
+            internalColor: internalColor,
+            name: name,
+            remoteId: remoteId,
+            remoteName: remoteName,
+            internalEnabled: internalEnabled,
+            enabled: enabled,
+        };
     },
     scaleCalculate: function() {
         var me = this,
@@ -1256,7 +1372,6 @@ Ext.define("NOC.inv.inv.CreateConnectionForm", {
             mainSurface = me.drawPanel.getSurface(),
             leftSurface = me.drawPanel.getSurface("left_internal_conn"),
             rightSurface = me.drawPanel.getSurface("right_internal_conn"),
-            // cable = me.getViewModel().get("cable"),
             leftObject = vm.get("leftObject"),
             rightObject = vm.get("rightObject"),
             newWires = Ext.Array.filter(mainSurface.getItems(), function(sprite) {return sprite.type === "connection" && sprite.isNew}),
