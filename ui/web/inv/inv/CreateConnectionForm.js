@@ -26,7 +26,7 @@ Ext.define("NOC.inv.inv.CreateConnectionForm", {
     schemaPadding: 60, // boxHeight * 3,
     gap: 12.5,
     scale: 1,
-    discriminatorWidth: {left: -150, right: 150},
+    discriminatorWidth: {left: -155, right: 155},
     legendHeight: 20,
     firstTrace: 3,
     requires: [
@@ -103,6 +103,17 @@ Ext.define("NOC.inv.inv.CreateConnectionForm", {
             queryMode: "local",
             displayField: "name",
             valueField: "name",
+            triggers: {
+                clear: {
+                    cls: 'x-form-clear-trigger',
+                    hidden: true,
+                    weight: -1,
+                    handler: function(field) {
+                        field.setValue(null);
+                        field.fireEvent("select", field);
+                    }
+                },
+            },
             store: {
                 fields: ["name", "available"],
                 data: []
@@ -180,7 +191,7 @@ Ext.define("NOC.inv.inv.CreateConnectionForm", {
         params = "o1=" + leftObject.get("id") + (rightObject ? "&o2=" + rightObject.get("id") : "");
         // params += leftSelected ? "&left_filter=" + leftSelected : "";
         // params += rightSelected ? "&right_filter=" + rightSelected : "";
-        params += cable ? "&cable=" + cable : "";
+        params += cable ? "&cable_filter=" + cable : "";
         me.mask(__("Loading..."));
         Ext.Ajax.request({
             url: "/inv/inv/crossing_proposals/?" + params,
@@ -227,8 +238,13 @@ Ext.define("NOC.inv.inv.CreateConnectionForm", {
             leftObjectId = leftObject ? leftObject.id : undefined,
             rightObjectId = rightObject ? rightObject.id : undefined;
 
+        if(me.cableCombo.getValue()) {
+            me.cableCombo.getTrigger("clear").show();
+        } else {
+            me.cableCombo.getTrigger("clear").hide();
+        }
         params = "o1=" + leftObjectId + (rightObjectId ? "&o2=" + rightObjectId : "");
-        params += cable ? "&cable=" + cable : "";
+        params += cable ? "&cable_filter=" + cable : "";
         me.mask(__("Loading..."));
         Ext.Ajax.request({
             url: "/inv/inv/crossing_proposals/?" + params,
@@ -321,7 +337,6 @@ Ext.define("NOC.inv.inv.CreateConnectionForm", {
                 _internalColor = pinHasNewInternalConnection ? pinStripe.internalColor : internalColor,
                 _internalEnabled = pinHasNewInternalConnection ? pinStripe.internalEnabled : internalEnabled;
 
-            console.log(pinHasNewExternalConnection);
             pinStripe.setAttributes({
                 isSelected: false,
                 pinColor: _pinColor,
@@ -440,6 +455,7 @@ Ext.define("NOC.inv.inv.CreateConnectionForm", {
                 enabled: enabled,
                 internalEnabled: internalEnabled,
                 hasInternalLabel: hasDiscriminator,
+                allowDiscriminators: port.internal ? port.internal.allow_discriminators : [],
                 side: side,
                 labelAlign: labelAlign,
                 allowInternal: !Ext.isEmpty(port.internal),
@@ -686,7 +702,9 @@ Ext.define("NOC.inv.inv.CreateConnectionForm", {
         var me = this,
             internalConnectionSurface = me.drawPanel.getSurface(side + "_internal_conn"),
             mainSurface = me.drawPanel.getSurface(),
-            connections = me.getInternalConnections(internalConnectionSurface);
+            connections = me.getInternalConnections(internalConnectionSurface),
+            fromDiscriminators = fromSprite.allowDiscriminators,
+            toDiscriminators = toSprite.allowDiscriminators;
 
         Ext.create("Ext.window.Window", {
             autoShow: true,
@@ -696,17 +714,23 @@ Ext.define("NOC.inv.inv.CreateConnectionForm", {
             layout: "form",
             title: __("Create internal connection from") + " " + fromSprite.attr.pinName + " " + __("to") + " " + toSprite.pinName,
             referenceHolder: true,
-            defaultFocus: "textfield",
+            defaultFocus: "numberfield",
             defaultButton: "createBtn",
             items: [
                 {
-                    xtype: "textfield",
+                    xtype: "combobox",
                     fieldLabel: __("Discriminator From"),
+                    store: fromDiscriminators,
+                    disabled: !fromDiscriminators.length,
+                    queryMode: "local",
                     name: "fromDiscriminator"
                 },
                 {
-                    xtype: "textfield",
+                    xtype: "combobox",
                     fieldLabel: __("Discriminator To"),
+                    store: toDiscriminators,
+                    disabled: !toDiscriminators.length,
+                    queryMode: "local",
                     name: "toDiscriminator"
                 },
                 {

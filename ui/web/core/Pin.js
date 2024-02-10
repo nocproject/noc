@@ -31,6 +31,7 @@ Ext.define("NOC.core.Pin", {
                 pinOver: "bool",
                 internalEnabled: "bool",
                 allowInternal: "bool",
+                allowDiscriminators: "data",
                 x: "number",
                 y: "number",
                 actualScale: "number"
@@ -47,6 +48,7 @@ Ext.define("NOC.core.Pin", {
                 remoteName: "recalculate",
                 side: "recalculate",
                 allowInternal: "recalculate",
+                allowDiscriminators: "recalculate",
                 enabled: "recalculate",
                 internalEnabled: "recalculate",
                 x: "recalculate",
@@ -89,6 +91,7 @@ Ext.define("NOC.core.Pin", {
                     me.internalEnabled = attr.internalEnabled;
                     me.pinColor = attr.pinColor;
                     me.internalColor = attr.internalColor;
+                    me.allowDiscriminators = attr.allowDiscriminators;
                     me.label.setAttributes({
                         text: attr.pinName,
                         fontWeight: me.getFontWeight(),
