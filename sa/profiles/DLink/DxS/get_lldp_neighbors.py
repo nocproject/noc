@@ -84,7 +84,6 @@ class Script(BaseScript):
                 # DGS1210-12TS/ME - 12
                 local_interface = port_id
             elif port_subtype == LLDP_PORT_SUBTYPE_NAME:
-                # DGS3130-30S - eth1/0/30
                 local_interface = port_id
             elif port_subtype == LLDP_PORT_SUBTYPE_MAC:
                 # Some old switches or switches with old firmware
