@@ -1,7 +1,7 @@
 # ----------------------------------------------------------------------
 # Base service
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2023 The NOC Project
+# Copyright (C) 2007-2024 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -418,6 +418,7 @@ class BaseService(object):
 
     async def deactivate(self):
         if not self.is_active:
+            self.logger.info("Not Active")
             return
         self.is_active = False
         self.logger.info("Deactivating")
@@ -1028,8 +1029,7 @@ class BaseService(object):
             self.logger.info("WatchDog loop")
             if not self.watchdog_waiter.is_set() and failed > 3:
                 self.logger.warning("WatchDog is more %s failed. Deactivate proccess", failed)
-                self.loop.create_task(self.deactivate())
-                return
+                self.stop()
             elif not self.watchdog_waiter.is_set():
                 failed += 1
                 continue
