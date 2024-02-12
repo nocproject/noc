@@ -23,7 +23,7 @@ from noc.core.log import PrefixLoggerAdapter
 from noc.config import config
 from noc.core.comp import smart_text
 from noc.core.etl.compression import compressor
-from noc.core.purgatorium import register
+from noc.core.purgatorium import register, ProtocolCheckResult
 from noc.main.models.pool import Pool
 from ..models.base import BaseModel
 from ..models.discoveredobject import DiscoveredObject
@@ -225,6 +225,9 @@ class BaseExtractor(object):
         rid: str,
         hostname: Optional[str] = None,
         chassis_id: Optional[str] = None,
+        labels: Optional[List[str]] = None,
+        checks: Optional[List[ProtocolCheckResult]] = None,
+        description: Optional[str] = None,
         **kwargs,
     ) -> None:
         self.discovered_address.append(
@@ -233,7 +236,10 @@ class BaseExtractor(object):
                 address=address,
                 pool=pool,
                 hostname=hostname,
+                description=description,
                 chassis_id=chassis_id,
+                labels=labels,
+                checks=checks,
                 data=kwargs,
             )
         )
@@ -405,8 +411,10 @@ class BaseExtractor(object):
                     address=item.address,
                     pool=pool.bi_id,
                     source="etl",
+                    description=item.description,
                     hostname=item.hostname,
                     remote_system=self.system.remote_system.bi_id,
                     remote_id=item.id,
+                    checks=item.checks,
                     **(item.data or {}),
                 )

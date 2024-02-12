@@ -51,6 +51,8 @@ def register(
     hostname: Optional[str] = None,
     remote_system: Optional[int] = None,
     remote_id: Optional[str] = None,
+    uptime: Optional[int] = None,
+    labels: Optional[List[str]] = None,
     is_delete: bool = False,
     checks: Optional[List[ProtocolCheckResult]] = None,
     **kwargs,
@@ -66,6 +68,8 @@ def register(
     :param hostname: Host Hostname
     :param remote_system: RemoteSystem from received host
     :param remote_id: Host ID on RemoteSystem
+    :param uptime: Host Uptime
+    :param labels: Some tags
     :param is_delete: Flag that host deleted
     :param checks: List Checks, that running on discovery
     :param kwargs: Some data about Host (used when received from RemoteSystem)
@@ -101,6 +105,10 @@ def register(
         data["chassis_id"] = chassis_id
     if hostname:
         data["hostname"] = hostname
+    if uptime is not None:
+        data["uptime"] = int(uptime)
+    if labels:
+        data["labels"] = list(labels)
     if checks:
-        data["checks"] = orjson.dumps(checks).decode("utf-8")
+        data["checks"] = [orjson.dumps(c).decode("utf-8") for c in checks]
     svc.publish(orjson.dumps(data), f"ch.{PURGATORIUM_TABLE}")
