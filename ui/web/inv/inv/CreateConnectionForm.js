@@ -1478,7 +1478,7 @@ Ext.define("NOC.inv.inv.CreateConnectionForm", {
                 }
             }
             if(connection.gainDb != undefined) {
-                param.gainDb = connection.gainDb;
+                param.gain_db = connection.gainDb;
             }
             if(connection.cable) {
                 param.cable = connection.cable;
