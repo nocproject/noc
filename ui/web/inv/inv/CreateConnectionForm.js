@@ -143,7 +143,7 @@ Ext.define("NOC.inv.inv.CreateConnectionForm", {
                     text: __("Close"),
                     scope: me,
                     glyph: NOC.glyph.arrow_left,
-                    handler: me.onPressClose
+                    handler: me.onCloseClick
                 },
                 {
                     glyph: NOC.glyph.eraser,
@@ -194,7 +194,8 @@ Ext.define("NOC.inv.inv.CreateConnectionForm", {
         params += cable ? "&cable_filter=" + cable : "";
         me.mask(__("Loading..."));
         Ext.Ajax.request({
-            url: "/inv/inv/crossing_proposals/?" + params,
+            // url: "/inv/inv/crossing_proposals/?" + params,
+            url: "http://localhost:3000/crossing_proposals/?" + params,
             method: "GET",
             success: function(response) {
                 var drawPanel = me.drawPanel,
@@ -247,7 +248,8 @@ Ext.define("NOC.inv.inv.CreateConnectionForm", {
         params += cable ? "&cable_filter=" + cable : "";
         me.mask(__("Loading..."));
         Ext.Ajax.request({
-            url: "/inv/inv/crossing_proposals/?" + params,
+            // url: "/inv/inv/crossing_proposals/?" + params,
+            url: "http://localhost:3000/crossing_proposals/?" + params,
             method: "GET",
             success: function(response) {
                 var data = Ext.decode(response.responseText);
@@ -648,7 +650,7 @@ Ext.define("NOC.inv.inv.CreateConnectionForm", {
     createWire(prevPinSprite, pinSprite) {
         var me = this,
             vm = me.getViewModel(),
-            cable = vm.get("cable") || undefined,
+            cable = me.cableCombo.getValue(),
             mainSurface = me.drawPanel.getSurface(),
             wires = me.getWires(mainSurface),
             fromName = prevPinSprite.pinName,
@@ -658,40 +660,44 @@ Ext.define("NOC.inv.inv.CreateConnectionForm", {
                 {id: prevPinSprite.id, side: prevPinSprite.side, isNew: true, cable: cable},
             ];
 
-        if(prevPinSprite && prevPinSprite.side !== pinSprite.side && prevPinSprite.side === "left") {
-            fromName = prevPinSprite.pinName + " => " + pinSprite.pinName;
-            toName = prevPinSprite.pinName + " <= " + pinSprite.pinName;
-        }
-        if(prevPinSprite && prevPinSprite.side !== pinSprite.side && prevPinSprite.side === "right") {
-            fromName = pinSprite.pinName + " <= " + prevPinSprite.pinName;
-            toName = pinSprite.pinName + " => " + prevPinSprite.pinName;
-        }
+        if(cable) {
+            if(prevPinSprite && prevPinSprite.side !== pinSprite.side && prevPinSprite.side === "left") {
+                fromName = prevPinSprite.pinName + " => " + pinSprite.pinName;
+                toName = prevPinSprite.pinName + " <= " + pinSprite.pinName;
+            }
+            if(prevPinSprite && prevPinSprite.side !== pinSprite.side && prevPinSprite.side === "right") {
+                fromName = pinSprite.pinName + " <= " + prevPinSprite.pinName;
+                toName = pinSprite.pinName + " => " + prevPinSprite.pinName;
+            }
 
-        prevPinSprite.setAttributes({
-            pinColor: me.OCCUPIED_COLOR,
-            enabled: false,
-            pinName: fromName,
-        });
-        // reDraw label for zIndex workaround
-        mainSurface.get("label" + prevPinSprite.id).setAttributes({
-            labelText: fromName,
-            backgroundTranslationX: prevPinSprite.labelBackground.attr.translationX,
-            backgroundWidth: prevPinSprite.labelBackground.attr.width,
-        });
-        pinSprite.setAttributes({
-            pinColor: me.OCCUPIED_COLOR,
-            enabled: false,
-            pinName: toName,
-        });
-        // reDraw label for zIndex workaround
-        mainSurface.get("label" + pinSprite.id).setAttributes({
-            labelText: toName,
-            backgroundTranslationX: pinSprite.labelBackground.attr.translationX,
-            backgroundWidth: pinSprite.labelBackground.attr.width
-        });
-        wires.push(wire);
-        me.drawWires(wires, mainSurface);
-        me.getViewModel().set("isDirty", true);
+            prevPinSprite.setAttributes({
+                pinColor: me.OCCUPIED_COLOR,
+                enabled: false,
+                pinName: fromName,
+            });
+            // reDraw label for zIndex workaround
+            mainSurface.get("label" + prevPinSprite.id).setAttributes({
+                labelText: fromName,
+                backgroundTranslationX: prevPinSprite.labelBackground.attr.translationX,
+                backgroundWidth: prevPinSprite.labelBackground.attr.width,
+            });
+            pinSprite.setAttributes({
+                pinColor: me.OCCUPIED_COLOR,
+                enabled: false,
+                pinName: toName,
+            });
+            // reDraw label for zIndex workaround
+            mainSurface.get("label" + pinSprite.id).setAttributes({
+                labelText: toName,
+                backgroundTranslationX: pinSprite.labelBackground.attr.translationX,
+                backgroundWidth: pinSprite.labelBackground.attr.width
+            });
+            wires.push(wire);
+            me.drawWires(wires, mainSurface);
+            me.getViewModel().set("isDirty", true);
+        } else {
+            NOC.error(__("Cable is not selected"));
+        }
     },
     wireSort: function(wire) {
         return Ext.Array.sort(wire, function(a, b) {
@@ -1056,10 +1062,22 @@ Ext.define("NOC.inv.inv.CreateConnectionForm", {
         this.load();
         return true;
     },
-    onPressClose: function() {
-        var me = this;
-        me.app.mainPanel.remove(me.app.connectionPanel, false);
-        me.app.mainPanel.add(me.app.tabPanel);
+    onCloseClick: function() {
+        var me = this,
+            action = function() {
+                me.app.mainPanel.remove(me.app.connectionPanel, false);
+                me.app.mainPanel.add(me.app.tabPanel);
+            };
+
+        if(me.getViewModel().get("isDirty")) {
+            Ext.Msg.confirm(__("Confirm"), __("There is unsaved data, do you really want to close the application?"), function(btn) {
+                if(btn === "yes") {
+                    action();
+                }
+            });
+        } else {
+            action();
+        }
     },
     onBoxReady: function() {
         this.callParent(arguments);
