@@ -19,7 +19,6 @@ from noc.core.snmp.version import SNMP_v3
 from noc.core.service.client import open_sync_rpc
 from noc.core.service.error import RPCError
 from noc.core.text import safe_shadow
-from noc.core.comp import smart_text
 from noc.core.mib import mib
 from noc.config import config
 

@@ -9,7 +9,7 @@
 import argparse
 import asyncio
 import socket
-from typing import Optional, Iterable, List, Dict
+from typing import Optional, Iterable, List
 from collections import defaultdict
 
 # Third-party modules
