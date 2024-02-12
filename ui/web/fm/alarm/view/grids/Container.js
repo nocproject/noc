@@ -24,6 +24,15 @@ Ext.define("NOC.fm.alarm.view.grids.Container", {
     reference: "fm-alarm-list",
     tbar: [
         {
+            text: __('Filtering List'),
+            glyph: NOC.glyph.filter,
+            tooltip: __('Show/Hide Filter'),
+            style: {
+                pointerEvents: 'all'
+            },
+            handler: 'collapseFilter'
+        },
+        {
             glyph: NOC.glyph.download,
             text: __("Group actions"),
             tooltip: __("Group actions"),
@@ -97,6 +106,11 @@ Ext.define("NOC.fm.alarm.view.grids.Container", {
             region: "east",
             width: "20%",
             split: true,
+            collapsed: true,
+            hideCollapseTool: true,
+            border: false,
+            animCollapse: false,
+            collapseMode: 'mini',
             listeners: {
                 fmAlarmSidebarResetSelection: "onActiveResetSelection"
             }

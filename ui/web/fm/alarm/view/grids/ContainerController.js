@@ -33,8 +33,8 @@ Ext.define("NOC.fm.alarm.view.grids.ContainerController", {
     },
     onStoreSelectionChange: function(grid) {
         var selection = Ext.Array.flatten(Ext.Array.map(grid.getSelection(), function(item) {
-                return item.get("total_subscribers").concat(item.get("total_services"))
-            })),
+            return item.get("total_subscribers").concat(item.get("total_services"))
+        })),
             selectionSummary = Ext.Array.reduce(selection, function(prev, item) {
                 if(prev.hasOwnProperty(item.profile)) {
                     prev[item.profile] += item.summary
@@ -57,11 +57,11 @@ Ext.define("NOC.fm.alarm.view.grids.ContainerController", {
     //
     generateSummaryHtml: function(records, filter, force) {
         var isEmpty = function(array) {
-                if(!array) {
-                    return true;
-                }
-                return array.length === 0;
-            },
+            if(!array) {
+                return true;
+            }
+            return array.length === 0;
+        },
             isEqual = function(item1, item2) {
                 return item1.id === item2.id;
             },
@@ -210,43 +210,46 @@ Ext.define("NOC.fm.alarm.view.grids.ContainerController", {
     },
     createMaintenance: function() {
         var selection = this.lookupReference("fm-alarm-active").getSelection(),
-            objects = selection.map(function (alarm) {
+            objects = selection.map(function(alarm) {
                 return {
                     object: alarm.get("managed_object"),
                     object__label: alarm.get("managed_object__label")
                 }
             }),
             args = {
-            direct_objects: objects,
-            subject: __('created from alarms list at ') + Ext.Date.format(new Date(), 'd.m.Y H:i P'),
-            contacts: NOC.email ? NOC.email : NOC.username,
-            start_date: Ext.Date.format(new Date(), 'd.m.Y'),
-            start_time: Ext.Date.format(new Date(), 'H:i'),
-            stop_time: '12:00',
-            suppress_alarms: true
-        };
+                direct_objects: objects,
+                subject: __('created from alarms list at ') + Ext.Date.format(new Date(), 'd.m.Y H:i P'),
+                contacts: NOC.email ? NOC.email : NOC.username,
+                start_date: Ext.Date.format(new Date(), 'd.m.Y'),
+                start_time: Ext.Date.format(new Date(), 'H:i'),
+                stop_time: '12:00',
+                suppress_alarms: true
+            };
         Ext.create("NOC.maintenance.maintenancetype.LookupField")
-        .getStore()
-        .load({
-            params: {__query: 'РНР'},
-            callback: function (records) {
-                if (records.length > 0) {
-                    Ext.apply(args, {
-                        type: records[0].id
-                    })
+            .getStore()
+            .load({
+                params: {__query: 'РНР'},
+                callback: function(records) {
+                    if(records.length > 0) {
+                        Ext.apply(args, {
+                            type: records[0].id
+                        })
+                    }
+                    NOC.launch("maintenance.maintenance", "new", {
+                        args: args
+                    });
                 }
-                NOC.launch("maintenance.maintenance", "new", {
-                    args: args
-                });
-            }
-        });
-        },
-        openAlarmDetailReport: function() {
+            });
+    },
+    openAlarmDetailReport: function() {
         var selection = this.lookupReference("fm-alarm-active").getSelection(),
             ids = selection.map(function(alarm) {
                 return alarm.id
             });
         NOC.launch("fm.reportalarmdetail", "new", {ids: ids});
 
+    },
+    collapseFilter: function() {
+        this.lookupReference('fm-alarm-sidebar').toggleCollapse();
     },
 });
