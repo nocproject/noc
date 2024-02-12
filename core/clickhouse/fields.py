@@ -24,7 +24,9 @@ class BaseField(object):
     db_type = None
     default_value = ""
 
-    def __init__(self, default=None, description: Optional[str] = None, low_cardinality: bool = False):
+    def __init__(
+        self, default=None, description: Optional[str] = None, low_cardinality: bool = False
+    ):
         """
 
         :param default: Default field value (if value not set)
