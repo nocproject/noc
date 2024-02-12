@@ -19,7 +19,6 @@ from noc.core.snmp.version import SNMP_v3
 from noc.core.service.client import open_sync_rpc
 from noc.core.service.error import RPCError
 from noc.core.text import safe_shadow
-from noc.core.comp import smart_text
 from noc.core.mib import mib
 from noc.config import config
 
@@ -50,6 +49,11 @@ class SNMPProtocolChecker(Checker):
         return [x for x in credentials if isinstance(x, (SNMPCredential, SNMPv3Credential))]
 
     def iter_suggest_check(self, check: Check) -> Iterable[Check]:
+        """
+        Iter all proto if suggest mode set
+        :param check:
+        :return:
+        """
         if check.name != SUGGEST_CHECK:
             yield check
             return
@@ -68,8 +72,8 @@ class SNMPProtocolChecker(Checker):
         """ """
         # Group by address
         processed = {}
-        for c in checks:
-            for c in self.iter_suggest_check(c):
+        for check in checks:
+            for c in self.iter_suggest_check(check):
                 if c.name not in self.CHECKS:
                     continue
                 key = (c.address, c.port)
@@ -87,14 +91,22 @@ class SNMPProtocolChecker(Checker):
                     if c in result:
                         continue
                     try:
-                        r = run_sync(partial(self.do_snmp_check, c, cred))
+                        skipped, data, message = run_sync(partial(self.do_snmp_check, c, cred))
                     except NotImplementedError:
                         continue
-                    if not r:
+                    if skipped:
                         continue
-                    result[c] = r
-        for c in checks:
-            for c in self.iter_suggest_check(c):
+                    result[c] = CheckResult(
+                        check=c.name,
+                        status=not bool(message) and bool(data),
+                        is_access=bool(data),
+                        is_available=not bool(message),
+                        data=data,
+                        credentials=[cred] if data else [],
+                        error=message,
+                    )
+        for check in checks:
+            for c in self.iter_suggest_check(check):
                 if c in result:
                     yield result[c]
                 else:
@@ -106,12 +118,12 @@ class SNMPProtocolChecker(Checker):
 
     async def do_snmp_check(
         self, check: Check, cred: Union[SNMPCredential, SNMPv3Credential]
-    ) -> Optional[CheckResult]:
+    ) -> Tuple[bool, Optional[Dict[str, str]], str]:
         """
 
         :param check:
         :param cred:
-        :return:
+        :return: available, getting data, error text
         """
         protocol = self.PROTO_CHECK_MAP[check.name]
         if (
@@ -119,7 +131,7 @@ class SNMPProtocolChecker(Checker):
             and self.pool
             and isinstance(cred, SNMPv3Credential)
         ):
-            status, message = self.check_v3_oid_on_pool(
+            r, message = self.check_v3_oid_on_pool(
                 check.address,
                 check.port,
                 cred.oids or CHECK_OIDS,
@@ -141,7 +153,7 @@ class SNMPProtocolChecker(Checker):
             and not self.pool
             and isinstance(cred, SNMPCredential)
         ):
-            status, message = await self.check_v2_oid(
+            r, message = await self.check_v2_oid(
                 check.address,
                 check.port,
                 cred.oids or CHECK_OIDS,
@@ -150,7 +162,7 @@ class SNMPProtocolChecker(Checker):
                 self.SNMP_TIMEOUT_SEC,
             )
         elif protocol.config.snmp_version != SNMP_v3 and isinstance(cred, SNMPCredential):
-            status, message = self.check_v2_oid_on_pool(
+            r, message = self.check_v2_oid_on_pool(
                 check.address,
                 check.port,
                 cred.oids or CHECK_OIDS,
@@ -159,22 +171,23 @@ class SNMPProtocolChecker(Checker):
                 self.SNMP_TIMEOUT_SEC,
             )
         else:
-            return None
-        if not status and not message:
+            return True, None, ""
+        if not r and not message:
             message = "Nothing value in MIB View"
         # self.logger.info(
         #     "Guessed community: %s, version: %d",
         #     config.snmp_ro,
         #     config.protocol.config.snmp_version,
         # )
-        return CheckResult(
-            check=check.name,
-            status=status,
-            is_access=status,
-            is_available=status or None,
-            credentials=[cred] if status else [],
-            error=message,
-        )
+        return False, r, message
+        # return CheckResult(
+        #     check=check.name,
+        #     status=status,
+        #     is_access=status,
+        #     is_available=status or None,
+        #     credentials=[cred] if status else [],
+        #     error=message,
+        # )
 
     async def check_v2_oid(
         self,
@@ -216,14 +229,14 @@ class SNMPProtocolChecker(Checker):
                 timeout=timeout,
             )
             self.logger.debug("SNMP GET %s %s returns %s", address, oids, result)
-            result = smart_text(result, errors="replace") if result else result
+            # result = smart_text(result, errors="replace") if result else result
         except SNMPError as e:
             result, message = False, repr(e)
             self.logger.debug("SNMP GET %s %s returns error %s", address, oids, e)
         except Exception as e:
             result, message = False, str(e)
             self.logger.debug("SNMP GET %s %s returns unknown error %s", address, oids, e)
-        return bool(result), message
+        return result, message
 
     def check_v2_oid_on_pool(
         self,

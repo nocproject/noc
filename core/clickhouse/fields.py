@@ -8,6 +8,7 @@
 # Python modules
 from ast import literal_eval
 from datetime import datetime
+from typing import Optional
 import itertools
 import socket
 import struct
@@ -23,11 +24,14 @@ class BaseField(object):
     db_type = None
     default_value = ""
 
-    def __init__(self, default=None, description=None, low_cardinality=False):
+    def __init__(
+        self, default=None, description: Optional[str] = None, low_cardinality: bool = False
+    ):
         """
 
         :param default: Default field value (if value not set)
         :param description: Field description
+        :param low_cardinality: Enable low_cardinality for field
         """
         self.field_number = next(self.FIELD_NUMBER)
         self.name = None
@@ -247,13 +251,13 @@ class ArrayField(BaseField):
 
 
 class MaterializedField(BaseField):
-    def __init__(self, field_type, expression, description=None):
-        super().__init__(description=description, low_cardinality=True)
+    def __init__(self, field_type, expression, description=None, low_cardinality=True):
+        super().__init__(description=description, low_cardinality=low_cardinality)
         self.field_type = field_type
         self.expression = expression
 
     def get_db_type(self, name=None):
-        return f"LowCardinality({self.field_type.get_db_type()})"
+        return self.field_type.get_db_type()
 
     def iter_create_sql(self):
         yield self.name, f"{self.get_db_type()} MATERIALIZED {self.expression}"
