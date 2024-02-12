@@ -647,7 +647,6 @@ Ext.define("NOC.inv.inv.CreateConnectionForm", {
     },
     createWire(prevPinSprite, pinSprite) {
         var me = this,
-            vm = me.getViewModel(),
             cable = me.cableCombo.getValue(),
             mainSurface = me.drawPanel.getSurface(),
             wires = me.getWires(mainSurface),
@@ -725,17 +724,50 @@ Ext.define("NOC.inv.inv.CreateConnectionForm", {
                     xtype: "combobox",
                     fieldLabel: __("Discriminator From"),
                     store: fromDiscriminators,
+                    editable: false,
                     disabled: !fromDiscriminators.length,
                     queryMode: "local",
-                    name: "fromDiscriminator"
+                    name: "fromDiscriminator",
+                    triggers: {
+                        clear: {
+                            cls: 'x-form-clear-trigger',
+                            hidden: true,
+                            weight: -1,
+                            handler: function(field) {
+                                field.setValue(null);
+                                field.fireEvent("select", field);
+                            }
+                        },
+                    },
+                    listeners: {
+                        change: function(field, value) {
+                            if(value) {
+                                field.getTrigger("clear").show();
+                            } else {
+                                field.getTrigger("clear").hide();
+                            }
+                        }
+                    }
                 },
                 {
                     xtype: "combobox",
                     fieldLabel: __("Discriminator To"),
                     store: toDiscriminators,
+                    editable: false,
                     disabled: !toDiscriminators.length,
                     queryMode: "local",
-                    name: "toDiscriminator"
+                    name: "toDiscriminator",
+                    triggers: {
+                        clear: {
+                            cls: 'x-form-clear-trigger',
+                            hidden: true,
+                            weight: -1,
+                            handler: function(field) {
+                                field.setValue(null);
+                                field.fireEvent("select", field);
+                            }
+                        },
+                    }
                 },
                 {
                     xtype: "numberfield",
@@ -761,8 +793,8 @@ Ext.define("NOC.inv.inv.CreateConnectionForm", {
                             win = button.up("window"),
                             body = mainSurface.get(side + "Body"),
                             gainDb = win.down("[name=gainDb]").getValue(),
-                            fromDiscriminator = win.down("[name=fromDiscriminator]").getValue(),
-                            toDiscriminator = win.down("[name=toDiscriminator]").getValue(),
+                            fromDiscriminator = win.down("[name=fromDiscriminator]").getValue() || undefined,
+                            toDiscriminator = win.down("[name=toDiscriminator]").getValue() || undefined,
                             from = {
                                 discriminator: fromDiscriminator,
                                 has_arrow: false,
@@ -1406,7 +1438,7 @@ Ext.define("NOC.inv.inv.CreateConnectionForm", {
         }
     },
     onSaveClick: function() {
-        var params, leftObjectId, rightObjectId,
+        var params, ObjectIds = {left: undefined, right: undefined},
             me = this,
             vm = me.getViewModel(),
             mainSurface = me.drawPanel.getSurface(),
@@ -1419,25 +1451,40 @@ Ext.define("NOC.inv.inv.CreateConnectionForm", {
             rightInternal = Ext.Array.filter(rightSurface.getItems(), function(sprite) {return sprite.type === "connection" && sprite.isNew}),
             connections = leftInternal.concat(newWires).concat(rightInternal);
 
-        leftObjectId = leftObject.get("id");
+        ObjectIds.left = leftObject.get("id");
         if(rightObject) {
-            rightObjectId = rightObject.get("id");
+            ObjectIds.right = rightObject.get("id");
         } else {
-            rightObjectId = leftObjectId;
+            ObjectIds.right = ObjectIds.left;
         }
-        console.log(leftObjectId, rightObjectId);
         console.log(connections);
 
         params = Ext.Array.map(connections, function(connection) {
             var param = {
-                object: leftObjectId,
                 name: connection.fromPort,
-                remote_object: rightObjectId,
                 remote_name: connection.toPort,
                 is_internal: connection.connectionType === "internal",
+                object: ObjectIds[connection.fromSide],
+                remote_object: ObjectIds[connection.toSide],
             };
+
+            if(connection.toDiscriminator || connection.fromDiscriminator) {
+                param.discriminator = {};
+                if(connection.toDiscriminator) {
+                    param.discriminator.output = connection.toDiscriminator;
+                }
+                if(connection.fromDiscriminator) {
+                    param.discriminator.input = connection.fromDiscriminator;
+                }
+            }
+            if(connection.gainDb != undefined) {
+                param.gainDb = connection.gainDb;
+            }
             if(connection.cable) {
                 param.cable = connection.cable;
+            }
+            if(param.object === param.remote_object) {
+                delete param.remote_object;
             }
             return param;
         });
