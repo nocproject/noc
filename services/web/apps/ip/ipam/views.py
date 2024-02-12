@@ -315,6 +315,7 @@ class IPAMApplication(ExtApplication):
                             "m": "Mgmt",
                             "d": "DHCP",
                             "n": "Neighbor",
+                            "P": "Ping",
                         }.get(a.source, "-"),
                         "tt": a.tt,
                         "labels": a.labels,
