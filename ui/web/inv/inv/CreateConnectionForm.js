@@ -194,8 +194,7 @@ Ext.define("NOC.inv.inv.CreateConnectionForm", {
         params += cable ? "&cable_filter=" + cable : "";
         me.mask(__("Loading..."));
         Ext.Ajax.request({
-            // url: "/inv/inv/crossing_proposals/?" + params,
-            url: "http://localhost:3000/crossing_proposals/?" + params,
+            url: "/inv/inv/crossing_proposals/?" + params,
             method: "GET",
             success: function(response) {
                 var drawPanel = me.drawPanel,
@@ -248,8 +247,7 @@ Ext.define("NOC.inv.inv.CreateConnectionForm", {
         params += cable ? "&cable_filter=" + cable : "";
         me.mask(__("Loading..."));
         Ext.Ajax.request({
-            // url: "/inv/inv/crossing_proposals/?" + params,
-            url: "http://localhost:3000/crossing_proposals/?" + params,
+            url: "/inv/inv/crossing_proposals/?" + params,
             method: "GET",
             success: function(response) {
                 var data = Ext.decode(response.responseText);
