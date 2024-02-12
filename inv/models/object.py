@@ -1292,7 +1292,7 @@ class Object(Document):
             raise ValueError("Not found connection: %s" % input)
         output = self.model.get_model_connection(output)
         for c in self.cross:
-            if c.input != input:
+            if c.input != input.name:
                 continue
             # Update
             c.update_params(**data)
@@ -1305,7 +1305,7 @@ class Object(Document):
                         "input_discriminator": data.get("input_discriminator"),
                         "output": output.name,
                         "output_discriminator": data.get("output_discriminator"),
-                        "gain_db": data.get("gain"),
+                        "gain_db": data.get("gain_db"),
                     }
                 )
             ]
