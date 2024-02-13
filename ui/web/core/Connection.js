@@ -34,20 +34,20 @@ Ext.define("NOC.core.Connection", {
                 actualScale: "number",
                 trace: "number",
                 path: "string",
-                connectionColor: "string",
                 length: "number",
                 isNew: "bool",
+                isSelected: "bool",
             },
             triggers: {
                 path: "recalculate",
-                connectionColor: "recalculate",
                 fromDiscriminator: "recalculate",
                 toDiscriminator: "recalculate",
                 discriminatorWidth: "recalculate",
                 cable: "recalculate",
+                isNew: "recalculate",
+                isSelected: "recalculate",
             },
             defaults: {
-                isNew: false,
             },
             updaters: {
                 recalculate: function(attr) {
@@ -77,7 +77,7 @@ Ext.define("NOC.core.Connection", {
                         toPortId: attr.toPortId,
                         connectionType: attr.connectionType,
                         path: path,
-                        strokeStyle: attr.connectionColor,
+                        strokeStyle: me.getColor(attr),
                         "marker-end": "url(#arrow)"
                     });
 
@@ -125,7 +125,7 @@ Ext.define("NOC.core.Connection", {
                     }
                 },
             }
-        }
+        },
     },
     config: {
         boxWidth: 15,
@@ -133,6 +133,10 @@ Ext.define("NOC.core.Connection", {
         fontSize: 10,
         fontFamily: "arial",
         fontWeight: "normal",
+        availableColor: "#1F6D91",
+        newColor: "lightgreen",
+        disabledColor: "#d0d0d0",
+        selectedColor: "#f5d63c",
     },
     hitTest: function(point, options) {
         var me = this,
@@ -234,5 +238,18 @@ Ext.define("NOC.core.Connection", {
         var me = this,
             font = Ext.String.format("{0} {1}px {2}", me.getFontWeight(), me.getFontSize(), me.getFontFamily());
         return Ext.draw.TextMeasurer.measureText(text, font).width;
+    },
+    getColor: function(attr) {
+        var me = this;
+
+        if(attr.isSelected) {
+            return me.getSelectedColor();
+        } else if(attr.isNew) {
+            return me.getNewColor();
+        } else if(!attr.isDeleted) {
+            return me.getDisabledColor();
+        } else {
+            return me.getAvailableColor();
+        }
     }
 });
