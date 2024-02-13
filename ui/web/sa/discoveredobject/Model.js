@@ -16,6 +16,20 @@ Ext.define("NOC.sa.discoveredobject.Model", {
             type: "string"
         },
         {
+            name: "address",
+            type: "string",
+            persist: false
+        },
+        {
+            name: "pool",
+            type: "string"
+        },
+        {
+            name: "pool__label",
+            type: "string",
+            persist: false
+        },
+        {
             name: "description",
             type: "string",
             persist: false

@@ -6,13 +6,11 @@
 # ---------------------------------------------------------------------
 
 # Python modules
-import logging
-from threading import Lock
-import operator
 import datetime
+import logging
 from dataclasses import dataclass
 from collections import defaultdict
-from typing import Dict, Optional, Iterable, List, Tuple, Any, Union
+from typing import Dict, Optional, List, Any, Union
 
 # Third-party modules
 import orjson
@@ -28,20 +26,16 @@ from mongoengine.fields import (
     ReferenceField,
     EmbeddedDocumentListField,
 )
-from pymongo import ReadPreference
-import cachetools
 
 # NOC modules
 from noc.core.wf.decorator import workflow
 from noc.core.bi.decorator import bi_sync
-from noc.core.change.decorator import change
 from noc.core.clickhouse.connect import connection
 from noc.core.purgatorium import ProtocolCheckResult, SOURCES, ETL_SOURCE
 from noc.core.mongo.fields import PlainReferenceField, ForeignKeyField
 from noc.main.models.pool import Pool
 from noc.main.models.label import Label
 from noc.main.models.remotesystem import RemoteSystem
-from noc.inv.models.object import Object
 from noc.sa.models.objectdiscoveryrule import ObjectDiscoveryRule
 from noc.sa.models.managedobject import ManagedObject
 from noc.pm.models.agent import Agent
@@ -61,6 +55,8 @@ FROM noc.purgatorium GROUP BY ip, pool
 ORDER BY ip
 FORMAT JSONEachRow
 """
+
+logger = logging.getLogger(__name__)
 
 
 class CheckData(EmbeddedDocument):
@@ -398,6 +394,7 @@ def sync_purgatorium():
      approve ?
     :return:
     """
+    logger.info("Start Purgatorium Sync")
     ch = connection()
     r = ch.execute(PURGATORIUM_SQL, return_raw=True)
     for row in r.splitlines():
@@ -416,7 +413,6 @@ def sync_purgatorium():
                     continue
                 rs = rs.name
             # Check timestamp
-            data[(source, rs)].update(d1 | d2)
             data[(source, rs)].update(d1 | d2)
         rule = ObjectDiscoveryRule.objects.get(name="default")
         DiscoveredObject.register(

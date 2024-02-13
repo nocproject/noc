@@ -12,6 +12,7 @@ Ext.define("NOC.sa.discoveredobject.Application", {
         "NOC.core.StateField",
         "NOC.sa.discoveredobject.Model",
         "NOC.main.remotesystem.LookupField",
+        "NOC.main.pool.LookupField",
         "NOC.sa.managedobject.LookupField",
         "NOC.core.label.LabelField",
         "Ext.ux.form.GridField"
@@ -37,15 +38,26 @@ Ext.define("NOC.sa.discoveredobject.Application", {
                 //    renderer: NOC.render.Lookup("rule")
                 //},
                 {
-                    text: "Hostname",
-                    dataIndex: "hostname",
-                    width: 200
+                    text: "IP",
+                    dataIndex: "address",
+                    width: 100
                 },
                 {
-                    text: "Name",
-                    dataIndex: "name",
-                    width: 200
+                    text: "Pool",
+                    dataIndex: "pool",
+                    width: 100,
+                    renderer: NOC.render.Lookup("pool")
                 },
+                {
+                    text: "Hostname",
+                    dataIndex: "hostname",
+                    width: 150
+                },
+                // {
+                //     text: "Name",
+                //     dataIndex: "name",
+                //     width: 200
+                // },
                 {
                     text: "Description",
                     dataIndex: "description",
@@ -60,14 +72,14 @@ Ext.define("NOC.sa.discoveredobject.Application", {
                 {
                     text: __("IsDrt"),
                     dataIndex: "is_dirty",
-                    width: 40,
+                    width: 30,
                     renderer: NOC.render.Bool,
                     align: "center"
                 },
                 {
                     text: __("Sources"),
                     dataIndex: "sources",
-                    width: 200
+                    width: 150
                 },
                 {
                     text: __("check"),
