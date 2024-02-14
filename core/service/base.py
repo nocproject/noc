@@ -417,7 +417,7 @@ class BaseService(object):
         self.loop.create_task(self.on_register())
 
     async def deactivate(self):
-        if not self.is_active:
+        if not self.is_active and not self.use_watchdog:
             self.logger.info("Not Active")
             return
         self.is_active = False
