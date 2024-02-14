@@ -18,10 +18,6 @@ Ext.define("NOC.inv.inv.CreateConnectionForm", {
     AVAILABLE_COLOR: "#2c3e50",
     OCCUPIED_COLOR: "lightgray",
     INVALID_COLOR: "lightcoral",
-    WIRE_COLOR: "#1F6D91",
-    NEW_WIRE_COLOR: "lightgreen",
-    DISABLED_WIRE_COLOR: "#d0d0d0",
-    SELECTED_WIRE_COLOR: "#f5d63c",
     boxWidth: 20,
     boxHeight: 20,
     schemaPadding: 60, // boxHeight * 3,
@@ -64,23 +60,7 @@ Ext.define("NOC.inv.inv.CreateConnectionForm", {
             itemId: "canvas",
             region: "center",
             scrollable: false,
-            isModalOpen: false, // mouseOut check position when modal window is open
-            wire: {
-                connectionColor: me.WIRE_COLOR,
-                lineWidth: 2,
-            },
-            newWire: {
-                connectionColor: me.NEW_WIRE_COLOR,
-                lineWidth: 2,
-            },
-            disabledWire: {
-                connectionColor: me.DISABLED_WIRE_COLOR,
-                lineWidth: 2,
-            },
-            selectedWire: {
-                connectionColor: me.SELECTED_WIRE_COLOR,
-                lineWidth: 4,
-            },
+            isModalOpen: false, // event mouseOut is fired when modal window is open
             sprites: [],
             listeners: {
                 spritemouseover: me.onSpriteMouseOver,
@@ -430,7 +410,6 @@ Ext.define("NOC.inv.inv.CreateConnectionForm", {
             isNew: isNew ? isNew : false,
             isDeleted: true,
             offset: [firstOffset, secondOffset],
-            // connectionColor: this.WIRE_COLOR,
             cable: cable,
             zIndex: 50,
         };
@@ -558,7 +537,6 @@ Ext.define("NOC.inv.inv.CreateConnectionForm", {
                 boxWidth: me.boxWidth,
                 boxHeight: me.boxHeight,
                 discriminatorWidth: me.discriminatorWidth[side],
-                // connectionColor: attr.is_delete ? me.WIRE_COLOR : me.DISABLED_WIRE_COLOR,
                 length: Math.abs(f[1] - t[1]),
                 isNew: attr.isNew ? true : false,
                 zIndex: 50,
@@ -714,21 +692,21 @@ Ext.define("NOC.inv.inv.CreateConnectionForm", {
             return a.side === 'left' ? -1 : (b.side === 'left' ? 1 : 0);
         });
     },
-    createInternalConnection: function(fromSprite, toSprite, side) {
-        var me = this,
-            internalConnectionSurface = me.drawPanel.getSurface(side + "_internal_conn"),
-            mainSurface = me.drawPanel.getSurface(),
-            connections = me.getInternalConnections(internalConnectionSurface),
-            fromDiscriminators = fromSprite.allowDiscriminators,
-            toDiscriminators = toSprite.allowDiscriminators,
-            triggers = {
-                clear: {
-                    cls: 'x-form-clear-trigger',
-                    hidden: true,
-                    weight: -1,
-                    handler: function(field) {
-                        field.setValue(null);
-                        field.fireEvent("select", field);
+    itemsForConnectionParamsForm: function(fromDiscriminators, toDiscriminators, validateBtn, values) {
+        var fromDiscriminator = values ? values.fromDiscriminator : '',
+            toDiscriminator = values ? values.toDiscriminator : '',
+            gainDb = values ? values.gainDb : 0,
+            setTriggers = function(value) {
+                console.log("setTriggers value is ", value);
+                return {
+                    clear: {
+                        cls: 'x-form-clear-trigger',
+                        hidden: Ext.isEmpty(value),
+                        weight: -1,
+                        handler: function(field) {
+                            field.setValue(null);
+                            field.fireEvent("select", field);
+                        }
                     }
                 }
             },
@@ -740,7 +718,56 @@ Ext.define("NOC.inv.inv.CreateConnectionForm", {
                         field.getTrigger("clear").hide();
                     }
                 }
-            };
+            },
+            items = [
+                {
+                    xtype: "combobox",
+                    fieldLabel: __("Discriminator From"),
+                    store: fromDiscriminators,
+                    editable: false,
+                    disabled: !fromDiscriminators.length,
+                    queryMode: "local",
+                    name: "fromDiscriminator",
+                    triggers: setTriggers(fromDiscriminator),
+                    listeners: listeners,
+                    value: fromDiscriminator,
+                },
+                {
+                    xtype: "combobox",
+                    fieldLabel: __("Discriminator To"),
+                    store: toDiscriminators,
+                    editable: false,
+                    disabled: !toDiscriminators.length,
+                    queryMode: "local",
+                    name: "toDiscriminator",
+                    triggers: setTriggers(toDiscriminator),
+                    listeners: listeners,
+                    value: toDiscriminator,
+                },
+                {
+                    xtype: "numberfield",
+                    fieldLabel: __("Gain DB"),
+                    step: 0.1,
+                    minValue: 0,
+                    maxValue: 100,
+                    name: "gainDb",
+                    value: gainDb,
+                    listeners: {
+                        validitychange: function(field, isValid) {
+                            field.up("window").lookupReference(validateBtn).setDisabled(!isValid);
+                        }
+                    }
+                }
+            ];
+        return items;
+    },
+    createInternalConnectionMsg: function(fromSprite, toSprite, side) {
+        var me = this,
+            internalConnectionSurface = me.drawPanel.getSurface(side + "_internal_conn"),
+            mainSurface = me.drawPanel.getSurface(),
+            connections = me.getInternalConnections(internalConnectionSurface),
+            fromDiscriminators = fromSprite.allowDiscriminators,
+            toDiscriminators = toSprite.allowDiscriminators;
 
         Ext.create("Ext.window.Window", {
             autoShow: true,
@@ -752,44 +779,7 @@ Ext.define("NOC.inv.inv.CreateConnectionForm", {
             referenceHolder: true,
             defaultFocus: "numberfield",
             defaultButton: "createBtn",
-            items: [
-                {
-                    xtype: "combobox",
-                    fieldLabel: __("Discriminator From"),
-                    store: fromDiscriminators,
-                    editable: false,
-                    disabled: !fromDiscriminators.length,
-                    queryMode: "local",
-                    name: "fromDiscriminator",
-                    triggers: triggers,
-                    listeners: listeners,
-                },
-                {
-                    xtype: "combobox",
-                    fieldLabel: __("Discriminator To"),
-                    store: toDiscriminators,
-                    editable: false,
-                    disabled: !toDiscriminators.length,
-                    queryMode: "local",
-                    name: "toDiscriminator",
-                    triggers: triggers,
-                    listeners: listeners,
-                },
-                {
-                    xtype: "numberfield",
-                    fieldLabel: __("Gain DB"),
-                    step: 0.1,
-                    minValue: 0,
-                    maxValue: 100,
-                    name: "gainDb",
-                    value: 0,
-                    listeners: {
-                        validitychange: function(field, isValid) {
-                            field.up("window").lookupReference("createBtn").setDisabled(!isValid);
-                        }
-                    }
-                }
-            ],
+            items: me.itemsForConnectionParamsForm(fromDiscriminators, toDiscriminators, "createBtn"),
             buttons: [
                 {
                     text: __("Create"),
@@ -852,33 +842,134 @@ Ext.define("NOC.inv.inv.CreateConnectionForm", {
             ]
         });
     },
-    deleteInternalConnection: function() {
+    updateDeleteInternalConnectionMsg: function() {
         var me = this,
             drawPanel = me.drawPanel,
-            sprite = drawPanel.selectedSprite;
+            mainSurface = drawPanel.getSurface(),
+            sprite = drawPanel.selectedSprite,
+            fromSprite = mainSurface.get(sprite.fromPortId),
+            toSprite = mainSurface.get(sprite.toPortId),
+            internalConnectionSurface = sprite.getSurface(),
+            side = sprite.fromSide,
+            values = {
+                gainDb: sprite.gainDb,
+                fromDiscriminator: sprite.fromDiscriminator,
+                toDiscriminator: sprite.toDiscriminator,
+            };
 
-        console.log("deleteInternalConnection", sprite.fromPortId, sprite.toPortId);
-        Ext.Msg.confirm(__("Confirm"), __("Are you sure you want to delete this internal cross") + " " + sprite.fromPort + "=>" + sprite.toPort, function(btn) {
-            if(btn === "yes") {
-                var vm = me.getViewModel(),
-                    fromObject = vm.get(sprite.fromSide + "Object"),
-                    params = {
-                        object: fromObject.id,
-                        name: sprite.fromPort,
-                        remote_name: sprite.toPort,
-                        is_internal: true,
-                    };
+        console.log("updateDeleteInternalConnection", sprite.fromPortId, sprite.toPortId);
+        drawPanel.isModalOpen = true;
 
-                if(sprite.isNew) {
-                    me.removeInternalConnection(sprite);
-                } else {
-                    me.disconnectConnection(params, function(response) {
-                        me.removeInternalConnection(sprite);
-                        NOC.msg.complete(__("Internal cross was successfully disconnected"));
-                    });
+        Ext.create("Ext.window.Window", {
+            autoShow: true,
+            width: 400,
+            reference: "updateRemoveConnFrm",
+            modal: true,
+            layout: "form",
+            title: __("Update or modify internal connection from") + " " + sprite.fromPort + " " + __("to") + " " + sprite.toPort,
+            referenceHolder: true,
+            defaultFocus: "numberfield",
+            defaultButton: "updateBtn",
+            items: me.itemsForConnectionParamsForm(fromSprite.allowDiscriminators, toSprite.allowDiscriminators, "updateBtn", values),
+            buttons: [
+                {
+                    text: __("Update"),
+                    reference: "updateBtn",
+                    handler: function(button) {
+                        var hasDiscriminator, internalConnectionQty, calculatedWidth, connections,
+                            win = button.up("window"),
+                            body = mainSurface.get(side + "Body"),
+                            gainDb = win.down("[name=gainDb]").getValue(),
+                            fromDiscriminator = win.down("[name=fromDiscriminator]").getValue() || undefined,
+                            toDiscriminator = win.down("[name=toDiscriminator]").getValue() || undefined,
+                            from = {
+                                discriminator: fromDiscriminator,
+                                has_arrow: false,
+                                id: fromSprite.id,
+                                name: fromSprite.attr.pinName
+                            },
+                            to = {
+                                discriminator: toDiscriminator,
+                                has_arrow: true,
+                                id: toSprite.id,
+                                name: toSprite.pinName
+                            },
+                            connection = {
+                                gain_db: gainDb,
+                                is_delete: true,
+                                to: to,
+                                from: from,
+                                isNew: true,
+                            };
+
+                        sprite.remove();
+                        connections = me.getInternalConnections(internalConnectionSurface),
+                            console.log(gainDb, fromDiscriminator, toDiscriminator);
+                        internalConnectionQty = connections.internal_connections.push(connection);
+                        if(hasDiscriminator = me.hasDiscriminator(connections.internal_connections)) {
+                            me.switchInternalLabel(body, true);
+                        }
+                        calculatedWidth = (internalConnectionQty + me.firstTrace) * me.gap + (hasDiscriminator ? Math.abs(me.discriminatorWidth[side]) : 0);
+                        if(body.width <= calculatedWidth) {
+                            var increment = (side === "left" ? calculatedWidth - body.attr.width : 0);
+                            body.setAttributes({
+                                width: calculatedWidth,
+                                x: body.attr.x - increment,
+                            });
+                        }
+                        me.drawInternalConnections(connections, internalConnectionSurface, side);
+
+                        // sprite.setAttributes({
+                        //     isNew: true,
+                        //     gainDb: gainDb,
+                        //     fromDiscriminator: fromDiscriminator,
+                        //     toDiscriminator: toDiscriminator,
+                        // });
+
+
+
+
+                        me.getViewModel().set("isDirty", true);
+                        console.log("renderFrame: createInternalConnections");
+                        mainSurface.renderFrame();
+                        button.up("window").close();
+                    },
+                },
+                {
+                    text: __("Delete"),
+                    handler: function() {
+                        var vm = me.getViewModel(),
+                            fromObject = vm.get(sprite.fromSide + "Object"),
+                            params = {
+                                object: fromObject.id,
+                                name: sprite.fromPort,
+                                remote_name: sprite.toPort,
+                                is_internal: true,
+                            };
+
+                        if(sprite.isNew) {
+                            me.removeInternalConnection(sprite);
+                        } else {
+                            me.disconnectConnection(params, function(response) {
+                                me.removeInternalConnection(sprite);
+                                NOC.msg.complete(__("Internal cross was successfully disconnected"));
+                            });
+                        }
+                        button.up("window").close();
+                    }
+                },
+                {
+                    text: __("Cancel"),
+                    handler: function() {
+                        this.up("window").close();
+                    }
+                }
+            ],
+            listeners: {
+                close: function() {
+                    drawPanel.isModalOpen = false;
                 }
             }
-            drawPanel.isModalOpen = false;
         });
     },
     removeConnection: function(connection) {
@@ -953,13 +1044,14 @@ Ext.define("NOC.inv.inv.CreateConnectionForm", {
             me.switchInternalLabel(body, false);
         }
         me.drawInternalConnections(connections, surface, side);
-        console.log("renderFrame: deleteInternalConnections");
+        console.log("renderFrame: removeInternalConnections");
         mainSurface.renderFrame();
     },
     deleteWireMsg: function(wireSprite) {
         var me = this,
             drawPanel = me.drawPanel;
 
+        drawPanel.isModalOpen = true;
         console.log("deleteWire", wireSprite.fromPortId, wireSprite.toPortId);
         Ext.Msg.confirm(__("Confirm"), __("Are you sure you want to delete this wire") + " " + wireSprite.fromPort + "=>" + wireSprite.toPort, function(btn) {
             if(btn === "yes") {
@@ -1167,14 +1259,12 @@ Ext.define("NOC.inv.inv.CreateConnectionForm", {
                     // illumination of ALL wire connections
                     Ext.each(mainSurface.getItems(), function(s) {
                         if(s.fromPortId === sprite.id || s.toPortId === sprite.id) {
-                            // s.setAttributes(me.drawPanel.selectedWire);
                             s.setAttributes({isSelected: true});
                         }
                     });
                     // illumination of ALL internal connections
                     Ext.each(me.drawPanel.getSurface(sprite.side + "_internal_conn").getItems(), function(s) {
                         if(s.fromPortId === sprite.id || s.toPortId === sprite.id) {
-                            // s.setAttributes(me.drawPanel.selectedWire);
                             s.setAttributes({isSelected: true});
                         }
                     });
@@ -1226,7 +1316,6 @@ Ext.define("NOC.inv.inv.CreateConnectionForm", {
                     }
                     if(sprite.connectionType === "internal") {
                         me.drawPanel.selectedSprite = sprite;
-                        sprite.setAttributes(me.drawPanel.selectedWire);
                         sprite.setAttributes({isSelected: true});
                         // console.log("renderFrame (internal): onSpriteMouseOver");
                         // me.drawPanel.getSurface(sprite.side + "_internal_conn").renderFrame();
@@ -1238,7 +1327,6 @@ Ext.define("NOC.inv.inv.CreateConnectionForm", {
                         }
                     }
                     if(Ext.Array.contains(["wire", "loopback"], sprite.connectionType)) {
-                        // sprite.setAttributes(me.drawPanel.selectedWire);
                         sprite.setAttributes({isSelected: true});
                         console.log("renderFrame (main): onSpriteMouseOver");
                         me.drawPanel.getSurface().renderFrame();
@@ -1278,18 +1366,12 @@ Ext.define("NOC.inv.inv.CreateConnectionForm", {
                     Ext.each(me.drawPanel.getSurface().getItems(), function(s) {
                         if(s.fromPortId === sprite.id || s.toPortId === sprite.id) {
                             s.setAttributes({isSelected: false});
-                            // s.setAttributes(me.drawPanel.wire);
                         }
                     });
                     // internal connections
                     Ext.each(me.drawPanel.getSurface(sprite.side + "_internal_conn").getItems(), function(s) {
                         if(s.fromPortId === sprite.id || s.toPortId === sprite.id) {
                             s.setAttributes({isSelected: false});
-                            // if(s.isDeleted) {
-                            //     s.setAttributes(me.drawPanel.wire);
-                            // } else {
-                            //     s.setAttributes(me.drawPanel.disabledWire);
-                            // }
                         }
                     });
                     mainSurface.get("label" + sprite.id).setAttributes({
@@ -1317,11 +1399,6 @@ Ext.define("NOC.inv.inv.CreateConnectionForm", {
                     if(sprite.connectionType === "internal") {
                         me.drawPanel.selectedSprite = undefined;
                         sprite.setAttributes({isSelected: false});
-                        // if(sprite.isDeleted) {
-                        //     sprite.setAttributes(me.drawPanel.wire);
-                        // } else {
-                        //     sprite.setAttributes(me.drawPanel.disabledWire);
-                        // }
                         if(sprite.toDiscriminatorTooltip && !sprite.toDiscriminatorTooltip.isHidden()) {
                             sprite.toDiscriminatorTooltip.hide();
                         }
@@ -1332,7 +1409,6 @@ Ext.define("NOC.inv.inv.CreateConnectionForm", {
                         // me.drawPanel.getSurface(sprite.side + "_internal_conn").renderFrame();
                     }
                     if(Ext.Array.contains(["wire", "loopback"], sprite.connectionType)) {
-                        // sprite.setAttributes(me.drawPanel.wire);
                         sprite.setAttributes({isSelected: false});
                         // console.log("renderFrame (main): onSpriteMouseOver");
                         // me.drawPanel.getSurface().renderFrame();
@@ -1369,7 +1445,7 @@ Ext.define("NOC.inv.inv.CreateConnectionForm", {
         }
 
         if(isInternal && sprite.attr.isSelected && prevSprite && prevSprite.attr.isSelected) {
-            me.createInternalConnection(prevSprite, sprite, side);
+            me.createInternalConnectionMsg(prevSprite, sprite, side);
         }
 
         if(!isInternal && sprite.attr.isSelected && prevSprite && prevSprite.attr.isSelected) {
@@ -1433,11 +1509,9 @@ Ext.define("NOC.inv.inv.CreateConnectionForm", {
             }
             case "connection": {
                 if(sprite.connectionType === "internal" && sprite.isDeleted) {
-                    me.drawPanel.isModalOpen = true;
-                    me.deleteInternalConnection();
+                    me.updateDeleteInternalConnectionMsg();
                 }
                 if(Ext.Array.contains(["wire", "loopback"], sprite.connectionType)) {
-                    me.drawPanel.isModalOpen = true;
                     me.deleteWireMsg(sprite);
                 }
                 break;

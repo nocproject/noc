@@ -42,6 +42,7 @@ Ext.define("NOC.core.Connection", {
                 path: "recalculate",
                 fromDiscriminator: "recalculate",
                 toDiscriminator: "recalculate",
+                gainDb: "recalculate",
                 discriminatorWidth: "recalculate",
                 cable: "recalculate",
                 isNew: "recalculate",
@@ -57,6 +58,7 @@ Ext.define("NOC.core.Connection", {
                     me.createSprites(attr);
                     me.isNew = attr.isNew;
                     me.cable = attr.cable;
+                    me.gainDb = attr.gainDb;
                     if(attr.connectionType === "wire") {
                         path = Ext.String.format("M{0},{1} L{2},{3} L{4},{5} L{6},{7}",
                             attr.fromXY[0], attr.fromXY[1],
