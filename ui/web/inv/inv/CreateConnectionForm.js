@@ -906,9 +906,8 @@ Ext.define("NOC.inv.inv.CreateConnectionForm", {
                         connections = me.getInternalConnections(internalConnectionSurface),
                             console.log(gainDb, fromDiscriminator, toDiscriminator);
                         internalConnectionQty = connections.internal_connections.push(connection);
-                        if(hasDiscriminator = me.hasDiscriminator(connections.internal_connections)) {
-                            me.switchInternalLabel(body, true);
-                        }
+                        hasDiscriminator = me.hasDiscriminator(connections.internal_connections);
+                        me.switchInternalLabel(body, hasDiscriminator);
                         calculatedWidth = (internalConnectionQty + me.firstTrace) * me.gap + (hasDiscriminator ? Math.abs(me.discriminatorWidth[side]) : 0);
                         if(body.width <= calculatedWidth) {
                             var increment = (side === "left" ? calculatedWidth - body.attr.width : 0);
@@ -918,17 +917,6 @@ Ext.define("NOC.inv.inv.CreateConnectionForm", {
                             });
                         }
                         me.drawInternalConnections(connections, internalConnectionSurface, side);
-
-                        // sprite.setAttributes({
-                        //     isNew: true,
-                        //     gainDb: gainDb,
-                        //     fromDiscriminator: fromDiscriminator,
-                        //     toDiscriminator: toDiscriminator,
-                        // });
-
-
-
-
                         me.getViewModel().set("isDirty", true);
                         console.log("renderFrame: createInternalConnections");
                         mainSurface.renderFrame();
@@ -937,7 +925,7 @@ Ext.define("NOC.inv.inv.CreateConnectionForm", {
                 },
                 {
                     text: __("Delete"),
-                    handler: function() {
+                    handler: function(button) {
                         var vm = me.getViewModel(),
                             fromObject = vm.get(sprite.fromSide + "Object"),
                             params = {
