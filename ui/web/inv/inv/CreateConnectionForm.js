@@ -761,11 +761,56 @@ Ext.define("NOC.inv.inv.CreateConnectionForm", {
             ];
         return items;
     },
-    createInternalConnectionMsg: function(fromSprite, toSprite, side) {
-        var me = this,
+    addConnectionSprite: function(button, fromSprite, toSprite, side) {
+        var hasDiscriminator, internalConnectionQty, calculatedWidth,
+            me = this,
             internalConnectionSurface = me.drawPanel.getSurface(side + "_internal_conn"),
             mainSurface = me.drawPanel.getSurface(),
             connections = me.getInternalConnections(internalConnectionSurface),
+            body = mainSurface.get(side + "Body"),
+            win = button.up("window"),
+            gainDb = win.down("[name=gainDb]").getValue(),
+            fromDiscriminator = win.down("[name=fromDiscriminator]").getValue() || undefined,
+            toDiscriminator = win.down("[name=toDiscriminator]").getValue() || undefined,
+            pinDisabled = {internalColor: me.OCCUPIED_COLOR, internalEnabled: false},
+            from = {
+                discriminator: fromDiscriminator,
+                has_arrow: false,
+                id: fromSprite.id,
+                name: fromSprite.attr.pinName
+            },
+            to = {
+                discriminator: toDiscriminator,
+                has_arrow: true,
+                id: toSprite.id,
+                name: toSprite.pinName
+            },
+            connection = {
+                gain_db: gainDb,
+                is_delete: true,
+                to: to,
+                from: from,
+                isNew: true,
+            };
+
+        fromSprite.setAttributes(pinDisabled);
+        toSprite.setAttributes(pinDisabled);
+        internalConnectionQty = connections.internal_connections.push(connection);
+        hasDiscriminator = me.hasDiscriminator(connections.internal_connections);
+        me.switchInternalLabel(body, hasDiscriminator);
+        calculatedWidth = (internalConnectionQty + me.firstTrace) * me.gap + (hasDiscriminator ? Math.abs(me.discriminatorWidth[side]) : 0);
+        if(body.width <= calculatedWidth) {
+            var increment = (side === "left" ? calculatedWidth - body.attr.width : 0);
+            body.setAttributes({
+                width: calculatedWidth,
+                x: body.attr.x - increment,
+            });
+        }
+        me.drawInternalConnections(connections, internalConnectionSurface, side);
+    },
+    createInternalConnectionMsg: function(fromSprite, toSprite, side) {
+        var me = this,
+            mainSurface = me.drawPanel.getSurface(),
             fromDiscriminators = fromSprite.allowDiscriminators,
             toDiscriminators = toSprite.allowDiscriminators;
 
@@ -785,48 +830,7 @@ Ext.define("NOC.inv.inv.CreateConnectionForm", {
                     text: __("Create"),
                     reference: "createBtn",
                     handler: function(button) {
-                        var hasDiscriminator, internalConnectionQty, calculatedWidth,
-                            win = button.up("window"),
-                            body = mainSurface.get(side + "Body"),
-                            gainDb = win.down("[name=gainDb]").getValue(),
-                            fromDiscriminator = win.down("[name=fromDiscriminator]").getValue() || undefined,
-                            toDiscriminator = win.down("[name=toDiscriminator]").getValue() || undefined,
-                            pinDisabled = {internalColor: me.OCCUPIED_COLOR, internalEnabled: false},
-                            from = {
-                                discriminator: fromDiscriminator,
-                                has_arrow: false,
-                                id: fromSprite.id,
-                                name: fromSprite.attr.pinName
-                            },
-                            to = {
-                                discriminator: toDiscriminator,
-                                has_arrow: true,
-                                id: toSprite.id,
-                                name: toSprite.pinName
-                            },
-                            connection = {
-                                gain_db: gainDb,
-                                is_delete: true,
-                                to: to,
-                                from: from,
-                                isNew: true,
-                            };
-
-                        fromSprite.setAttributes(pinDisabled);
-                        toSprite.setAttributes(pinDisabled);
-                        internalConnectionQty = connections.internal_connections.push(connection);
-                        if(hasDiscriminator = me.hasDiscriminator(connections.internal_connections)) {
-                            me.switchInternalLabel(body, true);
-                        }
-                        calculatedWidth = (internalConnectionQty + me.firstTrace) * me.gap + (hasDiscriminator ? Math.abs(me.discriminatorWidth[side]) : 0);
-                        if(body.width <= calculatedWidth) {
-                            var increment = (side === "left" ? calculatedWidth - body.attr.width : 0);
-                            body.setAttributes({
-                                width: calculatedWidth,
-                                x: body.attr.x - increment,
-                            });
-                        }
-                        me.drawInternalConnections(connections, internalConnectionSurface, side);
+                        me.addConnectionSprite(button, fromSprite, toSprite, side);
                         me.getViewModel().set("isDirty", true);
                         console.log("renderFrame: createInternalConnections");
                         mainSurface.renderFrame();
@@ -876,47 +880,8 @@ Ext.define("NOC.inv.inv.CreateConnectionForm", {
                     text: __("Update"),
                     reference: "updateBtn",
                     handler: function(button) {
-                        var hasDiscriminator, internalConnectionQty, calculatedWidth, connections,
-                            win = button.up("window"),
-                            body = mainSurface.get(side + "Body"),
-                            gainDb = win.down("[name=gainDb]").getValue(),
-                            fromDiscriminator = win.down("[name=fromDiscriminator]").getValue() || undefined,
-                            toDiscriminator = win.down("[name=toDiscriminator]").getValue() || undefined,
-                            from = {
-                                discriminator: fromDiscriminator,
-                                has_arrow: false,
-                                id: fromSprite.id,
-                                name: fromSprite.attr.pinName
-                            },
-                            to = {
-                                discriminator: toDiscriminator,
-                                has_arrow: true,
-                                id: toSprite.id,
-                                name: toSprite.pinName
-                            },
-                            connection = {
-                                gain_db: gainDb,
-                                is_delete: true,
-                                to: to,
-                                from: from,
-                                isNew: true,
-                            };
-
                         sprite.remove();
-                        connections = me.getInternalConnections(internalConnectionSurface),
-                            console.log(gainDb, fromDiscriminator, toDiscriminator);
-                        internalConnectionQty = connections.internal_connections.push(connection);
-                        hasDiscriminator = me.hasDiscriminator(connections.internal_connections);
-                        me.switchInternalLabel(body, hasDiscriminator);
-                        calculatedWidth = (internalConnectionQty + me.firstTrace) * me.gap + (hasDiscriminator ? Math.abs(me.discriminatorWidth[side]) : 0);
-                        if(body.width <= calculatedWidth) {
-                            var increment = (side === "left" ? calculatedWidth - body.attr.width : 0);
-                            body.setAttributes({
-                                width: calculatedWidth,
-                                x: body.attr.x - increment,
-                            });
-                        }
-                        me.drawInternalConnections(connections, internalConnectionSurface, side);
+                        me.addConnectionSprite(button, fromSprite, toSprite, side);
                         me.getViewModel().set("isDirty", true);
                         console.log("renderFrame: createInternalConnections");
                         mainSurface.renderFrame();
