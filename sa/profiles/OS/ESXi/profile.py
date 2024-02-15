@@ -2,7 +2,7 @@
 # Vendor: VmWare
 # OS:     ESXi
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2017 The NOC Project
+# Copyright (C) 2007-2024 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -25,3 +25,16 @@ class Profile(BaseProfile):
     # command_super = "su"
     command_exit = "exit"
     pattern_more = [(rb"--More--", b"\n")]
+
+    INTERFACE_TYPES = {
+        1: "other",
+        6: "physical",  # ethernetCsmacd
+        24: "loopback",  # softwareLoopback
+        258: "SVI",  # propVirtual
+        54: "physical",  # propMultiplexor
+        161: "aggregated",  # ieee8023adLag
+        53: "SVI",  # propVirtual
+    }
+
+    def get_interface_type(self, name):
+        return self.INTERFACE_TYPES.get(name)
