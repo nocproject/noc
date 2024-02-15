@@ -23,6 +23,8 @@ class DiscoveredObjectApplication(ExtDocApplication):
     icon = "icon_monitor"
     model = DiscoveredObject
     default_ordering = ["address"]
+    query_fields = ["address", "description", "hostname"]  # Use all unique fields by default
+    query_condition = "contains"
 
     def instance_to_dict_list(self, o, fields=None, nocustom=False):
         if isinstance(o, CheckStatus):
@@ -32,8 +34,11 @@ class DiscoveredObjectApplication(ExtDocApplication):
         return super().instance_to_dict_list(o, fields, nocustom)
 
     def instance_to_dict(self, o, fields=None, nocustom=False):
-        if isinstance(o, CheckStatus):
-            if not o.port:
-                return o.name
-            return f"{o.name}:{o.port}"
-        return super().instance_to_dict(o, fields, nocustom)
+        r = super().instance_to_dict(o, fields, nocustom)
+        if "checks" in r:
+            r["checks"] = [f"{c.name}:{c.port}" if c.port else c.name for c in o.checks if c.status]
+        # if isinstance(o, CheckStatus):
+        #    if not o.port:
+        #        return o.name
+        #    return f"{o.name}:{o.port}"
+        return r

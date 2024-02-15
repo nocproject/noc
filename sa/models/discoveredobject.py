@@ -48,10 +48,18 @@ SELECT
     IPv4NumToString(ip) as address,
     pool,
     groupArray(source) as sources,
-    groupArray((source, remote_system, map('hostname', hostname, 'description', description, 'uptime', toString(uptime), 'remote_id', remote_id, 'ts', toString(ts)), data, labels)) as all_data,
-    arrayJoin(groupArray(checks)) as all_checks,
-    arrayJoin(groupArray(labels)) as all_labels
-FROM noc.purgatorium GROUP BY ip, pool
+    groupArray((source, remote_system, map('hostname', hostname, 'description', description, 'uptime', toString(uptime), 'remote_id', remote_id, 'ts', toString(max_ts)), data, labels)) as all_data,
+    groupUniqArrayArray(checks) as all_checks,
+    groupUniqArrayArray(labels) as all_labels
+FROM (
+    SELECT ip, pool, remote_system,
+     argMax(source, ts) as source, argMax(hostname, ts) as hostname, argMax(description, ts) as description,
+     argMax(uptime, ts) as uptime, argMax(remote_id, ts) as remote_id, argMax(checks, ts) as checks, 
+     argMax(data, ts) as data, argMax(labels, ts) as labels, argMax(ts, ts) as max_ts
+    FROM noc.purgatorium
+    GROUP BY ip, pool, remote_system
+    )
+GROUP BY ip, pool
 ORDER BY ip
 FORMAT JSONEachRow
 """
@@ -203,19 +211,21 @@ class DiscoveredObject(Document):
         :return:
         """
         #
-        data, labels = {}, []
+        data, labels, changed = {}, [], False
         for di in sorted(self.data, key=lambda x: self.sources.index(x.source)):
             for key, value in di.data.items():
-                if key not in data and (
-                    key not in self.effective_data or self.effective_data[key] != value
-                ):
-                    data[key] = value
+                if key in data or not value:
+                    # Already set by priority source
+                    continue
+                data[key] = value
+                if key not in self.effective_data or self.effective_data[key] != value:
+                    changed = True
             if di.labels:
                 labels += di.labels
         # Update Extra Labels
         if self.extra_labels:
             labels += [ll for ll in Label.merge_labels(self.extra_labels.values())]
-        if not data:
+        if not changed or set(self.effective_labels) != set(labels):
             return
         self.is_dirty = True  # if data changed
         self.hostname = data.get("hostname")
@@ -223,6 +233,21 @@ class DiscoveredObject(Document):
         self.chassis_id = data.get("chassis_id")
         self.effective_data = data
         self.effective_labels = labels
+
+    def get_effective_data(self) -> Dict[str, str]:
+        """
+        Merge data by Source Priority
+        :return:
+        """
+        data, labels = {}, set()
+        for di in sorted(self.data, key=lambda x: self.sources.index(x.source)):
+            for key, value in di.data.items():
+                if key in data or not value:
+                    continue
+                data[key] = value
+            if di.labels:
+                labels |= set(di.labels)
+        return data
 
     def change_rule(self, rule):
         self.rule = rule

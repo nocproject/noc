@@ -53,6 +53,7 @@ class ObjectDiscoveryRule(Document):
     workflow = PlainReferenceField(
         Workflow, default=partial(Workflow.get_default_workflow, "sa.ObjectDiscoveryRule")
     )
+    # sources
     #
     # match: List["Match"] = EmbeddedDocumentListField(Match)
     #
