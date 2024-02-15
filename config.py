@@ -756,6 +756,10 @@ class Config(BaseConfig):
         # time to live (rounds quantity) of records in storm protection addresses dictionary
         storm_record_ttl = IntParameter(default=10)
 
+    class watchdog(ConfigSection):
+        delay = IntParameter(detal=30)
+        count = IntParameter(detal=10)
+
     class web(ConfigSection):
         theme = StringParameter(default="gray")
         api_row_limit = IntParameter(default=0)
