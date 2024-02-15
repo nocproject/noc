@@ -757,8 +757,8 @@ class Config(BaseConfig):
         storm_record_ttl = IntParameter(default=10)
 
     class watchdog(ConfigSection):
-        delay = IntParameter(detal=30)
-        count = IntParameter(detal=10)
+        delay = IntParameter(default=30)
+        count = IntParameter(default=6)
 
     class web(ConfigSection):
         theme = StringParameter(default="gray")
