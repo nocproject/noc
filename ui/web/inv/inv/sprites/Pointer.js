@@ -1,13 +1,13 @@
 //---------------------------------------------------------------------
-// NOC.core.Pointer
+// NOC.inv.inv.sprites.Pointer
 // Render SVG pointer for make connections
 //---------------------------------------------------------------------
 // Copyright (C) 2007-2024 The NOC Project
 // See LICENSE for details
 //---------------------------------------------------------------------
-console.debug("Defining NOC.core.Pointer");
+console.debug("Defining NOC.inv.inv.sprites.Pointer");
 
-Ext.define("NOC.core.Pointer", {
+Ext.define("NOC.inv.inv.sprites.Pointer", {
     extend: "Ext.draw.sprite.Composite",
     alias: "sprite.pointer",
 

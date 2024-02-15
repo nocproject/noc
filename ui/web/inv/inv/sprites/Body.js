@@ -1,13 +1,13 @@
 //---------------------------------------------------------------------
-// NOC.core.Body
+// NOC.inv.inv.sprites.Body
 // Render SVG object body
 //---------------------------------------------------------------------
 // Copyright (C) 2007-2024 The NOC Project
 // See LICENSE for details
 //---------------------------------------------------------------------
-console.debug("Defining NOC.core.Body");
+console.debug("Defining NOC.inv.inv.sprites.Body");
 
-Ext.define("NOC.core.Body", {
+Ext.define("NOC.inv.inv.sprites.Body", {
     extend: "Ext.draw.sprite.Composite",
     alias: "sprite.body",
     inheritableStatics: {

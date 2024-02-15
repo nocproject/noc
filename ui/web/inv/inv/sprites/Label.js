@@ -1,13 +1,13 @@
 //---------------------------------------------------------------------
-// NOC.core.Label
+// NOC.inv.inv.sprites.Label
 // Render SVG object label
 //---------------------------------------------------------------------
 // Copyright (C) 2007-2024 The NOC Project
 // See LICENSE for details
 //---------------------------------------------------------------------
-console.debug("Defining NOC.core.Label");
+console.debug("Defining NOC.inv.inv.sprites.Label");
 
-Ext.define("NOC.core.Label", {
+Ext.define("NOC.inv.inv.sprites.Label", {
     extend: "Ext.draw.sprite.Composite",
     alias: "sprite.label",
     inheritableStatics: {

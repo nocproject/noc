@@ -1,13 +1,13 @@
 //---------------------------------------------------------------------
-// NOC.core.Connection
+// NOC.inv.inv.sprites.Connection
 // Render SVG connection
 //---------------------------------------------------------------------
 // Copyright (C) 2007-2024 The NOC Project
 // See LICENSE for details
 //---------------------------------------------------------------------
-console.debug("Defining NOC.core.Connection");
+console.debug("Defining NOC.inv.inv.sprites.Connection");
 
-Ext.define("NOC.core.Connection", {
+Ext.define("NOC.inv.inv.sprites.Connection", {
     extend: "Ext.draw.sprite.Composite",
     alias: "sprite.connection",
     inheritableStatics: {

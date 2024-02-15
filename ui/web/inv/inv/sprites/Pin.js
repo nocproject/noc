@@ -1,13 +1,13 @@
 //---------------------------------------------------------------------
-// NOC.core.Pin
+// NOC.inv.inv.sprites.Pin
 // Render SVG pin image
 //---------------------------------------------------------------------
 // Copyright (C) 2007-2024 The NOC Project
 // See LICENSE for details
 //---------------------------------------------------------------------
-console.debug("Defining NOC.core.Pin");
+console.debug("Defining NOC.inv.inv.sprites.Pin");
 
-Ext.define("NOC.core.Pin", {
+Ext.define("NOC.inv.inv.sprites.Pin", {
     extend: "Ext.draw.sprite.Composite",
     alias: "sprite.pin",
     inheritableStatics: {

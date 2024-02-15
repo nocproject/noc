@@ -27,12 +27,12 @@ Ext.define("NOC.inv.inv.CreateConnectionForm", {
     legendHeight: 20,
     firstTrace: 3,
     requires: [
-        "NOC.core.Body",
+        "NOC.inv.inv.sprites.Body",
         "NOC.core.ComboBox",
-        "NOC.core.Connection",
-        "NOC.core.Label",
-        "NOC.core.Pin",
-        "NOC.core.Pointer"
+        "NOC.inv.inv.sprites.Connection",
+        "NOC.inv.inv.sprites.Label",
+        "NOC.inv.inv.sprites.Pin",
+        "NOC.inv.inv.sprites.Pointer"
     ],
     viewModel: {
         data: {
