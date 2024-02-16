@@ -22,6 +22,7 @@ from mongoengine.fields import (
     StringField,
     BooleanField,
     EmbeddedDocumentListField,
+    IntField,
 )
 
 # NOC modules
@@ -30,11 +31,27 @@ from noc.core.change.decorator import change
 from noc.wf.models.workflow import Workflow
 from noc.core.model.decorator import on_delete_check
 from noc.core.bi.decorator import bi_sync
+from noc.core.purgatorium import SOURCES
 from noc.main.models.label import Label
 from noc.config import config
 
 id_lock = Lock()
 rules_lock = Lock()
+
+
+class AddressRange(EmbeddedDocument):
+    networks = StringField()
+    pool = StringField()
+    enable_scan = BooleanField(default=True)
+
+
+class Checks(EmbeddedDocument):
+    check = StringField()
+    port = IntField(default=0)
+    arg0 = StringField()  # available, access, condition
+    key = StringField()  # data key # Hostname, Uptime # For multiple data collected
+    condition = StringField(choices=["regex", "eq", "gte", "contains"], default="eq")
+    value = StringField()
 
 
 @change
@@ -48,16 +65,34 @@ class ObjectDiscoveryRule(Document):
     name = StringField(unique=True)
     description = StringField()
     is_active = BooleanField(default=False)
+    # Rule preference, processed from lesser to greater
+    preference = IntField(required=True, default=100)
     #
-    networks = ListField(StringField())
+    address_ranges = EmbeddedDocumentListField(AddressRange)
     workflow = PlainReferenceField(
         Workflow, default=partial(Workflow.get_default_workflow, "sa.ObjectDiscoveryRule")
     )
-    # sources
+    update_interval = IntField(default=0)
+    sources = ListField(StringField(choices=list(SOURCES)))  # Source match and priority
+    expired_ttl = IntField(default=0)  # Time for expired event
     #
-    # match: List["Match"] = EmbeddedDocumentListField(Match)
+    condition_type = StringField(choices=["AND", "OR"], default="AND")
+    checks: List["Checks"] = EmbeddedDocumentListField(Checks)
     #
     # actions: List["MetricActionItem"] = EmbeddedDocumentListField(MetricActionItem)
+    # log - add record as new
+    # approve - send approve
+    # ignore - ignore state
+    # UnApprove, manual approve ?
+    # duplicate state
+    # notification_group
+    # notification_template =
+    action = StringField(choices=["new", "approve", "ignore"])
+    # label =
+    # groups =
+    stop_processed = BooleanField(default=False)
+    allow_sync = BooleanField(default=True)  # sync record on
+    # templates
 
     _id_cache = cachetools.TTLCache(maxsize=100, ttl=60)
     _rules_cache = cachetools.TTLCache(10, ttl=180)
