@@ -494,7 +494,7 @@ class BaseService(object):
             # Finally call on_activate
             await self.on_activate()
             self.logger.info("Service is active (in %.2fms)", self.uptime() * 1000)
-            if self.use_watchdog:
+            if self.use_watchdog or config.watchdog.use_watchdog:
                 # Run Watchdog
                 self.logger.info("Start Watchdog")
                 self.watchdog_waiter = asyncio.Event()
