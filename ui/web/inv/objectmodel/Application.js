@@ -386,7 +386,7 @@ Ext.define("NOC.inv.objectmodel.Application", {
                             },
                             listeners: {
                                 resize: function(grid, width, height) {
-                                    var diagramContainer = grid.up('container').down('#diagramContainer');
+                                    var diagramContainer = grid.up("container").down("#diagram");
                                     if(diagramContainer) {
                                         diagramContainer.setHeight(height);
                                     }
@@ -394,24 +394,21 @@ Ext.define("NOC.inv.objectmodel.Application", {
                             }
                         },
                         {
-                            xtype: "panel",
-                            itemId: "diagramContainer",
+                            xtype: "inv.crossdiagram",
+                            itemId: "diagram",
                             flex: 1,
                             layout: "fit",
                             border: false,
                             padding: 20,
-                            items: [{
-                                xtype: "inv.crossdiagram",
-                                itemId: "diagram",
-                                border: false,
-                            }],
+                            border: false,
                             listeners: {
                                 resize: function(panel) {
                                     var app = panel.up("[appId=inv.objectmodel]"),
-                                        diagram = panel.down("#diagram"),
-                                        padding = (panel.config.padding || 0) * 2;
-                                    console.log(panel.getWidth(), panel.getHeight());
-                                    diagram.drawDiagram(app.getFormData(), [panel.getWidth() - padding, panel.getHeight() - padding]);
+                                        padding = (panel.config.padding || 0) * 2,
+                                        data = app.getFormData();
+                                    if(!Ext.isEmpty(data.cross)) {
+                                        panel.drawDiagram(data, [panel.getWidth() - padding, panel.getHeight() - padding]);
+                                    }
                                 }
                             },
                         }
@@ -555,29 +552,12 @@ Ext.define("NOC.inv.objectmodel.Application", {
         var n = +m[2] + 1;
         record.set("name", m[1] + n);
     },
-    // editRecord: function(record) {
-    //     this.callParent([record]);
-    //     var diagram = this.down("[itemId=diagram]");
-    //     container = this.down("[itemId=diagramContainer]"),
-    //     gridField = this.down("[name=cross]"),
-    //     padding = diagramContainer.config.padding || 0,
-    //     region = gridField.bodyEl.getClientRegion();
-    //     width = gridField.getEl().body.clientWidth / 2,
-    //     height = gridField.getEl().body.clientHeight;
-    // // 
-    //     console.log(region);
-    //     console.log(width, height);
-    //     var diagram = NOC.generateDiagram(this.getFormData());
-    //     NOC.drawDiagram(diagram, this.down("[itemId=diagram]"));
-    //     debugger;
-    //     this.down("[itemId=diagram]").drawDiagram(this.getFormData(), [this.down("[name=cross]").getWidth(), this.down("[name=cross]").getHeight()]);
-    //     this.down("[itemId=diagramContainer]").setWidth(width);
-    //     this.down("[itemId=diagramContainer]").setHeight(height);
-    //     diagramContainer.setWidth(width);
-    //     diagramContainer.setHeight(height);
-    // diagramContainer.drawDiagram(this.getFormData(), [width - padding * 2, height - padding * 2]);
-    // diagram.drawDiagram(this.getFormData(), [500, 500]);
-    // },
+    editRecord: function(record) {
+        this.callParent([record]);
+        var diagram = this.down("[itemId=diagram]");
+
+        diagram.getSurface().removeAll();
+    },
     onDeleteRow: function() {
         NOC.drawDiagram(NOC.generateDiagram(this.getFormData()), this.down("[itemId=diagram]"));
     }
