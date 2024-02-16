@@ -13,6 +13,7 @@ Ext.define("NOC.inv.objectmodel.Application", {
         "NOC.core.label.LabelField",
         "NOC.core.TemplatePreview",
         "NOC.inv.objectmodel.Model",
+        "NOC.inv.objectmodel.CrossDiagram",
         "NOC.inv.vendor.LookupField",
         "NOC.inv.connectiontype.LookupField",
         "NOC.inv.connectionrule.LookupField",
@@ -305,13 +306,15 @@ Ext.define("NOC.inv.objectmodel.Application", {
                 {
                     xtype: "container",
                     layout: "hbox",
+                    itemId: "crossContainer",
                     items: [
                         {
+                            xtype: "gridfield",
                             name: "cross",
                             fieldLabel: __("Cross"),
-                            xtype: "gridfield",
                             allowBlank: true,
                             flex: 1,
+                            layout: "fit",
                             columns: [
                                 {
                                     text: __("Input"),
@@ -381,14 +384,38 @@ Ext.define("NOC.inv.objectmodel.Application", {
                                 }
                                 NOC.drawDiagram(NOC.generateDiagram(app.getFormData()), app.down("[itemId=diagram]"));
                             },
+                            listeners: {
+                                resize: function(grid, width, height) {
+                                    var diagramContainer = grid.up('container').down('#diagramContainer');
+                                    if(diagramContainer) {
+                                        diagramContainer.setHeight(height);
+                                    }
+                                }
+                            }
                         },
                         {
                             xtype: "panel",
+                            itemId: "diagramContainer",
                             flex: 1,
-                            itemId: "diagram",
+                            layout: "fit",
                             border: false,
+                            padding: 20,
+                            items: [{
+                                xtype: "inv.crossdiagram",
+                                itemId: "diagram",
+                                border: false,
+                            }],
+                            listeners: {
+                                resize: function(panel) {
+                                    var app = panel.up("[appId=inv.objectmodel]"),
+                                        diagram = panel.down("#diagram"),
+                                        padding = (panel.config.padding || 0) * 2;
+                                    console.log(panel.getWidth(), panel.getHeight());
+                                    diagram.drawDiagram(app.getFormData(), [panel.getWidth() - padding, panel.getHeight() - padding]);
+                                }
+                            },
                         }
-                    ]
+                    ],
                 },
                 {
                     name: "sensors",
@@ -528,11 +555,29 @@ Ext.define("NOC.inv.objectmodel.Application", {
         var n = +m[2] + 1;
         record.set("name", m[1] + n);
     },
-    editRecord: function(record) {
-        this.callParent([record]);
-        var diagram = NOC.generateDiagram(this.getFormData());
-        NOC.drawDiagram(diagram, this.down("[itemId=diagram]"));
-    },
+    // editRecord: function(record) {
+    //     this.callParent([record]);
+    //     var diagram = this.down("[itemId=diagram]");
+    //     container = this.down("[itemId=diagramContainer]"),
+    //     gridField = this.down("[name=cross]"),
+    //     padding = diagramContainer.config.padding || 0,
+    //     region = gridField.bodyEl.getClientRegion();
+    //     width = gridField.getEl().body.clientWidth / 2,
+    //     height = gridField.getEl().body.clientHeight;
+    // // 
+    //     console.log(region);
+    //     console.log(width, height);
+    //     var diagram = NOC.generateDiagram(this.getFormData());
+    //     NOC.drawDiagram(diagram, this.down("[itemId=diagram]"));
+    //     debugger;
+    //     this.down("[itemId=diagram]").drawDiagram(this.getFormData(), [this.down("[name=cross]").getWidth(), this.down("[name=cross]").getHeight()]);
+    //     this.down("[itemId=diagramContainer]").setWidth(width);
+    //     this.down("[itemId=diagramContainer]").setHeight(height);
+    //     diagramContainer.setWidth(width);
+    //     diagramContainer.setHeight(height);
+    // diagramContainer.drawDiagram(this.getFormData(), [width - padding * 2, height - padding * 2]);
+    // diagram.drawDiagram(this.getFormData(), [500, 500]);
+    // },
     onDeleteRow: function() {
         NOC.drawDiagram(NOC.generateDiagram(this.getFormData()), this.down("[itemId=diagram]"));
     }
