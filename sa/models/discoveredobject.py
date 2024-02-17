@@ -33,6 +33,7 @@ from noc.core.bi.decorator import bi_sync
 from noc.core.clickhouse.connect import connection
 from noc.core.purgatorium import ProtocolCheckResult, SOURCES, ETL_SOURCE
 from noc.core.mongo.fields import PlainReferenceField, ForeignKeyField
+from noc.core.ip import IP, PrefixDB
 from noc.main.models.pool import Pool
 from noc.main.models.label import Label
 from noc.main.models.remotesystem import RemoteSystem
@@ -147,6 +148,8 @@ class DiscoveredObject(Document):
         "auto_create_index": False,
         "indexes": [
             {"fields": ["pool", "address"], "unique": True},
+            {"fields": ["pool", "address_bin"]},
+            "address_bin",
             "sources",
             "is_dirty",
             "state",
@@ -157,6 +160,7 @@ class DiscoveredObject(Document):
 
     pool: "Pool" = PlainReferenceField(Pool, required=True)
     address: str = StringField(required=True)
+    address_bin = IntField()
     state: "State" = PlainReferenceField(State)
     # profile = Predefined Profile
     # Flags
@@ -167,7 +171,7 @@ class DiscoveredObject(Document):
     description = StringField()
     hostname = StringField()
     chassis_id = StringField()
-    # Sources that find object
+    # Sources that find object,     timestamp: str = DateTimeField(required=True)
     sources = ListField(StringField(choices=sorted(SOURCES)))
     # Timestamp of last seen
     last_seen = DateTimeField()
@@ -227,6 +231,7 @@ class DiscoveredObject(Document):
             labels += [ll for ll in Label.merge_labels(self.extra_labels.values())]
         if not changed or set(self.effective_labels) != set(labels):
             return
+        self.address_bin = IP.prefix(self.address).d
         self.is_dirty = True  # if data changed
         self.hostname = data.get("hostname")
         self.description = data.get("description")
@@ -262,8 +267,9 @@ class DiscoveredObject(Document):
         data: List[PurgatoriumData],  # source, remote_system, data
         checks: Optional[List[ProtocolCheckResult]] = None,
         labels: Optional[List[str]] = None,  # Manual Labels
+        timestamp: Optional[datetime.datetime] = None,
         rule=None,  # Processed rule
-    ) -> "DiscoveredObject":  # MergeRule
+    ) -> Optional["DiscoveredObject"]:  # MergeRule
         """
         Register New record
         1. Ensure Discovery Object
@@ -276,15 +282,14 @@ class DiscoveredObject(Document):
         :param data: Source, labels, data
         :param checks: List of checks
         :param labels: Manual Set labels
+        :param timestamp: Updated timestamp
         :param rule:
         :return:
         """
         if not isinstance(pool, Pool):
             pool = Pool.get_by_name(pool)
         o = DiscoveredObject.objects.filter(pool=pool, address=address).first()
-        if not rule:
-            # ResolveRule
-            ...
+        # timestamp = timestamp or datetime.datetime.now()
         if not o:
             o = DiscoveredObject(
                 pool=pool,
@@ -293,6 +298,10 @@ class DiscoveredObject(Document):
                 labels=labels or [],
                 rule=rule,
             )
+        o.rule = rule or ObjectDiscoveryRule.get_rule(address, pool, checks)
+        if not o.rule:
+            logger.warning("[%s|%s] Not find rule for address. Skipping", pool.name, address)
+            return
         o.seen(sources)  # Timestamp
         o.update_data(data, checks)
         o.save()
@@ -420,6 +429,13 @@ def sync_purgatorium():
     :return:
     """
     logger.info("Start Purgatorium Sync")
+    db = PrefixDB()
+    ranges = defaultdict(list)
+    for r in ObjectDiscoveryRule.objects.filter(is_active=True):
+        for p in r.get_prefixes():
+            ranges[p].append(r)
+    for prefix, rules in ranges.items():
+        db[prefix] = rules
     ch = connection()
     r = ch.execute(PURGATORIUM_SQL, return_raw=True)
     for row in r.splitlines():
@@ -439,7 +455,7 @@ def sync_purgatorium():
                 rs = rs.name
             # Check timestamp
             data[(source, rs)].update(d1 | d2)
-        rule = ObjectDiscoveryRule.objects.get(name="default")
+        rule = None
         DiscoveredObject.register(
             pool,
             row["address"],

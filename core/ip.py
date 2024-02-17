@@ -994,6 +994,17 @@ class PrefixDB(object):
             node = c
         node.key = key
 
+    def __contains__(self, prefix) -> bool:
+        if isinstance(prefix, str):
+            prefix = IPv4.prefix(prefix)
+        node = self
+        for n in prefix.iter_bits():
+            c = node.children[n]
+            if c is None:
+                break
+            node = c
+        return bool(node.key)
+
     def iter_free(self, root):
         """
         Generator returning free blocks
