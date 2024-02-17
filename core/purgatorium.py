@@ -44,6 +44,7 @@ class ProtocolCheckResult:
     available: Optional[bool] = None  # Protocol (port) is available, for UDP equal to access
     access: Optional[bool] = None  # None if not check (if available False)
     credential: Optional[str] = None  # Set if access True
+    data: Dict[str, str] = None
     error: Optional[str] = None  # Error message
 
 

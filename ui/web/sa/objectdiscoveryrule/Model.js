@@ -28,7 +28,7 @@ Ext.define("NOC.sa.objectdiscoveryrule.Model", {
             name: "is_builtin",
             type: "boolean",
             persist: false
-        }
+        },
         {
             name: "description",
             type: "string"

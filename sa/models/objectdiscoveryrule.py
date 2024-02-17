@@ -8,7 +8,7 @@
 # Python modules
 import operator
 from functools import partial
-from typing import List, Dict, Optional, Tuple, Set
+from typing import List, Dict, Optional, Tuple, Set, Any
 from threading import Lock
 
 # Third-party modules
@@ -21,16 +21,18 @@ from mongoengine.fields import (
     EmbeddedDocumentListField,
     IntField,
     UUIDField,
+    MapField,
 )
 
 # NOC modules
 from noc.core.mongo.fields import PlainReferenceField
 from noc.core.change.decorator import change
 from noc.core.ip import IPv4, IP
-from noc.wf.models.workflow import Workflow
 from noc.core.model.decorator import on_delete_check
 from noc.core.purgatorium import SOURCES, ProtocolCheckResult
+from noc.core.prettyjson import to_json
 from noc.main.models.pool import Pool
+from noc.wf.models.workflow import Workflow
 
 id_lock = Lock()
 rules_lock = Lock()
@@ -41,6 +43,10 @@ class NetworkRange(EmbeddedDocument):
     pool = PlainReferenceField(Pool, required=True)
     exclude = BooleanField(default=False)
 
+    @property
+    def json_data(self) -> Dict[str, Any]:
+        return {"network": self.network}
+
 
 class CheckItem(EmbeddedDocument):
     check = StringField(required=True)
@@ -49,12 +55,35 @@ class CheckItem(EmbeddedDocument):
     condition = StringField(choices=["regex", "contains", "eq", "gte", "lte"], default="eq")
     value = StringField()
 
-    def is_match(self, data: ProtocolCheckResult) -> bool:
-        if not data.status:
+    def is_match(self, result: ProtocolCheckResult) -> bool:
+        if not result.status:
             return False
-        if self.value:
+        elif result.status and not self.value:
+            return True
+        elif self.value and not result.data:
             return False
         return True
+
+    @property
+    def json_data(self) -> Dict[str, Any]:
+        r = {"check": self.check}
+        if self.port:
+            r["port"] = self.port
+        if self.arg0:
+            r["arg0"] = self.arg0
+        if self.condition and self.value:
+            r["condition"] = self.condition
+            r["value"] = self.value
+        return r
+
+
+class SourceItem(EmbeddedDocument):
+    source = StringField(choices=list(SOURCES), required=True)
+    is_required = BooleanField(default=False)  # Check if source required for match
+
+    @property
+    def json_data(self) -> Dict[str, Any]:
+        return {"source": self.source, "is_required": self.is_required}
 
 
 @change
@@ -77,7 +106,7 @@ class ObjectDiscoveryRule(Document):
     workflow: "Workflow" = PlainReferenceField(
         Workflow, default=partial(Workflow.get_default_workflow, "sa.DiscoveredObject")
     )
-    sources: List[str] = ListField(StringField(choices=list(SOURCES)))  # Source match and priority
+    sources: List[SourceItem] = EmbeddedDocumentListField(SourceItem)  # Source match and priority
     update_interval = IntField(default=0)
     expired_ttl = IntField(default=0)  # Time for expired event
     #
@@ -127,6 +156,37 @@ class ObjectDiscoveryRule(Document):
             if rule.is_match(address, pool, checks):
                 return rule
         return
+
+    @property
+    def json_data(self) -> Dict[str, Any]:
+        r = {
+            "name": self.name,
+            "$collection": self._meta["json_collection"],
+            "uuid": self.uuid,
+            "description": self.description,
+            #
+            "preference": self.preference,
+            "workflow__name": self.workflow.name,
+            #
+            "network_ranges": [c.json_data for c in self.network_ranges],
+            "check_policy": self.check_policy,
+            "checks": [c.json_data for c in self.checks],
+            #
+            "sources": [c.json_data for c in self.sources],
+            "event": self.event,
+        }
+        return r
+
+    def to_json(self) -> str:
+        return to_json(
+            self.json_data,
+            order=[
+                "name",
+                "$collection",
+                "uuid",
+                "description",
+            ],
+        )
 
     def is_match(self, address: str, pool: Pool, checks: List["ProtocolCheckResult"]) -> bool:
         """

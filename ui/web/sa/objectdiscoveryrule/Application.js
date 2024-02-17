@@ -51,7 +51,7 @@ Ext.define("NOC.sa.objectdiscoveryrule.Application", {
                     dataIndex: "preference",
                     width: 40,
                     align: "right"
-                },
+                }
             ],
 
             fields: [
@@ -113,8 +113,8 @@ Ext.define("NOC.sa.objectdiscoveryrule.Application", {
                             renderer: NOC.render.Lookup("pool")
                         },
                         {
-                            text: __("Scan"),
-                            dataIndex: "enable_scan",
+                            text: __("Exclude"),
+                            dataIndex: "exclude",
                             editor: "checkbox",
                             renderer: NOC.render.Bool,
                             width: 50
@@ -145,6 +145,33 @@ Ext.define("NOC.sa.objectdiscoveryrule.Application", {
                     boxLabel: __("Stop Processing")
                 },
                 {
+                    name: "sources",
+                    xtype: "gridfield",
+                    fieldLabel: __("Sources"),
+                    columns: [
+                        {
+                            text: __("Source"),
+                            dataIndex: "source",
+                            width: 150,
+                            editor: {
+                                xtype: "combobox",
+                                store: [
+                                    ["etl", _("ETL")],
+                                    ["network-scan", _("Network Scan")],
+                                    ["manual", _("Manual")]
+                                ]
+                            },
+                            {
+                                text: __("Required"),
+                                dataIndex: "is_required",
+                                editor: "checkbox",
+                                renderer: NOC.render.Bool,
+                                width: 50
+                            }
+                        }
+                    ]
+                },
+                {
                     name: "checks",
                     fieldLabel: __("Checks"),
                     xtype: "gridfield",
@@ -172,7 +199,7 @@ Ext.define("NOC.sa.objectdiscoveryrule.Application", {
                                 xtype: "numberfield",
                                 defaultValue: 0
                             }
-                        },
+                        }
                     ]
                 }
             ]

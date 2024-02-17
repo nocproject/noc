@@ -16,7 +16,8 @@ class ObjectDiscoveryRuleApplication(ExtDocApplication):
     Discovered Object
     """
 
-    title = _("Discovered Object")
-    menu = _("Discovered Object")
-    icon = "icon_monitor"
+    title = _("Object Discovered Rules")
+    menu = [_("Setup"), _("Object Discovered Rules")]
     model = ObjectDiscoveryRule
+    query_fields = ["name__icontains", "description__icontains"]
+    default_ordering = ["name"]
