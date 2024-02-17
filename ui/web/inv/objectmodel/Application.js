@@ -400,12 +400,13 @@ Ext.define("NOC.inv.objectmodel.Application", {
                             layout: "fit",
                             border: false,
                             padding: 20,
-                            border: false,
                             listeners: {
                                 resize: function(panel) {
                                     var app = panel.up("[appId=inv.objectmodel]"),
                                         padding = (panel.config.padding || 0) * 2,
                                         data = app.getFormData();
+
+                                    console.log(panel.getId());
                                     if(!Ext.isEmpty(data.cross)) {
                                         panel.drawDiagram(data, [panel.getWidth() - padding, panel.getHeight() - padding]);
                                     }

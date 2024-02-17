@@ -15,6 +15,11 @@ Ext.define("NOC.inv.objectmodel.CrossDiagram", {
         "NOC.inv.objectmodel.sprites.Label",
         "NOC.inv.objectmodel.sprites.Pin"
     ],
+    plugins: ["spriteevents"],
+    listeners: {
+        spritemouseover: "onSpriteMouseOver",
+        spritemouseout: "onSpriteMouseOut",
+    },
     /**
  * Draw a diagram based on the provided data and size.
  *
@@ -24,6 +29,16 @@ Ext.define("NOC.inv.objectmodel.CrossDiagram", {
  */
     drawDiagram: function(data, size) {
         var outputOffsetX, inputOffsetX,
+            groupBy = (array, key) => array.reduce((result, item) => {
+                (result[item[key]] = result[item[key]] || []).push(item);
+                return result;
+            }, {}),
+            sortGroups = (groups, sortBy) => {
+                return Object.values(groups)
+                    .filter(group => group.length > 1)
+                    .map(group => group.sort((a, b) => a[sortBy].localeCompare(b[sortBy])))
+                    .sort((a, b) => b.length - a.length);
+            },
             me = this,
             surface = me.getSurface(),
             inputPins = Ext.Array.unique(Ext.Array.map(data.cross || [], function(connection) {return connection.input})),
@@ -31,77 +46,205 @@ Ext.define("NOC.inv.objectmodel.CrossDiagram", {
             maxPins = Ext.Array.max([inputPins.length, outputPins.length]),
             pinRadius = 8,
             gap = pinRadius * 2.5,
-            inputOffsetY = (maxPins - inputPins.length) * gap / 2,
-            outputOffsetY = (maxPins - outputPins.length) * gap / 2,
+            // by vertical center
+            // inputOffsetY = (maxPins - inputPins.length) * gap / 2,
+            // outputOffsetY = (maxPins - outputPins.length) * gap / 2,
+            inputOffsetY = 0,
+            outputOffsetY = 0,
+            filledPinRow = 0,
             topPadding = pinRadius,
             fontFamily = "arial",
-            fontSize = pinRadius * 1.8,
+            pinFontSize = pinRadius * 1.8,
+            discriminatorFontSize = pinRadius,
             drawContainerHeight = topPadding + maxPins * gap,
-            scale = size[1] / drawContainerHeight;
+            scale = size[1] / drawContainerHeight,
+            groupedByOutput = groupBy(data.cross, 'output'),
+            outputGroups = sortGroups(groupedByOutput, 'input'),
+            groupedByInput = groupBy(data.cross, 'input'),
+            inputGroups = sortGroups(groupedByInput, 'output'),
+            remainingItems = [data.cross.filter(item =>
+                !outputGroups.some(group => group.includes(item)) &&
+                !inputGroups.some(group => group.includes(item))
+            ).sort((a, b) => a.input.localeCompare(b.input))];
 
         pinRadius *= scale;
         gap *= scale;
-        fontSize *= scale;
+        pinFontSize *= scale;
+        discriminatorFontSize *= scale;
         inputOffsetY *= scale;
         outputOffsetY *= scale;
-        outputOffsetX = size[0] - Ext.Array.max(Ext.Array.map(outputPins, function(pin) {return me.measureText(pin, fontSize, fontFamily);})) - pinRadius * 2;
-        inputOffsetX = Ext.Array.max(Ext.Array.map(inputPins, function(pin) {return me.measureText(pin, fontSize, fontFamily);})) + pinRadius * 2;
+        outputOffsetX = size[0] - Ext.Array.max(Ext.Array.map(outputPins, function(pin) {return me.measureText(pin, pinFontSize, fontFamily);})) - pinRadius * 2;
+        inputOffsetX = Ext.Array.max(Ext.Array.map(inputPins, function(pin) {return me.measureText(pin, pinFontSize, fontFamily);})) + pinRadius * 2;
+        inputDiscriminatorLength = Ext.Array.max(Ext.Array.map(data.cross, function(connection) {return me.measureText(connection.input_discriminator, discriminatorFontSize, fontFamily);})) + pinRadius * 5;
+        outputDiscriminatorLength = Ext.Array.max(Ext.Array.map(data.cross, function(connection) {return me.measureText(connection.output_discriminator, discriminatorFontSize, fontFamily);})) + pinRadius * 5;
+        outputGroups = Ext.Array.map(outputGroups, function(group) {
+            return Ext.apply(group, {
+                type: "inputMany"
+            });
+        });
+        inputGroups = Ext.Array.map(inputGroups, function(group) {
+            return Ext.apply(group, {
+                type: "outputMany"
+            });
+        });
+        remainingItems = Ext.Array.map(remainingItems, function(group) {
+            return Ext.apply(group, {
+                type: "single"
+            });
+        });
 
-        console.log(maxPins, inputOffsetX, outputOffsetX, inputOffsetY, outputOffsetY);
-        // me.setWidth(size[0]);
-        // me.setHeight(size[1]);
-        // surface.add({
-        // type: "rect",
-        // x: 0,
-        // y: 0,
-        // width: size[0],
-        // height: size[1],
-        // stroke: "black",
-        // });
-
+        console.log('Группы с одинаковым output:', outputGroups);
+        console.log('Группы с одинаковым input:', inputGroups);
+        console.log('Остальные объекты:', remainingItems);
+        console.log('inputDiscriminatorLength:', inputDiscriminatorLength);
+        console.log('outputDiscriminatorLength:', outputDiscriminatorLength);
         surface.removeAll(true);
-        Ext.Array.each(inputPins, function(pin, i) {
-            surface.add({
-                type: "cross.pin",
-                id: "input" + pin,
-                radius: pinRadius,
-                x: inputOffsetX,
-                y: inputOffsetY + i * gap,
-                fontFamily: fontFamily,
-                fontSize: fontSize,
-                text: pin,
-                textAlign: "end",
-            });
-        });
-        Ext.Array.each(outputPins, function(pin, i) {
-            surface.add({
-                type: "cross.pin",
-                id: "output" + pin,
-                radius: pinRadius,
-                x: outputOffsetX,
-                y: outputOffsetY + i * gap,
-                fontFamily: fontFamily,
-                fontSize: fontSize,
-                text: pin,
-                textAlign: "start",
-            });
-        });
+        Ext.Array.each([...outputGroups, ...inputGroups, ...remainingItems], function(group, i, allGroups) {
+            var inputPins = Ext.Array.unique(Ext.Array.map(group || [], function(connection) {return connection.input})),
+                outputPins = Ext.Array.unique(Ext.Array.map(group || [], function(connection) {return connection.output})),
+                inputOffsetY = filledPinRow * gap;
+            outputOffsetY = filledPinRow * gap;
 
-        Ext.Array.each(data.cross || [], function(connection, i) {
-            var inputSprite = surface.get("input" + connection.input),
-                outputSprite = surface.get("output" + connection.output),
-                path = Ext.String.format("M{0},{1} L{2},{3}", inputSprite.x, inputSprite.y + pinRadius * 2, outputSprite.x, outputSprite.y + pinRadius * 2);
+            Ext.Array.each(inputPins, function(pin, j) {
+                surface.add({
+                    type: "cross_pin",
+                    id: "input" + pin,
+                    radius: pinRadius,
+                    x: inputOffsetX,
+                    y: inputOffsetY + j * gap,
+                    fontFamily: fontFamily,
+                    fontSize: pinFontSize,
+                    text: pin,
+                    textAlign: "end",
+                });
+            });
+            Ext.Array.each(outputPins, function(pin, j) {
+                surface.add({
+                    type: "cross_pin",
+                    id: "output" + pin,
+                    radius: pinRadius,
+                    x: outputOffsetX,
+                    y: outputOffsetY + j * gap,
+                    fontFamily: fontFamily,
+                    fontSize: pinFontSize,
+                    text: pin,
+                    textAlign: "start",
+                });
+            });
+            //
+            filledPinRow += Ext.Array.max([inputPins.length, outputPins.length]);
+            //
+            Ext.Array.each(group, function(connection, j) {
+                var secondPointXY, thirdPointXY, path,
+                    inputSprite = surface.get("input" + connection.input),
+                    outputSprite = surface.get("output" + connection.output),
+                    startXY = [inputSprite.x, inputSprite.y + pinRadius * 2],
+                    endXY = [outputSprite.x, outputSprite.y + pinRadius * 2];
 
-            surface.add({
-                type: "cross.connection",
-                path: path,
+                switch(group.type) {
+                    case "inputMany": {
+                        secondPointXY = [outputOffsetX - outputDiscriminatorLength - pinRadius * (group.length - j), startXY[1]];
+                        thirdPointXY = [secondPointXY[0], endXY[1]];
+                        path = Ext.String.format("M{0},{1} L{2},{3} L{4},{5} L{6},{7}",
+                            startXY[0], startXY[1],
+                            secondPointXY[0], secondPointXY[1],
+                            thirdPointXY[0], thirdPointXY[1],
+                            endXY[0], endXY[1]);
+                        break;
+                    }
+                    case "outputMany": {
+                        secondPointXY = [inputOffsetX + inputDiscriminatorLength + pinRadius * (group.length - j), startXY[1]];
+                        thirdPointXY = [secondPointXY[0], endXY[1]];
+                        path = Ext.String.format("M{0},{1} L{2},{3} L{4},{5} L{6},{7}",
+                            startXY[0], startXY[1],
+                            secondPointXY[0], secondPointXY[1],
+                            thirdPointXY[0], thirdPointXY[1],
+                            // outputOffsetX - 5 * pinRadius, endXY[1],
+                            endXY[0], endXY[1]);
+                        break;
+                    }
+                    case "single": {
+                        path = Ext.String.format("M{0},{1} L{2},{3}", startXY[0], startXY[1], endXY[0], endXY[1]);
+                        break;
+                    }
+                }
+                surface.add({
+                    type: "cross_connection",
+                    path: path,
+                    inputId: inputSprite.id,
+                    outputId: outputSprite.id,
+                    toXY: endXY,
+                    scaleFactor: scale,
+                });
             });
         });
         surface.renderFrame();
     },
+    onSpriteMouseOver: function(sprite) {
+        switch(sprite.type) {
+            case "cross_connection": {
+                var inputSprite = sprite.getSurface().get(sprite.inputId),
+                    outputSprite = sprite.getSurface().get(sprite.outputId);
+
+                Ext.Array.each([inputSprite, outputSprite, sprite], function(s) {
+                    s.setAttributes({
+                        isSelected: true,
+                    });
+                });
+                break;
+            }
+            case "cross_pin": {
+                var connections = Ext.Array.filter(sprite.getSurface().getItems(),
+                    function(s) {
+                        return s.type === "cross_connection" && (s.outputId === sprite.id || s.inputId === sprite.id)
+                    });
+
+                Ext.Array.each([sprite, ...connections], function(s) {
+                    s.setAttributes({
+                        isSelected: true,
+                        zIndex: 50,
+                    });
+                });
+                break;
+            }
+        }
+        this.getSurface().renderFrame();
+    },
+    onSpriteMouseOut: function(sprite) {
+        switch(sprite.type) {
+            case "cross_connection": {
+                var inputSprite = sprite.getSurface().get(sprite.inputId),
+                    outputSprite = sprite.getSurface().get(sprite.outputId);
+
+                Ext.Array.each([inputSprite, outputSprite, sprite], function(s) {
+                    s.setAttributes({
+                        isSelected: false,
+                    });
+                });
+                break;
+            }
+            case "cross_pin": {
+                var connections = Ext.Array.filter(sprite.getSurface().getItems(),
+                    function(s) {
+                        return s.type === "cross_connection" && (s.outputId === sprite.id || s.inputId === sprite.id)
+                    });
+
+                Ext.Array.each([sprite, ...connections], function(s) {
+                    s.setAttributes({
+                        isSelected: false,
+                    });
+                });
+                break;
+            }
+        }
+        this.getSurface().renderFrame();
+    },
     measureText: function(text, fontSize, fontFamily) {
-        var me = this,
-            font = Ext.String.format("{0} {1}px {2}", "normal", fontSize, fontFamily);
+        var font = Ext.String.format("{0} {1}px {2}", "normal", fontSize, fontFamily);
+
+        if(Ext.isEmpty(text)) {
+            return 0;
+        }
         return Ext.draw.TextMeasurer.measureText(text, font).width;
     }
 });
