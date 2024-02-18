@@ -374,6 +374,7 @@ Ext.define("NOC.inv.objectmodel.Application", {
                             onCellEdit: function(editor, context) {
                                 var me = this,
                                     app = this.up("[appId=inv.objectmodel]"),
+                                    diagram = me.up("container").down("#diagram"),
                                     ed = context.grid.columns[context.colIdx].getEditor(),
                                     field = context.grid.columns[context.colIdx].field;
                                 if(ed.rawValue) {
@@ -382,7 +383,7 @@ Ext.define("NOC.inv.objectmodel.Application", {
                                 if(field.xtype === "labelfield") {
                                     context.value = field.valueCollection.items;
                                 }
-                                NOC.drawDiagram(NOC.generateDiagram(app.getFormData()), app.down("[itemId=diagram]"));
+                                diagram.drawDiagram(app.getFormData(), [diagram.getWidth(), diagram.getHeight()]);
                             },
                             listeners: {
                                 resize: function(grid, width, height) {
@@ -560,6 +561,6 @@ Ext.define("NOC.inv.objectmodel.Application", {
         diagram.getSurface().removeAll();
     },
     onDeleteRow: function() {
-        NOC.drawDiagram(NOC.generateDiagram(this.getFormData()), this.down("[itemId=diagram]"));
+        debugger;
     }
 });

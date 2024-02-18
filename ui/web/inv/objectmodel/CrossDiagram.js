@@ -55,7 +55,7 @@ Ext.define("NOC.inv.objectmodel.CrossDiagram", {
             topPadding = pinRadius,
             fontFamily = "arial",
             pinFontSize = pinRadius * 1.8,
-            discriminatorFontSize = pinRadius,
+            discriminatorFontSize = pinRadius * 1.4,
             drawContainerHeight = topPadding + maxPins * gap,
             scale = size[1] / drawContainerHeight,
             groupedByOutput = groupBy(data.cross, 'output'),
@@ -135,45 +135,25 @@ Ext.define("NOC.inv.objectmodel.CrossDiagram", {
             filledPinRow += Ext.Array.max([inputPins.length, outputPins.length]);
             //
             Ext.Array.each(group, function(connection, j) {
-                var secondPointXY, thirdPointXY, path,
-                    inputSprite = surface.get("input" + connection.input),
+                var inputSprite = surface.get("input" + connection.input),
                     outputSprite = surface.get("output" + connection.output),
                     startXY = [inputSprite.x, inputSprite.y + pinRadius * 2],
                     endXY = [outputSprite.x, outputSprite.y + pinRadius * 2];
 
-                switch(group.type) {
-                    case "inputMany": {
-                        secondPointXY = [outputOffsetX - outputDiscriminatorLength - pinRadius * (group.length - j), startXY[1]];
-                        thirdPointXY = [secondPointXY[0], endXY[1]];
-                        path = Ext.String.format("M{0},{1} L{2},{3} L{4},{5} L{6},{7}",
-                            startXY[0], startXY[1],
-                            secondPointXY[0], secondPointXY[1],
-                            thirdPointXY[0], thirdPointXY[1],
-                            endXY[0], endXY[1]);
-                        break;
-                    }
-                    case "outputMany": {
-                        secondPointXY = [inputOffsetX + inputDiscriminatorLength + pinRadius * (group.length - j), startXY[1]];
-                        thirdPointXY = [secondPointXY[0], endXY[1]];
-                        path = Ext.String.format("M{0},{1} L{2},{3} L{4},{5} L{6},{7}",
-                            startXY[0], startXY[1],
-                            secondPointXY[0], secondPointXY[1],
-                            thirdPointXY[0], thirdPointXY[1],
-                            // outputOffsetX - 5 * pinRadius, endXY[1],
-                            endXY[0], endXY[1]);
-                        break;
-                    }
-                    case "single": {
-                        path = Ext.String.format("M{0},{1} L{2},{3}", startXY[0], startXY[1], endXY[0], endXY[1]);
-                        break;
-                    }
-                }
                 surface.add({
                     type: "cross_connection",
-                    path: path,
+                    pathType: group.type,
+                    indexes: [j, group.length],
                     inputId: inputSprite.id,
                     outputId: outputSprite.id,
+                    startXY: startXY,
                     toXY: endXY,
+                    fontFamily: fontFamily,
+                    fontSize: discriminatorFontSize,
+                    pinRadius: pinRadius,
+                    discriminators: [connection.input_discriminator, connection.output_discriminator],
+                    discriminatorsLength: [inputDiscriminatorLength, outputDiscriminatorLength],
+                    offsetsX: [inputOffsetX, outputOffsetX],
                     scaleFactor: scale,
                 });
             });

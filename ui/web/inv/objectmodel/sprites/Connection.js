@@ -14,10 +14,19 @@ Ext.define("NOC.inv.objectmodel.sprites.Connection", {
         def: {
             processors: {
                 path: "string",
+                pathType: "string",
+                indexes: "data",
+                offsetsX: "data",
                 inputId: "string",
                 outputId: "string",
+                discriminators: "data",
+                discriminatorsLength: "data",
+                fontFamily: "string",
+                fontSize: "string",
                 isSelected: "bool",
+                startXY: "data",
                 toXY: "data",
+                pinRadius: "number",
                 scaleFactor: "number",
             },
             triggers: {
@@ -60,18 +69,73 @@ Ext.define("NOC.inv.objectmodel.sprites.Connection", {
         return null;
     },
     createSprites: function(attr) {
-        var me = this;
+        var me = this,
+            path, secondPointXY, thirdPointXY;
 
         if(!me.line) {
             me.inputId = attr.inputId;
             me.outputId = attr.outputId;
+
+            switch(attr.pathType) {
+                case "inputMany": {
+                    secondPointXY = [attr.offsetsX[1] - attr.discriminatorsLength[1] - attr.pinRadius * (attr.indexes[1] - attr.indexes[0]), attr.startXY[1]];
+                    thirdPointXY = [secondPointXY[0], attr.toXY[1]];
+                    path = Ext.String.format("M{0},{1} L{2},{3} L{4},{5} L{6},{7}",
+                        attr.startXY[0], attr.startXY[1],
+                        secondPointXY[0], secondPointXY[1],
+                        thirdPointXY[0], thirdPointXY[1],
+                        attr.toXY[0], attr.toXY[1]);
+                    break;
+                }
+                case "outputMany": {
+                    secondPointXY = [attr.offsetsX[0] + attr.discriminatorsLength[0] + attr.pinRadius * (attr.indexes[1] - attr.indexes[0]), attr.startXY[1]];
+                    thirdPointXY = [secondPointXY[0], attr.toXY[1]];
+                    path = Ext.String.format("M{0},{1} L{2},{3} L{4},{5} L{6},{7}",
+                        attr.startXY[0], attr.startXY[1],
+                        secondPointXY[0], secondPointXY[1],
+                        thirdPointXY[0], thirdPointXY[1],
+                        attr.toXY[0], attr.toXY[1]);
+                    break;
+                }
+                case "single": {
+                    path = Ext.String.format("M{0},{1} L{2},{3}", attr.startXY[0], attr.startXY[1], attr.toXY[0], attr.toXY[1]);
+                    break;
+                }
+            }
+
             me.line = me.add({
                 type: "path",
-                path: attr.path,
+                path: path,
                 strokeStyle: me.getAvailableColor(),
                 lineWidth: 2,
             });
             me.add(me.getMarker("arrow", attr.toXY, attr.scaleFactor));
+            if(attr.discriminators[0]) {
+                me.add({
+                    type: "text",
+                    text: attr.discriminators[0],
+                    fontFamily: attr.fontFamily,
+                    fontWeight: "normal",
+                    fontSize: attr.fontSize,
+                    textBaseline: "middle",
+                    textAlign: "start",
+                    x: attr.startXY[0] + attr.pinRadius * 2,
+                    y: attr.startXY[1] - attr.pinRadius,
+                });
+            }
+            if(attr.discriminators[1]) {
+                me.add({
+                    type: "text",
+                    text: attr.discriminators[1],
+                    fontFamily: attr.fontFamily,
+                    fontWeight: "normal",
+                    fontSize: attr.fontSize,
+                    textBaseline: "middle",
+                    textAlign: "end",
+                    x: attr.toXY[0] - attr.pinRadius * 4,
+                    y: attr.toXY[1] - attr.pinRadius,
+                });
+            }
         }
     },
     getMarker: function(id, pointXY, scale) {
