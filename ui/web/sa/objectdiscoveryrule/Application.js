@@ -160,14 +160,14 @@ Ext.define("NOC.sa.objectdiscoveryrule.Application", {
                                     ["network-scan", _("Network Scan")],
                                     ["manual", _("Manual")]
                                 ]
-                            },
-                            {
-                                text: __("Required"),
-                                dataIndex: "is_required",
-                                editor: "checkbox",
-                                renderer: NOC.render.Bool,
-                                width: 50
                             }
+                        },
+                        {
+                            text: __("Required"),
+                            dataIndex: "is_required",
+                            editor: "checkbox",
+                            renderer: NOC.render.Bool,
+                            width: 50
                         }
                     ]
                 },

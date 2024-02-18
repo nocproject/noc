@@ -194,6 +194,7 @@ class Command(BaseCommand):
                                 port=r.port,
                                 available=r.is_available,
                                 access=r.is_access,
+                                data=r.data,
                                 error=r.error,
                             )
                         )

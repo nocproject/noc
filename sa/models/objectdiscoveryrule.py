@@ -56,13 +56,12 @@ class CheckItem(EmbeddedDocument):
     value = StringField()
 
     def is_match(self, result: ProtocolCheckResult) -> bool:
-        if not result.status:
+        if not self.value:
+            return result.status
+        key = self.arg0 or self.check
+        if key not in result.data:
             return False
-        elif result.status and not self.value:
-            return True
-        elif self.value and not result.data:
-            return False
-        return True
+        return result.data[key] == self.value
 
     @property
     def json_data(self) -> Dict[str, Any]:
@@ -79,6 +78,7 @@ class CheckItem(EmbeddedDocument):
 
 class SourceItem(EmbeddedDocument):
     source = StringField(choices=list(SOURCES), required=True)
+    # Remote system ?
     is_required = BooleanField(default=False)  # Check if source required for match
 
     @property
@@ -197,11 +197,12 @@ class ObjectDiscoveryRule(Document):
         :return:
         """
         address = IP.prefix(address)
-        r = any([p for p in self.get_prefixes(pool) if address in p])
-        if not self.network_ranges:
+        if self.network_ranges:
+            r = any([p for p in self.get_prefixes(pool) if address in p])
+        else:
             r = True
-        elif not r:
-            return False
+        if not self.checks:
+            return r
         all_checks: Set[str] = set()
         check_r: Dict[Tuple[str, int], ProtocolCheckResult] = {}
         for c in checks:

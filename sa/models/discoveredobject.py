@@ -86,6 +86,7 @@ class CheckData(EmbeddedDocument):
 @dataclass
 class PurgatoriumData(object):
     source: str
+    ts: Optional[datetime.datetime] = None
     remote_system: Optional[str] = None
     labels: Optional[List[str]] = None
     data: Optional[Dict[str, str]] = None
@@ -109,6 +110,7 @@ class CheckStatus(EmbeddedDocument):
 
 class DataItem(EmbeddedDocument):
     source: str = StringField(required=True)
+    last_update = DateTimeField(required=False)
     remote_system: "RemoteSystem" = ReferenceField(RemoteSystem, required=False)
     remote_id: str = StringField(required=False)
     labels: List[str] = ListField(StringField())
@@ -267,7 +269,6 @@ class DiscoveredObject(Document):
         data: List[PurgatoriumData],  # source, remote_system, data
         checks: Optional[List[ProtocolCheckResult]] = None,
         labels: Optional[List[str]] = None,  # Manual Labels
-        timestamp: Optional[datetime.datetime] = None,
         rule=None,  # Processed rule
     ) -> Optional["DiscoveredObject"]:  # MergeRule
         """
@@ -302,8 +303,9 @@ class DiscoveredObject(Document):
         if not o.rule:
             logger.warning("[%s|%s] Not find rule for address. Skipping", pool.name, address)
             return
-        o.seen(sources)  # Timestamp
         o.update_data(data, checks)
+        # Set Status, is_dirty
+        o.seen(sources)  # Timestamp
         o.save()
         return o
 
@@ -429,13 +431,11 @@ def sync_purgatorium():
     :return:
     """
     logger.info("Start Purgatorium Sync")
-    db = PrefixDB()
     ranges = defaultdict(list)
+    # ranges filter
     for r in ObjectDiscoveryRule.objects.filter(is_active=True):
         for p in r.get_prefixes():
             ranges[p].append(r)
-    for prefix, rules in ranges.items():
-        db[prefix] = rules
     ch = connection()
     r = ch.execute(PURGATORIUM_SQL, return_raw=True)
     for row in r.splitlines():
@@ -463,6 +463,7 @@ def sync_purgatorium():
             data=[
                 PurgatoriumData(
                     source=source,
+                    ts=datetime.datetime.fromisoformat(d.pop("ts")),
                     remote_system=rs,
                     data=d,
                 )
