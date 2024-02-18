@@ -376,14 +376,20 @@ Ext.define("NOC.inv.objectmodel.Application", {
                                     app = this.up("[appId=inv.objectmodel]"),
                                     diagram = me.up("container").down("#diagram"),
                                     ed = context.grid.columns[context.colIdx].getEditor(),
+                                    data = app.getFormData(),
+                                    padding = (diagram.config.padding || 0) * 2,
+                                    diagramSize = [diagram.getWidth() - padding, diagram.getHeight() - padding],
                                     field = context.grid.columns[context.colIdx].field;
+
                                 if(ed.rawValue) {
                                     context.record.set(context.field + "__label", ed.rawValue);
                                 }
                                 if(field.xtype === "labelfield") {
                                     context.value = field.valueCollection.items;
                                 }
-                                diagram.drawDiagram(app.getFormData(), [diagram.getWidth(), diagram.getHeight()]);
+                                if(!Ext.isEmpty(context.record.get("input")) && !Ext.isEmpty(context.record.get("output"))) {
+                                    diagram.drawDiagram(data, diagramSize);
+                                }
                             },
                             listeners: {
                                 resize: function(grid, width, height) {
@@ -407,7 +413,6 @@ Ext.define("NOC.inv.objectmodel.Application", {
                                         padding = (panel.config.padding || 0) * 2,
                                         data = app.getFormData();
 
-                                    console.log(panel.getId());
                                     if(!Ext.isEmpty(data.cross)) {
                                         panel.drawDiagram(data, [panel.getWidth() - padding, panel.getHeight() - padding]);
                                     }

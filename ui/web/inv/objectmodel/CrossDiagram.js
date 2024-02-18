@@ -93,11 +93,6 @@ Ext.define("NOC.inv.objectmodel.CrossDiagram", {
             });
         });
 
-        console.log('Группы с одинаковым output:', outputGroups);
-        console.log('Группы с одинаковым input:', inputGroups);
-        console.log('Остальные объекты:', remainingItems);
-        console.log('inputDiscriminatorLength:', inputDiscriminatorLength);
-        console.log('outputDiscriminatorLength:', outputDiscriminatorLength);
         surface.removeAll(true);
         Ext.Array.each([...outputGroups, ...inputGroups, ...remainingItems], function(group, i, allGroups) {
             var inputPins = Ext.Array.unique(Ext.Array.map(group || [], function(connection) {return connection.input})),
