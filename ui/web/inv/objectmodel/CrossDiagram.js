@@ -40,10 +40,29 @@ Ext.define("NOC.inv.objectmodel.CrossDiagram", {
                     .sort((a, b) => b.length - a.length);
             },
             me = this,
+
+            groupedByOutput = groupBy(data.cross, 'output'),
+            outputGroups = sortGroups(groupedByOutput, 'input'),
+            groupedByInput = groupBy(data.cross, 'input'),
+            inputGroups = sortGroups(groupedByInput, 'output'),
+            remainingItems = [data.cross.filter(item =>
+                !outputGroups.some(group => group.includes(item)) &&
+                !inputGroups.some(group => group.includes(item))
+            ).sort((a, b) => a.input.localeCompare(b.input))],
+
             surface = me.getSurface(),
             inputPins = Ext.Array.unique(Ext.Array.map(data.cross || [], function(connection) {return connection.input})),
             outputPins = Ext.Array.unique(Ext.Array.map(data.cross || [], function(connection) {return connection.output})),
-            maxPins = Ext.Array.max([inputPins.length, outputPins.length]),
+            // maxPins = Ext.Array.reduce([...outputGroups, ...inputGroups, ...remainingItems],
+            //     function(prev, group) {
+            //         console.log(group);
+            //         var inputPins = Ext.Array.unique(Ext.Array.map(group || [], function(connection) {return connection.input})),
+            //             outputPins = Ext.Array.unique(Ext.Array.map(group || [], function(connection) {return connection.output})),
+            //             value = Ext.Array.max([inputPins.length, outputPins.length]);
+            //         return prev + value
+            //     }, 0),
+            // maxPins = Ext.Array.max([inputPins.length, outputPins.length]),
+            maxPins = data.cross.length,
             pinRadius = 8,
             gap = pinRadius * 2.5,
             // by vertical center
@@ -57,15 +76,7 @@ Ext.define("NOC.inv.objectmodel.CrossDiagram", {
             pinFontSize = pinRadius * 1.8,
             discriminatorFontSize = pinRadius * 1.4,
             drawContainerHeight = topPadding + maxPins * gap,
-            scale = size[1] / drawContainerHeight,
-            groupedByOutput = groupBy(data.cross, 'output'),
-            outputGroups = sortGroups(groupedByOutput, 'input'),
-            groupedByInput = groupBy(data.cross, 'input'),
-            inputGroups = sortGroups(groupedByInput, 'output'),
-            remainingItems = [data.cross.filter(item =>
-                !outputGroups.some(group => group.includes(item)) &&
-                !inputGroups.some(group => group.includes(item))
-            ).sort((a, b) => a.input.localeCompare(b.input))];
+            scale = size[1] / drawContainerHeight;
 
         pinRadius *= scale;
         gap *= scale;

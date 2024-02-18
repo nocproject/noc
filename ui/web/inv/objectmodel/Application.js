@@ -299,13 +299,15 @@ Ext.define("NOC.inv.objectmodel.Application", {
                     ],
                     listeners: {
                         scope: me,
-                        clone: me.onCloneConnection,
-                        delete: me.onDeleteRow
+                        clone: me.onCloneConnection
                     }
                 },
                 {
                     xtype: "container",
-                    layout: "hbox",
+                    layout: {
+                        type: 'hbox',
+                        align: 'stretch'
+                    },
                     itemId: "crossContainer",
                     items: [
                         {
@@ -367,10 +369,6 @@ Ext.define("NOC.inv.objectmodel.Application", {
                                 }
                                 context.cancel = context.record.get("is_persist");
                             },
-                            listeners: {
-                                scope: me,
-                                delete: me.onDeleteRow,
-                            },
                             onCellEdit: function(editor, context) {
                                 var me = this,
                                     app = this.up("[appId=inv.objectmodel]"),
@@ -391,14 +389,6 @@ Ext.define("NOC.inv.objectmodel.Application", {
                                     diagram.drawDiagram(data, diagramSize);
                                 }
                             },
-                            listeners: {
-                                resize: function(grid, width, height) {
-                                    var diagramContainer = grid.up("container").down("#diagram");
-                                    if(diagramContainer) {
-                                        diagramContainer.setHeight(height);
-                                    }
-                                }
-                            }
                         },
                         {
                             xtype: "inv.crossdiagram",
@@ -415,6 +405,8 @@ Ext.define("NOC.inv.objectmodel.Application", {
 
                                     if(!Ext.isEmpty(data.cross)) {
                                         panel.drawDiagram(data, [panel.getWidth() - padding, panel.getHeight() - padding]);
+                                    } else {
+                                        panel.getSurface().destroy();
                                     }
                                 }
                             },
@@ -559,13 +551,4 @@ Ext.define("NOC.inv.objectmodel.Application", {
         var n = +m[2] + 1;
         record.set("name", m[1] + n);
     },
-    editRecord: function(record) {
-        this.callParent([record]);
-        var diagram = this.down("[itemId=diagram]");
-
-        diagram.getSurface().removeAll();
-    },
-    onDeleteRow: function() {
-        debugger;
-    }
 });
