@@ -173,6 +173,8 @@ Ext.define("NOC.inv.objectmodel.CrossDiagram", {
                 var inputSprite = sprite.getSurface().get(sprite.inputId),
                     outputSprite = sprite.getSurface().get(sprite.outputId);
 
+                this.unselectAllConnections();
+
                 Ext.Array.each([inputSprite, outputSprite, sprite], function(s) {
                     s.setAttributes({
                         isSelected: true,
@@ -236,21 +238,24 @@ Ext.define("NOC.inv.objectmodel.CrossDiagram", {
     },
     selectConnection: function(record) {
         var input = record.get("input"),
-            output = record.get("output"),
-            connections = Ext.Array.filter(this.getSurface().getItems(),
-                function(sprite) {
-                    return sprite.type === "cross_connection"
-                });
+            output = record.get("output");
+
+        this.unselectAllConnections();
+        Ext.Array.each(
+            Ext.Array.filter(this.getSurface().getItems(),
+                function(sprite) {return sprite.type === "cross_connection" && sprite.inputId === "input" + input && sprite.outputId === "output" + output}),
+            function(connectionSprite) {connectionSprite.setAttributes({isSelected: true})}
+        );
+        this.getSurface().renderFrame();
+    },
+    unselectAllConnections: function() {
+        var connections = Ext.Array.filter(this.getSurface().getItems(),
+            function(sprite) {
+                return sprite.type === "cross_connection"
+            });
 
         Ext.Array.each(connections, function(connectionSprite) {
             connectionSprite.setAttributes({isSelected: false});
         });
-
-        Ext.Array.each(
-            Ext.Array.filter(connections,
-                function(sprite) {return sprite.inputId === "input" + input && sprite.outputId === "output" + output}),
-            function(connectionSprite) {connectionSprite.setAttributes({isSelected: true})}
-        );
-        this.getSurface().renderFrame();
     }
 });
