@@ -78,7 +78,7 @@ Ext.define("NOC.inv.objectmodel.sprites.Connection", {
 
             switch(attr.pathType) {
                 case "inputMany": {
-                    secondPointXY = [attr.offsetsX[1] - attr.discriminatorsLength[1] - attr.pinRadius * (attr.indexes[1] - attr.indexes[0]), attr.startXY[1]];
+                    secondPointXY = [attr.startXY[0] + attr.pinRadius * (attr.indexes[0] + 3) + attr.discriminatorsLength[0], attr.startXY[1]];
                     thirdPointXY = [secondPointXY[0], attr.toXY[1]];
                     path = Ext.String.format("M{0},{1} L{2},{3} L{4},{5} L{6},{7}",
                         attr.startXY[0], attr.startXY[1],
@@ -88,7 +88,7 @@ Ext.define("NOC.inv.objectmodel.sprites.Connection", {
                     break;
                 }
                 case "outputMany": {
-                    secondPointXY = [attr.offsetsX[0] + attr.discriminatorsLength[0] + attr.pinRadius * (attr.indexes[1] - attr.indexes[0]), attr.startXY[1]];
+                    secondPointXY = [attr.toXY[0] - attr.pinRadius * (attr.indexes[0] + 3) - attr.discriminatorsLength[1], attr.startXY[1]];
                     thirdPointXY = [secondPointXY[0], attr.toXY[1]];
                     path = Ext.String.format("M{0},{1} L{2},{3} L{4},{5} L{6},{7}",
                         attr.startXY[0], attr.startXY[1],
@@ -109,9 +109,10 @@ Ext.define("NOC.inv.objectmodel.sprites.Connection", {
                 strokeStyle: me.getAvailableColor(),
                 lineWidth: 2,
             });
-            me.add(me.getMarker("arrow", attr.toXY, attr.scaleFactor));
+            // input
+            me.arrow = me.add(me.getMarker("arrow", attr.toXY, attr.pinRadius * 2));
             if(attr.discriminators[0]) {
-                me.add({
+                me.inputDiscriminator = me.add({
                     type: "text",
                     text: attr.discriminators[0],
                     fontFamily: attr.fontFamily,
@@ -123,8 +124,9 @@ Ext.define("NOC.inv.objectmodel.sprites.Connection", {
                     y: attr.startXY[1] - attr.pinRadius,
                 });
             }
+            // output
             if(attr.discriminators[1]) {
-                me.add({
+                me.outputDiscriminator = me.add({
                     type: "text",
                     text: attr.discriminators[1],
                     fontFamily: attr.fontFamily,
@@ -132,15 +134,17 @@ Ext.define("NOC.inv.objectmodel.sprites.Connection", {
                     fontSize: attr.fontSize,
                     textBaseline: "middle",
                     textAlign: "end",
-                    x: attr.toXY[0] - attr.pinRadius * 4,
+                    x: attr.toXY[0] - attr.pinRadius * 2.5,
                     y: attr.toXY[1] - attr.pinRadius,
                 });
             }
         }
     },
-    getMarker: function(id, pointXY, scale) {
-        var length = 20 * (scale || 1),
-            width = 5.5 * (scale || 1),
+    getMarker: function(id, pointXY, length) {
+        var
+            // length = 18 * (scale || 1),
+            // width = 5.5 * (scale || 1),
+            width = length / 3,
             path = Ext.String.format("M{0},{1} L{2},{3} L{4},{5} Z",
                 pointXY[0], pointXY[1],
                 pointXY[0] - length, pointXY[1] + width,
@@ -151,6 +155,8 @@ Ext.define("NOC.inv.objectmodel.sprites.Connection", {
             type: "path",
             id: id,
             fillStyle: "red",
+            x: pointXY[0],
+            y: pointXY[1],
             path: path,
             hidden: false,
         };

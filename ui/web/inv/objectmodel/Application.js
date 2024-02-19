@@ -398,12 +398,13 @@ Ext.define("NOC.inv.objectmodel.Application", {
                             border: false,
                             padding: 20,
                             listeners: {
-                                resize: function(panel) {
+                                resize: function(panel, width, height) {
                                     var app = panel.up("[appId=inv.objectmodel]"),
                                         padding = (panel.config.padding || 0) * 2,
                                         data = app.getFormData();
 
                                     if(!Ext.isEmpty(data.cross)) {
+                                        console.log(width + " x " + height);
                                         panel.drawDiagram(data, [panel.getWidth() - padding, panel.getHeight() - padding]);
                                     } else {
                                         panel.getSurface().destroy();

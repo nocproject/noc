@@ -80,14 +80,15 @@ Ext.define("NOC.inv.objectmodel.CrossDiagram", {
 
         pinRadius *= scale;
         gap *= scale;
-        pinFontSize *= scale;
-        discriminatorFontSize *= scale;
+        pinFontSize = Math.round(scale * pinFontSize);
+        discriminatorFontSize = Math.round(scale * discriminatorFontSize);
         inputOffsetY *= scale;
         outputOffsetY *= scale;
+
         outputOffsetX = size[0] - Ext.Array.max(Ext.Array.map(outputPins, function(pin) {return me.measureText(pin, pinFontSize, fontFamily);})) - pinRadius * 2;
         inputOffsetX = Ext.Array.max(Ext.Array.map(inputPins, function(pin) {return me.measureText(pin, pinFontSize, fontFamily);})) + pinRadius * 2;
-        inputDiscriminatorLength = Ext.Array.max(Ext.Array.map(data.cross, function(connection) {return me.measureText(connection.input_discriminator, discriminatorFontSize, fontFamily);})) + pinRadius * 5;
-        outputDiscriminatorLength = Ext.Array.max(Ext.Array.map(data.cross, function(connection) {return me.measureText(connection.output_discriminator, discriminatorFontSize, fontFamily);})) + pinRadius * 5;
+        inputDiscriminatorLength = Ext.Array.max(Ext.Array.map(data.cross, function(connection) {return me.measureText(connection.input_discriminator, discriminatorFontSize, fontFamily);})) + pinRadius * 0;
+        outputDiscriminatorLength = Ext.Array.max(Ext.Array.map(data.cross, function(connection) {return me.measureText(connection.output_discriminator, discriminatorFontSize, fontFamily);})) + pinRadius * 0;
         outputGroups = Ext.Array.map(outputGroups, function(group) {
             return Ext.apply(group, {
                 type: "inputMany"
