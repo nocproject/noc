@@ -404,7 +404,6 @@ Ext.define("NOC.inv.objectmodel.Application", {
                                         data = app.getFormData();
 
                                     if(!Ext.isEmpty(data.cross)) {
-                                        console.log(width + " x " + height);
                                         panel.drawDiagram(data, [panel.getWidth() - padding, panel.getHeight() - padding]);
                                     } else {
                                         panel.getSurface().destroy();
