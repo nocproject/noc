@@ -389,6 +389,18 @@ Ext.define("NOC.inv.objectmodel.Application", {
                                     diagram.drawDiagram(data, diagramSize);
                                 }
                             },
+                            onSelect: function(grid, record, index) {
+                                var me = this;
+
+                                me.currentSelection = index;
+                                me.deleteButton.setDisabled(true);
+                                me.cloneButton.setDisabled(true);
+                                if(!record.get("is_persist")) {
+                                    me.deleteButton.setDisabled(false);
+                                    me.cloneButton.setDisabled(false);
+                                }
+                                me.up().down("[itemId=diagram]").selectConnection(record);
+                            },
                         },
                         {
                             xtype: "inv.crossdiagram",

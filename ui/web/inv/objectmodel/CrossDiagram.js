@@ -233,5 +233,24 @@ Ext.define("NOC.inv.objectmodel.CrossDiagram", {
             return 0;
         }
         return Ext.draw.TextMeasurer.measureText(text, font).width;
+    },
+    selectConnection: function(record) {
+        var input = record.get("input"),
+            output = record.get("output"),
+            connections = Ext.Array.filter(this.getSurface().getItems(),
+                function(sprite) {
+                    return sprite.type === "cross_connection"
+                });
+
+        Ext.Array.each(connections, function(connectionSprite) {
+            connectionSprite.setAttributes({isSelected: false});
+        });
+
+        Ext.Array.each(
+            Ext.Array.filter(connections,
+                function(sprite) {return sprite.inputId === "input" + input && sprite.outputId === "output" + output}),
+            function(connectionSprite) {connectionSprite.setAttributes({isSelected: true})}
+        );
+        this.getSurface().renderFrame();
     }
 });
