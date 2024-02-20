@@ -10,6 +10,6 @@ from noc.sa.profiles.Generic.get_interface_properties import Script as BaseScrip
 
 
 class Script(BaseScript):
-    name = "OS.ESX.get_interface_properties"
+    name = "OS.ESXi.get_interface_properties"
 
     SNMP_NAME_TABLE = "IF-MIB::ifName"
