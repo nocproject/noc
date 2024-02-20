@@ -23,18 +23,21 @@ class Script(BaseScript):
     )
     rx_snmp_ver = re.compile(r"(?P<platform>\S+)+\ (?P<version>\S+)")
 
-    def execute(self):
-        if self.has_snmp():
-            try:
-                v = self.snmp.get("1.3.6.1.2.1.47.1.1.1.1.10.1", cached=True)
-                match = self.re_search(self.rx_snmp_ver, v)
-                return {
-                    "vendor": "Fortinet",
-                    "platform": match.group("platform"),
-                    "version": match.group("version"),
-                }
-            except self.snmp.TimeOutError:
-                pass
+    def execute_snmp(self):
+        try:
+            serial = self.snmp.get("1.3.6.1.2.1.47.1.1.1.1.11.1", cached=True)
+            v = self.snmp.get("1.3.6.1.2.1.47.1.1.1.1.10.1", cached=True)
+            match = self.re_search(self.rx_snmp_ver, v)
+            return {
+                "vendor": "Fortinet",
+                "platform": match.group("platform"),
+                "version": match.group("version"),
+                "attributes": {"Serial Number": serial},
+            }
+        except self.snmp.TimeOutError:
+            pass
+
+    def execute_cli(self):
         v = self.cli("get system status")
         match = self.re_search(self.rx_ver, v)
         return {
