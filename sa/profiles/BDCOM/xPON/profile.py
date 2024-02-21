@@ -25,6 +25,10 @@ class Profile(BaseProfile):
     command_exit = "exit"
     config_volatile = ["^%.*?$"]
 
+    config_tokenizer = "indent"
+    config_tokenizer_settings = {"line_comment": "!"}
+    config_normalizer = "BDCOMxPONNormalizer"
+
     def convert_interface_name(self, interface):
         if interface.startswith("TGigaEthernet"):
             return interface

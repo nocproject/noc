@@ -1,0 +1,4 @@
+config: |
+  time-zone Moscow 3 0
+result:
+  - ['system', 'clock', 'timezone', 'Moscow', 'offset', '0300', {'replace': True}]

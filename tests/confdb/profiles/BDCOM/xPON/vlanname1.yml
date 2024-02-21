@@ -1,0 +1,10 @@
+config: |
+  vlan 501
+   name MGMT
+  !
+  vlan 101,501
+result:
+  - ['virtual-router', 'default', 'forwarding-instance', 'default', 'vlans', 501]
+  - ['virtual-router', 'default', 'forwarding-instance', 'default', 'vlans', 501, 'name', 'MGMT', {'replace': True}]
+  - ['virtual-router', 'default', 'forwarding-instance', 'default', 'vlans', 101]
+  - ['virtual-router', 'default', 'forwarding-instance', 'default', 'vlans', 501]

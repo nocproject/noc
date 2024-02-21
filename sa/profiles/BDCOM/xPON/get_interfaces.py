@@ -44,6 +44,7 @@ class Script(BaseScript):
         "Giga-FX-SFP": "physical",  # GigabitEthernet
         "10Giga-FX": "physical",  # TGigaEthernet port
         "10Giga-FX-SFP": "physical",  # TGigaEthernet SFP port
+        "10Giga-DAC": "physical", # TGigaEthernet SFP+ DAC
         "GigaEthernet-PON": "physical",  # EPON port
         "GigaEthernet-LLID": "other",  # EPON ONU port
         "Giga-PON": "physical",  # EPON port

@@ -1,0 +1,6 @@
+config: |
+  snmp-server community 0 Private1 RO 
+  snmp-server community 0 Private2 RW 
+result:
+  - ['virtual-router', 'default', 'forwarding-instance', 'default', 'protocols', 'snmp', 'community', 'Private1', 'level', 'read-only', {'replace': True}]
+  - ['virtual-router', 'default', 'forwarding-instance', 'default', 'protocols', 'snmp', 'community', 'Private2', 'level', 'read-write', {'replace': True}]

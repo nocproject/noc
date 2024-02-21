@@ -1,0 +1,24 @@
+config: |
+  epon onu-config-template EPON0/5:60
+   cmd-sequence 001 epon onu all-port ctc vlan mode tag 560
+   cmd-sequence 002 epon sla upstream pir 150000 cir 1000
+   cmd-sequence 003 epon sla downstream pir 150000 cir 1000
+   cmd-sequence 004 epon onu all-port loopback detect
+  !
+  epon onu-config-template EPON0/6:14
+   cmd-sequence 001 epon onu all-port ctc vlan mode tag 614
+   cmd-sequence 002 epon sla upstream pir 150000 cir 1000
+   cmd-sequence 003 epon sla downstream pir 150000 cir 1000
+   cmd-sequence 004 epon onu all-port loopback detect
+  !
+result:
+  - ["onu-templates", "EPON0/5:60"]
+  - ["onu-templates", "EPON0/5:60", "speed", "upload", "pir", 150000]
+  - ["onu-templates", "EPON0/5:60", "speed", "upload", "cir", 1000]
+  - ["onu-templates", "EPON0/5:60", "speed", "download", "pir", 150000]
+  - ["onu-templates", "EPON0/5:60", "speed", "download", "cir", 1000]
+  - ["onu-templates", "EPON0/6:14"]
+  - ["onu-templates", "EPON0/6:14", "speed", "upload", "pir", 150000]
+  - ["onu-templates", "EPON0/6:14", "speed", "upload", "cir", 1000]
+  - ["onu-templates", "EPON0/6:14", "speed", "download", "pir", 150000]
+  - ["onu-templates", "EPON0/6:14", "speed", "download", "cir", 1000]

@@ -1,0 +1,6 @@
+config: |
+  interface VLAN501
+   ip address 172.25.25.101 255.255.255.0
+   no ip directed-broadcast
+result:
+  - ['virtual-router', 'default', 'forwarding-instance', 'default', 'interfaces', 'VLAN501', 'unit', 'VLAN501', 'inet', 'address', !IP 172.25.25.101/24]

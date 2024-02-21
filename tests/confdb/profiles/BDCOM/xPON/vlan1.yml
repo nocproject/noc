@@ -1,0 +1,7 @@
+config: |
+  vlan 1,101-103
+result:
+  - ['virtual-router', 'default', 'forwarding-instance', 'default', 'vlans', 1]
+  - ['virtual-router', 'default', 'forwarding-instance', 'default', 'vlans', 101]
+  - ['virtual-router', 'default', 'forwarding-instance', 'default', 'vlans', 102]
+  - ['virtual-router', 'default', 'forwarding-instance', 'default', 'vlans', 103]
