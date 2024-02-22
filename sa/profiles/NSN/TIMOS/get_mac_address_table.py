@@ -60,8 +60,8 @@ class Script(BaseScript):
         v = ""
         for vrf_id in ies:
             v += self.cli("show service id %s arp" % vrf_id)
-        for l in v.split("\n"):
-            match = self.rx_line1.match(l.strip())
+        for line in v.split("\n"):
+            match = self.rx_line1.match(line.strip())
             if not match:
                 continue
             vlans = match.group("vlans")
