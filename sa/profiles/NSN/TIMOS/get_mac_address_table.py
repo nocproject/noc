@@ -1,7 +1,7 @@
 # ----------------------------------------------------------------------
 # NSN.TIMOS.get_mac_address_table
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2018 The NOC Project
+# Copyright (C) 2007-2024 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -36,7 +36,7 @@ class Script(BaseScript):
             if "." in vlans and "*" not in vlans:
                 up_tag, down_tag = vlans.split(".")
                 vlan_id = int(up_tag)
-            elif "*" in vlans:
+            elif "*" in vlans or vlans == "0":
                 vlan_id = 1
             else:
                 vlan_id = int(vlans)
@@ -60,8 +60,8 @@ class Script(BaseScript):
         v = ""
         for vrf_id in ies:
             v += self.cli("show service id %s arp" % vrf_id)
-        for l in v.split("\n"):
-            match = self.rx_line1.match(l.strip())
+        for line in v.split("\n"):
+            match = self.rx_line1.match(line.strip())
             if not match:
                 continue
             vlans = match.group("vlans")
