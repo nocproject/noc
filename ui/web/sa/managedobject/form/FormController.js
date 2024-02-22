@@ -130,7 +130,7 @@ Ext.define('NOC.sa.managedobject.form.FormController', {
         var view = this.getView(),
             parentController = view.up('[itemId=sa-managedobject]').getController(),
             formPanel = this.getView().down('[itemId=managedobject-form-panel]');
-        parentController.setFormTitle(__("Clone") + " {0}", "CLONE");
+        parentController.setFormTitle(__("Clone") + " {0}", {id: "CLONE"});
         parentController.displayButtons(["closeBtn", "saveBtn", "resetBtn"]);
         formPanel.getForm().setValues({bi_id: null});
         formPanel.recordId = undefined;
@@ -219,7 +219,7 @@ Ext.define('NOC.sa.managedobject.form.FormController', {
         Ext.Array.each(fieldsWithDefaultValue, function(field) {
             defaultValues[field.name] = field.defaultValue;
         });
-        parentController.setFormTitle(__("Create") + " {0}", "NEW");
+        parentController.setFormTitle(__("Create") + " {0}", {id: "NEW"});
         parentController.resetInlineStore(formPanel, defaults);
         parentController.displayButtons(["closeBtn", "saveBtn", "resetBtn"]);
         formPanel.recordId = undefined;
