@@ -23,7 +23,7 @@ ADDRESS_QUERY = """
     SELECT IPv4NumToString(ip) as address, argMax(ts, pool) as pool,
      argMax(ts, hostname) as hostname, argMax(description, ts) as description, argMax(ts, ts) as last
     FROM noc.purgatorium
-    WHERE has(success_checks, 'ICMP') and date >= %s and ts >= %s and source = 'network-scan'
+    WHERE has(success_checks, 'ICMP') and date >= %s and ts > %s and source = 'network-scan'
     GROUP BY ip
     FORMAT JSONEachRow
 """
