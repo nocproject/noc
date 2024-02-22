@@ -1148,6 +1148,7 @@ class GenericObject(object):
     id: int
     object_profile: int
     diagnostics: Dict[str, Any]
+    effective_labels: List[str]
     pool: str = "default"
     access_preference = "S"
 
@@ -1167,14 +1168,20 @@ def update_diagnostics_alarms(profile_id, **kwargs):
     * if alarm_policy disabled - cleanup access alarms
     * if alarm_policy enabled - raise access alarms
     :param profile_id:
-    :param box_changed:
-    :param periodic_changed:
-    :param alarm_policy_changed:
     :return:
     """
     from noc.sa.models.managedobject import ManagedObject
 
-    for o_id, pool_id, fm_pool_id, diagnostics, enable_box_discovery, box_alarm, periodic_alarm in (
+    for (
+        o_id,
+        pool_id,
+        fm_pool_id,
+        diagnostics,
+        enable_box_discovery,
+        box_alarm,
+        periodic_alarm,
+        el,
+    ) in (
         ManagedObject.objects.filter(is_managed=True, object_profile=profile_id)
         .filter(
             d_Q(diagnostics__CLI__state=DiagnosticState.failed.value)
@@ -1189,14 +1196,18 @@ def update_diagnostics_alarms(profile_id, **kwargs):
             "object_profile__enable_box_discovery",
             "object_profile__box_discovery_alarm_policy",
             "object_profile__periodic_discovery_alarm_policy",
+            "effective_labels",
         )
     ):
         fm_pool = fm_pool_id or pool_id
         fm_pool = Pool.get_by_id(fm_pool)
         o = GenericObject(
-            id=o_id, object_profile=int(profile_id), diagnostics=diagnostics, pool=fm_pool.name
+            id=o_id,
+            object_profile=int(profile_id),
+            diagnostics=diagnostics,
+            pool=fm_pool.name,
+            effective_labels=list(el),
         )
-
         with DiagnosticHub(o, dry_run=False) as d:
             d.sync_alarms(alarm_disable=box_alarm == "D" or not enable_box_discovery)
 
