@@ -24,7 +24,7 @@ class Script(BaseScript):
 
     cache = True
 
-    splitter = re.compile(r"\n *-{3,} *\n")
+    splitter = re.compile(r"\s*\n\s*-+\n")
 
     status_map = {"online": True, "offline": False}  # associated  # disassociating
 
