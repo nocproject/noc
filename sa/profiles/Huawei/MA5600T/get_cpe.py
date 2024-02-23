@@ -1,7 +1,7 @@
 # ---------------------------------------------------------------------
 # Huawei.MA5600T.get_cpe
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2023 The NOC Project
+# Copyright (C) 2007-2024 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -26,7 +26,7 @@ class Script(BaseScript):
 
     cache = True
 
-    splitter = re.compile(r"\s*-+\n")
+    splitter = re.compile(r"\n *-{3,} *\n")
 
     status_map = {"online": "active", "offline": "inactive"}  # associated  # disassociating
     INACTIVE_STATE = {"initial"}
@@ -93,9 +93,9 @@ class Script(BaseScript):
                                 {
                                     "vendor": t["Vendor ID"][0],
                                     "model": t["ONT"][0] + t["Model"][0] if t["Model"] else "",
-                                    "version": t["Software Version"][0]
-                                    if t["Software Version"]
-                                    else "",
+                                    "version": (
+                                        t["Software Version"][0] if t["Software Version"] else ""
+                                    ),
                                 }
                             )
                         continue
