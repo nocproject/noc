@@ -109,7 +109,7 @@ Ext.define("NOC.inv.inv.CreateConnectionForm", {
             },
             listeners: {
                 scope: me,
-                change: me.reloadStatuses
+                change: Ext.Function.bind(me.reloadStatuses, me, [true], false)
             }
         });
         Ext.apply(me, {
@@ -215,7 +215,7 @@ Ext.define("NOC.inv.inv.CreateConnectionForm", {
             }
         });
     },
-    reloadStatuses: function() {
+    reloadStatuses: function(fromCombo) {
         var params, me = this,
             vm = me.getViewModel(),
             leftObject = vm.get("leftObject"),
@@ -244,7 +244,7 @@ Ext.define("NOC.inv.inv.CreateConnectionForm", {
 
                 Ext.Array.each(["left", "right"], function(side) {
                     if(data[side].connections && data[side].connections.length) {
-                        me.updatePinsStatus(data[side].connections);
+                        me.updatePinsStatus(data[side].connections, side, fromCombo);
                     }
                 });
                 me.unmask();
@@ -288,7 +288,7 @@ Ext.define("NOC.inv.inv.CreateConnectionForm", {
         surface.add(me.makeWires(wires));
         surface.renderFrame();
     },
-    updatePinsStatus: function(pinObjList, side) {
+    updatePinsStatus: function(pinObjList, side, clearPointer) {
         var me = this,
             mainSurface = me.drawPanel.getSurface(),
             leftSurface = me.drawPanel.getSurface("left_internal_conn"),
@@ -308,7 +308,9 @@ Ext.define("NOC.inv.inv.CreateConnectionForm", {
                 }];
             }));
 
-        me.cancelDrawConnection();
+        if(clearPointer) {
+            me.cancelDrawConnection();
+        }
         Ext.Array.each(pinObjList, function(pinObj) {
             var pinStripe = mainSurface.get(pinObj.id),
                 pinHasNewInternalConnection = Ext.Array.filter(pinsWithNewConnections, function(item) {return item.pin === pinObj.id && item.type === "internal"}).length > 0,
@@ -328,7 +330,6 @@ Ext.define("NOC.inv.inv.CreateConnectionForm", {
                 _internalEnabled = pinHasNewInternalConnection ? pinStripe.internalEnabled : internalEnabled;
 
             pinStripe.setAttributes({
-                isSelected: false,
                 pinColor: _pinColor,
                 enabled: _enabled,
                 internalColor: _internalColor,
@@ -661,6 +662,7 @@ Ext.define("NOC.inv.inv.CreateConnectionForm", {
             prevPinSprite.setAttributes({
                 pinColor: me.OCCUPIED_COLOR,
                 enabled: false,
+                isSelected: false,
                 pinName: fromName,
             });
             // reDraw label for zIndex workaround
@@ -672,6 +674,7 @@ Ext.define("NOC.inv.inv.CreateConnectionForm", {
             pinSprite.setAttributes({
                 pinColor: me.OCCUPIED_COLOR,
                 enabled: false,
+                isSelected: false,
                 pinName: toName,
             });
             // reDraw label for zIndex workaround
@@ -1384,7 +1387,14 @@ Ext.define("NOC.inv.inv.CreateConnectionForm", {
             pointer = surface.get("pointer"),
             side = sprite.side || "left",
             isInternal = sprite.attr.cursorOn === "internal",
-            isWire = sprite.attr.cursorOn === "wire";
+            isWire = sprite.attr.cursorOn === "wire",
+            clearViewModel = function() {
+                viewModel.set("selectedPinId", null);
+                viewModel.set("selectedPin", null);
+                viewModel.set("isSelectedPinInternal", null);
+                viewModel.set("side", null);
+                surface.get("pointer").remove();
+            };
 
         if(!sprite.enabled && isWire) {
             return;
@@ -1399,10 +1409,14 @@ Ext.define("NOC.inv.inv.CreateConnectionForm", {
 
         if(isInternal && sprite.attr.isSelected && prevSprite && prevSprite.attr.isSelected) {
             me.createInternalConnectionMsg(prevSprite, sprite, side);
+            clearViewModel();
+            return;
         }
 
         if(!isInternal && sprite.attr.isSelected && prevSprite && prevSprite.attr.isSelected) {
             me.createWire(prevSprite, sprite, side);
+            clearViewModel();
+            return;
         }
 
         switch(sprite.type) {
@@ -1452,12 +1466,9 @@ Ext.define("NOC.inv.inv.CreateConnectionForm", {
                     viewModel.set("side", side);
                 } else {
                     // self selected
-                    viewModel.set("selectedPinId", null);
-                    viewModel.set("selectedPin", null);
-                    viewModel.set("isSelectedPinInternal", null);
-                    viewModel.set("side", null);
-                    surface.get("pointer").remove();
+                    clearViewModel();
                 }
+                me.reloadStatuses(false);
                 break;
             }
             case "connection": {
