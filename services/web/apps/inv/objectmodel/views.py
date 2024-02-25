@@ -14,7 +14,7 @@ from mongoengine.queryset import Q
 # NOC modules
 from noc.services.web.base.extdocapplication import ExtDocApplication, view
 from noc.main.models.doccategory import DocCategory
-from noc.inv.models.objectmodel import ObjectModel, ProtocolVariantItem, ObjectModelConnection
+from noc.inv.models.objectmodel import ObjectModel, ProtocolVariantItem
 from noc.inv.models.modelinterface import ModelInterface
 from noc.inv.models.protocol import ProtocolVariant
 from noc.sa.interfaces.base import ListOfParameter, DocumentParameter

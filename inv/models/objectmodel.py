@@ -37,7 +37,6 @@ from noc.core.text import quote_safe_path
 from noc.core.model.decorator import on_delete_check, on_save
 from noc.core.change.decorator import change
 from noc.pm.models.measurementunits import MeasurementUnits
-from noc.cm.models.configurationparam import ConfigurationParam
 from noc.core.discriminator import discriminator
 from .objectconfigurationrule import ObjectConfigurationRule
 from .connectiontype import ConnectionType
