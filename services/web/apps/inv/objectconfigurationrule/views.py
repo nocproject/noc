@@ -7,7 +7,7 @@
 
 # NOC modules
 from noc.services.web.base.extdocapplication import ExtDocApplication
-from noc.inv.models.objectconfigurationrule import ObjectConfigurationRule, SlotRule
+from noc.inv.models.objectconfigurationrule import ObjectConfigurationRule, ConnectionRule
 from noc.core.translation import ugettext as _
 
 
@@ -22,7 +22,7 @@ class ObjectConfigurationRuleApplication(ExtDocApplication):
     query_fields = ["name__icontains"]
 
     def instance_to_dict(self, o, fields=None, nocustom=False):
-        if isinstance(o, SlotRule):
+        if isinstance(o, ConnectionRule):
             r = {
                 "scope": str(o.scope.id),
                 "scope__label": o.scope.name,

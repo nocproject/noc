@@ -121,11 +121,11 @@ class ProtocolVariant(object):
     def get_discriminator(
         self,
     ) -> Optional[Union[LambdaDiscriminator, OduDiscriminator, VlanDiscriminator]]:
-        if self.protocol.discriminator == "D":
+        if not self.protocol.discriminator:
             return None
-        if self.protocol.discriminator == "S":
+        if self.protocol.discriminator != "loader":
             return discriminator(
-                f"{self.protocol.discriminator_scope}::{self.protocol.discriminator_default}"
+                f"{self.protocol.discriminator}::{self.discriminator or self.protocol.discriminator_default}"
             )
         ds = self.protocol.get_discriminator_source(self.data)
         return ds.get_discriminator_instance(self.discriminator)
@@ -195,15 +195,10 @@ class Protocol(Document):
     )
     # Discriminators
     discriminator: str = StringField(
-        choices=[
-            ("D", "Disable"),
-            ("L", "From Loader"),
-            ("S", "Local"),
-        ],
-        default="D",
+        choices=list(scopes) + ["loader"],
+        required=False,
     )
     discriminator_loader = StringField(default=None)
-    discriminator_scope = StringField(default=None, choices=list(scopes))
     discriminator_default = StringField(default=None)  # Alias table ?
     #
     transport_protocols = ListField(ReferenceField("self", reverse_delete_rule=NULLIFY))
@@ -223,17 +218,17 @@ class Protocol(Document):
 
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_id_cache"), lock=lambda _: id_lock)
-    def get_by_id(cls, oid):
+    def get_by_id(cls, oid) -> Optional["Protocol"]:
         return Protocol.objects.filter(id=oid).first()
 
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_bi_id_cache"), lock=lambda _: id_lock)
-    def get_by_bi_id(cls, bi_id):
+    def get_by_bi_id(cls, bi_id) -> Optional["Protocol"]:
         return Protocol.objects.filter(bi_id=bi_id).first()
 
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_code_cache"), lock=lambda _: id_lock)
-    def get_by_code(cls, code):
+    def get_by_code(cls, code) -> Optional["Protocol"]:
         return Protocol.objects.filter(code=code).first()
 
     @classmethod
@@ -263,9 +258,8 @@ class Protocol(Document):
             "connection_schema": self.connection_schema,
             "data": [c.json_data for c in self.data],
         }
-        if self.discriminator and self.discriminator_scope:
+        if self.discriminator:
             r["discriminator"] = self.discriminator
-            r["discriminator_scope"] = self.discriminator_scope
         if self.discriminator_loader:
             r["discriminator_loader"] = self.discriminator_loader
         if self.discriminator_default:

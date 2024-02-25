@@ -188,6 +188,9 @@ class ObjectModelConnection(EmbeddedDocument):
     direction = StringField(choices=["i", "o", "s"])  # Inner slot  # Outer slot  # Connection
     gender = StringField(choices=["s", "m", "f"])
     combo = StringField(required=False)
+    cross_direction: Optional[str] = StringField(
+        choices=["i", "o", "s"], required=False
+    )  # Inner  # Outer  # Any
     protocols: List["ProtocolVariantItem"] = EmbeddedDocumentListField(ProtocolVariantItem)
     cfg_context: str = StringField()
     internal_name = StringField(required=False)
@@ -198,7 +201,7 @@ class ObjectModelConnection(EmbeddedDocument):
     def __str__(self):
         return self.name
 
-    def __eq__(self, other):
+    def __eq__(self, other: "ObjectModelConnection"):
         return (
             self.name == other.name
             and self.description == other.description
@@ -207,6 +210,7 @@ class ObjectModelConnection(EmbeddedDocument):
             and self.gender == other.gender
             and self.combo == other.combo
             and self.cfg_context == other.cfg_context
+            and self.cross_direction == other.cross_direction
             and self.protocols == other.protocols
             and self.internal_name == other.internal_name
             and self.composite == other.composite
@@ -233,6 +237,8 @@ class ObjectModelConnection(EmbeddedDocument):
             r["composite"] = self.composite
         if self.composite_pins:
             r["composite_pins"] = self.composite_pins
+        if self.cross_direction:
+            r["cross_direction"] = self.cross_direction
         if self.data:
             r["data"] = [d.json_data for d in self.data]
         return r
@@ -353,7 +359,6 @@ class ObjectModel(Document):
         interface: str,
         key: str,
         connection: Optional[str] = None,
-        context: Optional[str] = None,
         **params,
     ) -> Any:
         """
@@ -375,8 +380,6 @@ class ObjectModel(Document):
             data = self.data
         for item in data:
             if item.interface == interface and item.attr == key:
-                if item.cfg_context and item.cfg_context != context:
-                    continue
                 return item.value
         return None
 

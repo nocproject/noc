@@ -68,6 +68,7 @@ class ConnectionData(object):
     name: str
     protocols: List[ProtocolVariant]
     data: Dict[str, Any]
+    cross: Optional[str] = None
     interface_name: Optional[str] = None
 
 
@@ -689,6 +690,7 @@ class Object(Document):
             c.name,
             protocols=[ProtocolVariant.get_by_code(p.code) for p in c.protocols],
             data={},
+            cross=c.cross_direction,
         )
 
     def get_crossing_proposals(
@@ -697,7 +699,7 @@ class Object(Document):
         """
         Return possible connections for connection name
         as (connection name, discriminators)
-        * Getting proto
+        * Getting proto (not compared proto because it's internal connect)
         * Getting discriminators
         * Iterable over compatible connections
         * Return connections and discriminators
@@ -709,20 +711,31 @@ class Object(Document):
         r = []
         # Exclude crossing
         for c in self.model.connections:
-            if c.name == name or (name2 and c.name == name2):
+            if c.name == lc.name or (name2 and c.name == name2) or c.composite:
                 # Same
                 continue
-            c = self.get_effective_connection_data(name)
+            c = self.get_effective_connection_data(c.name)
+            if not c.cross or c.cross == lc.cross:
+                continue
             # Check protocols
             protocols, discriminators = [], []
             for lp in lc.protocols:
                 for p in c.protocols:
-                    if p in lp:
+                    pd = p.get_discriminator()
+                    lpd = lp.get_discriminator()
+                    if not pd and not lpd:
+                        # Not supported discriminators
                         protocols.append(p)
-                        d = p.get_discriminator()
-                        discriminators += d.get_crossing_proposals(
-                            lp.get_discriminator()
-                        )  # remove discriminators from crossing
+                        continue
+                    elif not pd or not lpd:
+                        # Not supported discriminators
+                        continue
+                    # remove discriminators from crossing
+                    d = pd.get_crossing_proposals(lp.get_discriminator())
+                    if not d:
+                        continue
+                    discriminators += d
+                    protocols.append(p)
             if c.protocols and not protocols:
                 continue
             # Check discriminators

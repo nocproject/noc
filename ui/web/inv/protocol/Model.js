@@ -54,10 +54,6 @@ Ext.define("NOC.inv.protocol.Model", {
             type: "string"
         },
         {
-            name: "discriminator_scope",
-            type: "string"
-        },
-        {
             name: "discriminator_default",
             type: "string"
         },
@@ -68,18 +64,6 @@ Ext.define("NOC.inv.protocol.Model", {
         },
         {
             name: "data",
-            type: "auto"
-        },
-        {
-            name: "discriminator_interface",
-            type: "string"
-        },
-        {
-            name: "discriminator_attr",
-            type: "string"
-        },
-        {
-            name: "discriminators",
             type: "auto"
         }
     ]

@@ -19,8 +19,13 @@
         {
             "name": "LINE1",
             "description": null,
+            "cross_direction": "o",
             "direction": "s",
             "gender": "s",
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "OTUCn"
+            }],
             "type__name": "Composed"
         },
         {
@@ -42,8 +47,13 @@
         {
             "name": "LINE2",
             "description": null,
+            "cross_direction": "o",
             "direction": "s",
             "gender": "s",
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "OTUCn"
+            }],
             "type__name": "Composed"
         },
         {
@@ -65,133 +75,217 @@
         {
             "name": "CLIENT1",
             "description": "Клиентский порт 1 для установки модулей QSFP28",
+            "cross_direction": "i",
             "direction": "i",
             "gender": "f",
-            "protocols": [{
-                "direction": "*",
-                "protocol__code": "TransEth10G"
-            }],
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth10G"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "OTU4"
+                }
+            ],
             "type__name": "Transceiver | QSFP+"
         },
         {
             "name": "CLIENT2",
             "description": "Клиентский порт 2 для установки модулей QSFP28",
+            "cross_direction": "i",
             "direction": "i",
             "gender": "f",
-            "protocols": [{
-                "direction": "*",
-                "protocol__code": "TransEth10G"
-            }],
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth10G"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "OTU4"
+                }
+            ],
             "type__name": "Transceiver | QSFP+"
         },
         {
             "name": "CLIENT3",
             "description": "Клиентский порт 3 для установки модулей QSFP28",
+            "cross_direction": "i",
             "direction": "i",
             "gender": "f",
-            "protocols": [{
-                "direction": "*",
-                "protocol__code": "TransEth10G"
-            }],
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth10G"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "OTU4"
+                }
+            ],
             "type__name": "Transceiver | QSFP+"
         },
         {
             "name": "CLIENT4",
             "description": "Клиентский порт 4 для установки модулей QSFP28",
+            "cross_direction": "i",
             "direction": "i",
             "gender": "f",
-            "protocols": [{
-                "direction": "*",
-                "protocol__code": "TransEth10G"
-            }],
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth10G"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "OTU4"
+                }
+            ],
             "type__name": "Transceiver | QSFP+"
         },
         {
             "name": "CLIENT5",
             "description": "Клиентский порт 5 для установки модулей QSFP28",
+            "cross_direction": "i",
             "direction": "i",
             "gender": "f",
-            "protocols": [{
-                "direction": "*",
-                "protocol__code": "TransEth10G"
-            }],
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth10G"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "OTU4"
+                }
+            ],
             "type__name": "Transceiver | QSFP+"
         },
         {
             "name": "CLIENT6",
             "description": "Клиентский порт 6 для установки модулей QSFP28",
+            "cross_direction": "i",
             "direction": "i",
             "gender": "f",
-            "protocols": [{
-                "direction": "*",
-                "protocol__code": "TransEth10G"
-            }],
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth10G"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "OTU4"
+                }
+            ],
             "type__name": "Transceiver | QSFP+"
         },
         {
             "name": "CLIENT7",
             "description": "Клиентский порт 7 для установки модулей QSFP28",
+            "cross_direction": "i",
             "direction": "i",
             "gender": "f",
-            "protocols": [{
-                "direction": "*",
-                "protocol__code": "TransEth10G"
-            }],
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth10G"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "OTU4"
+                }
+            ],
             "type__name": "Transceiver | QSFP+"
         },
         {
             "name": "CLIENT8",
             "description": "Клиентский порт 8 для установки модулей QSFP28",
+            "cross_direction": "i",
             "direction": "i",
             "gender": "f",
-            "protocols": [{
-                "direction": "*",
-                "protocol__code": "TransEth10G"
-            }],
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth10G"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "OTU4"
+                }
+            ],
             "type__name": "Transceiver | QSFP+"
         },
         {
             "name": "CLIENT9",
             "description": "Клиентский порт 9 для установки модулей QSFP28",
+            "cross_direction": "i",
             "direction": "i",
             "gender": "f",
-            "protocols": [{
-                "direction": "*",
-                "protocol__code": "TransEth10G"
-            }],
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth10G"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "OTU4"
+                }
+            ],
             "type__name": "Transceiver | QSFP+"
         },
         {
             "name": "CLIENT10",
             "description": "Клиентский порт 10 для установки модулей QSFP28",
+            "cross_direction": "i",
             "direction": "i",
             "gender": "f",
-            "protocols": [{
-                "direction": "*",
-                "protocol__code": "TransEth10G"
-            }],
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth10G"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "OTU4"
+                }
+            ],
             "type__name": "Transceiver | QSFP+"
         },
         {
             "name": "CLIENT11",
             "description": "Клиентский порт 11 для установки модулей QSFP28",
+            "cross_direction": "i",
             "direction": "i",
             "gender": "f",
-            "protocols": [{
-                "direction": "*",
-                "protocol__code": "TransEth10G"
-            }],
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth10G"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "OTU4"
+                }
+            ],
             "type__name": "Transceiver | QSFP+"
         },
         {
             "name": "CLIENT12",
             "description": "Клиентский порт 12 для установки модулей QSFP28",
+            "cross_direction": "i",
             "direction": "i",
             "gender": "f",
-            "protocols": [{
-                "direction": "*",
-                "protocol__code": "TransEth10G"
-            }],
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth10G"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "OTU4"
+                }
+            ],
             "type__name": "Transceiver | QSFP+"
         }
     ],

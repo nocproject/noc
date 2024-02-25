@@ -82,6 +82,7 @@ ODU_LIMITS = {
     "ODU3": {"ODU0": 32, "ODU1": 16, "ODU2e": 1},
     "ODU3e2": {"ODU2e": 4},
     "ODU4": {"ODU0": 80, "ODU1": 40, "ODU2": 10, "ODU2e": 10, "ODU3": 2},
+    "ODUC1": {"ODU4": 1},
     "ODUC2": {"ODU4": 2},
     "ODUC3": {"ODU4": 3},
     "ODUC4": {"ODU4": 4},
@@ -169,7 +170,7 @@ class OduDiscriminator(object):
         """
         if isinstance(d, str):
             d = discriminator(d)
-        limit = d.get_limit(d)
+        limit = self.get_limit(d)
         if not limit:
             return []
         elif limit == 1:

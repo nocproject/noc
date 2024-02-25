@@ -165,8 +165,8 @@ Ext.define("NOC.inv.objectmodel.Application", {
                     fieldLabel: __("Labels"),
                     allowBlank: true,
                     query: {
-                        "enable_objectmodel": true
-                    },
+                            "allow_models": ["inv.ObjectModel"]
+                       }
                 },
                 // {
                 //     name: "data",
@@ -282,6 +282,19 @@ Ext.define("NOC.inv.objectmodel.Application", {
                                 regex: /^\d+-\d+$/,
                                 regexText: __("Regex error!")
                             }
+                        },
+                        {
+                            text: __("Cross"),
+                            dataIndex: "cross_direction",
+                            editor: {
+                                xtype: "combobox",
+                                store: [
+                                    ["i", "Inner"],
+                                    ["o", "Outer"],
+                                    ["s", "Connection"]
+                                ]
+                            },
+                            width: 50
                         },
                         {
                             text: __("Protocols"),
