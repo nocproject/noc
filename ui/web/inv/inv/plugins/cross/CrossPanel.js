@@ -26,13 +26,13 @@ Ext.define("NOC.inv.inv.plugins.cross.CrossPanel", {
     },
     //
     preview: function(data) {
-        var me = this;
-        me.currentId = data.id;
-        NOC.drawDiagram(NOC.generateDiagram({
-            cross: data.data,
-            connections: [...Ext.Array.map(data.data, function(el) {return {name: el.input}}),
-            ...Ext.Array.map(data.data, function(el) {return {name: el.output}})]
-        }), this.down("[itemId=diagram]"));
+        // var me = this;
+        // me.currentId = data.id;
+        // NOC.drawDiagram(NOC.generateDiagram({
+        //     cross: data.data,
+        //     connections: [...Ext.Array.map(data.data, function(el) {return {name: el.input}}),
+        //     ...Ext.Array.map(data.data, function(el) {return {name: el.output}})]
+        // }), this.down("[itemId=diagram]"));
     },
     //
     onReload: function() {
