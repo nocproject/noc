@@ -284,6 +284,12 @@ Ext.define("NOC.inv.objectmodel.Application", {
                             }
                         },
                         {
+                            text: __("Group"),
+                            dataIndex: "group",
+                            width: 100,
+                            editor: "textfield"
+                        },
+                        {
                             text: __("Cross"),
                             dataIndex: "cross_direction",
                             editor: {

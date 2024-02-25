@@ -188,6 +188,7 @@ class ObjectModelConnection(EmbeddedDocument):
     direction = StringField(choices=["i", "o", "s"])  # Inner slot  # Outer slot  # Connection
     gender = StringField(choices=["s", "m", "f"])
     combo = StringField(required=False)
+    group = StringField(required=False)
     cross_direction: Optional[str] = StringField(
         choices=["i", "o", "s"], required=False
     )  # Inner  # Outer  # Any
@@ -210,6 +211,7 @@ class ObjectModelConnection(EmbeddedDocument):
             and self.gender == other.gender
             and self.combo == other.combo
             and self.cfg_context == other.cfg_context
+            and self.group == other.group
             and self.cross_direction == other.cross_direction
             and self.protocols == other.protocols
             and self.internal_name == other.internal_name
@@ -239,6 +241,8 @@ class ObjectModelConnection(EmbeddedDocument):
             r["composite_pins"] = self.composite_pins
         if self.cross_direction:
             r["cross_direction"] = self.cross_direction
+        if self.group:
+            r["group"] = self.group
         if self.data:
             r["data"] = [d.json_data for d in self.data]
         return r
@@ -330,7 +334,7 @@ class ObjectModel(Document):
     data: List["ModelAttr"] = EmbeddedDocumentListField(ModelAttr)
     connections: List["ObjectModelConnection"] = EmbeddedDocumentListField(ObjectModelConnection)
     # Static crossings
-    cross = EmbeddedDocumentListField(Crossing)
+    cross: List[Crossing] = EmbeddedDocumentListField(Crossing)
     sensors: List["ObjectModelSensor"] = EmbeddedDocumentListField(ObjectModelSensor)
     plugins = ListField(StringField(), required=False)
     # Labels
@@ -395,6 +399,14 @@ class ObjectModel(Document):
             return self.get_data("twinax", "twinax") and self.get_data("twinax", "alias") == name
         else:
             return True
+
+    def has_connection_cross(self, name: str) -> bool:
+        if self.get_model_connection(name).cross_direction:
+            return True
+        for c in self.cross:
+            if name == c.input or name == c.output:
+                return True
+        return False
 
     def get_connection_proposals(self, name: str) -> List[Tuple["ObjectModel", str]]:
         """

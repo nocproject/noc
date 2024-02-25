@@ -69,6 +69,7 @@ class ConnectionData(object):
     protocols: List[ProtocolVariant]
     data: Dict[str, Any]
     cross: Optional[str] = None
+    group: Optional[str] = None
     interface_name: Optional[str] = None
 
 
@@ -691,10 +692,11 @@ class Object(Document):
             protocols=[ProtocolVariant.get_by_code(p.code) for p in c.protocols],
             data={},
             cross=c.cross_direction,
+            group=c.group,
         )
 
     def get_crossing_proposals(
-        self, name: str, name2: Optional[str] = None
+        self, name: str, to_name: Optional[str] = None
     ) -> List[Tuple[str, List[str]]]:
         """
         Return possible connections for connection name
@@ -711,11 +713,13 @@ class Object(Document):
         r = []
         # Exclude crossing
         for c in self.model.connections:
-            if c.name == lc.name or (name2 and c.name == name2) or c.composite:
+            if c.name == lc.name or (to_name and c.name != to_name) or c.composite:
                 # Same
                 continue
             c = self.get_effective_connection_data(c.name)
             if not c.cross or c.cross == lc.cross:
+                continue
+            elif lc.group != c.group:
                 continue
             # Check protocols
             protocols, discriminators = [], []
