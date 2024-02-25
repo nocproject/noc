@@ -17,6 +17,7 @@ Ext.define("NOC.inv.objectmodel.Application", {
         "NOC.inv.vendor.LookupField",
         "NOC.inv.connectiontype.LookupField",
         "NOC.inv.connectionrule.LookupField",
+        "NOC.cm.configurationparam.LookupField",
         "NOC.pm.measurementunits.LookupField",
         "NOC.inv.modelinterface.LookupField",
         "NOC.inv.objectconfigurationrule.LookupField",
@@ -199,11 +200,15 @@ Ext.define("NOC.inv.objectmodel.Application", {
                             editor: "textfield"
                         },
                         {
-                            text: __("Slot"),
-                            dataIndex: "slot",
+                            text: __("Connection"),
+                            dataIndex: "connection",
+                            editor: "textfield"
+                        },
+                        {
+                            text: __("Protocol"),
+                            dataIndex: "protocol",
                             editor: "textfield"
                         }
-
                     ]
                 },
                 {
@@ -231,8 +236,8 @@ Ext.define("NOC.inv.objectmodel.Application", {
                             width: 50
                         },
                         {
-                            text: __("Group"),
-                            dataIndex: "group",
+                            text: __("Cfg Ctx."),
+                            dataIndex: "cfg_context",
                             editor: "textfield",
                             width: 50
                         },

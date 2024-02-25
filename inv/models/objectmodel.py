@@ -1,7 +1,7 @@
 # ---------------------------------------------------------------------
 # ObjectModel model
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2020 The NOC Project
+# Copyright (C) 2007-2024 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -56,15 +56,8 @@ class ModelAttr(EmbeddedDocument):
     interface = StringField()
     attr = StringField()
     value = DynamicField()
-    match_slot = StringField(required=False)
-    match_param: Optional["ConfigurationParam"] = PlainReferenceField(
-        ConfigurationParam, required=False
-    )
-    match_param_values = ListField(StringField())
 
     def __str__(self) -> str:
-        if self.match_slot:
-            return "%s.%s@%s = %s" % (self.interface, self.attr, self.match_slot, self.value)
         return "%s.%s = %s" % (self.interface, self.attr, self.value)
 
     @property
@@ -74,11 +67,6 @@ class ModelAttr(EmbeddedDocument):
             "attr": self.attr,
             "value": self.value,
         }
-        if self.match_slot:
-            r["match_slot"] = self.match_slot
-        if self.match_param:
-            r["match_param__code"] = self.match_param.code
-            r["match_param_values"] = self.match_param_values
         return r
 
 
@@ -87,6 +75,7 @@ class ProtocolVariantItem(EmbeddedDocument):
     protocol: "Protocol" = PlainReferenceField(Protocol, required=True)
     discriminator = StringField(required=False)
     direction = StringField(choices=[">", "<", "*"], default="*")
+    data: List["ModelAttr"] = EmbeddedDocumentListField(ModelAttr)
 
     def __str__(self):
         return self.code
@@ -180,10 +169,10 @@ class Crossing(EmbeddedDocument):
     def json_data(self) -> Dict[str, Any]:
         r: Dict[str, Any] = {
             "input": self.input,
+            "output": self.output,
         }
         if self.input_discriminator:
             r["input_discriminator"] = self.input_discriminator
-        r["output"] = self.output
         if self.output_discriminator:
             r["output_discriminator"] = self.output_discriminator
         if self.gain_db:
@@ -192,18 +181,20 @@ class Crossing(EmbeddedDocument):
 
 
 class ObjectModelConnection(EmbeddedDocument):
-    meta = {"strict": False, "auto_create_index": False}
+    _meta = {"strict": False, "auto_create_index": False}
+
     name = StringField()
     description = StringField()
     type = PlainReferenceField(ConnectionType)
     direction = StringField(choices=["i", "o", "s"])  # Inner slot  # Outer slot  # Connection
     gender = StringField(choices=["s", "m", "f"])
     combo = StringField(required=False)
-    group = StringField(required=False)  # @todo:Remove
-    protocols = EmbeddedDocumentListField(ProtocolVariantItem)
+    protocols: List["ProtocolVariantItem"] = EmbeddedDocumentListField(ProtocolVariantItem)
+    cfg_context: str = StringField()
     internal_name = StringField(required=False)
     composite = StringField(required=False)
     composite_pins = StringField(required=False)
+    data: List["ModelAttr"] = EmbeddedDocumentListField(ModelAttr)
 
     def __str__(self):
         return self.name
@@ -216,11 +207,12 @@ class ObjectModelConnection(EmbeddedDocument):
             and self.direction == other.direction
             and self.gender == other.gender
             and self.combo == other.combo
-            and self.group == other.group
+            and self.cfg_context == other.cfg_context
             and self.protocols == other.protocols
             and self.internal_name == other.internal_name
             and self.composite == other.composite
             and self.composite_pins == other.composite_pins
+            and self.data != other.data
         )
 
     @property
@@ -234,8 +226,6 @@ class ObjectModelConnection(EmbeddedDocument):
         }
         if self.combo:
             r["combo"] = self.combo
-        if self.group:
-            r["group"] = self.group
         if self.protocols:
             r["protocols"] = [pv.json_data for pv in self.protocols]
         if self.internal_name:
@@ -244,6 +234,8 @@ class ObjectModelConnection(EmbeddedDocument):
             r["composite"] = self.composite
         if self.composite_pins:
             r["composite_pins"] = self.composite_pins
+        if self.data:
+            r["data"] = [d.json_data for d in self.data]
         return r
 
     def clean(self):
@@ -256,6 +248,14 @@ class ObjectModelConnection(EmbeddedDocument):
         if self.composite_pins and not rx_composite_pins_validate.match(self.composite_pins):
             raise ValidationError("Composite pins not match format: N-N")
         super().clean()
+
+    def get_protocols(self, context: str) -> List["ProtocolVariantItem"]:
+        r = []
+        for p in self.protocols:
+            if context and p.cfg_context != context:
+                continue
+            r.append(p)
+        return r
 
 
 class ObjectModelSensor(EmbeddedDocument):
@@ -320,6 +320,8 @@ class ObjectModel(Document):
     )
     # Connection rule context
     cr_context = StringField(required=False)
+    # Configuration Context Param
+    # cfg_context_param = PlainReferenceField(ConfigurationParam, required=False)
     data: List["ModelAttr"] = EmbeddedDocumentListField(ModelAttr)
     connections: List["ObjectModelConnection"] = EmbeddedDocumentListField(ObjectModelConnection)
     # Static crossings
@@ -347,16 +349,36 @@ class ObjectModel(Document):
     def get_by_name(cls, name) -> Optional["ObjectModel"]:
         return ObjectModel.objects.filter(name=name).first()
 
-    def get_data(self, interface: str, key: str, slot: Optional[str] = None, **params) -> Any:
-        for item in self.data:
+    def get_data(
+        self,
+        interface: str,
+        key: str,
+        connection: Optional[str] = None,
+        context: Optional[str] = None,
+        **params,
+    ) -> Any:
+        """
+        Context ?
+        :param interface: Model Interface name for data
+        :param key: Data key on Model Interface
+        :param connection: Data For connection
+        :param context: Data Configuration Context
+        :param params:
+        :return:
+        """
+        # Getting default context from ObjectConfigurationRule
+        if connection:
+            c = self.get_model_connection(connection)
+            if not c:
+                raise ValueError("Unknown connection: %s" % c)
+            data = c.data
+        else:
+            data = self.data
+        for item in data:
             if item.interface == interface and item.attr == key:
-                if item.match_param and (
-                    item.match_param.code not in params
-                    or params[item.match_param.code] not in item.match_param_values
-                ):
+                if item.cfg_context and item.cfg_context != context:
                     continue
-                if not slot or slot.startswith(item.match_slot):
-                    return item.value
+                return item.value
         return None
 
     def on_save(self):

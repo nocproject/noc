@@ -10,7 +10,7 @@ import os
 import operator
 from dataclasses import dataclass
 from threading import Lock
-from typing import Optional, Iterable, List, Any, Dict
+from typing import Optional, Iterable, List, Any, Dict, Union
 
 # Third-party modules
 import cachetools
@@ -22,6 +22,7 @@ from mongoengine.fields import (
     EmbeddedDocumentListField,
     UUIDField,
     DynamicField,
+    IntField,
     ListField,
     ReferenceField,
 )
@@ -34,6 +35,13 @@ from noc.core.prettyjson import to_json
 from noc.core.text import quote_safe_path
 from noc.core.model.decorator import on_delete_check
 from noc.core.bi.decorator import bi_sync
+from noc.core.discriminator import (
+    discriminator,
+    scopes,
+    LambdaDiscriminator,
+    VlanDiscriminator,
+    OduDiscriminator,
+)
 from noc.inv.models.technology import Technology
 from noc.core.protodcsources.base import BaseDiscriminatorSource
 
@@ -56,7 +64,7 @@ class ProtocolVariant(object):
     def __str__(self) -> str:
         return self.code
 
-    def __eq__(self, other) -> bool:
+    def __eq__(self, other: "ProtocolVariant") -> bool:
         r = self.protocol.id == other.protocol.id and self.direction == other.direction
         if not self.discriminator:
             return r
@@ -110,6 +118,18 @@ class ProtocolVariant(object):
             raise ValueError("Unknown protocol code: %s" % p_code)
         return ProtocolVariant(protocol, d_code, vd_code)
 
+    def get_discriminator(
+        self,
+    ) -> Optional[Union[LambdaDiscriminator, OduDiscriminator, VlanDiscriminator]]:
+        if self.protocol.discriminator == "D":
+            return None
+        if self.protocol.discriminator == "S":
+            return discriminator(
+                f"{self.protocol.discriminator_scope}::{self.protocol.discriminator_default}"
+            )
+        ds = self.protocol.get_discriminator_source(self.data)
+        return ds.get_discriminator_instance(self.discriminator)
+
 
 class ProtocolAttr(EmbeddedDocument):
     interface = StringField()
@@ -129,8 +149,8 @@ class ProtocolAttr(EmbeddedDocument):
 
 
 class DiscriminatorAttr(EmbeddedDocument):
-    code: str = StringField()
-    data: List["ProtocolAttr"] = EmbeddedDocumentListField(ProtocolAttr)
+    code: str = StringField(required=True)
+    limit: int = IntField(default=1)
 
     def __str__(self):
         return self.code
@@ -173,8 +193,19 @@ class Protocol(Document):
         ],
         default="BD",
     )
-    discriminator_source = StringField(default=None)
-    discriminators: List[DiscriminatorAttr] = EmbeddedDocumentListField(DiscriminatorAttr)
+    # Discriminators
+    discriminator: str = StringField(
+        choices=[
+            ("D", "Disable"),
+            ("L", "From Loader"),
+            ("S", "Local"),
+        ],
+        default="D",
+    )
+    discriminator_loader = StringField(default=None)
+    discriminator_scope = StringField(default=None, choices=list(scopes))
+    discriminator_default = StringField(default=None)  # Alias table ?
+    #
     transport_protocols = ListField(ReferenceField("self", reverse_delete_rule=NULLIFY))
     # For
     # use_helper
@@ -208,9 +239,7 @@ class Protocol(Document):
     @classmethod
     def _reset_caches(cls, id):
         try:
-            del cls._id_cache[
-                str(id),
-            ]  # Tuple
+            del cls._id_cache[str(id),]  # Tuple
         except KeyError:
             pass
 
@@ -232,8 +261,13 @@ class Protocol(Document):
             "connection_schema": self.connection_schema,
             "data": [c.json_data for c in self.data],
         }
-        if self.discriminators:
-            r["discriminators"] = [d.json_data for d in self.discriminators]
+        if self.discriminator and self.discriminator_scope:
+            r["discriminator"] = self.discriminator
+            r["discriminator_scope"] = self.discriminator_scope
+        if self.discriminator_loader:
+            r["discriminator_loader"] = self.discriminator_loader
+        if self.discriminator_default:
+            r["discriminator_default"] = self.discriminator_default
         return r
 
     def to_json(self) -> str:
@@ -267,7 +301,7 @@ class Protocol(Document):
         if self.allow_different_connection != "BO":
             yield ProtocolVariant(self, ">")
             yield ProtocolVariant(self, "<")
-        if not self.discriminator_source:
+        if not self.discriminator == "D":
             return
         ds = self.get_discriminator_source()
         for code in ds:
@@ -279,5 +313,5 @@ class Protocol(Document):
     ) -> Optional[BaseDiscriminatorSource]:
         from noc.core.protodcsources.loader import loader
 
-        ds = loader[self.discriminator_source]
+        ds = loader[self.discriminator_loader]
         return ds(self, data)

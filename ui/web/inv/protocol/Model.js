@@ -46,7 +46,19 @@ Ext.define("NOC.inv.protocol.Model", {
             defaultValue: "BD"
         },
         {
-            name: "discriminator_source",
+            name: "discriminator",
+            type: "string"
+        },
+        {
+            name: "discriminator_loader",
+            type: "string"
+        },
+        {
+            name: "discriminator_scope",
+            type: "string"
+        },
+        {
+            name: "discriminator_default",
             type: "string"
         },
         {

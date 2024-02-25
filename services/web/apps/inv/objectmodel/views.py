@@ -1,9 +1,12 @@
 # ---------------------------------------------------------------------
 # inv.objectmodel application
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2023 The NOC Project
+# Copyright (C) 2007-2024 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
+
+# Python modules
+from collections import defaultdict
 
 # Third-party modules
 from mongoengine.queryset import Q
@@ -11,7 +14,7 @@ from mongoengine.queryset import Q
 # NOC modules
 from noc.services.web.base.extdocapplication import ExtDocApplication, view
 from noc.main.models.doccategory import DocCategory
-from noc.inv.models.objectmodel import ObjectModel, ProtocolVariantItem
+from noc.inv.models.objectmodel import ObjectModel, ProtocolVariantItem, ObjectModelConnection
 from noc.inv.models.modelinterface import ModelInterface
 from noc.inv.models.protocol import ProtocolVariant
 from noc.sa.interfaces.base import ListOfParameter, DocumentParameter
@@ -49,9 +52,27 @@ class ObjectModelApplication(ExtDocApplication):
     def instance_to_dict(self, o, fields=None, nocustom=False):
         if isinstance(o, ProtocolVariantItem):
             return str(o)
-        return super().instance_to_dict(o, fields, nocustom=nocustom)
+        r = super().instance_to_dict(o, fields, nocustom=nocustom)
+        if isinstance(o, ObjectModel) and "connections" in r:
+            for c in r["connections"]:
+                data = c.pop("data", None)
+                for d in data or []:
+                    d["connection"] = c["name"]
+                    r["data"].append(d)
+        return r
 
     def clean(self, data):
+        model_data = []
+        connection_data = defaultdict(list)
+        for d in data.get("data", []):
+            c = d.pop("connection", None)
+            if c:
+                connection_data[c].append(d)
+            else:
+                model_data.append(d)
+        print("connection data", connection_data)
+        if model_data:
+            data["data"] = ModelInterface.clean_data(model_data)
         if "data" in data:
             data["data"] = ModelInterface.clean_data(data["data"])
         if "plugins" in data and data["plugins"]:
@@ -61,6 +82,8 @@ class ObjectModelApplication(ExtDocApplication):
         if "connections" not in data:
             return super().clean(data)
         for c in data["connections"]:
+            if connection_data and c["name"] in connection_data:
+                c["data"] = ModelInterface.clean_data(connection_data[c["name"]])
             if "protocols" not in c:
                 continue
             protocols = []
@@ -70,6 +93,7 @@ class ObjectModelApplication(ExtDocApplication):
                 if p.discriminator:
                     protocols[-1]["discriminator"] = p.discriminator
             c["protocols"] = protocols
+        print("D", data)
         return super().clean(data)
 
     def cleaned_query(self, q):

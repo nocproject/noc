@@ -8,6 +8,7 @@
 # Python modules
 import datetime
 import operator
+from dataclasses import dataclass
 from threading import Lock
 from collections import namedtuple
 from typing import Optional, Any, Dict, Union, List, Set, Iterator
@@ -54,11 +55,20 @@ from .objectmodel import ObjectModel, Crossing
 from .modelinterface import ModelInterface
 from .objectlog import ObjectLog
 from .error import ConnectionError, ModelDataError
+from .protocol import ProtocolVariant
 
 PathItem = namedtuple("PathItem", ["object", "connection"])
 
 id_lock = Lock()
 _path_cache = cachetools.TTLCache(maxsize=1000, ttl=60)
+
+
+@dataclass(frozen=True)
+class ConnectionData(object):
+    name: str
+    protocols: List[ProtocolVariant]
+    data: Dict[str, Any]
+    interface_name: Optional[str] = None
 
 
 class ObjectConnectionData(EmbeddedDocument):
@@ -368,7 +378,14 @@ class Object(Document):
             seen |= wave
         return list(seen)
 
-    def get_data(self, interface: str, key: str, scope: Optional[str] = None) -> Any:
+    def get_data(
+        self,
+        interface: str,
+        key: str,
+        scope: Optional[str] = None,
+        connection: Optional[str] = None,
+        protocol: Optional[str] = None,
+    ) -> Any:
         attr = ModelInterface.get_interface_attr(interface, key)
         if attr.is_const:
             # Lookup model
@@ -659,6 +676,58 @@ class Object(Document):
             if not scope or not param.has_scope(scope.name) or scope.is_common:
                 continue
             yield ScopeVariant(scope=scope, value=c.name)
+
+    def get_effective_connection_data(self, name) -> ConnectionData:
+        """
+        Return effective connection data
+        :return:
+        """
+        c = self.model.get_model_connection(name)
+        if c is None:
+            raise ConnectionError("Local connection not found: %s" % name)
+        return ConnectionData(
+            c.name,
+            protocols=[ProtocolVariant.get_by_code(p.code) for p in c.protocols],
+            data={},
+        )
+
+    def get_crossing_proposals(
+        self, name: str, name2: Optional[str] = None
+    ) -> List[Tuple[str, List[str]]]:
+        """
+        Return possible connections for connection name
+        as (connection name, discriminators)
+        * Getting proto
+        * Getting discriminators
+        * Iterable over compatible connections
+        * Return connections and discriminators
+        :param name: Connection name
+        :param name2: Other side connection
+        :return:
+        """
+        lc = self.get_effective_connection_data(name)
+        r = []
+        # Exclude crossing
+        for c in self.model.connections:
+            if c.name == name or (name2 and c.name == name2):
+                # Same
+                continue
+            c = self.get_effective_connection_data(name)
+            # Check protocols
+            protocols, discriminators = [], []
+            for lp in lc.protocols:
+                for p in c.protocols:
+                    if p in lp:
+                        protocols.append(p)
+                        d = p.get_discriminator()
+                        discriminators += d.get_crossing_proposals(
+                            lp.get_discriminator()
+                        )  # remove discriminators from crossing
+            if c.protocols and not protocols:
+                continue
+            # Check discriminators
+            r.append((c.name, discriminators))
+        return r
 
     def has_connection(self, name):
         return self.model.has_connection(name)
@@ -1284,9 +1353,7 @@ class Object(Document):
                     seen.add(item.output)
 
     def set_internal_connection(self, input: str, output: str, data: Dict[str, str] = None):
-        """
-
-        """
+        """ """
         input = self.model.get_model_connection(input)
         if not input:
             raise ValueError("Not found connection: %s" % input)

@@ -20,8 +20,8 @@ class LambdaDiscriminator(object):
     Optical wavelength.
 
     Possible formats:
-        * `<freq>` - central frequence in GHz
-        * `<freq>-<width>` - central frequence and channel width in GHz.
+        * `<freq>` - central frequency in GHz
+        * `<freq>-<width>` - central frequency and channel width in GHz.
     """
 
     scope: str = "lambda"
@@ -79,9 +79,14 @@ ODU_LIMITS = {
     "ODU1": {"ODU0": 2},
     "ODU2": {"ODU0": 8, "ODU1": 4},
     "ODU2e": {},
-    "ODU3": {"ODU0": 32, "ODU1": 16},
+    "ODU3": {"ODU0": 32, "ODU1": 16, "ODU2e": 1},
     "ODU3e2": {"ODU2e": 4},
-    "ODU4": {"ODU0": 80, "ODU1": 40, "ODU2": 10, "ODU3": 2},
+    "ODU4": {"ODU0": 80, "ODU1": 40, "ODU2": 10, "ODU2e": 10, "ODU3": 2},
+    "ODUC2": {"ODU4": 2},
+    "ODUC3": {"ODU4": 3},
+    "ODUC4": {"ODU4": 4},
+    "ODUC5": {"ODU4": 5},
+    "ODUC6": {"ODU4": 6},
 }
 
 
@@ -136,6 +141,43 @@ class OduDiscriminator(object):
             elif y not in ODU_LIMITS[x]:
                 return False
         return True
+
+    def get_limit(self, d: "OduDiscriminator") -> int:
+        """
+        Return Multiplex Limit
+        :param d: Payload
+        # :param d2: Container
+        :return:
+        """
+        if self.odu == d.odu:
+            return 1
+        if d not in self:
+            return 0
+        # Container
+        c, cn = self.odu[0]
+        # Payload
+        p, pn = d.odu[0]
+        if p not in ODU_LIMITS[c]:
+            return 0
+        return ODU_LIMITS[c][p]
+
+    def get_crossing_proposals(self, d: Union[str, "OduDiscriminator"]) -> List[str]:
+        """
+        Same discriminator - container
+        :param d: Payload
+        :return:
+        """
+        if isinstance(d, str):
+            d = discriminator(d)
+        limit = d.get_limit(d)
+        if not limit:
+            return []
+        elif limit == 1:
+            return [f"{self.scope}::{self.odu[0][0]}"]
+        r = []
+        for n in range(1, limit + 1):
+            r.append(f"{self.scope}::{self.odu[0][0]}::{d.odu[0][0]}-{n}")
+        return r
 
 
 scopes = {x.scope: x for x in (LambdaDiscriminator, VlanDiscriminator, OduDiscriminator)}
