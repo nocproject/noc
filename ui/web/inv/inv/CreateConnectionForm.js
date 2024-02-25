@@ -163,57 +163,65 @@ Ext.define("NOC.inv.inv.CreateConnectionForm", {
         me.callParent();
     },
     load: function() {
-        var params, title,
-            me = this,
-            cable = me.cableCombo.getValue(),
-            // leftSelected = mainPanel.getViewModel().get("leftSelectedPin"),
-            // rightSelected = mainPanel.getViewModel().get("rightSelectedPin"),
-            leftObject = me.getViewModel().get("leftObject"),
-            rightObject = me.getViewModel().get("rightObject");
+        var me = this,
+            action = function() {
+                var params, title,
+                    cable = me.cableCombo.getValue(),
+                    leftObject = me.getViewModel().get("leftObject"),
+                    rightObject = me.getViewModel().get("rightObject");
 
-        title = (leftObject ? leftObject.get("name") : __("none")) + " <==> " + (rightObject ? rightObject.get("name") : __("none"));
-        me.setTitle(title);
-        params = "o1=" + leftObject.get("id") + (rightObject ? "&o2=" + rightObject.get("id") : "");
-        // params += leftSelected ? "&left_filter=" + leftSelected : "";
-        // params += rightSelected ? "&right_filter=" + rightSelected : "";
-        params += cable ? "&cable_filter=" + cable : "";
-        me.mask(__("Loading..."));
-        console.log("load() : " + "/inv/inv/crossing_proposals/?" + params);
-        Ext.Ajax.request({
-            url: "/inv/inv/crossing_proposals/?" + params,
-            method: "GET",
-            success: function(response) {
-                var drawPanel = me.drawPanel,
-                    mainSurface = drawPanel.getSurface(),
-                    data = Ext.decode(response.responseText);
+                title = (leftObject ? leftObject.get("name") : __("none")) + " <==> " + (rightObject ? rightObject.get("name") : __("none"));
+                me.setTitle(title);
+                params = "o1=" + leftObject.get("id") + (rightObject ? "&o2=" + rightObject.get("id") : "");
+                params += cable ? "&cable_filter=" + cable : "";
+                me.mask(__("Loading..."));
+                console.log("load() : " + "/inv/inv/crossing_proposals/?" + params);
+                Ext.Ajax.request({
+                    url: "/inv/inv/crossing_proposals/?" + params,
+                    method: "GET",
+                    success: function(response) {
+                        var drawPanel = me.drawPanel,
+                            mainSurface = drawPanel.getSurface(),
+                            data = Ext.decode(response.responseText);
 
-                me.maxPins = Math.max(data.left.connections.length, data.right.connections.length);
-                me.unmask();
-                NOC.msg.complete(__("The data was successfully loaded"));
-                mainSurface.removeAll(true);
-                me.getViewModel().set("isDirty", false);
-                me.cableCombo.getStore().loadData(data.cable);
-                me.scaleCalculate();
-                Ext.Array.each(["left", "right"], function(side) {
-                    if(data[side].connections && data[side].connections.length) {
-                        var hasDiscriminator = me.hasDiscriminator(data[side].internal_connections);
+                        me.maxPins = Math.max(data.left.connections.length, data.right.connections.length);
+                        me.unmask();
+                        NOC.msg.complete(__("The data was successfully loaded"));
+                        mainSurface.removeAll(true);
+                        me.getViewModel().set("isDirty", false);
+                        me.cableCombo.getStore().loadData(data.cable);
+                        me.scaleCalculate();
+                        Ext.Array.each(["left", "right"], function(side) {
+                            if(data[side].connections && data[side].connections.length) {
+                                var hasDiscriminator = me.hasDiscriminator(data[side].internal_connections);
 
-                        me.drawObject(data[side].connections, mainSurface, side, hasDiscriminator, me.maxPins);
-                        me.drawInternalConnections(data[side], drawPanel.getSurface(side + "_internal_conn"), side, hasDiscriminator);
+                                me.drawObject(data[side].connections, mainSurface, side, hasDiscriminator, me.maxPins);
+                                me.drawInternalConnections(data[side], drawPanel.getSurface(side + "_internal_conn"), side, hasDiscriminator);
+                            }
+                        });
+                        me.drawWires(data.wires, mainSurface);
+                        // workaround zIndex, redraw labels and set zIndex to 60
+                        me.reDrawLabels(mainSurface);
+                        me.drawLegend(mainSurface);
+                        console.log("renderFrame: load");
+                        mainSurface.renderFrame();
+                    },
+                    failure: function() {
+                        me.unmask();
+                        NOC.msg.failed(__("Error loading data"));
                     }
                 });
-                me.drawWires(data.wires, mainSurface);
-                // workaround zIndex, redraw labels and set zIndex to 60
-                me.reDrawLabels(mainSurface);
-                me.drawLegend(mainSurface);
-                console.log("renderFrame: load");
-                mainSurface.renderFrame();
-            },
-            failure: function() {
-                me.unmask();
-                NOC.msg.failed(__("Error loading data"));
-            }
-        });
+            };
+
+        if(me.getViewModel().get("isDirty")) {
+            Ext.Msg.confirm(__("Confirm"), __("There is unsaved data, do you really want to load the object?"), function(btn) {
+                if(btn === "yes") {
+                    action();
+                }
+            });
+        } else {
+            action();
+        }
     },
     reloadStatuses: function(fromCombo) {
         var params, me = this,
@@ -1485,13 +1493,24 @@ Ext.define("NOC.inv.inv.CreateConnectionForm", {
         surface.renderFrame();
     },
     onCleanClick: function() {
-        var me = this;
+        var me = this,
+            action = function() {
+                me.setTitle(__("Object connections"));
+                me.cleanViewModel();
+                me.drawPanel.removeAll(true);
+                console.log("renderFrame: onCleanClick");
+                me.drawPanel.renderFrame();
+            };
 
-        me.setTitle(__("Object connections"));
-        me.cleanViewModel();
-        me.drawPanel.removeAll(true);
-        console.log("renderFrame: onCleanClick");
-        me.drawPanel.renderFrame();
+        if(me.getViewModel().get("isDirty")) {
+            Ext.Msg.confirm(__("Confirm"), __("There is unsaved data, do you really want to clean?"), function(btn) {
+                if(btn === "yes") {
+                    action();
+                }
+            });
+        } else {
+            action();
+        }
     },
     onReload: function() {
         this.load();
