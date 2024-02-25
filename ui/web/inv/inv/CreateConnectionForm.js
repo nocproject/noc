@@ -337,37 +337,6 @@ Ext.define("NOC.inv.inv.CreateConnectionForm", {
             NOC.error(__("Cable is not selected"));
         }
     },
-    deleteWireMsg: function(wireSprite) {
-        var me = this,
-            drawPanel = me.drawPanel;
-
-        drawPanel.isModalOpen = true;
-        console.log("deleteWire", wireSprite.fromPortId, wireSprite.toPortId);
-        Ext.Msg.confirm(__("Confirm"), __("Are you sure you want to delete this wire") + " " + wireSprite.fromPort + "=>" + wireSprite.toPort, function(btn) {
-            if(btn === "yes") {
-                var vm = me.getViewModel(),
-                    leftObject = vm.get("leftObject"),
-                    rightObject = vm.get("rightObject"),
-                    params = {
-                        object: leftObject.id,
-                        name: wireSprite.fromPort,
-                        remote_object: rightObject.id,
-                        remote_name: wireSprite.toPort,
-                        is_internal: wireSprite.connectionType === "internal",
-                    };
-
-                if(wireSprite.isNew) {
-                    me.removeWire(wireSprite);
-                } else {
-                    me.disconnectConnection(params, function(response) {
-                        me.removeWire(wireSprite);
-                        NOC.msg.complete(__("Wire was successfully disconnected"));
-                    });
-                }
-            }
-            drawPanel.isModalOpen = false;
-        });
-    },
     disconnectConnection: function(params, callBack) {
         Ext.Ajax.request({
             url: "/inv/inv/disconnect/",
@@ -1132,7 +1101,7 @@ Ext.define("NOC.inv.inv.CreateConnectionForm", {
                     me.updateDeleteInternalConnectionMsg();
                 }
                 if(Ext.Array.contains(["wire", "loopback"], sprite.connectionType)) {
-                    me.deleteWireMsg(sprite);
+                    me.removeWireMsg(sprite);
                 }
                 break;
             }
@@ -1469,6 +1438,39 @@ Ext.define("NOC.inv.inv.CreateConnectionForm", {
         console.log("renderFrame: removeInternalConnections");
         mainSurface.renderFrame();
     },
+    removeWireMsg: function(wireSprite) {
+        var me = this,
+            drawPanel = me.drawPanel;
+
+        drawPanel.isModalOpen = true;
+        console.log("deleteWire", wireSprite.fromPortId, wireSprite.toPortId);
+        Ext.Msg.confirm(__("Confirm"), __("Are you sure you want to delete this wire") + " " + wireSprite.fromPort + "=>" + wireSprite.toPort, function(btn) {
+            if(btn === "yes") {
+                var vm = me.getViewModel(),
+                    leftObject = vm.get("leftObject"),
+                    rightObject = vm.get("rightObject"),
+                    params = {
+                        object: leftObject.id,
+                        name: wireSprite.fromPort,
+                        remote_object: rightObject.id,
+                        remote_name: wireSprite.toPort,
+                        is_internal: wireSprite.connectionType === "internal",
+                    };
+
+                if(wireSprite.isNew) {
+                    me.removeWire(wireSprite);
+                } else {
+                    me.disconnectConnection(params, function(response) {
+                        me.removeWire(wireSprite);
+                        me.reloadStatuses(true);
+                        NOC.msg.complete(__("Wire was successfully disconnected"));
+                    });
+                }
+            }
+            drawPanel.isModalOpen = false;
+        });
+    },
+
     removeWire: function(wireSprite) {
         var connections,
             me = this,
