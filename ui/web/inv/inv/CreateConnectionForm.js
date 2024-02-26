@@ -1102,7 +1102,7 @@ Ext.define("NOC.inv.inv.CreateConnectionForm", {
                     // self selected
                     clearViewModel();
                 }
-                me.reloadStatuses(false, side + "_filter=" + sprite.id + "&internal=" + isInternal);
+                me.reloadStatuses(false, side + "_filter=" + sprite.pinName + "&internal=" + isInternal);
                 break;
             }
             case "connection": {
