@@ -223,16 +223,14 @@ Ext.define("NOC.inv.inv.CreateConnectionForm", {
         var canvas = Ext.ComponentQuery.query("#canvas")[0],
             viewModel = canvas.up().getViewModel(),
             surface = canvas.getSurface(),
-            side = viewModel.get("side"),
             id = viewModel.get("selectedPinId"),
-            isInternal = viewModel.get("isSelectedPinInternal"),
             pointer = surface.get("pointer");
 
         Ext.Array.each(surface.getItems(), function(element) {
             if(element.attr.isSelected) element.setAttributes({isSelected: false});
         });
         if(id) {
-            canvas.up().reloadStatuses(false)
+            canvas.up().reloadStatuses(false);
         }
         viewModel.set("selectedPin", null);
         viewModel.set("selectedPinId", null);
@@ -573,11 +571,16 @@ Ext.define("NOC.inv.inv.CreateConnectionForm", {
                 var params, title,
                     cable = me.cableCombo.getValue(),
                     leftObject = me.getViewModel().get("leftObject"),
-                    rightObject = me.getViewModel().get("rightObject");
+                    rightObject = me.getViewModel().get("rightObject"),
+                    leftObjectId = leftObject.get("id"),
+                    rightObjectId = rightObject ? rightObject.get("id") : undefined;
 
+                if(leftObjectId === rightObjectId) {
+                    return;
+                }
                 title = (leftObject ? leftObject.get("name") : __("none")) + " <==> " + (rightObject ? rightObject.get("name") : __("none"));
                 me.setTitle(title);
-                params = "o1=" + leftObject.get("id") + (rightObject ? "&o2=" + rightObject.get("id") : "");
+                params = "o1=" + leftObjectId + (rightObjectId ? "&o2=" + rightObjectId : "");
                 params += cable ? "&cable_filter=" + cable : "";
                 me.mask(__("Loading..."));
                 console.log("load() : " + "/inv/inv/crossing_proposals/?" + params);
@@ -753,7 +756,7 @@ Ext.define("NOC.inv.inv.CreateConnectionForm", {
                 remoteId,
                 remoteName,
                 internalEnabled,
-                enabled} = me.portStatus(port, side);
+                enabled} = me.pinStatus(port, side);
 
             sprites.push({
                 type: "pin",
@@ -1112,7 +1115,32 @@ Ext.define("NOC.inv.inv.CreateConnectionForm", {
                 break;
             }
             case "label": {
-                console.log(sprite.getSurface().get(sprite.id));
+                var pin = sprite.getSurface().get(sprite.pinId),
+                    object = viewModel.get(side + "Object");
+
+                if(pin.remoteId !== "none") {
+                    console.log(pin.remoteId, object.id);
+                    if(side === "left") {
+                        viewModel.set("leftObject", Ext.data.Model.create({
+                            id: pin.remoteId,
+                            name: pin.remoteName
+                        }));
+                        viewModel.set("rightObject", Ext.data.Model.create({
+                            id: object.id,
+                            name: object.get("name")
+                        }));
+                    } else {
+                        viewModel.set("leftObject", Ext.data.Model.create({
+                            id: object.id,
+                            name: object.get("name")
+                        }));
+                        viewModel.set("rightObject", Ext.data.Model.create({
+                            id: pin.remoteId,
+                            name: pin.remoteName
+                        }));
+                    }
+                    me.load();
+                }
                 break;
             }
         }
@@ -1292,40 +1320,40 @@ Ext.define("NOC.inv.inv.CreateConnectionForm", {
             }
         }
     },
-    portStatus: function(port, side) {
+    pinStatus: function(pin, side) {
         var me = this,
             pinColor = me.AVAILABLE_COLOR,
             internalColor = me.AVAILABLE_COLOR,
-            name = port.name,
+            name = pin.name,
             remoteId = "none",
             remoteName = "none",
             internalEnabled = true,
             enabled = true;
 
-        if(!port.free) {
+        if(!pin.free) {
             pinColor = me.OCCUPIED_COLOR;
             enabled = false;
-            if(port.remote_device) {
-                var remoteLink = port.remote_device.slot ? port.remote_device.slot : "",
-                    remoteName = port.remote_device.name ? port.remote_device.name + "/" : "";
-                remoteId = port.remote_device.id;
+            if(pin.remote_device) {
+                var remoteLink = pin.remote_device.slot ? pin.remote_device.slot : "",
+                    remoteName = pin.remote_device.name ? pin.remote_device.name + "/" : "";
+                remoteId = pin.remote_device.id;
                 if(side === "left") {
                     name += " => " + remoteName + remoteLink;
                 } else {
-                    name = remoteName + remoteLink + " <= " + port.name;
+                    name = remoteName + remoteLink + " <= " + pin.name;
                 }
             }
         }
-        if(!port.valid) {
+        if(!pin.valid) {
             pinColor = me.INVALID_COLOR;
             enabled = false;
         }
-        if(port.internal) {
-            if(!port.internal.valid) {
+        if(pin.internal) {
+            if(!pin.internal.valid) {
                 internalColor = me.INVALID_COLOR;
                 internalEnabled = false;
             }
-            if(!port.internal.free) {
+            if(!pin.internal.free) {
                 internalColor = me.OCCUPIED_COLOR;
                 internalEnabled = false;
             }
@@ -1688,7 +1716,7 @@ Ext.define("NOC.inv.inv.CreateConnectionForm", {
                     remoteName,
                     internalEnabled,
                     enabled
-                } = me.portStatus(pinObj, side),
+                } = me.pinStatus(pinObj, side),
                 _pinColor = pinHasNewExternalConnection ? pinStripe.pinColor : pinColor,
                 _enabled = pinHasNewExternalConnection ? pinStripe.enabled : enabled,
                 _internalColor = pinHasNewInternalConnection ? pinStripe.internalColor : internalColor,
