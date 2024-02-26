@@ -275,6 +275,7 @@ Ext.define("NOC.inv.inv.CreateConnectionForm", {
                         me.addConnectionSprite(button, fromSprite, toSprite, side);
                         me.getViewModel().set("isDirty", true);
                         console.log("renderFrame: createInternalConnections");
+                        me.reloadStatuses(true);
                         mainSurface.renderFrame();
                         button.up("window").close();
                     },
@@ -282,6 +283,7 @@ Ext.define("NOC.inv.inv.CreateConnectionForm", {
                 {
                     text: __("Cancel"),
                     handler: function() {
+                        me.reloadStatuses(true);
                         this.up("window").close();
                     }
                 }
