@@ -429,10 +429,9 @@ class ObjectModel(Document):
                 return c
         return None
 
+    @classmethod
     def check_connection(
-        self,
-        lc: "ObjectModelConnection",
-        rc: "ObjectModelConnection",
+        cls, lc: "ObjectModelConnection", rc: "ObjectModelConnection"
     ) -> Tuple[bool, str]:
         """
 

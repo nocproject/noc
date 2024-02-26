@@ -10,6 +10,9 @@ import inspect
 import os
 from typing import Optional, Dict, List, Any, Tuple, Set
 
+# Third-party modules
+from mongoengine import ValidationError
+
 # NOC modules
 from noc.services.web.base.extapplication import ExtApplication, view
 from noc.inv.models.object import Object
@@ -24,6 +27,9 @@ from noc.sa.interfaces.base import (
     UnicodeParameter,
     ListOfParameter,
     BooleanParameter,
+    DictListParameter,
+    DictParameter,
+    FloatParameter,
 )
 from noc.core.inv.path import find_path
 from noc.core.translation import ugettext as _
@@ -271,6 +277,155 @@ class InvApplication(ExtApplication):
         internal: bool = False,
     ):
         """
+        API for connection form. Checked proposals object connection
+        For internal flag - check crossing
+        Denied connections:
+           * internal and external pin
+           * Same pin
+        :param request:
+        :param o1: From object
+        :param o2: To Object
+        :param left_filter: From object connection pin
+        :param right_filter: To object connection pin
+        :param cable_filter: Used cable for connection
+        :param internal: For internal connection (crossing)
+        :return: Connection and status:
+            * Free - pin with exists connection on pin
+            * Valid - pin may be used for connection
+        """
+        self.logger.info(
+            "Crossing proposals: %s:%s -> %s:%s (Cable: %s, Internal: %s)",
+            o1,
+            left_filter,
+            o2,
+            right_filter,
+            cable_filter,
+            internal,
+        )
+        lo: Object = self.get_object_or_404(Object, id=o1)  # Left Object
+        check = [("left", lo, left_filter, None, None)]
+        ro: Optional[Object] = None  # Right Object
+        cable: Optional[ObjectModel] = None
+        if o2:
+            ro = self.get_object_or_404(Object, id=o2)
+            check = [
+                ("left", lo, left_filter, ro, right_filter),
+                ("right", ro, right_filter, lo, left_filter),
+            ]
+        if cable_filter:
+            cable = ObjectModel.get_by_name(cable_filter)
+        checking_ports = []
+        id_ports_map = {}  # Left ports
+        # Getting cable
+        cables = ObjectModel.objects.filter(
+            data__match={"interface": "length", "attr": "length", "value__gte": 0},
+        )
+        result = {
+            "left": {"connections": [], "device": {}, "internal_connections": []},
+            "right": {
+                "connections": [],
+                "device": {},
+                "internal_connections": [],
+            },
+            "cable": [{"name": c.name, "available": True} for c in cables],
+            "valid": False,
+            "wires": [],
+        }
+        # Left and Right Object Processed
+        for key, lo, left_filter, ro, right_filter in check:
+            internal_used, left_cross = self.get_cross(lo)
+            result[key]["internal_connections"] = left_cross
+            for c in lo.model.connections:
+                cid = f"{str(lo.id)}{c.name}"
+                id_ports_map[c.name] = cid
+                c_data = lo.get_effective_connection_data(c.name)
+                oc, oo, _ = lo.get_p2p_connection(c.name)
+                # Deny same and internal <-> external
+                valid = not internal and c.name != left_filter and c.type.name != "Composed"
+                if ro:
+                    valid, disable_reason = lo.get_connection_proposals(
+                        c.name, ro, right_filter, cable
+                    )
+                if oc:
+                    checking_ports.append(c)
+                free = not oc
+                r = {
+                    "id": cid,
+                    "name": c.name,
+                    "type": str(c.type.id),
+                    "type__label": c.type.name,
+                    "gender": c.gender,
+                    "direction": c.direction,
+                    "protocols": [str(p) for p in c_data.protocols],
+                    "free": free,
+                    # "allow_internal": False,
+                    "internal": None,
+                    "valid": valid,
+                    "disable_reason": "",
+                }
+                if lo.model.has_connection_cross(c.name):
+                    # Allowed crossed input
+                    rc = None
+                    if internal and left_filter:
+                        rc = lo.get_crossing_proposals(c.name, left_filter)
+                    elif not internal and left_filter:
+                        rc = []
+                    r["internal"] = {
+                        "valid": c.name != left_filter and (rc is None or rc),
+                        "free": c.name not in internal_used,
+                        "allow_discriminators": rc[0][1] if rc else [],
+                    }
+                if not free:
+                    rd = self.get_remote_device(c.name, c_data.protocols, lo)
+                    if rd:
+                        r["remote_device"] = {
+                            "name": rd.obj.name,
+                            "id": str(rd.obj.id),
+                            "slot": rd.connection,
+                        }
+                result[key]["connections"] += [r]
+            # lcs.append(r)
+        if result["left"]["connections"] and result["right"]["connections"]:
+            result["left"]["device"] = {"id": str(lo.id), "name": lo.name}
+            result["right"]["device"] = {"id": str(ro.id), "name": ro.name}
+            result["valid"] = left_filter and right_filter
+            for p in checking_ports:
+                cable, remote = self.get_remote_slot(p, lo, ro)
+                if remote:
+                    result["wires"].append(
+                        [
+                            {"id": id_ports_map.get(p.name, 0), "name": p.name, "side": "left"},
+                            {
+                                "id": id_ports_map.get(remote.connection, 0),
+                                "name": remote.connection,
+                                "side": "right",
+                            },
+                        ]
+                    )
+        return result
+        # return {
+        #     "left": {"connections": lcs, "device": device_left, "internal_connections": left_cross},
+        #     "right": {
+        #         "connections": rcs,
+        #         "device": device_right,
+        #         "internal_connections": right_cross,
+        #     },
+        #     "cable": [{"name": c.name, "available": True} for c in cables],
+        #     "valid": lcs and rcs and left_filter and right_filter,
+        #     "wires": wires,
+        # }
+
+    def api_get_crossing_proposals2(
+        self,
+        request,
+        o1,
+        o2=None,
+        left_filter: Optional[str] = None,
+        right_filter: Optional[str] = None,
+        cable_filter: Optional[str] = None,
+        internal: bool = False,
+    ):
+        """
         API for connnection form.
         1) If cable_filter set, checked connection capable with cable.
         2) If left_filter set, check renmote object
@@ -451,18 +606,94 @@ class InvApplication(ExtApplication):
         method=["POST"],
         access="connect",
         api=True,
-        validate={
-            "object": ObjectIdParameter(required=True),
-            "name": StringParameter(required=True),
-            "remote_object": ObjectIdParameter(required=False),
-            "remote_name": StringParameter(required=True),
-            # "cable": ObjectIdParameter(required=False),
-            "cable": StringParameter(required=False),
-            "reconnect": BooleanParameter(default=False, required=False),
-            "is_internal": BooleanParameter(default=False, required=False),
-        },
+        validate=DictListParameter(
+            attrs={
+                "object": ObjectIdParameter(required=True),
+                "name": StringParameter(required=True),
+                "remote_object": ObjectIdParameter(required=False),
+                "remote_name": StringParameter(required=True),
+                # "cable": ObjectIdParameter(required=False),
+                "cable": StringParameter(required=False),
+                "reconnect": BooleanParameter(default=False, required=False),
+                "is_internal": BooleanParameter(default=False, required=False),
+                "discriminator": DictParameter(
+                    attrs={"input": StringParameter(), "output": StringParameter()},
+                    required=False,
+                ),
+                "gain_db": FloatParameter(required=False),
+            }
+        ),
     )
     def api_connect(
+        self,
+        request,
+        **kwargs,
+    ):
+        data: List[Dict[str, Any]] = self.deserialize(request.body)
+        errors = []
+        for num, link in enumerate(data):
+            lo: Object = self.get_object_or_404(Object, id=link["object"])
+            name, remote_name = link["name"], link["remote_name"]
+            remote_object = link.get("remote_object")
+            reconnect = link.get("reconnect")
+            if link.get("is_internal"):
+                try:
+                    discriminator = link.get("discriminator") or {}
+                    lo.set_internal_connection(
+                        name,
+                        remote_name,
+                        data={
+                            "gain_db": link.get("gain_db") or 1.0,
+                            "input_discriminator": discriminator.get("input"),
+                            "output_discriminator": discriminator.get("output"),
+                        },
+                    )
+                    lo.save()
+                    continue
+                except (ConnectionError, ValidationError) as e:
+                    self.logger.warning("Connection Error: %s", str(e))
+                    errors.append(link)
+                    link["error"] = str(e)
+                    continue
+            elif remote_object:
+                ro: Object = self.get_object_or_404(Object, id=remote_object)
+            elif name == remote_name:
+                errors.append(link)
+                link["error"] = "Same slot connection is not Allowed"
+                continue
+            else:
+                # Connect same
+                ro = lo
+            cable_o: Optional[Object] = None
+            if link.get("cable"):
+                cable = ObjectModel.get_by_name(link["cable"])
+                cable_o = Object(
+                    name=f"Wire {lo.name}:{name} <-> {ro.name}:{remote_name}",
+                    model=cable,
+                    container=lo.container.id if lo.container else None,
+                )
+                cable_o.save()
+            try:
+                if cable_o:
+                    c1, c2 = cable_o.model.connections[:2]
+                    self.logger.debug("Wired connect %s:%s", c1, c2)
+                    lo.connect_p2p(name, cable_o, c1.name, {}, reconnect=reconnect)
+                    ro.connect_p2p(remote_name, cable_o, c2.name, {}, reconnect=reconnect)
+                    lo.save()
+                    ro.save()
+                else:
+                    lo.connect_p2p(name, ro, remote_name, {}, reconnect=reconnect)
+            except ConnectionError as e:
+                self.logger.warning("Connection Error: %s", str(e))
+                link["error"] = str(e)
+                errors.append(link)
+        if errors:
+            return self.render_json(
+                {"status": False, "text": "Invalid connections", "invalid_connections": errors}
+            )
+        return self.render_json({"status": True, "text": ""})
+
+    def api_connect_old(
         self,
         request,
         object,
@@ -549,6 +780,7 @@ class InvApplication(ExtApplication):
         Determine right device's slot with find_path method
         :return:
         """
+        wire = None
         for path in (
             find_path(
                 lo,
@@ -558,8 +790,11 @@ class InvApplication(ExtApplication):
             )
             or []
         ):
+            if path.obj.model.get_data("length", "length"):
+                wire = path.obj
             if path.obj == ro:
-                return path
+                return wire, path
+        return None, None
 
     def get_remote_device(self, slot, protocols, o):
         """

@@ -643,7 +643,6 @@ class Object(Document):
                 ):
                     continue
                 if pr.scope and pr.scope != scope.scope:
-                    print("Exclude", pr.scope, scope.code, scope)
                     continue
                 schema = pr.param.get_schema(self)
                 # Getting param from connection model (for transceiver)
@@ -713,7 +712,7 @@ class Object(Document):
         r = []
         # Exclude crossing
         for c in self.model.connections:
-            if c.name == lc.name or (to_name and c.name != to_name) or c.composite:
+            if c.name == lc.name or (to_name and c.name == to_name) or c.composite:
                 # Same
                 continue
             c = self.get_effective_connection_data(c.name)
@@ -735,7 +734,7 @@ class Object(Document):
                         # Not supported discriminators
                         continue
                     # remove discriminators from crossing
-                    d = pd.get_crossing_proposals(lp.get_discriminator())
+                    d = lpd.get_crossing_proposals(pd)
                     if not d:
                         continue
                     discriminators += d
@@ -744,6 +743,32 @@ class Object(Document):
                 continue
             # Check discriminators
             r.append((c.name, discriminators))
+        return r
+
+    def get_connection_proposals(
+        self,
+        name,
+        ro: "Object",
+        remote_name: Optional[str] = None,
+        use_cable: bool = False,
+    ) -> List[Tuple[str, str]]:
+        """
+
+        :param name:
+        :param ro:
+        :param remote_name:
+        :param use_cable:
+        :return:
+        """
+        lc = self.model.get_model_connection(name)
+        r = []
+        for rc in ro.model.connections:
+            if remote_name and rc.name != remote_name:
+                continue
+            valid, error = ObjectModel.check_connection(lc, rc)
+            if not valid:
+                continue
+            r.append((rc.name, valid))
         return r
 
     def has_connection(self, name):
@@ -817,7 +842,7 @@ class Object(Document):
         valid, cause = self.model.check_connection(lc, rc)
         if not valid:
             raise ConnectionError(cause)
-        # Check existing connecitons
+        # Check existing connections
         if lc.type.genders in ("s", "m", "f", "mf"):
             ec, r_object, r_name = self.get_p2p_connection(name)
             if ec is not None:
