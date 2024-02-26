@@ -256,6 +256,7 @@ Ext.define("NOC.inv.inv.CreateConnectionForm", {
             fromDiscriminators = fromSprite.allowDiscriminators,
             toDiscriminators = toSprite.allowDiscriminators;
 
+        me.drawPanel.isModalOpen = true;
         Ext.create("Ext.window.Window", {
             autoShow: true,
             width: 400,
@@ -275,7 +276,6 @@ Ext.define("NOC.inv.inv.CreateConnectionForm", {
                         me.addConnectionSprite(button, fromSprite, toSprite, side);
                         me.getViewModel().set("isDirty", true);
                         console.log("renderFrame: createInternalConnections");
-                        me.reloadStatuses(true);
                         mainSurface.renderFrame();
                         button.up("window").close();
                     },
@@ -283,11 +283,16 @@ Ext.define("NOC.inv.inv.CreateConnectionForm", {
                 {
                     text: __("Cancel"),
                     handler: function() {
-                        me.reloadStatuses(true);
                         this.up("window").close();
                     }
                 }
-            ]
+            ],
+            listeners: {
+                close: function() {
+                    me.reloadStatuses(true);
+                    me.drawPanel.isModalOpen = false;
+                }
+            }
         });
     },
     createWire(prevPinSprite, pinSprite) {
@@ -1679,6 +1684,7 @@ Ext.define("NOC.inv.inv.CreateConnectionForm", {
             ],
             listeners: {
                 close: function() {
+                    me.reloadStatuses(true);
                     drawPanel.isModalOpen = false;
                 }
             }
@@ -1709,6 +1715,7 @@ Ext.define("NOC.inv.inv.CreateConnectionForm", {
         }
         Ext.Array.each(pinObjList, function(pinObj) {
             var pinStripe = mainSurface.get(pinObj.id),
+                allowDiscriminators = pinObj.internal ? pinObj.internal.allow_discriminators : undefined,
                 pinHasNewInternalConnection = Ext.Array.filter(pinsWithNewConnections, function(item) {return item.pin === pinObj.id && item.type === "internal"}).length > 0,
                 pinHasNewExternalConnection = Ext.Array.filter(pinsWithNewConnections, function(item) {return item.pin === pinObj.id && item.type === "external"}).length > 0,
                 {
@@ -1728,6 +1735,7 @@ Ext.define("NOC.inv.inv.CreateConnectionForm", {
             pinStripe.setAttributes({
                 pinColor: _pinColor,
                 enabled: _enabled,
+                allowDiscriminators: allowDiscriminators,
                 internalColor: _internalColor,
                 internalEnabled: _internalEnabled,
             });
