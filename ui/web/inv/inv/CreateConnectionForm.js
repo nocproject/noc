@@ -223,11 +223,17 @@ Ext.define("NOC.inv.inv.CreateConnectionForm", {
         var canvas = Ext.ComponentQuery.query("#canvas")[0],
             viewModel = canvas.up().getViewModel(),
             surface = canvas.getSurface(),
+            side = viewModel.get("side"),
+            id = viewModel.get("selectedPinId"),
+            isInternal = viewModel.get("isSelectedPinInternal"),
             pointer = surface.get("pointer");
 
         Ext.Array.each(surface.getItems(), function(element) {
             if(element.attr.isSelected) element.setAttributes({isSelected: false});
         });
+        if(id) {
+            canvas.up().reloadStatuses(false, side + "_filter=" + id + "&internal=" + isInternal)
+        }
         viewModel.set("selectedPin", null);
         viewModel.set("selectedPinId", null);
         viewModel.set("isSelectedPinInternal", null);
@@ -1093,7 +1099,7 @@ Ext.define("NOC.inv.inv.CreateConnectionForm", {
                     // self selected
                     clearViewModel();
                 }
-                me.reloadStatuses(false, side + "_filter=" + sprite.id);
+                me.reloadStatuses(false, side + "_filter=" + sprite.id + "&internal=" + isInternal);
                 break;
             }
             case "connection": {
