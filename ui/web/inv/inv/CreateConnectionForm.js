@@ -1093,7 +1093,7 @@ Ext.define("NOC.inv.inv.CreateConnectionForm", {
                     // self selected
                     clearViewModel();
                 }
-                me.reloadStatuses(false);
+                me.reloadStatuses(false, side + "_filter=" + sprite.id);
                 break;
             }
             case "connection": {
@@ -1106,7 +1106,7 @@ Ext.define("NOC.inv.inv.CreateConnectionForm", {
                 break;
             }
             case "label": {
-                console.log(sprite);
+                console.log(sprite.getSurface().get(sprite.id));
                 break;
             }
         }
@@ -1369,7 +1369,7 @@ Ext.define("NOC.inv.inv.CreateConnectionForm", {
                 });
             });
     },
-    reloadStatuses: function(fromCombo) {
+    reloadStatuses: function(fromCombo, filter) {
         var params, me = this,
             vm = me.getViewModel(),
             leftObject = vm.get("leftObject"),
@@ -1388,6 +1388,7 @@ Ext.define("NOC.inv.inv.CreateConnectionForm", {
         }
         params = "o1=" + leftObjectId + (rightObjectId ? "&o2=" + rightObjectId : "");
         params += cable ? "&cable_filter=" + cable : "";
+        params += filter ? "&" + filter : "";
         me.mask(__("Loading..."));
         console.log("reload() : " + "/inv/inv/crossing_proposals/?" + params);
         Ext.Ajax.request({
