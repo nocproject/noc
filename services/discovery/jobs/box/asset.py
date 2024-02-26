@@ -1,7 +1,7 @@
 # ---------------------------------------------------------------------
 # Asset check
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2023 The NOC Project
+# Copyright (C) 2007-2024 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -21,7 +21,7 @@ import cachetools
 from noc.services.discovery.jobs.base import DiscoveryCheck
 from noc.main.models.label import Label
 from noc.inv.models.modelinterface import ModelInterface, ModelDataError
-from noc.inv.models.objectmodel import ObjectModel, ConnectionRule, Crossing
+from noc.inv.models.objectmodel import ObjectModel, ConnectionRule
 from noc.inv.models.object import Object, ObjectAttr
 from noc.inv.models.vendor import Vendor
 from noc.inv.models.unknownmodel import UnknownModel
