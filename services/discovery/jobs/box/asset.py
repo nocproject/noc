@@ -383,17 +383,15 @@ class AssetCheck(DiscoveryCheck):
             if not o.has_connection(c["output"]):
                 self.logger.warning("[%s] Unkown crossing output: %s", o.model.name, c["output"])
                 continue
-            o.cross += [
-                Crossing(
-                    **{
-                        "input": o.model.get_model_connection(c["input"]).name,
-                        "input_discriminator": c.get("input_discriminator"),
-                        "output": o.model.get_model_connection(c["output"]).name,
-                        "output_discriminator": c.get("output_discriminator"),
-                        "gain_db": c["gain"],
-                    }
-                )
-            ]
+            o.set_internal_connection(
+                o.model.get_model_connection(c["input"]).name,
+                o.model.get_model_connection(c["output"]).name,
+                data={
+                    "gain_db": c["gain"] or 1.0,
+                    "input_discriminator":  c.get("input_discriminator"),
+                    "output_discriminator": c.get("output_discriminator"),
+                },
+            )
         o.save()
 
     def clean_sa_data(

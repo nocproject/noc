@@ -135,8 +135,6 @@ class InvApplication(ExtApplication):
                 n["plugins"] += [self.get_plugin_data("managedobject")]
             if o.get_data("contacts", "has_contacts"):
                 n["plugins"] += [self.get_plugin_data("contacts")]
-            if o.cross or o.model.cross:
-                n["plugins"] += [self.get_plugin_data("cross")]
             if o.model.sensors or Sensor.objects.filter(object=o.id).first():
                 n["plugins"] += [self.get_plugin_data("sensor")]
                 n["plugins"] += [self.get_plugin_data("metric")]
@@ -375,7 +373,9 @@ class InvApplication(ExtApplication):
                     if internal and left_filter:
                         rc = o_from.get_crossing_proposals(c.name, left_filter)
                         if rc:
-                            r["internal"].update({"valid": True, "allow_discriminators": rc[0][1]})
+                            r["internal"].update(
+                                {"valid": True, "free": True, "allow_discriminators": rc[0][1]}
+                            )
                 if not free:
                     rd = self.get_remote_device(c.name, c_data.protocols, o_from)
                     if rd and rd.obj != o_to:
