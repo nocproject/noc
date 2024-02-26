@@ -388,7 +388,7 @@ class AssetCheck(DiscoveryCheck):
                 o.model.get_model_connection(c["output"]).name,
                 data={
                     "gain_db": c["gain"] or 1.0,
-                    "input_discriminator":  c.get("input_discriminator"),
+                    "input_discriminator": c.get("input_discriminator"),
                     "output_discriminator": c.get("output_discriminator"),
                 },
             )

@@ -60,7 +60,9 @@ class ConfigParamCheck(DiscoveryCheck):
             try:
                 o.set_cfg_data(pd.param, pd.value, pd.scope, is_dirty=True)
             except (AttributeError, ValueError) as e:
-                self.logger.warning("[%s|%s|%s] Error when set param: %s", pd.param,  pd.scope, pd.value, str(e))
+                self.logger.warning(
+                    "[%s|%s|%s] Error when set param: %s", pd.param, pd.scope, pd.value, str(e)
+                )
                 continue
             o.log(
                 f"Object param '{pd.param}' changed: {ed.get(pd)} -> {pd.value}",
