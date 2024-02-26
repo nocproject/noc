@@ -250,6 +250,8 @@ class Script(BaseScript):
             }
             if common.crossing:
                 for cross in common.crossing.values():
+                    if not cross:
+                        continue
                     c_in, c_out = cross[:2]
                     card["crossing"] += [
                         {

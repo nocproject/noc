@@ -705,14 +705,14 @@ class Object(Document):
         * Iterable over compatible connections
         * Return connections and discriminators
         :param name: Connection name
-        :param name2: Other side connection
+        :param to_name: Other side connection
         :return:
         """
         lc = self.get_effective_connection_data(name)
         r = []
         # Exclude crossing
         for c in self.model.connections:
-            if c.name == lc.name or (to_name and c.name == to_name) or c.composite:
+            if c.name == lc.name or (to_name and c.name != to_name) or c.composite:
                 # Same
                 continue
             c = self.get_effective_connection_data(c.name)
@@ -734,7 +734,10 @@ class Object(Document):
                         # Not supported discriminators
                         continue
                     # remove discriminators from crossing
-                    d = lpd.get_crossing_proposals(pd)
+                    if c.cross == "o":
+                        d = pd.get_crossing_proposals(lpd)
+                    else:
+                        d = lpd.get_crossing_proposals(pd)
                     if not d:
                         continue
                     discriminators += d
@@ -751,24 +754,31 @@ class Object(Document):
         ro: "Object",
         remote_name: Optional[str] = None,
         use_cable: bool = False,
-    ) -> List[Tuple[str, str]]:
+        only_first: bool = False,
+    ) -> List[Tuple[Optional["ObjectModel"], str]]:
         """
 
         :param name:
         :param ro:
         :param remote_name:
         :param use_cable:
+        :param only_first:
         :return:
         """
-        lc = self.model.get_model_connection(name)
         r = []
-        for rc in ro.model.connections:
-            if remote_name and rc.name != remote_name:
+        for model_id, c_name in self.model.get_connection_proposals(name):
+            if use_cable:
+                model = ObjectModel.get_by_id(model_id)
+                if bool(model.get_data("length", "length")):
+                    # Wired, Multiple Cable?
+                    r.append((model, c_name))
+            elif remote_name and c_name != remote_name:
                 continue
-            valid, error = ObjectModel.check_connection(lc, rc)
-            if not valid:
-                continue
-            r.append((rc.name, valid))
+            elif ro and ro.model.id == model_id:
+                r.append((None, c_name))
+            if only_first and r:
+                return r
+            # Check connection
         return r
 
     def has_connection(self, name):

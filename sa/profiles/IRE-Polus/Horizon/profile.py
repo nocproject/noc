@@ -46,7 +46,7 @@ rx_module = re.compile(
 rx_channel = re.compile(r"\S+Lane_(\d+)\S+")
 rx_threshold = re.compile(r"(?P<param>\S+)(?P<type>CMax|WMax|WMin|CMin)$")
 rx_num = re.compile(r"\S+(\d+)")
-rx_cross_dst = re.compile(r"(?:ODU\d+)?(?P<port>(?:Ln|Cl)_\d+)_(?P<odu>ODU\d+)(?P<odu_idx>_\d+)?")
+rx_cross_dst = re.compile(r"(?:ODU\d+)?(?P<port>(?:Ln|Cl|IN)_?\d+)(_(?P<odu>ODU\d+)(?P<odu_idx>_\d+))?")
 rx_param_match = re.compile(
     r"(?:pt)?(?P<port>Ln_\d+|Cl_\d+|Line\d+|Client\d+|Port\d+|OSC|H\d+|C\d+)?(?P<c_name>\w+\d)*(\w*)"
     r"(?P<code>Set\S+|EnableTx|TxInfo|TxCat|RxCat|RxInfo|Source|Destination)"
@@ -385,10 +385,13 @@ class Component:
         return ""
 
     def add_cross(self, p: PolusParam):
-        if not p.value:
+        if not p.value or p.value == "Заблокирован":
             return
         # xc_index, xc_type = p.name.rsplit("_", 1)
-        d_port, d_odu, d_desc = rx_cross_dst.match(p.value).groups()
+        cross = rx_cross_dst.match(p.value).groupdict()
+        d_port = cross["port"]
+        d_odu = cross.get("odu")
+        d_desc = cross.get("desc")
         if not d_port:
             print(f"Unknown port on crossing {p.value}")
             return
@@ -463,7 +466,7 @@ class Profile(BaseProfile):
         slots = script.http.get("/api/slots", json=True, cached=True)
         # Getting ControlUnit
         for s in slots["slots"]:
-            if not s["name"].lower().startswith("cu"):
+            if "name" not in s or not s["name"].lower().startswith("cu"):
                 continue
             return int(s["crateId"]), int(s["slotNumber"])
         raise script.NotSupportedError("Unknown Control Unit")

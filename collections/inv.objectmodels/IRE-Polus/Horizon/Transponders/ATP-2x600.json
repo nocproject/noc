@@ -22,6 +22,7 @@
             "cross_direction": "o",
             "direction": "s",
             "gender": "s",
+            "group": "1",
             "protocols": [{
                 "direction": "*",
                 "protocol__code": "OTUCn"
@@ -50,6 +51,7 @@
             "cross_direction": "o",
             "direction": "s",
             "gender": "s",
+            "group": "2",
             "protocols": [{
                 "direction": "*",
                 "protocol__code": "OTUCn"
@@ -78,6 +80,7 @@
             "cross_direction": "i",
             "direction": "i",
             "gender": "f",
+            "group": "1",
             "protocols": [
                 {
                     "direction": "*",
@@ -96,6 +99,7 @@
             "cross_direction": "i",
             "direction": "i",
             "gender": "f",
+            "group": "1",
             "protocols": [
                 {
                     "direction": "*",
@@ -114,6 +118,7 @@
             "cross_direction": "i",
             "direction": "i",
             "gender": "f",
+            "group": "1",
             "protocols": [
                 {
                     "direction": "*",
@@ -132,6 +137,7 @@
             "cross_direction": "i",
             "direction": "i",
             "gender": "f",
+            "group": "1",
             "protocols": [
                 {
                     "direction": "*",
@@ -150,6 +156,7 @@
             "cross_direction": "i",
             "direction": "i",
             "gender": "f",
+            "group": "1",
             "protocols": [
                 {
                     "direction": "*",
@@ -168,6 +175,7 @@
             "cross_direction": "i",
             "direction": "i",
             "gender": "f",
+            "group": "1",
             "protocols": [
                 {
                     "direction": "*",
@@ -186,6 +194,7 @@
             "cross_direction": "i",
             "direction": "i",
             "gender": "f",
+            "group": "2",
             "protocols": [
                 {
                     "direction": "*",
@@ -204,6 +213,7 @@
             "cross_direction": "i",
             "direction": "i",
             "gender": "f",
+            "group": "2",
             "protocols": [
                 {
                     "direction": "*",
@@ -222,6 +232,7 @@
             "cross_direction": "i",
             "direction": "i",
             "gender": "f",
+            "group": "2",
             "protocols": [
                 {
                     "direction": "*",
@@ -240,6 +251,7 @@
             "cross_direction": "i",
             "direction": "i",
             "gender": "f",
+            "group": "2",
             "protocols": [
                 {
                     "direction": "*",
@@ -258,6 +270,7 @@
             "cross_direction": "i",
             "direction": "i",
             "gender": "f",
+            "group": "2",
             "protocols": [
                 {
                     "direction": "*",
@@ -276,6 +289,7 @@
             "cross_direction": "i",
             "direction": "i",
             "gender": "f",
+            "group": "2",
             "protocols": [
                 {
                     "direction": "*",

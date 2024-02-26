@@ -21,6 +21,7 @@ from mongoengine.fields import (
     BooleanField,
     EmbeddedDocumentListField,
 )
+from pydantic import BaseModel
 import cachetools
 
 # NOC modules
@@ -35,8 +36,7 @@ from .configurationscope import ConfigurationScope
 id_lock = threading.Lock()
 
 
-@dataclass
-class ParamSchema(object):
+class ParamSchema(BaseModel):
     type: str  # number, string, bool
     # String Schema
     pattern: Optional[str] = None
@@ -51,7 +51,7 @@ class ParamSchema(object):
     step: Optional[float] = None
     decimal: Optional[int] = None  # Choices 0, 0.1, 0.01, 0.001, 0.0001
     recommended_choices: List[str] = None
-    choices: List[float] = None
+    choices: List[str] = None
 
     def clean(self, value: str) -> Union[str, float, bool]:
         if self.type == "bool":

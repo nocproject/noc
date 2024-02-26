@@ -25,8 +25,9 @@ from mongoengine.fields import (
     FloatField,
 )
 from mongoengine.errors import ValidationError
-import cachetools
+from bson import ObjectId
 from pymongo import InsertOne, DeleteOne
+import cachetools
 
 # NOC modules
 from noc.main.models.doccategory import category
@@ -408,7 +409,7 @@ class ObjectModel(Document):
                 return True
         return False
 
-    def get_connection_proposals(self, name: str) -> List[Tuple["ObjectModel", str]]:
+    def get_connection_proposals(self, name: str) -> List[Tuple["ObjectId", str]]:
         """
         Return possible connections for connection name
         as (model id, connection name)
