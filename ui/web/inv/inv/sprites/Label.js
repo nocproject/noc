@@ -90,7 +90,7 @@ Ext.define("NOC.inv.inv.sprites.Label", {
 
         if(bbox && x >= bbox.x && x <= (bbox.x + bbox.width) && y >= bbox.y && y <= (bbox.y + bbox.height)) {
             return {
-                sprite: me.getSurface().get(me.pinId)
+                sprite: me
             }
         }
         return null;

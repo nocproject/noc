@@ -1105,6 +1105,10 @@ Ext.define("NOC.inv.inv.CreateConnectionForm", {
                 }
                 break;
             }
+            case "label": {
+                console.log(sprite);
+                break;
+            }
         }
         console.log("renderFrame: onSpriteClick");
         surface.renderFrame();
