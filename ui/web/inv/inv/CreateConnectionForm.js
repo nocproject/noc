@@ -232,7 +232,7 @@ Ext.define("NOC.inv.inv.CreateConnectionForm", {
             if(element.attr.isSelected) element.setAttributes({isSelected: false});
         });
         if(id) {
-            canvas.up().reloadStatuses(false, side + "_filter=" + id + "&internal=" + isInternal)
+            canvas.up().reloadStatuses(false)
         }
         viewModel.set("selectedPin", null);
         viewModel.set("selectedPinId", null);
