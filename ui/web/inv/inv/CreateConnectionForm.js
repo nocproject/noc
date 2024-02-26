@@ -173,7 +173,7 @@ Ext.define("NOC.inv.inv.CreateConnectionForm", {
             gainDb = win.down("[name=gainDb]").getValue(),
             fromDiscriminator = win.down("[name=fromDiscriminator]").getValue() || undefined,
             toDiscriminator = win.down("[name=toDiscriminator]").getValue() || undefined,
-            pinDisabled = {internalColor: me.OCCUPIED_COLOR, internalEnabled: false},
+            pinDisabled = {internalColor: me.OCCUPIED_COLOR, internalEnabled: false, isSelected: false},
             from = {
                 discriminator: fromDiscriminator,
                 has_arrow: false,
@@ -1041,13 +1041,13 @@ Ext.define("NOC.inv.inv.CreateConnectionForm", {
             return;
         }
 
-        if(isInternal && sprite.attr.isSelected && prevSprite && prevSprite.attr.isSelected) {
+        if(sprite.type === "pin" && isInternal && sprite.attr.isSelected && prevSprite && prevSprite.attr.isSelected) {
             me.createInternalConnectionMsg(prevSprite, sprite, side);
             clearViewModel();
             return;
         }
 
-        if(!isInternal && sprite.attr.isSelected && prevSprite && prevSprite.attr.isSelected) {
+        if(sprite.type === "pin" && !isInternal && sprite.attr.isSelected && prevSprite && prevSprite.attr.isSelected) {
             me.createWire(prevSprite, sprite, side);
             clearViewModel();
             return;
@@ -1473,6 +1473,7 @@ Ext.define("NOC.inv.inv.CreateConnectionForm", {
         if(!me.hasDiscriminator(connections.internal_connections)) {
             me.switchInternalLabel(body, false);
         }
+        me.reloadStatuses(false);
         me.drawInternalConnections(connections, surface, side);
         console.log("renderFrame: removeInternalConnections");
         mainSurface.renderFrame();
