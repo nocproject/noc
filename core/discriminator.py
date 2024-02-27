@@ -135,13 +135,11 @@ class OduDiscriminator(object):
     def __contains__(self, other: "OduDiscriminator") -> bool:
         if not isinstance(other, OduDiscriminator):
             return False
-        for (x, i1), (y, i2) in zip(self.odu, other.odu):
-            if x == y:
-                if i1 != i2:
-                    return False
-            elif y not in ODU_LIMITS[x]:
-                return False
-        return True
+        if self.odu == other.odu:
+            return True
+        if len(self.odu) > len(other.odu):
+            return False
+        return self.odu == other.odu[: len(self.odu)]
 
     def get_limit(self, d: "OduDiscriminator") -> int:
         """

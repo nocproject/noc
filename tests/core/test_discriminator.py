@@ -56,6 +56,7 @@ def test_invalid_value(v: str) -> None:
         ("vlan::1,2,7-15", "vlan::12-15", True),
         # ODU
         ("odu::ODU2", "odu::ODU1", False),
+        ("odu::ODU2", "odu::ODU2", True),
         ("odu::ODU2", "odu::ODU2::ODU0-1", True),
     ],
 )
