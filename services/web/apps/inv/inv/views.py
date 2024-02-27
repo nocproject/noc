@@ -343,7 +343,7 @@ class InvApplication(ExtApplication):
                 valid = not internal and c.name != left_filter and c.type.name != "Composed"
                 if o_to or cable_filter:
                     cp = o_from.get_connection_proposals(
-                        c.name, cable_filter or o_to, right_filter, only_first=True
+                        c.name, cable or o_to.model, right_filter, only_first=True
                     )
                     valid = bool(cp)
                 if oc and o_from == lo:

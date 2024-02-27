@@ -751,7 +751,7 @@ class Object(Document):
     def get_connection_proposals(
         self,
         name,
-        ro: "Object",
+        ro: "ObjectModel",
         remote_name: Optional[str] = None,
         use_cable: bool = False,
         only_first: bool = False,
@@ -774,7 +774,7 @@ class Object(Document):
                     r.append((model, c_name))
             elif remote_name and c_name != remote_name:
                 continue
-            elif ro and ro.model.id == model_id:
+            elif ro and ro.id == model_id:
                 r.append((None, c_name))
             if only_first and r:
                 return r
