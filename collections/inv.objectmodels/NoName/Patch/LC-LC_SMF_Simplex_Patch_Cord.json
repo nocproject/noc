@@ -20,7 +20,6 @@
             "type__name": "Optical | LC"
         }
     ],
-    "data": [],
     "cross": [
         {
             "input": "1",
@@ -30,5 +29,10 @@
             "input": "2",
             "output": "1"
         }
-    ]
+    ],
+    "data": [{
+        "attr": "length",
+        "interface": "length",
+        "value": 5.0
+    }]
 }

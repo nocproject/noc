@@ -16,6 +16,7 @@ from .base import (
     REStringParameter,
     OIDParameter,
     LabelListParameter,
+    DiscriminatorParameter,
 )
 
 
@@ -51,11 +52,11 @@ class IGetInventory(BaseInterface):
                     # Input connection name, according to model
                     "input": StringParameter(),
                     # Input filter
-                    "input_discriminator": StringParameter(required=False),
+                    "input_discriminator": DiscriminatorParameter(required=False),
                     # Output connection name, according to model
                     "output": StringParameter(),
                     # Output signal mapping
-                    "output_discriminator": StringParameter(required=False),
+                    "output_discriminator": DiscriminatorParameter(required=False),
                     # Power gain, in dB
                     "gain": FloatParameter(default=1),
                 },

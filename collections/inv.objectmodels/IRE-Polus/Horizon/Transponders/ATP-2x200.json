@@ -21,6 +21,7 @@
             "cross_direction": "i",
             "direction": "i",
             "gender": "f",
+            "group": "1",
             "protocols": [
                 {
                     "direction": "*",
@@ -39,6 +40,7 @@
             "cross_direction": "o",
             "direction": "i",
             "gender": "f",
+            "group": "1",
             "protocols": [
                 {
                     "direction": "*",
@@ -57,6 +59,7 @@
             "cross_direction": "i",
             "direction": "i",
             "gender": "f",
+            "group": "1",
             "protocols": [
                 {
                     "direction": "*",
@@ -75,6 +78,7 @@
             "cross_direction": "i",
             "direction": "i",
             "gender": "f",
+            "group": "2",
             "protocols": [
                 {
                     "direction": "*",
@@ -93,6 +97,7 @@
             "cross_direction": "o",
             "direction": "i",
             "gender": "f",
+            "group": "2",
             "protocols": [
                 {
                     "direction": "*",
@@ -111,6 +116,7 @@
             "cross_direction": "i",
             "direction": "i",
             "gender": "f",
+            "group": "2",
             "protocols": [
                 {
                     "direction": "*",

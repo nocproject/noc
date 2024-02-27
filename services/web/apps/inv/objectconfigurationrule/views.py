@@ -26,7 +26,7 @@ class ObjectConfigurationRuleApplication(ExtDocApplication):
             r = {
                 "scope": str(o.scope.id),
                 "scope__label": o.scope.name,
-                "match_slot": o.match_slot,
+                "match_context": o.match_context,
                 "match_connection_type": None,
                 "match_protocols": [
                     {"id": str(p.id), "label": p.code} for p in o.match_protocols or []
