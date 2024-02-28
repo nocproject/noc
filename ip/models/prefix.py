@@ -141,7 +141,13 @@ class Prefix(NOCModel):
     source = models.CharField(
         "Source",
         max_length=1,
-        choices=[("M", "Manual"), ("i", "Interface"), ("w", "Whois"), ("n", "Neighbor")],
+        choices=[
+            ("M", "Manual"),
+            ("i", "Interface"),
+            ("w", "Whois"),
+            ("n", "Neighbor"),
+            ("P", "Ping"),
+        ],
         null=False,
         blank=False,
         default="M",
