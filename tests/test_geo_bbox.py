@@ -16,7 +16,6 @@ from noc.core.geo import get_bbox
 @pytest.mark.parametrize(
     "input,expected",
     [
-        ([0, 0, 0, 0], [[[0, 0], [0, 0], [0, 0], [0, 0], [0, 0]]]),
         ([0, 10, 0, 20], [[[0, 0], [10, 0], [10, 20], [0, 20], [0, 0]]]),
         ([10, 0, 0, 20], [[[0, 0], [10, 0], [10, 20], [0, 20], [0, 0]]]),
         ([0, 10, 20, 0], [[[0, 0], [10, 0], [10, 20], [0, 20], [0, 0]]]),
@@ -31,3 +30,5 @@ def test_get_bbox(input, expected):
     assert isinstance(bbox, Polygon)
     assert bbox.type == "Polygon"
     assert bbox.coordinates == expected
+    with pytest.raises(ValueError):
+        get_bbox(0, 0, 0, 0)
