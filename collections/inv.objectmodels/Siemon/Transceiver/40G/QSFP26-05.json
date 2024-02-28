@@ -5,30 +5,34 @@
     "vendor__code": "SIEMON",
     "description": "Siemon QSFP+ 40 Gigabit Ethernet Direct Attach Copper (twinax copper cable) 5m ",
     "cr_context": "XCVR",
-    "labels": ["noc::inv::xcvr"],
+    "labels": [
+        "noc::inv::xcvr"
+    ],
     "connections": [
         {
             "name": "in1",
             "description": "Chassis connection",
-            "cross": "in2",
             "direction": "o",
             "gender": "m",
-            "protocols": [{
-                "direction": "*",
-                "protocol__code": "TransEth40G"
-            }],
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth40G"
+                }
+            ],
             "type__name": "Transceiver | QSFP+"
         },
         {
             "name": "in2",
             "description": "Chassis connection",
-            "cross": "in1",
             "direction": "o",
             "gender": "m",
-            "protocols": [{
-                "direction": "*",
-                "protocol__code": "TransEth40G"
-            }],
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth40G"
+                }
+            ],
             "type__name": "Transceiver | QSFP+"
         }
     ],
@@ -36,7 +40,9 @@
         {
             "attr": "part_no",
             "interface": "asset",
-            "value": ["900973-10-01"]
+            "value": [
+                "900973-10-01"
+            ]
         },
         {
             "attr": "description",
@@ -62,6 +68,16 @@
             "attr": "connection2",
             "interface": "twinax",
             "value": "in2"
+        }
+    ],
+    "cross": [
+        {
+            "input": "in1",
+            "output": "in2"
+        },
+        {
+            "input": "in2",
+            "output": "in1"
         }
     ]
 }

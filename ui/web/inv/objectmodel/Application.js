@@ -1,7 +1,7 @@
 //---------------------------------------------------------------------
 // inv.objectmodel application
 //---------------------------------------------------------------------
-// Copyright (C) 2007-2020 The NOC Project
+// Copyright (C) 2007-2023 The NOC Project
 // See LICENSE for details
 //---------------------------------------------------------------------
 console.debug("Defining NOC.inv.objectmodel.Application");
@@ -13,9 +13,11 @@ Ext.define("NOC.inv.objectmodel.Application", {
         "NOC.core.label.LabelField",
         "NOC.core.TemplatePreview",
         "NOC.inv.objectmodel.Model",
+        "NOC.inv.objectmodel.CrossDiagram",
         "NOC.inv.vendor.LookupField",
         "NOC.inv.connectiontype.LookupField",
         "NOC.inv.connectionrule.LookupField",
+        "NOC.cm.configurationparam.LookupField",
         "NOC.pm.measurementunits.LookupField",
         "NOC.inv.modelinterface.LookupField",
         "NOC.inv.objectconfigurationrule.LookupField",
@@ -163,8 +165,8 @@ Ext.define("NOC.inv.objectmodel.Application", {
                     fieldLabel: __("Labels"),
                     allowBlank: true,
                     query: {
-                        "enable_objectmodel": true
-                    },
+                            "allow_models": ["inv.ObjectModel"]
+                       }
                 },
                 // {
                 //     name: "data",
@@ -198,18 +200,21 @@ Ext.define("NOC.inv.objectmodel.Application", {
                             editor: "textfield"
                         },
                         {
-                            text: __("Slot"),
-                            dataIndex: "slot",
+                            text: __("Connection"),
+                            dataIndex: "connection",
+                            editor: "textfield"
+                        },
+                        {
+                            text: __("Protocol"),
+                            dataIndex: "protocol",
                             editor: "textfield"
                         }
-
                     ]
                 },
                 {
                     name: "connections",
                     xtype: "gridfield",
                     fieldLabel: __("Connections"),
-                    labelAlign: "top",
                     columns: [
                         {
                             text: __("Name"),
@@ -231,8 +236,8 @@ Ext.define("NOC.inv.objectmodel.Application", {
                             width: 50
                         },
                         {
-                            text: __("Group"),
-                            dataIndex: "group",
+                            text: __("Cfg Ctx."),
+                            dataIndex: "cfg_context",
                             editor: "textfield",
                             width: 50
                         },
@@ -279,10 +284,23 @@ Ext.define("NOC.inv.objectmodel.Application", {
                             }
                         },
                         {
-                            text: __("Cross"),
-                            dataIndex: "cross",
+                            text: __("Group"),
+                            dataIndex: "group",
                             width: 100,
                             editor: "textfield"
+                        },
+                        {
+                            text: __("Cross"),
+                            dataIndex: "cross_direction",
+                            editor: {
+                                xtype: "combobox",
+                                store: [
+                                    ["i", "Inner"],
+                                    ["o", "Outer"],
+                                    ["s", "Connection"]
+                                ]
+                            },
+                            width: 50
                         },
                         {
                             text: __("Protocols"),
@@ -307,6 +325,129 @@ Ext.define("NOC.inv.objectmodel.Application", {
                         scope: me,
                         clone: me.onCloneConnection
                     }
+                },
+                {
+                    xtype: "container",
+                    layout: {
+                        type: 'hbox',
+                        align: 'stretch'
+                    },
+                    itemId: "crossContainer",
+                    items: [
+                        {
+                            xtype: "gridfield",
+                            name: "cross",
+                            fieldLabel: __("Cross"),
+                            allowBlank: true,
+                            flex: 1,
+                            layout: "fit",
+                            columns: [
+                                {
+                                    text: __("Input"),
+                                    dataIndex: "input",
+                                    width: 150,
+                                    editor: {
+                                        xtype: "combobox",
+                                        valueField: "id",
+                                        editable: false,
+                                        queryMode: "local",
+                                        forceSelection: true
+                                    }
+                                },
+                                {
+                                    text: __("Input Discriminator"),
+                                    dataIndex: "input_discriminator",
+                                    width: 200,
+                                    editor: "textfield"
+                                },
+                                {
+                                    text: __("Output"),
+                                    dataIndex: "output",
+                                    width: 150,
+                                    editor: {
+                                        xtype: "combobox",
+                                        valueField: "id",
+                                        editable: false,
+                                        queryMode: "local",
+                                        forceSelection: true
+                                    }
+                                },
+                                {
+                                    text: __("Output Discriminator"),
+                                    dataIndex: "output_discriminator",
+                                    width: 200,
+                                    editor: "textfield"
+                                },
+                                {
+                                    text: __("Gain (dB)"),
+                                    dataIndex: "gain_db",
+                                    editor: "textfield"
+                                }
+                            ],
+                            onBeforeEdit: function(editor, context) {
+                                if(["input", "output"].includes(context.column.dataIndex)) {
+                                    var connectionsField = context.view.up("[xtype=form]").down("[name=connections]"),
+                                        data = Ext.Array.map(connectionsField.value, function(value) {return {id: value.name, text: value.name}}),
+                                        combo = editor.getEditor(context.record, context.column).field;
+                                    combo.getStore().loadData(data);
+                                }
+                                context.cancel = context.record.get("is_persist");
+                            },
+                            onCellEdit: function(editor, context) {
+                                var me = this,
+                                    app = this.up("[appId=inv.objectmodel]"),
+                                    diagram = me.up("container").down("#diagram"),
+                                    ed = context.grid.columns[context.colIdx].getEditor(),
+                                    data = app.getFormData(),
+                                    padding = (diagram.config.padding || 0) * 2,
+                                    diagramSize = [diagram.getWidth() - padding, diagram.getHeight() - padding],
+                                    field = context.grid.columns[context.colIdx].field;
+
+                                if(ed.rawValue) {
+                                    context.record.set(context.field + "__label", ed.rawValue);
+                                }
+                                if(field.xtype === "labelfield") {
+                                    context.value = field.valueCollection.items;
+                                }
+                                if(!Ext.isEmpty(context.record.get("input")) && !Ext.isEmpty(context.record.get("output"))) {
+                                    diagram.drawDiagram(data, diagramSize);
+                                }
+                            },
+                            onSelect: function(grid, record, index) {
+                                var me = this;
+
+                                me.currentSelection = index;
+                                me.deleteButton.setDisabled(true);
+                                me.cloneButton.setDisabled(true);
+                                if(!record.get("is_persist")) {
+                                    me.deleteButton.setDisabled(false);
+                                    me.cloneButton.setDisabled(false);
+                                }
+                                me.up().down("[itemId=diagram]").selectConnection(record);
+                            },
+                        },
+                        {
+                            xtype: "inv.crossdiagram",
+                            itemId: "diagram",
+                            flex: 1,
+                            layout: "fit",
+                            border: false,
+                            padding: 20,
+                            listeners: {
+                                resize: function(panel, width, height) {
+                                    var app = panel.up("[appId=inv.objectmodel]"),
+                                        padding = (panel.config.padding || 0) * 2,
+                                        data = app.getFormData();
+
+                                    if(!Ext.isEmpty(data.cross)) {
+                                        panel.drawDiagram(data, [panel.getWidth() - padding, panel.getHeight() - padding]);
+                                    } else {
+                                        panel.getSurface().destroy();
+                                    }
+                                }
+                            },
+                        }
+                    ],
                 },
                 {
                     name: "sensors",
@@ -445,5 +586,5 @@ Ext.define("NOC.inv.objectmodel.Application", {
         }
         var n = +m[2] + 1;
         record.set("name", m[1] + n);
-    }
+    },
 });

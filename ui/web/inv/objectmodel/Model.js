@@ -78,6 +78,10 @@ Ext.define("NOC.inv.objectmodel.Model", {
         {
             name: "labels",
             type: "auto"
+        },
+        {
+            name: "cross",
+            type: "auto"
         }
     ]
 });

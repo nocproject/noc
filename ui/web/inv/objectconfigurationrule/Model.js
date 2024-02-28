@@ -20,7 +20,7 @@ Ext.define("NOC.inv.objectconfigurationrule.Model", {
             type: "string"
         },
         {
-            name: "slot_rules",
+            name: "connection_rules",
             type: "auto"
         },
         {

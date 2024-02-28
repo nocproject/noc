@@ -8,7 +8,6 @@
         {
             "name": "1",
             "description": "1st connector",
-            "cross": "2",
             "direction": "s",
             "gender": "m",
             "type__name": "Optical | LC"
@@ -16,11 +15,24 @@
         {
             "name": "2",
             "description": "2nd connector",
-            "cross": "1",
             "direction": "s",
             "gender": "m",
             "type__name": "Optical | LC"
         }
     ],
-    "data": []
+    "cross": [
+        {
+            "input": "1",
+            "output": "2"
+        },
+        {
+            "input": "2",
+            "output": "1"
+        }
+    ],
+    "data": [{
+        "attr": "length",
+        "interface": "length",
+        "value": 5.0
+    }]
 }

@@ -5,30 +5,34 @@
     "vendor__code": "TIMEINTERCONNECT",
     "description": "40GE QSFP+ DAC 1m",
     "cr_context": "XCVR",
-    "labels": ["noc::inv::xcvr"],
+    "labels": [
+        "noc::inv::xcvr"
+    ],
     "connections": [
         {
             "name": "in1",
             "description": "Chassis connection",
-            "cross": "in2",
             "direction": "o",
             "gender": "m",
-            "protocols": [{
-                "direction": "*",
-                "protocol__code": "TransEth40G"
-            }],
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth40G"
+                }
+            ],
             "type__name": "Transceiver | QSFP+"
         },
         {
             "name": "in2",
             "description": "Chassis connection",
-            "cross": "in1",
             "direction": "o",
             "gender": "m",
-            "protocols": [{
-                "direction": "*",
-                "protocol__code": "TransEth40G"
-            }],
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth40G"
+                }
+            ],
             "type__name": "Transceiver | QSFP+"
         }
     ],
@@ -36,7 +40,9 @@
         {
             "attr": "part_no",
             "interface": "asset",
-            "value": ["D10045-02-1m-06"]
+            "value": [
+                "D10045-02-1m-06"
+            ]
         },
         {
             "attr": "alias",
@@ -57,6 +63,16 @@
             "attr": "twinax",
             "interface": "twinax",
             "value": true
+        }
+    ],
+    "cross": [
+        {
+            "input": "in1",
+            "output": "in2"
+        },
+        {
+            "input": "in2",
+            "output": "in1"
         }
     ]
 }

@@ -5,30 +5,34 @@
     "vendor__code": "CISCO",
     "description": "Cisco QSFP+ 100 Gigabit Ethernet Direct Attach Copper (twinax copper cable) 3m",
     "cr_context": "XCVR",
-    "labels": ["noc::inv::xcvr"],
+    "labels": [
+        "noc::inv::xcvr"
+    ],
     "connections": [
         {
             "name": "in1",
             "description": "Chassis connection",
-            "cross": "in2",
             "direction": "o",
             "gender": "m",
-            "protocols": [{
-                "direction": "*",
-                "protocol__code": "TransEth100G"
-            }],
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth100G"
+                }
+            ],
             "type__name": "Transceiver | QSFP+"
         },
         {
             "name": "in2",
             "description": "Chassis connection",
-            "cross": "in1",
             "direction": "o",
             "gender": "m",
-            "protocols": [{
-                "direction": "*",
-                "protocol__code": "TransEth100G"
-            }],
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth100G"
+                }
+            ],
             "type__name": "Transceiver | QSFP+"
         }
     ],
@@ -36,7 +40,9 @@
         {
             "attr": "part_no",
             "interface": "asset",
-            "value": ["QSFP-100G-CU3M"]
+            "value": [
+                "QSFP-100G-CU3M"
+            ]
         },
         {
             "attr": "connection1",
@@ -52,6 +58,16 @@
             "attr": "twinax",
             "interface": "twinax",
             "value": true
+        }
+    ],
+    "cross": [
+        {
+            "input": "in1",
+            "output": "in2"
+        },
+        {
+            "input": "in2",
+            "output": "in1"
         }
     ]
 }

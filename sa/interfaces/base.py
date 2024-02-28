@@ -17,6 +17,7 @@ from noc.core.validators import is_ipv6
 from noc.core.interface.error import InterfaceTypeError
 from noc.core.interface.parameter import BaseParameter as Parameter
 from noc.core.interface.parameter import ORParameter  # noqa
+from noc.core.discriminator import discriminator
 from noc.core.comp import smart_text
 
 
@@ -765,6 +766,18 @@ class MACAddressParameter(StringParameter):
             return str(MAC(value))
         except ValueError:
             self.raise_error(value)
+
+
+class DiscriminatorParameter(StringParameter):
+    """
+    Check value is Cross Discriminator
+    """
+
+    def clean(self, value):
+        try:
+            return discriminator(value)
+        except ValueError as e:
+            self.raise_error("Bad discriminator: %s" % str(e))
 
 
 class InterfaceNameParameter(StringParameter):

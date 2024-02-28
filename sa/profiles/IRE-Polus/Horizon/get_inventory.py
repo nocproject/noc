@@ -87,16 +87,6 @@ class Script(BaseScript):
     rx_devices = re.compile(r"(?P<slot>\d+)\s*\|(?P<name>\S+)\s*")
     rx_table = re.compile(r"(?P<pname>\S+)\s*\|(?P<punits>\S*)\s*\|(?P<pvalue>.+)\s*")
 
-    cfg_params = {
-        "SetTxFreqSp",
-        "EnableTx",
-        "SetState",
-        "SetDataType",
-        "SetFECType",
-        "SetPayload",
-        "SetPayload",
-    }
-
     def get_fru(self, c: Component) -> Optional[FRU]:
         """
         Getting FRU from component info
@@ -159,30 +149,6 @@ class Script(BaseScript):
                 }
             ]
         return r, cfg_thresholds
-
-    def get_cfg_param_data(self, c: Component) -> List[Dict[str, str]]:
-        """
-        Getting Configuration Param Datafrom component cfg_param
-        """
-        r = []
-        for p in c.cfg_params:
-            scopes = []
-            if p.port:
-                scopes += [
-                    {
-                        "scope": "OpticalPort",
-                        "value": p.port,
-                    }
-                ]
-            r.append(
-                {
-                    "param": p.code,
-                    "value": p.value,
-                    "scopes": scopes,
-                    # "measurement":
-                }
-            )
-        return r
 
     def parse_table(self, v):
         r = {}
@@ -259,6 +225,16 @@ class Script(BaseScript):
             common = components["common"]
             c_fru = self.get_fru(common)
             sensors, cfgs = self.get_sensors(common, slot)
+            for cc in common.cfg_params:
+                if not cc.get_param_code():
+                    continue
+                cfgs.append(
+                    {
+                        "param": cc.get_param_code(),
+                        "value": cc.value,
+                        "scopes": cc.get_param_scopes(),
+                    }
+                )
             card = {
                 "type": "LINECARD",
                 "number": num,
@@ -268,9 +244,24 @@ class Script(BaseScript):
                 "revision": c_fru.revision,
                 "sensors": sensors,
                 "param_data": cfgs,
-                "data": [{"interface": "hw_path", "attr": "slot", "value": str(slot)}]
+                "data": [{"interface": "hw_path", "attr": "slot", "value": str(slot)}],
+                "crossing": [],
                 # "param_data": self.get_cfg_param_data(common),
             }
+            if common.crossing:
+                for cross in common.crossing.values():
+                    if not cross:
+                        continue
+                    c_in, c_out = cross[:2]
+                    card["crossing"] += [
+                        {
+                            "input": c_in[0],
+                            "input_discriminator": c_in[1],
+                            "output": c_out[0],
+                            "output_discriminator": c_out[1],
+                            # "gain":
+                        }
+                    ]
             r += [card]
             for c_name, c in components.items():
                 fru = self.get_fru(c)
@@ -280,10 +271,44 @@ class Script(BaseScript):
                     sensors, cfgs = self.get_sensors(c, slot)
                     card["sensors"] += sensors
                     card["param_data"] += cfgs
+                    if c.crossing:
+                        for cross in c.crossing.values():
+                            c_in, c_out = cross[:2]
+                            card["crossing"] += [
+                                {
+                                    "input": c_in[0],
+                                    "input_discriminator": c_in[1],
+                                    "output": c_out[0],
+                                    "output_discriminator": c_out[1],
+                                    # "gain":
+                                }
+                            ]
+                    for cc in c.cfg_params:
+                        if not cc.get_param_code():
+                            continue
+                        card["param_data"].append(
+                            {
+                                "param": cc.get_param_code(),
+                                "value": cc.value,
+                                "scopes": cc.get_param_scopes(),
+                            }
+                        )
                     continue
-                self.logger.info("[%s] Parse FRU", fru)
+                self.logger.debug("[%s] Parse FRU", fru)
                 # card["param_data"] += self.get_cfg_param_data(c)
                 sensors, cfgs = self.get_sensors(c, slot)
+                card["sensors"] += sensors
+                card["param_data"] += cfgs
+                for cc in c.cfg_params:
+                    if not cc.get_param_code():
+                        continue
+                    card["param_data"].append(
+                        {
+                            "param": cc.get_param_code(),
+                            "value": cc.value,
+                            "scopes": cc.get_param_scopes(),
+                        }
+                    )
                 r += [
                     {
                         "type": fru.type,
@@ -292,8 +317,8 @@ class Script(BaseScript):
                         "part_no": fru.part_no,
                         "serial": fru.serial,
                         "revision": fru.revision,
-                        "sensors": sensors,
-                        "param_data": cfgs,
+                        # "sensors": sensors,
+                        # "param_data": cfgs,
                     }
                 ]
         return r
