@@ -86,7 +86,9 @@ class ParamPlugin(InvPlugin):
                 o.set_cfg_data(p, d["value"])
             else:
                 for s in d["scopes"]:
-                    o.set_cfg_data(p, d["value"], scopes=s[1:].split("@"))
+                    o.set_cfg_data(
+                        p, d["value"], scope=s, is_dirty=True
+                    )  # scopes=s[1:].split("@"))
         try:
             o.save()
         except Exception as e:

@@ -145,42 +145,29 @@ Ext.define("NOC.inv.protocol.Application", {
                     ]
                 },
                 {
-                    name: "discriminator_source",
+                    name: "discriminator",
+                    xtype: "combobox",
+                    fieldLabel: __("Discriminator"),
+                    allowBlank: true,
+                    store: [
+                        ["loader", __("From Loader")],
+                        ["lambda", __("Optical Lambda")],
+                        ["odu", __("OTN ODU")],
+                        ["vlan", __("VLAN")]
+                    ],
+                    uiStyle: "medium"
+                },
+                {
+                    name: "discriminator_loader",
                     xtype: "main.ref.protocoldiscriminatorsource.LookupField",
                     fieldLabel: __("Discriminator Source"),
                     allowBlank: true
                 },
                 {
-                    name: "discriminator_interface",
-                    xtype: "inv.modelinterface.LookupField",
-                    fieldLabel: __("Discriminator Interface"),
-                    allowBlank: true
-                },
-                {
-                    name: "discriminator_attr",
+                    name: "discriminator_default",
                     xtype: "textfield",
-                    fieldLabel: __("Discriminator Attribute"),
-                    allowBlank: true,
-                    uiStyle: "medium"
-                },
-                {
-                    name: "discriminators",
-                    fieldLabel: __("Discriminators"),
-                    xtype: "gridfield",
-                    allowBlank: true,
-                    columns: [
-                        {
-                            text: __("Code"),
-                            dataIndex: "code",
-                            editor: "textfield"
-                        },
-                        {
-                            text: __("Value"),
-                            dataIndex: "value",
-                            editor: "textfield"
-                        }
-
-                    ]
+                    fieldLabel: __("Discriminator Default"),
+                    allowBlank: true
                 }
             ],
 

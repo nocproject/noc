@@ -11,6 +11,7 @@ from typing import List, Iterable
 
 # NOC modules
 from .base import BaseDiscriminatorSource, DiscriminatorDataItem
+from noc.core.discriminator import LambdaDiscriminator
 
 GRID_BASE = 192.1 * 1_000
 GRID_STEP = 0.05 * 1_000
@@ -74,3 +75,7 @@ class OpticalDWDMDiscriminatorSource(BaseDiscriminatorSource):
                 num = int((d.value * 1_000 - GRID_BASE) / GRID_STEP)
                 return r[num]
         raise ValueError("Not found code for data")
+
+    def get_discriminator_instance(self, code):
+        freq, wl = self.get_data(code)
+        return LambdaDiscriminator(f"{freq.value * 1000}-50")

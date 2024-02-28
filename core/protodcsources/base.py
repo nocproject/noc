@@ -52,3 +52,9 @@ class BaseDiscriminatorSource(ABC):
         Get Discriminator Code by data
         """
         ...
+
+    def get_discriminator_instance(self, code: str):
+        """
+        Getting Discriminator Instance by Code
+        :return:
+        """

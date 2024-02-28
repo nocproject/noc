@@ -1,7 +1,7 @@
 # ---------------------------------------------------------------------
 # ObjectModel model
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2020 The NOC Project
+# Copyright (C) 2007-2024 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -22,10 +22,12 @@ from mongoengine.fields import (
     DynamicField,
     EmbeddedDocumentListField,
     ObjectIdField,
+    FloatField,
 )
 from mongoengine.errors import ValidationError
-import cachetools
+from bson import ObjectId
 from pymongo import InsertOne, DeleteOne
+import cachetools
 
 # NOC modules
 from noc.main.models.doccategory import category
@@ -36,7 +38,7 @@ from noc.core.text import quote_safe_path
 from noc.core.model.decorator import on_delete_check, on_save
 from noc.core.change.decorator import change
 from noc.pm.models.measurementunits import MeasurementUnits
-from noc.cm.models.configurationparam import ConfigurationParam
+from noc.core.discriminator import discriminator
 from .objectconfigurationrule import ObjectConfigurationRule
 from .connectiontype import ConnectionType
 from .connectionrule import ConnectionRule
@@ -54,15 +56,8 @@ class ModelAttr(EmbeddedDocument):
     interface = StringField()
     attr = StringField()
     value = DynamicField()
-    match_slot = StringField(required=False)
-    match_param: Optional["ConfigurationParam"] = PlainReferenceField(
-        ConfigurationParam, required=False
-    )
-    match_param_values = ListField(StringField())
 
     def __str__(self) -> str:
-        if self.match_slot:
-            return "%s.%s@%s = %s" % (self.interface, self.attr, self.match_slot, self.value)
         return "%s.%s = %s" % (self.interface, self.attr, self.value)
 
     @property
@@ -72,11 +67,6 @@ class ModelAttr(EmbeddedDocument):
             "attr": self.attr,
             "value": self.value,
         }
-        if self.match_slot:
-            r["match_slot"] = self.match_slot
-        if self.match_param:
-            r["match_param__code"] = self.match_param.code
-            r["match_param_values"] = self.match_param_values
         return r
 
 
@@ -85,6 +75,7 @@ class ProtocolVariantItem(EmbeddedDocument):
     protocol: "Protocol" = PlainReferenceField(Protocol, required=True)
     discriminator = StringField(required=False)
     direction = StringField(choices=[">", "<", "*"], default="*")
+    data: List["ModelAttr"] = EmbeddedDocumentListField(ModelAttr)
 
     def __str__(self):
         return self.code
@@ -116,9 +107,82 @@ class ProtocolVariantItem(EmbeddedDocument):
             return r
         return r and self.discriminator == other.discriminator
 
+    def __contains__(self, item) -> bool:
+        r = self.protocol.id == item.protocol.id and self.direction != item.direction
+        if not self.discriminator:
+            return r
+        return r and self.discriminator == item.discriminator
+
+
+class Crossing(EmbeddedDocument):
+    """
+    Dynamic/Static crossing.
+
+    Attributes:
+        input: Input slot name.
+        input_discriminator: Input filter.
+        output: Output slot name.
+        output_discriminator: When not-empty, input to output mapping.
+        gain_db: When non-empty, signal gain in dB.
+    """
+
+    input = StringField(required=True)
+    input_discriminator = StringField(required=False)
+    output = StringField(required=True)
+    output_discriminator = StringField(required=False)
+    gain_db = FloatField(required=False)
+
+    def __str__(self) -> str:
+        r = [self.input]
+        if self.input_discriminator:
+            r += [f": {self.input_discriminator}"]
+        r += [" -> ", self.output]
+        if self.output_discriminator:
+            r += [f": {self.output_discriminator}"]
+        return "".join(r)
+
+    def update_params(self, input_discriminator: str, output_discriminator: str, gain_db):
+        if self.input_discriminator != input_discriminator:
+            self.input_discriminator == input_discriminator
+        if self.output_discriminator != output_discriminator:
+            self.output_discriminator = input_discriminator
+        if self.gain_db != gain_db:
+            self.gain_db = gain_db
+        self.clean()
+
+    def clean(self) -> None:
+        if self.input_discriminator:
+            try:
+                discriminator(self.input_discriminator)
+            except ValueError as e:
+                msg = f"Invalid input_discriminator: {e}"
+                raise ValidationError(msg) from e
+        if self.output_discriminator:
+            try:
+                discriminator(self.output_discriminator)
+            except ValueError as e:
+                msg = f"Invalid output_discriminator: {e}"
+                raise ValidationError(msg) from e
+        super().clean()
+
+    @property
+    def json_data(self) -> Dict[str, Any]:
+        r: Dict[str, Any] = {
+            "input": self.input,
+            "output": self.output,
+        }
+        if self.input_discriminator:
+            r["input_discriminator"] = self.input_discriminator
+        if self.output_discriminator:
+            r["output_discriminator"] = self.output_discriminator
+        if self.gain_db:
+            r["gain_db"] = self.gain_db
+        return r
+
 
 class ObjectModelConnection(EmbeddedDocument):
-    meta = {"strict": False, "auto_create_index": False}
+    _meta = {"strict": False, "auto_create_index": False}
+
     name = StringField()
     description = StringField()
     type = PlainReferenceField(ConnectionType)
@@ -126,16 +190,20 @@ class ObjectModelConnection(EmbeddedDocument):
     gender = StringField(choices=["s", "m", "f"])
     combo = StringField(required=False)
     group = StringField(required=False)
-    cross = StringField(required=False)
-    protocols = EmbeddedDocumentListField(ProtocolVariantItem)
+    cross_direction: Optional[str] = StringField(
+        choices=["i", "o", "s"], required=False
+    )  # Inner  # Outer  # Any
+    protocols: List["ProtocolVariantItem"] = EmbeddedDocumentListField(ProtocolVariantItem)
+    cfg_context: str = StringField()
     internal_name = StringField(required=False)
     composite = StringField(required=False)
     composite_pins = StringField(required=False)
+    data: List["ModelAttr"] = EmbeddedDocumentListField(ModelAttr)
 
     def __str__(self):
         return self.name
 
-    def __eq__(self, other):
+    def __eq__(self, other: "ObjectModelConnection"):
         return (
             self.name == other.name
             and self.description == other.description
@@ -143,12 +211,14 @@ class ObjectModelConnection(EmbeddedDocument):
             and self.direction == other.direction
             and self.gender == other.gender
             and self.combo == other.combo
+            and self.cfg_context == other.cfg_context
             and self.group == other.group
-            and self.cross == other.cross
+            and self.cross_direction == other.cross_direction
             and self.protocols == other.protocols
             and self.internal_name == other.internal_name
             and self.composite == other.composite
             and self.composite_pins == other.composite_pins
+            and self.data != other.data
         )
 
     @property
@@ -162,10 +232,6 @@ class ObjectModelConnection(EmbeddedDocument):
         }
         if self.combo:
             r["combo"] = self.combo
-        if self.group:
-            r["group"] = self.group
-        if self.cross:
-            r["cross"] = self.cross
         if self.protocols:
             r["protocols"] = [pv.json_data for pv in self.protocols]
         if self.internal_name:
@@ -174,6 +240,12 @@ class ObjectModelConnection(EmbeddedDocument):
             r["composite"] = self.composite
         if self.composite_pins:
             r["composite_pins"] = self.composite_pins
+        if self.cross_direction:
+            r["cross_direction"] = self.cross_direction
+        if self.group:
+            r["group"] = self.group
+        if self.data:
+            r["data"] = [d.json_data for d in self.data]
         return r
 
     def clean(self):
@@ -186,6 +258,14 @@ class ObjectModelConnection(EmbeddedDocument):
         if self.composite_pins and not rx_composite_pins_validate.match(self.composite_pins):
             raise ValidationError("Composite pins not match format: N-N")
         super().clean()
+
+    def get_protocols(self, context: str) -> List["ProtocolVariantItem"]:
+        r = []
+        for p in self.protocols:
+            if context and p.cfg_context != context:
+                continue
+            r.append(p)
+        return r
 
 
 class ObjectModelSensor(EmbeddedDocument):
@@ -250,8 +330,12 @@ class ObjectModel(Document):
     )
     # Connection rule context
     cr_context = StringField(required=False)
+    # Configuration Context Param
+    # cfg_context_param = PlainReferenceField(ConfigurationParam, required=False)
     data: List["ModelAttr"] = EmbeddedDocumentListField(ModelAttr)
     connections: List["ObjectModelConnection"] = EmbeddedDocumentListField(ObjectModelConnection)
+    # Static crossings
+    cross: List[Crossing] = EmbeddedDocumentListField(Crossing)
     sensors: List["ObjectModelSensor"] = EmbeddedDocumentListField(ObjectModelSensor)
     plugins = ListField(StringField(), required=False)
     # Labels
@@ -275,16 +359,33 @@ class ObjectModel(Document):
     def get_by_name(cls, name) -> Optional["ObjectModel"]:
         return ObjectModel.objects.filter(name=name).first()
 
-    def get_data(self, interface: str, key: str, slot: Optional[str] = None, **params) -> Any:
-        for item in self.data:
+    def get_data(
+        self,
+        interface: str,
+        key: str,
+        connection: Optional[str] = None,
+        **params,
+    ) -> Any:
+        """
+        Context ?
+        :param interface: Model Interface name for data
+        :param key: Data key on Model Interface
+        :param connection: Data For connection
+        :param context: Data Configuration Context
+        :param params:
+        :return:
+        """
+        # Getting default context from ObjectConfigurationRule
+        if connection:
+            c = self.get_model_connection(connection)
+            if not c:
+                raise ValueError("Unknown connection: %s" % c)
+            data = c.data
+        else:
+            data = self.data
+        for item in data:
             if item.interface == interface and item.attr == key:
-                if item.match_param and (
-                    item.match_param.code not in params
-                    or params[item.match_param.code] not in item.match_param_values
-                ):
-                    continue
-                if not slot or slot.startswith(item.match_slot):
-                    return item.value
+                return item.value
         return None
 
     def on_save(self):
@@ -300,7 +401,15 @@ class ObjectModel(Document):
         else:
             return True
 
-    def get_connection_proposals(self, name: str) -> List[Tuple["ObjectModel", str]]:
+    def has_connection_cross(self, name: str) -> bool:
+        if self.get_model_connection(name).cross_direction:
+            return True
+        for c in self.cross:
+            if name == c.input or name == c.output:
+                return True
+        return False
+
+    def get_connection_proposals(self, name: str) -> List[Tuple["ObjectId", str]]:
         """
         Return possible connections for connection name
         as (model id, connection name)
@@ -321,10 +430,9 @@ class ObjectModel(Document):
                 return c
         return None
 
+    @classmethod
     def check_connection(
-        self,
-        lc: "ObjectModelConnection",
-        rc: "ObjectModelConnection",
+        cls, lc: "ObjectModelConnection", rc: "ObjectModelConnection"
     ) -> Tuple[bool, str]:
         """
 
@@ -427,6 +535,8 @@ class ObjectModel(Document):
             "data": [c.json_data for c in self.data],
             "connections": [c.json_data for c in self.connections],
         }
+        if self.cross:
+            r["cross"] = [s.json_data for s in self.cross]
         if self.sensors:
             r["sensors"] = [s.json_data for s in self.sensors]
         if self.connection_rule:

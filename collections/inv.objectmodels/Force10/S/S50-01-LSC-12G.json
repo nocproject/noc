@@ -8,7 +8,6 @@
         {
             "name": "0",
             "description": "12G stacking connector",
-            "cross": "1",
             "direction": "s",
             "gender": "m",
             "type__name": "Force10 | S | Stacking 12G"
@@ -16,15 +15,26 @@
         {
             "name": "1",
             "description": "12G stacking connector",
-            "cross": "0",
             "direction": "s",
             "gender": "m",
             "type__name": "Force10 | S | Stacking 12G"
         }
     ],
-    "data": [{
-        "attr": "length",
-        "interface": "length",
-        "value": "4"
-    }]
+    "data": [
+        {
+            "attr": "length",
+            "interface": "length",
+            "value": "4"
+        }
+    ],
+    "cross": [
+        {
+            "input": "0",
+            "output": "1"
+        },
+        {
+            "input": "1",
+            "output": "0"
+        }
+    ]
 }

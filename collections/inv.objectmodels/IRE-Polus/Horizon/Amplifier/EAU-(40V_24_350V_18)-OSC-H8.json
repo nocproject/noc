@@ -94,6 +94,28 @@
             "type__name": "Optical | LC"
         }
     ],
+    "cross": [
+        {
+            "input": "IN1",
+            "output": "OUT1"
+        },
+        {
+            "input": "IN1",
+            "output": "OSC_OUT"
+        },
+        {
+            "input": "IN1",
+            "output": "MON1"
+        },
+        {
+            "input": "IN2",
+            "output": "OUT2"
+        },
+        {
+            "input": "IN2",
+            "output": "MON2"
+        }
+    ],
     "data": [
         {
             "attr": "power",

@@ -82,9 +82,9 @@ Ext.define("NOC.inv.objectconfigurationrule.Application", {
                     fieldLabel: __("Description")
                 },
                 {
-                    name: "slot_rules",
+                    name: "connection_rules",
                     xtype: "gridfield",
-                    fieldLabel: __("Slot Rules"),
+                    fieldLabel: __("Connection Rules"),
                     columns: [
                         {
                             text: __("Scope"),
@@ -94,8 +94,8 @@ Ext.define("NOC.inv.objectconfigurationrule.Application", {
                             renderer: NOC.render.Lookup("scope")
                         },
                         {
-                            text: __("Match Slot"),
-                            dataIndex: "match_slot",
+                            text: __("Match Slot/Ctx"),
+                            dataIndex: "match_context",
                             width: 100,
                             editor: "textfield"
                         },

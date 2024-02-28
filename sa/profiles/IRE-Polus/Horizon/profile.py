@@ -46,6 +46,18 @@ rx_module = re.compile(
 rx_channel = re.compile(r"\S+Lane_(\d+)\S+")
 rx_threshold = re.compile(r"(?P<param>\S+)(?P<type>CMax|WMax|WMin|CMin)$")
 rx_num = re.compile(r"\S+(\d+)")
+rx_cross_dst = re.compile(
+    r"(?:ODU\d+)?(?P<port>(?:Ln|Cl|IN)_?\d+)(_(?P<odu>ODU\d+)(?P<odu_idx>_\d+))?"
+)
+rx_param_match = re.compile(
+    r"(?:pt)?(?P<port>Ln_\d+|Cl_\d+|Line\d+|Client\d+|Port\d+|OSC|H\d+|C\d+)?(?P<c_name>\w+\d)*(\w*)"
+    r"(?P<code>Set\S+|EnableTx|TxInfo|TxCat|RxCat|RxInfo|Source|Destination)"
+)
+rx_metric_match = re.compile(
+    r"(?P<port>Ln_\d+|Cl_\d+|Line\d+|Client\d+|Port\d+)?(?P<c_name>\w+\d)*(\w*?)"
+    r"(?P<direction>In|Out|Rx|Tx)?(?P<metric>OSCPwr|AttPwr|PwrDrift|Pwr|SigPwr|Att|Gain|GainTilt|ILD|ITEC|"
+    r"Temp|Time|Speed|CPUUsage|MemLoad|DiskSpace|SNR|CD|DGD|Q|FECBER|EB|ES|SES|BBE|UAS|V)"
+)
 
 METRIC_MAP = {
     "Time": "s",
@@ -115,6 +127,18 @@ THRESHOLD_PARAM_MAP = {
 }
 
 
+cfg_param_map = {
+    "Destination": "port_destination",
+    "SetTxFreqSp": "tx_frequency",
+    "SetTxPwr": "tx_power",
+    "EnableTx": "enable_tx",
+    "SetState": "optical_state",
+    "SetDataType": "otn_data_type",
+    "SetFECType": "otn_fec_type",
+    "SetPayload": "otn_payload",
+}
+
+
 @dataclass
 class PolusParam:
     name: str
@@ -122,6 +146,36 @@ class PolusParam:
     code: Optional[str] = None
     prefix: Optional[str] = None
     description: Optional[str] = None
+
+    def get_param_scopes(self) -> Optional[List[Dict[str, str]]]:
+        r = []
+        match = rx_param_match.match(self.name)
+        if not match:
+            return None
+        port, module, p_type, code = match.groups()
+        if port and port.lower().startswith("ln"):
+            r.append({"scope": "OpticalLinePort", "value": f"LINE{port[3:]}"})
+        elif port and port.lower().startswith("cl"):
+            r.append({"scope": "OpticalPort", "value": f"CLIENT{port[3:]}"})
+        elif port and port.lower().startswith("po"):
+            r.append({"scope": "EthernetPort", "value": f"Port{port[4:]}"})
+        elif port and (port.lower().startswith("h") or port.lower().startswith("c")):
+            r.append({"scope": "OpticalPort", "value": port})
+        if port and module:
+            r.append({"scope": "OTN", "value": module.strip("_")})
+        # if port and p_type:
+        #    r.append({"scope": "Module", "value": p_type.strip("_")})
+        elif not port and module:
+            r.append({"scope": "Module", "value": module.strip("_")})
+        elif not port and p_type:
+            r.append({"scope": "Module", "value": p_type.strip("_")})
+        return r
+
+    def get_param_code(self) -> Optional[str]:
+        match = rx_param_match.match(self.name)
+        if not match or match.group("code") not in cfg_param_map:
+            return None
+        return cfg_param_map[match.group("code")]
 
     @property
     def is_info(self) -> bool:
@@ -170,15 +224,12 @@ class PolusParam:
     def is_config(self) -> bool:
         """
         Return if param is_config
+        self.name.startswith("Set")
+        self.name.endswith("EnableTx")
+        self.name.endswith("Cat")
+        self.name.endswith("Info")
         """
-        if (
-            self.name.startswith("Set")
-            or self.name.endswith("EnableTx")
-            or self.name.endswith("Cat")
-            or self.name.endswith("Info")
-        ):
-            return True
-        return False
+        return bool(rx_param_match.match(self.name))
 
     @property
     def is_metric(self) -> bool:
@@ -211,6 +262,14 @@ class PolusParam:
         if self.name in METRIC_MAP:
             return METRIC_MAP[self.name]
         return "1"
+
+    @property
+    def is_cross(self) -> bool:
+        return (
+            self.name.endswith("SetSrc")
+            or self.name.endswith("SetDst")
+            or self.name.endswith("SetIn")
+        )
 
     @property
     def component_type(self) -> Optional[str]:
@@ -263,27 +322,27 @@ class PolusParam:
         """
         Parse param code
 
-        >>> Param.from_code("FAN1SrNumber", 0000)
+        >>> PolusParam.from_code("FAN1SrNumber", 0000)
         Param(name='SrNumber', value=0, prefix='FAN1', description=None)
-        >>> Param.from_code("FAN1State", 0)
+        >>> PolusParam.from_code("FAN1State", 0)
         Param(name='State', value=0, prefix='FAN1', description=None)
-        >>> Param.from_code("DiskSpace", 0)
+        >>> PolusParam.from_code("DiskSpace", 0)
         Param(name='DiskSpace', value=0, prefix=None, description=None)
-        >>> Param.from_code("ClOutSetAtt", 0)
+        >>> PolusParam.from_code("ClOutSetAtt", 0)
         Param(name='SetAtt', value=0, prefix='ClOut', description=None)
-        >>> Param.from_code("ptDirInCat", 0)
+        >>> PolusParam.from_code("ptDirInCat", 0)
         Param(name='Cat', value=0, prefix='DirIn', description=None)
-        >>> Param.from_code("Cl_1_SetState", 0)
+        >>> PolusParam.from_code("Cl_1_SetState", 0)
         Param(name='SetState', value=0, prefix='Cl_1', description=None)
-        >>> Param.from_code("Cl_1_SetState", 0).port
+        >>> PolusParam.from_code("Cl_1_SetState", 0).port
         'Cl_1'
-        >>> Param.from_code("ptDirInCat", 0).port
+        >>> PolusParam.from_code("ptDirInCat", 0).port
         'DirIn'
-        >>> Param.from_code("SetFactory", 0).port
+        >>> PolusParam.from_code("SetFactory", 0).port
 
-        >>> Param.from_code("Cl_2_QSFP28_Lane_3_RxPwr", -2).channel
+        >>> PolusParam.from_code("Cl_2_QSFP28_Lane_3_RxPwr", -2).channel
         '3'
-        >>> Param.from_code("Cl_2_QSFP28_Lane_3_RxPwr", -2).component
+        >>> PolusParam.from_code("Cl_2_QSFP28_Lane_3_RxPwr", -2).component
         'XCVR'
         """
         name, value, description = name.strip(), value.strip(), description.strip()
@@ -291,6 +350,8 @@ class PolusParam:
         if name.endswith("Max") or name.endswith("Min"):
             # Threshold param
             pass
+        if value == "None":
+            value = None
         prefix, *param = name.rsplit("_", 1)
         if param:
             return PolusParam(name, value, code=param[0], prefix=prefix, description=description)
@@ -310,6 +371,7 @@ class Component:
     cfg_thresholds: List[PolusParam] = None
     info_params: List[PolusParam] = None
     cfg_params: List[PolusParam] = None
+    crossing: Dict[str, List[Tuple[str, str]]] = None
 
     @property
     def is_common(self) -> bool:
@@ -324,11 +386,37 @@ class Component:
             return match.groups()[0]
         return ""
 
+    def add_cross(self, p: PolusParam):
+        if not p.value or p.value == "Заблокирован":
+            return
+        # xc_index, xc_type = p.name.rsplit("_", 1)
+        cross = rx_cross_dst.match(p.value).groupdict()
+        d_port = cross["port"]
+        d_odu = cross.get("odu")
+        d_desc = cross.get("desc")
+        if not d_port:
+            print(f"Unknown port on crossing {p.value}")
+            return
+        if self.crossing is None:
+            self.crossing = {}
+        if p.prefix not in self.crossing:
+            self.crossing[p.prefix] = []
+        if d_desc:
+            d_odu = f"odu::ODU2::{d_odu}-{d_desc.strip('_')}"
+        else:
+            d_odu = f"odu::ODU2::{d_odu}-0"
+        if p.code == "SetSrc":
+            self.crossing[p.prefix].insert(0, (d_port, d_odu))
+        elif p.code == "SetDst":
+            self.crossing[p.prefix].append((d_port, d_odu))
+
     @classmethod
     def get_components(cls, params: List[PolusParam]) -> Dict[str, "Component"]:
         r = {}
         ignored_components = set()
         for p in params:
+            if p.value is None:
+                continue
             c_name = p.component or "common"
             if c_name not in r:
                 r[c_name] = Component(p.component, True, [], [], [], [])
@@ -337,6 +425,8 @@ class Component:
                 c.info_params.append(p)
             elif p.is_threshold:
                 c.cfg_thresholds.append(p)
+            elif p.is_cross:
+                c.add_cross(p)
             elif p.is_config:
                 c.cfg_params.append(p)
             elif p.is_metric:
@@ -378,7 +468,7 @@ class Profile(BaseProfile):
         slots = script.http.get("/api/slots", json=True, cached=True)
         # Getting ControlUnit
         for s in slots["slots"]:
-            if not s["name"].lower().startswith("cu"):
+            if "name" not in s or not s["name"].lower().startswith("cu"):
                 continue
             return int(s["crateId"]), int(s["slotNumber"])
         raise script.NotSupportedError("Unknown Control Unit")

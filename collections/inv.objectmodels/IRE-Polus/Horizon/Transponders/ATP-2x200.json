@@ -18,8 +18,10 @@
         {
             "name": "CLIENT1",
             "description": "Посадочное место под клиентский QSFP28 модуль 1",
+            "cross_direction": "i",
             "direction": "i",
             "gender": "f",
+            "group": "1",
             "protocols": [
                 {
                     "direction": "*",
@@ -35,8 +37,10 @@
         {
             "name": "LINE1",
             "description": "Линейный порт 1",
+            "cross_direction": "o",
             "direction": "i",
             "gender": "f",
+            "group": "1",
             "protocols": [
                 {
                     "direction": "*",
@@ -44,7 +48,7 @@
                 },
                 {
                     "direction": "*",
-                    "protocol__code": "OTU2C"
+                    "protocol__code": "OTUCn"
                 }
             ],
             "type__name": "Transceiver | CFP2"
@@ -52,8 +56,10 @@
         {
             "name": "CLIENT2",
             "description": "Посадочное место под клиентский QSFP28 модуль 1",
+            "cross_direction": "i",
             "direction": "i",
             "gender": "f",
+            "group": "1",
             "protocols": [
                 {
                     "direction": "*",
@@ -69,8 +75,10 @@
         {
             "name": "CLIENT3",
             "description": "Посадочное место под клиентский QSFP28 модуль 1",
+            "cross_direction": "i",
             "direction": "i",
             "gender": "f",
+            "group": "2",
             "protocols": [
                 {
                     "direction": "*",
@@ -86,8 +94,10 @@
         {
             "name": "LINE2",
             "description": "Линейный порт 1",
+            "cross_direction": "o",
             "direction": "i",
             "gender": "f",
+            "group": "2",
             "protocols": [
                 {
                     "direction": "*",
@@ -95,7 +105,7 @@
                 },
                 {
                     "direction": "*",
-                    "protocol__code": "OTU2C"
+                    "protocol__code": "OTUCn"
                 }
             ],
             "type__name": "Transceiver | CFP2"
@@ -103,8 +113,10 @@
         {
             "name": "CLIENT4",
             "description": "Посадочное место под клиентский QSFP28 модуль 1",
+            "cross_direction": "i",
             "direction": "i",
             "gender": "f",
+            "group": "2",
             "protocols": [
                 {
                     "direction": "*",

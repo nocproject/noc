@@ -16,6 +16,7 @@ from .base import (
     REStringParameter,
     OIDParameter,
     LabelListParameter,
+    DiscriminatorParameter,
 )
 
 
@@ -49,11 +50,15 @@ class IGetInventory(BaseInterface):
             "crossing": DictListParameter(
                 attrs={
                     # Input connection name, according to model
-                    "in": StringParameter(),
+                    "input": StringParameter(),
+                    # Input filter
+                    "input_discriminator": DiscriminatorParameter(required=False),
                     # Output connection name, according to model
-                    "out": StringParameter(),
+                    "output": StringParameter(),
+                    # Output signal mapping
+                    "output_discriminator": DiscriminatorParameter(required=False),
                     # Power gain, in dB
-                    "gain": FloatParameter(),
+                    "gain": FloatParameter(default=1),
                 },
                 required=False,
             ),

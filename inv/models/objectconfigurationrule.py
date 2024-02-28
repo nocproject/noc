@@ -31,24 +31,25 @@ from .protocol import Protocol
 from .connectiontype import ConnectionType
 
 
-class SlotRule(EmbeddedDocument):
+class ConnectionRule(EmbeddedDocument):
     meta = {"strict": False, "auto_create_index": False}
 
     # Match section
     scope = PlainReferenceField(ConfigurationScope, required=True)
-    match_slot = StringField()
+    match_context = StringField()
     match_connection_type: Optional[ConnectionType] = PlainReferenceField(ConnectionType)
     match_protocols: Optional[List["Protocol"]] = PlainReferenceListField(Protocol)
     # Param Section
     # param, is_hide, is_readonly, choices
     allowed_params: List["ConfigurationParam"] = PlainReferenceListField(ConfigurationParam)
     deny_params: List["ConfigurationParam"] = PlainReferenceListField(ConfigurationParam)
+    disabled = BooleanField(default=False)
 
     @property
     def json_data(self) -> Dict[str, Any]:
         r = {"scope__name": self.scope.name}
-        if self.match_slot:
-            r["match_slot"] = self.match_slot
+        if self.match_context:
+            r["match_context"] = self.match_context
         if self.match_connection_type:
             r["match_connection_type__name"] = self.match_connection_type.name
         if self.match_protocols:
@@ -111,7 +112,7 @@ class ObjectConfigurationRule(Document):
     name = StringField(unique=True)
     description = StringField()
     uuid = UUIDField(binary=True)
-    slot_rules: List["SlotRule"] = EmbeddedDocumentListField(SlotRule)
+    connection_rules: List["ConnectionRule"] = EmbeddedDocumentListField(ConnectionRule)
     param_rules: List["ParamRule"] = EmbeddedDocumentListField(ParamRule)
 
     def __str__(self):
@@ -124,7 +125,7 @@ class ObjectConfigurationRule(Document):
             "$collection": self._meta["json_collection"],
             "uuid": self.uuid,
             "description": self.description,
-            "slot_rules": [s.json_data for s in self.slot_rules],
+            "connection_rules": [s.json_data for s in self.connection_rules],
             "param_rules": [p.json_data for p in self.param_rules],
         }
 
@@ -153,12 +154,12 @@ class ObjectConfigurationRule(Document):
         :return:
         """
         protocols = set(oc.protocols)
-        for rule in self.slot_rules:
+        for rule in self.connection_rules:
             if rule.allowed_params and param not in rule.allowed_params:
                 continue
             if rule.deny_params and param in rule.deny_params:
                 continue
-            if rule.match_slot and not re.match(rule.match_slot, oc.name):
+            if rule.match_context and not re.match(rule.match_context, oc.name):
                 continue
             if rule.match_connection_type and rule.match_connection_type != oc.type:
                 continue

@@ -230,7 +230,7 @@ CONNECTION_CHECKLIST = {
             "OTU2e",
             "OTU3",
             "OTU4",
-            "OTU2C",
+            "OTUCn",
         ],
     },
     "Transceiver | CFP4": {

@@ -4,30 +4,34 @@
     "uuid": "7fdc6f54-c1ff-4f95-8238-ea0edf694bfe",
     "vendor__code": "LUXSHARE-ICT",
     "description": "10G SFP+ DAC 3m",
-    "labels": ["noc::inv::xcvr"],
+    "labels": [
+        "noc::inv::xcvr"
+    ],
     "connections": [
         {
             "name": "in1",
             "description": "Chassis connection",
-            "cross": "in2",
             "direction": "o",
             "gender": "m",
-            "protocols": [{
-                "direction": "*",
-                "protocol__code": "TransEth10G"
-            }],
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth10G"
+                }
+            ],
             "type__name": "Transceiver | SFP+"
         },
         {
             "name": "in2",
             "description": "Chassis connection",
-            "cross": "in1",
             "direction": "o",
             "gender": "m",
-            "protocols": [{
-                "direction": "*",
-                "protocol__code": "TransEth10G"
-            }],
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth10G"
+                }
+            ],
             "type__name": "Transceiver | SFP+"
         }
     ],
@@ -35,7 +39,9 @@
         {
             "attr": "part_no",
             "interface": "asset",
-            "value": ["L99SF014-SD-H"]
+            "value": [
+                "L99SF014-SD-H"
+            ]
         },
         {
             "attr": "alias",
@@ -56,6 +62,16 @@
             "attr": "twinax",
             "interface": "twinax",
             "value": true
+        }
+    ],
+    "cross": [
+        {
+            "input": "in1",
+            "output": "in2"
+        },
+        {
+            "input": "in2",
+            "output": "in1"
         }
     ]
 }

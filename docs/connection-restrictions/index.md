@@ -10,9 +10,11 @@ may be expressed in several complimentary ways:
   - [Direction](#direction)
   - [Protocols](#protocols)
   - [Crossing](#crossing)
-    - [Groups](#groups)
-    - [Cross](#cross)
     - [Examples](#examples)
+      - [DAC/Twinax cable](#dactwinax-cable)
+      - [Unidirectional Splitter](#unidirectional-splitter)
+      - [Bidirectional Splitter](#bidirectional-splitter)
+      - [95%/5% splitter](#955-splitter)
 
 The connection may be established only when all five kinds of restrictions are met.
 
@@ -163,88 +165,122 @@ connected only in one of two cases:
 
 The crossing is the additional set of rules which can be applied to protocol-agnostic
 `s` connections within the same object to define the possible protocol flow.
-Without the crossing restriction signal incoming to genderless `s` connection
-will flow to each other genderless `s` connections of the object.
-Consider the picture:
+Usually, crossing represents static multiplexing which can be defined o model
+or object level. Static multiplexing means the signal with given protocol
+may pass trannsparently from input to one or more output slots.
 
-![Crossing/All](crossing-all.svg){: width=300px }
+Crossing is defined as table of items, each connects particular input with
+particular output. Additonal restrictions, named discriminators, are possible.
 
-<!-- prettier-ignore -->
+| Name                   | Description                                                 |
+| ---------------------- | ----------------------------------------------------------- |
+| `input`                | Input connection name                                       |
+| `input_discriminator`  | Optional input discriminator                                |
+| `output`               | Output connection name                                      |
+| `output_discriminator` | Optional output discriminator, for describe output mappings |
+| `gain_db`              | Signal gain, in dB                                          |
+
 !!! note
     Unlike other restrictions, which defines the object's communications
     with the outer world (extravertive nature), crossing defines an object's
     internals (introvertive nature).
 
-Note that the incoming path on slot `1` may be continued via outgoing slots `2`, `3`
-and `4`, as protocol-agnostic and having `s` direction. The path cannot
-be continued over `out` slot, as having `o` direction.
+The common rules of the signal passing are:
 
-### Groups
+``` mermaid
+flowchart TD
+    start((start))
+    c_input{`input` matched?}
+    c_input_discriminator{Has input_discriminator?}
+    c_input_match{Input discriminator matched?}
+    skip([Skip Rule])
+    passed([Signal Passed to output])
+    start --> c_input
+    c_input -- Yes --> c_input_discriminator
+    c_input -- No --> skip
+    c_input_discriminator -- Yes --> c_input_match
+    c_input_discriminator -- No --> passed
+    c_input_match -- Yes --> passed
+    c_input_match -- No --> skip
+```
 
-To apply additional restrictions on crossing paths, slots can be assigned
-to different groups. The path can stay only within the same connection groups.
-Consider the picture.
+Signal is replicated to all matched outputs. Additionaly, signal gain/loss may be applied.
 
-![Crossing/Group](crossing-group.svg){: width=300px }
-
-Note that the incoming path on slot `1` is restricted by connection group `1`,
-so it can be propagated only to slots `3` and `4`. The path via the slot '2'
-is prohibited, as leaving outside the group.
-
-### Cross
-
-Cross applies explicit restrictions on internal connections. Cross may contain
-the name of the peer connection and the behavior depends on the peer connection
-crossing settings:
-
-- If the peer connection defines crossing back to the starting, the direct
-  crossing is considered.
-- If the peer connection defines no crossing, peer considered to be the source,
-  and the signal power applied to the source will be divided between
-  all referring connections.
 
 ### Examples
 
-<!-- prettier-ignore -->
-!!! example "Example: Patch Cord"
-    Simple patch-cord terminated by two connectors, named `0` and `1`.
+#### DAC/Twinax cable
 
-    | Name | Direction | Group | Cross |
-    | ---- | --------- | ----- | ----: |
-    | 0    | `s`       |       |     1 |
-    | 1    | `s`       |       |     0 |
+| Input | Output |
+| ----- | ------ |
+| `s1`  | `s2`   |
+| `s2`  | `s1`   |
 
-    Note that connectors are crossed together and the `group` is not used.
-    This case doesn't apply any additional restrictions, as two `s` connections
-    will be interconnected by default.
+``` mermaid
+graph LR
+    s1 --> s2
+    s2 --> s1
+```
 
-<!-- prettier-ignore -->
-!!! example "Example: Optical duplex cable"
-    The two-fiber cable is terminated by four connectors, two per end.
-    The first end is named `0` and contains two connectors, named `0-0` and `0-1`.
-    The other end is named `1` and contains two connectors, named `1-0` and `1-1`.
+#### Unidirectional Splitter
 
-    | Name | Direction | Group | Cross |
-    | ---- | --------- | ----- | ----: |
-    | 0-0  | `s`       |       |   1-0 |
-    | 0-1  | `s`       |       |   1-1 |
-    | 1-0  | `s`       |       |   0-0 |
-    | 1-1  | `s`       |       |   0-1 |
+1:4 splitter with equal distribution
 
-    Note that connectors are crossed to the corresponding connector on the other end.
+| Input | Output | Gain (dB) |
+| ----- | ------ | --------- |
+| `in`  | `out1` | `-6`      |
+| `in`  | `out2` | `-6`      |
+| `in`  | `out3` | `-6`      |
+| `in`  | `out4` | `-6`      |
 
-<!-- prettier-ignore -->
-!!! example "Example: Splitter 1x4"
-    The incoming signal from the input `in` is distributed equally to outputs
-    `out0`, `out1`, `out2`, and `out3`.
+``` mermaid
+graph LR
+in -- -6dB --> out1
+in -- -6dB --> out2
+in -- -6dB --> out3
+in -- -6dB --> out4
+```
 
-    | Name | Direction | Group | Cross |
-    | ---- | --------- | ----: | ----: |
-    | in   | `s`       |     1 |       |
-    | out0 | `s`       |     1 |    in |
-    | out1 | `s`       |     1 |    in |
-    | out2 | `s`       |     1 |    in |
-    | out3 | `s`       |     1 |    in |
+#### Bidirectional Splitter
 
-    Note that all connectors are placed and the same group and output connectors
-    are crossed to input one.
+1:4 splitter with equal distribution in dowstream,
+allowing to pass signal upstream with 3 dB attenuation.
+
+| Input  | Output | Gain (dB) |
+| ------ | ------ | --------- |
+| `in`   | `out1` | `-6`      |
+| `in`   | `out2` | `-6`      |
+| `in`   | `out3` | `-6`      |
+| `in`   | `out4` | `-6`      |
+| `out1` | `in`   | `-3`      |
+| `out2` | `in`   | `-3`      |
+| `out3` | `in`   | `-3`      |
+| `out4` | `in`   | `-3`      |
+
+``` mermaid
+graph LR
+in -- -6dB --> out1
+in -- -6dB --> out2
+in -- -6dB --> out3
+in -- -6dB --> out4
+out1 -- -3dB --> in
+out2 -- -3dB --> in
+out3 -- -3dB --> in
+out4 -- -3dB --> in
+```
+
+#### 95%/5% splitter
+
+Common TV system splitter, passing 95% of the signal to transit
+and redirecting 5% to output.
+
+| Input | Output    | Gain     |
+| ----- | --------- | -------- |
+| `in`  | `transit` | `-0.2`   |
+| `in`  | `out`     | `-139.8` |
+
+``` mermaid
+graph LR
+in -- -0.2dB --> transit
+in -- -139.8dB --> output
+```

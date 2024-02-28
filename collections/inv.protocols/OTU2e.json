@@ -6,5 +6,7 @@
     "description": "255/237 × 10 319 500 kbit/s. Transports a 10 Gigabit Ethernet local area network (LAN) PHY coming from IP/Ethernet switches and routers at full line rate (10.3 Gbit/s). This is specified in G.Sup43.",
     "data": [],
     "connection_schema": "BO",
+    "discriminator": "odu",
+    "discriminator_default": "ODU2e",
     "technology__name": "OTN"
 }

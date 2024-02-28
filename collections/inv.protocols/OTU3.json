@@ -6,5 +6,7 @@
     "description": "255/236 × 39 813 120 kbit/s",
     "data": [],
     "connection_schema": "BO",
+    "discriminator": "odu",
+    "discriminator_default": "ODU3",
     "technology__name": "OTN"
 }

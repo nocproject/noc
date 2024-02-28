@@ -17,6 +17,7 @@
         {
             "name": "LINE1",
             "description": "Line port 1",
+            "cross_direction": "o",
             "direction": "i",
             "gender": "f",
             "protocols": [
@@ -26,7 +27,7 @@
                 },
                 {
                     "direction": "*",
-                    "protocol__code": "OTU2C"
+                    "protocol__code": "OTUCn"
                 }
             ],
             "type__name": "Transceiver | CFP2"
@@ -34,6 +35,7 @@
         {
             "name": "LINE2",
             "description": "Line port 2",
+            "cross_direction": "o",
             "direction": "i",
             "gender": "f",
             "protocols": [
@@ -43,7 +45,7 @@
                 },
                 {
                     "direction": "*",
-                    "protocol__code": "OTU2C"
+                    "protocol__code": "OTUCn"
                 }
             ],
             "type__name": "Transceiver | CFP2"
@@ -51,6 +53,7 @@
         {
             "name": "CLIENT1",
             "description": "Client port 1",
+            "cross_direction": "i",
             "direction": "i",
             "gender": "f",
             "protocols": [
@@ -65,6 +68,10 @@
                 {
                     "direction": "*",
                     "protocol__code": "OTU2e"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "STM64"
                 }
             ],
             "type__name": "Transceiver | SFP+"
@@ -72,6 +79,7 @@
         {
             "name": "CLIENT2",
             "description": "Client port 2",
+            "cross_direction": "i",
             "direction": "i",
             "gender": "f",
             "protocols": [
@@ -86,6 +94,10 @@
                 {
                     "direction": "*",
                     "protocol__code": "OTU2e"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "STM64"
                 }
             ],
             "type__name": "Transceiver | SFP+"
@@ -93,6 +105,7 @@
         {
             "name": "CLIENT3",
             "description": "Client port 3",
+            "cross_direction": "i",
             "direction": "i",
             "gender": "f",
             "protocols": [
@@ -107,6 +120,10 @@
                 {
                     "direction": "*",
                     "protocol__code": "OTU2e"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "STM64"
                 }
             ],
             "type__name": "Transceiver | SFP+"
@@ -114,6 +131,7 @@
         {
             "name": "CLIENT4",
             "description": "Client port 4",
+            "cross_direction": "i",
             "direction": "i",
             "gender": "f",
             "protocols": [
@@ -128,6 +146,10 @@
                 {
                     "direction": "*",
                     "protocol__code": "OTU2e"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "STM64"
                 }
             ],
             "type__name": "Transceiver | SFP+"
@@ -135,6 +157,7 @@
         {
             "name": "CLIENT5",
             "description": "Client port 5",
+            "cross_direction": "i",
             "direction": "i",
             "gender": "f",
             "protocols": [
@@ -149,6 +172,10 @@
                 {
                     "direction": "*",
                     "protocol__code": "OTU2e"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "STM64"
                 }
             ],
             "type__name": "Transceiver | SFP+"
@@ -156,6 +183,7 @@
         {
             "name": "CLIENT6",
             "description": "Client port 6",
+            "cross_direction": "i",
             "direction": "i",
             "gender": "f",
             "protocols": [
@@ -170,6 +198,10 @@
                 {
                     "direction": "*",
                     "protocol__code": "OTU2e"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "STM64"
                 }
             ],
             "type__name": "Transceiver | SFP+"
@@ -177,6 +209,7 @@
         {
             "name": "CLIENT7",
             "description": "Client port 7",
+            "cross_direction": "i",
             "direction": "i",
             "gender": "f",
             "protocols": [
@@ -191,6 +224,10 @@
                 {
                     "direction": "*",
                     "protocol__code": "OTU2e"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "STM64"
                 }
             ],
             "type__name": "Transceiver | SFP+"
@@ -198,6 +235,7 @@
         {
             "name": "CLIENT8",
             "description": "Client port 8",
+            "cross_direction": "i",
             "direction": "i",
             "gender": "f",
             "protocols": [
@@ -212,6 +250,10 @@
                 {
                     "direction": "*",
                     "protocol__code": "OTU2e"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "STM64"
                 }
             ],
             "type__name": "Transceiver | SFP+"
@@ -219,6 +261,7 @@
         {
             "name": "CLIENT9",
             "description": "Client port 9",
+            "cross_direction": "i",
             "direction": "i",
             "gender": "f",
             "protocols": [
@@ -233,6 +276,10 @@
                 {
                     "direction": "*",
                     "protocol__code": "OTU2e"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "STM64"
                 }
             ],
             "type__name": "Transceiver | SFP+"
@@ -240,6 +287,7 @@
         {
             "name": "CLIENT10",
             "description": "Client port 10",
+            "cross_direction": "i",
             "direction": "i",
             "gender": "f",
             "protocols": [
@@ -254,6 +302,10 @@
                 {
                     "direction": "*",
                     "protocol__code": "OTU2e"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "STM64"
                 }
             ],
             "type__name": "Transceiver | SFP+"
@@ -261,6 +313,7 @@
         {
             "name": "CLIENT11",
             "description": "Client port 11",
+            "cross_direction": "i",
             "direction": "i",
             "gender": "f",
             "protocols": [
@@ -275,6 +328,10 @@
                 {
                     "direction": "*",
                     "protocol__code": "OTU2e"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "STM64"
                 }
             ],
             "type__name": "Transceiver | SFP+"
@@ -282,6 +339,7 @@
         {
             "name": "CLIENT12",
             "description": "Client port 12",
+            "cross_direction": "i",
             "direction": "i",
             "gender": "f",
             "protocols": [
@@ -296,6 +354,10 @@
                 {
                     "direction": "*",
                     "protocol__code": "OTU2e"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "STM64"
                 }
             ],
             "type__name": "Transceiver | SFP+"
@@ -303,6 +365,7 @@
         {
             "name": "CLIENT13",
             "description": "Client port 13",
+            "cross_direction": "i",
             "direction": "i",
             "gender": "f",
             "protocols": [
@@ -317,6 +380,10 @@
                 {
                     "direction": "*",
                     "protocol__code": "OTU2e"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "STM64"
                 }
             ],
             "type__name": "Transceiver | SFP+"
@@ -324,6 +391,7 @@
         {
             "name": "CLIENT14",
             "description": "Client port 14",
+            "cross_direction": "i",
             "direction": "i",
             "gender": "f",
             "protocols": [
@@ -338,6 +406,10 @@
                 {
                     "direction": "*",
                     "protocol__code": "OTU2e"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "STM64"
                 }
             ],
             "type__name": "Transceiver | SFP+"
@@ -345,6 +417,7 @@
         {
             "name": "CLIENT15",
             "description": "Client port 15",
+            "cross_direction": "i",
             "direction": "i",
             "gender": "f",
             "protocols": [
@@ -359,6 +432,10 @@
                 {
                     "direction": "*",
                     "protocol__code": "OTU2e"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "STM64"
                 }
             ],
             "type__name": "Transceiver | SFP+"
@@ -366,6 +443,7 @@
         {
             "name": "CLIENT16",
             "description": "Client port 16",
+            "cross_direction": "i",
             "direction": "i",
             "gender": "f",
             "protocols": [
@@ -380,6 +458,10 @@
                 {
                     "direction": "*",
                     "protocol__code": "OTU2e"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "STM64"
                 }
             ],
             "type__name": "Transceiver | SFP+"
@@ -387,6 +469,7 @@
         {
             "name": "CLIENT17",
             "description": "Client port 17",
+            "cross_direction": "i",
             "direction": "i",
             "gender": "f",
             "protocols": [
@@ -401,6 +484,10 @@
                 {
                     "direction": "*",
                     "protocol__code": "OTU2e"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "STM64"
                 }
             ],
             "type__name": "Transceiver | SFP+"
@@ -408,6 +495,7 @@
         {
             "name": "CLIENT18",
             "description": "Client port 18",
+            "cross_direction": "i",
             "direction": "i",
             "gender": "f",
             "protocols": [
@@ -422,6 +510,10 @@
                 {
                     "direction": "*",
                     "protocol__code": "OTU2e"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "STM64"
                 }
             ],
             "type__name": "Transceiver | SFP+"
@@ -429,6 +521,7 @@
         {
             "name": "CLIENT19",
             "description": "Client port 19",
+            "cross_direction": "i",
             "direction": "i",
             "gender": "f",
             "protocols": [
@@ -443,6 +536,10 @@
                 {
                     "direction": "*",
                     "protocol__code": "OTU2e"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "STM64"
                 }
             ],
             "type__name": "Transceiver | SFP+"
@@ -450,6 +547,7 @@
         {
             "name": "CLIENT20",
             "description": "Client port 20",
+            "cross_direction": "i",
             "direction": "i",
             "gender": "f",
             "protocols": [
@@ -464,6 +562,10 @@
                 {
                     "direction": "*",
                     "protocol__code": "OTU2e"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "STM64"
                 }
             ],
             "type__name": "Transceiver | SFP+"

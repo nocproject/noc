@@ -663,14 +663,14 @@ class ResourceGroup(Document):
         table = model._meta.db_table
         where = ""
         if table_filter:
-            where = "WHERE " + " AND ".join(t[0] for t in table_filter)
+            where = "AND " + " AND ".join(f"{t[0]} = %s" for t in table_filter)
         SQL_SYNC = f"""
             UPDATE {table} AS update_t SET effective_service_groups = update_t.static_service_groups || array_remove(sq.erg, NULL)
              FROM (SELECT t.id as id, array_agg(rgs.rg) AS erg FROM {table} AS t
              LEFT JOIN (select * from jsonb_to_recordset(%s::jsonb) AS x(rg text, ml text[])) AS rgs
-             ON t.effective_labels::text[] @> rgs.ml {where} GROUP BY t.id
+             ON t.effective_labels::text[] @> rgs.ml GROUP BY t.id
              HAVING t.effective_service_groups != t.static_service_groups || array_remove(sq.erg, NULL)) AS sq
-             WHERE sq.id = update_t.id
+             WHERE sq.id = update_t.id  {where}
             """
         r = []
         for rg_id, tech, dsl in ResourceGroup.objects.filter(

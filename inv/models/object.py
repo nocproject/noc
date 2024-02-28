@@ -8,6 +8,7 @@
 # Python modules
 import datetime
 import operator
+from dataclasses import dataclass
 from threading import Lock
 from collections import namedtuple
 from typing import Optional, Any, Dict, Union, List, Set, Iterator
@@ -49,15 +50,27 @@ from noc.config import config
 from noc.pm.models.agent import Agent
 from noc.cm.models.configurationscope import ConfigurationScope
 from noc.cm.models.configurationparam import ConfigurationParam, ParamData, ScopeVariant
-from .objectmodel import ObjectModel
+from noc.core.discriminator import discriminator
+from .objectmodel import ObjectModel, Crossing
 from .modelinterface import ModelInterface
 from .objectlog import ObjectLog
 from .error import ConnectionError, ModelDataError
+from .protocol import ProtocolVariant
 
 PathItem = namedtuple("PathItem", ["object", "connection"])
 
 id_lock = Lock()
 _path_cache = cachetools.TTLCache(maxsize=1000, ttl=60)
+
+
+@dataclass(frozen=True)
+class ConnectionData(object):
+    name: str
+    protocols: List[ProtocolVariant]
+    data: Dict[str, Any]
+    cross: Optional[str] = None
+    group: Optional[str] = None
+    interface_name: Optional[str] = None
 
 
 class ObjectConnectionData(EmbeddedDocument):
@@ -189,6 +202,8 @@ class Object(Document):
     connections: List["ObjectConnectionData"] = ListField(
         EmbeddedDocumentField(ObjectConnectionData)
     )
+    # Dynamic crossings
+    cross: List[Crossing] = ListField(EmbeddedDocumentField(Crossing))
     # Labels
     labels = ListField(StringField())
     effective_labels = ListField(StringField())
@@ -365,7 +380,14 @@ class Object(Document):
             seen |= wave
         return list(seen)
 
-    def get_data(self, interface: str, key: str, scope: Optional[str] = None) -> Any:
+    def get_data(
+        self,
+        interface: str,
+        key: str,
+        scope: Optional[str] = None,
+        connection: Optional[str] = None,
+        protocol: Optional[str] = None,
+    ) -> Any:
         attr = ModelInterface.get_interface_attr(interface, key)
         if attr.is_const:
             # Lookup model
@@ -621,7 +643,6 @@ class Object(Document):
                 ):
                     continue
                 if pr.scope and pr.scope != scope.scope:
-                    print("Exclude", pr.scope, scope.code, scope)
                     continue
                 schema = pr.param.get_schema(self)
                 # Getting param from connection model (for transceiver)
@@ -656,6 +677,109 @@ class Object(Document):
             if not scope or not param.has_scope(scope.name) or scope.is_common:
                 continue
             yield ScopeVariant(scope=scope, value=c.name)
+
+    def get_effective_connection_data(self, name) -> ConnectionData:
+        """
+        Return effective connection data
+        :return:
+        """
+        c = self.model.get_model_connection(name)
+        if c is None:
+            raise ConnectionError("Local connection not found: %s" % name)
+        return ConnectionData(
+            c.name,
+            protocols=[ProtocolVariant.get_by_code(p.code) for p in c.protocols],
+            data={},
+            cross=c.cross_direction,
+            group=c.group,
+        )
+
+    def get_crossing_proposals(
+        self, name: str, to_name: Optional[str] = None
+    ) -> List[Tuple[str, List[str]]]:
+        """
+        Return possible connections for connection name
+        as (connection name, discriminators)
+        * Getting proto (not compared proto because it's internal connect)
+        * Getting discriminators
+        * Iterable over compatible connections
+        * Return connections and discriminators
+        :param name: Connection name
+        :param to_name: Other side connection
+        :return:
+        """
+        lc = self.get_effective_connection_data(name)
+        r = []
+        # Exclude crossing
+        for c in self.model.connections:
+            if c.name == lc.name or (to_name and c.name != to_name) or c.composite:
+                # Same
+                continue
+            c = self.get_effective_connection_data(c.name)
+            if not c.cross or c.cross == lc.cross:
+                continue
+            elif lc.group != c.group:
+                continue
+            # Check protocols
+            protocols, discriminators = [], []
+            for lp in lc.protocols:
+                for p in c.protocols:
+                    pd = p.get_discriminator()
+                    lpd = lp.get_discriminator()
+                    if not pd and not lpd:
+                        # Not supported discriminators
+                        protocols.append(p)
+                        continue
+                    elif not pd or not lpd:
+                        # Not supported discriminators
+                        continue
+                    # remove discriminators from crossing
+                    if c.cross == "o":
+                        d = pd.get_crossing_proposals(lpd)
+                    else:
+                        d = lpd.get_crossing_proposals(pd)
+                    if not d:
+                        continue
+                    discriminators += d
+                    protocols.append(p)
+            if c.protocols and not protocols:
+                continue
+            # Check discriminators
+            r.append((c.name, discriminators))
+        return r
+
+    def get_connection_proposals(
+        self,
+        name,
+        ro: "ObjectModel",
+        remote_name: Optional[str] = None,
+        use_cable: bool = False,
+        only_first: bool = False,
+    ) -> List[Tuple[Optional["ObjectModel"], str]]:
+        """
+
+        :param name:
+        :param ro:
+        :param remote_name:
+        :param use_cable:
+        :param only_first:
+        :return:
+        """
+        r = []
+        for model_id, c_name in self.model.get_connection_proposals(name):
+            if use_cable:
+                model = ObjectModel.get_by_id(model_id)
+                if bool(model.get_data("length", "length")):
+                    # Wired, Multiple Cable?
+                    r.append((model, c_name))
+            elif remote_name and c_name != remote_name:
+                continue
+            elif ro and ro.id == model_id:
+                r.append((None, c_name))
+            if only_first and r:
+                return r
+            # Check connection
+        return r
 
     def has_connection(self, name):
         return self.model.has_connection(name)
@@ -728,7 +852,7 @@ class Object(Document):
         valid, cause = self.model.check_connection(lc, rc)
         if not valid:
             raise ConnectionError(cause)
-        # Check existing connecitons
+        # Check existing connections
         if lc.type.genders in ("s", "m", "f", "mf"):
             ec, r_object, r_name = self.get_p2p_connection(name)
             if ec is not None:
@@ -1241,6 +1365,77 @@ class Object(Document):
             level=10,
             attrs={},
         )
+
+    def iter_cross(
+        self, name: str, discriminators: Optional[Iterable[str]] = None
+    ) -> Iterable[str]:
+        """
+        Iterate crossed outputs.
+
+        Given the input name and the optional discriminators,
+        find and iterate all reachable outputs names.
+        Process using dynamic crossings from objects and
+        static crossings from models.
+        """
+
+        def is_passable(item: Crossing) -> bool:
+            if not item.input_discriminator:
+                return True
+            if not discriminators:
+                return False
+            item_desc = discriminator(item.input_discriminator)
+            return any(d in item_desc for d in discriminators)
+
+        def iter_merge(
+            i1: Optional[Iterable[Crossing]], i2: Optional[Iterable[Crossing]]
+        ) -> Iterable[Crossing]:
+            if i1:
+                yield from i1
+            if i2:
+                yield from i2
+
+        seen: Set[str] = set()
+        discriminators = [discriminator(x) for x in discriminators or []]
+        # Dynamic crossings
+        if self.cross:
+            for item in iter_merge(self.cross, self.model.cross):
+                # @todo: Restrict to type `s`?
+                if item.input == name and item.output not in seen and is_passable(item):
+                    yield item.output
+                    seen.add(item.output)
+
+    def set_internal_connection(self, input: str, output: str, data: Dict[str, str] = None):
+        """ """
+        input = self.model.get_model_connection(input)
+        if not input:
+            raise ValueError("Not found connection: %s" % input)
+        output = self.model.get_model_connection(output)
+        for c in self.cross:
+            if c.input != input.name:
+                continue
+            # Update
+            c.update_params(**data)
+            break
+        else:
+            self.cross += [
+                Crossing(
+                    **{
+                        "input": input.name,
+                        "input_discriminator": data.get("input_discriminator"),
+                        "output": output.name,
+                        "output_discriminator": data.get("output_discriminator"),
+                        "gain_db": data.get("gain_db"),
+                    }
+                )
+            ]
+
+    def disconnect_internal(self, name: str):
+        """
+        Remove internal crossing
+        """
+        if not self.model.has_connection(name):
+            raise ValueError("Unknown input")
+        self.cross = [c for c in self.cross if c.input != name]
 
 
 signals.pre_delete.connect(Object.detach_children, sender=Object)
