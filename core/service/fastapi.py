@@ -19,6 +19,7 @@ from fastapi.encoders import jsonable_encoder
 from fastapi.middleware.wsgi import WSGIMiddleware
 
 # NOC modules
+from noc.config import config
 from noc.core.version import version
 from noc.core.log import PrefixLoggerAdapter
 from noc.core.debug import error_report
@@ -156,6 +157,9 @@ class FastAPIService(BaseService):
         self.loop.create_task(self.server.main_loop())
 
     async def shutdown_api(self):
+        self.logger.info("Shutdown FAST API")
+        if self.use_watchdog or config.watchdog.use_watchdog:
+            self.server.force_exit = True
         await self.server.shutdown()
 
     def get_effective_address(self) -> Tuple[str, int]:
