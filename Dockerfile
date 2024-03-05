@@ -13,8 +13,7 @@ RUN \
     build-essential \
     && pip install --upgrade pip \
     && pip install -r .requirements/cython.txt \
-    && cythonize -i speedup/*.pyx \
-    && pip wheel $(grep http-parser .requirements/node.txt)
+    && cythonize -i speedup/*.pyx
 
 # Base layer containing system packages and requirements
 FROM python AS code
@@ -30,8 +29,6 @@ COPY . /opt/noc/
 COPY --from=build /build/speedup/*.so /opt/nocspeedup/
 COPY --from=build /build/*.whl /tmp
 WORKDIR /opt/noc/
-
-ARG BUILD_PACKAGES="build-essential cmake gcc libffi-dev libmemcached-dev libssl-dev zlib1g-dev git"
 
 RUN \
     set -x \
