@@ -27,7 +27,6 @@ ENV\
     NOC_SPEEDUP_PATH=/opt/nocspeedup
 COPY . /opt/noc/
 COPY --from=build /build/speedup/*.so /opt/nocspeedup/
-COPY --from=build /build/*.whl /tmp
 WORKDIR /opt/noc/
 
 RUN \
@@ -40,7 +39,6 @@ RUN \
     libjemalloc2 \
     libpq-dev \
     && pip3 install --upgrade pip \
-    && pip install /tmp/*.whl \
     && pip3 install\
     -r ./.requirements/node.txt\
     -r ./.requirements/bh.txt\
