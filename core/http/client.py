@@ -31,7 +31,6 @@ from noc.core.validators import is_ipv4
 from .proxy import SYSTEM_PROXIES
 from noc.config import config
 from noc.core.comp import smart_bytes, smart_text
-from noc.core.ioloop.util import run_sync
 
 logger = logging.getLogger(__name__)
 
@@ -271,7 +270,7 @@ async def __fetch(
                 metrics["httpclient_proxy_timeouts"] += 1
                 return ERR_TIMEOUT, {}, b"Timed out while sending request to proxy"
             # Wait for proxy response
-            parser = HttpParser()
+            parser = None
             while not parser.is_headers_complete():
                 try:
                     data = await asyncio.wait_for(reader.read(max_buffer_size), request_timeout)
@@ -347,7 +346,7 @@ async def __fetch(
         except (asyncio.TimeoutError, TimeoutError):
             metrics["httpclient_timeouts"] += 1
             return ERR_TIMEOUT, {}, b"Timed out while sending request"
-        parser = HttpParser()
+        parser = None
         response_body: List[bytes] = []
         while not parser.is_message_complete():
             try:
