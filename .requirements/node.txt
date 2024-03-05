@@ -49,4 +49,4 @@ uvicorn==0.24.0.post1
 yappi==1.4.0
 gufo-liftbridge==0.1.0
 urllib3<2 # To be deleted after drop OS with openssl<1.1.1 (centos7,rhel7,deb9)
-git+https://github.com/kasium/http-parser.git@issue-94
+gufo-http==0.1.0

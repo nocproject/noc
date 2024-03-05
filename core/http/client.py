@@ -21,6 +21,8 @@ import random
 # Third-party modules
 import cachetools
 import orjson
+from gufo.http.sync_client import HttpClient as HttpClientSync
+from gufo.http.async_client import HttpClient
 from typing import Optional, List, Tuple, Any, Dict
 
 # NOC modules
@@ -30,8 +32,6 @@ from .proxy import SYSTEM_PROXIES
 from noc.config import config
 from noc.core.comp import smart_bytes, smart_text
 from noc.core.ioloop.util import run_sync
-
-from http_parser.parser import HttpParser
 
 logger = logging.getLogger(__name__)
 
@@ -84,6 +84,68 @@ async def resolve(host):
 
 
 async def fetch(
+    url: str,
+    method: str = "GET",
+    headers=None,
+    body: Optional[bytes] = None,
+    connect_timeout=DEFAULT_CONNECT_TIMEOUT,
+    request_timeout=DEFAULT_REQUEST_TIMEOUT,
+    resolver=resolve,
+    max_buffer_size=DEFAULT_BUFFER_SIZE,
+    follow_redirects: bool = False,
+    max_redirects=DEFAULT_MAX_REDIRECTS,
+    validate_cert=config.http_client.validate_certs,
+    allow_proxy: bool = False,
+    proxies=None,
+    user: Optional[str] = None,
+    password: Optional[str] = None,
+    content_encoding: Optional[str] = None,
+    eof_mark: Optional[bytes] = None,
+) -> Tuple[int, Dict[str, Any], bytes]:
+    """
+
+    :param url: Fetch URL
+    :param method: request method "GET", "POST", "PUT" etc
+    :param headers: Dict of additional headers
+    :param body: Request body for POST and PUT request
+    :param connect_timeout:
+    :param request_timeout:
+    :param resolver:
+    :param follow_redirects:
+    :param max_redirects:
+    :param validate_cert:
+    :param allow_proxy:
+    :param proxies:
+    :param user:
+    :param password:
+    :param max_buffer_size:
+    :param content_encoding:
+    :param eof_mark: Do not consider connection reset as error if
+      eof_mark received (string or list)
+    :return: code, headers, body
+    """
+    params = {
+        "max_redirects": max_redirects,
+        "validate_cert": validate_cert,
+        "connect_timeout": connect_timeout,
+        "timeout": request_timeout,
+        "headers": headers,
+    }
+    async with HttpClient(**params) as client:
+        if method == "GET":
+            r = await client.get(url, headers=headers)
+        elif method == "POST":
+            r = await client.post(url, body, headers=headers)
+        elif method == "PUT":
+            r = await client.put(url, body, headers=headers)
+        elif method == "OPTIONS":
+            r = await client.put(url, headers=headers)
+        else:
+            raise NotImplementedError()
+        return r.status, {}, r.read()
+
+
+async def __fetch(
     url: str,
     method: str = "GET",
     headers=None,
@@ -374,29 +436,26 @@ def fetch_sync(
     password: Optional[str] = None,
     content_encoding: Optional[str] = None,
     eof_mark: Optional[bytes] = None,
-):
-    async def _fetch():
-        return await fetch(
-            url,
-            method=method,
-            headers=headers,
-            body=body,
-            connect_timeout=connect_timeout,
-            request_timeout=request_timeout,
-            resolver=resolver,
-            max_buffer_size=max_buffer_size,
-            follow_redirects=follow_redirects,
-            max_redirects=max_redirects,
-            validate_cert=validate_cert,
-            allow_proxy=allow_proxy,
-            proxies=proxies,
-            user=user,
-            password=password,
-            content_encoding=content_encoding,
-            eof_mark=eof_mark,
-        )
-
-    return run_sync(_fetch)
+) -> Tuple[int, Dict[str, Any], bytes]:
+    params = {
+        "max_redirects": max_redirects,
+        "validate_cert": validate_cert,
+        "connect_timeout": connect_timeout,
+        "timeout": request_timeout,
+        "headers": headers,
+    }
+    with HttpClientSync(**params) as client:
+        if method == "GET":
+            r = client.get(url, headers=headers)
+        elif method == "POST":
+            r = client.post(url, body, headers=headers)
+        elif method == "PUT":
+            r = client.put(url, body, headers=headers)
+        elif method == "OPTIONS":
+            r = client.put(url, headers=headers)
+        else:
+            raise NotImplementedError()
+        return r.status, {}, r.read()
 
 
 def to32u(n):
