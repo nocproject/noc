@@ -443,15 +443,24 @@ def fetch_sync(
         "timeout": request_timeout,
         "headers": headers,
     }
+    body = body or ""
+    content_type = "application/binary"
+    if not isinstance(body, (str, bytes)):
+        body = smart_text(orjson.dumps(body))
+        content_type = "application/json"
+    body = smart_bytes(body)  # Here and below body is binary
+    h = {"Connection": "close", "User-Agent": DEFAULT_USER_AGENT, "Content-Type": content_type}
+    if headers:
+        h.update(headers)
     with HttpClientSync(**params) as client:
         if method == "GET":
-            r = client.get(url, headers=headers)
+            r = client.get(url, headers=h)
         elif method == "POST":
-            r = client.post(url, body, headers=headers)
+            r = client.post(url, body, headers=h)
         elif method == "PUT":
-            r = client.put(url, body, headers=headers)
+            r = client.put(url, body, headers=h)
         elif method == "OPTIONS":
-            r = client.put(url, headers=headers)
+            r = client.put(url, headers=h)
         else:
             raise NotImplementedError()
         return r.status, {}, r.read()
