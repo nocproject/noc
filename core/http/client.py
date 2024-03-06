@@ -452,7 +452,7 @@ def fetch_sync(
     h = {"Connection": "close", "User-Agent": DEFAULT_USER_AGENT, "Content-Type": content_type}
     if headers:
         h.update(headers)
-    h = {smart_bytes(k): smart_bytes(v) for k, v in h.items()}
+    h = {k: smart_bytes(v) for k, v in h.items()}
     with HttpClientSync(**params) as client:
         if method == "GET":
             r = client.get(url, headers=h)
