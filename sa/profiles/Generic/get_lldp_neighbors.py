@@ -144,7 +144,9 @@ class Script(BaseScript):
                     neigh["remote_port_description"] = neigh["remote_port_description"].rstrip(
                         "\x00"
                     )
-                if neigh["remote_chassis_id_subtype"] == 7 and isinstance(neigh["remote_chassis_id"], bytes):
+                if neigh["remote_chassis_id_subtype"] == 7 and isinstance(
+                        neigh["remote_chassis_id"], bytes
+                ):
                     neigh["remote_chassis_id"] = neigh["remote_chassis_id"].decode()
                 r += [
                     {
