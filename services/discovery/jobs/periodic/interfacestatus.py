@@ -117,8 +117,7 @@ class InterfaceStatusCheck(DiscoveryCheck):
             iface = get_interface(i["interface"])
             if not iface:
                 continue
-            old_astatus = iface.admin_status
-            old_ostatus = iface.oper_status
+            old_adm_status = iface.admin_status
             kwargs = {
                 "admin_status": i.get("admin_status"),
                 "full_duplex": i.get("full_duplex"),
@@ -130,12 +129,12 @@ class InterfaceStatusCheck(DiscoveryCheck):
             self.log_changes(f"Interface {i['interface']} status has been changed", changes)
             ostatus = i.get("oper_status")
             astatus = i.get("admin_status")
-            if old_ostatus != ostatus and ostatus is not None:
+            if iface.oper_status != ostatus and ostatus is not None:
                 self.logger.info("[%s] set oper_status to %s", i["interface"], ostatus)
                 if iface.profile.status_discovery in {"c", "rc", "ca"}:
                     self.iface_alarm(ostatus, astatus, iface, timestamp=now)
                 iface.set_oper_status(ostatus)
-            if old_astatus != astatus and astatus is not None:
+            if old_adm_status != astatus and astatus is not None:
                 if iface.profile.status_discovery in {"ca", "rc"}:
                     self.iface_alarm(ostatus, astatus, iface, timestamp=now)
                 if astatus is False:
