@@ -52,7 +52,7 @@ class InterfaceStatusCheck(DiscoveryCheck):
             "timestamp": timestamp,
             "reference": f"e:{self.object.id}:{alarm_class.id}:{iface.name}",
         }
-        if iface.profile.status_discovery == "ca" and a_status is False:
+        if iface.profile.status_discovery in {"ca", "rc"} and a_status is False:
             msg["$op"] = "clear"
             self.logger.info(
                 f"Clear {alarm_class.name}: on interface {iface.name}. Reason: Admin Status Down"
@@ -136,7 +136,7 @@ class InterfaceStatusCheck(DiscoveryCheck):
                     self.iface_alarm(ostatus, astatus, iface, timestamp=now)
                 iface.set_oper_status(ostatus)
             if old_astatus != astatus and astatus is not None:
-                if iface.profile.status_discovery == "ca":
+                if iface.profile.status_discovery in {"ca", "rc"}:
                     self.iface_alarm(ostatus, astatus, iface, timestamp=now)
                 if astatus is False:
                     # If admin_down send expired signal
