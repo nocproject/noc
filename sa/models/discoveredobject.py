@@ -51,12 +51,14 @@ SELECT
     groupArray(source) as sources,
     groupArray((source, remote_system, map('hostname', hostname, 'description', description, 'uptime', toString(uptime), 'remote_id', remote_id, 'ts', toString(max_ts)), data, labels)) as all_data,
     groupUniqArrayArray(checks) as all_checks,
-    groupUniqArrayArray(labels) as all_labels
+    groupUniqArrayArray(labels) as all_labels,
+    max(last_ts) as last_ts
 FROM (
     SELECT ip, pool, remote_system,
      argMax(source, ts) as source, argMax(hostname, ts) as hostname, argMax(description, ts) as description,
      argMax(uptime, ts) as uptime, argMax(remote_id, ts) as remote_id, argMax(checks, ts) as checks, 
-     argMax(data, ts) as data, argMax(labels, ts) as labels, argMax(ts, ts) as max_ts
+     argMax(data, ts) as data, argMax(labels, ts) as labels, argMax(ts, ts) as max_ts,
+     max(ts) as last_ts
     FROM noc.purgatorium
     GROUP BY ip, pool, remote_system
     )
@@ -100,6 +102,9 @@ class CheckStatus(EmbeddedDocument):
     skipped: bool = BooleanField(default=False)
     # data: Dict[str, str] # (for rules check)
     error: Optional[str] = StringField(required=False)  # Description if Fail
+
+    def __hash__(self):
+        return hash((self.name, self.port or 0, self.arg0 or "", self.status))
 
     def check_condition(self):
         """
@@ -197,6 +202,8 @@ class DiscoveredObject(Document):
     extra_labels: Dict[str, List[str]] = DictField()
     labels: List[str] = ListField(StringField())  # Manual Set
     effective_labels: List[str] = ListField(StringField())
+    # Calculated duplicate hash
+    # duplicate_hash =
     #
     bi_id = LongField(unique=True)
     # Comments ?
@@ -269,21 +276,21 @@ class DiscoveredObject(Document):
         data: List[PurgatoriumData],  # source, remote_system, data
         checks: Optional[List[ProtocolCheckResult]] = None,
         labels: Optional[List[str]] = None,  # Manual Labels
+        update_ts: Optional[datetime.datetime] = None,
         rule=None,  # Processed rule
     ) -> Optional["DiscoveredObject"]:  # MergeRule
         """
         Register New record
         1. Ensure Discovery Object
-        2. Update Data obj.update_data(
+        2. Update Data obj.update_data
         3. Rules = for merge data
-        is_dirty = True
+        4. is_dirty = True if data changed
         :param pool: Address Pool ? default
         :param address: Check Address
         :param sources: List available sources ?from data
         :param data: Source, labels, data
         :param checks: List of checks
         :param labels: Manual Set labels
-        :param timestamp: Updated timestamp
         :param rule:
         :return:
         """
@@ -299,57 +306,25 @@ class DiscoveredObject(Document):
                 labels=labels or [],
                 rule=rule,
             )
-        o.rule = rule or ObjectDiscoveryRule.get_rule(address, pool, checks)
-        if not o.rule:
-            logger.warning("[%s|%s] Not find rule for address. Skipping", pool.name, address)
+        rule = rule or ObjectDiscoveryRule.get_rule(address, pool, checks)
+        if not rule:
+            logger.debug("[%s|%s] Not find rule for address. Skipping", pool.name, address)
             return
-        o.update_data(data, checks)
+        if update_ts and update_ts == o.last_seen and rule == o.rule:
+            logger.info("[%s|%s] Nothing updating data. Skipping", pool.name, address)
+            return
+        if o.rule != rule:
+            o.rule = rule
+            o.is_dirty = True
+        if set(o.sources).difference(set(sources)):
+            o.sources = sources
+            o.is_dirty = True
         # Set Status, is_dirty
-        o.seen(sources)  # Timestamp
+        o.update_data(data, checks)
         o.save()
+        o.fire_event(rule.action)
+        o.touch(ts=update_ts)
         return o
-
-    def seen(self, sources: List[str], bulk: Optional[List[Any]] = None):
-        """
-        Seen Discovered Object
-        bulk mode
-        * if record on purgatorium and not expired
-        """
-        # Sorted by rule
-        if set(self.sources) != set(sources):
-            self.sources = list(set(self.sources or []).union(set(sources)))
-            if bulk is not None:
-                ...
-            else:
-                self._get_collection().update_one(
-                    {"_id": self.id}, {"$addToSet": {"sources": self.sources}}
-                )
-        self.fire_event("seen")
-        self.touch()  # Workflow expired
-
-    def unseen(self, sources: List[str], bulk: Optional[List[Any]] = None):
-        """
-        Unseen Discovered Object
-        bulk mode
-        Unseen record:
-         * if delete
-         * for expired (by rule)
-        """
-        # Sorted by rule
-        sources = set(self.sources) - set(sources)
-        if sources != set(self.sources):
-            self.sources = list(set(self.sources or []) - set(sources))
-            self._get_collection().update_one(
-                {"_id": self.id}, {"$pull": {"sources": self.sources}}
-            )
-        elif not sources:
-            # For empty source, clean sources
-            self.sources = []
-            self._get_collection().update_one({"_id": self.id}, {"$set": {"sources": []}})
-        if not self.sources:
-            # source - None, set sensor to missed
-            self.fire_event("missed")
-            self.touch()
 
     def sync(self):
         """
@@ -357,22 +332,42 @@ class DiscoveredObject(Document):
         :return:
         """
 
+    @property
+    def is_approved(self) -> bool:
+        if not self.rule:
+            return False
+        return self.state.is_productive
+
     def set_data(
         self,
         source,
         data: Dict[str, str],
         labels: Optional[List[str]] = None,
         remote_system: Optional[str] = None,
+        ts: Optional[datetime.datetime] = None,
     ):
+        """
+        Set data for source
+        :param source: Source code
+        :param data: Dict of data
+        :param labels: label list
+        :param remote_system: Remote System from data
+        :param ts: timestamp when data updated
+        :return:
+        """
         if source == ETL_SOURCE and not remote_system:
             raise AttributeError("remote_system param is required for 'etl' source")
+        last_update = ts or datetime.datetime.now().replace(microsecond=0)
         for d in self.data:
             if d.source != source:
                 continue
             if remote_system and remote_system != d.remote_system:
                 continue
+            if d.last_update == last_update:
+                continue
             d.data = data
             d.labels = labels or []
+            d.last_update = last_update
             break
         else:
             self.data += [
@@ -382,6 +377,7 @@ class DiscoveredObject(Document):
                     remote_id=data.pop("remote_id", None),
                     labels=labels,
                     data=data,
+                    last_update=last_update,
                 )
             ]
 
@@ -401,23 +397,26 @@ class DiscoveredObject(Document):
         # Merge Data
         for d in data:
             if d.source not in self.sources:
-                # Skip data if not in source
+                # @todo Skip data if not in source
                 continue
             rs = None
             if d.remote_system:
                 rs = RemoteSystem.get_by_name(d.remote_system)
             self.set_data(d.source, d.data, d.labels, remote_system=rs)
-        if checks:
-            self.checks = [
-                CheckStatus(name=c.check, status=c.status, port=c.port, error=c.error)
-                for c in checks
-            ]
+        if not checks and not self.checks:
+            return
+        checks = [
+            CheckStatus(name=c.check, status=c.status, port=c.port, error=c.error) for c in checks
+        ]
+        if not self.checks or set(checks).difference(set(checks)):
+            self.checks = checks
+            self.is_dirty = True
 
 
 def sync_purgatorium():
     """
     Sync Discovered object with Purgatorium
-    1. Load CHUNK from Purgatorium
+    1. Load by CHUNK from Purgatorium
     2. Query records from DiscoveredObject
     3. -> register (for new), seen/unseen, update_data (update_data, is_dirty)
      new - Not in DiscoveredObject
@@ -444,7 +443,8 @@ def sync_purgatorium():
         data = defaultdict(dict)
         # hostnames, descriptions, uptimes, all_data,
         for source, rs, d1, d2, labels in row["all_data"]:
-            if d1["uptime"] == "0":
+            if not int(d1["uptime"]):
+                # Filter 0 uptime
                 del d1["uptime"]
             if not rs:
                 del d1["remote_id"]
@@ -455,7 +455,7 @@ def sync_purgatorium():
                 rs = rs.name
             # Check timestamp
             data[(source, rs)].update(d1 | d2)
-        rule = None
+        last_ts = datetime.datetime.fromisoformat(row["last_ts"])
         DiscoveredObject.register(
             pool,
             row["address"],
@@ -470,7 +470,10 @@ def sync_purgatorium():
                 for (source, rs), d in data.items()
             ],
             checks=[ProtocolCheckResult(**orjson.loads(c)) for c in row["all_checks"]],
-            rule=rule,
+            update_ts=last_ts,
             # data, check, labels
             # TS (timestamp)
         )
+    now = datetime.datetime.now()
+    for o in DiscoveredObject.objects.filter(expired__gt=now):
+        o.fire_event("expired")

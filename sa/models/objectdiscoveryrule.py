@@ -7,6 +7,7 @@
 
 # Python modules
 import operator
+import re
 from functools import partial
 from typing import List, Dict, Optional, Tuple, Set, Any
 from threading import Lock
@@ -15,13 +16,11 @@ from threading import Lock
 import cachetools
 from mongoengine.document import Document, EmbeddedDocument
 from mongoengine.fields import (
-    ListField,
     StringField,
     BooleanField,
     EmbeddedDocumentListField,
     IntField,
     UUIDField,
-    MapField,
 )
 
 # NOC modules
@@ -52,16 +51,31 @@ class CheckItem(EmbeddedDocument):
     check = StringField(required=True)
     port = IntField(default=0)
     arg0 = StringField()  # available, access, condition
-    condition = StringField(choices=["regex", "contains", "eq", "gte", "lte"], default="eq")
+    match_state = StringField(choices=["ok", "fail", "any"], default="any")
+    match = StringField(choices=["regex", "contains", "eq", "gte", "lte"], default="eq")
     value = StringField()
 
-    def is_match(self, result: ProtocolCheckResult) -> bool:
-        if not self.value:
-            return result.status
+    def __str__(self):
+        if self.arg0:
+            return f"{self.check}:{self.port} -> {self.arg0}"
+        return f"{self.check}:{self.port}"
+
+    def is_match(self, status: bool, data: Dict[str, Any]) -> bool:
+        if not self.value and self.match_state == "any":
+            return True
+        elif not self.value:
+            return status
         key = self.arg0 or self.check
-        if key not in result.data:
+        if key not in data:
             return False
-        return result.data[key] == self.value
+        value = data[key]
+        if self.match == "regex":
+            return bool(re.match(self.value, value))
+        elif self.match == "contains":
+            return value in self.value
+        elif self.match == "gte":
+            return int(value) >= int(self.value)
+        return value == self.value
 
     @property
     def json_data(self) -> Dict[str, Any]:
@@ -70,8 +84,8 @@ class CheckItem(EmbeddedDocument):
             r["port"] = self.port
         if self.arg0:
             r["arg0"] = self.arg0
-        if self.condition and self.value:
-            r["condition"] = self.condition
+        if self.match and self.value:
+            r["match"] = self.match
             r["value"] = self.value
         return r
 
@@ -108,7 +122,7 @@ class ObjectDiscoveryRule(Document):
     )
     sources: List[SourceItem] = EmbeddedDocumentListField(SourceItem)  # Source match and priority
     update_interval = IntField(default=0)
-    expired_ttl = IntField(default=0)  # Time for expired event
+    expired_ttl = IntField(default=0)  # Time for expired source
     #
     check_policy = StringField(choices=["ALL", "ANY"], default="ALL")
     checks: List["CheckItem"] = EmbeddedDocumentListField(CheckItem)
@@ -121,12 +135,12 @@ class ObjectDiscoveryRule(Document):
     # duplicate state
     # notification_group
     # notification_template =
-    event = StringField(
+    action = StringField(
         choices=[
-            ("new", "New"),
-            ("approve", "Approve"),
-            ("ignore", "Ignore"),
-            ("skip", "Skip"),
+            ("new", "As New"),  # Set Rule, Save Record as New
+            ("approve", "Approve"),  # Set Rule, Approve Record
+            ("ignore", "Ignore"),  # Set Rule and Send Ignored Signal
+            ("skip", "Skip"),  # SkipRule, if Rule Needed for Discovery Settings
         ],
         default="new",
     )
@@ -152,10 +166,18 @@ class ObjectDiscoveryRule(Document):
     def get_rule(
         cls, address, pool: Pool, checks: List["ProtocolCheckResult"]
     ) -> Optional["ObjectDiscoveryRule"]:
-        for rule in ObjectDiscoveryRule.objects.filter(is_active=True).order_by("preference"):
+        for rule in ObjectDiscoveryRule.objects.filter(is_active=True, action__ne="skip").order_by(
+            "preference"
+        ):
             if rule.is_match(address, pool, checks):
                 return rule
         return
+
+    def on_save(self):
+        from noc.sa.models.discoveredobject import DiscoveredObject
+
+        # Set record on rule is_dirty
+        DiscoveredObject.objects.filter(rule=self.id).update(is_dirty=True)
 
     @property
     def json_data(self) -> Dict[str, Any]:
@@ -173,7 +195,7 @@ class ObjectDiscoveryRule(Document):
             "checks": [c.json_data for c in self.checks],
             #
             "sources": [c.json_data for c in self.sources],
-            "event": self.event,
+            "action": self.action,
         }
         return r
 
@@ -188,7 +210,12 @@ class ObjectDiscoveryRule(Document):
             ],
         )
 
-    def is_match(self, address: str, pool: Pool, checks: List["ProtocolCheckResult"]) -> bool:
+    def is_match(
+        self,
+        address: str,
+        pool: Pool,
+        checks: List["ProtocolCheckResult"],
+    ) -> bool:
         """
         Check discovered record for match rule
         :param address: IP Address
@@ -213,7 +240,8 @@ class ObjectDiscoveryRule(Document):
         for c in self.checks:
             r = False
             if (c.check, c.port or 0) in check_r:
-                r = c.is_match(check_r[(c.check, c.port or 0)])
+                pc = check_r[(c.check, c.port or 0)]
+                r = c.is_match(pc.status, pc.data)
             if not r and self.check_policy == "ALL":
                 return False
             if r and self.check_policy == "ANY":

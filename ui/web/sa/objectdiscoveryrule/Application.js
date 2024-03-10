@@ -145,6 +145,19 @@ Ext.define("NOC.sa.objectdiscoveryrule.Application", {
                     boxLabel: __("Stop Processing")
                 },
                 {
+                    name: "action",
+                    xtype: "combobox",
+                    fieldLabel: __("Action""),
+                    store: [
+                        ["new", __("As New")],
+                        ["ignore", __("Send Ignore")],
+                        ["skip", __("Skip Rule")],
+                        ["approve", __("Send Approve")]
+                    ],
+                    value: "new",
+                    uiStyle: "medium"
+                },
+                {
                     name: "sources",
                     xtype: "gridfield",
                     fieldLabel: __("Sources"),
@@ -170,6 +183,18 @@ Ext.define("NOC.sa.objectdiscoveryrule.Application", {
                             width: 50
                         }
                     ]
+                },
+                {
+                    name: "check_policy",
+                    xtype: "combobox",
+                    fieldLabel: __("Check Policy"),
+                    store: [
+                        ["ALL", __("All success")],
+                        ["ANY", __("Any success")],
+                    ],
+                    allowBlank: true,
+                    value: "ALL",
+                    uiStyle: "medium"
                 },
                 {
                     name: "checks",
@@ -199,6 +224,49 @@ Ext.define("NOC.sa.objectdiscoveryrule.Application", {
                                 xtype: "numberfield",
                                 defaultValue: 0
                             }
+                        },
+                        {
+                            text: __("Match State"),
+                            dataIndex: "match_state",
+                            width: 100,
+                            editor: {
+                                xtype: "combobox",
+                                store: [
+                                    ["ok", __("OK")],
+                                    ["fail", __("Fail")],
+                                    ["any", __("Any")]
+                                ]
+                            },
+                            renderer: NOC.render.Choices({
+                                "ok": __("OK"),
+                                "fail": __("Fail"),
+                                "any": __("Any")
+                            })
+                        },
+                        {
+                            text: __("Match"),
+                            dataIndex: "match",
+                            width: 100,
+                            editor: {
+                                xtype: "combobox",
+                                store: [
+                                    ["regex", __("Regex")],
+                                    ["contains", __("Contains")],
+                                    ["eq", __("Equal")],
+                                    ["gte", __("Greater Equal")]
+                                ]
+                            },
+                            renderer: NOC.render.Choices({
+                                "regex": __("Regex"),
+                                "contains": __("Contains"),
+                                "eq": __("Equal"),
+                                "gte": __("Greater Equal")
+                            })
+                        },
+                        {
+                            text: __("Value"),
+                            dataIndex: "value",
+                            editor: "textfield"
                         }
                     ]
                 }
