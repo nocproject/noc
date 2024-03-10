@@ -33,7 +33,7 @@ from noc.core.bi.decorator import bi_sync
 from noc.core.clickhouse.connect import connection
 from noc.core.purgatorium import ProtocolCheckResult, SOURCES, ETL_SOURCE
 from noc.core.mongo.fields import PlainReferenceField, ForeignKeyField
-from noc.core.ip import IP, PrefixDB
+from noc.core.ip import IP
 from noc.main.models.pool import Pool
 from noc.main.models.label import Label
 from noc.main.models.remotesystem import RemoteSystem
