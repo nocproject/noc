@@ -13,7 +13,7 @@ from noc.core.confdb.normalizer.base import BaseNormalizer, match, ANY, REST
 from noc.core.confdb.syntax.patterns import IP_ADDRESS, INTEGER
 from noc.core.text import ranges_to_list
 
-tz_offset_match = re.compile("(?P<tz>\S+)(?P<offset>[+-]\d{2}:\d{2})")
+tz_offset_match = re.compile(r"(?P<tz>\S+)(?P<offset>[+-]\d{2}:\d{2})")
 
 
 class TPLinkT2600GNormalizer(BaseNormalizer):
@@ -32,7 +32,7 @@ class TPLinkT2600GNormalizer(BaseNormalizer):
         yield self.make_global_spanning_tree_status(status=False)
 
     @match("spanning-tree")
-    def normalize_no_spanning_tree(self, tokens):
+    def normalize_spanning_tree(self, tokens):
         self.set_context("spanning_tree_disabled", False)
         yield self.make_global_spanning_tree_status(status=True)
 
