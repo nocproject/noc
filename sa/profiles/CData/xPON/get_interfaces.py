@@ -101,12 +101,13 @@ class Script(BaseScript):
                         }
                     ]
             v = self.cli("show lacp system port")
+            ifindexes = {y: x for y, x in self.scripts.get_ifindexes().items()}
             for match in self.rx_port.finditer(v):
                 ifname = match.group("ifname")
                 iface = {
                     "name": ifname,
                     "type": "physical",
-                    "snmp_ifindex": match.group("snmp_ifindex"),
+                    "snmp_ifindex": ifindexes[ifname],
                     "admin_status": True,
                     "oper_status": match.group("oper_status").lower() == "1",
                     "enabled_protocols": [],
