@@ -35,7 +35,7 @@ class Profile(BaseProfile):
     rx_ifname = re.compile(r"^((?P<type>Gi|Te|.*)\d\/\d\/)*(?P<number>\d+).*$")
     matchers = {"is_platform_T2600G": {"platform": {"$regex": r"T2600G.*"}}}
 
-    config_tokenizer = "context"
+    config_tokenizer = "indent"
     config_normalizer = "TPLinkT2600GNormalizer"
 
     def convert_interface_name(self, s):
