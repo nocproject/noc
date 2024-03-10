@@ -1,13 +1,14 @@
 # ----------------------------------------------------------------------
 # @workflow decorator
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2017 The NOC Project
+# Copyright (C) 2007-2024 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
 # Python modules
 import logging
 import datetime
+from typing import Optional, List
 
 # Third-party modules
 from pymongo import UpdateOne
@@ -120,12 +121,14 @@ def document_set_state(
         )
 
 
-def document_touch(self, bulk=None):
+def document_touch(
+    self, bulk: Optional[List["UpdateOne"]] = None, ts: Optional[datetime.datetime] = None
+):
     if not self.state:
         logger.info("[%s] No default state. Skipping", self)
         return
     opset = {}
-    ts = datetime.datetime.now()
+    ts = (ts or datetime.datetime.now()).replace(microsecond=0)
     if self.state.update_last_seen:
         opset["last_seen"] = ts
         self.last_seen = ts
@@ -235,12 +238,14 @@ def model_set_state(self, state, state_changed: datetime.datetime = None, bulk=N
         )
 
 
-def model_touch(self, bulk=None):
+def model_touch(
+    self, bulk: Optional[List["UpdateOne"]] = None, ts: Optional[datetime.datetime] = None
+):
     if not self.state:
         logger.info("[%s] No default state. Skipping", self)
         return
     opset = {}
-    ts = datetime.datetime.now()
+    ts = (ts or datetime.datetime.now()).replace(microsecond=0)
     if self.state.update_last_seen:
         opset["last_seen"] = ts
         self.last_seen = ts

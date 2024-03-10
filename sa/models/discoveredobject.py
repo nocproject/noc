@@ -30,6 +30,7 @@ from mongoengine.fields import (
 # NOC modules
 from noc.core.wf.decorator import workflow
 from noc.core.bi.decorator import bi_sync
+from noc.core.model.decorator import on_delete_check
 from noc.core.clickhouse.connect import connection
 from noc.core.purgatorium import ProtocolCheckResult, SOURCES, ETL_SOURCE
 from noc.core.mongo.fields import PlainReferenceField, ForeignKeyField
@@ -148,6 +149,7 @@ class DataItem(EmbeddedDocument):
 
 @bi_sync
 @workflow
+@on_delete_check(check=[("sa.DiscoveredObject", "origin")])
 class DiscoveredObject(Document):
     meta = {
         "collection": "discoveredobjects",
