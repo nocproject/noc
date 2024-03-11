@@ -101,6 +101,8 @@ def get_bbox(x0: float, x1: float, y0: float, y1: float) -> geojson.Polygon:
     y0 = bound_y(y0)
     y1 = bound_y(y1)
 
+    if x1 == x0 and y1 == y0:
+        raise ValueError("Coordinates are equal. Not build poligon")
     if x1 < x0:
         x0, x1 = x1, x0
     if y1 < y0:
