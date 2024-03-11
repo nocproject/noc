@@ -1,0 +1,8 @@
+config: |
+  #
+  system-time ntp UTC+04:00 217.14.192.1 217.14.192.1 1
+result:
+  - ['system', 'clock', 'timezone', 'UTC', 'offset', '+04:00', {'replace': True}]
+  - ['protocols', 'ntp', '217.14.192.1', 'address', !IP 217.14.192.1, {'replace': True}]
+  - ['protocols', 'ntp', '217.14.192.1', 'prefer']
+  - ['protocols', 'ntp', '217.14.192.1', 'address', !IP 217.14.192.1, {'replace': True}]
