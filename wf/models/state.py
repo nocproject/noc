@@ -81,6 +81,7 @@ class InteractionSetting(EmbeddedDocument):
         ("pm.Agent", "state"),
         ("sa.Service", "state"),
         ("sa.ManagedObject", "state"),
+        ("sa.DiscoveredObject", "state"),
         ("sla.SLAProbe", "state"),
         ("vc.VLAN", "state"),
         ("vc.VPN", "state"),

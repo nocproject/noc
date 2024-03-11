@@ -29,6 +29,7 @@ from noc.core.checkers.snmp import SUGGEST_CHECK
 from noc.core.checkers.tcp import TCP_DIAG
 from noc.core.script.scheme import SNMPCredential, SNMPv3Credential
 from noc.main.models.pool import Pool
+from noc.sa.models.objectdiscoveryrule import ObjectDiscoveryRule
 from noc.core.purgatorium import ProtocolCheckResult, register
 from noc.core.mib import mib
 
@@ -57,6 +58,7 @@ class Command(BaseCommand):
             "--dry-run", dest="dry_run", action="store_true", help="Test only. Do not save records"
         ),
         parser.add_argument("--ports", action="store", type=str, help="Check TCP ports")
+        parser.add_argument("--rule", action="store", type=str, help="Check Rule. Set rule name")
         parser.add_argument(
             "--check",
             action="store",
@@ -80,6 +82,7 @@ class Command(BaseCommand):
         ports: Optional[str] = None,
         community: Optional[str] = None,
         snmp_user: Optional[str] = None,
+        rule: Optional[ObjectDiscoveryRule] = None,
     ) -> Iterable[Check]:
         """
         Parse required checks
@@ -112,6 +115,14 @@ class Command(BaseCommand):
                 address=address,
                 credentials=snmp_cred,
             )
+        if rule:
+            for c in rule.checks:
+                yield Check(
+                    name=c.check,
+                    address=address,
+                    port=c.port,
+                    arg0=c.arg0,
+                )
         for c in checks.split(";"):
             name, *other = c.split("?")
             if not other:
@@ -136,6 +147,7 @@ class Command(BaseCommand):
         community: Optional[str] = None,
         snmp_user: Optional[str] = None,
         dry_run: bool = False,
+        rule: Optional[str] = None,
         *args,
         **options,
     ):
@@ -168,7 +180,7 @@ class Command(BaseCommand):
                 )
                 metrics["address_up"] += 1
                 # SNMP/HTTP/Agent/TCP Check
-                for c in self.parse_checks(addr, checks, ports, community, snmp_user):
+                for c in self.parse_checks(addr, checks, ports, community, snmp_user, rule):
                     h = self.get_checker(c.name)
                     if not h:
                         continue
@@ -194,6 +206,7 @@ class Command(BaseCommand):
                                 port=r.port,
                                 available=r.is_available,
                                 access=r.is_access,
+                                data=r.data,
                                 error=r.error,
                             )
                         )
@@ -202,7 +215,13 @@ class Command(BaseCommand):
         socket.setdefaulttimeout(2)
         # result: Dict[str, List[ProtocolCheckResult]] = defaultdict(list)
         result = defaultdict(lambda: {"checks": [], "source": "network-scan", "data": {}})
-        addr_list = self.get_addresses(addresses, input)
+        if rule:
+            connect()
+            rule = ObjectDiscoveryRule.objects.get(name=rule)
+            if not rule:
+                self.print(f"Unknown Object Discovery Rule: {rule}")
+                self.die(f"Unknown Object Discovery Rule: {rule}")
+        addr_list = self.get_addresses(addresses, input, rule)
         lock: Optional[asyncio.Lock] = None
         ping = Ping(tos=config.ping.tos, timeout=1.0)
         setup_asyncio()
@@ -244,7 +263,12 @@ class Command(BaseCommand):
             checker_cache[name] = h() if h else None
         return checker_cache[name]
 
-    def get_addresses(self, addresses: Iterable[str], input: Iterable[str]) -> List[str]:
+    def get_addresses(
+        self,
+        addresses: Iterable[str],
+        input: Iterable[str],
+        rule: Optional[ObjectDiscoveryRule] = None,
+    ) -> List[str]:
         r = set()
         for a in addresses:
             # if not is_ipv4(a):
@@ -255,6 +279,14 @@ class Command(BaseCommand):
                 continue
             for x in a.iter_address(count=a.size):
                 r.add(x)
+        if rule:
+            for p in rule.network_ranges:
+                a = IP.prefix(p.network)
+                if a.size == 1:
+                    r.add(a)
+                    continue
+                for x in a.iter_address(count=a.size):
+                    r.add(x)
         # Read addresses from files
         if input:
             for fn in input:
