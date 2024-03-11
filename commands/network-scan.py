@@ -216,7 +216,6 @@ class Command(BaseCommand):
         self.count_net = 0
 
         # options by-default
-        is_managed = "True"
         # administrative_domain = "default"
         profile = "Generic.Host"
         # object_profile = "default"
@@ -348,7 +347,6 @@ class Command(BaseCommand):
                 if autoadd:
                     m = ManagedObject(
                         name=x12 if not x12 or x12 != "" else ipx,
-                        is_managed=is_managed,
                         administrative_domain=self.adm_domain,
                         profile=self.profile,
                         description=description,
