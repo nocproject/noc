@@ -76,6 +76,8 @@ class SNMPProtocolChecker(Checker):
             for c in self.iter_suggest_check(check):
                 if c.name not in self.CHECKS:
                     continue
+                if not c.credentials:
+                    continue
                 key = (c.address, c.port)
                 if key not in processed:
                     processed[key] = defaultdict(set)
@@ -115,6 +117,11 @@ class SNMPProtocolChecker(Checker):
                         status=True,
                         skipped=True,
                     )
+        # if any(c.status for c in result.values()):
+        #     yield CheckResult(
+        #         check=SUGGEST_CHECK,
+        #         status=True,
+        #     )
 
     async def do_snmp_check(
         self, check: Check, cred: Union[SNMPCredential, SNMPv3Credential]

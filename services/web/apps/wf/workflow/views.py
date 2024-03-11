@@ -144,7 +144,8 @@ class WorkflowApplication(ExtDocApplication):
                         attrs={
                             "labels": StringListParameter(),
                             "exclude_labels": StringListParameter(),
-                        }
+                        },
+                        required=False,
                     ),
                     "handlers": StringListParameter(),
                     "vertices": DictListParameter(attrs={"x": IntParameter(), "y": IntParameter()}),

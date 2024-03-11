@@ -55,6 +55,7 @@ _wiping_state_cache = cachetools.TTLCache(maxsize=1000, ttl=1)
         ("pm.AgentProfile", "workflow"),
         ("sa.ServiceProfile", "workflow"),
         ("sa.ManagedObjectProfile", "workflow"),
+        ("sa.ObjectDiscoveryRule", "workflow"),
         ("sla.SLAProfile", "workflow"),
         ("inv.CPEProfile", "workflow"),
         ("inv.SensorProfile", "workflow"),

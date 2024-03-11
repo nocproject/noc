@@ -28,6 +28,12 @@ class Message(object):
 
 
 PURGATORIUM_TABLE = "purgatorium"
+ETL_SOURCE = "etl"
+SCAN_SOURCE = "network-scan"
+MANUAL_SOURCE = "manual"
+SNMP_TRAP_SOURCE = "snmptrap"
+NEIGHBOR_SOURCE = "neighbor"
+SOURCES = {ETL_SOURCE, MANUAL_SOURCE, SCAN_SOURCE, SNMP_TRAP_SOURCE, NEIGHBOR_SOURCE}
 
 
 @dataclass
@@ -38,6 +44,7 @@ class ProtocolCheckResult:
     available: Optional[bool] = None  # Protocol (port) is available, for UDP equal to access
     access: Optional[bool] = None  # None if not check (if available False)
     credential: Optional[str] = None  # Set if access True
+    data: Dict[str, str] = None
     error: Optional[str] = None  # Error message
 
 
@@ -87,11 +94,11 @@ def register(
         "is_delete": is_delete,
         "description": description or None,
     }
-    if source == "etl" and not remote_system:
+    if source == ETL_SOURCE and not remote_system:
         raise ValueError("Source ETL required RemoteSystem set")
-    elif source == "etl" and not remote_id:
+    elif source == ETL_SOURCE and not remote_id:
         raise ValueError("With RemoteSystem, RemoteId must be set")
-    elif source == "etl":
+    elif source == ETL_SOURCE:
         # Set for ETL
         data["remote_system"] = remote_system
         data["remote_id"] = remote_id

@@ -62,7 +62,8 @@ def gen_key() -> str:
 @bi_sync
 @Label.model
 @on_delete_check(
-    check=[("sa.Service", "agent"), ("inv.Sensor", "agent"), ("sla.SLAProbe", "agent")]
+    check=[("sa.Service", "agent"), ("inv.Sensor", "agent"), ("sla.SLAProbe", "agent")],
+    clean=[("sa.DiscoveredObject", "agent")],
 )
 class Agent(Document):
     meta = {

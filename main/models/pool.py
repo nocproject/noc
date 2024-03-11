@@ -31,6 +31,8 @@ id_lock = threading.Lock()
 @on_delete_check(
     check=[
         ("sa.AdministrativeDomain", "default_pool"),
+        ("sa.DiscoveredObject", "pool"),
+        ("sa.ObjectDiscoveryRule", "network_ranges__pool"),
         ("sa.ManagedObject", "pool"),
         ("sa.ManagedObject", "fm_pool"),
         ("inv.CPEProfile", "object_pool"),
