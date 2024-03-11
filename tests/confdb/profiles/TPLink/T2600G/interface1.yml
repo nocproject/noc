@@ -1,0 +1,51 @@
+config: |
+  #
+  interface gigabitEthernet 1/0/2
+    switchport general allowed vlan 2481 untagged
+    switchport pvid 2481
+    no switchport general allowed vlan 1
+    storm-control rate-mode ratio
+    storm-control broadcast 10
+    storm-control multicast 10
+    ip dhcp filter
+    ip dhcp filter mac-verify
+    ip dhcp l2relay information option
+    pppoe circuit-id
+    pppoe circuit-id type mac
+    port isolation gi-forward-list 1/0/2 te-forward-list 1/0/25-28
+    
+    loopback-detection config process-mode port-based recovery-mode auto
+    loopback-detection
+  ##
+  #
+  #
+
+  interface ten-gigabitEthernet 1/0/25
+    description "UpLink"
+    speed 1000
+    switchport general allowed vlan 2480-2503,4008 tagged
+    ip dhcp l2relay information option
+    port isolation gi-forward-list 1/0/1-24 te-forward-list 1/0/25-28
+    
+    no lldp med-tlv-select network-policy
+    no lldp med-tlv-select location
+    no lldp med-tlv-select power-management
+    no lldp med-tlv-select inventory-management
+    no lldp tlv-select port-description
+    no lldp tlv-select system-capability
+    no lldp tlv-select port-vlan
+    no lldp tlv-select protocol-vlan
+    no lldp tlv-select vlan-name
+    no lldp tlv-select link-aggregation
+    no lldp tlv-select mac-phy-cfg
+    no lldp tlv-select max-frame-size
+    no lldp tlv-select power
+    lldp management-address 10.118.32.21
+  #
+result:
+  - ['interfaces', 'Gi1/0/2']
+  - ['interfaces', 'Gi1/0/2', 'storm-control', 'broadcast', 'level', 10.0, {'replace': True}]
+  - ['interfaces', 'Gi1/0/2', 'storm-control', 'multicast', 'level', 10.0, {'replace': True}]
+  - ['protocols', 'loop-detect', 'interface', 'Gi1/0/2']
+  - ['interfaces', 'Te1/0/25']
+  - ['interfaces', 'Te1/0/25', 'description', 'UpLink', {'replace': True}]

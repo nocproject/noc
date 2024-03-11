@@ -1,0 +1,12 @@
+config: |
+  vlan 2480-2482
+  #
+  vlan 4008
+   name "management"
+  #
+result:
+  - ['virtual-router', 'default', 'forwarding-instance', 'default', 'vlans', 2480]
+  - ['virtual-router', 'default', 'forwarding-instance', 'default', 'vlans', 2481]
+  - ['virtual-router', 'default', 'forwarding-instance', 'default', 'vlans', 2482]
+  - ['virtual-router', 'default', 'forwarding-instance', 'default', 'vlans', 4008]
+  - ['virtual-router', 'default', 'forwarding-instance', 'default', 'vlans', 4008, 'name', '"management"', {'replace': True}]
