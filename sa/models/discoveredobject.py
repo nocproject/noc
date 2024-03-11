@@ -25,6 +25,7 @@ from mongoengine.fields import (
     BooleanField,
     ReferenceField,
     EmbeddedDocumentListField,
+    ObjectIdField,
 )
 
 # NOC modules
@@ -33,7 +34,7 @@ from noc.core.bi.decorator import bi_sync
 from noc.core.model.decorator import on_delete_check
 from noc.core.clickhouse.connect import connection
 from noc.core.purgatorium import ProtocolCheckResult, SOURCES, ETL_SOURCE
-from noc.core.mongo.fields import PlainReferenceField, ForeignKeyField
+from noc.core.mongo.fields import PlainReferenceField
 from noc.core.ip import IP
 from noc.main.models.pool import Pool
 from noc.main.models.label import Label
@@ -193,9 +194,9 @@ class DiscoveredObject(Document):
     checks: List[CheckStatus] = EmbeddedDocumentListField(CheckStatus)
     data: List[DataItem] = EmbeddedDocumentListField(DataItem)
     #
-    managed_object: "ManagedObject" = ForeignKeyField(ManagedObject)
+    managed_object: "ManagedObject" = IntField(required=False)
     # Link to agent
-    agent: "Agent" = PlainReferenceField(Agent)
+    agent: "Agent" = ObjectIdField(required=False)
     # Link to Rule
     rule: "ObjectDiscoveryRule" = PlainReferenceField(ObjectDiscoveryRule, required=False)
     #

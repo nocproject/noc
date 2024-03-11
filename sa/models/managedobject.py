@@ -316,6 +316,7 @@ class ManagedObjectManager(Manager):
         ("sa.Service", "managed_object"),
         ("maintenance.Maintenance", "escalate_managed_object"),
         ("maintenance.Maintenance", "direct_objects__object"),
+        ("sa.DiscoveredObject", "managed_object"),
     ],
 )
 class ManagedObject(NOCModel):
