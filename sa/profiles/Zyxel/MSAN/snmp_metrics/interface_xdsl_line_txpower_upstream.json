@@ -1,0 +1,12 @@
+{
+    "$metric": "Interface | xDSL | Line | TxPower | Upstream",
+    "$type": "caps",
+    "oids": [[
+      "SNMP | MIB | ADSL-MIB", {
+        "$type": "ifindex",
+        "oid": "ADSL-LINE-MIB::adslAturCurrOutputPwr.{{ ifIndex }}",
+        "type": "gauge",
+        "units": "dB"
+      }
+    ]]
+  }
