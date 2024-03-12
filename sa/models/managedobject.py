@@ -2247,9 +2247,9 @@ class ManagedObject(NOCModel):
         mo.is_mock = True
         return mo
 
-    def iter_scope(self, scope):
+    def iter_technology(self, technologies):
         for o in Object.get_managed(self):
-            yield from o.iter_scope(scope)
+            yield from o.iter_technology(technologies)
 
     def get_effective_fm_pool(self):
         if self.fm_pool:

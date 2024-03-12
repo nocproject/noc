@@ -43,6 +43,7 @@ from noc.core.model.decorator import on_save, on_delete_check
 from noc.core.bi.decorator import bi_sync
 from noc.core.change.decorator import change
 from noc.core.topology.types import TopologyNode
+from noc.core.discriminator import discriminator
 from noc.main.models.remotesystem import RemoteSystem
 from noc.main.models.label import Label
 from noc.core.comp import smart_text
@@ -50,7 +51,7 @@ from noc.config import config
 from noc.pm.models.agent import Agent
 from noc.cm.models.configurationscope import ConfigurationScope
 from noc.cm.models.configurationparam import ConfigurationParam, ParamData, ScopeVariant
-from noc.core.discriminator import discriminator
+from noc.inv.models.technology import Technology
 from .objectmodel import ObjectModel, Crossing
 from .modelinterface import ModelInterface
 from .objectlog import ObjectLog
@@ -1241,7 +1242,7 @@ class Object(Document):
 
     def get_object_serials(self, chassis_only: bool = True) -> List[str]:
         """
-        Gettint object serialNumber
+        Getting object serialNumber
         :param chassis_only: With serial numbers inner objects
         :return:
         """
@@ -1251,22 +1252,31 @@ class Object(Document):
                 serials += oo.get_object_serials(chassis_only=False)
         return serials
 
-    def iter_scope(self, scope: str) -> Iterable[Tuple[PathItem, ...]]:
+    def iter_technology(self, technologies: List["Technology"]) -> Iterable[Tuple[PathItem, ...]]:
         """
-        Yields Full physical path for all connections with given scopes
-        behind the object
-
-        :param scope: Scope name
+        Iter object ports for technologies
+        :param technologies: List for connection technologies
         :return:
         """
-        connections = {name: ro for name, ro, _ in self.iter_inner_connections()}
+
+        def is_protocol_match(protocols) -> bool:
+            for p in protocols:
+                if p.protocol.technology in technologies:
+                    return True
+            return False
+
+        connections = {
+            name: ro
+            for name, ro, _ in self.iter_inner_connections()
+            if ro.model.cr_context != "XCVR"
+        }
+        # cr_context == XCVR
         for c in self.model.connections:
-            if c.type.is_matched_scope(scope, [p.protocol.code for p in c.protocols]):
-                # Yield connection
+            if is_protocol_match(c.protocols):
                 yield PathItem(object=self, connection=c),
             elif c.name in connections:
                 ro = connections[c.name]
-                for part_path in ro.iter_scope(scope):
+                for part_path in ro.iter_technology(technologies):
                     yield (PathItem(object=self, connection=c),) + part_path
 
     def set_connection_interface(self, name, if_name):

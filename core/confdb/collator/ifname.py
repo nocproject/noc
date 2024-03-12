@@ -14,8 +14,8 @@ class IfNameCollator(BaseCollator):
     Direct map between connection name and interface name
     """
 
-    def __init__(self):
-        super().__init__()
+    def __init__(self, profile=None):
+        super().__init__(profile=profile)
         self.names = None
 
     def collate(self, physical_path, interfaces):
