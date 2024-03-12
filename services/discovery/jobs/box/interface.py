@@ -22,6 +22,7 @@ from noc.inv.models.forwardinginstance import ForwardingInstance
 from noc.inv.models.interface import Interface
 from noc.inv.models.interfaceprofile import InterfaceProfile
 from noc.inv.models.subinterface import SubInterface
+from noc.inv.models.technology import Technology
 from noc.main.models.label import Label
 from noc.sa.interfaces.igetinterfaces import IGetInterfaces
 
@@ -724,7 +725,7 @@ class InterfaceCheck(PolicyDiscoveryCheck):
                 i["subinterfaces"] = list(i["subinterfaces"].values())
         return IGetInterfaces().clean_result(r)
 
-    def collate(self, if_map: Dict[str, Interface]) -> None:
+    def collate_old(self, if_map: Dict[str, Interface]) -> None:
         """
         Collation is the process of binding between physical and logical inventory.
         I.e. assigning interface names to inventory slots.
@@ -753,7 +754,8 @@ class InterfaceCheck(PolicyDiscoveryCheck):
         seen_objects = set()  # {object}
         obj_combined = {}  # object -> connection name -> parent name
         obj_ifnames = {}  # object -> connection name -> interface name
-        for path in self.object.iter_scope("physical"):
+        t = Technology.get_by_name("Ethernet")
+        for path in self.object.iter_technology([t]):
             if_name = None
             obj = path[-1].object
             if obj not in seen_objects:

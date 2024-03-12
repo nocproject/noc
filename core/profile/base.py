@@ -9,6 +9,7 @@
 import re
 import functools
 import warnings
+from itertools import product
 
 # Third-party modules
 from typing import Dict, Callable, Union, Optional, List, Tuple
@@ -521,7 +522,11 @@ class BaseProfile(object, metaclass=BaseProfileMetaclass):
     Activated by ConfDB `hints` section
     """
 
-    collators = None
+    collators = [
+        "noc.core.confdb.collator.profile.ProfileCollator",
+        "noc.core.confdb.collator.ifname.IfNameCollator",
+    ]
+
     """
     Collators
     List of (<collator handler>, <collator settings>) or <collator_handler>
@@ -705,10 +710,10 @@ class BaseProfile(object, metaclass=BaseProfileMetaclass):
         Returns linecard number related to interface
 
         ```python
-        >>> Profile().get_linecard("Gi 4/15")
+        >>> BaseProfile().get_linecard("Gi 4/15")
         4
-        >>> Profile().get_linecard("Lo")
-        >>> Profile().get_linecard("ge-1/1/0")
+        >>> BaseProfile().get_linecard("Lo")
+        >>> BaseProfile().get_linecard("ge-1/1/0")
         1
         ```
         """
@@ -735,16 +740,16 @@ class BaseProfile(object, metaclass=BaseProfileMetaclass):
         Returns stack number related to interface
 
         ```python
-        >>> Profile().get_stack_number("Gi 1/4/15")
+        >>> BaseProfile().get_stack_number("Gi 1/4/15")
         1
-        >>> Profile().get_stack_number("Lo")
-        >>> Profile().get_stack_number("Te 2/0/1.5")
+        >>> BaseProfile().get_stack_number("Lo")
+        >>> BaseProfile().get_stack_number("Te 2/0/1.5")
         2
-        >>> Profile().get_stack_number("Se 0/1/0:0.10")
+        >>> BaseProfile().get_stack_number("Se 0/1/0:0.10")
         0
-        >>> Profile().get_stack_number("3:2")
+        >>> BaseProfile().get_stack_number("3:2")
         3
-        >>> Profile().get_stack_number("3/2")
+        >>> BaseProfile().get_stack_number("3/2")
         3
         ```
         """
@@ -757,6 +762,77 @@ class BaseProfile(object, metaclass=BaseProfileMetaclass):
                 return int(match.group("number"))
         return None
 
+    rx_connection_path = re.compile(r".*?(\d+|\d+/\d+)(_\w+|\.\d+)?$")
+
+    def get_connection_path(self, name: str) -> str:
+        """
+        Return interface path by Inventory connection name
+
+        ```python
+        >>> BaseProfile().get_stack_number("Gi 1/4/15")
+        1
+        >>> BaseProfile().get_stack_number("Lo")
+        >>> BaseProfile().get_stack_number("Te 2/0/1.5")
+        1
+        >>> BaseProfile().get_stack_number("Se 0/1/0:0.10")
+        0
+        >>> BaseProfile().get_stack_number("3:2")
+        2
+        >>> BaseProfile().get_stack_number("3/2")
+        2
+        >>> BaseProfile().get_stack_number("GigabitEthernet X/0/1")
+        0/1
+        >>> BaseProfile().get_stack_number("GigabitEthernet1_sfp")
+        1
+        >>> BaseProfile().get_stack_number("sfp 9")
+        9
+        ```
+        :param name: Connection Name
+        :return:
+        """
+        if name.isdigit():
+            return name
+        match = self.rx_connection_path.match(name)
+        if match:
+            return match.group(1)
+        return name
+
+    proto_prefixes = {
+        "TransEth40G": ["Fo"],
+        "10GBASE": ["Te", "Xg"],
+        "TransEth10G": ["Te", "Xg"],
+        "TransEth1G": ["Gi", "Ge"],
+        "1000BASE": ["Gi", "Ge"],
+        "100BASE": ["Fa"],
+        "TransEth100M": ["Fa"],
+        "10BASE": ["Eth"],
+    }
+
+    def get_protocol_prefixes(self, protocols: List[str]) -> List[str]:
+        """
+        Return interface prefix by Protocol
+        :param protocols: Protocols code list
+        :return:
+        """
+        for pp in self.proto_prefixes:
+            for p in protocols:
+                if p.startswith(pp):
+                    return self.proto_prefixes[pp]
+        return []
+
+    def get_interfaces_by_port(self, port) -> List[str]:
+        if len(port.path) == 1 and not port.stack_num:
+            return [port.name]
+        r = []
+        for p in port.path[:-1]:
+            r.append(self.get_connection_path(p.c_name))
+        path = self.get_connection_path(port.name)
+        r.append(path)
+        protocol_prefixes = self.get_protocol_prefixes(port.protocols)
+        if not protocol_prefixes:
+            return r
+        return list(product([protocol_prefixes, r], repeat=1))
+
     def generate_prefix_list(self, name, pl):
         """
         Generate prefix list:
@@ -766,7 +842,7 @@ class BaseProfile(object, metaclass=BaseProfileMetaclass):
 
         Strict - should tested prefix be exactly matched
         or should be more specific as well
-        Can be overriden to achieve desired behavior
+        Can be override to achieve desired behavior
 
         Not implemented in Base Class
         """
@@ -1026,11 +1102,11 @@ class BaseProfile(object, metaclass=BaseProfileMetaclass):
     def iter_collators(cls, obj):
         def get_collator(cfg):
             if isinstance(cfg, str):
-                c_handler, c_cfg = cfg, {}
+                c_handler, c_cfg = cfg, {"profile": obj.get_profile()}
             else:
                 c_handler, c_cfg = cfg
             if not c_handler.startswith("noc."):
-                c_handler = "noc.sa.profiles.%s.confdb.collator.%s" % (profile_name, c_handler)
+                c_handler = f"noc.sa.profiles.{profile_name}.confdb.collator.{c_handler}"
             c_cls = get_handler(c_handler)
             assert c_cls, "Invalid collator %s" % c_handler
             return c_cls(**c_cfg)
