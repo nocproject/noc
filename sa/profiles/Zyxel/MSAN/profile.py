@@ -72,6 +72,9 @@ class Profile(BaseProfile):
                 return "IES-2000"
             if hw in ["MSC1000A"]:
                 return "IES-2000M"
+        if slot_no == 10:
+            if hw in ["MSC1000G"]:
+                return "IES-5000"
         if slot_no == 12:
             if hw in ["MSC1024GB", "MSC1224GB"]:
                 return "IES-5112M"
