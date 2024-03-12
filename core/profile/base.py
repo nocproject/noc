@@ -784,6 +784,8 @@ class BaseProfile(object, metaclass=BaseProfileMetaclass):
         0/1
         >>> BaseProfile().get_stack_number("GigabitEthernet1_sfp")
         1
+        >>> BaseProfile().get_stack_number("Gi1_sfp")
+        1
         >>> BaseProfile().get_stack_number("sfp 9")
         9
         ```
@@ -821,7 +823,7 @@ class BaseProfile(object, metaclass=BaseProfileMetaclass):
         return []
 
     def get_interfaces_by_port(self, port) -> List[str]:
-        if len(port.path) == 1 and not port.stack_num:
+        if len(port.path) <= 1 and not port.stack_num:
             return [port.name]
         r = []
         for p in port.path[:-1]:

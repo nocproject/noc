@@ -1265,7 +1265,12 @@ class Object(Document):
                     return True
             return False
 
-        connections = {name: ro for name, ro, _ in self.iter_inner_connections()}
+        connections = {
+            name: ro
+            for name, ro, _ in self.iter_inner_connections()
+            if ro.model.cr_context != "XCVR"
+        }
+        # cr_context == XCVR
         for c in self.model.connections:
             if is_protocol_match(c.protocols):
                 yield PathItem(object=self, connection=c),

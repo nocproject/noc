@@ -29,7 +29,7 @@ class PathItem(object):
             context=o.model.cr_context,
             c_name=c.name,
             c_num=c.name,
-            path_template=o.get_data("interface_collation", "path_template"),
+            # path_template=o.get_data("interface_collation", "path_template"),
             stack_num=o.get_data("stack", "member"),
             # slot_num=o.get_data("slot", "number"),
         )
@@ -52,6 +52,8 @@ class PortItem(object):
 
     @property
     def stack_num(self) -> int:
+        if not self.path:
+            return 0
         return self.path[0].stack_num
 
     @property
@@ -79,6 +81,9 @@ class ProfileCollator(BaseCollator):
             internal_name=c.internal_name,
         )
         for iface_name in self.profile.get_interfaces_by_port(pi):
-            iface_name = self.profile.convert_interface_name(iface_name)
+            try:
+                iface_name = self.profile.convert_interface_name(iface_name)
+            except ValueError:
+                continue
             if iface_name in interfaces:
                 return interfaces[iface_name]
