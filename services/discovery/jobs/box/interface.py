@@ -725,7 +725,7 @@ class InterfaceCheck(PolicyDiscoveryCheck):
                 i["subinterfaces"] = list(i["subinterfaces"].values())
         return IGetInterfaces().clean_result(r)
 
-    def collate_old(self, if_map: Dict[str, Interface]) -> None:
+    def collate(self, if_map: Dict[str, Interface]) -> None:
         """
         Collation is the process of binding between physical and logical inventory.
         I.e. assigning interface names to inventory slots.

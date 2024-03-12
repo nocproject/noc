@@ -24,7 +24,7 @@ class PathItem(object):
     slot_num: Optional[str] = None
 
     @classmethod
-    def from_object(cls, o: "Object", c: "ObjectModelConnection") -> "PathItem":
+    def from_object(cls, o, c) -> "PathItem":
         p = PathItem(
             context=o.model.cr_context,
             c_name=c.name,
