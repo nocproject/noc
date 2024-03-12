@@ -88,12 +88,9 @@ class RedPandaClient(object):
     @classmethod
     def get_replication_factor(cls, meta) -> int:
         """
-        Only Odd number
+        Only Odd number, Max 3. Maybe config ?
         """
-        rf = len(meta.brokers)
-        if not rf % 2:
-            rf += 1
-        return rf
+        return min(len(meta.brokers), 3) or 1
 
     @staticmethod
     async def _sleep_on_error(delay: float = 1.0, deviation: float = 0.5):
@@ -224,16 +221,18 @@ class RedPandaClient(object):
         return self.admin_client
 
     @staticmethod
-    def get_topic_config(name) -> Dict[str, str]:
+    def get_topic_config(name, replication_factor: int = 1) -> Dict[str, str]:
         """
         Return topic retention settings
         :param name:
+        :param replication_factor: Cluster replicator factor
         :return:
         """
         if name.startswith("__"):
             return {}
         cfg = get_stream(name)
-        r = {}
+        # Replica not more 3
+        r = {"min.insync.replicas": min(cfg.config.replication_factor or 3, replication_factor or 1)}
         if cfg.config.retention_bytes:
             r["retention.bytes"] = str(cfg.config.retention_bytes)
         if cfg.config.retention_ages:
@@ -242,7 +241,6 @@ class RedPandaClient(object):
             r["segment.bytes"] = str(cfg.config.segment_bytes)
         if cfg.config.segment_ages:
             r["segment.ms"] = str(cfg.config.segment_ages * 1000)
-        # "min.insync.replicas": 2,
         return r or None
 
     async def create_stream(
@@ -267,7 +265,7 @@ class RedPandaClient(object):
                     name=name,
                     num_partitions=partitions,
                     replication_factor=replication_factor,
-                    topic_configs=self.get_topic_config(name),
+                    topic_configs=self.get_topic_config(name, replication_factor),
                 )
             ],
             validate_only=False,
