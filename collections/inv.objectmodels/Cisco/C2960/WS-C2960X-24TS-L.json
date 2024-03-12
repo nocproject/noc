@@ -516,10 +516,16 @@
             "description": "Gi1/0/25",
             "direction": "i",
             "gender": "f",
-            "protocols": [{
-                "direction": "*",
-                "protocol__code": "TransEth1G"
-            }],
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth100M"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth1G"
+                }
+            ],
             "type__name": "Transceiver | SFP"
         },
         {
@@ -527,10 +533,16 @@
             "description": "Gi1/0/26",
             "direction": "i",
             "gender": "f",
-            "protocols": [{
-                "direction": "*",
-                "protocol__code": "TransEth1G"
-            }],
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth100M"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth1G"
+                }
+            ],
             "type__name": "Transceiver | SFP"
         },
         {
@@ -538,10 +550,16 @@
             "description": "Gi1/0/27",
             "direction": "i",
             "gender": "f",
-            "protocols": [{
-                "direction": "*",
-                "protocol__code": "TransEth1G"
-            }],
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth100M"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth1G"
+                }
+            ],
             "type__name": "Transceiver | SFP"
         },
         {
@@ -549,10 +567,16 @@
             "description": "Gi1/0/28",
             "direction": "i",
             "gender": "f",
-            "protocols": [{
-                "direction": "*",
-                "protocol__code": "TransEth1G"
-            }],
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth100M"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth1G"
+                }
+            ],
             "type__name": "Transceiver | SFP"
         },
         {
@@ -567,7 +591,17 @@
             "description": "Management Interface",
             "direction": "s",
             "gender": "f",
-            "type__name": "Electrical | RJ45"
+            "type__name": "Electrical | RJ45",
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "10BASET"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "100BASETX"
+                }
+            ]
         },
         {
             "name": "power",
