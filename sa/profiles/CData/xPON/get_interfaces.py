@@ -1,7 +1,7 @@
 # ---------------------------------------------------------------------
 # CData.xPON.get_interfaces
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2022 The NOC Project
+# Copyright (C) 2007-2024 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -106,7 +106,6 @@ class Script(BaseScript):
                 iface = {
                     "name": ifname,
                     "type": "physical",
-                    "snmp_ifindex": match.group("snmp_ifindex"),
                     "admin_status": True,
                     "oper_status": match.group("oper_status").lower() == "1",
                     "enabled_protocols": [],
