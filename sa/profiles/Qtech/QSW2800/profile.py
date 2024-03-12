@@ -60,6 +60,8 @@ class Profile(BaseProfile):
         },
         "is_stack": {"caps": {"$in": ["Stack | Members"]}},
         "is_stackable": {"platform": {"$regex": r"QSW-8200-28F-AC-DC"}},
+        "is_qsw3750": {"platform": {"$regex": r"QSW-(?:3750|2850|4610|3470|3500)"}},
+        "is_old_version": {"version": {"$regex": r"8.1.1.(?:398|296|431|458|426|406)"}},
     }
 
     rx_date_format = re.compile(r"(\S+)\s*\((.+)\)")
