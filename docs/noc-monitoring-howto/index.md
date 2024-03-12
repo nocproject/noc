@@ -39,9 +39,10 @@ services:
     ports:
       - 8429:8429
     volumes:
-      - "./vm/vmagentdata:/vmagentdata"        
-      - "./vm/prometheus.yml:/etc/prometheus/prometheus.yml"
+      - "./vm/vmagentdata:/vmagentdata"
+      - "./vm/vmagent.yml:/etc/prometheus/prometheus.yml"
     command:
+      - '--promscrape.config.strictParse=false'
       - '--promscrape.config=/etc/prometheus/prometheus.yml'
       - '--remoteWrite.url=http://vm:8428/api/v1/write'
     restart: always
@@ -110,9 +111,10 @@ mkdir -p /etc/docker-compose/mon/grafana/data/
 ```
 git clone https://code.getnoc.com/noc/grafana-selfmon-dashboards.git /etc/docker-compose/mon/grafana/grafana-selfmon-dashboards/
 ```
-4. Create the **vm** directory:
+4. Create the **vm** and **admdata** directory:
 ```
-mkdir /etc/docker-compose/mon/vm
+mkdir -p /etc/docker-compose/mon/vm/amdata/
+chmod 777 /etc/docker-compose/mon/vm/amdata
 ```
 5. In the **vm** directory, create the **vmdata** directory and a file named **vmagent.yml**.
 ```
@@ -189,9 +191,9 @@ git clone https://code.getnoc.com/noc/noc-prometheus-alerts.git /etc/docker-comp
 ```
 6. Create a file named **alertmanager.yml** in the **vm** directory.
 ```
-touch /etc/docker-compose/mon/vm/alertmanager.yml
+touch /etc/docker-compose/mon/vm/amdata/alertmanager.yml
 ```
-with the following content, replacing your data:
+with the following content, replacing with your data:
 ```
 global:
   resolve_timeout: 5m
@@ -214,6 +216,7 @@ route:
       group_interval: 5m
  
 receivers:
+- name: blackhole
 - name: 'prometheus-bot'
   webhook_configs:
    - url: 'http://prometheus-bot:9087/alert/<id of telegram chat>'
@@ -227,7 +230,6 @@ receivers:
       From: alertmanager@prometheus.example.com
       Subject: '{{ template "email.default.subject" . }}'
       To: XXXXXXX@example.com
-    html: {# '{{ template "email.default.html" . }}' #}
     
 inhibit_rules:
   - source_match:

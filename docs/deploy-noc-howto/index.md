@@ -1,4 +1,4 @@
-# NOC Deply Howto
+# NOC Deploy Howto
 
 ## Change Administrator's Password
 

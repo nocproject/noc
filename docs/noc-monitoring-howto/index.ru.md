@@ -37,9 +37,10 @@ services:
     ports:
       - 8429:8429
     volumes:
-      - "./vm/vmagentdata:/vmagentdata"        
-      - "./vm/prometheus.yml:/etc/prometheus/prometheus.yml"
+      - "./vm/vmagentdata:/vmagentdata"
+      - "./vm/vmagent.yml:/etc/prometheus/prometheus.yml"
     command:
+      - '--promscrape.config.strictParse=false'
       - '--promscrape.config=/etc/prometheus/prometheus.yml'
       - '--remoteWrite.url=http://vm:8428/api/v1/write'
     restart: always
@@ -64,7 +65,7 @@ services:
     image: prom/alertmanager
     restart: always
     volumes:
-      - "./vm:/alertmanager"
+      - "./vm/amdata/:/alertmanager"
     command:
       - --config.file=/alertmanager/alertmanager.yml
       - --web.external-url=https://alertmanager:9093
@@ -108,9 +109,10 @@ mkdir -p /etc/docker-compose/mon/grafana/data/
 ```
 git clone https://code.getnoc.com/noc/grafana-selfmon-dashboards.git /etc/docker-compose/mon/grafana/grafana-selfmon-dashboards/
 ```
-4. Cоздаём директорию **vm**:
+4. Cоздаём директории **vm** и **amdata**:
 ```
-mkdir /etc/docker-compose/mon/vm
+mkdir -p /etc/docker-compose/mon/vm/amdata/
+chmod 777 /etc/docker-compose/mon/vm/amdata
 ```
 5. В директории **vm** создаём директорию **vmdata** и файл **vmagent.yml** 
 ```
@@ -188,7 +190,7 @@ git clone https://code.getnoc.com/noc/noc-prometheus-alerts.git /etc/docker-comp
 ```
 6. В директорию **vm** создаём файл **alertmanager.yml**: 
 ```
-touch /etc/docker-compose/mon/vm/alertmanager.yml
+touch /etc/docker-compose/mon/vm/amdata/alertmanager.yml
 ```
 со следующим содержимым подставляя свои данные:
 ```
@@ -213,6 +215,7 @@ route:
       group_interval: 5m
  
 receivers:
+- name: blackhole
 - name: 'prometheus-bot'
   webhook_configs:
    - url: 'http://prometheus-bot:9087/alert/<id чат телеграмма>'
@@ -226,7 +229,6 @@ receivers:
       From: alertmanager@prometheus.example.com
       Subject: '{{ template "email.default.subject" . }}'
       To: XXXXXXX@example.com
-    html: {# '{{ template "email.default.html" . }}' #}
     
 inhibit_rules:
   - source_match:
