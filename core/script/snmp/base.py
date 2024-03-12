@@ -94,7 +94,9 @@ class SNMP(object):
 
     def _get_snmp_credentials(self, version: Optional[int] = None) -> Tuple[str, int]:
         version = self._get_snmp_version(version)
-        if version < SNMP_v3 and "snmp_ro" not in self.script.credentials:
+        if self.script.is_beefed:
+            return "public", SNMP_v2c
+        elif version < SNMP_v3 and "snmp_ro" not in self.script.credentials:
             raise SNMPError(code=ERR_SNMP_BAD_COMMUNITY)
         elif version < SNMP_v3:
             return str(self.script.credentials["snmp_ro"]), version
