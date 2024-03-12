@@ -912,6 +912,7 @@ nav:
   - How-to:
       - Overview: sections-overview/howto.md
       - Deploy NOC: deploy-noc-howto/index.md
+      - Add devices from network scan: add-from-network-scan-howto/index.md
       - Sharing Collections Howto: sharing-collections-howto/index.md
       - Loading FIAS Data Howto:
           - Overview: fias-loading-howto/index.md
