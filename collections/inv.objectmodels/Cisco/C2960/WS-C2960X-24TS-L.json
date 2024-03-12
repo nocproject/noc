@@ -584,6 +584,10 @@
             "description": "Console port",
             "direction": "s",
             "gender": "f",
+            "protocols": [{
+                "direction": ">",
+                "protocol__code": "RS232"
+            }],
             "type__name": "Electrical | RJ45"
         },
         {
@@ -607,7 +611,7 @@
             "name": "power",
             "description": "Power inlet",
             "direction": "s",
-            "gender": "f",
+            "gender": "m",
             "protocols": [
                 {
                     "direction": ">",
