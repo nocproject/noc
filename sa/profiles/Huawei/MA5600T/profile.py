@@ -2,7 +2,7 @@
 # Vendor: Huawei
 # OS:     MA5600T
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2020 The NOC Project
+# Copyright (C) 2007-2024 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -67,7 +67,7 @@ class Profile(BaseProfile):
         rb"(\s+(ALARM NAME|PARAMETERS|DESCRIPTION|CAUSE|ADVICE)\s+:\s*(.+\n)+)+\s+\-+\s*END",
         re.MULTILINE,
     )
-    rogue_chars = [b"\xff", b"\r", rx_alarm_clean]
+    rogue_chars = [re.compile(rb"\x1b\[(?P<s>\d+)D +\x1b\[(?P=s)D"), b"\xff", b"\r", rx_alarm_clean]
     cli_retries_unprivileged_mode = 2
     config_tokenizer = "indent"
     config_tokenizer_settings = {"line_comment": "#"}
