@@ -155,7 +155,7 @@ class ActivationConfig(EmbeddedDocument):
 
 
 @change
-@on_delete_check(check=[("pm.MetricRule", "items.metric_action")])
+@on_delete_check(check=[("pm.MetricRule", "actions.metric_action")])
 class MetricAction(Document):
     meta = {
         "collection": "metricactions",
