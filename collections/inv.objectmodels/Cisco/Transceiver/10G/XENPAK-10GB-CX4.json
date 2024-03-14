@@ -23,6 +23,21 @@
             "attr": "part_no",
             "interface": "asset",
             "value": ["XENPAK-10GB-CX4"]
+        },
+        {
+            "attr": "distance_max",
+            "interface": "optical",
+            "value": 15
+        },
+        {
+            "attr": "bidi",
+            "interface": "optical",
+            "value": false
+        },
+        {
+            "attr": "xwdm",
+            "interface": "optical",
+            "value": false
         }
     ]
 }

@@ -43,6 +43,21 @@
             "attr": "part_no",
             "interface": "asset",
             "value": ["DEM-331R"]
+        },
+        {
+            "attr": "distance_max",
+            "interface": "optical",
+            "value": 40000
+        },
+        {
+            "attr": "bidi",
+            "interface": "optical",
+            "value": true
+        },
+        {
+            "attr": "xwdm",
+            "interface": "optical",
+            "value": false
         }
     ]
 }

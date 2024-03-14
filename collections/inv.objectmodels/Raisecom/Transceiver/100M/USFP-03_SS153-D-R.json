@@ -42,6 +42,26 @@
             "attr": "part_no",
             "interface": "asset",
             "value": ["USFP-03/SS153"]
+        },
+        {
+            "attr": "tx_wavelength",
+            "interface": "optical",
+            "value": 1550
+        },
+        {
+            "attr": "distance_max",
+            "interface": "optical",
+            "value": 15000
+        },
+        {
+            "attr": "bidi",
+            "interface": "optical",
+            "value": false
+        },
+        {
+            "attr": "xwdm",
+            "interface": "optical",
+            "value": false
         }
     ]
 }

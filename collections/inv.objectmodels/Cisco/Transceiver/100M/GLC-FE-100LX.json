@@ -51,6 +51,16 @@
             "attr": "part_no",
             "interface": "asset",
             "value": ["GLC-FE-100LX"]
+        },
+        {
+            "attr": "bidi",
+            "interface": "optical",
+            "value": false
+        },
+        {
+            "attr": "xwdm",
+            "interface": "optical",
+            "value": false
         }
     ]
 }

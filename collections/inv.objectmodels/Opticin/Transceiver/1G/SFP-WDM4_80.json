@@ -43,6 +43,21 @@
             "attr": "part_no",
             "interface": "asset",
             "value": ["SFP-WDM4.80", "SFP-BiDi-DDM4.80"]
+        },
+        {
+            "attr": "distance_max",
+            "interface": "optical",
+            "value": 80000
+        },
+        {
+            "attr": "bidi",
+            "interface": "optical",
+            "value": true
+        },
+        {
+            "attr": "xwdm",
+            "interface": "optical",
+            "value": false
         }
     ]
 }

@@ -51,6 +51,16 @@
             "attr": "part_no",
             "interface": "asset",
             "value": ["TRPUG1CLXECISE2G"]
+        },
+        {
+            "attr": "bidi",
+            "interface": "optical",
+            "value": false
+        },
+        {
+            "attr": "xwdm",
+            "interface": "optical",
+            "value": false
         }
     ]
 }

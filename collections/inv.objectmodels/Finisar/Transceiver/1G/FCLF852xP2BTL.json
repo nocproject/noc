@@ -44,6 +44,21 @@
                 "FCMJ-8521-3",
                 "GE-GB-P1RC"
             ]
+        },
+        {
+            "attr": "distance_max",
+            "interface": "optical",
+            "value": 100
+        },
+        {
+            "attr": "bidi",
+            "interface": "optical",
+            "value": false
+        },
+        {
+            "attr": "xwdm",
+            "interface": "optical",
+            "value": false
         }
     ]
 }

@@ -45,6 +45,21 @@
             "attr": "part_no",
             "interface": "asset",
             "value": ["GLC-SX-MMD", "GLC-SX"]
+        },
+        {
+            "attr": "distance_max",
+            "interface": "optical",
+            "value": 300
+        },
+        {
+            "attr": "bidi",
+            "interface": "optical",
+            "value": false
+        },
+        {
+            "attr": "xwdm",
+            "interface": "optical",
+            "value": false
         }
     ]
 }

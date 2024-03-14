@@ -51,6 +51,26 @@
             "attr": "order_part_no",
             "interface": "asset",
             "value": ["FTRJ-8519-7D-NT", "FTRJ-8519-7D-CSC"]
+        },
+        {
+            "attr": "tx_wavelength",
+            "interface": "optical",
+            "value": 850
+        },
+        {
+            "attr": "distance_max",
+            "interface": "optical",
+            "value": 300
+        },
+        {
+            "attr": "bidi",
+            "interface": "optical",
+            "value": false
+        },
+        {
+            "attr": "xwdm",
+            "interface": "optical",
+            "value": false
         }
     ]
 }

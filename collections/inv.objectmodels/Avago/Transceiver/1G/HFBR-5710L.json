@@ -52,6 +52,26 @@
             "attr": "part_no",
             "interface": "asset",
             "value": ["HFBR-5710L", "HFBR-5710LP-H3C"]
+        },
+        {
+            "attr": "tx_wavelength",
+            "interface": "optical",
+            "value": 850
+        },
+        {
+            "attr": "distance_max",
+            "interface": "optical",
+            "value": 550
+        },
+        {
+            "attr": "bidi",
+            "interface": "optical",
+            "value": false
+        },
+        {
+            "attr": "xwdm",
+            "interface": "optical",
+            "value": false
         }
     ]
 }

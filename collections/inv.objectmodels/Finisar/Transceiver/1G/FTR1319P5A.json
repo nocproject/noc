@@ -52,6 +52,26 @@
             "attr": "part_no",
             "interface": "asset",
             "value": ["FTR-1319P-5A"]
+        },
+        {
+            "attr": "tx_wavelength",
+            "interface": "optical",
+            "value": 1310
+        },
+        {
+            "attr": "distance_max",
+            "interface": "optical",
+            "value": 10000
+        },
+        {
+            "attr": "bidi",
+            "interface": "optical",
+            "value": false
+        },
+        {
+            "attr": "xwdm",
+            "interface": "optical",
+            "value": false
         }
     ]
 }

@@ -34,6 +34,21 @@
             "attr": "part_no",
             "interface": "asset",
             "value": ["GLC-T", "GLC-TE", "SBCU-5740ARZ-CS1"]
+        },
+        {
+            "attr": "distance_max",
+            "interface": "optical",
+            "value": 100
+        },
+        {
+            "attr": "bidi",
+            "interface": "optical",
+            "value": false
+        },
+        {
+            "attr": "xwdm",
+            "interface": "optical",
+            "value": false
         }
     ]
 }

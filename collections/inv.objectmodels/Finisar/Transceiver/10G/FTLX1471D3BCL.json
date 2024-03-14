@@ -51,6 +51,26 @@
             "attr": "order_part_no",
             "interface": "asset",
             "value": ["FTLX1471D3BCL-HW", "FTLX1471D3BCL-J1", "FTLX1471D3BCL-A5"]
+        },
+        {
+            "attr": "tx_wavelength",
+            "interface": "optical",
+            "value": 1310
+        },
+        {
+            "attr": "distance_max",
+            "interface": "optical",
+            "value": 10000
+        },
+        {
+            "attr": "bidi",
+            "interface": "optical",
+            "value": false
+        },
+        {
+            "attr": "xwdm",
+            "interface": "optical",
+            "value": false
         }
     ]
 }

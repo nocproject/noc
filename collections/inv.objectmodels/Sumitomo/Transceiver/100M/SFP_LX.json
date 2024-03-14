@@ -52,6 +52,16 @@
             "attr": "part_no",
             "interface": "asset",
             "value": ["SCP6803-C1-BM"]
+        },
+        {
+            "attr": "bidi",
+            "interface": "optical",
+            "value": false
+        },
+        {
+            "attr": "xwdm",
+            "interface": "optical",
+            "value": false
         }
     ]
 }

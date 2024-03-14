@@ -57,6 +57,21 @@
             "attr": "order_part_no",
             "interface": "asset",
             "value": ["FTRJ1519P1BCL-C1", "FTRJ1519P1BCL-CS", "FTRJ1519P1BCL-C"]
+        },
+        {
+            "attr": "distance_max",
+            "interface": "optical",
+            "value": 80000
+        },
+        {
+            "attr": "bidi",
+            "interface": "optical",
+            "value": false
+        },
+        {
+            "attr": "xwdm",
+            "interface": "optical",
+            "value": false
         }
     ]
 }

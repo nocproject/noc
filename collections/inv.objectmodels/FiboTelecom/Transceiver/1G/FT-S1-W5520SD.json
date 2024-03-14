@@ -30,6 +30,31 @@
             "attr": "part_no",
             "interface": "asset",
             "value": ["FT-S1-W5520SD"]
+        },
+        {
+            "attr": "tx_wavelength",
+            "interface": "optical",
+            "value": 1550
+        },
+        {
+            "attr": "rx_wavelength",
+            "interface": "optical",
+            "value": 1550
+        },
+        {
+            "attr": "distance_max",
+            "interface": "optical",
+            "value": 20000
+        },
+        {
+            "attr": "bidi",
+            "interface": "optical",
+            "value": true
+        },
+        {
+            "attr": "xwdm",
+            "interface": "optical",
+            "value": false
         }
     ]
 }

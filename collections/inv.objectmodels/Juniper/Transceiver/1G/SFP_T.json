@@ -40,6 +40,21 @@
             "attr": "order_part_no",
             "interface": "asset",
             "value": ["SFP-T"]
+        },
+        {
+            "attr": "distance_max",
+            "interface": "optical",
+            "value": 100
+        },
+        {
+            "attr": "bidi",
+            "interface": "optical",
+            "value": false
+        },
+        {
+            "attr": "xwdm",
+            "interface": "optical",
+            "value": false
         }
     ]
 }

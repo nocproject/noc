@@ -52,6 +52,21 @@
             "attr": "part_no",
             "interface": "asset",
             "value": ["SFP-GE-L-C", "GLC-LH-SM-G"]
+        },
+        {
+            "attr": "distance_max",
+            "interface": "optical",
+            "value": 20000
+        },
+        {
+            "attr": "bidi",
+            "interface": "optical",
+            "value": false
+        },
+        {
+            "attr": "xwdm",
+            "interface": "optical",
+            "value": false
         }
     ]
 }

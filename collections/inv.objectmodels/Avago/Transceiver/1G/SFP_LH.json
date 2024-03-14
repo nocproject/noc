@@ -52,6 +52,21 @@
             "attr": "part_no",
             "interface": "asset",
             "value": ["QFCT-5798LP", "SFCT-5798PZ", "SFCT-5798PZ-CS2", "SFCT-5798PZ-CS3"]
+        },
+        {
+            "attr": "distance_max",
+            "interface": "optical",
+            "value": 20000
+        },
+        {
+            "attr": "bidi",
+            "interface": "optical",
+            "value": false
+        },
+        {
+            "attr": "xwdm",
+            "interface": "optical",
+            "value": false
         }
     ]
 }

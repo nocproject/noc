@@ -12,14 +12,23 @@
             "description": "XFP Connector",
             "direction": "o",
             "gender": "m",
-            "protocols": [
-                {
-                    "direction": "*",
-                    "protocol__code": "TransEth10G"
-                }
-            ],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "TransEth10G"
+            }],
             "type__name": "Transceiver | XFP"
         }
     ],
-    "data": []
+    "data": [
+        {
+            "attr": "bidi",
+            "interface": "optical",
+            "value": false
+        },
+        {
+            "attr": "xwdm",
+            "interface": "optical",
+            "value": false
+        }
+    ]
 }

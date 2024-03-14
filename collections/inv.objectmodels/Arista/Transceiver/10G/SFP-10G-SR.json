@@ -52,6 +52,21 @@
             "attr": "part_no",
             "interface": "asset",
             "value": ["SFP-10G-SR"]
+        },
+        {
+            "attr": "distance_max",
+            "interface": "optical",
+            "value": 300
+        },
+        {
+            "attr": "bidi",
+            "interface": "optical",
+            "value": false
+        },
+        {
+            "attr": "xwdm",
+            "interface": "optical",
+            "value": false
         }
     ]
 }

@@ -46,6 +46,26 @@
             "attr": "part_no",
             "interface": "asset",
             "value": ["FTLX8570D3BCL-C1"]
+        },
+        {
+            "attr": "tx_wavelength",
+            "interface": "optical",
+            "value": 850
+        },
+        {
+            "attr": "distance_max",
+            "interface": "optical",
+            "value": 300
+        },
+        {
+            "attr": "bidi",
+            "interface": "optical",
+            "value": false
+        },
+        {
+            "attr": "xwdm",
+            "interface": "optical",
+            "value": false
         }
     ]
 }
