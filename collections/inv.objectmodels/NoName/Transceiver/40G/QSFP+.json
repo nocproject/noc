@@ -18,5 +18,16 @@
             "type__name": "Transceiver | QSFP+"
         }
     ],
-    "data": []
+    "data": [
+        {
+            "attr": "bidi",
+            "interface": "optical",
+            "value": false
+        },
+        {
+            "attr": "xwdm",
+            "interface": "optical",
+            "value": false
+        }
+    ]
 }

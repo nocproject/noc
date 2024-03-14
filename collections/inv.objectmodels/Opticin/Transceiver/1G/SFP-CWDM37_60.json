@@ -49,6 +49,26 @@
             "attr": "part_no",
             "interface": "asset",
             "value": ["SFP-CWDM37.60"]
+        },
+        {
+            "attr": "tx_wavelength",
+            "interface": "optical",
+            "value": 1370
+        },
+        {
+            "attr": "distance_max",
+            "interface": "optical",
+            "value": 60000
+        },
+        {
+            "attr": "bidi",
+            "interface": "optical",
+            "value": false
+        },
+        {
+            "attr": "xwdm",
+            "interface": "optical",
+            "value": true
         }
     ]
 }

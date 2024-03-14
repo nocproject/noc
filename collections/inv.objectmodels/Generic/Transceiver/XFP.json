@@ -11,11 +11,11 @@
             "description": null,
             "direction": "o",
             "gender": "m",
-            "type__name": "Transceiver | XFP",
             "protocols": [{
                 "direction": "*",
                 "protocol__code": "TransEth10G"
-            }]
+            }],
+            "type__name": "Transceiver | XFP"
         },
         {
             "name": "rx",
@@ -32,5 +32,16 @@
             "type__name": "Optical | LC"
         }
     ],
-    "data": []
+    "data": [
+        {
+            "attr": "bidi",
+            "interface": "optical",
+            "value": false
+        },
+        {
+            "attr": "xwdm",
+            "interface": "optical",
+            "value": false
+        }
+    ]
 }

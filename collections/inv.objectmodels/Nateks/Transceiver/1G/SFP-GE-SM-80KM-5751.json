@@ -43,6 +43,26 @@
             "attr": "part_no",
             "interface": "asset",
             "value": ["GESM80KMBIDI5751", "GE80KMBIDI57/51"]
+        },
+        {
+            "attr": "tx_wavelength",
+            "interface": "optical",
+            "value": 1570
+        },
+        {
+            "attr": "distance_max",
+            "interface": "optical",
+            "value": 80000
+        },
+        {
+            "attr": "bidi",
+            "interface": "optical",
+            "value": true
+        },
+        {
+            "attr": "xwdm",
+            "interface": "optical",
+            "value": false
         }
     ]
 }

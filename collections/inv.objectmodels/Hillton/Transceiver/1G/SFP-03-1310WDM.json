@@ -52,6 +52,21 @@
             "attr": "part_no",
             "interface": "asset",
             "value": ["SFP-03-1310WDM"]
+        },
+        {
+            "attr": "distance_max",
+            "interface": "optical",
+            "value": 3000
+        },
+        {
+            "attr": "bidi",
+            "interface": "optical",
+            "value": false
+        },
+        {
+            "attr": "xwdm",
+            "interface": "optical",
+            "value": false
         }
     ]
 }

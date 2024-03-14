@@ -42,6 +42,21 @@
             "attr": "part_no",
             "interface": "asset",
             "value": ["WDM-1G-1550-3SC"]
+        },
+        {
+            "attr": "tx_wavelength",
+            "interface": "optical",
+            "value": 1550
+        },
+        {
+            "attr": "bidi",
+            "interface": "optical",
+            "value": true
+        },
+        {
+            "attr": "xwdm",
+            "interface": "optical",
+            "value": false
         }
     ]
 }

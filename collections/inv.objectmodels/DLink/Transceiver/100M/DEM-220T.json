@@ -43,6 +43,21 @@
             "attr": "part_no",
             "interface": "asset",
             "value": ["DEM-220T", "DEM-220T/10"]
+        },
+        {
+            "attr": "distance_max",
+            "interface": "optical",
+            "value": 20000
+        },
+        {
+            "attr": "bidi",
+            "interface": "optical",
+            "value": true
+        },
+        {
+            "attr": "xwdm",
+            "interface": "optical",
+            "value": false
         }
     ]
 }

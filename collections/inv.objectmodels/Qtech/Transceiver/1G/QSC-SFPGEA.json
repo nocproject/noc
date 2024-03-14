@@ -35,6 +35,21 @@
             "attr": "part_no",
             "interface": "asset",
             "value": ["QSC-SFPGEA"]
+        },
+        {
+            "attr": "distance_max",
+            "interface": "optical",
+            "value": 100
+        },
+        {
+            "attr": "bidi",
+            "interface": "optical",
+            "value": false
+        },
+        {
+            "attr": "xwdm",
+            "interface": "optical",
+            "value": false
         }
     ]
 }

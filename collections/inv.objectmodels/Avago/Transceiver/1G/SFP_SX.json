@@ -46,6 +46,21 @@
             "attr": "part_no",
             "interface": "asset",
             "value": ["AFBR-5715APZ-CS3", "SFBR-5766PZ", "SFBR-5766PZ-CS2", "QFBR-5766LP"]
+        },
+        {
+            "attr": "distance_max",
+            "interface": "optical",
+            "value": 300
+        },
+        {
+            "attr": "bidi",
+            "interface": "optical",
+            "value": false
+        },
+        {
+            "attr": "xwdm",
+            "interface": "optical",
+            "value": false
         }
     ]
 }

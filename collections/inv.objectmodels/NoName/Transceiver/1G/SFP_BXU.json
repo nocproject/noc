@@ -43,6 +43,26 @@
             "attr": "min_serial_size",
             "interface": "asset",
             "value": 5
+        },
+        {
+            "attr": "tx_wavelength",
+            "interface": "optical",
+            "value": 1310
+        },
+        {
+            "attr": "distance_max",
+            "interface": "optical",
+            "value": 5000
+        },
+        {
+            "attr": "bidi",
+            "interface": "optical",
+            "value": true
+        },
+        {
+            "attr": "xwdm",
+            "interface": "optical",
+            "value": false
         }
     ]
 }

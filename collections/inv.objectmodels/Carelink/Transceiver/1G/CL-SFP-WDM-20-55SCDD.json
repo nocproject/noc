@@ -43,6 +43,26 @@
             "attr": "part_no",
             "interface": "asset",
             "value": ["CLSFPWDM2055SCDD"]
+        },
+        {
+            "attr": "tx_wavelength",
+            "interface": "optical",
+            "value": 1550
+        },
+        {
+            "attr": "rx_wavelength",
+            "interface": "optical",
+            "value": 1310
+        },
+        {
+            "attr": "bidi",
+            "interface": "optical",
+            "value": true
+        },
+        {
+            "attr": "xwdm",
+            "interface": "optical",
+            "value": false
         }
     ]
 }

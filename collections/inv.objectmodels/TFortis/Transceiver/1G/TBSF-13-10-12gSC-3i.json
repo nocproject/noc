@@ -43,6 +43,26 @@
             "attr": "part_no",
             "interface": "asset",
             "value": ["TBSF131012gSC3c", "TBSF131012GSC3C"]
+        },
+        {
+            "attr": "tx_wavelength",
+            "interface": "optical",
+            "value": 1310
+        },
+        {
+            "attr": "distance_max",
+            "interface": "optical",
+            "value": 10000
+        },
+        {
+            "attr": "bidi",
+            "interface": "optical",
+            "value": true
+        },
+        {
+            "attr": "xwdm",
+            "interface": "optical",
+            "value": false
         }
     ]
 }

@@ -52,6 +52,21 @@
             "attr": "part_no",
             "interface": "asset",
             "value": ["GR-S1-M8505L-D"]
+        },
+        {
+            "attr": "tx_wavelength",
+            "interface": "optical",
+            "value": 850
+        },
+        {
+            "attr": "bidi",
+            "interface": "optical",
+            "value": false
+        },
+        {
+            "attr": "xwdm",
+            "interface": "optical",
+            "value": false
         }
     ]
 }

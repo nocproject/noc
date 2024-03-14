@@ -52,6 +52,21 @@
             "attr": "part_no",
             "interface": "asset",
             "value": ["DEM-314GT"]
+        },
+        {
+            "attr": "distance_max",
+            "interface": "optical",
+            "value": 50000
+        },
+        {
+            "attr": "bidi",
+            "interface": "optical",
+            "value": false
+        },
+        {
+            "attr": "xwdm",
+            "interface": "optical",
+            "value": false
         }
     ]
 }

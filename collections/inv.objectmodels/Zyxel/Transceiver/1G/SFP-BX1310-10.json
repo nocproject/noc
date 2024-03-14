@@ -43,6 +43,21 @@
             "attr": "part_no",
             "interface": "asset",
             "value": ["SFP-BX1310-10"]
+        },
+        {
+            "attr": "distance_max",
+            "interface": "optical",
+            "value": 10000
+        },
+        {
+            "attr": "bidi",
+            "interface": "optical",
+            "value": true
+        },
+        {
+            "attr": "xwdm",
+            "interface": "optical",
+            "value": false
         }
     ]
 }

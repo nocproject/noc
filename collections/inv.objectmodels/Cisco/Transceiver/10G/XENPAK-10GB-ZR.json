@@ -51,6 +51,21 @@
             "attr": "part_no",
             "interface": "asset",
             "value": ["XENPAK-10GB-ZR", "XENPAK-10GB-ZR="]
+        },
+        {
+            "attr": "distance_max",
+            "interface": "optical",
+            "value": 80000
+        },
+        {
+            "attr": "bidi",
+            "interface": "optical",
+            "value": false
+        },
+        {
+            "attr": "xwdm",
+            "interface": "optical",
+            "value": false
         }
     ]
 }

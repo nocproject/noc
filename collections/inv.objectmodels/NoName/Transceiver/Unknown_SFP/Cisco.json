@@ -25,5 +25,16 @@
             "type__name": "Transceiver | SFP | Cisco"
         }
     ],
-    "data": []
+    "data": [
+        {
+            "attr": "bidi",
+            "interface": "optical",
+            "value": false
+        },
+        {
+            "attr": "xwdm",
+            "interface": "optical",
+            "value": false
+        }
+    ]
 }

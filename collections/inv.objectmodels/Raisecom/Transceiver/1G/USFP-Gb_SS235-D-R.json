@@ -43,6 +43,26 @@
             "attr": "part_no",
             "interface": "asset",
             "value": ["USFP-Gb/SS235", "USFP-Gb\\SS235"]
+        },
+        {
+            "attr": "tx_wavelength",
+            "interface": "optical",
+            "value": 1310
+        },
+        {
+            "attr": "distance_max",
+            "interface": "optical",
+            "value": 40000
+        },
+        {
+            "attr": "bidi",
+            "interface": "optical",
+            "value": false
+        },
+        {
+            "attr": "xwdm",
+            "interface": "optical",
+            "value": false
         }
     ]
 }

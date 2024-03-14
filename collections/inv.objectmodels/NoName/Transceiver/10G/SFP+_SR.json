@@ -41,5 +41,21 @@
             "type__name": "Optical | LC"
         }
     ],
-    "data": []
+    "data": [
+        {
+            "attr": "distance_max",
+            "interface": "optical",
+            "value": 300
+        },
+        {
+            "attr": "bidi",
+            "interface": "optical",
+            "value": false
+        },
+        {
+            "attr": "xwdm",
+            "interface": "optical",
+            "value": false
+        }
+    ]
 }
