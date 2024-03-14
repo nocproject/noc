@@ -450,6 +450,9 @@ nav:
           - Tangram:
               - Overview: profiles-reference/Tangram/index.md
               - Tangram.GT21: profiles-reference/Tangram/GT21.md
+          - Telecom:
+              - Overview: profiles-reference/Telecom/index.md
+              - Telecom.CPE: profiles-reference/Telecom/CPE.md
           - Telindus:
               - Overview: profiles-reference/Telindus/index.md
               - Telindus.SHDSL: profiles-reference/Telindus/SHDSL.md
