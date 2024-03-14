@@ -1,0 +1,7 @@
+{
+    "$metric": "CPU | Load | 1min",
+    "$type": "oid",
+    "oid": "1.3.6.1.4.1.35265.1.209.1.2.3.0",
+    "type": "gauge",
+    "scale": "scale(0.01)"
+}

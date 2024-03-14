@@ -1,0 +1,13 @@
+{
+    "name": "Eltex | LTP | LTP-8N sysObjectID",
+    "$collection": "sa.profilecheckrules",
+    "uuid": "892ba9c5-1255-443f-bd58-57eb7b3d9393",
+    "description": null,
+    "preference": 10,
+    "method": "snmp_v2c_get",
+    "param": "SNMPv2-MIB::sysObjectID.0",
+    "match_method": "eq",
+    "value": "1.3.6.1.4.1.35265.1.297",
+    "action": "match",
+    "profile__name": "Eltex.LTP16N"
+}
