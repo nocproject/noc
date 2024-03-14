@@ -13,6 +13,7 @@ Ext.define('NOC.core.filter.Filter', {
         'Ext.ux.form.SearchField',
         'NOC.core.ComboBox',
         'NOC.core.combotree.ComboTree',
+        'NOC.core.label.LabelField',
         'NOC.core.filter.ViewModel',
         'NOC.core.filter.FilterController',
     ],
