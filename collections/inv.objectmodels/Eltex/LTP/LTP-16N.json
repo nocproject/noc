@@ -1,0 +1,413 @@
+{
+    "name": "Eltex | LTP | LTP-16N",
+    "$collection": "inv.objectmodels",
+    "uuid": "0f1450b4-99cf-4590-b2fa-d16b133d08c2",
+    "vendor__code": "ELTEX",
+    "description": "Optical station terminal (OLT) LTP-16N for passive optical networks (PON). 16 x PON  ports (SFP), 8 x 10GBASE-X (SFP+)/1000BASE-Х(SFP) for Uplinks, console port(RS-232), OOB port, 2 x slots for Fan, 2 x slots for Power Supply 220 VAC (150-250 V) or 48 VDC (36-72 V).",
+    "connection_rule__name": "Eltex | LTP16N",
+    "cr_context": "CHASSIS",
+    "labels": [
+        "noc::inv::chassis",
+        "noc::inv::psu",
+        "noc::inv::sup",
+        "noc::inv::fan",
+        "noc::inv::port"
+    ],
+    "connections": [
+        {
+            "name": "PON_24",
+            "description": null,
+            "direction": "i",
+            "gender": "f",
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "GPON"
+            }],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "name": "PON_23",
+            "description": null,
+            "direction": "i",
+            "gender": "f",
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "GPON"
+            }],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "name": "PON_22",
+            "description": null,
+            "direction": "i",
+            "gender": "f",
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "GPON"
+            }],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "name": "PON_21",
+            "description": null,
+            "direction": "i",
+            "gender": "f",
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "GPON"
+            }],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "name": "PON_20",
+            "description": null,
+            "direction": "i",
+            "gender": "f",
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "GPON"
+            }],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "name": "PON_19",
+            "description": null,
+            "direction": "i",
+            "gender": "f",
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "GPON"
+            }],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "name": "PON_18",
+            "description": null,
+            "direction": "i",
+            "gender": "f",
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "GPON"
+            }],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "name": "PON_17",
+            "description": null,
+            "direction": "i",
+            "gender": "f",
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "GPON"
+            }],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "name": "PON_16",
+            "description": null,
+            "direction": "i",
+            "gender": "f",
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "GPON"
+            }],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "name": "PON_15",
+            "description": null,
+            "direction": "i",
+            "gender": "f",
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "GPON"
+            }],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "name": "PON_14",
+            "description": null,
+            "direction": "i",
+            "gender": "f",
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "GPON"
+            }],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "name": "PON_13",
+            "description": null,
+            "direction": "i",
+            "gender": "f",
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "GPON"
+            }],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "name": "PON_12",
+            "description": null,
+            "direction": "i",
+            "gender": "f",
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "GPON"
+            }],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "name": "PON_11",
+            "description": null,
+            "direction": "i",
+            "gender": "f",
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "GPON"
+            }],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "name": "PON_10",
+            "description": null,
+            "direction": "i",
+            "gender": "f",
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "GPON"
+            }],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "name": "PON_9",
+            "description": null,
+            "direction": "i",
+            "gender": "f",
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "GPON"
+            }],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "name": "Front_8",
+            "description": null,
+            "direction": "i",
+            "gender": "f",
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth1G"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth10G"
+                }
+            ],
+            "type__name": "Transceiver | SFP+"
+        },
+        {
+            "name": "Front_7",
+            "description": null,
+            "direction": "i",
+            "gender": "f",
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth1G"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth10G"
+                }
+            ],
+            "type__name": "Transceiver | SFP+"
+        },
+        {
+            "name": "Front_6",
+            "description": null,
+            "direction": "i",
+            "gender": "f",
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth1G"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth10G"
+                }
+            ],
+            "type__name": "Transceiver | SFP+"
+        },
+        {
+            "name": "Front_5",
+            "description": null,
+            "direction": "i",
+            "gender": "f",
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth1G"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth10G"
+                }
+            ],
+            "type__name": "Transceiver | SFP+"
+        },
+        {
+            "name": "Front_4",
+            "description": null,
+            "direction": "i",
+            "gender": "f",
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth1G"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth10G"
+                }
+            ],
+            "type__name": "Transceiver | SFP+"
+        },
+        {
+            "name": "Front_3",
+            "description": null,
+            "direction": "i",
+            "gender": "f",
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth1G"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth10G"
+                }
+            ],
+            "type__name": "Transceiver | SFP+"
+        },
+        {
+            "name": "Front_2",
+            "description": null,
+            "direction": "i",
+            "gender": "f",
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth1G"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth10G"
+                }
+            ],
+            "type__name": "Transceiver | SFP+"
+        },
+        {
+            "name": "Front_1",
+            "description": null,
+            "direction": "i",
+            "gender": "f",
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth1G"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth10G"
+                }
+            ],
+            "type__name": "Transceiver | SFP+"
+        },
+        {
+            "name": "psu2",
+            "description": null,
+            "direction": "i",
+            "gender": "f",
+            "type__name": "Eltex | MES | PSU"
+        },
+        {
+            "name": "psu1",
+            "description": null,
+            "direction": "i",
+            "gender": "f",
+            "type__name": "Eltex | MES | PSU"
+        },
+        {
+            "name": "OOB",
+            "description": null,
+            "direction": "s",
+            "gender": "f",
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "1000BASET"
+            }],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "name": "Console",
+            "description": null,
+            "direction": "s",
+            "gender": "f",
+            "protocols": [{
+                "direction": ">",
+                "protocol__code": "RS232"
+            }],
+            "type__name": "Electrical | RJ45"
+        }
+    ],
+    "data": [
+        {
+            "attr": "order_part_no",
+            "interface": "asset",
+            "value": ["LTP-16N"]
+        },
+        {
+            "attr": "depth",
+            "interface": "dimensions",
+            "value": 317
+        },
+        {
+            "attr": "height",
+            "interface": "dimensions",
+            "value": 44
+        },
+        {
+            "attr": "width",
+            "interface": "dimensions",
+            "value": 430
+        },
+        {
+            "attr": "managed",
+            "interface": "management",
+            "value": true
+        },
+        {
+            "attr": "power",
+            "interface": "power",
+            "value": 20.0
+        },
+        {
+            "attr": "units",
+            "interface": "rackmount",
+            "value": 1.0
+        },
+        {
+            "attr": "is_recursive",
+            "interface": "weight",
+            "value": true
+        },
+        {
+            "attr": "weight",
+            "interface": "weight",
+            "value": 3.5
+        }
+    ]
+}
