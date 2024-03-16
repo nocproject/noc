@@ -41,20 +41,37 @@ class Script(BaseScript):
             for p in parts[1:]:
                 for onu in p.split("\n"):
                     line = onu.split()
-                    r.append(
-                        {
-                            "vendor": line[1],
-                            "model": line[2],
-                            #                            "version": ap_sw_ver,
-                            "mac": line[3],
-                            "status": self.status_map[line[6]],
-                            "id": line[0],  # Use int command show ap inventory NAME
-                            "global_id": line[3],
-                            "type": "ont",
-                            #                            "name": line[0],
-                            #                            "ip": ip_address,
-                            "serial": line[3],
-                            "description": "",
-                        }
-                    )
+                    if len(line) >= 8:
+                        r.append(
+                            {
+                                "vendor": line[1],
+                                "model": line[2],
+                                "mac": line[3],
+                                "status": self.status_map[line[6]],
+                                "id": line[0],  # Use int command show ap inventory NAME
+                                "global_id": line[3],
+                                "type": "ont",
+                                "serial": line[3],
+                                "description": "",
+                            }
+                        )
+                    else:
+                        # Sometimes first fields overlaps
+                        # IntfName   VendorID  ModelID    MAC Address    Description                     BindType  Status          Dereg Reason
+                        # ---------- --------- ---------- -------------- ------------------------------- --------- --------------- -----------------
+                        # EPON0/13:9 VSOL      D401       006d.61d4.6bf8 N/A                             static    auto-configured N/A
+                        # EPON0/13:10xPON      101Z       e0e8.e61f.0759 N/A                             static    auto-configured N/A
+                        r.append(
+                            {
+                                "vendor": line[0][12:],
+                                "model": line[1],
+                                "mac": line[2],
+                                "status": self.status_map[line[5]],
+                                "id": line[0][0:11],  # Use int command show ap inventory NAME
+                                "global_id": line[2],
+                                "type": "ont",
+                                "serial": line[2],
+                                "description": "",
+                            }
+                        )
         return r
