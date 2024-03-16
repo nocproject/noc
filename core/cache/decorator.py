@@ -1,9 +1,12 @@
 # ----------------------------------------------------------------------
 # Decorators
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2020 The NOC Project
+# Copyright (C) 2007-2024 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
+
+# Python modules
+import functools
 
 # NOC modules
 from noc.core.perf import metrics
@@ -13,7 +16,7 @@ from .base import cache as x_cache
 def cachedmethod(cache=None, key="cache-%s", lock=None, ttl=None, version=0):
     """
     Decorator to wrap class instance or method
-    with memoizing callable
+    with memorizing callable
     :param cache: In-memory function which follows dict protocol.
         None, when no in-memory caching required
     :param key: Key mask to convert args to string
@@ -131,6 +134,6 @@ def cachedmethod(cache=None, key="cache-%s", lock=None, ttl=None, version=0):
                 # Done
                 return v
 
-        return wrapper
+        return functools.update_wrapper(wrapper, method)
 
     return decorator
