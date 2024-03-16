@@ -16,7 +16,7 @@ from .base import cache as x_cache
 def cachedmethod(cache=None, key="cache-%s", lock=None, ttl=None, version=0):
     """
     Decorator to wrap class instance or method
-    with memoizing callable
+    with memorizing callable
     :param cache: In-memory function which follows dict protocol.
         None, when no in-memory caching required
     :param key: Key mask to convert args to string
