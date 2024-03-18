@@ -5,6 +5,9 @@
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
+# Python modules
+import functools
+
 # NOC modules
 from noc.core.perf import metrics
 from .base import cache as x_cache
@@ -131,6 +134,6 @@ def cachedmethod(cache=None, key="cache-%s", lock=None, ttl=None, version=0):
                 # Done
                 return v
 
-        return wrapper
+        return functools.update_wrapper(wrapper, method)
 
     return decorator
