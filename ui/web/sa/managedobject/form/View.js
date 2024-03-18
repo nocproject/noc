@@ -1623,7 +1623,7 @@ Ext.define('NOC.sa.managedobject.form.View', {
                                     ],
                                     listeners: {
                                         rowdblclick: function(grid, record) {
-                                            console.log(record.get('name'));
+                                            console.log(record.get("templateId"), record.get('name'));
                                         }
                                     }
                                 },
@@ -1633,24 +1633,24 @@ Ext.define('NOC.sa.managedobject.form.View', {
                                     fieldLabel: __('Choose template'),
                                     store: {
                                         data: [
-                                            {name: 'aaaaa'},
-                                            {name: 'bbbbb'},
-                                            {name: 'ccccc'},
-                                            {name: 'xxxxx'},
-                                            {name: 'yyyyy'},
-                                            {name: 'zzzzz'},
+                                            {templateId: 1, name: 'aaaaa'},
+                                            {templateId: 2, name: 'bbbbb'},
+                                            {templateId: 3, name: 'ccccc'},
+                                            {templateId: 4, name: 'xxxxx'},
+                                            {templateId: 5, name: 'yyyyy'},
+                                            {templateId: 6, name: 'zzzzz'},
                                         ]
                                     },
                                     queryMode: 'local',
                                     displayField: 'name',
-                                    valueField: 'id',
+                                    valueField: 'templateId',
                                     listeners: {
                                         select: function(combo, record) {
                                             var store = Ext.data.StoreManager.lookup('saTemplateStore'),
                                                 recordToRemove = store.findRecord('name', record.get('name'));
 
                                             store.remove(recordToRemove);
-                                            store.insert(0, {name: record.get('name')});
+                                            store.insert(0, {templateId: combo.getValue(), name: record.get('name')});
                                         }
                                     }
                                 }

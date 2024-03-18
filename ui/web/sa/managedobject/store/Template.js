@@ -6,7 +6,7 @@
 console.debug('Defining NOC.sa.managedobject.store.Template');
 Ext.define('NOC.sa.managedobject.store.Template', {
     extend: 'Ext.data.Model',
-    fields: ['name'],
+    fields: ['templateId', 'name'],
     proxy: {
         type: 'localstorage',
         id: 'sa-managedobject-template'
