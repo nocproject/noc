@@ -17,6 +17,7 @@ Ext.define('NOC.sa.managedobject.Controller', {
 
     init: function(app) {
         var action = this.getView().noc.cmd;
+
         if(action && action.args && action.args.length >= 1) {
             this.editManagedObject(undefined, action.args[0], action.args[1]);
         }
@@ -695,7 +696,7 @@ Ext.define('NOC.sa.managedobject.Controller', {
         var view = this.getView(),
             formPanel = view.down('[itemId=managedobject-form-panel]');
         formPanel.up().getController().onNewRecord();
-        formPanel.up().form = formPanel.getForm();
+        formPanel.up().form = formPanel.down('#managedobject-form').getForm();
         view.getLayout().setActiveItem('managedobject-form');
     },
     editManagedObject: function(gridView, id, suffix, isEmbedded) {
@@ -729,8 +730,8 @@ Ext.define('NOC.sa.managedobject.Controller', {
                         gridView = this.getView();
                     }
                     record.set('id', id);
-                    formPanel = gridView.down('[itemId=managedobject-form-panel]');
-                    formView = formPanel.up();
+                    formPanel = gridView.down('#managedobject-form-panel #managedobject-form');
+                    formView = formPanel.up('[xtype=managedobject.form]');
                     formPanel.recordId = id;
                     formPanel.currentRecord = record;
                     form = formPanel.getForm();
@@ -776,6 +777,8 @@ Ext.define('NOC.sa.managedobject.Controller', {
                     }
                     this.setFormTitle(formView.changeTitle, data);
                     this.showMapHandler(record);
+                    formView.down('#sa-managedobject-template').collapse();
+                    formView.down('#sa-managedobject-template').disable();
                 }
                 if(view.noc.hasOwnProperty("protected_field")) {
                     this.setProtectedField(view.noc.protected_field);

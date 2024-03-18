@@ -154,6 +154,12 @@ Ext.define('NOC.sa.managedobject.form.FormController', {
         this.getView().up('[itemId=sa-managedobject]').getController().clearForm(this.getView().form);
         this.getView().up('[itemId=sa-managedobject]').getController().resetInlineStore(this.getView());
     },
+    onTemplate: function() {
+        var panel = this.getView().up('#sa-managedobject').down('#sa-managedobject-template');
+
+        panel.toggleCollapse();
+        panel.updateLayout();
+    },
     onConfig: function() {
         this.itemPreview('sa-config');
     },
@@ -211,8 +217,9 @@ Ext.define('NOC.sa.managedobject.form.FormController', {
     newRecord: function(defaults) {
         var defaultValues = {},
             view = this.getView(),
-            formPanel = this.getView().down('[itemId=managedobject-form-panel]'),
-            parentController = view.up('[itemId=sa-managedobject]').getController(),
+            formPanel = this.getView().down('#managedobject-form-panel #managedobject-form'),
+            templatePanel = this.getView().down('#sa-managedobject-template'),
+            parentController = view.up('#sa-managedobject').getController(),
             fieldsWithDefaultValue = Ext.Array.filter(Ext.create("NOC.sa.managedobject.Model").fields,
                 function(field) {return !Ext.isEmpty(field.defaultValue)});
 
@@ -221,9 +228,10 @@ Ext.define('NOC.sa.managedobject.form.FormController', {
         });
         parentController.setFormTitle(__("Create") + " {0}", {id: "NEW"});
         parentController.resetInlineStore(formPanel, defaults);
-        parentController.displayButtons(["closeBtn", "saveBtn", "resetBtn"]);
+        parentController.displayButtons(["closeBtn", "saveBtn", "resetBtn", "templateBtn"]);
         formPanel.recordId = undefined;
         this.getView().up('[itemId=sa-managedobject]').getController().clearForm(formPanel.getForm());
+        templatePanel.enable();
         formPanel.getForm().setValues(defaultValues);
     },
     saveRecord: function(data) {
