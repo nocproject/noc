@@ -40,9 +40,7 @@ class Script(BaseScript):
         if m:
             status = m["status"]
         else:
-            self.logger.info(
-                "Unknown ONU status '%s'. Fallback to oper_state 'down'", raw_status
-            )
+            self.logger.info("Unknown ONU status '%s'. Fallback to oper_state 'down'", raw_status)
             return False
 
         return self.status_map[status]
