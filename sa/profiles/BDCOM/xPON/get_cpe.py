@@ -30,14 +30,18 @@ class Script(BaseScript):
     # EPON port can contain maximum 64 ONU
     ifname_validator = re.compile(r"^EPON\d+/\d+:\d{1,2}$")
     ifname_match = re.compile(r"^(?P<ifname>EPON\d+/\d+:\d{1,2})")
-    status_match = re.compile(r"^(?P<status>auto-configured|auto-configuring|authenticated|lost|deregistered)")
+    status_match = re.compile(
+        r"^(?P<status>auto-configured|auto-configuring|authenticated|lost|deregistered)"
+    )
 
     def get_onu_status(self, raw_status):
         m = self.status_match.match(raw_status)
         if m:
             status = m["status"]
         else:
-            self.logger.info("Unknown ONU status while processing \'%s\'. Fallback to oper_state \'down\'", onu)
+            self.logger.info(
+                "Unknown ONU status while processing '%s'. Fallback to oper_state 'down'", onu
+            )
             return "inactive"
 
         return self.status_map[status]
@@ -47,7 +51,7 @@ class Script(BaseScript):
         if m:
             ifname = m["ifname"]
         else:
-            self.logger.info("Unknown ONU ifname while processing \'%s\'. Return raw value", onu)
+            self.logger.info("Unknown ONU ifname while processing '%s'. Return raw value", onu)
             return raw_id
 
         return ifname
