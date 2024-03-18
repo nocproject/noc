@@ -26,7 +26,6 @@ from mongoengine.fields import (
     FloatField,
 )
 from mongoengine.errors import ValidationError
-from bson import ObjectId
 from pymongo import InsertOne, DeleteOne
 import cachetools
 
