@@ -41,7 +41,7 @@ class Script(BaseScript):
             status = m["status"]
         else:
             self.logger.info(
-                "Unknown ONU status while processing '%s'. Fallback to oper_state 'down'", onu
+                "Unknown ONU status '%s'. Fallback to oper_state 'down'", raw_status
             )
             return False
 
@@ -52,7 +52,7 @@ class Script(BaseScript):
         if m:
             ifname = m["ifname"]
         else:
-            self.logger.info("Unknown ONU ifname while processing '%s'. Return raw value", onu)
+            self.logger.info("Unknown ONU ifname '%s'. Return raw value", raw_id)
             return raw_id
 
         return ifname
