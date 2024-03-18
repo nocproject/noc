@@ -27,11 +27,30 @@ class Script(BaseScript):
         "deregistered": "inactive",
     }
 
-    #    detail_map = {
-    #        "ont distance(m)": "ont_distance",
-    #        "ont ip 0 address/mask": "ont_address",
-    #        "last down cause": "down_cause",
-    #    }
+    # EPON port can contain maximum 64 ONU
+    ifname_validator = re.compile(r"^EPON\d+/\d+:\d{1,2}$")
+    ifname_match = re.compile(r"^(?P<ifname>EPON\d+/\d+:\d{1,2})")
+    status_match = re.compile(r"^(?P<status>auto-configured|auto-configuring|authenticated|lost|deregistered)")
+
+    def get_onu_status(self, raw_status):
+        m = self.status_match.match(raw_status)
+        if m:
+            status = m["status"]
+        else:
+            self.logger.info("Unknown ONU status while processing \'%s\'. Fallback to oper_state \'down\'", onu)
+            return "inactive"
+
+        return self.status_map[status]
+
+    def get_onu_local_id(self, raw_id):
+        m = self.ifname_match.match(raw_id)
+        if m:
+            ifname = m["ifname"]
+        else:
+            self.logger.info("Unknown ONU ifname while processing \'%s\'. Return raw value", onu)
+            return raw_id
+
+        return ifname
 
     def execute_cli(self, **kwargs):
         r = []
@@ -41,37 +60,40 @@ class Script(BaseScript):
             for p in parts[1:]:
                 for onu in p.split("\n"):
                     line = onu.split()
-                    if len(line) >= 8:
-                        r.append(
-                            {
-                                "vendor": line[1],
-                                "model": line[2],
-                                "mac": line[3],
-                                "status": self.status_map[line[6]],
-                                "id": line[0],  # Use int command show ap inventory NAME
-                                "global_id": line[3],
-                                "type": "ont",
-                                "serial": line[3],
-                                "description": "",
-                            }
-                        )
+                    if len(line) >= 8 or self.ifname_validator.match(line[0]):
+                        onu_id = line[0]
+                        onu_vendor = line[1]
+                        onu_model = line[2]
+                        onu_mac = line[3]
+                        onu_status = self.get_onu_status(line[6])
                     else:
-                        # Sometimes first fields overlaps
+                        # Sometimes first fields overlaps on some firmware version
                         # IntfName   VendorID  ModelID    MAC Address    Description                     BindType  Status          Dereg Reason
                         # ---------- --------- ---------- -------------- ------------------------------- --------- --------------- -----------------
                         # EPON0/13:9 VSOL      D401       006d.61d4.6bf8 N/A                             static    auto-configured N/A
                         # EPON0/13:10xPON      101Z       e0e8.e61f.0759 N/A                             static    auto-configured N/A
-                        r.append(
-                            {
-                                "vendor": line[0][12:],
-                                "model": line[1],
-                                "mac": line[2],
-                                "status": self.status_map[line[5]],
-                                "id": line[0][0:11],  # Use int command show ap inventory NAME
-                                "global_id": line[2],
-                                "type": "ont",
-                                "serial": line[2],
-                                "description": "",
-                            }
-                        )
+                        #
+                        # Or last fields
+                        # EPON0/3:38 VSOL      D401      006d.61d3.ee10 N/A             static    auto-configuringN/A
+
+                        onu_id = self.get_onu_local_id(line[0])
+                        onu_vendor = line[0].replace(onu_id, "")
+                        onu_model = line[1]
+                        onu_mac = line[2]
+                        onu_status = self.get_onu_status(line[5])
+
+                    r.append(
+                        {
+                            "vendor": onu_vendor,
+                            "model": onu_model,
+                            "mac": onu_mac,
+                            "status": onu_status,
+                            "id": onu_id,
+                            "global_id": onu_mac,
+                            "type": "ont",
+                            "serial": onu_mac,
+                            "description": "",
+                        }
+                    )
+
         return r
