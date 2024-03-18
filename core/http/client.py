@@ -21,8 +21,9 @@ import random
 # Third-party modules
 import cachetools
 import orjson
-from gufo.http.sync_client import HttpClient as HttpClientSync
-from gufo.http.async_client import HttpClient
+from gufo.http import BasicAuth, RequestMethod, DEFLATE, GZIP
+from gufo.http.async_client import AsyncClient
+from gufo.http.sync_client import SyncClient as HttpClientSync
 from typing import Optional, List, Tuple, Any, Dict
 
 # NOC modules
@@ -56,6 +57,8 @@ ns_cache = cachetools.TTLCache(
 
 CE_DEFLATE = "deflate"
 CE_GZIP = "gzip"
+
+gufo_encoding_map = {CE_DEFLATE: DEFLATE, CE_GZIP: GZIP}
 
 
 async def resolve(host):
@@ -124,23 +127,28 @@ async def fetch(
     :return: code, headers, body
     """
     params = {
-        "max_redirects": max_redirects,
+        "max_redirects": max_redirects if follow_redirects else 0,
         "validate_cert": validate_cert,
         "connect_timeout": connect_timeout,
         "timeout": request_timeout,
         "headers": headers,
+        "user_agent": DEFAULT_USER_AGENT,
+        "compression": gufo_encoding_map.get(content_encoding),
+        "auth": BasicAuth(user=user, password=password) if user else None,
     }
-    async with HttpClient(**params) as client:
-        if method == "GET":
-            r = await client.get(url, headers=headers)
-        elif method == "POST":
-            r = await client.post(url, body, headers=headers)
-        elif method == "PUT":
-            r = await client.put(url, body, headers=headers)
-        elif method == "OPTIONS":
-            r = await client.put(url, headers=headers)
-        else:
-            raise NotImplementedError()
+    body = body or ""
+    content_type = b"application/binary"
+    if not isinstance(body, (str, bytes)):
+        body = smart_text(orjson.dumps(body))
+        content_type = b"application/json"
+    body = smart_bytes(body)  # Here and below body is binary
+    h = {"Connection": b"close", "Content-Type": content_type}
+    async with AsyncClient(**params) as client:
+        try:
+            method = RequestMethod[method]
+        except ValueError:
+            raise NotImplementedError("Not implementer method: %s", method)
+        r = client.request(RequestMethod(method), url, body=body)
         return r.status, {}, r.read()
 
 
@@ -437,33 +445,30 @@ def fetch_sync(
     eof_mark: Optional[bytes] = None,
 ) -> Tuple[int, Dict[str, Any], bytes]:
     params = {
-        "max_redirects": max_redirects,
+        "max_redirects": max_redirects if follow_redirects else 0,
         "validate_cert": validate_cert,
         "connect_timeout": connect_timeout,
         "timeout": request_timeout,
         "headers": headers,
+        "compression": gufo_encoding_map.get(content_encoding),
+        "user_agent": DEFAULT_USER_AGENT,
+        "auth": BasicAuth(user=user, password=password) if user else None,
     }
     body = body or ""
-    content_type = "application/binary"
+    content_type = b"application/binary"
     if not isinstance(body, (str, bytes)):
         body = smart_text(orjson.dumps(body))
-        content_type = "application/json"
+        content_type = b"application/json"
     body = smart_bytes(body)  # Here and below body is binary
-    h = {"Connection": "close", "User-Agent": DEFAULT_USER_AGENT, "Content-Type": content_type}
+    h = {"Connection": b"close", "Content-Type": content_type}
     if headers:
-        h.update(headers)
-    h = {k: smart_bytes(v) for k, v in h.items()}
+        h.update({k: smart_bytes(v) for k, v in headers.items()})
     with HttpClientSync(**params) as client:
-        if method == "GET":
-            r = client.get(url, headers=h)
-        elif method == "POST":
-            r = client.post(url, body, headers=h)
-        elif method == "PUT":
-            r = client.put(url, body, headers=h)
-        elif method == "OPTIONS":
-            r = client.put(url, headers=h)
-        else:
-            raise NotImplementedError()
+        try:
+            method = RequestMethod[method]
+        except ValueError:
+            raise NotImplementedError("Not implementer method: %s", method)
+        r = client.request(RequestMethod(method), url, body=body, headers=h)
         return r.status, {}, r.read()
 
 
