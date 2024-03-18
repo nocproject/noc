@@ -9,10 +9,11 @@
 import operator
 import re
 from functools import partial
-from typing import List, Dict, Optional, Tuple, Set, Any
+from typing import List, Dict, Optional, Tuple, Set, Any, Union
 from threading import Lock
 
 # Third-party modules
+from bson import ObjectId
 import cachetools
 from mongoengine.document import Document, EmbeddedDocument
 from mongoengine.fields import (
@@ -159,7 +160,7 @@ class ObjectDiscoveryRule(Document):
 
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_id_cache"), lock=lambda _: id_lock)
-    def get_by_id(cls, oid) -> Optional["ObjectDiscoveryRule"]:
+    def get_by_id(cls, oid: Union[str, ObjectId]) -> Optional["ObjectDiscoveryRule"]:
         return ObjectDiscoveryRule.objects.filter(id=oid).first()
 
     @classmethod
