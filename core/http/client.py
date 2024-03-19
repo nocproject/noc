@@ -127,7 +127,7 @@ async def fetch(
     :return: code, headers, body
     """
     params = {
-        "max_redirects": max_redirects if follow_redirects else 0,
+        "max_redirects": max_redirects if follow_redirects else None,
         "validate_cert": validate_cert,
         "connect_timeout": connect_timeout,
         "timeout": request_timeout,
@@ -150,7 +150,7 @@ async def fetch(
             method = RequestMethod[method]
         except ValueError:
             raise NotImplementedError("Not implementer method: %s", method)
-        r = client.request(RequestMethod(method), url, body=body)
+        r = client.request(method, url, body=body)
         return r.status, {}, r.read()
 
 
@@ -447,7 +447,7 @@ def fetch_sync(
     eof_mark: Optional[bytes] = None,
 ) -> Tuple[int, Dict[str, Any], bytes]:
     params = {
-        "max_redirects": max_redirects if follow_redirects else 0,
+        "max_redirects": max_redirects if follow_redirects else None,
         "validate_cert": validate_cert,
         "connect_timeout": connect_timeout,
         "timeout": request_timeout,
@@ -470,7 +470,7 @@ def fetch_sync(
             method = RequestMethod[method]
         except ValueError:
             raise NotImplementedError("Not implementer method: %s", method)
-        r = client.request(RequestMethod(method), url, body=body, headers=h)
+        r = client.request(method, url, body=body, headers=h)
         return r.status, {}, r.read()
 
 
