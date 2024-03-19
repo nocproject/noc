@@ -143,6 +143,8 @@ async def fetch(
         content_type = b"application/json"
     body = smart_bytes(body)  # Here and below body is binary
     h = {"Connection": b"close", "Content-Type": content_type}
+    if headers:
+        h.update({k: smart_bytes(v) for k, v in headers.items()})
     async with AsyncClient(**params) as client:
         try:
             method = RequestMethod[method]
