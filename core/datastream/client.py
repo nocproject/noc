@@ -14,9 +14,11 @@ from typing import Optional
 import orjson
 
 # NOC modules
-from noc.core.http.client import fetch, ERR_READ_TIMEOUT, ERR_TIMEOUT
+from noc.core.http.client import ERR_READ_TIMEOUT, ERR_TIMEOUT
+from noc.core.http.async_client import HttpClient
 from noc.core.error import NOCError, ERR_DS_BAD_CODE, ERR_DS_PARSE_ERROR
 from noc.core.dcs.error import ResolutionError
+from noc.core.comp import DEFAULT_ENCODING
 
 logger = logging.getLogger(__name__)
 
@@ -28,6 +30,9 @@ class DataStreamClient(object):
         self.name = name
         self.service = service
         self._is_ready = False
+        self.client = HttpClient(
+            headers={"X-NOC-API-Access": f"datastream:{self.name}".encode(DEFAULT_ENCODING)}
+        )
 
     async def on_change(self, data):
         """
@@ -90,7 +95,6 @@ class DataStreamClient(object):
             base_qs += [f"format={ds_format}"]
         if filter_policy:
             base_qs += [f"filter_policy={filter_policy}"]
-        req_headers = {"X-NOC-API-Access": f"datastream:{self.name}"}
         loop = asyncio.get_running_loop()
         # Continue until finish
         while True:
@@ -107,19 +111,20 @@ class DataStreamClient(object):
             # Get data
             logger.debug("Request: %s", url)
             t0 = loop.time()
-            code, headers, data = await fetch(url, resolver=self.resolve, headers=req_headers)
+            res = self.client.get(url)
+            # code, headers, data = await fetch(url, resolver=self.resolve, headers=req_headers)
             dt = loop.time() - t0
-            logger.debug("Response: %s %s [%.2fms]", code, headers, dt * 1000)
-            if code == ERR_TIMEOUT or code == ERR_READ_TIMEOUT:
+            logger.debug("Response: %s %s [%.2fms]", res.status, res.headers, dt * 1000)
+            if res.status == ERR_TIMEOUT or res.status == ERR_READ_TIMEOUT:
                 if dt < self.RETRY_TIMEOUT:
                     await asyncio.sleep(self.RETRY_TIMEOUT - dt)
                 continue  # Retry on timeout
-            elif code != 200:
-                logger.info("Invalid response code: %s", code)
-                raise NOCError(code=ERR_DS_BAD_CODE, msg=f"Invalid response code {code}")
+            elif res.status != 200:
+                logger.info("Invalid response code: %s", res.status)
+                raise NOCError(code=ERR_DS_BAD_CODE, msg=f"Invalid response code {res.status}")
             # Parse response
             try:
-                data = orjson.loads(data)
+                data = orjson.loads(res.content)
             except ValueError as e:
                 logger.info("Cannot parse response: %s", e)
                 raise NOCError(code=ERR_DS_PARSE_ERROR, msg=f"Cannot parse response: {e}")
@@ -132,12 +137,12 @@ class DataStreamClient(object):
                 else:
                     await self.on_change(item)
             #
-            if not self._is_ready and "X-NOC-DataStream-More" not in headers:
+            if not self._is_ready and "X-NOC-DataStream-More" not in res.headers:
                 await self.on_ready()
                 self._is_ready = True
             # Continue from last change
-            if "X-NOC-DataStream-Last-Change" in headers:
-                change_id = headers["X-NOC-DataStream-Last-Change"]
+            if "X-NOC-DataStream-Last-Change" in res.headers:
+                change_id = res.headers["X-NOC-DataStream-Last-Change"]
                 continue
             if block and self._is_ready:
                 # Do not set block=1 before is_ready, otherwise

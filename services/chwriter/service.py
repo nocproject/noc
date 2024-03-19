@@ -16,7 +16,7 @@ from typing import Dict
 
 # NOC modules
 from noc.core.service.fastapi import FastAPIService
-from noc.core.http.client import fetch
+from noc.core.http.async_client import HttpClient
 from noc.config import config
 from noc.core.perf import metrics
 from noc.services.chwriter.channel import Channel
@@ -126,7 +126,11 @@ class CHWriterService(FastAPIService):
         Flush data
         :return:
         """
-        async with MessageStreamClient() as client:
+        async with MessageStreamClient() as client, HttpClient(
+                user=config.clickhouse.rw_user,
+                password=config.clickhouse.rw_password or "",
+                compression=config.clickhouse.encoding,
+        ) as http_client:
             cursor_id = self.get_cursor_id()
             partition_id = config.chwriter.shard_id
             if MessageStreamClient.has_bulk_mode():
@@ -149,15 +153,8 @@ class CHWriterService(FastAPIService):
                             f"database={config.clickhouse.db}&"
                             f"query={ch.q_sql}"
                         )
-                        code, headers, body = await fetch(
-                            url,
-                            method="POST",
-                            body=ch.get_data(),
-                            user=config.clickhouse.rw_user,
-                            password=config.clickhouse.rw_password or "",
-                            content_encoding=config.clickhouse.encoding,
-                        )
-                        if code == 200:
+                        r = http_client.post(url, body=ch.get_data())
+                        if r.status == 200:
                             self.logger.info(
                                 "[%s] %d records sent in %.2fms",
                                 ch.table,
@@ -166,14 +163,14 @@ class CHWriterService(FastAPIService):
                             )
                             metrics["records_written"] += n_records
                             break
-                        elif code in self.CH_SUSPEND_ERRORS:
-                            self.logger.info("[%s] Timed out: %s", ch.table, body)
+                        elif r.status in self.CH_SUSPEND_ERRORS:
+                            self.logger.info("[%s] Timed out: %s", ch.table, r.content)
                             metrics["error", ("type", "records_spool_timeouts")] += 1
                             await asyncio.sleep(1)
                             continue
                         else:
                             self.logger.info(
-                                "[%s] Failed to write records: %s %s", ch.table, code, body
+                                "[%s] Failed to write records: %s %s", ch.table, r.status, r.content
                             )
                             metrics["error", ("type", "records_spool_failed")] += 1
                             break
