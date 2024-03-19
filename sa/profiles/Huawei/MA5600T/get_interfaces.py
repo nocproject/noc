@@ -53,7 +53,7 @@ class Script(BaseScript):
     rx_ether = re.compile(
         r"^\s*(?P<port>\d+)\s+(?:10)?[GF]E(?:-Optic|-Elec)?\s+"
         r"(\S+\s+)?(\d+\s+)?(\S+\s+)?\S+\s+\S+\s+\S+\s+"
-        r"\S+\s+(?P<admin_status>\S+)\s+(?P<oper_status>\S+)\s*\n",
+        r"(?P<admin_status>\S+)\s+(?P<oper_status>\S+)\s*\n",
         re.MULTILINE,
     )
     rx_adsl_state = re.compile(r"^\s*(?P<port>\d+)\s+(?P<oper_state>\S+)", re.MULTILINE)
