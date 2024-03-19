@@ -10,8 +10,8 @@ import logging
 from typing import Optional, Dict
 
 # Third-party modules
-from gufo.http import BasicAuth, RequestMethod, DEFLATE, GZIP, BROTLI, Response
-from gufo.http.sync_client import HttpClient as GufoHttpClient
+from gufo.http import BasicAuth, RequestMethod, DEFLATE, GZIP, BROTLI
+from gufo.http.sync_client import Response, HttpClient as GufoHttpClient
 
 # NOC modules
 from noc.core.perf import metrics
