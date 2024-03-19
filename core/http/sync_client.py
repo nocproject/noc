@@ -72,7 +72,7 @@ class HttpClient(GufoHttpClient):
             validate_cert=validate_cert,
             connect_timeout=connect_timeout,
             timeout=timeout,
-            user_agent=user_agent,
+            user_agent=user_agent or self.user_agent,
             auth=auth,
         )
 
@@ -84,9 +84,8 @@ class HttpClient(GufoHttpClient):
         body: Optional[bytes] = None,
         headers: Optional[Dict[str, bytes]] = None,
     ) -> Response:
-        try:
-            method = RequestMethod[method]
-        except ValueError:
+        method = RequestMethod.get(method)
+        if not method:
             raise NotImplementedError("Not implementer method: %s", method)
         metrics["httpclient_requests", ("method", method.lower())] += 1
         return super().request(method, url, body=body, headers=headers)

@@ -7,10 +7,10 @@
 
 # Python modules
 from dataclasses import dataclass
-from typing import Any, Optional, List, Iterator
+from typing import Any, Optional, List, Iterator, Tuple
 
 # NOC modules
-from noc.core.http.client import fetch_sync
+from noc.core.http.sync_client import HttpClient
 from .errors import GeoCoderError
 
 
@@ -62,20 +62,22 @@ class BaseGeocoder(object):
         """
         yield from self.iter_query(query, bounds)
 
-    def get(self, url):
+    def get(self, url: str) -> Tuple[int, bytes]:
         """
         Perform get request
         :param url:
         :type url: str
         :return:
         """
-        code, headers, body = fetch_sync(
-            url, follow_redirects=True, validate_cert=False, allow_proxy=True
-        )
-        if 200 <= code <= 299:
-            return code, body
-        else:
-            raise GeoCoderError("HTTP Error %s" % code)
+        with HttpClient(
+            timeout=60,
+            allow_proxy=True,
+            validate_cert=False,
+        ) as client:
+            r = client.request("GET", url)
+            if 200 <= r.status <= 299:
+                return r.status, r.content
+            raise GeoCoderError("HTTP Error %s" % r.status)
 
     @staticmethod
     def get_path(data, path):

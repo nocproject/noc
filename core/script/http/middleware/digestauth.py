@@ -120,7 +120,6 @@ class DigestAuthMiddeware(BaseMiddleware):
         self.logger.debug("[%s] Process middleware on: %s", self.name, url)
         # First query - 401
         with HttpClient(
-            url,
             timeout=60,
             allow_proxy=False,
             validate_cert=False,

@@ -1,7 +1,7 @@
 # ----------------------------------------------------------------------
 # HTTP methods implementation
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2020 The NOC Project
+# Copyright (C) 2007-2024 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -91,7 +91,6 @@ class HTTP(object):
                 url, _, hdr = mw.process_get(url, "", hdr)
 
         with HttpClient(
-            url,
             headers=hdr,
             timeout=60,
             allow_proxy=False,
@@ -156,7 +155,6 @@ class HTTP(object):
             for mw in self.request_middleware:
                 url, data, hdr = mw.process_post(url, data, hdr)
         with HttpClient(
-            url,
             headers=hdr,
             timeout=60,
             allow_proxy=False,

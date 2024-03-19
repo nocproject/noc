@@ -32,7 +32,6 @@ class CsvUrlDownloader(BaseDownloader):
         url = ref_book.download_url
         url = url.replace("http://update.nocproject.org/db/", "https://cdn.nocproject.org/refbook/")
         with HttpClient(
-            url,
             timeout=60,
             allow_proxy=True,
             validate_cert=False,
