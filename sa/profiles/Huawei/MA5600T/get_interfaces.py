@@ -52,7 +52,7 @@ class Script(BaseScript):
     rx_tagged = re.compile(r"(?P<tagged>\d+)", re.MULTILINE)
     rx_ether = re.compile(
         r"^\s*(?P<port>\d+)\s+(?:10)?[GF]E(?:-Optic|-Elec)?\s+"
-        r"(\S+\s+)?(\d+\s+)?(\S+\s+)?\S+\s+\S+\s+\S+\s+"
+        r"(\S+\s+)?(\d+\s+)?(\S+\s+){3,4}"
         r"(?P<admin_status>\S+)\s+(?P<oper_status>\S+)\s*\n",
         re.MULTILINE,
     )
