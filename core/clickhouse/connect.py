@@ -11,7 +11,7 @@ from typing import List, Union
 from urllib.parse import quote as urllib_quote
 
 # NOC modules
-from noc.core.http.client import fetch_sync
+from noc.core.http.sync_client import HttpClient
 from noc.core.comp import smart_text
 from noc.config import config
 from .error import ClickhouseError
@@ -32,6 +32,12 @@ class ClickhouseClient(object):
             self.addresses = [str(x) for x in config.clickhouse.ro_addresses]
         else:
             self.addresses = [str(x) for x in config.clickhouse.rw_addresses]
+        self.http_client = HttpClient(
+            connect_timeout=config.clickhouse.connect_timeout,
+            timeout=config.clickhouse.request_timeout,
+            user=self.user,
+            password=self.password,
+        )
 
     def execute(
         self, sql=None, args=None, nodb=False, post=None, extra=None, return_raw=False
@@ -56,20 +62,12 @@ class ClickhouseClient(object):
             else:
                 post = sql.encode("utf8")
         url = "http://%s/?%s" % (random.choice(self.addresses), "&".join(qs))
-        code, headers, body = fetch_sync(
-            url,
-            method="POST",
-            body=post,
-            user=self.user,
-            password=self.password,
-            connect_timeout=config.clickhouse.connect_timeout,
-            request_timeout=config.clickhouse.request_timeout,
-        )
-        if code != 200:
-            raise ClickhouseError("%s: %s" % (code, body))
+        res = self.http_client.post(url, body=post)
+        if res.status != 200:
+            raise ClickhouseError("%s: %s" % (res.status, res.content))
         if return_raw:
-            return body
-        return [smart_text(row).split("\t") for row in body.splitlines()]
+            return res.content
+        return [smart_text(row).split("\t") for row in res.content.splitlines()]
 
     def ensure_db(self, db_name=None):
         self.execute(
