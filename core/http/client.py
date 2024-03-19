@@ -151,7 +151,7 @@ async def fetch(
         except ValueError:
             raise NotImplementedError("Not implementer method: %s", method)
         r = client.request(method, url, body=body)
-        return r.status, {}, r.read()
+        return r.status, {}, r.content
 
 
 async def __fetch(
@@ -471,7 +471,7 @@ def fetch_sync(
         except ValueError:
             raise NotImplementedError("Not implementer method: %s", method)
         r = client.request(method, url, body=body, headers=h)
-        return r.status, {}, r.read()
+        return r.status, {}, r.content
 
 
 def to32u(n):
