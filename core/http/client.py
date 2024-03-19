@@ -22,8 +22,8 @@ import random
 import cachetools
 import orjson
 from gufo.http import BasicAuth, RequestMethod, DEFLATE, GZIP
-from gufo.http.async_client import AsyncClient
-from gufo.http.sync_client import SyncClient as HttpClientSync
+from gufo.http.async_client import HttpClient
+from gufo.http.sync_client import HttpClient as HttpClientSync
 from typing import Optional, List, Tuple, Any, Dict
 
 # NOC modules
@@ -145,7 +145,7 @@ async def fetch(
     h = {"Connection": b"close", "Content-Type": content_type}
     if headers:
         h.update({k: smart_bytes(v) for k, v in headers.items()})
-    async with AsyncClient(**params) as client:
+    async with HttpClient(**params) as client:
         try:
             method = RequestMethod[method]
         except ValueError:
