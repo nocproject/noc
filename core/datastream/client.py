@@ -14,7 +14,6 @@ from typing import Optional
 import orjson
 
 # NOC modules
-from noc.core.http.client import ERR_READ_TIMEOUT, ERR_TIMEOUT
 from noc.core.http.async_client import HttpClient
 from noc.core.error import NOCError, ERR_DS_BAD_CODE, ERR_DS_PARSE_ERROR
 from noc.core.dcs.error import ResolutionError
