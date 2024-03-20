@@ -46,7 +46,6 @@ class HttpClient(GufoHttpClient):
     """
 
     user_agent = config.http_client.user_agent
-    headers: Optional[Dict[str, bytes]] = {None}
 
     def __init__(
         self: "HttpClient",

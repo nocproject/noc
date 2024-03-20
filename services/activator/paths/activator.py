@@ -18,10 +18,10 @@ from noc.core.script.loader import loader
 from noc.core.script.base import BaseScript
 from noc.core.ioloop.snmp import snmp_get, SNMPError
 from noc.core.snmp.version import SNMP_v1, SNMP_v2c
-from noc.core.http.client import fetch
+from noc.core.http.async_client import HttpClient
+from noc.core.comp import DEFAULT_ENCODING, smart_text
 from noc.core.perf import metrics
 from noc.config import config
-from noc.core.comp import smart_text
 from noc.core.jsonutils import iter_chunks
 from ..models.streaming import StreamingConfig
 
@@ -300,23 +300,23 @@ class ActivatorAPI(JSONRPCAPI):
         :returns" Result as a string, or None in case of errors
         """
         self.logger.debug("HTTP GET %s", url)
-        code, header, body = await fetch(
-            url,
-            request_timeout=config.activator.http_request_timeout,
-            follow_redirects=True,
+        async with HttpClient(
+            timeout=config.activator.http_request_timeout,
             validate_cert=config.activator.http_validate_cert,
-            eof_mark=b"</html>",
-        )
-        if 200 <= code <= 299:
-            return smart_text(body, errors="replace")
-        elif ignore_errors:
-            metrics["error", ("type", f"http_error_{code}")] += 1
-            self.logger.debug("HTTP GET %s failed: %s %s", url, code, body)
-            return smart_text(header, errors="replace") + smart_text(body, errors="replace")
-        else:
-            metrics["error", ("type", f"http_error_{code}")] += 1
-            self.logger.debug("HTTP GET %s failed: %s %s", url, code, body)
-            return None
+        ) as client:
+            resp = await client.get(url)
+            if 200 <= resp.status <= 299:
+                return resp.content.decode(DEFAULT_ENCODING, errors="replace")
+            elif ignore_errors:
+                metrics["error", ("type", f"http_error_{resp.status}")] += 1
+                self.logger.debug("HTTP GET %s failed: %s %s", url, resp.status, resp.content)
+                return str(
+                    {k: v.decode(DEFAULT_ENCODING, errors="replace") for k, v in resp.headers}
+                ) + resp.content.decode(DEFAULT_ENCODING, errors="replace")
+            else:
+                metrics["error", ("type", f"http_error_{resp.status}")] += 1
+                self.logger.debug("HTTP GET %s failed: %s %s", url, resp.status, resp.content)
+                return None
 
     @staticmethod
     def http_get_get_label(url):
