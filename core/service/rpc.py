@@ -81,7 +81,7 @@ class RPCProxy(object):
                     if sample:
                         req_headers["X-NOC-Span-Ctx"] = span.span_context
                         req_headers["X-NOC-Span"] = span.span_id
-                    res = self._client.post(url, body=body, headers=req_headers)
+                    res = self._client.post(url, body, headers=req_headers)
                     # Process response
                     if res.status == 200:
                         return res.content

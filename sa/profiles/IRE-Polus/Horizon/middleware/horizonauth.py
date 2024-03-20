@@ -10,7 +10,7 @@ import orjson
 
 # NOC modules
 from noc.core.script.http.middleware.base import BaseMiddleware
-from noc.core.http.client import fetch_sync
+from noc.core.http.sync_client import HttpClient
 
 
 class HorizonAuthMiddeware(BaseMiddleware):
@@ -34,24 +34,26 @@ class HorizonAuthMiddeware(BaseMiddleware):
                 "password": self.http.script.credentials.get("password"),
             }
         )
-        code, resp_headers, result = fetch_sync(
-            url=self.http.get_url("/auth"),
-            body=b,
-            method="POST",
-            headers={"Content-Type": "application/json"},
-            request_timeout=60,
-            follow_redirects=True,
+        with HttpClient(
+            url,
+            headers={"Content-Type": b"application/json"},
+            timeout=60,
             allow_proxy=False,
             validate_cert=False,
-        )
-        self.http._process_cookies(resp_headers)
-        headers["Cookie"] = self.http.cookies.output(header="", attrs="value").lstrip()
-        self.http.logger.debug(
-            "[%s] Response code %s, headers %s on: %s, body: %s",
-            self.name,
-            code,
-            resp_headers,
-            url,
-            body,
-        )
-        return url, body, headers
+        ) as client:
+            resp = client.request(
+                "POST",
+                self.http.get_url("/auth"),
+                body=b,
+            )
+            self.http._process_cookies(resp.headers)
+            headers["Cookie"] = self.http.cookies.output(header="", attrs="value").lstrip()
+            self.http.logger.debug(
+                "[%s] Response code %s, headers %s on: %s, body: %s",
+                self.name,
+                resp.status,
+                resp.headers,
+                url,
+                body,
+            )
+            return url, body, headers
