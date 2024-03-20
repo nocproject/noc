@@ -6,18 +6,23 @@
 # ----------------------------------------------------------------------
 
 # Python modules
+import asyncio
+from asyncio import coroutines
 import os
+import re
 import threading
 import operator
 import logging
 import codecs
-from typing import Tuple, Optional, List
+from typing import AnyStr, Iterable, Tuple, Optional, Union, List, cast
+import time
 
 # Third-party modules modules
 import cachetools
-from ssh2.session import Session, LIBSSH2_HOSTKEY_HASH_SHA1
-from ssh2.exceptions import SSH2Error
-from ssh2.error_codes import LIBSSH2_ERROR_EAGAIN
+
+import asyncssh as asyncssh
+from asyncssh.misc import PermissionDenied
+from asyncssh.misc import ConnectionLost
 
 # NOC modules
 from noc.config import config
@@ -29,6 +34,158 @@ from .error import CLIAuthFailed, CLISSHProtocolError
 
 key_lock = threading.Lock()
 logger = logging.getLogger(__name__)
+
+
+class NOCSSHThread(threading.Thread):
+    def __init__(self, socket, owner, username, password, pub_key, priv_key):
+        super().__init__()
+        self.socket = socket
+        self._owner = owner
+
+        self.logger = self._owner.logger
+
+        self.username = username
+        self.password = password
+        self.pub_key = pub_key
+        self.priv_key = priv_key
+
+        self.auth_success = False
+        self.connection = None
+        self.writer = None
+        self.stdout_reader = None
+        self.stderr_reader = None
+
+        self.loop = asyncio.new_event_loop()
+
+    def is_running(self) -> bool:
+        return self.loop.is_running()
+
+    def is_auth_success(self) -> bool:
+        return self.auth_success
+
+    async def _read(self, n: int):
+        data = b""
+        self.logger.debug("Receiving ||")
+        try:
+            data = await self.stdout_reader.read(n)
+        except ConnectionLost as e:
+            self.logger.info("Connection is lost while reading (%s)", e)
+        except Exception as e:
+            self.logger.info("Some connection trouble while reading (%s)", e)
+
+        self.logger.debug("Received |%s|", data)
+        return data
+
+    async def _write(self, data: bytes):
+        try:
+            self.logger.debug("Writing 1 |%s|", data)
+            self.writer.write(data)
+            self.logger.debug("Writing 2 |%s|", data)
+            await self.writer.drain()
+            self.logger.debug("Writing 3 |%s|", data)
+        except Exception as e:
+            self.logger.info("Some connection trouble while writing (%s)", e)
+
+    async def _connect(self):
+        def NOCSSHClient_factory() -> NOCSSHClient:
+            return NOCSSHClient(self)
+
+        try:
+            self.connection = await asyncssh.run_client(
+                self.socket,
+                client_factory=NOCSSHClient_factory,
+                known_hosts=None,
+                username=self.username,
+                term_type="xterm",
+                kex_algs="+diffie-hellman-group1-sha1",
+                encryption_algs="+3des-cbc",
+                keepalive_interval=60,
+                keepalive_count_max=5,
+            )
+
+            if self.connection:
+                self.auth_success = True
+
+            host_key = self.connection.get_server_host_key()
+            host_hash = smart_bytes(host_key.get_fingerprint(hash_name="sha1"))
+            hex_hash = smart_text(codecs.encode(host_hash, "hex"))
+            self.logger.debug("Connected. Host fingerprint is %s", hex_hash)
+
+            res = await self.connection.open_session(encoding=None)
+            self.writer = res[0]
+            self.stdout_reader = res[1]
+            self.stderr_reader = res[2]
+        except PermissionDenied as e:
+            self.logger.info("Auth failed for user %s", self.username)
+        except Exception as e:
+            self.logger.info("Something happens while connection creating %s", e)
+
+    def connect(self):
+        return asyncio.run_coroutine_threadsafe(self._connect(), self.loop).result()
+
+    def read(self, n: int):
+        return asyncio.run_coroutine_threadsafe(self._read(n), self.loop).result()
+
+    def write(self, data: bytes):
+        return asyncio.run_coroutine_threadsafe(self._write(data), self.loop).result()
+
+    def run(self):
+        self.logger.debug("Starting ssh async thread")
+        asyncio.set_event_loop(self.loop)
+        self.loop.run_forever()
+        self.logger.debug("Stopped ssh async thread")
+
+    def stop(self):
+        self.logger.debug("Closing ssh async connection")
+        if self.connection:
+            self.connection.close()
+        else:
+            self.logger.info("Connection not exists")
+        self.logger.debug("Stopping ssh async event loop")
+        self.loop.call_soon_threadsafe(self.loop.stop)
+        self.logger.debug("Wait for thread is closed")
+        self.join()
+
+
+class NOCSSHClient(asyncssh.SSHClient):
+    def __init__(self, owner: NOCSSHThread):
+        self._owner = owner
+        self.logger = self._owner.logger
+
+        self.username = self._owner.username
+        self.password = self._owner.password
+        self.pub_key = self._owner.pub_key
+        self.priv_key = self._owner.priv_key
+
+        self.key_sended = False
+
+    def public_key_auth_requested(self) -> Optional[Tuple[bytes, bytes]]:
+        self.logger.debug("Requested key auth")
+
+        if not self.pub_key or not self.priv_key:
+            self.logger.debug("No keys for pool. Skipping")
+            return None
+        else:
+            if self.key_sended:
+                return None
+            self.key_sended = True
+            return self.priv_key
+
+    def password_auth_requested(self) -> Optional[str]:
+        self.logger.debug("Requested password auth")
+        return self.password
+
+    def auth_completed(self):
+        self.logger.debug("Auth successfull")
+
+    def connection_made(self, conn):
+        self.logger.debug("Connection successfull")
+
+    def connection_lost(self, exc):
+        if exc:
+            self.logger.info("Connection is lost with exception %s", exc)
+        else:
+            self.logger.info("Connection is lost without exception")
 
 
 class SSHStream(BaseStream):
@@ -71,91 +228,51 @@ class SSHStream(BaseStream):
         """
         SSH session startup
         """
+
         user = self.credentials["user"]
         if user is None:
             user = ""
-        self.logger.debug("Startup ssh session for user '%s'", user)
-        self.session = Session()
-        try:
-            self.session.handshake(self.socket)
-            host_hash = smart_bytes(self.session.hostkey_hash(LIBSSH2_HOSTKEY_HASH_SHA1))
-            hex_hash = smart_text(codecs.encode(host_hash, "hex"))
-            self.logger.debug("Connected. Host fingerprint is %s", hex_hash)
-            # libssh2's userauth_list implementation tries to authenticate
-            # using `none` method internally. So calling `userauth_list`
-            # can bring session into authenticated state.
-            auth_methods = self.session.userauth_list(user)
-            if self.session.userauth_authenticated():
-                self.logger.info("Authenticated using 'none' method")
-                metrics["ssh_auth_success", ("method", "none")] += 1
-            elif auth_methods:
-                if not self.authenticate(user, auth_methods):
-                    raise CLIAuthFailed("Failed to log in")
-            else:
-                self.logger.info("No supported authentication methods. Failed to log in")
-                raise CLIAuthFailed("No supported authentication methods. Failed to log in")
-            self.logger.debug("User is authenticated")
-            self.logger.debug("Open channel")
-            self.channel = self.session.open_session()
-            if isinstance(self.channel, int):
-                # Return error code, see handle_error_codes on utils
-                raise SSH2Error(f"SSH Error code: {self.channel}")
-            self.channel.pty("xterm")
-            self.channel.shell()
-            self.session.keepalive_config(False, 60)
-            self.session.set_blocking(False)
-        except SSH2Error as e:
-            self.logger.info("SSH Error: %s", e)
-            raise CLISSHProtocolError("SSH Error: %s" % e)
+
+        password = self.get_password()
+        pub_key, priv_key = self.get_publickey(self.script.pool)
+
+        self.logger.debug("Startup asyncssh session for user '%s'", user)
+
+        self.loop = asyncio.new_event_loop()
+        # try:
+        self.thread = NOCSSHThread(
+            socket=self.socket,
+            owner=self,
+            username=user,
+            password=password,
+            pub_key=pub_key,
+            priv_key=priv_key,
+        )
+
+        self.thread.start()
+        while not self.thread.is_running():
+            await asyncio.sleep(0.1)
+
+        self.thread.connect()
+
+        if not self.thread.is_auth_success():
+            raise CLIAuthFailed("Failed to log in")
 
     async def read(self, n: int) -> bytes:
-        while True:
-            try:
-                await self.wait_for_read()
-                metrics["ssh_reads"] += 1
-                code, data = self.channel.read(n)
-                if code == 0:
-                    if self.channel.eof():
-                        self.logger.info("SSH session reset")
-                        self.close()
-                        return b""
-                    metrics["ssh_reads_blocked"] += 1
-                    continue
-                elif code > 0:
-                    n = len(data)
-                    metrics["ssh_read_bytes"] += n
-                    return data
-                elif code == LIBSSH2_ERROR_EAGAIN:
-                    metrics["ssh_reads_blocked"] += 1
-                    continue
-                metrics["ssh_errors", ("code", code)] += 1
-                raise CLISSHProtocolError("SSH Error code %s" % code)
-            except SSH2Error as e:
-                raise CLISSHProtocolError("SSH Error: %s" % e)
+        data = self.thread.read(n)
+        n = len(data)
+        metrics["ssh_read_bytes"] += n
+        return data
 
     async def write(self, data: bytes):
-        metrics["ssh_writes"] += 1
-        while data:
-            await self.wait_for_write()
-            try:
-                _, sent = self.channel.write(data)
-                metrics["ssh_write_bytes"] += sent
-                data = data[sent:]
-            except SSH2Error as e:
-                raise CLISSHProtocolError("SSH Error: %s" % e)
+        res = self.thread.write(data)
+        metrics["ssh_write_bytes"] += len(data)
+        return res
 
     def close(self, exc_info=False):
-        if self.channel:
-            self.logger.debug("Closing channel")
-            try:
-                self.channel.close()
-            except SSH2Error as e:
-                self.logger.debug("Cannot close channel clearly: %s", e)
-            # The causes of memory leak
-            # self.channel = None
-        if self.session:
-            self.logger.debug("Closing ssh session")
-            self.session = None
+        if self.thread:
+            self.logger.debug("Stopping ssh async thread")
+            self.thread.stop()
         super().close()
 
     def get_user(self) -> str:
@@ -169,76 +286,6 @@ class SSHStream(BaseStream):
         Get current user's password
         """
         return self.script.credentials["password"] or ""
-
-    def authenticate(self, user: str, methods: List[str]) -> bool:
-        """
-        Try to authenticate. Return True on success
-        :param user: Username
-        :param methods: List of available authentication methods
-        :return:
-        """
-        self.logger.debug("Supported authentication methods: %s", ", ".join(methods))
-        for method in methods:
-            auth_handler = getattr(self, "auth_%s" % method.replace("-", ""), None)
-            if not auth_handler:
-                self.logger.debug("'%s' method is not supported, skipping", method)
-                continue
-            metrics["ssh_auth", ("method", method)] += 1
-            if auth_handler():
-                metrics["ssh_auth_success", ("method", method)] += 1
-                return True
-            metrics["ssh_auth_fail", ("method", method)] += 1
-        self.logger.error("Failed to authenticate user '%s'", user)
-        return False
-
-    def auth_publickey(self) -> bool:
-        """
-        Public key authentication
-        """
-        self.logger.debug("Trying publickey authentication")
-        pub_key, priv_key = self.get_publickey(self.script.pool)
-        if not pub_key or not priv_key:
-            self.logger.debug("No keys for pool. Skipping")
-            return False
-        user = self.get_user()
-        try:
-            self.session.userauth_publickey_frommemory(user, priv_key, "", pub_key)
-            return True
-        except SSH2Error:
-            msg = self.session.last_error()
-            self.logger.debug("Failed: %s", msg)
-            return False
-
-    def auth_keyboardinteractive(self):
-        """
-        Keyboard-interactive authentication. Send username and password
-        """
-        self.logger.debug("Trying keyboard-interactive")
-        if not hasattr(self.session, "userauth_keyboardinteractive"):
-            self.logger.debug("keyboard-interactive is not supported by ssh library. Skipping")
-            return False
-        try:
-            self.session.userauth_keyboardinteractive(self.get_user(), self.get_password())
-            self.logger.debug("Success")
-            return True
-        except SSH2Error:
-            msg = self.session.last_error()
-            self.logger.debug("Failed: %s", msg)
-            return False
-
-    def auth_password(self):
-        """
-        Password authentication. Send username and password
-        """
-        self.logger.debug("Trying password authentication")
-        try:
-            self.session.userauth_password(self.get_user(), self.get_password())
-            self.logger.debug("Success")
-            return True
-        except SSH2Error:
-            msg = self.session.last_error()
-            self.logger.debug("Failed: %s", msg)
-            return False
 
 
 class SSHCLI(CLI):
