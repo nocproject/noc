@@ -58,6 +58,7 @@ class ClickhouseClient(object):
         :param return_raw: Return raw binary result
         :return:
         """
+
         def q(v):
             # @todo: quote dates
             if isinstance(v, str):
