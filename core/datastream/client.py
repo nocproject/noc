@@ -114,11 +114,11 @@ class DataStreamClient(object):
             # code, headers, data = await fetch(url, resolver=self.resolve, headers=req_headers)
             dt = loop.time() - t0
             logger.debug("Response: %s %s [%.2fms]", res.status, res.headers, dt * 1000)
-            if res.status == ERR_TIMEOUT or res.status == ERR_READ_TIMEOUT:
-                if dt < self.RETRY_TIMEOUT:
-                    await asyncio.sleep(self.RETRY_TIMEOUT - dt)
-                continue  # Retry on timeout
-            elif res.status != 200:
+            # if res.status == ERR_TIMEOUT or res.status == ERR_READ_TIMEOUT:
+            #     if dt < self.RETRY_TIMEOUT:
+            #         await asyncio.sleep(self.RETRY_TIMEOUT - dt)
+            #     continue  # Retry on timeout
+            if res.status != 200:
                 logger.info("Invalid response code: %s", res.status)
                 raise NOCError(code=ERR_DS_BAD_CODE, msg=f"Invalid response code {res.status}")
             # Parse response
