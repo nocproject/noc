@@ -62,7 +62,7 @@ class ClickhouseClient(object):
             else:
                 post = sql.encode("utf8")
         url = "http://%s/?%s" % (random.choice(self.addresses), "&".join(qs))
-        res = self.http_client.post(url, body=post)
+        res = self.http_client.post(url, post)
         if res.status != 200:
             raise ClickhouseError("%s: %s" % (res.status, res.content))
         if return_raw:
