@@ -17,7 +17,7 @@ from typing import Tuple, Optional
 # Third-party modules modules
 import cachetools
 
-import asyncssh as asyncssh
+import asyncssh
 from asyncssh.misc import PermissionDenied
 from asyncssh.misc import ConnectionLost
 
