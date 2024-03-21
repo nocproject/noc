@@ -72,7 +72,7 @@ def get_py_modules_list():
         fn = parts[-1]
         if fn.startswith("."):
             continue
-        if parts == ["core", "http", "client"]:
+        if parts == ["core", "http", "client.py"]:
             continue
         if fn == "__init__.py":
             # Strip __init__.py
