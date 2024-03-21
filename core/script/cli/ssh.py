@@ -1,7 +1,7 @@
 # ----------------------------------------------------------------------
 # SSH CLI
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2021 The NOC Project
+# Copyright (C) 2007-2024 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -15,7 +15,6 @@ import operator
 import logging
 import codecs
 from typing import AnyStr, Iterable, Tuple, Optional, Union, List, cast
-import time
 
 # Third-party modules modules
 import cachetools
@@ -37,7 +36,7 @@ logger = logging.getLogger(__name__)
 
 
 class NOCSSHThread(threading.Thread):
-    def __init__(self, socket, owner, username, password, pub_key, priv_key):
+    def __init__(self, socket, owner, username, password, pub_key, priv_key) -> None:
         super().__init__()
         self.socket = socket
         self._owner = owner
@@ -76,17 +75,14 @@ class NOCSSHThread(threading.Thread):
         self.logger.debug("Received |%s|", data)
         return data
 
-    async def _write(self, data: bytes):
+    async def _write(self, data: bytes) -> None:
         try:
-            self.logger.debug("Writing 1 |%s|", data)
             self.writer.write(data)
-            self.logger.debug("Writing 2 |%s|", data)
             await self.writer.drain()
-            self.logger.debug("Writing 3 |%s|", data)
         except Exception as e:
             self.logger.info("Some connection trouble while writing (%s)", e)
 
-    async def _connect(self):
+    async def _connect(self) -> None:
         def NOCSSHClient_factory() -> NOCSSHClient:
             return NOCSSHClient(self)
 
@@ -120,22 +116,22 @@ class NOCSSHThread(threading.Thread):
         except Exception as e:
             self.logger.info("Something happens while connection creating %s", e)
 
-    def connect(self):
+    def connect(self) -> None:
         return asyncio.run_coroutine_threadsafe(self._connect(), self.loop).result()
 
     def read(self, n: int):
         return asyncio.run_coroutine_threadsafe(self._read(n), self.loop).result()
 
-    def write(self, data: bytes):
+    def write(self, data: bytes) -> None:
         return asyncio.run_coroutine_threadsafe(self._write(data), self.loop).result()
 
-    def run(self):
+    def run(self) -> None:
         self.logger.debug("Starting ssh async thread")
         asyncio.set_event_loop(self.loop)
         self.loop.run_forever()
         self.logger.debug("Stopped ssh async thread")
 
-    def stop(self):
+    def stop(self) -> None:
         self.logger.debug("Closing ssh async connection")
         if self.connection:
             self.connection.close()
@@ -148,7 +144,7 @@ class NOCSSHThread(threading.Thread):
 
 
 class NOCSSHClient(asyncssh.SSHClient):
-    def __init__(self, owner: NOCSSHThread):
+    def __init__(self, owner: NOCSSHThread) -> None:
         self._owner = owner
         self.logger = self._owner.logger
 
@@ -162,26 +158,27 @@ class NOCSSHClient(asyncssh.SSHClient):
     def public_key_auth_requested(self) -> Optional[Tuple[bytes, bytes]]:
         self.logger.debug("Requested key auth")
 
-        if not self.pub_key or not self.priv_key:
-            self.logger.debug("No keys for pool. Skipping")
+        if not self.priv_key:
+            self.logger.debug("No private key for pool. Skip key auth")
             return None
-        else:
-            if self.key_sended:
-                return None
-            self.key_sended = True
-            return self.priv_key
+
+        if self.key_sended:
+            return None
+
+        self.key_sended = True
+        return self.priv_key
 
     def password_auth_requested(self) -> Optional[str]:
         self.logger.debug("Requested password auth")
         return self.password
 
-    def auth_completed(self):
+    def auth_completed(self) -> None:
         self.logger.debug("Auth successfull")
 
-    def connection_made(self, conn):
+    def connection_made(self, conn) -> None:
         self.logger.debug("Connection successfull")
 
-    def connection_lost(self, exc):
+    def connection_lost(self, exc) -> None:
         if exc:
             self.logger.info("Connection is lost with exception %s", exc)
         else:
@@ -224,7 +221,7 @@ class SSHStream(BaseStream):
         with open(pub_path, "rb") as fpub, open(priv_path, "rb") as fpriv:
             return fpub.read(), fpriv.read()
 
-    async def startup(self):
+    async def startup(self) -> None:
         """
         SSH session startup
         """
@@ -239,7 +236,6 @@ class SSHStream(BaseStream):
         self.logger.debug("Startup asyncssh session for user '%s'", user)
 
         self.loop = asyncio.new_event_loop()
-        # try:
         self.thread = NOCSSHThread(
             socket=self.socket,
             owner=self,
@@ -264,12 +260,11 @@ class SSHStream(BaseStream):
         metrics["ssh_read_bytes"] += n
         return data
 
-    async def write(self, data: bytes):
-        res = self.thread.write(data)
+    async def write(self, data: bytes) -> None:
+        self.thread.write(data)
         metrics["ssh_write_bytes"] += len(data)
-        return res
 
-    def close(self, exc_info=False):
+    def close(self, exc_info=False) -> None:
         if self.thread:
             self.logger.debug("Stopping ssh async thread")
             self.thread.stop()
