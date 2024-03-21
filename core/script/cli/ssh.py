@@ -7,14 +7,12 @@
 
 # Python modules
 import asyncio
-from asyncio import coroutines
 import os
-import re
 import threading
 import operator
 import logging
 import codecs
-from typing import AnyStr, Iterable, Tuple, Optional, Union, List, cast
+from typing import Tuple, Optional
 
 # Third-party modules modules
 import cachetools
@@ -29,7 +27,7 @@ from noc.core.perf import metrics
 from noc.core.comp import smart_bytes, smart_text
 from .cli import CLI
 from .base import BaseStream
-from .error import CLIAuthFailed, CLISSHProtocolError
+from .error import CLIAuthFailed
 
 key_lock = threading.Lock()
 logger = logging.getLogger(__name__)
@@ -111,7 +109,7 @@ class NOCSSHThread(threading.Thread):
             self.writer = res[0]
             self.stdout_reader = res[1]
             self.stderr_reader = res[2]
-        except PermissionDenied as e:
+        except PermissionDenied:
             self.logger.info("Auth failed for user %s", self.username)
         except Exception as e:
             self.logger.info("Something happens while connection creating %s", e)
