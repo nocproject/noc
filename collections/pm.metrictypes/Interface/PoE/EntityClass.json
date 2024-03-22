@@ -1,0 +1,12 @@
+{
+    "name": "Interface | PoE | EntityClass",
+    "$collection": "pm.metrictypes",
+    "uuid": "236c936c-1e98-4079-ba9d-4af13d3f5dbe",
+    "scope__name": "Interface",
+    "field_name": "poe_entity_class",
+    "field_type": "Int8",
+    "description": "The connected PD class of power inline",
+    "measure": "",
+    "units__code": "1",
+    "scale__code": "1"
+}

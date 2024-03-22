@@ -1,0 +1,12 @@
+{
+    "name": "Interface | PoE | OperStatus",
+    "$collection": "pm.metrictypes",
+    "uuid": "fc577084-da9b-4245-a4b6-9a4d5feddb4a",
+    "scope__name": "Interface",
+    "field_name": "poe_oper_status",
+    "field_type": "Int8",
+    "description": "The power inline detect status. on(1):PD is connected and natural powered, off(2):PD is not connected, faulty(3):error, deny(4):power is low or high, force(5):force power.",
+    "measure": "",
+    "units__code": "1",
+    "scale__code": "1"
+}

@@ -75,6 +75,14 @@
                   {% from "graph_interface_card_discards.j2" import interface -%}
                 {{interface(port_types)}},
                 {% endif %}
+                {%if "poe_oper_status" in port_types.metrics %}
+                  {% from "graph_interface_poe_operstatus.j2" import interface -%}                  
+                {{interface(port_types)}},
+                {% endif %}
+                {%if "poe_power" in port_types.metrics %}
+                  {% from "graph_interface_poe_power.j2" import interface -%}                  
+                {{interface(port_types)}},
+                {% endif %}
               ]
             }
     {%endif%}
