@@ -1,7 +1,7 @@
 # ---------------------------------------------------------------------
 # Huawei.MA5600T.get_cpe_status
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2023 The NOC Project
+# Copyright (C) 2007-2024 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -24,7 +24,7 @@ class Script(BaseScript):
 
     cache = True
 
-    splitter = re.compile(r"\s*-+\n")
+    splitter = re.compile(r"\s*\n\s*-+\n")
 
     status_map = {"online": True, "offline": False}  # associated  # disassociating
 
