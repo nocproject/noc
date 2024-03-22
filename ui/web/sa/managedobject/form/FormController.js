@@ -356,6 +356,24 @@ Ext.define('NOC.sa.managedobject.form.FormController', {
         this.getView().down('[itemId=snmp_priv_proto]').setHidden(["Community", "noAuthNoPriv", "authNoPriv"].includes(value));
         this.getView().down('[name=snmp_priv_key]').setHidden(["Community", "noAuthNoPriv", "authNoPriv"].includes(value));
     },
+    openTemplate: function(widget) {
+        var templateBtn = widget.up('[alias=widget.managedobject.form]').down('button[itemId=templateBtn]');
+
+        templateBtn.toggle(false);
+        templateBtn.fireHandler();
+    },
+    onSelectTemplate: function(widget, record) {
+        var store = Ext.data.StoreManager.lookup('saTemplateStore'),
+            recordToRemove = store.findRecord('name', record.get('name'));
+
+        this.openTemplate(widget);
+        store.remove(recordToRemove);
+        store.insert(0, {templateId: widget.getValue(), name: record.get('name')});
+    },
+    onDblClickTemplate: function(widget, record) {
+        this.openTemplate(widget);
+        console.log(record.get("templateId"), record.get('name'));
+    },
     // Workaround labelField
     onChange: Ext.emptyFn,
 });

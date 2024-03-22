@@ -1572,7 +1572,7 @@ Ext.define('NOC.sa.managedobject.form.View', {
                     itemId: "sa-managedobject-template",
                     border: false,
                     width: 400,
-                    collapsed: true,
+                    collapsed: false,
                     animCollapse: false,
                     collapseMode: 'mini',
                     hideCollapseTool: true,
@@ -1622,9 +1622,7 @@ Ext.define('NOC.sa.managedobject.form.View', {
                                         },
                                     ],
                                     listeners: {
-                                        rowdblclick: function(grid, record) {
-                                            console.log(record.get("templateId"), record.get('name'));
-                                        }
+                                        rowdblclick: 'onDblClickTemplate'
                                     }
                                 },
                                 {
@@ -1645,13 +1643,7 @@ Ext.define('NOC.sa.managedobject.form.View', {
                                     displayField: 'name',
                                     valueField: 'templateId',
                                     listeners: {
-                                        select: function(combo, record) {
-                                            var store = Ext.data.StoreManager.lookup('saTemplateStore'),
-                                                recordToRemove = store.findRecord('name', record.get('name'));
-
-                                            store.remove(recordToRemove);
-                                            store.insert(0, {templateId: combo.getValue(), name: record.get('name')});
-                                        }
+                                        select: 'onSelectTemplate'
                                     }
                                 }
                             ]
@@ -1822,8 +1814,10 @@ Ext.define('NOC.sa.managedobject.form.View', {
                 itemId: "templateBtn",
                 text: __("Template"),
                 tooltip: __("Choose Template"),
+                enableToggle: true,
+                pressed: true,
                 glyph: NOC.glyph.file,
-                handler: 'onTemplate'
+                handler: 'onTemplate',
             },
             {
                 itemId: "deleteBtn",
