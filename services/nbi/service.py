@@ -8,12 +8,14 @@
 
 # NOC modules
 from noc.core.service.fastapi import FastAPIService
+from noc.config import config
 
 
 class NBIService(FastAPIService):
     name = "nbi"
     use_mongo = True
     use_router = True
+    use_watchdog = config.watchdog.enable_watchdog
     traefik_routes_rule = "PathPrefix(`/api/nbi`)"
 
     def __init__(self):
