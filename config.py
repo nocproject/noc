@@ -757,9 +757,9 @@ class Config(BaseConfig):
         storm_record_ttl = IntParameter(default=10)
 
     class watchdog(ConfigSection):
-        use_watchdog = BooleanParameter(default=True)
-        delay = IntParameter(default=30)
-        count = IntParameter(default=6)
+        enable_watchdog = BooleanParameter(default=True)
+        check_interval = IntParameter(default=30, help="Run interval")
+        failed_count = IntParameter(default=6, help="Failed check for force reboot")
 
     class web(ConfigSection):
         theme = StringParameter(default="gray")

@@ -158,7 +158,7 @@ class FastAPIService(BaseService):
 
     async def shutdown_api(self):
         self.logger.info("Shutdown FAST API")
-        if self.use_watchdog or config.watchdog.use_watchdog:
+        if self.watchdog_waiter:
             self.server.force_exit = True
         await self.server.shutdown()
 

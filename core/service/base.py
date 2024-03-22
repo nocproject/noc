@@ -104,7 +104,7 @@ class BaseService(object):
     # Use service based consul check timeout
     dcs_check_interval: Optional[int] = None
     dcs_check_timeout: Optional[int] = None
-    # Use wachdog for check Service health
+    # Use watchdog for check Service register in consul
     use_watchdog = False
 
     LOG_FORMAT = config.log_format
@@ -494,8 +494,8 @@ class BaseService(object):
             # Finally call on_activate
             await self.on_activate()
             self.logger.info("Service is active (in %.2fms)", self.uptime() * 1000)
-            if self.use_watchdog or config.watchdog.use_watchdog:
-                # Run Watchdog
+            if self.use_watchdog and not hasattr(self, "slot_number") and not self.leader_lock_name:
+                # Run Watchdog, ignore service with slot
                 self.logger.info("Start Watchdog")
                 self.watchdog_waiter = asyncio.Event()
                 self.loop.create_task(self.watchdog())
@@ -1023,12 +1023,17 @@ class BaseService(object):
         return
 
     async def watchdog(self):
-        failed, delay, deviation = 0, config.watchdog.delay, 0.5
+        """
+        WatchDog task. View watchdog_waiter event, by setting /health API.
+        If not set event - force reboot process
+        :return:
+        """
+        failed, delay, deviation = 0, config.watchdog.check_interval, 0.5
         while True:
             await asyncio.sleep(delay - deviation + 2 * deviation * random.random())
             self.logger.info("WatchDog loop")
-            if not self.watchdog_waiter.is_set() and failed > config.watchdog.count:
-                self.logger.warning("WatchDog is more %s failed. Deactivate proccess", failed)
+            if not self.watchdog_waiter.is_set() and failed > config.watchdog.failed_count:
+                self.logger.warning("WatchDog is more %s failed. Deactivate process", failed)
                 self.stop()
             elif not self.watchdog_waiter.is_set():
                 failed += 1

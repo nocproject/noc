@@ -8,6 +8,7 @@
 
 # NOC modules
 from noc.core.service.fastapi import FastAPIService
+from noc.config import config
 
 
 class ActivatorService(FastAPIService):
@@ -15,6 +16,7 @@ class ActivatorService(FastAPIService):
     pooled = True
     process_name = "noc-%(name).10s-%(pool).5s"
     use_telemetry = True
+    use_watchdog = config.watchdog.enable_watchdog
 
 
 if __name__ == "__main__":
