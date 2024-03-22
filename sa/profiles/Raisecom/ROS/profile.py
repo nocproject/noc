@@ -35,10 +35,9 @@ class Profile(BaseProfile):
         "contexts": [["interface", ANY, ANY]],
         "end_of_context": "!",
     }
-    collators = ["noc.core.confdb.collator.ifname.IfNameCollator"]
 
     matchers = {
-        "is_not_iscom2608g": {"platform": {"$regex": r"^(?i)(?!ISCOM26(?:08|24|48)G)"}},
+        "is_not_iscom2608g": {"platform": {"$regex": r"(?i)^(?!ISCOM26(?:08|24|48)G)"}},
         "is_iscom2624g": {"platform": {"$regex": r"ISCOM26(?:08|24|48)G"}},
         "is_iscom2924g": {"platform": {"$regex": r"ISCOM2924G"}},
         "is_rotek": {"vendor": {"$in": ["Rotek", "ROTEK"]}},
