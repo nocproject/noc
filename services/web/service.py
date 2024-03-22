@@ -24,6 +24,7 @@ class WebService(FastAPIService):
     use_translation = True
     use_mongo = True
     use_router = True
+    use_watchdog = config.watchdog.enable_watchdog
     traefik_routes_rule = "!PathPrefix(`/api/`) && !PathPrefix(`/ui/`) && PathPrefix(`/`)"
 
     def __init__(self):

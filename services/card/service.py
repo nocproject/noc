@@ -8,6 +8,7 @@
 
 # NOC modules
 from noc.core.service.fastapi import FastAPIService
+from noc.config import config
 
 
 class CardService(FastAPIService):
@@ -16,6 +17,7 @@ class CardService(FastAPIService):
     use_translation = True
     use_jinja = True
     use_mongo = True
+    use_watchdog = config.watchdog.enable_watchdog
     traefik_routes_rule = "PathPrefix(`/api/card`)"
 
 

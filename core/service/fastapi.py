@@ -156,6 +156,9 @@ class FastAPIService(BaseService):
         self.loop.create_task(self.server.main_loop())
 
     async def shutdown_api(self):
+        self.logger.info("Shutdown FAST API")
+        if self.watchdog_waiter:
+            self.server.force_exit = True
         await self.server.shutdown()
 
     def get_effective_address(self) -> Tuple[str, int]:
