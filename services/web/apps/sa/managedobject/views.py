@@ -1,7 +1,7 @@
 # ---------------------------------------------------------------------
 # sa.managedobject application
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2022 The NOC Project
+# Copyright (C) 2007-2024 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -704,6 +704,7 @@ class ManagedObjectApplication(ExtModelApplication):
             {
                 "id": str(i.id),
                 "name": i.name,
+                "status": i.status,
                 "description": i.description,
                 "profile": str(i.profile.id) if i.profile else None,
                 "profile__label": smart_text(i.profile) if i.profile else None,
