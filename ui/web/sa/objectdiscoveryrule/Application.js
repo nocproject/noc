@@ -147,7 +147,7 @@ Ext.define("NOC.sa.objectdiscoveryrule.Application", {
                 {
                     name: "action",
                     xtype: "combobox",
-                    fieldLabel: __("Action""),
+                    fieldLabel: __("Action"),
                     store: [
                         ["new", __("As New")],
                         ["ignore", __("Send Ignore")],
