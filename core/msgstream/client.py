@@ -182,15 +182,17 @@ class MessageStreamClient(object):
         :return:
         """
         # Get stream config
-        s = get_stream(name)
+        stream = get_stream(name)
         # Get liftbridge metadata
-        partitions = partitions or s.get_partitions()
+        partitions = partitions or stream.get_partitions()
         # Check if stream is configured properly
         if not partitions:
             logger.info("Stream '%s' without partition. Skipping..", name)
             return False
         meta = await self.fetch_metadata(name)
         rf = self.client.get_replication_factor(meta)
+        # Apply replication factor from config
+        rf = min(rf, stream.config.replication_factor or rf)
         stream_meta = meta.metadata[name] if name in meta.metadata else None
         if stream_meta and len(stream_meta) == partitions:
             return False
