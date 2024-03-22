@@ -66,7 +66,10 @@ class ManagedObjectCollector(BaseCollector):
             ), count
         for pool_name, count in pool_stat.items():
             yield ("inventory_managedobject_total", ("pool", pool_name)), sum(count)
-        for pool_name, data in diag_state.items():
+            if pool_name not in diag_state:
+                continue
+            # Set diagnostic state metrics
+            data = diag_state[pool_name]
             yield (
                 (
                     "diag_managedobject_count",
