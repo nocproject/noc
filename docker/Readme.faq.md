@@ -14,7 +14,6 @@ docker-mongo
 docker-mongorestore
 docker-nginx
 docker-noc
-docker-nsq
 docker-postgres
 docker-postgresrestore
 docker-promgrafana
@@ -36,7 +35,7 @@ A: `noc-dc` consists of more than 30 containers,
     
 ```shell script
 docker-compose up -d mongodb-repl-set-init mongo postgres consul nginx_openssl \
-traefik redis nginx nsqd nsqlookupd clickhouse grafana migrate
+traefik redis nginx clickhouse grafana migrate
 
 docker-compose up -d
 ``` 
@@ -61,8 +60,6 @@ docker_escalator_1:             Up 3 minutes	1200/tcp
 docker_classifier-default_1:    Up 3 minutes	1200/tcp
 docker_selfmon_1:               Up 3 minutes	1200/tcp
 docker_correlator-default_1:    Up 3 minutes	1200/tcp
-docker_nsqd_1:                  Up 4 minutes	4150-4151/tcp, 
-                                                4160-4161/tcp, 4170-4171/tcp
 docker_bi_1:                    Up 3 minutes	1200/tcp
 docker_mailsender_1:            Up 3 minutes	1200/tcp
 docker_tgsender_1:              Up 3 minutes	1200/tcp
@@ -74,9 +71,7 @@ docker_mib_1:                   Up 3 minutes	1200/tcp
 docker_mrt_1:                   Up 3 minutes	1200/tcp
 docker_scheduler_1:             Up 3 minutes	1200/tcp
 docker_grafanads_1:             Up 3 minutes	1200/tcp
-docker_discovery-default_1:     Up 3 minutes	1200/tcp
-docker_nsqlookupd_1:            Up 4 minutes	4150-4151/tcp, 4160-4161/tcp,
-                                                4170-4171/tcp
+docker_discovery-default_1:     Up 3 minutes	1200/tcp                                                4170-4171/tcp
 docker_clickhouse_1:            Up 4 minutes	8123/tcp, 9000/tcp, 9009/tcp
 docker_grafana_1:               Up 4 minutes	3000/tcp
 docker_activator-default_1:     Up 4 minutes	1200/tcp
