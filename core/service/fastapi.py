@@ -19,7 +19,6 @@ from fastapi.encoders import jsonable_encoder
 from fastapi.middleware.wsgi import WSGIMiddleware
 
 # NOC modules
-from noc.config import config
 from noc.core.version import version
 from noc.core.log import PrefixLoggerAdapter
 from noc.core.debug import error_report
