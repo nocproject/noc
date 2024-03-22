@@ -364,7 +364,10 @@ class Command(BaseCommand):
                         m.syslog_source_type = syslog_source
                     if trap_source:
                         m.trap_source_type = trap_source
-                    m.save()
+                    try:
+                        m.save()
+                    except Exception as e:
+                        print(e)
                 x3 = "False"
             if ipx in self.enable_snmp:
                 # ['1.3.6.1.2.1.1.2.0', '1.3.6.1.2.1.1.5.0']
