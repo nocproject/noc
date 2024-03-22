@@ -1,0 +1,12 @@
+{
+    "name": "Interface | PoE | Power",
+    "$collection": "pm.metrictypes",
+    "uuid": "330716a3-8051-4334-bd82-d1bb0a1f2bc2",
+    "scope__name": "Interface",
+    "field_name": "poe_power",
+    "field_type": "UInt16",
+    "description": "Current power (mW)",
+    "measure": "mW",
+    "units__code": "W",
+    "scale__code": "m"
+}

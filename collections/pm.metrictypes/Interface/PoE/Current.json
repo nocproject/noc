@@ -1,0 +1,12 @@
+{
+    "name": "Interface | PoE | Current",
+    "$collection": "pm.metrictypes",
+    "uuid": "cade3269-8018-4186-a185-dda8ce3eab64",
+    "scope__name": "Interface",
+    "field_name": "poe_current_ma",
+    "field_type": "Int16",
+    "description": "PoE current",
+    "measure": "mA",
+    "units__code": "A",
+    "scale__code": "m"
+}

@@ -1,0 +1,12 @@
+{
+    "name": "Environment | PoE | NominalPower",
+    "$collection": "pm.metrictypes",
+    "uuid": "1cb4abf0-eb5f-4d69-b490-949de229f78f",
+    "scope__name": "Environment",
+    "field_name": "poe_nominal_power",
+    "field_type": "UInt16",
+    "description": "The power inline global available power whitch cannot be exceeded by the total power of all PDs (W)",
+    "measure": "W",
+    "units__code": "W",
+    "scale__code": "1"
+}
