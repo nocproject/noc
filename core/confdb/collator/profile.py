@@ -21,6 +21,7 @@ class PathItem(object):
     c_num: int  # Connection num
     path_template: Optional[str] = None
     stack_num: Optional[int] = None
+    stackable: bool = False
     slot_num: Optional[str] = None
 
     @classmethod
@@ -31,6 +32,7 @@ class PathItem(object):
             c_num=c.name,
             # path_template=o.get_data("interface_collation", "path_template"),
             stack_num=o.get_data("stack", "member"),
+            stackable=o.get_data("stack", "stackable"),
             # slot_num=o.get_data("slot", "number"),
         )
         return p
@@ -57,6 +59,10 @@ class PortItem(object):
         return self.path[0].stack_num
 
     @property
+    def stackable(self) -> bool:
+        return self.path[0].stackable
+
+    @property
     def slot_num(self) -> str:
         return self.path[0].slot_num
 
@@ -71,13 +77,13 @@ class ProfileCollator(BaseCollator):
     Direct map between connection name and interface name
     """
 
-    def collate(self, physical_path, interfaces):
-
+    def collate(self, physical_path, interfaces) -> Optional[str]:
+        print("Collate", physical_path)
         c = physical_path[-1].connection
         pi = PortItem(
             name=c.name,
             protocols=[p.protocol.code for p in c.protocols],
-            path=[PathItem.from_object(p.object, p.connection) for p in physical_path[:-1]],
+            path=[PathItem.from_object(p.object, p.connection) for p in physical_path],
             internal_name=c.internal_name,
         )
         for iface_name in self.profile.get_interfaces_by_port(pi):
@@ -86,4 +92,4 @@ class ProfileCollator(BaseCollator):
             except ValueError:
                 continue
             if iface_name in interfaces:
-                return interfaces[iface_name]
+                return interfaces[iface_name].name

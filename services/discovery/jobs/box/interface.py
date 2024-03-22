@@ -754,8 +754,9 @@ class InterfaceCheck(PolicyDiscoveryCheck):
         seen_objects = set()  # {object}
         obj_combined = {}  # object -> connection name -> parent name
         obj_ifnames = {}  # object -> connection name -> interface name
-        t = Technology.get_by_name("Ethernet")
-        for path in self.object.iter_technology([t]):
+        ethernet_t = Technology.get_by_name("Ethernet")
+        xcvr_t = Technology.get_by_name("Trasceiver")
+        for path in self.object.iter_technology([ethernet_t, xcvr_t]):
             if_name = None
             obj = path[-1].object
             if obj not in seen_objects:

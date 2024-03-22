@@ -823,13 +823,24 @@ class BaseProfile(object, metaclass=BaseProfileMetaclass):
         return []
 
     def get_interfaces_by_port(self, port) -> List[str]:
-        if len(port.path) <= 1 and not port.stack_num:
+        """
+        1. If device is not stackable and not module (len path) - return slot num
+        2. Append num from last path element
+        3. If device supported stack - add first stack_member or 0
+        4. Reverse path
+        5. Product all variants with protocol prefix
+        :param port:
+        :return:
+        """
+        if len(port.path) <= 1 and not port.stackable:
             return [port.name]
-        r = []
-        for p in port.path[:-1]:
-            r.append(self.get_connection_path(p.c_name))
-        path = self.get_connection_path(port.name)
-        r.append(path)
+        r: List[str] = []
+        x = []
+        for p in reversed(port.path):
+            x.append(self.get_connection_path(p.c_name))
+        r.append("/".join(x))
+        if port.stackable:
+            r.append("/".join([str(port.stack_num or 0)] + x))
         protocol_prefixes = self.get_protocol_prefixes(port.protocols)
         if not protocol_prefixes:
             return r

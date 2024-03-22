@@ -72,11 +72,6 @@ class Profile(BaseProfile):
     ]
     config_applicators = ["noc.core.confdb.applicator.collapsetagged.CollapseTaggedApplicator"]
 
-    collators = [
-        "noc.sa.profiles.Huawei.VRP.confdb.collators.HuaweiMgmgIfCollator",
-        "noc.core.confdb.collator.ifpath.IfPathCollator",
-    ]
-
     matchers = {
         "is_kernel_3": {"version": {"$gte": "3.0", "$lt": "5.0"}},
         "is_kernelgte_5": {"version": {"$gte": "5.0"}},
