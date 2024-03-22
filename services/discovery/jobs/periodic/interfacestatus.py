@@ -1,7 +1,7 @@
 # ---------------------------------------------------------------------
 # Interface Status check
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2021 The NOC Project
+# Copyright (C) 2007-2024 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -97,7 +97,7 @@ class InterfaceStatusCheck(DiscoveryCheck):
             i.name: i
             for i in Interface.objects.filter(
                 managed_object=self.object.id,
-                type="physical",
+                type__in=["physical", "aggregated"],
                 profile__in=InterfaceProfile.get_with_status_discovery(),
             ).read_preference(ReadPreference.SECONDARY_PREFERRED)
         }
@@ -127,6 +127,8 @@ class InterfaceStatusCheck(DiscoveryCheck):
             }
             changes = self.update_if_changed(iface, kwargs, ignore_empty=list(kwargs), bulk=bulk)
             self.log_changes(f"Interface {i['interface']} status has been changed", changes)
+            if iface.type == "aggregated":
+                continue
             ostatus = i.get("oper_status")
             astatus = i.get("admin_status")
             if iface.oper_status != ostatus and ostatus is not None:
