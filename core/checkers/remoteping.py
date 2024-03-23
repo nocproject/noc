@@ -9,8 +9,9 @@
 from typing import List, Iterable
 
 # NOC modules
-from noc.core.validators import is_ipv4
 from .base import Checker, CheckResult, MetricValue
+from noc.core.wf.diagnostic import CLI_DIAG
+from noc.core.validators import is_ipv4
 
 RP_DIAG = "REMOTE_PING"
 
@@ -22,7 +23,7 @@ class RemotePing(Checker):
 
     name = "remoteping"
     CHECKS: List[str] = [RP_DIAG]
-    # Required check
+    REQUIRED_DIAGS: List[str] = [CLI_DIAG]
 
     def iter_result(self, checks=None) -> Iterable[CheckResult]:
         if not checks:
@@ -33,10 +34,6 @@ class RemotePing(Checker):
             for address in c.arg0.split(";"):
                 if not is_ipv4(address):
                     continue
-                # if CLI_DIAG not in self.object.diagnostics:
-                #     yield CheckResult(
-                #         RP_DIAG, status=True, skipped=True, error="CLI Diagnostic Required"
-                #     )
                 try:
                     ping = self.get_script("ping")
                     r = ping(address=address)
