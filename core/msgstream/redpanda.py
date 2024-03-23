@@ -52,6 +52,8 @@ class RedPandaClient(object):
         self.admin_client: Optional[KafkaAdminClient] = None
         self.loop = asyncio.get_running_loop()
         self.stub = None
+        kafka_logger = logging.getLogger('kafka')
+        kafka_logger.setLevel(logging.WARN)
 
     async def resolve_broker(self) -> str:
         # Getting addresses from config directly will block the loop on resolve() method.
