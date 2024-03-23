@@ -98,7 +98,7 @@ class DiagnosticCheck(DiscoveryCheck):
                 if d.diagnostic == PROFILE_DIAG and "profile" in d_data[d.diagnostic]:
                     self.set_profile(d_data[d.diagnostic]["profile"])
                 # Apply credentials
-                if credentials and self.object.auth_profile.enable_suggest:
+                if credentials:
                     self.logger.debug("Apply credentials: %s", credentials)
                     self.apply_credentials(credentials)
                 # Update diagnostics
@@ -138,8 +138,12 @@ class DiagnosticCheck(DiscoveryCheck):
         for checker, d_checks in do_checks.items():
             if checker == "profile":
                 kwargs["rules"] = ProfileCheckRule.get_profile_check_rules()
-            elif checker == "snmp":
+            elif checker in ["snmp", "cli"] and (
+                not self.object.auth_profile or self.object.auth_profile.enable_suggest
+            ):
                 kwargs["rules"] = CredentialCheckRule.get_suggests(self.object)
+            else:
+                kwargs["object"] = self.object.id
             checker = loader[checker](**kwargs)
             self.logger.info("[%s] Run checker", ";".join(f"{c.name}({c.arg0})" for c in d_checks))
             try:
@@ -157,7 +161,7 @@ class DiagnosticCheck(DiscoveryCheck):
         self.invalidate_neighbor_cache()
         self.object.profile = profile
         self.object.vendor = None
-        self.object.plarform = None
+        self.object.platform = None
         self.object.version = None
         self.object.save()
         return True

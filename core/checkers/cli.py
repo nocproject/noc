@@ -68,6 +68,7 @@ class CLIProtocolChecker(Checker):
                     continue
                 yield CheckResult(
                     check=c.name,
+                    arg0=c.arg0,
                     status=status,
                     port=c.port,
                     is_available=not error or not self.is_unsupported_error(error),
@@ -78,6 +79,7 @@ class CLIProtocolChecker(Checker):
             else:
                 yield CheckResult(
                     check=c.name,
+                    arg0=c.arg0,
                     status=False,
                     port=c.port,
                     is_available=True,
