@@ -17,6 +17,7 @@ from typing import Dict, Callable, Union, Optional, List, Tuple
 # NOC modules
 from noc.core.ip import IPv4
 from noc.sa.interfaces.base import InterfaceTypeError
+from noc.core.confdb.collator.typing import PortItem
 from noc.core.ecma48 import strip_control_sequences
 from noc.core.handler import get_handler
 from noc.core.comp import smart_text, smart_bytes
@@ -822,7 +823,7 @@ class BaseProfile(object, metaclass=BaseProfileMetaclass):
                     return self.proto_prefixes[pp]
         return []
 
-    def get_interfaces_by_port(self, port) -> List[str]:
+    def get_interfaces_by_port(self, port: PortItem) -> List[str]:
         """
         1. If device is not stackable and not module (len path) - return slot num
         2. Append num from last path element
@@ -832,15 +833,15 @@ class BaseProfile(object, metaclass=BaseProfileMetaclass):
         :param port:
         :return:
         """
-        if len(port.path) <= 1 and not port.stackable:
+        if len(port.path) <= 1 and port.stack_num is None:
             return [port.name]
         r: List[str] = []
         x = []
         for p in reversed(port.path):
             x.append(self.get_connection_path(p.c_name))
         r.append("/".join(x))
-        if port.stackable:
-            r.append("/".join([str(port.stack_num or 0)] + x))
+        if port.stack_num is not None:
+            r.append("/".join([str(port.stack_num)] + x))
         protocol_prefixes = self.get_protocol_prefixes(port.protocols)
         if not protocol_prefixes:
             return r

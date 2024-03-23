@@ -44,6 +44,7 @@ from noc.core.bi.decorator import bi_sync
 from noc.core.change.decorator import change
 from noc.core.topology.types import TopologyNode
 from noc.core.discriminator import discriminator
+from noc.core.confdb.collator.typing import PortItem, PathItem
 from noc.main.models.remotesystem import RemoteSystem
 from noc.main.models.label import Label
 from noc.core.comp import smart_text
@@ -57,8 +58,6 @@ from .modelinterface import ModelInterface
 from .objectlog import ObjectLog
 from .error import ConnectionError, ModelDataError
 from .protocol import ProtocolVariant
-
-PathItem = namedtuple("PathItem", ["object", "connection"])
 
 id_lock = Lock()
 _path_cache = cachetools.TTLCache(maxsize=1000, ttl=60)
@@ -1129,7 +1128,7 @@ class Object(Document):
         return None, None, None
 
     @classmethod
-    def get_managed(cls, mo) -> Optional["Object"]:
+    def get_managed(cls, mo) -> List["Object"]:
         """
         Get Object managed by managed object
         :param mo: Managed Object instance or id
@@ -1252,7 +1251,7 @@ class Object(Document):
                 serials += oo.get_object_serials(chassis_only=False)
         return serials
 
-    def iter_technology(self, technologies: List["Technology"]) -> Iterable[Tuple[PathItem, ...]]:
+    def iter_technology(self, technologies: List["Technology"]) -> Iterable[PortItem]:
         """
         Iter object ports for technologies
         :param technologies: List for connection technologies
@@ -1270,14 +1269,20 @@ class Object(Document):
             for name, ro, _ in self.iter_inner_connections()
             if ro.model.cr_context != "XCVR"
         }
-        # cr_context == XCVR
         for c in self.model.connections:
             if is_protocol_match(c.protocols):
-                yield PathItem(object=self, connection=c),
+                yield PortItem(
+                    name=c.name,
+                    protocols=[str(p) for p in c.protocols],
+                    internal_name=c.internal_name,
+                    path=[PathItem.from_object(self, c)],
+                    combo=c.combo,
+                )
             elif c.name in connections:
                 ro = connections[c.name]
                 for part_path in ro.iter_technology(technologies):
-                    yield (PathItem(object=self, connection=c),) + part_path
+                    part_path.path = [PathItem.from_object(self, c)] + part_path.path
+                    yield part_path
 
     def set_connection_interface(self, name, if_name):
         for cdata in self.connections:
