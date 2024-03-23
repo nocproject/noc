@@ -62,8 +62,6 @@ class Profile(BaseProfile):
         ("hints", "protocols", "ntp", "version", "3"),
     ]
 
-    collators = ["noc.core.confdb.collator.ifpath.IfPathCollator"]
-
     matchers = {
         "is_has_image": {"image": {"$regex": r"^\S+"}},
         "is_has_chgroup": {

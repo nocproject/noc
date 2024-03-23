@@ -45,8 +45,6 @@ class Profile(BaseProfile):
     ]
     config_applicators = ["IfaceTypeJunosApplicator"]
 
-    collators = ["noc.core.confdb.collator.ifpath.IfPathCollator"]
-
     matchers = {
         "is_has_lldp": {"platform": {"$regex": "ex|mx|qfx|acx|srx"}},
         "is_switch": {"platform": {"$regex": "ex|qfx"}},

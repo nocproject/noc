@@ -17,6 +17,7 @@ from typing import Dict, Callable, Union, Optional, List, Tuple
 # NOC modules
 from noc.core.ip import IPv4
 from noc.sa.interfaces.base import InterfaceTypeError
+from noc.core.confdb.collator.typing import PortItem
 from noc.core.ecma48 import strip_control_sequences
 from noc.core.handler import get_handler
 from noc.core.comp import smart_text, smart_bytes
@@ -802,13 +803,15 @@ class BaseProfile(object, metaclass=BaseProfileMetaclass):
     proto_prefixes = {
         "TransEth40G": ["Fo"],
         "10GBASE": ["Te", "Xg"],
-        "TransEth10G": ["Te", "Xg"],
-        "TransEth1G": ["Gi", "Ge"],
-        "1000BASE": ["Gi", "Ge"],
+        "TransEth10G": ["Te", "Xg", "XGigabitEthernet"],
+        "TransEth1G": ["Gi", "Ge", "GigabitEthernet"],
+        "1000BASE": ["Gi", "Ge", "GigabitEthernet"],
         "100BASE": ["Fa"],
         "TransEth100M": ["Fa"],
-        "10BASE": ["Eth"],
+        "10BASE": ["Eth", "Ethernet"],
     }
+
+    port_splitter = " "
 
     def get_protocol_prefixes(self, protocols: List[str]) -> List[str]:
         """
@@ -822,18 +825,29 @@ class BaseProfile(object, metaclass=BaseProfileMetaclass):
                     return self.proto_prefixes[pp]
         return []
 
-    def get_interfaces_by_port(self, port) -> List[str]:
-        if len(port.path) <= 1 and not port.stack_num:
+    def get_interfaces_by_port(self, port: PortItem) -> List[str]:
+        """
+        1. If device is not stackable and not module (len path) - return slot num
+        2. Append num from last path element
+        3. If device supported stack - add first stack_member or 0
+        4. Reverse path
+        5. Product all variants with protocol prefix
+        :param port:
+        :return:
+        """
+        if len(port.path) <= 1 and port.stack_num is None:
             return [port.name]
-        r = []
-        for p in port.path[:-1]:
-            r.append(self.get_connection_path(p.c_name))
-        path = self.get_connection_path(port.name)
-        r.append(path)
+        r: List[str] = []
+        x = []
+        for p in reversed(port.path):
+            x.insert(0, self.get_connection_path(p.c_name))
+        r.append("/".join(x))
+        if port.stack_num is not None:
+            r.append("/".join([str(port.stack_num)] + x))
         protocol_prefixes = self.get_protocol_prefixes(port.protocols)
         if not protocol_prefixes:
             return r
-        return list(product([protocol_prefixes, r], repeat=1))
+        return [self.port_splitter.join(p) for p in product(protocol_prefixes, r, repeat=1)]
 
     def generate_prefix_list(self, name, pl):
         """

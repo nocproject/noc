@@ -94,6 +94,10 @@ class CLICredential(object):
     def protocol(self) -> "Protocol":
         return Protocol(self.enable_protocols[0])
 
+    @property
+    def user(self):
+        return self.username
+
 
 @dataclass
 class HTTPCredential(object):
