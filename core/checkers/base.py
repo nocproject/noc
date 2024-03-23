@@ -9,10 +9,11 @@
 import logging
 from dataclasses import dataclass, field
 from typing import List, Optional, Dict, Any, Iterable, Literal, Union
-from noc.core.script.scheme import SNMPCredential, SNMPv3Credential, CLICredential, HTTPCredential
 
 # NOC modules
 from noc.core.log import PrefixLoggerAdapter
+from noc.core.script.scheme import SNMPCredential, SNMPv3Credential, CLICredential, HTTPCredential
+from noc.core.script.caller import ScriptCaller
 
 
 @dataclass(frozen=True)
@@ -40,19 +41,34 @@ class CredentialItem(object):
 
 @dataclass(frozen=True, eq=True)
 class Check(object):
-    name: str = field(hash=True)  # Check name
-    port: Optional[int] = field(default=None, hash=True)  # TCP/UDP port
-    arg0: Optional[str] = field(default=None, hash=True)  #
+    name: str  # Check name
+    port: Optional[int] = None  # TCP/UDP port
+    arg0: Optional[str] = None  #
     # pool: Optional[str] = field(default=None, hash=False)  # Address Pool
     address: str = field(default=None, compare=False)  # IP Address
     credentials: Optional[
         List[Union[SNMPCredential, SNMPv3Credential, CLICredential, HTTPCredential]]
     ] = field(default=None, compare=False)
 
+    def __hash__(self):
+        if self.address or self.port:
+            return hash((self.name, self.address or "", self.port or 0, self.arg0 or ""))
+        return hash((self.name, self.arg0 or ""))
+
+    def arg(self) -> str:
+        r = []
+        if self.address:
+            r.append(f"address={self.address}")
+        if self.port:
+            r.append(f"port={self.port}")
+        if self.arg0:
+            r.append(f"arg0={self.arg0}")
+        return "&".join(r)
+
     @classmethod
     def from_string(cls, url) -> "Check":
         """
-
+        <check>://<cred>@<address>:<port>&arg0
         :param url:
         :return:
         """
@@ -110,6 +126,17 @@ class Checker(object):
         self.calling_service = calling_service or self.name
         # Set for pooled check
         self.pool = pool
+        self.object = kwargs.get("object")
+        self._script_caller: Optional["ScriptCaller"] = None
+
+    def get_script(self, name: str) -> "ScriptCaller":
+        if not self._script_caller and not self.object:
+            raise NotImplementedError()
+        if not self._script_caller:
+            o = lambda: None
+            o.id = self.object
+            self._script_caller = ScriptCaller(o, name)
+        return self._script_caller
 
     def iter_result(self, checks: List[Check]) -> Iterable[CheckResult]:
         """

@@ -10,15 +10,15 @@ from typing import List, Iterable
 
 # NOC modules
 from noc.core.validators import is_ipv4
-from .base import ObjectChecker, CheckResult, MetricValue
+from .base import Checker, CheckResult, MetricValue
 from ..wf.diagnostic import CLI_DIAG
 
 RP_DIAG = "REMOTE_PING"
 
 
-class RemotePing(ObjectChecker):
+class RemotePing(Checker):
     """
-    Check ManagedObject profile by rules
+    Check address availability from remote device
     """
 
     name = "remoteping"
@@ -33,12 +33,13 @@ class RemotePing(ObjectChecker):
             for address in c.arg0.split(";"):
                 if not is_ipv4(address):
                     continue
-                if CLI_DIAG not in self.object.diagnostics:
-                    yield CheckResult(
-                        RP_DIAG, status=True, skipped=True, error="CLI Diagnostic Required"
-                    )
+                # if CLI_DIAG not in self.object.diagnostics:
+                #     yield CheckResult(
+                #         RP_DIAG, status=True, skipped=True, error="CLI Diagnostic Required"
+                #     )
                 try:
-                    r = self.object.scripts.ping(address=address)
+                    ping = self.get_script("ping")
+                    r = ping(address=address)
                 except AttributeError:
                     yield CheckResult(RP_DIAG, status=True, skipped=True, error="Invalid script")
                     continue
