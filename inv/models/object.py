@@ -10,7 +10,6 @@ import datetime
 import operator
 from dataclasses import dataclass
 from threading import Lock
-from collections import namedtuple
 from typing import Optional, Any, Dict, Union, List, Set, Iterator
 
 # Third-party modules
