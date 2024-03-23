@@ -133,7 +133,7 @@ class Checker(object):
         if not self._script_caller and not self.object:
             raise NotImplementedError()
         if not self._script_caller:
-            o = lambda: None
+            o = lambda: None  # noqa:E731
             o.id = self.object
             self._script_caller = ScriptCaller(o, name)
         return self._script_caller
