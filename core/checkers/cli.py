@@ -10,7 +10,7 @@ from typing import List, Iterable, Dict, Tuple
 
 # NOC modules
 from .base import Checker, CheckResult, Check
-from ..script.scheme import Protocol
+from ..script.scheme import Protocol, CLICredential
 from noc.core.service.client import open_sync_rpc
 from noc.core.service.error import RPCError
 from noc.core.text import safe_shadow
@@ -25,6 +25,17 @@ class CLIProtocolChecker(Checker):
     CHECKS: List[str] = ["TELNET", "SSH"]
     GENERIC_PROFILE = "Generic.Host"
     PROTO_CHECK_MAP: Dict[str, Protocol] = {p.config.check: p for p in Protocol if p.config.check}
+
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+        self.rules: List[CLICredential] = self.load_suggests(kwargs.get("rules"))
+        self.profile = kwargs.get("profile")
+
+    @staticmethod
+    def load_suggests(credentials):
+        if not credentials:
+            return []
+        return [x for x in credentials if isinstance(x, CLICredential)]
 
     @staticmethod
     def is_unsupported_error(message) -> bool:
@@ -50,10 +61,14 @@ class CLIProtocolChecker(Checker):
             if c.name not in self.CHECKS:
                 # Unknown check, skipped
                 continue
-            if not c.arg0 or c.arg0 == self.GENERIC_PROFILE:
+            profile = c.arg0
+            if self.profile and self.profile != self.GENERIC_PROFILE:
+                profile = self.profile
+            if profile == self.GENERIC_PROFILE:
                 self.logger.info("CLI Access for Generic profile is not supported. Ignoring")
                 continue
-            for cred in c.credentials:
+            self.logger.info("[CLI] Profile: %s,%s", profile, c.credentials)
+            for cred in self.rules:
                 status, error = self.check_login(
                     c.address,
                     c.port,
@@ -61,7 +76,7 @@ class CLIProtocolChecker(Checker):
                     cred.password,
                     cred.super_password,
                     self.PROTO_CHECK_MAP[c.name],
-                    c.arg0,
+                    self.profile or c.arg0,
                     cred.raise_privilege,
                 )
                 if not status and not self.is_unsupported_error(error):
