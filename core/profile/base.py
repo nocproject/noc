@@ -847,7 +847,7 @@ class BaseProfile(object, metaclass=BaseProfileMetaclass):
         protocol_prefixes = self.get_protocol_prefixes(port.protocols)
         if not protocol_prefixes:
             return r
-        return [self.port_splitter.join(p) for p in product(*[protocol_prefixes, r], repeat=1)]
+        return [self.port_splitter.join(p) for p in product(protocol_prefixes, r, repeat=1)]
 
     def generate_prefix_list(self, name, pl):
         """

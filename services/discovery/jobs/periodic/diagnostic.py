@@ -180,7 +180,7 @@ class DiagnosticCheck(DiscoveryCheck):
                 changed["snmp_security_level"] = cred.security_level
             elif isinstance(cred, CLICredential) and self.object.scheme != cred.protocol.value:
                 changed["scheme"] = cred.protocol.value
-            for f in object_credentials._fields:
+            for f in object_credentials.__dataclass_fields__:
                 if not hasattr(cred, f) or getattr(cred, f) == getattr(object_credentials, f):
                     continue
                 changed[f] = getattr(cred, f)

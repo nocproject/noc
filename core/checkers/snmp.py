@@ -204,7 +204,7 @@ class SNMPProtocolChecker(Checker):
         community: str,
         protocol: Protocol = Protocol(7),
         timeout: int = 3,
-    ) -> Tuple[bool, str]:
+    ) -> Tuple[Optional[Dict[str, str]], str]:
         """
         Perform SNMP GET. Param is OID or symbolic name, version is activator method
         :param address:
@@ -238,10 +238,10 @@ class SNMPProtocolChecker(Checker):
             self.logger.debug("SNMP GET %s %s returns %s", address, oids, result)
             # result = smart_text(result, errors="replace") if result else result
         except SNMPError as e:
-            result, message = False, repr(e)
+            result, message = None, repr(e)
             self.logger.debug("SNMP GET %s %s returns error %s", address, oids, e)
         except Exception as e:
-            result, message = False, str(e)
+            result, message = None, str(e)
             self.logger.debug("SNMP GET %s %s returns unknown error %s", address, oids, e)
         return result, message
 
@@ -253,7 +253,7 @@ class SNMPProtocolChecker(Checker):
         community: str,
         protocol: Protocol = Protocol(7),
         timeout: int = 3,
-    ) -> Tuple[bool, str]:
+    ) -> Tuple[Optional[Dict[str, str]], str]:
         """
         Perform SNMP GET. Param is OID or symbolic name, version is activator method
         todo mass check
@@ -280,10 +280,10 @@ class SNMPProtocolChecker(Checker):
             if message.startswith("<"):
                 message = message.strip("<>")
             self.logger.info("Result: %s (%s)", result, message)
-            return result is not None, message or ""
+            return {oid: result} if result else None, message or ""
         except RPCError as e:
             self.logger.info("RPC Error: %s", e)
-            return False, str(e)
+            return None, str(e)
 
     def check_v3_oid_on_pool(
         self,
@@ -296,7 +296,7 @@ class SNMPProtocolChecker(Checker):
         priv_proto: Optional[str] = None,
         priv_key: Optional[str] = None,
         timeout: int = 3,
-    ) -> Tuple[bool, str]:
+    ) -> Tuple[Optional[Dict[str, str]], str]:
         """
         Perform SNMP GET. Param is OID or symbolic name, version is activator method
         todo mass check
@@ -325,7 +325,7 @@ class SNMPProtocolChecker(Checker):
             if message.startswith("<"):
                 message = message.strip("<>")
             self.logger.info("Result: %s (%s)", result, message)
-            return result is not None, message or ""
+            return {oid: result} if result else None, message or ""
         except RPCError as e:
             self.logger.info("RPC Error: %s", e)
-            return False, str(e)
+            return None, str(e)
