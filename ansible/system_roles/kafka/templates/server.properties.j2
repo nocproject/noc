@@ -131,3 +131,9 @@ log.segment.bytes={{ kafka_log_segment_bytes }}
 # The interval at which log segments are checked to see if they can be deleted according
 # to the retention policies
 log.retention.check.interval.ms={{ kafka_log_retention_check_interval_ms }}
+
+# Disable autocreating topics
+auto.create.topics.enable = {{ kafka_auto_create_topics_enable }}
+
+# Enable delete.topic.enable
+delete.topic.enable = {{ kafka_delete_topic_enable }}
