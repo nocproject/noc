@@ -12,7 +12,7 @@ import logging
 from dataclasses import dataclass
 from collections import defaultdict
 from functools import partial
-from typing import Optional, List, Dict, Any, Iterable
+from typing import Optional, List, Dict, Any, Iterable, Tuple
 
 # Third-party modules
 import orjson
@@ -195,7 +195,7 @@ class DiagnosticHub(object):
     ):
         self.logger = logger or logging.getLogger(__name__)
         self.__diagnostics: Optional[Dict[str, DiagnosticItem]] = None  # Actual diagnostic state
-        self.__checks: Dict[Check, List[str]] = defaultdict(list)
+        self.__checks: Dict[Tuple[str, str], List[str]] = defaultdict(list)
         self.__depended: Dict[str, str] = {}  # Depended diagnostics
         if not hasattr(o, "diagnostics"):
             raise NotImplementedError("Diagnostic Interface not supported")
@@ -280,7 +280,7 @@ class DiagnosticHub(object):
                     r[dc.diagnostic].reason = dc.reason
             # item["config"] = dc
             for c in dc.checks or []:
-                self.__checks[c] += [dc.diagnostic]
+                self.__checks[(c.name, c.arg0 or "")] += [dc.diagnostic]
             for dd in dc.dependent or []:
                 self.__depended[dd] = dc.diagnostic
         return r
@@ -342,10 +342,12 @@ class DiagnosticHub(object):
         now = datetime.datetime.now().replace(microsecond=0)
         affected_diagnostics: Dict[str, List[CheckStatus]] = defaultdict(list)
         for cr in checks:
-            c = Check(name=cr.name, arg0=cr.arg0)
-            if c not in self.__checks:
+            if (cr.name, cr.arg0 or "") not in self.__checks:
+                self.logger.debug(
+                    "[%s|%s] Diagnostic not enabled: %s", cr.name, cr.arg0, self.__checks
+                )
                 continue
-            for d in self.__checks[c]:
+            for d in self.__checks[(cr.name, cr.arg0 or "")]:
                 affected_diagnostics[d] += [
                     CheckStatus(
                         name=cr.name,
