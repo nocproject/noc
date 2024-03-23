@@ -51,8 +51,6 @@ class Profile(BaseProfile):
         # ("hints", "protocols", "loop-detect", "status", False),
     ]
 
-    collators = ["noc.core.confdb.collator.ifpath.IfPathCollator"]
-
     matchers = {
         "is_new_metric": {"caps": {"$in": ["Qtech | OID | Memory Usage 11"]}},
         "is_support_mac_version": {

@@ -144,6 +144,8 @@ class DiagnosticCheck(DiscoveryCheck):
                 kwargs["rules"] = CredentialCheckRule.get_suggests(self.object)
             else:
                 kwargs["object"] = self.object.id
+            if checker == "cli":
+                kwargs["profile"] = self.object.profile
             checker = loader[checker](**kwargs)
             self.logger.info("[%s] Run checker", ";".join(f"{c.name}({c.arg0})" for c in d_checks))
             try:
@@ -158,6 +160,7 @@ class DiagnosticCheck(DiscoveryCheck):
         profile = Profile.get_by_name(profile)
         if self.object.profile.id == profile.id:
             return False
+        self.logger.info("Changed profile: %s -> %s", self.object.profile.name, profile.name)
         self.invalidate_neighbor_cache()
         self.object.profile = profile
         self.object.vendor = None
@@ -180,7 +183,7 @@ class DiagnosticCheck(DiscoveryCheck):
                 changed["snmp_security_level"] = cred.security_level
             elif isinstance(cred, CLICredential) and self.object.scheme != cred.protocol.value:
                 changed["scheme"] = cred.protocol.value
-            for f in object_credentials._fields:
+            for f in object_credentials.__dataclass_fields__:
                 if not hasattr(cred, f) or getattr(cred, f) == getattr(object_credentials, f):
                     continue
                 changed[f] = getattr(cred, f)

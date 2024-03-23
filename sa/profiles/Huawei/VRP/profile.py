@@ -1,7 +1,7 @@
 # ---------------------------------------------------------------------
 # Huawei,VRP profile
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2021 The NOC Project
+# Copyright (C) 2007-2024 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -72,10 +72,7 @@ class Profile(BaseProfile):
     ]
     config_applicators = ["noc.core.confdb.applicator.collapsetagged.CollapseTaggedApplicator"]
 
-    collators = [
-        "noc.sa.profiles.Huawei.VRP.confdb.collators.HuaweiMgmgIfCollator",
-        "noc.core.confdb.collator.ifpath.IfPathCollator",
-    ]
+    port_splitter = ""
 
     matchers = {
         "is_kernel_3": {"version": {"$gte": "3.0", "$lt": "5.0"}},
