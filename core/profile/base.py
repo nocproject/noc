@@ -803,13 +803,15 @@ class BaseProfile(object, metaclass=BaseProfileMetaclass):
     proto_prefixes = {
         "TransEth40G": ["Fo"],
         "10GBASE": ["Te", "Xg"],
-        "TransEth10G": ["Te", "Xg"],
-        "TransEth1G": ["Gi", "Ge"],
-        "1000BASE": ["Gi", "Ge"],
+        "TransEth10G": ["Te", "Xg", "XGigabitEthernet"],
+        "TransEth1G": ["Gi", "Ge", "GigabitEthernet"],
+        "1000BASE": ["Gi", "Ge", "GigabitEthernet"],
         "100BASE": ["Fa"],
         "TransEth100M": ["Fa"],
-        "10BASE": ["Eth"],
+        "10BASE": ["Eth", "Ethernet"],
     }
+
+    port_splitter = " "
 
     def get_protocol_prefixes(self, protocols: List[str]) -> List[str]:
         """
@@ -838,14 +840,14 @@ class BaseProfile(object, metaclass=BaseProfileMetaclass):
         r: List[str] = []
         x = []
         for p in reversed(port.path):
-            x.append(self.get_connection_path(p.c_name))
+            x.insert(0, self.get_connection_path(p.c_name))
         r.append("/".join(x))
         if port.stack_num is not None:
             r.append("/".join([str(port.stack_num)] + x))
         protocol_prefixes = self.get_protocol_prefixes(port.protocols)
         if not protocol_prefixes:
             return r
-        return list(product([protocol_prefixes, r], repeat=1))
+        return [self.port_splitter.join(p) for p in product(*[protocol_prefixes, r], repeat=1)]
 
     def generate_prefix_list(self, name, pl):
         """

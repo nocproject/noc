@@ -1,7 +1,7 @@
 # ---------------------------------------------------------------------
 # Huawei,VRP profile
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2021 The NOC Project
+# Copyright (C) 2007-2024 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -71,6 +71,8 @@ class Profile(BaseProfile):
         ("hints", "protocols", "ntp", "version", "3"),
     ]
     config_applicators = ["noc.core.confdb.applicator.collapsetagged.CollapseTaggedApplicator"]
+
+    port_splitter = ""
 
     matchers = {
         "is_kernel_3": {"version": {"$gte": "3.0", "$lt": "5.0"}},
