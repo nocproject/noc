@@ -7,6 +7,7 @@
 
 # Python modules
 from typing import List, Iterable, Dict, Tuple
+from itertools import chain
 
 # NOC modules
 from .base import Checker, CheckResult, Check
@@ -67,8 +68,7 @@ class CLIProtocolChecker(Checker):
             if profile == self.GENERIC_PROFILE:
                 self.logger.info("CLI Access for Generic profile is not supported. Ignoring")
                 continue
-            self.logger.info("[CLI] Profile: %s,%s", profile, c.credentials)
-            for cred in self.rules:
+            for cred in chain(c.credentials, self.rules):
                 status, error = self.check_login(
                     c.address,
                     c.port,
@@ -76,7 +76,7 @@ class CLIProtocolChecker(Checker):
                     cred.password,
                     cred.super_password,
                     self.PROTO_CHECK_MAP[c.name],
-                    self.profile or c.arg0,
+                    profile,
                     cred.raise_privilege,
                 )
                 if not status and not self.is_unsupported_error(error):
