@@ -11,7 +11,6 @@ from typing import List, Iterable
 # NOC modules
 from noc.core.validators import is_ipv4
 from .base import Checker, CheckResult, MetricValue
-from ..wf.diagnostic import CLI_DIAG
 
 RP_DIAG = "REMOTE_PING"
 
@@ -23,6 +22,7 @@ class RemotePing(Checker):
 
     name = "remoteping"
     CHECKS: List[str] = [RP_DIAG]
+    # Required check
 
     def iter_result(self, checks=None) -> Iterable[CheckResult]:
         if not checks:
