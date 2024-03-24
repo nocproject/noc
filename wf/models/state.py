@@ -239,7 +239,7 @@ class State(Document):
             # New default
             self.workflow.set_wiping_state(self)
         if (chenged_fields and "labels" in chenged_fields) or (not chenged_fields and self.labels):
-            self.sync_reffered_labels()
+            self.sync_referred_labels()
 
     def iter_changed_datastream(self, changed_fields=None):
         from noc.sa.models.managedobject import ManagedObject
@@ -424,9 +424,9 @@ class State(Document):
             else "",
         )
 
-    def sync_reffered_labels(self):
+    def sync_referred_labels(self):
         """
-        Update labels on reffered models
+        Update labels on referred models
         * filter - state=state_id
         * sync resource_group
         :return:
