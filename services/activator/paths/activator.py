@@ -304,18 +304,18 @@ class ActivatorAPI(JSONRPCAPI):
             timeout=config.activator.http_request_timeout,
             validate_cert=config.activator.http_validate_cert,
         ) as client:
-            resp = await client.get(url)
-            if 200 <= resp.status <= 299:
-                return resp.content.decode(DEFAULT_ENCODING, errors="replace")
+            code, header, body = await client.get(url)
+            if 200 <= code <= 299:
+                return body.decode(DEFAULT_ENCODING, errors="replace")
             elif ignore_errors:
-                metrics["error", ("type", f"http_error_{resp.status}")] += 1
-                self.logger.debug("HTTP GET %s failed: %s %s", url, resp.status, resp.content)
+                metrics["error", ("type", f"http_error_{code}")] += 1
+                self.logger.debug("HTTP GET %s failed: %s %s", url, code, body)
                 return str(
-                    {k: v.decode(DEFAULT_ENCODING, errors="replace") for k, v in resp.headers}
-                ) + resp.content.decode(DEFAULT_ENCODING, errors="replace")
+                    {k: v.decode(DEFAULT_ENCODING, errors="replace") for k, v in headers}
+                ) + body.decode(DEFAULT_ENCODING, errors="replace")
             else:
-                metrics["error", ("type", f"http_error_{resp.status}")] += 1
-                self.logger.debug("HTTP GET %s failed: %s %s", url, resp.status, resp.content)
+                metrics["error", ("type", f"http_error_{code}")] += 1
+                self.logger.debug("HTTP GET %s failed: %s %s", url, code, body)
                 return None
 
     @staticmethod

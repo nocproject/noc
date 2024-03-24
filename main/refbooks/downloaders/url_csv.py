@@ -36,11 +36,11 @@ class CsvUrlDownloader(BaseDownloader):
             allow_proxy=True,
             validate_cert=False,
         ) as client:
-            r = client.request("GET", url)
-            if r.status != 200:
-                raise IOError("Invalid HTTP response: %s" % r.status)
+            code, headers, body = client.get(url)
+            if code != 200:
+                raise IOError("Invalid HTTP response: %s" % code)
 
-            data = StringIO(r.content)
+            data = StringIO(body)
             # Wrap GzipFile for gzipped content
             if ref_book.download_url.endswith(".gz"):
                 data = gzip.GzipFile(fileobj=data)

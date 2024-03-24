@@ -98,17 +98,17 @@ class HTTP(object):
             user=user,
             password=password,
         ) as client:
-            r = client.request("GET", url)
-            if not 200 <= r.status <= 299:
-                raise HTTPError(msg="HTTP Error (%s)" % r.content[:256], code=r.status)
+            code, headers, result = client.get(url, headers=hdr)
+            if not 200 <= code <= 299:
+                raise HTTPError(msg="HTTP Error (%s)" % result[:256], code=code)
             self._process_cookies(headers)
             if json:
                 try:
-                    result = orjson.loads(r.content)
+                    result = orjson.loads(result)
                 except ValueError as e:
                     raise HTTPError("Failed to decode JSON: %s" % e)
             elif not raw_result:
-                result = r.content.decode(DEFAULT_ENCODING, errors="ignore")
+                result = result.decode(DEFAULT_ENCODING, errors="ignore")
             self.logger.debug("Result: %r", result)
             if cached:
                 self.script.root.http_cache[cache_key] = result
@@ -162,17 +162,17 @@ class HTTP(object):
             user=user,
             password=password,
         ) as client:
-            r = client.request("POST", url, body=data)
-            if not 200 <= r.status <= 299:
-                raise HTTPError(msg="HTTP Error (%s)" % r.content[:256], code=r.status)
+            code, headers, result = client.post(url, data, headers=hdr)
+            if not 200 <= code <= 299:
+                raise HTTPError(msg="HTTP Error (%s)" % result[:256], code=code)
             self._process_cookies(headers)
             if json:
                 try:
-                    return orjson.loads(r.content)
+                    return orjson.loads(result)
                 except ValueError as e:
                     raise HTTPError(msg="Failed to decode JSON: %s" % e)
             elif not raw_result:
-                result = r.content.decode(DEFAULT_ENCODING, errors="ignore")
+                result = result.decode(DEFAULT_ENCODING, errors="ignore")
             self.logger.debug("Result: %r", result)
             if cached:
                 self.script.root.http_cache[cache_key] = result

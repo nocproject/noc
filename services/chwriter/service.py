@@ -158,8 +158,8 @@ class CHWriterService(FastAPIService):
                             f"database={config.clickhouse.db}&"
                             f"query={ch.q_sql}"
                         )
-                        r = http_client.post(url, ch.get_data())
-                        if r.status == 200:
+                        code, headers, body = http_client.post(url, ch.get_data())
+                        if code == 200:
                             self.logger.info(
                                 "[%s] %d records sent in %.2fms",
                                 ch.table,
@@ -168,14 +168,14 @@ class CHWriterService(FastAPIService):
                             )
                             metrics["records_written"] += n_records
                             break
-                        elif r.status in self.CH_SUSPEND_ERRORS:
-                            self.logger.info("[%s] Timed out: %s", ch.table, r.content)
+                        elif code in self.CH_SUSPEND_ERRORS:
+                            self.logger.info("[%s] Timed out: %s", ch.table, body)
                             metrics["error", ("type", "records_spool_timeouts")] += 1
                             await asyncio.sleep(1)
                             continue
                         else:
                             self.logger.info(
-                                "[%s] Failed to write records: %s %s", ch.table, r.status, r.content
+                                "[%s] Failed to write records: %s %s", ch.table, code, body
                             )
                             metrics["error", ("type", "records_spool_failed")] += 1
                             break

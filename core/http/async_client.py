@@ -7,7 +7,7 @@
 
 # Python modules
 import logging
-from typing import Optional, Dict
+from typing import Optional, Dict, Tuple, Any
 
 # Third-party modules
 from gufo.http import BasicAuth, RequestMethod, DEFLATE, GZIP, BROTLI
@@ -82,9 +82,49 @@ class HttpClient(GufoHttpClient):
         /,
         body: Optional[bytes] = None,
         headers: Optional[Dict[str, bytes]] = None,
-    ) -> Response:
+    ) -> Tuple[int, Dict[str, Any], bytes]:
         method = RequestMethod.get(method)
         if not method:
             raise NotImplementedError("Not implementer method: %s", method)
         metrics["httpclient_requests", ("method", method.lower())] += 1
-        return super().request(method, url, body=body, headers=headers)
+        try:
+            r = await super().request(method, url, body=body, headers=headers)
+        except ConnectionResetError:
+            metrics["httpclient_timeouts"] += 1
+            return ERR_TIMEOUT, {}, b"Connection reset while sending request"
+        except TimeoutError:
+            metrics["httpclient_timeouts"] += 1
+            return ERR_TIMEOUT, {}, b"Timed out while sending request"
+        return r.code, r.headers, r.content
+
+    async def get(
+        self, url: str, /, headers: Optional[Dict[str, bytes]] = None
+    ) -> Tuple[int, Dict[str, Any], bytes]:
+        metrics["httpclient_requests", ("method", "get")] += 1
+        try:
+            r = await super().get(url, headers=headers)
+        except ConnectionResetError:
+            metrics["httpclient_timeouts"] += 1
+            return ERR_TIMEOUT, {}, b"Connection reset while sending request"
+        except TimeoutError:
+            metrics["httpclient_timeouts"] += 1
+            return ERR_TIMEOUT, {}, b"Timed out while sending request"
+        return r.code, r.headers, r.content
+
+    async def post(
+        self,
+        url: str,
+        body: bytes,
+        /,
+        headers: Optional[Dict[str, bytes]] = None,
+    ) -> Tuple[int, Dict[str, Any], bytes]:
+        metrics["httpclient_requests", ("method", "post")] += 1
+        try:
+            r = await super().post(url, body, headers=headers)
+        except ConnectionResetError:
+            metrics["httpclient_timeouts"] += 1
+            return ERR_TIMEOUT, {}, b"Connection reset while sending request"
+        except TimeoutError:
+            metrics["httpclient_timeouts"] += 1
+            return ERR_TIMEOUT, {}, b"Timed out while sending request"
+        return r.code, r.headers, r.content

@@ -74,10 +74,10 @@ class BaseGeocoder(object):
             allow_proxy=True,
             validate_cert=False,
         ) as client:
-            r = client.request("GET", url)
-            if 200 <= r.status <= 299:
-                return r.status, r.content
-            raise GeoCoderError("HTTP Error %s" % r.status)
+            code, headers, body = client.get(url)
+            if 200 <= code <= 299:
+                return code, body
+            raise GeoCoderError("HTTP Error %s" % code)
 
     @staticmethod
     def get_path(data, path):

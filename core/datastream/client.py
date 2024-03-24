@@ -14,7 +14,7 @@ from typing import Optional
 import orjson
 
 # NOC modules
-from noc.core.http.async_client import HttpClient
+from noc.core.http.async_client import HttpClient, ERR_TIMEOUT, ERR_READ_TIMEOUT
 from noc.core.error import NOCError, ERR_DS_BAD_CODE, ERR_DS_PARSE_ERROR
 from noc.core.dcs.error import ResolutionError
 from noc.core.comp import DEFAULT_ENCODING
@@ -110,20 +110,20 @@ class DataStreamClient(object):
             # Get data
             logger.debug("Request: %s", url)
             t0 = loop.time()
-            res = self.client.get(url)
+            code, headers, data = await self.client.get(url)
             # code, headers, data = await fetch(url, resolver=self.resolve, headers=req_headers)
             dt = loop.time() - t0
-            logger.debug("Response: %s %s [%.2fms]", res.status, res.headers, dt * 1000)
-            # if res.status == ERR_TIMEOUT or res.status == ERR_READ_TIMEOUT:
-            #     if dt < self.RETRY_TIMEOUT:
-            #         await asyncio.sleep(self.RETRY_TIMEOUT - dt)
-            #     continue  # Retry on timeout
-            if res.status != 200:
-                logger.info("Invalid response code: %s", res.status)
-                raise NOCError(code=ERR_DS_BAD_CODE, msg=f"Invalid response code {res.status}")
+            logger.debug("Response: %s %s [%.2fms]", code, headers, dt * 1000)
+            if code == ERR_TIMEOUT or code == ERR_READ_TIMEOUT:
+                if dt < self.RETRY_TIMEOUT:
+                    await asyncio.sleep(self.RETRY_TIMEOUT - dt)
+                continue  # Retry on timeout
+            elif code != 200:
+                logger.info("Invalid response code: %s", code)
+                raise NOCError(code=ERR_DS_BAD_CODE, msg=f"Invalid response code {code}")
             # Parse response
             try:
-                data = orjson.loads(res.content)
+                data = orjson.loads(data)
             except ValueError as e:
                 logger.info("Cannot parse response: %s", e)
                 raise NOCError(code=ERR_DS_PARSE_ERROR, msg=f"Cannot parse response: {e}")
@@ -136,12 +136,12 @@ class DataStreamClient(object):
                 else:
                     await self.on_change(item)
             #
-            if not self._is_ready and "X-NOC-DataStream-More" not in res.headers:
+            if not self._is_ready and "X-NOC-DataStream-More" not in headers:
                 await self.on_ready()
                 self._is_ready = True
             # Continue from last change
-            if "X-NOC-DataStream-Last-Change" in res.headers:
-                change_id = res.headers["X-NOC-DataStream-Last-Change"]
+            if "X-NOC-DataStream-Last-Change" in headers:
+                change_id = headers["X-NOC-DataStream-Last-Change"]
                 continue
             if block and self._is_ready:
                 # Do not set block=1 before is_ready, otherwise

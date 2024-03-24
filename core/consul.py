@@ -27,11 +27,11 @@ class ConsulHTTPClient(consul.base.HTTPClient):
             timeout=config.consul.request_timeout,
             validate_cert=self.verify,
         ) as client:
-            res = client.request(method, url, body=body)
+            code, headers, body = client.request(method, url, body=body)
 
-            if res.status in ConsulRepeatableCodes:
+            if code in ConsulRepeatableCodes:
                 raise consul.base.Timeout
-            return callback(consul.base.Response(code=res.status, headers=res.headers, body=body))
+            return callback(consul.base.Response(code=code, headers=headers, body=body))
 
     def get(self, callback, path, params=None):
         url = self.uri(path, params)

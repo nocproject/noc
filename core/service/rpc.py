@@ -81,25 +81,25 @@ class RPCProxy(object):
                     if sample:
                         req_headers["X-NOC-Span-Ctx"] = span.span_context
                         req_headers["X-NOC-Span"] = span.span_id
-                    res = self._client.post(url, body, headers=req_headers)
+                    code, headers, data = self._client.post(url, body, headers=req_headers)
                     # Process response
-                    if res.status == 200:
-                        return res.content
-                    elif res.status == 307:
+                    if code == 200:
+                        return data
+                    elif code == 307:
                         # Process redirect
                         if not limit:
                             raise RPCException("Redirects limit exceeded")
-                        url = res.headers.get("location")
+                        url = headers.get("location")
                         self._logger.debug("Redirecting to %s", url)
-                        r = await make_call(url, res.content, limit - 1)
+                        r = await make_call(url, data, limit - 1)
                         return r
-                    elif res.status in (598, 599):
-                        span.set_error(res.status)
+                    elif code in (598, 599):
+                        span.set_error(code)
                         self._logger.debug("Timed out")
                         return None
                     else:
-                        span.set_error(res.status)
-                        raise RPCHTTPError(f"HTTP Error {res.status}: {body}")
+                        span.set_error(code)
+                        raise RPCHTTPError(f"HTTP Error {code}: {body}")
 
             t0 = perf_counter()
             self._logger.debug(

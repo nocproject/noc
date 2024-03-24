@@ -79,12 +79,12 @@ class ClickhouseClient(object):
             else:
                 post = sql
         url = "http://%s/?%s" % (random.choice(self.addresses), "&".join(qs))
-        res = self.http_client.post(url, post.encode(DEFAULT_ENCODING))
-        if res.status != 200:
-            raise ClickhouseError("%s: %s" % (res.status, res.content))
+        code, headers, body = self.http_client.post(url, post.encode(DEFAULT_ENCODING))
+        if code != 200:
+            raise ClickhouseError("%s: %s" % (code, body))
         if return_raw:
-            return res.content
-        return [smart_text(row).split("\t") for row in res.content.splitlines()]
+            return body
+        return [smart_text(row).split("\t") for row in body.splitlines()]
 
     def ensure_db(self, db_name=None):
         self.execute(
