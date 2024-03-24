@@ -8,9 +8,10 @@
 # Python modules
 import operator
 from threading import Lock
-from typing import Optional, List, Dict, Any
+from typing import Optional, List, Dict, Any, Union
 
 # Third-party modules
+import bson
 from mongoengine.document import Document, EmbeddedDocument
 from mongoengine.fields import StringField, ListField, EmbeddedDocumentField, IntField
 from mongoengine.queryset.visitor import Q
@@ -102,8 +103,8 @@ class FirmwarePolicy(Document):
 
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_id_cache"), lock=lambda _: id_lock)
-    def get_by_id(cls, id) -> Optional["FirmwarePolicy"]:
-        return FirmwarePolicy.objects.filter(id=id).first()
+    def get_by_id(cls, oid: Union[str, bson.ObjectId]) -> Optional["FirmwarePolicy"]:
+        return FirmwarePolicy.objects.filter(id=oid).first()
 
     @classmethod
     def get_status(

@@ -16,6 +16,7 @@ from itertools import accumulate
 from functools import partial
 
 # Third-party modules
+import bson
 from pymongo import UpdateMany
 from mongoengine.document import Document, EmbeddedDocument
 from mongoengine.queryset.visitor import Q as m_Q
@@ -321,8 +322,8 @@ class Label(Document):
 
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_id_cache"), lock=lambda _: id_lock)
-    def get_by_id(cls, lid: str) -> Optional["Label"]:
-        return Label.objects.filter(id=lid).first()
+    def get_by_id(cls, oid: Union[str, bson.ObjectId]) -> Optional["Label"]:
+        return Label.objects.filter(id=oid).first()
 
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_name_cache"), lock=lambda _: id_lock)

@@ -8,10 +8,12 @@
 # Python modules
 import operator
 from threading import Lock
+from typing import Optional, Union
 import datetime
 import logging
 
 # Third-party modules
+from bson import ObjectId
 from mongoengine.document import Document
 from mongoengine.fields import (
     StringField,
@@ -86,8 +88,8 @@ class TTSystem(Document):
 
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_id_cache"), lock=lambda _: id_lock)
-    def get_by_id(cls, id):
-        return TTSystem.objects.filter(id=id).first()
+    def get_by_id(cls, oid: Union[str, ObjectId]) -> Optional["TTSystem"]:
+        return TTSystem.objects.filter(id=oid).first()
 
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_name_cache"), lock=lambda _: id_lock)

@@ -7,9 +7,11 @@
 
 # Python modules
 from threading import Lock
+from typing import Optional, Union
 import operator
 
 # Third-party modules
+from bson import ObjectId
 from mongoengine.document import Document
 from mongoengine.fields import StringField, LongField, ListField
 import cachetools
@@ -71,13 +73,13 @@ class VLANProfile(Document):
 
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_id_cache"), lock=lambda _: id_lock)
-    def get_by_id(cls, id):
-        return VLANProfile.objects.filter(id=id).first()
+    def get_by_id(cls, oid: Union[str, ObjectId]) -> Optional["VLANProfile"]:
+        return VLANProfile.objects.filter(id=oid).first()
 
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_bi_id_cache"), lock=lambda _: id_lock)
-    def get_by_bi_id(cls, id):
-        return VLANProfile.objects.filter(bi_id=id).first()
+    def get_by_bi_id(cls, bi_id: int) -> Optional["VLANProfile"]:
+        return VLANProfile.objects.filter(bi_id=bi_id).first()
 
     @classmethod
     def can_set_label(cls, label):

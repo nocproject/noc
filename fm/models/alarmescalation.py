@@ -10,9 +10,10 @@ import logging
 import operator
 from threading import Lock
 import datetime
-from typing import Optional
+from typing import Optional, Union
 
 # Third-party modules
+from bson import ObjectId
 from mongoengine.document import Document, EmbeddedDocument
 from mongoengine.fields import (
     StringField,
@@ -93,8 +94,8 @@ class AlarmEscalation(Document):
 
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_id_cache"), lock=lambda _: id_lock)
-    def get_by_id(cls, id) -> "AlarmEscalation":
-        return AlarmEscalation.objects.filter(id=id).first()
+    def get_by_id(cls, oid: Union[str, ObjectId]) -> Optional["AlarmEscalation"]:
+        return AlarmEscalation.objects.filter(id=oid).first()
 
     @property
     def delays(self):

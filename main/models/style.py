@@ -7,6 +7,7 @@
 
 # Python modules
 from threading import Lock
+from typing import Optional
 import operator
 
 # Third-party modules
@@ -70,7 +71,7 @@ class Style(NOCModel):
 
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_id_cache"), lock=lambda _: id_lock)
-    def get_by_id(cls, id):
+    def get_by_id(cls, id: int) -> Optional["Style"]:
         try:
             return Style.objects.get(id=id)
         except Style.DoesNotExist:

@@ -7,9 +7,11 @@
 
 # Python modules
 from threading import Lock
+from typing import Optional, Union
 import operator
 
 # Third-party modules
+from bson import ObjectId
 from mongoengine.document import Document, EmbeddedDocument
 from mongoengine.fields import StringField, LongField, ListField, EmbeddedDocumentField
 from mongoengine.errors import ValidationError
@@ -83,13 +85,13 @@ class VPN(Document):
 
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_id_cache"), lock=lambda _: id_lock)
-    def get_by_id(cls, id):
-        return VPN.objects.filter(id=id).first()
+    def get_by_id(cls, oid: Union[str, ObjectId]) -> Optional["VPN"]:
+        return VPN.objects.filter(id=oid).first()
 
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_bi_id_cache"), lock=lambda _: id_lock)
-    def get_by_bi_id(cls, id):
-        return VPN.objects.filter(bi_id=id).first()
+    def get_by_bi_id(cls, bi_id: int) -> Optional["VPN"]:
+        return VPN.objects.filter(bi_id=bi_id).first()
 
     def clean(self):
         super().clean()

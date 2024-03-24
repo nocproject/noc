@@ -7,9 +7,10 @@
 
 # Python modules
 import datetime
-from typing import Optional, Iterable
+from typing import Optional, Iterable, Union
 
 # Third-party modules
+from bson import ObjectId
 from jinja2 import Template as Jinja2Template
 from mongoengine.document import Document
 from mongoengine.fields import (
@@ -124,8 +125,8 @@ class ArchivedAlarm(Document):
         return str(self.id)
 
     @classmethod
-    def get_by_id(cls, id) -> Optional["ArchivedAlarm"]:
-        return ArchivedAlarm.objects.filter(id=id).first()
+    def get_by_id(cls, oid: Union[str, ObjectId]) -> Optional["ArchivedAlarm"]:
+        return ArchivedAlarm.objects.filter(id=oid).first()
 
     def iter_changed_datastream(self, changed_fields=None):
         if config.datastream.enable_alarm:

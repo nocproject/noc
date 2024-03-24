@@ -8,10 +8,12 @@
 # NOC modules
 import operator
 from threading import Lock, RLock
+from typing import Optional, Union
 from functools import partial
 from dataclasses import dataclass
 
 # Third-party modules
+import bson
 import cachetools
 from pymongo import ReadPreference
 from mongoengine.document import Document, EmbeddedDocument
@@ -137,13 +139,13 @@ class CPEProfile(Document):
 
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_id_cache"), lock=lambda _: id_lock)
-    def get_by_id(cls, id) -> "CPEProfile":
-        return CPEProfile.objects.filter(id=id).first()
+    def get_by_id(cls, oid: Union[str, bson.ObjectId]) -> Optional["CPEProfile"]:
+        return CPEProfile.objects.filter(id=oid).first()
 
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_bi_id_cache"), lock=lambda _: id_lock)
-    def get_by_bi_id(cls, id) -> "CPEProfile":
-        return CPEProfile.objects.filter(bi_id=id).first()
+    def get_by_bi_id(cls, bi_id: int) -> Optional["CPEProfile"]:
+        return CPEProfile.objects.filter(bi_id=bi_id).first()
 
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_default_cache"), lock=lambda _: id_lock)

@@ -10,9 +10,10 @@ import os
 from threading import Lock
 import operator
 import logging
-from typing import Optional, Dict, Any
+from typing import Optional, Dict, Any, Union
 
 # Third-party modules
+from bson import ObjectId
 from mongoengine.document import Document
 from mongoengine.fields import (
     StringField,
@@ -130,13 +131,13 @@ class Workflow(Document):
 
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_id_cache"), lock=lambda _: id_lock)
-    def get_by_id(cls, id) -> Optional["Workflow"]:
-        return Workflow.objects.filter(id=id).first()
+    def get_by_id(cls, oid: Union[str, ObjectId]) -> Optional["Workflow"]:
+        return Workflow.objects.filter(id=oid).first()
 
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_bi_id_cache"), lock=lambda _: id_lock)
-    def get_by_bi_id(cls, id) -> Optional["Workflow"]:
-        return Workflow.objects.filter(bi_id=id).first()
+    def get_by_bi_id(cls, bi_id: int) -> Optional["Workflow"]:
+        return Workflow.objects.filter(bi_id=bi_id).first()
 
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_name_cache"), lock=lambda _: id_lock)

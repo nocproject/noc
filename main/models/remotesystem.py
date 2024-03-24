@@ -9,9 +9,10 @@
 from threading import Lock
 import operator
 import datetime
-from typing import Optional
+from typing import Optional, Union
 
 # Third-party modules
+import bson
 from mongoengine.document import Document, EmbeddedDocument
 from mongoengine.fields import (
     StringField,
@@ -147,8 +148,8 @@ class RemoteSystem(Document):
 
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_id_cache"), lock=lambda _: id_lock)
-    def get_by_id(cls, id) -> Optional["RemoteSystem"]:
-        return RemoteSystem.objects.filter(id=id).first()
+    def get_by_id(cls, oid: Union[str, bson.ObjectId]) -> Optional["RemoteSystem"]:
+        return RemoteSystem.objects.filter(id=oid).first()
 
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_name_cache"), lock=lambda _: id_lock)

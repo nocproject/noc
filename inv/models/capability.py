@@ -12,6 +12,7 @@ from threading import Lock
 from typing import Any, Dict, Union, Optional
 
 # Third-party modules
+import bson
 from mongoengine.document import Document
 from mongoengine.fields import StringField, UUIDField, ObjectIdField
 import cachetools
@@ -64,8 +65,8 @@ class Capability(Document):
 
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_id_cache"), lock=lambda _: id_lock)
-    def get_by_id(cls, id) -> Optional["Capability"]:
-        return Capability.objects.filter(id=id).first()
+    def get_by_id(cls, oid: Union[str, bson.ObjectId]) -> Optional["Capability"]:
+        return Capability.objects.filter(id=oid).first()
 
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_name_cache"), lock=lambda _: id_lock)

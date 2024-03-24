@@ -9,9 +9,10 @@
 import re
 import threading
 import operator
-from typing import Any, Dict
+from typing import Any, Dict, Optional, Union
 
 # Third-party modules
+from bson import ObjectId
 from mongoengine.document import Document, EmbeddedDocument
 from mongoengine.fields import (
     StringField,
@@ -97,8 +98,8 @@ class Action(Document):
 
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_id_cache"), lock=lambda _: id_lock)
-    def get_by_id(cls, id):
-        return Action.objects.filter(id=id).first()
+    def get_by_id(cls, oid: Union[str, ObjectId]) -> Optional["Action"]:
+        return Action.objects.filter(id=oid).first()
 
     def get_json_path(self) -> str:
         return "%s.json" % quote_safe_path(self.name)
