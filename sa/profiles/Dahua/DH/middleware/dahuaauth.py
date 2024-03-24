@@ -83,10 +83,9 @@ class DahuaAuthMiddeware(BaseMiddleware):
             allow_proxy=False,
             validate_cert=False,
         ) as client:
-            r = client.request(
-                "POST",
+            code, resp_headers, result = client.post(
                 auth_url,
-                body=orjson.dumps(
+                orjson.dumps(
                     {
                         "method": "global.login",
                         "params": {
@@ -99,15 +98,14 @@ class DahuaAuthMiddeware(BaseMiddleware):
                     },
                 ),
             )
-            r = orjson.loads(r.content)
+            r = orjson.loads(result)
             session = r["session"]
             self.http.set_session_id(session)
             password = self.get_auth(r["params"])
 
-            client.request(
-                "POST",
+            client.post(
                 auth_url,
-                body=orjson.dumps(
+                orjson.dumps(
                     {
                         "method": "global.login",
                         "params": {

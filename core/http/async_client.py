@@ -11,7 +11,7 @@ from typing import Optional, Dict, Tuple, Any
 
 # Third-party modules
 from gufo.http import BasicAuth, RequestMethod, DEFLATE, GZIP, BROTLI
-from gufo.http.async_client import Response, HttpClient as GufoHttpClient
+from gufo.http.async_client import HttpClient as GufoHttpClient
 
 # NOC modules
 from noc.core.perf import metrics

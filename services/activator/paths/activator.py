@@ -304,7 +304,7 @@ class ActivatorAPI(JSONRPCAPI):
             timeout=config.activator.http_request_timeout,
             validate_cert=config.activator.http_validate_cert,
         ) as client:
-            code, header, body = await client.get(url)
+            code, headers, body = await client.get(url)
             if 200 <= code <= 299:
                 return body.decode(DEFAULT_ENCODING, errors="replace")
             elif ignore_errors:
