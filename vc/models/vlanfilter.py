@@ -13,6 +13,7 @@ from collections import defaultdict
 from typing import Optional, Union, List, Tuple, Dict, FrozenSet
 
 # Third-party modules
+from bson import ObjectId
 from mongoengine.document import Document
 from mongoengine.fields import (
     StringField,
@@ -63,8 +64,8 @@ class VLANFilter(Document):
 
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_id_cache"), lock=lambda _: id_lock)
-    def get_by_id(cls, id) -> Optional["VLANFilter"]:
-        return VLANFilter.objects.filter(id=id).first()
+    def get_by_id(cls, oid: Union[str, ObjectId]) -> Optional["VLANFilter"]:
+        return VLANFilter.objects.filter(id=oid).first()
 
     def save(self, *args, **kwargs):
         """

@@ -7,7 +7,7 @@
 
 # Python modules
 from threading import Lock, RLock
-from typing import Optional, Dict
+from typing import Optional, Dict, Union
 from dataclasses import dataclass
 import operator
 
@@ -240,13 +240,13 @@ class InterfaceProfile(Document):
 
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_id_cache"), lock=lambda _: id_lock)
-    def get_by_id(cls, id) -> Optional["InterfaceProfile"]:
-        return InterfaceProfile.objects.filter(id=id).first()
+    def get_by_id(cls, oid: Union[str, ObjectId]) -> Optional["InterfaceProfile"]:
+        return InterfaceProfile.objects.filter(id=oid).first()
 
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_bi_id_cache"), lock=lambda _: id_lock)
-    def get_by_bi_id(cls, id) -> Optional["InterfaceProfile"]:
-        return InterfaceProfile.objects.filter(bi_id=id).first()
+    def get_by_bi_id(cls, bi_id: int) -> Optional["InterfaceProfile"]:
+        return InterfaceProfile.objects.filter(bi_id=bi_id).first()
 
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_name_cache"), lock=lambda _: id_lock)

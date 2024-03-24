@@ -5,6 +5,9 @@
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
+# Python modules
+from typing import Optional
+
 # Third-party modules
 from noc.core.translation import ugettext as _
 from django.db import models
@@ -93,7 +96,7 @@ class AddressRange(NOCModel):
         )
 
     @classmethod
-    def get_by_id(cls, id):
+    def get_by_id(cls, id: int) -> Optional["AddressRange"]:
         addressrange = AddressRange.objects.filter(id=id)[:1]
         if addressrange:
             return addressrange[0]

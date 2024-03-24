@@ -9,10 +9,11 @@
 import os
 import operator
 import logging
-from typing import List, Dict, Any
+from typing import List, Dict, Any, Optional, Union
 from threading import Lock
 
 # Third-party modules
+from bson import ObjectId
 from mongoengine.document import Document, EmbeddedDocument
 from mongoengine.fields import (
     StringField,
@@ -196,13 +197,13 @@ class Transition(Document):
 
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_id_cache"), lock=lambda _: id_lock)
-    def get_by_id(cls, id):
-        return Transition.objects.filter(id=id).first()
+    def get_by_id(cls, oid: Union[str, ObjectId]) -> Optional["Transition"]:
+        return Transition.objects.filter(id=oid).first()
 
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_bi_id_cache"), lock=lambda _: id_lock)
-    def get_by_bi_id(cls, id):
-        return Transition.objects.filter(bi_id=id).first()
+    def get_by_bi_id(cls, bi_id: int) -> Optional["Transition"]:
+        return Transition.objects.filter(bi_id=bi_id).first()
 
     def clean(self):
         if not self.from_state or not self.to_state:

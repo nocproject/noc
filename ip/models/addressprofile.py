@@ -8,9 +8,11 @@
 # Python modules
 from threading import Lock
 from functools import partial
+from typing import Optional, Union
 import operator
 
 # Third-party modules
+from bson import ObjectId
 from mongoengine.document import Document
 from mongoengine.fields import StringField, LongField, ListField
 import cachetools
@@ -78,8 +80,8 @@ class AddressProfile(Document):
 
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_id_cache"), lock=lambda _: id_lock)
-    def get_by_id(cls, id):
-        return AddressProfile.objects.filter(id=id).first()
+    def get_by_id(cls, oid: Union[str, ObjectId]) -> Optional["AddressProfile"]:
+        return AddressProfile.objects.filter(id=oid).first()
 
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_name_cache"), lock=lambda _: id_lock)
@@ -88,8 +90,8 @@ class AddressProfile(Document):
 
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_bi_id_cache"), lock=lambda _: id_lock)
-    def get_by_bi_id(cls, id):
-        return AddressProfile.objects.filter(bi_id=id).first()
+    def get_by_bi_id(cls, bi_id: int) -> Optional["AddressProfile"]:
+        return AddressProfile.objects.filter(bi_id=bi_id).first()
 
     @classmethod
     def can_set_label(cls, label):

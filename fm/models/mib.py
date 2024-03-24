@@ -8,10 +8,11 @@
 # Python modules
 import re
 import threading
-from typing import Optional, List, Dict
+from typing import Optional, List, Dict, Union
 import operator
 
 # Third-party modules
+from bson import ObjectId
 from mongoengine.document import Document
 from mongoengine.fields import StringField, DateTimeField, IntField, ListField, DictField
 import cachetools
@@ -56,8 +57,8 @@ class MIB(Document):
 
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_id_cache"), lock=lambda _: id_lock)
-    def get_by_id(cls, id):
-        return MIB.objects.filter(id=id).first()
+    def get_by_id(cls, oid: Union[str, ObjectId]) -> Optional["MIB"]:
+        return MIB.objects.filter(id=oid).first()
 
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_name_cache"), lock=lambda _: id_lock)

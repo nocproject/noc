@@ -6,9 +6,10 @@
 # ---------------------------------------------------------------------
 
 # Python modules
-from typing import Optional
+from typing import Optional, Union
 
 # Third-party modules
+from bson import ObjectId
 from mongoengine.document import Document
 from mongoengine.fields import StringField, ListField
 
@@ -50,8 +51,8 @@ class ForwardingInstance(Document):
         return "%s: %s" % (self.managed_object.name, self.name if self.name else "default")
 
     @classmethod
-    def get_by_id(cls, id) -> Optional["ForwardingInstance"]:
-        return ForwardingInstance.objects.filter(id=id).first()
+    def get_by_id(cls, oid: Union[str, ObjectId]) -> Optional["ForwardingInstance"]:
+        return ForwardingInstance.objects.filter(id=oid).first()
 
     def iter_changed_datastream(self, changed_fields=None):
         if config.datastream.enable_managedobject:

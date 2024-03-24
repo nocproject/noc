@@ -6,9 +6,10 @@
 # ---------------------------------------------------------------------
 
 # Python modules
-from typing import Optional, Iterable, List
+from typing import Optional, Iterable, List, Union
 
 # Third-party modules
+from bson import ObjectId
 from mongoengine.document import Document
 from mongoengine.fields import StringField, IntField, ListField, ReferenceField
 
@@ -112,8 +113,8 @@ class SubInterface(Document):
         return f"{self.managed_object.name} {self.name}"
 
     @classmethod
-    def get_by_id(cls, id) -> Optional["SubInterface"]:
-        return SubInterface.objects.filter(id=id).first()
+    def get_by_id(cls, oid: Union[str, ObjectId]) -> Optional["SubInterface"]:
+        return SubInterface.objects.filter(id=oid).first()
 
     def iter_changed_datastream(self, changed_fields=None):
         if config.datastream.enable_managedobject:

@@ -7,9 +7,11 @@
 
 # Python modules
 import threading
+from typing import Optional, Union
 import operator
 
 # Third-party modules
+from bson import ObjectId
 from mongoengine.document import Document, EmbeddedDocument
 from mongoengine.fields import (
     StringField,
@@ -66,8 +68,8 @@ class InterfaceValidationPolicy(Document):
 
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_id_cache"), lock=lambda _: id_lock)
-    def get_by_id(cls, id):
-        return InterfaceValidationPolicy.objects.filter(id=id).first()
+    def get_by_id(cls, oid: Union[str, ObjectId]) -> Optional["InterfaceValidationPolicy"]:
+        return InterfaceValidationPolicy.objects.filter(id=oid).first()
 
     def iter_problems(self, engine, ifname: str) -> Iterable[ProblemItem]:
         """

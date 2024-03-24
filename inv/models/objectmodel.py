@@ -13,6 +13,7 @@ import re
 from typing import Any, Dict, Optional, List, Tuple, Union
 
 # Third-party modules
+from bson import ObjectId
 from mongoengine.document import Document, EmbeddedDocument
 from mongoengine.fields import (
     StringField,
@@ -25,7 +26,6 @@ from mongoengine.fields import (
     FloatField,
 )
 from mongoengine.errors import ValidationError
-from bson import ObjectId
 from pymongo import InsertOne, DeleteOne
 import cachetools
 
@@ -351,8 +351,8 @@ class ObjectModel(Document):
 
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_id_cache"), lock=lambda _: id_lock)
-    def get_by_id(cls, id) -> Optional["ObjectModel"]:
-        return ObjectModel.objects.filter(id=id).first()
+    def get_by_id(cls, oid: Union[str, ObjectId]) -> Optional["ObjectModel"]:
+        return ObjectModel.objects.filter(id=oid).first()
 
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_name_cache"), lock=lambda _: id_lock)

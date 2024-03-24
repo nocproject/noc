@@ -6,7 +6,7 @@
 # ---------------------------------------------------------------------
 
 # Python modules
-from typing import Optional, List, Dict
+from typing import Optional, List, Dict, Union
 
 # Third-party modules
 import bson
@@ -242,8 +242,8 @@ class ConfiguredMap(Document):
         return self.name
 
     @classmethod
-    def get_by_id(cls, id) -> Optional["ConfiguredMap"]:
-        return ConfiguredMap.objects.filter(id=id).first()
+    def get_by_id(cls, oid: Union[str, bson.ObjectId]) -> Optional["ConfiguredMap"]:
+        return ConfiguredMap.objects.filter(id=oid).first()
 
     def get_node_by_id(self, nid) -> Optional[NodeItem]:
         for n in self.nodes:

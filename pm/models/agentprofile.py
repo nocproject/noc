@@ -8,9 +8,11 @@
 # Python modules
 import operator
 from threading import Lock
+from typing import Optional, Union
 from functools import partial
 
 # Third-party modules
+from bson import ObjectId
 from mongoengine.document import Document
 from mongoengine.fields import StringField, IntField, BooleanField
 import cachetools
@@ -46,8 +48,8 @@ class AgentProfile(Document):
 
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_id_cache"), lock=lambda _: id_lock)
-    def get_by_id(cls, id):
-        return AgentProfile.objects.filter(id=id).first()
+    def get_by_id(cls, oid: Union[str, ObjectId]) -> Optional["AgentProfile"]:
+        return AgentProfile.objects.filter(id=oid).first()
 
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_default_cache"), lock=lambda _: id_lock)

@@ -5,6 +5,9 @@
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
+# Python modules
+from typing import Optional
+
 # Third-party modules modules
 from noc.core.translation import ugettext as _
 from django.db import models
@@ -42,7 +45,7 @@ class DNSServer(NOCModel):
         return self.name
 
     @classmethod
-    def get_by_id(cls, id):
+    def get_by_id(cls, id: int) -> Optional["DNSServer"]:
         dnsserver = DNSServer.objects.filter(id=id)[:1]
         if dnsserver:
             return dnsserver[0]

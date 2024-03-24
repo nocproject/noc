@@ -7,10 +7,12 @@
 
 # Python modules
 from threading import Lock
+from typing import Iterable, Optional, Tuple, Union
 import operator
 import logging
 
 # Third-party modules
+from bson import ObjectId
 from mongoengine.document import Document, EmbeddedDocument
 from mongoengine.fields import (
     StringField,
@@ -19,7 +21,6 @@ from mongoengine.fields import (
     ReferenceField,
 )
 from mongoengine.queryset.visitor import Q
-from typing import Optional, Iterable, Tuple
 from jinja2 import Template
 import cachetools
 
@@ -77,8 +78,8 @@ class VLANTemplate(Document):
 
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_id_cache"), lock=lambda _: id_lock)
-    def get_by_id(cls, id) -> Optional["VLANTemplate"]:
-        return VLANTemplate.objects.filter(id=id).first()
+    def get_by_id(cls, oid: Union[str, ObjectId]) -> Optional["VLANTemplate"]:
+        return VLANTemplate.objects.filter(id=oid).first()
 
     def on_save(self):
         # Allocate vlans when necessary

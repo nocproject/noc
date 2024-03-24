@@ -7,10 +7,12 @@
 
 # Python modules
 import threading
+from typing import Optional, Union
 import operator
 import uuid
 
 # Third-party modules
+from bson import ObjectId
 from mongoengine.document import Document
 from mongoengine.fields import StringField, LongField, URLField, UUIDField, ListField
 from mongoengine.errors import NotUniqueError
@@ -72,13 +74,13 @@ class Vendor(Document):
 
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_id_cache"), lock=lambda _: id_lock)
-    def get_by_id(cls, id):
-        return Vendor.objects.filter(id=id).first()
+    def get_by_id(cls, oid: Union[str, ObjectId]) -> Optional["Vendor"]:
+        return Vendor.objects.filter(id=oid).first()
 
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_bi_id_cache"), lock=lambda _: id_lock)
-    def get_by_bi_id(cls, id):
-        return Vendor.objects.filter(bi_id=id).first()
+    def get_by_bi_id(cls, bi_id: int) -> Optional["Vendor"]:
+        return Vendor.objects.filter(bi_id=bi_id).first()
 
     @classmethod
     def _get_by_code(cls, code):

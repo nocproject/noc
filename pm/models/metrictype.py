@@ -9,9 +9,10 @@
 import os
 import operator
 from threading import Lock
-from typing import Any, Dict, Callable, Optional
+from typing import Any, Dict, Callable, Optional, Union
 
 # Third-party modules
+from bson import ObjectId
 from mongoengine.document import Document, EmbeddedDocument
 from mongoengine.fields import (
     StringField,
@@ -210,7 +211,7 @@ class MetricType(Document):
 
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_id_cache"), lock=lambda _: id_lock)
-    def get_by_id(cls, oid) -> Optional["MetricType"]:
+    def get_by_id(cls, oid: Union[str, ObjectId]) -> Optional["MetricType"]:
         return MetricType.objects.filter(id=oid).first()
 
     @classmethod
@@ -228,8 +229,8 @@ class MetricType(Document):
 
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_bi_id_cache"), lock=lambda _: id_lock)
-    def get_by_bi_id(cls, id) -> Optional["MetricType"]:
-        return MetricType.objects.filter(bi_id=id).first()
+    def get_by_bi_id(cls, bi_id: int) -> Optional["MetricType"]:
+        return MetricType.objects.filter(bi_id=bi_id).first()
 
     def on_save(self):
         call_later(

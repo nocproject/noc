@@ -21,3 +21,9 @@ def get_documents():
         model = get_model(model_id)
         if model and is_document(model):
             yield model
+
+
+def get_all_models():
+    for model_id in iter_model_id():
+        model = get_model(model_id)
+        yield model

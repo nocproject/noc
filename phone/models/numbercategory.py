@@ -8,9 +8,11 @@
 # Python modules
 import re
 from threading import Lock
+from typing import Optional, Union
 import operator
 
 # Third-party modules
+from bson import ObjectId
 from mongoengine.document import Document, EmbeddedDocument
 from mongoengine.fields import StringField, BooleanField, IntField, ListField, EmbeddedDocumentField
 import cachetools
@@ -48,8 +50,8 @@ class NumberCategory(Document):
 
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_id_cache"), lock=lambda _: id_lock)
-    def get_by_id(cls, id):
-        return NumberCategory.objects.filter(id=id).first()
+    def get_by_id(cls, oid: Union[str, ObjectId]) -> Optional["NumberCategory"]:
+        return NumberCategory.objects.filter(id=oid).first()
 
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_rule_cache"), lock=lambda _: id_lock)

@@ -5,6 +5,9 @@
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
+# Python modules
+from typing import Optional
+
 # Third-party modules
 from django.db import models
 
@@ -39,7 +42,7 @@ class TimePatternTerm(NOCModel):
         return "%s: %s" % (self.time_pattern.name, self.term)
 
     @classmethod
-    def get_by_id(cls, id):
+    def get_by_id(cls, id: int) -> Optional["TimePatternTerm"]:
         tpt = TimePatternTerm.objects.filter(id=id)[:1]
         if tpt:
             return tpt[0]

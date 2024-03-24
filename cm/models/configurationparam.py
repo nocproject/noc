@@ -14,6 +14,7 @@ from dataclasses import dataclass
 from typing import List, Optional, Union, NoReturn, Any
 
 # Third-party modules
+from bson import ObjectId
 from mongoengine.document import Document, EmbeddedDocument
 from mongoengine.fields import (
     StringField,
@@ -264,8 +265,8 @@ class ConfigurationParam(Document):
 
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_id_cache"), lock=lambda _: id_lock)
-    def get_by_id(cls, id) -> Optional["ConfigurationParam"]:
-        return ConfigurationParam.objects.filter(id=id).first()
+    def get_by_id(cls, oid: Union[str, ObjectId]) -> Optional["ConfigurationParam"]:
+        return ConfigurationParam.objects.filter(id=oid).first()
 
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_code_cache"), lock=lambda _: id_lock)
