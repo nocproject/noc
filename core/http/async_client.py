@@ -95,7 +95,7 @@ class HttpClient(GufoHttpClient):
         except TimeoutError:
             metrics["httpclient_timeouts"] += 1
             return ERR_TIMEOUT, {}, b"Timed out while sending request"
-        return r.code, r.headers, r.content
+        return r.status, r.headers, r.content
 
     async def get(
         self, url: str, /, headers: Optional[Dict[str, bytes]] = None
@@ -109,7 +109,7 @@ class HttpClient(GufoHttpClient):
         except TimeoutError:
             metrics["httpclient_timeouts"] += 1
             return ERR_TIMEOUT, {}, b"Timed out while sending request"
-        return r.code, r.headers, r.content
+        return r.status, r.headers, r.content
 
     async def post(
         self,
@@ -127,4 +127,4 @@ class HttpClient(GufoHttpClient):
         except TimeoutError:
             metrics["httpclient_timeouts"] += 1
             return ERR_TIMEOUT, {}, b"Timed out while sending request"
-        return r.code, r.headers, r.content
+        return r.status, r.headers, r.content
