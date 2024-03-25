@@ -13,7 +13,7 @@ class Migration(BaseMigration):
     def migrate(self):
         mdb = self.mongo_db
         for d in mdb.noc.pools.find():
-            pid = int(d["name"][1:])
+            pid = 1 if d["name"] == "default" else int(d["name"][1:])
             self.db.execute(
                 "UPDATE sa_managedobject SET pool=%s WHERE activator_id=%s", [str(d["_id"]), pid]
             )
