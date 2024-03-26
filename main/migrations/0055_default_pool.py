@@ -14,11 +14,9 @@ class Migration(BaseMigration):
 
     def migrate(self):
         mdb = self.mongo_db
-        for cn, (a_id, name) in enumerate(self.db.execute("SELECT id, name FROM sa_activator")):
-            if not cn:
-                mdb.noc.pools.insert_one({"name": "default", "description": name})
-            else:
-                mdb.noc.pools.insert_one({"name": "P%04d" % a_id, "description": name})
+        mdb.noc.pools.insert_one({"name": "default", "description": "default"})
+        for a_id, name in self.db.execute("SELECT id, name FROM sa_activator"):
+            mdb.noc.pools.insert_one({"name": "P%04d" % a_id, "description": name})
 
     def backwards(self):
         pass
