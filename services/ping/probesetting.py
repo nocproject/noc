@@ -1,13 +1,13 @@
 # ----------------------------------------------------------------------
 # Probe Setting
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2022 The NOC Project
+# Copyright (C) 2007-2024 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
 # Python modules
 from enum import Enum
-from typing import Optional
+from typing import Optional, List, Dict
 from types import CodeType
 import sys
 
@@ -47,6 +47,8 @@ class ProbeSetting(object):
         "fm_pool",
         "stream",
         "partition",
+        "is_management",
+        "interface",
     ]
 
     def __init__(
@@ -66,6 +68,8 @@ class ProbeSetting(object):
         expr_policy="D",
         bi_id: Optional[int] = None,
         fm_pool: Optional[str] = None,
+        is_management: bool = False,
+        interface: Optional[str] = None,
         *args,
         **kwargs,
     ):
@@ -89,6 +93,8 @@ class ProbeSetting(object):
         self.fm_pool = sys.intern(fm_pool or config.pool)
         self.stream = self.get_pool_stream(self.fm_pool)
         self.partition = 0  # Set by set_partition
+        self.is_management = is_management
+        self.interface = interface
 
     @staticmethod
     def get_pool_stream(pool: str) -> str:
