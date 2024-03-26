@@ -12,6 +12,7 @@ import time
 import datetime
 import os
 import asyncio
+from collections import defaultdict
 from typing import Dict, Any, Tuple, Optional, List
 
 # Third-party modules
@@ -38,7 +39,9 @@ class PingService(FastAPIService):
     def __init__(self):
         super().__init__()
         self.mappings_callback = None
-        self.probes: Dict[int, ProbeSetting] = {}  # mo id -> ProbeSetting
+        self.probes: Dict[int, Tuple[ProbeSetting, ...]] = defaultdict(
+            tuple
+        )  # mo id -> ProbeSetting
         self.ping = None
         self.is_throttled = False
         self.slot_number = 0
@@ -105,24 +108,44 @@ class PingService(FastAPIService):
                 await asyncio.sleep(1)
 
     async def update_probe(self, data):
-        if data["id"] in self.probes:
-            await self._change_probe(data)
-        else:
-            await self._create_probe(data)
+        addresses = data.pop("addresses", [])
+        if not addresses and "address" in data:
+            # Old format
+            addresses += [
+                {"address": data.pop("address"), "interface": None, "is_management": True}
+            ]
 
-    async def delete_probe(self, id):
+        if data["id"] not in self.probes:
+            probes = set()
+        else:
+            probes = {p.address for p in self.probes[data["id"]]}
+        processed = set()
+        for d in addresses:
+            d |= data
+            if d["address"] not in probes:
+                await self._create_probe(d)
+            else:
+                await self._change_probe(d)
+            processed.add(d["address"])
+        # Delete probes
+        for addr in probes - processed:
+            await self.delete_probe(data["id"], address=addr)
+
+    async def delete_probe(self, id, address: Optional[str] = None):
         if id not in self.probes:
             return
-        ps = self.probes[id]
-        ip = self.probes[id].address
-        self.logger.info("Delete probe: %s", ip)
-        ps.task.stop()
-        ps.task = None
-        del self.probes[id]
-        metrics["ping_probe_delete"] += 1
-        if ps.status is not None and not ps.status:
-            metrics["down_objects"] -= 1
-        metrics["ping_objects"] = len(self.probes)
+        for ps in self.probes[id]:
+            if address and ps.address != address:
+                continue
+            ip = ps.address
+            self.logger.info("Delete probe: %s", ip)
+            ps.task.stop()
+            ps.task = None
+            del self.probes[id]
+            metrics["ping_probe_delete"] += 1
+            if ps.status is not None and not ps.status:
+                metrics["down_objects"] -= 1
+            metrics["ping_objects"] = len(self.probes)
 
     async def _create_probe(self, data):
         """
@@ -131,7 +154,7 @@ class PingService(FastAPIService):
         self.logger.info("Create probe: %s (%ds)", data["address"], data["interval"])
         ps = ProbeSetting(**data)
         ps.set_partition(await self.get_pool_partitions(ps.fm_pool))
-        self.probes[data["id"]] = ps
+        self.probes[data["id"]] = self.probes[data["id"]] + (ps,)
         pt = PeriodicOffsetCallback(functools.partial(self.ping_check, ps), ps.interval * 1000)
         ps.task = pt
         pt.start()
@@ -140,19 +163,22 @@ class PingService(FastAPIService):
 
     async def _change_probe(self, data):
         self.logger.info("Update probe: %s (%ds)", data["address"], data["interval"])
-        ps = self.probes[data["id"]]
-        if ps.interval != data["interval"]:
-            ps.task.set_interval(data["interval"] * 1000)
-        if ps.address != data["address"]:
-            self.logger.info("Changing address: %s -> %s", ps.address, data["address"])
-            ps.address = data["address"]
-        if ps.fm_pool != data["fm_pool"]:
-            ps.fm_pool = data["fm_pool"]
-            ps.set_stream()
-            ps.set_partition(await self.get_pool_partitions(ps.fm_pool))
-        ps.update(**data)
-        metrics["ping_probe_update"] += 1
-        metrics["ping_objects"] = len(self.probes)
+        for ps in self.probes[data["id"]]:
+            if ps.address != data["address"]:
+                continue
+            # ps = self.probes[data["id"]]
+            if ps.interval != data["interval"]:
+                ps.task.set_interval(data["interval"] * 1000)
+            if ps.address != data["address"]:
+                self.logger.info("Changing address: %s -> %s", ps.address, data["address"])
+                ps.address = data["address"]
+            if ps.fm_pool != data["fm_pool"]:
+                ps.fm_pool = data["fm_pool"]
+                ps.set_stream()
+                ps.set_partition(await self.get_pool_partitions(ps.fm_pool))
+            ps.update(**data)
+            metrics["ping_probe_update"] += 1
+            metrics["ping_objects"] = len(self.probes)
 
     @classmethod
     def get_status_message(cls, status: bool) -> Dict[str, Any]:
