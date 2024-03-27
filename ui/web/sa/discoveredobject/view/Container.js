@@ -15,7 +15,6 @@ Ext.define("NOC.sa.discoveredobject.view.Container", {
     },
     requires: [
         "Ext.ux.form.SearchField",
-        // "NOC.sa.discoveredobject.ApplicationModel",
         "NOC.sa.discoveredobject.controller.Container",
         "NOC.sa.discoveredobject.model.Container",
         "NOC.sa.discoveredobject.view.Grid",
@@ -91,7 +90,6 @@ Ext.define("NOC.sa.discoveredobject.view.Container", {
             hideCollapseTool: true,
             bind: {
                 collapsed: "{!isFilterOpen}",
-                // value: "{filter}"
             },
             split: {
                 xtype: "splitter"
