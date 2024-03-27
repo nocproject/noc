@@ -42,18 +42,12 @@ Ext.define("NOC.sa.discoveredobject.widget.Source", {
         });
     },
     getValue: function() {
-        var me = this;
-
-        console.log("getValue from Source");
-        return me.buttons ? me.buttons.getValue() : [];
+        return this.buttons ? this.buttons.getValue() : [];
     },
     setValue: function(value) {
-        var me = this;
-
-        console.log(value);
-        if(me.buttons) {
-            me.buttons.setValue(value);
+        if(this.buttons) {
+            this.buttons.setValue(value);
         }
-        me.value = me.rawValue = value;
+        this.value = this.rawValue = value;
     }
 });

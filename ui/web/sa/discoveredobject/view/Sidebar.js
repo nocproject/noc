@@ -45,7 +45,6 @@ Ext.define("NOC.sa.discoveredobject.view.Sidebar", {
                 {
                     xtype: "core.combo",
                     restUrl: "/wf/state/lookup/",
-                    // itemId: "state", // name of request query param
                     name: "state",
                     fieldLabel: __("By State:"),
                     listeners: {
@@ -66,6 +65,16 @@ Ext.define("NOC.sa.discoveredobject.view.Sidebar", {
                     },
                     listeners: {
                         change: "setFilter"
+                    }
+                },
+                {
+                    xtype: "datefield",
+                    name: "last_update",
+                    startDay: 1,
+                    fieldLabel: __("By Last Update:"),
+                    format: "d.m.Y",
+                    listeners: {
+                        select: "setFilter"
                     }
                 },
                 {

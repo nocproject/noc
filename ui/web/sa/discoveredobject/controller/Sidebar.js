@@ -85,7 +85,8 @@ Ext.define("NOC.sa.discoveredobject.controller.Sidebar", {
 
         Ext.History.add(appView.appId);
         button.up("form").getForm().reset();
-        this.reload();
+
+        this.reloadData();
     },
     onChange: Ext.emptyFn,
 });
