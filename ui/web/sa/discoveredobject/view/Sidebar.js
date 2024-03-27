@@ -14,6 +14,7 @@ Ext.define("NOC.sa.discoveredobject.view.Sidebar", {
         "NOC.core.ComboBox",
         "NOC.core.label.LabelField",
         "NOC.sa.discoveredobject.controller.Sidebar",
+        "NOC.sa.discoveredobject.widget.Check",
         "NOC.sa.discoveredobject.widget.Source",
     ],
     title: __("Filter"),
@@ -106,6 +107,18 @@ Ext.define("NOC.sa.discoveredobject.view.Sidebar", {
                         change: "setFilter"
                     },
                 },
+                {
+                    xtype: "checkfield",
+                    name: "checks",
+                    listeners: {
+                        change: "setFilter",
+                        updateLayout: function() {
+                            Ext.defer(function() {
+                                this.updateLayout();
+                            }, 25, this);
+                        }
+                    }
+                }
             ],
             buttons: [
                 {
@@ -118,7 +131,4 @@ Ext.define("NOC.sa.discoveredobject.view.Sidebar", {
             ],
         }
     ],
-    initComponent: function() {
-        this.callParent();
-    },
 });
