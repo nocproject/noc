@@ -173,7 +173,7 @@ class CfgTrapDataStream(DataStream):
             if ip.is_internal:
                 trap_source_ip = None
         if syslog_source_ip:
-            ip = IP.prefix(trap_source_ip)
+            ip = IP.prefix(syslog_source_ip)
             if ip.is_internal:
                 syslog_source_ip = None
         # Process sources
