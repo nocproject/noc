@@ -872,6 +872,7 @@ class ManagedObject(NOCModel):
         changed_fields = set(changed_fields or [])
         if config.datastream.enable_managedobject:
             yield "managedobject", self.id
+        yield "cfgtrarget", self.id
         if config.datastream.enable_cfgping and changed_fields.intersection(
             {
                 "id",  # Create object
