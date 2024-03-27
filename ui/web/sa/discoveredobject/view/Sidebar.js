@@ -14,6 +14,7 @@ Ext.define("NOC.sa.discoveredobject.view.Sidebar", {
         "NOC.core.ComboBox",
         "NOC.core.label.LabelField",
         "NOC.sa.discoveredobject.controller.Sidebar",
+        "NOC.sa.discoveredobject.widget.Source",
     ],
     title: __("Filter"),
     reference: "sa-discoveredobject-filter",
@@ -63,6 +64,27 @@ Ext.define("NOC.sa.discoveredobject.view.Sidebar", {
                     query: {
                         "allow_models": ["sa.ManagedObject"]
                     },
+                    listeners: {
+                        change: "setFilter"
+                    }
+                },
+                {
+                    xtype: "sourcefield",
+                    name: "source",
+                    items: [
+                        {
+                            text: __("ETL"),
+                            value: "etl"
+                        },
+                        {
+                            text: __("Discovery"),
+                            value: "scan"
+                        },
+                        {
+                            text: __("Manual"),
+                            value: "manual"
+                        }
+                    ],
                     listeners: {
                         change: "setFilter"
                     }
