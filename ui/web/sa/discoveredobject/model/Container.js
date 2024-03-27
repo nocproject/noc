@@ -13,4 +13,25 @@ Ext.define("NOC.sa.discoveredobject.model.Container", {
     data: {
         isFilterOpen: true,
     },
+    formulas: {
+        buttonDisabled: {
+            bind: {
+                isNotSelectedRow: "{sa-discoveredobject-grid.selection}",
+                filter: "{sa-discovered-sidebar.value}",
+            },
+            get: function(data) {
+                console.log(data);
+                var isEmpty = true;
+
+                Ext.Object.each(data.filter, function(_, value) {
+                    if(!Ext.isEmpty(value, true)) {
+                        isEmpty = false;
+                        return false;
+                    }
+                });
+
+                return Ext.isEmpty(data.isNotSelectedRow) && isEmpty;
+            }
+        }
+    },
 });

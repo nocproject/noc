@@ -11,6 +11,7 @@ Ext.define("NOC.sa.discoveredobject.view.Grid", {
     controller: "sa.discoveredobject.grid",
     alias: "widget.sa.discoveredobject.grid",
     requires: [
+        "NOC.sa.discoveredobject.ApplicationController",
         "NOC.sa.discoveredobject.controller.Grid",
         "NOC.sa.discoveredobject.store.DiscoveredObject",
         // "Ext.ux.grid.column.GlyphAction"
@@ -20,8 +21,8 @@ Ext.define("NOC.sa.discoveredobject.view.Grid", {
         type: "sa.discoveredobject"
     },
     selModel: {
-        mode: 'MULTI',
-        selType: 'checkboxmodel'
+        mode: "MULTI",
+        type: "checkboxmodel"
     },
     columns: [
         {
@@ -49,6 +50,11 @@ Ext.define("NOC.sa.discoveredobject.view.Grid", {
             text: __("State"),
             dataIndex: "state",
             renderer: NOC.render.Lookup("state"),
+        },
+        {
+            text: __("Checks"),
+            dataIndex: "checks",
+            renderer: "checksRenderer",
         },
         {
             text: __("Labels"),
