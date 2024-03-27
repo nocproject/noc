@@ -15,6 +15,7 @@ Ext.define("NOC.sa.discoveredobject.view.Container", {
     },
     requires: [
         "Ext.ux.form.SearchField",
+        // "NOC.sa.discoveredobject.ApplicationModel",
         "NOC.sa.discoveredobject.controller.Container",
         "NOC.sa.discoveredobject.model.Container",
         "NOC.sa.discoveredobject.view.Grid",
@@ -52,6 +53,9 @@ Ext.define("NOC.sa.discoveredobject.view.Container", {
             xtype: "splitbutton",
             text: __("Group Action"),
             menu: [],
+            bind: {
+                disabled: "{buttonDisabled}"
+            },
             listeners: {
                 beforerender: "onBeforeRenderGroupAction"
             },
@@ -60,6 +64,9 @@ Ext.define("NOC.sa.discoveredobject.view.Container", {
             xtype: "splitbutton",
             text: __("Scan Record"),
             menu: [],
+            bind: {
+                disabled: "{buttonDisabled}"
+            },
             listeners: {
                 beforerender: "onBeforeRenderScanRecord"
             },
@@ -83,10 +90,11 @@ Ext.define("NOC.sa.discoveredobject.view.Container", {
             collapseMode: 'mini',
             hideCollapseTool: true,
             bind: {
-                collapsed: "{!isFilterOpen}"
+                collapsed: "{!isFilterOpen}",
+                // value: "{filter}"
             },
             split: {
-                xtype: 'splitter'
+                xtype: "splitter"
             },
         }
     ]

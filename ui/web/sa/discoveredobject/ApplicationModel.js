@@ -9,6 +9,4 @@ console.debug("Defining NOC.sa.discoveredobject.ApplicationModel");
 Ext.define("NOC.sa.discoveredobject.ApplicationModel", {
     extend: "Ext.app.ViewModel",
     alias: "viewmodel.sa.discoveredobject",
-    data: {
-    }
 });

@@ -10,29 +10,82 @@ Ext.define("NOC.sa.discoveredobject.view.Sidebar", {
     extend: "Ext.form.Panel",
     alias: "widget.sa.discoveredobject.sidebar",
     controller: "sa.discoveredobject.sidebar",
-    viewModel: {
-        type: "sa.discoveredobject.sidebar"
-    },
     requires: [
+        "NOC.core.ComboBox",
+        "NOC.core.label.LabelField",
         "NOC.sa.discoveredobject.controller.Sidebar",
-        "NOC.sa.discoveredobject.model.Sidebar",
     ],
-    reference: "sa-discoveredobject-filter",
     title: __("Filter"),
-    titleAlign: "center",
-    minWidth: 350,
-    scrollable: {
-        indicators: false,
-        x: false,
-        y: true
+    reference: "sa-discoveredobject-filter",
+    config: {
+        value: {},
     },
-    suspendLayout: true,
-    defaults: {
-        xtype: "fieldset",
-        margin: 5,
-        collapsible: true
+    twoWayBindable: ["value"],
+    publishes: ["value"],
+    scrollable: "y",
+    minWidth: 350,
+    layout: {
+        type: "vbox",
+        align: "right"
     },
     items: [
+        {
+            xtype: "form",
+            border: false,
+            minWidth: this.minWidth - 30,
+            width: "100%",
+            padding: "5 10 0 10",
+            defaults: {
+                labelAlign: "top",
+                width: "100%",
+                uiStyle: undefined,
+            },
+            items: [
+                {
+                    xtype: "core.combo",
+                    restUrl: "/wf/state/lookup/",
+                    // itemId: "state", // name of request query param
+                    name: "state",
+                    fieldLabel: __("By State:"),
+                    listeners: {
+                        select: "setFilter"
+                    },
+                    query: {
+                        "allowed_models": "sa.ManagedObject"
+                    },
+                },
+                {
+                    xtype: "labelfield",
+                    name: "labels",
+                    fieldLabel: __("By Labels:"),
+                    toBufferTrigger: false,
+                    filterProtected: false,
+                    query: {
+                        "allow_models": ["sa.ManagedObject"]
+                    },
+                    listeners: {
+                        change: "setFilter"
+                    }
+                },
+                {
+                    xtype: "textarea",
+                    name: "addresses",
+                    fieldLabel: __("By IP list (max. 2000):"),
+                    listeners: {
+                        change: "setFilter"
+                    },
+                },
+            ],
+            buttons: [
+                {
+                    xtype: "button",
+                    itemId: "clean-btn",
+                    minWidth: 50,
+                    text: __("Clean All"),
+                    handler: "cleanAllFilters"
+                }
+            ],
+        }
     ],
     initComponent: function() {
         this.callParent();

@@ -11,6 +11,7 @@ Ext.define("NOC.sa.discoveredobject.Application", {
     layout: "card",
     reference: "sa-discoveredobject",
     controller: "sa.discoveredobject",
+    appId: "sa.discoveredobject",
     viewModel: {
         type: "sa.discoveredobject"
     },
@@ -24,9 +25,6 @@ Ext.define("NOC.sa.discoveredobject.Application", {
         {
             itemId: "sa-discoveredobject-list",
             xtype: "sa.discoveredobject.container",
-            listeners: {
-                saDiscoveredObjectResetFilter: "onResetFilter"
-            }
         },
     ]
 });
