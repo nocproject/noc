@@ -863,6 +863,8 @@ class Config(BaseConfig):
             default="0",
             help="Removing datastream cfgping records older days",
         )
+        enable_cfgtarget = BooleanParameter(default=True)
+        enable_cfgtarget_wait = BooleanParameter(default=True)
         enable_cfgsyslog = BooleanParameter(default=True)
         enable_cfgsyslog_wait = BooleanParameter(
             default=True,

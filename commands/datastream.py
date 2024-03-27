@@ -37,6 +37,7 @@ class Command(BaseCommand):
         "cfgping": "sa.ManagedObject",
         "cfgsyslog": "sa.ManagedObject",
         "cfgtrap": "sa.ManagedObject",
+        "cfgtarget": "sa.ManagedObject",
         "dnszone": "dns.DNSZone",
         "resourcegroup": "inv.ResourceGroup",
         "alarm": ("fm.ActiveAlarm", "fm.ArchivedAlarm"),

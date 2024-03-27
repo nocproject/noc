@@ -47,7 +47,7 @@ class ProbeSetting(object):
         "fm_pool",
         "stream",
         "partition",
-        "is_management",
+        "is_fatal",
         "interface",
     ]
 
@@ -68,7 +68,7 @@ class ProbeSetting(object):
         expr_policy="D",
         bi_id: Optional[int] = None,
         fm_pool: Optional[str] = None,
-        is_management: bool = False,
+        is_fatal: bool = False,
         interface: Optional[str] = None,
         *args,
         **kwargs,
@@ -93,8 +93,17 @@ class ProbeSetting(object):
         self.fm_pool = sys.intern(fm_pool or config.pool)
         self.stream = self.get_pool_stream(self.fm_pool)
         self.partition = 0  # Set by set_partition
-        self.is_management = is_management
+        self.is_fatal = is_fatal
         self.interface = interface
+
+    @classmethod
+    def from_config(cls, data) -> "ProbeSetting":
+        d = data.pop("ping")
+        d["managed_object"] = data.pop("opaque_data")
+        del d["syslog"]
+        del d["trap"]
+        del d["dependencies"]
+        return ProbeSetting(**d)
 
     @staticmethod
     def get_pool_stream(pool: str) -> str:
