@@ -4,7 +4,7 @@
 // Copyright (C) 2007-2024 The NOC Project
 // See LICENSE for details
 //---------------------------------------------------------------------
-console.debug("Defining NOC.sa.discoveredobject.view.Sidebar");
+console.debug("Defining NOC.sa.discoveredobject.widget.Source");
 
 Ext.define("NOC.sa.discoveredobject.widget.Source", {
     extend: "Ext.form.field.Base",
@@ -33,10 +33,8 @@ Ext.define("NOC.sa.discoveredobject.widget.Source", {
             width: "100%",
             listeners: {
                 toggle: function() {
-                    var value = me.buttons.getValue();
-
-                    me.rawValue = value;
-                    me.fireEvent("change", me, value);
+                    me.value = me.rawValue = me.buttons.getValue();
+                    me.fireEvent("change", me, me.value);
                 }
             }
         });
