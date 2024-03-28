@@ -64,4 +64,7 @@ Ext.define("NOC.sa.discoveredobject.view.Grid", {
             renderer: NOC.render.LabelField,
         },
     ],
+    viewConfig: {
+        enableTextSelection: true
+    },
 });
