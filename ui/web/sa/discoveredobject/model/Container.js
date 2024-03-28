@@ -23,7 +23,7 @@ Ext.define("NOC.sa.discoveredobject.model.Container", {
                 var isEmpty = true;
 
                 Ext.Object.each(data.filter, function(_, value) {
-                    if(!Ext.isEmpty(value, true)) {
+                    if(!Ext.isEmpty(value)) {
                         isEmpty = false;
                         return false;
                     }
