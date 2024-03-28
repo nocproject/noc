@@ -71,9 +71,8 @@ Ext.define("NOC.sa.discoveredobject.widget.Check", {
             border: false,
             width: "100%",
             layout: {
-                type: 'vbox',
-                // align: 'stretch',
-                pack: 'bottom'
+                type: "vbox",
+                pack: "bottom"
             },
             items: [
                 {
@@ -146,10 +145,10 @@ Ext.define("NOC.sa.discoveredobject.widget.Check", {
                 {
                     xtype: "numberfield",
                     name: "port",
-                    emptyText: __("port"),
+                    emptyText: __("port") + " (1-65536)",
                     maxValue: 65536,
                     minValue: 1,
-                    width: 100,
+                    width: 105,
                     checkChangeBuffer: 250,
                     disabled: true,
                     listeners: {

@@ -74,6 +74,7 @@ Ext.define("NOC.sa.discoveredobject.view.Sidebar", {
                     startDay: 1,
                     fieldLabel: __("By Last Update:"),
                     format: "d.m.Y",
+                    emptyText: __("dd.mm.yyyy"),
                     listeners: {
                         change: "setFilter"
                     }
