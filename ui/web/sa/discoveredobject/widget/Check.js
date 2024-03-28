@@ -21,6 +21,7 @@ Ext.define("NOC.sa.discoveredobject.widget.Check", {
     },
     reset: function() {
         this.callParent(arguments);
+        this.value = this.rawValue = [];
         Ext.each(this.form.query("form"), function(form) {
             this.form.remove(form);
         }, this);
