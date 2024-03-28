@@ -75,19 +75,11 @@ Ext.define("NOC.sa.discoveredobject.controller.Sidebar", {
     },
     reload: function() {
         var appView = this.view.up("[appId]"),
+            filterObject = this.notEmptyValues(),
             grid = appView.down("grid"),
-            store = grid.getStore(),
-            filterObject = this.getView().getForm().getValues();
+            store = grid.getStore();
 
-        console.log("reload", filterObject);
         grid.mask(__("Loading..."));
-        Ext.Object.each(filterObject, function(key, value) {
-            if(Ext.isEmpty(value, true) || value === "") {
-                delete filterObject[key];
-            }
-        });
-        console.log("reload", filterObject);
-
         store.getProxy().setExtraParams(filterObject);
         store.load({
             callback: function() {
@@ -112,6 +104,17 @@ Ext.define("NOC.sa.discoveredobject.controller.Sidebar", {
         button.up("form").getForm().reset();
 
         this.reloadData();
+    },
+    notEmptyValues: function() {
+        var cloned = Ext.clone(this.getView().getForm().getValues());
+
+        Ext.Object.each(cloned, function(key, value) {
+            if(Ext.isEmpty(value)) {
+                delete cloned[key];
+            }
+        });
+
+        return cloned;
     },
     onChange: Ext.emptyFn,
 });

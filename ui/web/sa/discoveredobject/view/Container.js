@@ -61,13 +61,13 @@ Ext.define("NOC.sa.discoveredobject.view.Container", {
         },
         {
             xtype: "splitbutton",
-            text: __("Scan Record"),
+            text: __("Sync Record"),
             menu: [],
             bind: {
                 disabled: "{buttonDisabled}"
             },
             listeners: {
-                beforerender: "onBeforeRenderScanRecord"
+                beforerender: "onBeforeRenderSyncRecord"
             },
         },
     ],

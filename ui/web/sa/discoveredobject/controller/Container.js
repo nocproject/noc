@@ -27,21 +27,33 @@ Ext.define("NOC.sa.discoveredobject.controller.Container", {
     onBeforeRenderGroupAction: function(button) {
         this.fillMenu(button, "/sa/discoveredobject/action_lookup/", "/sa/discoveredobject/actions/send_event/");
     },
-    onBeforeRenderScanRecord: function(button) {
+    onBeforeRenderSyncRecord: function(button) {
         this.fillMenu(button, "/sa/discoveredobject/template_lookup/", "/sa/discoveredobject/actions/sync_records/");
     },
     fillMenu: function(button, url, actionUrl) {
         var actionFn = function(args, actionUrl) {
-            console.log("args : ", args, actionUrl);
+            var filterPanel = button.up("[appId=sa.discoveredobject]").lookup("sa-discoveredobject-list").lookup("sa-discovered-sidebar"),
+                grid = button.up("[appId=sa.discoveredobject]").lookup("sa-discoveredobject-list").lookup("sa-discoveredobject-grid"),
+                ids = Ext.Array.map(grid.getSelection(), function(item) {return item.get("id")}),
+                filterObject = filterPanel.getController().notEmptyValues(),
+                params = Ext.apply(filterObject, {ids: ids}, {args: args});
+
+            console.log("args : ", params);
             Ext.Ajax.request({
                 url: actionUrl,
                 method: "POST",
-                // jsonData: defaultHandler.args,
+                jsonData: params,
                 success: function(response) {
-                    NOC.info(button.text + __(" : Success"));
+                    var data = Ext.decode(response.responseText);
+
+                    if(data.status) {
+                        NOC.info(button.text + __(" - Success"));
+                    } else {
+                        NOC.error(button.text + __(" - Failed") + " : " + data.error);
+                    }
                 },
                 failure: function() {
-                    NOC.error(button.text + __(" : Failed"));
+                    NOC.error(button.text + __(" - Failed"));
                 }
             });
         };

@@ -10,7 +10,7 @@ Ext.define("NOC.sa.discoveredobject.store.DiscoveredObject", {
     extend: "Ext.data.BufferedStore",
     alias: "store.sa.discoveredobject",
     model: "NOC.sa.discoveredobject.model.DiscoveredObject",
-    autoLoad: true,
+    autoLoad: false,
     pageSize: 70,
     leadingBufferZone: 70,
     numFromEdge: Math.ceil(70 / 2),

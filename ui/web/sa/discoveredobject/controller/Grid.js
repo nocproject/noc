@@ -19,6 +19,9 @@ Ext.define("NOC.sa.discoveredobject.controller.Grid", {
 
             result.push("<span style='" + border + background + "padding:1;margin:2;'>" + text + "</span>");
         });
-        return result.join("") || "N/A";
+        return result.join("") || __("N/A");
+    },
+    afterrenderHandler: function(grid) {
+        grid.up().lookup("sa-discovered-sidebar").getController().reload();
     },
 });
