@@ -1010,24 +1010,24 @@ class ManagedObjectProfile(NOCModel):
             ac = self.access_preference
         if not o or Interaction.ServiceActivation in o.interactions:
             # SNMP Diagnostic
-            snmp_cred = o.credentials.get_snmp_credential()
+            snmp_cred = o.credentials.get_snmp_credential() if o else None
             yield DiagnosticConfig(
                 SNMP_DIAG,
                 display_description="Check Device response by SNMP request",
                 checks=[
                     Check(
                         name="SNMPv1",
-                        address=o.address,
+                        address=o.address if o else None,
                         credentials=[snmp_cred] if snmp_cred else [],
                     ),
                     Check(
                         name="SNMPv2c",
-                        address=o.address,
+                        address=o.address if o else None,
                         credentials=[snmp_cred] if snmp_cred else [],
                     ),
                     Check(
                         name="SNMPv3",
-                        address=o.address,
+                        address=o.address if o else None,
                         credentials=[snmp_cred] if snmp_cred else [],
                     ),
                 ],
@@ -1039,7 +1039,7 @@ class ManagedObjectProfile(NOCModel):
                 alarm_labels=["noc::access::method::SNMP"],
                 reason="Blocked by AccessPreference" if ac == "C" else None,
             )
-            snmp_cred = o.credentials.get_snmp_credential()
+            snmp_cred = o.credentials.get_snmp_credential() if o else None
             yield DiagnosticConfig(
                 PROFILE_DIAG,
                 display_description="Check device profile",
@@ -1047,7 +1047,7 @@ class ManagedObjectProfile(NOCModel):
                 checks=[
                     Check(
                         name="PROFILE",
-                        address=o.address,
+                        address=o.address if o else None,
                         credentials=[snmp_cred] if snmp_cred else [],
                     ),
                 ],
@@ -1062,21 +1062,21 @@ class ManagedObjectProfile(NOCModel):
             if o:
                 blocked |= o.scheme not in {1, 2}
             # CLI Diagnostic
-            cli_cred = o.credentials.get_cli_credential()
+            cli_cred = o.credentials.get_cli_credential() if o else None
             yield DiagnosticConfig(
                 CLI_DIAG,
                 display_description="Check Device response by CLI (TELNET/SSH) request",
                 checks=[
                     Check(
                         name="TELNET",
-                        address=o.address,
-                        arg0=o.profile.name,
+                        address=o.address if o else None,
+                        arg0=o.profile.name if o else None,
                         credentials=[cli_cred] if cli_cred else [],
                     ),
                     Check(
                         name="SSH",
-                        address=o.address,
-                        arg0=o.profile.name,
+                        address=o.address if o else None,
+                        arg0=o.profile.name if o else None,
                         credentials=[cli_cred] if cli_cred else [],
                     ),
                 ],
@@ -1096,8 +1096,8 @@ class ManagedObjectProfile(NOCModel):
                 alarm_class="NOC | Managed Object | Access Lost",
                 alarm_labels=["noc::access::method::HTTP"],
                 checks=[
-                    Check("HTTP", address=o.address),
-                    Check("HTTPS", address=o.address),
+                    Check("HTTP", address=o.address if o else None),
+                    Check("HTTPS", address=o.address if o else None),
                 ],
                 blocked=False,
                 run_policy="D",  # Not supported
