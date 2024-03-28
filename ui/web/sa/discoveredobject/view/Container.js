@@ -70,6 +70,10 @@ Ext.define("NOC.sa.discoveredobject.view.Container", {
                 beforerender: "onBeforeRenderSyncRecord"
             },
         },
+        {
+            text: __("Scan"),
+            handler: "onScan",
+        }
     ],
     items: [
         {

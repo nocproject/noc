@@ -20,6 +20,7 @@ Ext.define("NOC.sa.discoveredobject.controller.Container", {
         } else {
             searchField.getTrigger("clear").hide();
         }
+
     },
     onToggleFilter: function(_, pressed) {
         this.getViewModel().set("isFilterOpen", pressed);
@@ -38,7 +39,6 @@ Ext.define("NOC.sa.discoveredobject.controller.Container", {
                 filterObject = filterPanel.getController().notEmptyValues(),
                 params = Ext.apply(filterObject, {ids: ids}, {args: args});
 
-            console.log("args : ", params);
             Ext.Ajax.request({
                 url: actionUrl,
                 method: "POST",
@@ -91,4 +91,94 @@ Ext.define("NOC.sa.discoveredobject.controller.Container", {
             }
         });
     },
+    onScan: function() {
+        var me = this;
+
+        Ext.create("Ext.window.Window", {
+            autoShow: true,
+            modal: true,
+            width: 400,
+            reference: "scanFrm",
+            title: __("Manual Scan"),
+            items: {
+                xtype: "form",
+                layout: "form",
+                bodyPadding: 5,
+                items: [
+                    {
+                        xtype: "textarea",
+                        name: "addresses",
+                        allowBlank: false,
+                        emptyText: __("By IP, list (max. 2000)"),
+                    },
+                    {
+                        xtype: "checkfield",
+                        name: "checks",
+                        listeners: {
+                            updateLayout: function() {
+                                Ext.defer(function() {
+                                    this.updateLayout();
+                                }, 25, this);
+                            }
+                        }
+                    },
+                    {
+                        xtype: "textarea",
+                        name: "credentials",
+                        allowBlank: true,
+                        emptyText: __("SNMP Credentials"),
+                    },
+                ],
+                buttons: [
+                    {
+                        text: __("Send"),
+                        reference: "sendBtn",
+                        handler: function(button) {
+                            var form = button.up("form").getForm();
+
+                            if(!form.isValid()) {
+                                return;
+                            }
+                            var params = Ext.clone(form.getValues());
+
+                            Ext.Object.each(params, function(key, value) {
+                                if(Ext.isEmpty(value)) {
+                                    delete params[key];
+                                }
+                            });
+
+                            Ext.Ajax.request({
+                                url: "/sa/discoveredobject/scan_run/",
+                                method: "POST",
+                                jsonData: params,
+                                scope: me,
+                                success: function(response) {
+                                    var data = Ext.decode(response.responseText);
+
+                                    if(data.status) {
+                                        NOC.info(__("Success"));
+                                        this.lookup("sa-discovered-sidebar").getController().reload();
+                                    } else {
+                                        NOC.error(__("Failed") + " : " + data.error_description);
+                                    }
+                                },
+                                failure: function(response) {
+                                    var data = Ext.decode(response.responseText);
+
+                                    NOC.error(__("Manual Scan Failed") + " : " + data.error_description);
+                                }
+                            });
+                            button.up("window").close();
+                        },
+                    },
+                    {
+                        text: __("Cancel"),
+                        handler: function() {
+                            this.up("window").close();
+                        }
+                    }
+                ],
+            }
+        });
+    }
 });
