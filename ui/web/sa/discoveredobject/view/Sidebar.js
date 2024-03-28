@@ -45,7 +45,7 @@ Ext.define("NOC.sa.discoveredobject.view.Sidebar", {
             items: [
                 {
                     xtype: "hiddenfield",
-                    name: "query",
+                    name: "__query",
                     listeners: {
                         change: "setFilter"
                     }

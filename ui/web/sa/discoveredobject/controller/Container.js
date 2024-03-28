@@ -12,14 +12,14 @@ Ext.define("NOC.sa.discoveredobject.controller.Container", {
 
     onClearSearchField: function(searchField) {
         searchField.setValue("");
-        this.lookup("sa-discovered-sidebar").down("[name=query]").setValue("");
+        this.lookup("sa-discovered-sidebar").down("[name=__query]").setValue("");
         searchField.getTrigger("clear").hide();
     },
     onChangeSearchField: function(searchField, event) {
         if(searchField.getValue()) {
             searchField.getTrigger("clear").show();
             if(event.keyCode === event.ENTER) {
-                this.lookup("sa-discovered-sidebar").down("[name=query]").setValue(searchField.getValue());
+                this.lookup("sa-discovered-sidebar").down("[name=__query]").setValue(searchField.getValue());
             }
         } else {
             searchField.getTrigger("clear").hide();
@@ -188,8 +188,8 @@ Ext.define("NOC.sa.discoveredobject.controller.Container", {
     onFilterChanged: function(_, value) {
         var v = "";
 
-        if(value.hasOwnProperty("query")) {
-            v = value.query;
+        if(value.hasOwnProperty("__query")) {
+            v = value.__query;
         }
         this.getView().down("[xtype=searchfield]").setValue(v);
     },
