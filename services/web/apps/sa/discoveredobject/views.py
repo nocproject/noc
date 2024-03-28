@@ -59,12 +59,46 @@ class DiscoveredObjectApplication(ExtDocApplication):
         #    return f"{o.name}:{o.port}"
         return r
 
-    @view(url=r"/actions/sync_records/$", method=["POST"], access="action", api=True)
-    def api_action(self, request):
+    def cleaned_query(self, q):
+        if "addresses" in q:
+            if isinstance(q["addresses"], list):
+                q["address__in"] = q["addresses"]
+            else:
+                q["address__in"] = [q["addresses"]]
+            del q["addresses"]
+        if "checks" in q:
+            checks = q.pop("checks")
+            if not isinstance(checks, list):
+                checks = [checks]
+            for c in checks:
+                c_name, *port, status = c.split("__")
+                if not port:
+                    q["checks__match"] = {"name": c_name, "status": status == "true"}
+                else:
+                    q["checks__match"] = {
+                        "name": c_name,
+                        "port": int(port[0]),
+                        "status": status == "true",
+                    }
+            # SNMPv2c__true
+        if "source" in q:
+            source = q.pop("source")
+            if not isinstance(source, list):
+                source = [source]
+            q["sources__in"] = [{"scan": "network-scan"}.get(s, s) for s in source]
+        if "last_update" in q:
+            del q["last_update"]
+        r = super().cleaned_query(q)
+        return r
+
+    @view(url=r"actions/sync_records/$", method=["POST"], access="action", api=True)
+    def api_sync_action(self, request):
+        print(request)
         return {"status": True}
 
-    @view(url=r"/actions/send_event/$", method=["POST"], access="action", api=True)
-    def api_action(self, request):
+    @view(url=r"actions/send_event/$", method=["POST"], access="action", api=True)
+    def api_send_event_action(self, request):
+        print(request)
         return {"status": True}
 
     @view(url=r"^template_lookup/$", method=["GET"], access="read", api=True)
@@ -83,7 +117,7 @@ class DiscoveredObjectApplication(ExtDocApplication):
     @view(url=r"^action_lookup/$", method=["GET"], access="read", api=True)
     def api_action_lookup(self, request):
         r = []
-        for event in ["approve", "ignore", "approve"]:
+        for event in ["approve", "ignore", "remove"]:
             r += [
                 {
                     "id": f"active_event",
