@@ -17,6 +17,9 @@ Ext.define("NOC.sa.discoveredobject.controller.Sidebar", {
     setFilter: function(field, event) {
         var value = field.getValue();
 
+        if(!field.isValid()) {
+            return
+        }
         if(field.name && "addresses" === field.name) {
             value = value.split("\n")
                 .filter(function(ip) {
