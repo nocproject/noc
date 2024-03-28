@@ -44,6 +44,13 @@ Ext.define("NOC.sa.discoveredobject.view.Sidebar", {
             },
             items: [
                 {
+                    xtype: "hiddenfield",
+                    name: "query",
+                    listeners: {
+                        change: "setFilter"
+                    }
+                },
+                {
                     xtype: "core.combo",
                     restUrl: "/wf/state/lookup/",
                     name: "state",

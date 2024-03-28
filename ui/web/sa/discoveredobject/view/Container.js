@@ -25,8 +25,9 @@ Ext.define("NOC.sa.discoveredobject.view.Container", {
     tbar: [
         {
             xtype: "searchfield",
-            width: 250,
+            width: 400,
             enableKeyEvents: true,
+            emptyText: __("enter search text and press <Enter>"),
             triggers: {
                 clear: {
                     cls: "x-form-clear-trigger",
@@ -98,6 +99,9 @@ Ext.define("NOC.sa.discoveredobject.view.Container", {
             split: {
                 xtype: "splitter"
             },
+            listeners: {
+                filterChanged: "onFilterChanged"
+            }
         }
     ]
 });

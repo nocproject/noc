@@ -26,5 +26,8 @@ Ext.define("NOC.sa.discoveredobject.Application", {
             itemId: "sa-discoveredobject-list",
             xtype: "sa.discoveredobject.container",
         },
-    ]
+    ],
+    listeners: {
+        afterrender: "onAfterRender",
+    },
 });

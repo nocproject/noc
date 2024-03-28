@@ -12,7 +12,6 @@ Ext.define("NOC.sa.discoveredobject.controller.Sidebar", {
 
     init: function() {
         this.reloadTask = new Ext.util.DelayedTask(this.reload, this);
-        this.restoreFilter();
     },
     setFilter: function(field, event) {
         var value = field.getValue();
@@ -91,10 +90,12 @@ Ext.define("NOC.sa.discoveredobject.controller.Sidebar", {
         var queryStr = Ext.util.History.getToken().split("?")[1];
 
         if(queryStr) {
-            var params = Ext.Object.fromQueryString(queryStr, true);
+            var params = Ext.Object.fromQueryString(queryStr, true),
+                view = this.getView();
 
-            this.getView().down("form").getForm().setValues(params);
-            this.getView().setValue(params);
+            view.down("form").getForm().setValues(params);
+            view.setValue(params);
+            view.fireEvent("filterChanged", this.getView(), params);
         }
     },
     cleanAllFilters: function(button) {
@@ -102,7 +103,7 @@ Ext.define("NOC.sa.discoveredobject.controller.Sidebar", {
 
         Ext.History.add(appView.appId);
         button.up("form").getForm().reset();
-
+        this.getView().fireEvent("filterChanged", this.getView(), {});
         this.reloadData();
     },
     notEmptyValues: function() {
