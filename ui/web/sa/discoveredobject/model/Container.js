@@ -20,7 +20,6 @@ Ext.define("NOC.sa.discoveredobject.model.Container", {
                 filter: "{sa-discovered-sidebar.value}",
             },
             get: function(data) {
-                console.log(data);
                 var isEmpty = true;
 
                 Ext.Object.each(data.filter, function(_, value) {

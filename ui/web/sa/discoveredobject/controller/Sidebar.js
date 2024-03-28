@@ -11,6 +11,7 @@ Ext.define("NOC.sa.discoveredobject.controller.Sidebar", {
     alias: "controller.sa.discoveredobject.sidebar",
 
     init: function() {
+        this.reloadTask = new Ext.util.DelayedTask(this.reload, this);
         this.restoreFilter();
     },
     setFilter: function(field, event) {
@@ -65,10 +66,31 @@ Ext.define("NOC.sa.discoveredobject.controller.Sidebar", {
         }
 
         Ext.History.add(appView.appId + token, true);
-        this.reload();
+
+        this.reloadTask.cancel();
+        this.reloadTask.delay(500);
     },
     reload: function() {
-        console.log("reload");
+        var appView = this.view.up("[appId]"),
+            grid = appView.down("grid"),
+            store = grid.getStore(),
+            filterObject = this.getView().getForm().getValues();
+
+        console.log("reload", filterObject);
+        grid.mask(__("Loading..."));
+        Ext.Object.each(filterObject, function(key, value) {
+            if(Ext.isEmpty(value, true) || value === "") {
+                delete filterObject[key];
+            }
+        });
+        console.log("reload", filterObject);
+
+        store.getProxy().setExtraParams(filterObject);
+        store.load({
+            callback: function() {
+                grid.unmask();
+            }
+        });
     },
     restoreFilter: function() {
         var queryStr = Ext.util.History.getToken().split("?")[1];
