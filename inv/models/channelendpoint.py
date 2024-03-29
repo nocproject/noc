@@ -20,7 +20,7 @@ class ChannelEndpoint(Document):
         "collection": "channelendpoints",
         "strict": False,
         "auto_create_index": False,
-        "indexes": ["tech_domain", "channel", "endpoint"],
+        "indexes": ["channel", "endpoint"],
     }
     endpoint = PlainReferenceField(Endpoint)
     channel = PlainReferenceField(Channel)
