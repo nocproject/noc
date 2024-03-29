@@ -151,7 +151,7 @@ _MODELS = {
     "inv.BioSegTrial": "noc.inv.models.biosegtrial.BioSegTrial",
     "inv.Capability": "noc.inv.models.capability.Capability",
     "inv.Channel": "noc.inv.models.channel.Channel",
-    "inv.ChannelEndpoint": "noc.inv.models.channel.ChannelEndpoint",
+    "inv.ChannelEndpoint": "noc.inv.models.channelendpoint.ChannelEndpoint",
     "inv.ConfiguredMap": "noc.inv.models.configuredmap.ConfiguredMap",
     "inv.ConnectionRule": "noc.inv.models.connectionrule.ConnectionRule",
     "inv.ConnectionType": "noc.inv.models.connectiontype.ConnectionType",
