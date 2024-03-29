@@ -49,7 +49,7 @@ class ChannelTopology(Enum):
 
 @bi_sync
 @Label.model
-@on_delete_check(check=[("inv.ChannelEndpoint", "channel")])
+@on_delete_check(check=[("inv.Endpoint", "channel")])
 class Channel(Document):
     """
     Channel.
