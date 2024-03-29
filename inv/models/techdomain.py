@@ -116,7 +116,7 @@ class TechDomain(Document):
     max_endpoints = IntField(required=False)
     full_mesh = BooleanField()
     require_unique = BooleanField()
-    handler = PlainReferenceField(Handler, required=False)
+    controller_handler = PlainReferenceField(Handler, required=False)
     # Object id in BI
     bi_id = LongField(unique=True)
 
