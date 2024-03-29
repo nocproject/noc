@@ -27,11 +27,43 @@ Ext.define("NOC.sa.service.Application", {
     search: true,
     helpId: "reference-service",
 
-    initComponent: function () {
+    initComponent: function() {
         var me = this;
 
         Ext.apply(me, {
             columns: [
+                {
+                    text: __("S"),
+                    dataIndex: "oper_state",
+                    sortable: false,
+                    width: 30,
+                    renderer: function(value, metaData) {
+                        var color = "grey";
+
+                        metaData.tdAttr = "data-qtip='<table style=\"font-size: 11px;\">" +
+                            "<tr><td style=\"padding-right: 10px;\"><div class=\"noc-object-oper-state\" style=\"background-color: grey;\"></div></td><td>" + __("Unknown") + "</td></tr>" +
+                            "<tr><td><div class=\"noc-object-oper-state\" style=\"background-color: green;\"></div></td><td>" + __("UP") + "</td></tr>" +
+                            "<tr><td><div class=\"noc-object-oper-state\" style=\"background-color: yellow;\"></div></td><td>" + __("SLIGHTLY_DEGRADED") + "</td></tr>" +
+                            "<tr><td><div class=\"noc-object-oper-state\" style=\"background-color: orange;\"></div></td><td>" + __("DEGRADED") + "</td></tr>" +
+                            "<tr><td><div class=\"noc-object-oper-state\" style=\"background-color: red;\"></div></td><td>" + __("DOWN") + "</td></tr>" +
+                            "</table>'";
+                        switch(value) {
+                            case 1:
+                                color = "green";
+                                break;
+                            case 2:
+                                color = "yellow";
+                                break;
+                            case 3:
+                                color = "orange";
+                                break;
+                            case 4:
+                                color = "red";
+                                break;
+                        }
+                        return "<div class='noc-object-oper-state' style='background-color: " + color + "'></div>";
+                    }
+                },
                 {
                     text: __("ID"),
                     dataIndex: "id",
