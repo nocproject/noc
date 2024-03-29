@@ -90,10 +90,14 @@ class TechDomain(Document):
 
     Attributes:
         name: Human-readable name.
-        code: Unique code.
+        uuid: Collection uuid.
+        description: Optional descirption.
         uuid: UUID.
         description: Optional description.
         discriminators: List of available discriminators.
+        max_endpoints: Limit maximal amount of endpoints, when set.
+        full_mesh: Bidirectional, if set.
+        require_unique: Endpoints must have discriminators.
         bi_id: Bi-encoded id.
     """
 
@@ -105,10 +109,14 @@ class TechDomain(Document):
     }
 
     name = StringField(unique=True)
-    code = StringField(unique=True)
     uuid = UUIDField(binary=True)
     description = StringField()
+    kind = StringField(choices=[x.value for x in ChannelKind])
     discriminators = EmbeddedDocumentListField(DiscriminatorItem)
+    max_endpoints = IntField(required=False)
+    full_mesh = BooleanField()
+    require_unique = BooleanField()
+    handler = PlainReferenceField(Handler, required=False)
     # Object id in BI
     bi_id = LongField(unique=True)
 
@@ -129,20 +137,19 @@ class TechDomain(Document):
     def get_by_bi_id(cls, bi_id: int) -> Optional["TechDomain"]:
         return TechDomain.objects.filter(bi_id=bi_id).first()
 
-    @classmethod
-    @cachetools.cachedmethod(operator.attrgetter("_code_cache"), lock=lambda _: id_lock)
-    def get_by_code(cls, code: str) -> Optional["TechDomain"]:
-        return TechDomain.objects.filter(code=code).first()
-
     @property
     def json_data(self) -> Dict[str, Any]:
         r: Dict[str, Any] = {
             "name": self.name,
-            "code": self.code,
             "$collection": self._meta["json_collection"],
             "uuid": self.uuid,
-            "description": self.description,
         }
+        if self.description:
+            r["description"] = self.description
+        if self.max_endpoints is not None:
+            r["max_endpoints"] = self.max_endpoints
+        r["full_mesh"] = self.full_mesh
+        r["require_unique"] = self.require_unique
         if self.discriminators:
             r["discriminators"] = [d.json_data for d in self.discriminators]
         return r
@@ -150,8 +157,8 @@ class TechDomain(Document):
     def to_json(self) -> str:
         return to_json(
             self.json_data,
-            order=["name", "code", "$collection", "uuid", "description"],
+            order=["name", "$collection", "uuid", "description"],
         )
 
     def get_json_path(self) -> str:
-        return f"{quote_safe_path(self.code)}.json"
+        return f"{quote_safe_path(self.name)}.json"

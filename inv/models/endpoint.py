@@ -6,32 +6,13 @@
 # ----------------------------------------------------------------------
 
 # Third-party modules
-from mongoengine.document import Document, EmbeddedDocument
-from mongoengine.fields import StringField, ListField, DateTimeField, EmbeddedDocumentField
+from mongoengine.document import Document
+from mongoengine.fields import StringField, ListField
 
 # NOC modules
 from noc.core.mongo.fields import PlainReferenceField
 from noc.main.models.label import Label
 from .techdomain import TechDomain
-from .channel import Channel
-
-
-class EndpointChannel(EmbeddedDocument):
-    """
-    Channel to endpoint bindings.
-
-    Attributes:
-        channel: Reference to Channel.
-        discriminators: List of discriminators.
-    """
-
-    channel = PlainReferenceField(Channel, reqired=True)
-    discriminators = ListField(StringField())
-
-    def __str__(self) -> str:
-        if self.discriminators:
-            return f"{self.channel.name}: {'; '.join(self.discriminators)}"
-        return self.channel.name
 
 
 @Label.model
@@ -68,16 +49,14 @@ class Endpoint(Document):
         "auto_create_index": False,
         "indexes": [("model", "resource_id")],
     }
-
-    tech_domain = PlainReferenceField(TechDomain, required=True)
     name = StringField(required=True)
     description = StringField()
+    tech_domain = PlainReferenceField(TechDomain, required=True)
     model = StringField(required=True)
     resource_id = StringField()
-    slot = StringField()
+    slot = StringField(required=False)
+    labels = ListField(StringField())
     effective_labels = ListField(StringField())
-    deadline = DateTimeField()
-    channels = ListField(EmbeddedDocumentField(EndpointChannel))
 
     def __str__(self) -> str:
         return self.name
