@@ -7,7 +7,7 @@
 
 # Python modules
 from threading import Lock
-from typing import Optional
+from typing import Optional, Union
 import operator
 from enum import Enum
 
@@ -25,7 +25,7 @@ from noc.crm.models.subscriber import Subscriber
 from noc.crm.models.supplier import Supplier
 from noc.main.models.label import Label
 from noc.main.models.remotesystem import RemoteSystem
-
+from noc.core.model.decorator import on_delete_check
 
 id_lock = Lock()
 
@@ -49,6 +49,7 @@ class ChannelTopology(Enum):
 
 @bi_sync
 @Label.model
+@on_delete_check(check=[("inv.ChannelEndpoint", "channel")])
 class Channel(Document):
     """
     Channel.
@@ -85,7 +86,7 @@ class Channel(Document):
 
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_id_cache"), lock=lambda _: id_lock)
-    def get_by_id(cls, oid: ObjectId) -> Optional["Channel"]:
+    def get_by_id(cls, oid: Union[str, ObjectId]) -> Optional["Channel"]:
         return Channel.objects.filter(id=oid).first()
 
     @classmethod

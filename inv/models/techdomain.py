@@ -7,7 +7,7 @@
 
 # Python modules
 from threading import Lock
-from typing import Optional, Dict, Any
+from typing import Optional, Dict, Any, Union
 import operator
 from enum import Enum
 
@@ -116,7 +116,7 @@ class TechDomain(Document):
     max_endpoints = IntField(required=False)
     full_mesh = BooleanField()
     require_unique = BooleanField()
-    handler = PlainReferenceField(Handler, required=False)
+    controller_handler = PlainReferenceField(Handler, required=False)
     # Object id in BI
     bi_id = LongField(unique=True)
 
@@ -129,7 +129,7 @@ class TechDomain(Document):
 
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_id_cache"), lock=lambda _: id_lock)
-    def get_by_id(cls, oid: ObjectId) -> Optional["TechDomain"]:
+    def get_by_id(cls, oid: Union[str, ObjectId]) -> Optional["TechDomain"]:
         return TechDomain.objects.filter(id=oid).first()
 
     @classmethod

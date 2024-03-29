@@ -12,10 +12,12 @@ from mongoengine.fields import StringField, ListField
 # NOC modules
 from noc.core.mongo.fields import PlainReferenceField
 from noc.main.models.label import Label
+from noc.core.model.decorator import on_delete_check
 from .techdomain import TechDomain
 
 
 @Label.model
+@on_delete_check(check=[("inv.ChannelEndpoint", "endpoint")])
 class Endpoint(Document):
     """
     Enpoint.
