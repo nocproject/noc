@@ -1,7 +1,7 @@
 # ----------------------------------------------------------------------
 # Channel
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2023 The NOC Project
+# Copyright (C) 2007-2024 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -15,11 +15,7 @@ from enum import Enum
 from bson import ObjectId
 import cachetools
 from mongoengine.document import Document
-from mongoengine.fields import (
-    StringField,
-    LongField,
-    ListField,
-)
+from mongoengine.fields import StringField, LongField, ListField, BooleanField
 
 # NOC modules
 from noc.core.bi.decorator import bi_sync
@@ -28,26 +24,10 @@ from noc.project.models.project import Project
 from noc.crm.models.subscriber import Subscriber
 from noc.crm.models.supplier import Supplier
 from noc.main.models.label import Label
+from noc.main.models.remotesystem import RemoteSystem
 
 
 id_lock = Lock()
-
-
-class ChannelKind(Enum):
-    """
-    Kind of channel.
-
-    Attributes:
-        L1: Level-1
-        L2: Level-2
-        L3: Level-3
-        INTERNET: Global connectivity.
-    """
-
-    L1 = "l1"
-    L2 = "l2"
-    L3 = "l3"
-    INTERNET = "internet"
 
 
 class ChannelTopology(Enum):
@@ -83,13 +63,17 @@ class Channel(Document):
 
     name = StringField(unique=True)
     description = StringField()
-    kind = StringField(choices=[x.value for x in ChannelKind], required=True)
-    topology = StringField(choices=[x.value for x in ChannelTopology], required=True)
     project = ForeignKeyField(Project)
     supplier = PlainReferenceField(Supplier)
     subscriber = PlainReferenceField(Subscriber)
+    is_free = BooleanField()
     labels = ListField(StringField())
     effective_labels = ListField(StringField())
+    # Integration with external NRI and TT systems
+    # Reference to remote system object has been imported from
+    remote_system = PlainReferenceField(RemoteSystem)
+    # Object id in remote system
+    remote_id = StringField()
     # Object id in BI
     bi_id = LongField(unique=True)
 

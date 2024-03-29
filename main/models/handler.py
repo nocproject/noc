@@ -1,7 +1,7 @@
 # ----------------------------------------------------------------------
 # Approved handlers
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2021 The NOC Project
+# Copyright (C) 2007-2024 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -34,6 +34,7 @@ id_lock = Lock()
         ("sa.ManagedObject", "config_diff_filter_handler"),
         ("sa.ManagedObject", "config_validation_handler"),
         ("inv.InterfaceProfile", "ifdesc_handler"),
+        ("inv.TechDomain", "controller_handler"),
         ("pm.ThresholdProfile", "umbrella_filter_handler"),
         ("pm.ThresholdProfile", "value_handler"),
         ("pm.ThresholdConfig", "open_handler"),
@@ -67,6 +68,7 @@ class Handler(Document):
     allow_mx_transmutation = BooleanField()
     allow_match_rule = BooleanField()
     allow_fm_alarmgrouprule = BooleanField()
+    allow_tech_domain = BooleanField()
 
     _id_cache = cachetools.TTLCache(maxsize=1000, ttl=60)
 
