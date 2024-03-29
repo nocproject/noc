@@ -47,7 +47,7 @@ class Endpoint(Document):
         "collection": "endpoints",
         "strict": False,
         "auto_create_index": False,
-        "indexes": [("model", "resource_id")],
+        "indexes": [("model", "resource_id"), "effective_labels"],
     }
     name = StringField(required=True)
     description = StringField()
