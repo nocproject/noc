@@ -7,7 +7,7 @@
 
 # Third-party modules
 from mongoengine.document import Document
-from mongoengine.fields import StringField, ListField
+from mongoengine.fields import StringField
 
 # NOC modules
 from noc.core.mongo.fields import PlainReferenceField
