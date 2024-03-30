@@ -227,7 +227,9 @@ class HTTP(object):
             headers = {}
         if self.cookies:
             # headers["Cookie"] = self.cookies.output(header="").lstrip()
-            headers["Cookie"] = self.cookies.output(header="", sep=";").lstrip()
+            headers["Cookie"] = (
+                self.cookies.output(header="", sep=";").lstrip().encode(DEFAULT_ENCODING)
+            )
         return headers
 
     def set_header(self, name, value):

@@ -79,8 +79,10 @@ class RPCProxy(object):
                     parent=span_id,
                 ) as span:
                     if sample:
-                        req_headers["X-NOC-Span-Ctx"] = span.span_context
-                        req_headers["X-NOC-Span"] = span.span_id
+                        req_headers["X-NOC-Span-Ctx"] = str(span.span_context).encode(
+                            DEFAULT_ENCODING
+                        )
+                        req_headers["X-NOC-Span"] = str(span.span_id).encode(DEFAULT_ENCODING)
                     code, headers, data = await self._client.post(url, body, headers=req_headers)
                     # Process response
                     if code == 200:
