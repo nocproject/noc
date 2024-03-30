@@ -80,7 +80,7 @@ class HttpClient(GufoHttpClient):
             timeout=timeout,
             user_agent=user_agent or self.user_agent,
             auth=auth,
-            proxy=proxy,
+            proxy=[Proxy(proxy)] if proxy else None,
         )
 
     async def request(
