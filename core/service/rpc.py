@@ -116,7 +116,7 @@ class RPCProxy(object):
             is_notify = "_notify" in kwargs
             if not is_notify:
                 msg["id"] = tid
-            body = orjson.dumps(msg).decode(encoding=DEFAULT_ENCODING)
+            body = orjson.dumps(msg)
             # Get services
             response = None
             for t in self._service.iter_rpc_retry_timeout():

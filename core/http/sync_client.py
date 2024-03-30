@@ -91,12 +91,12 @@ class HttpClient(GufoHttpClient):
         body: Optional[bytes] = None,
         headers: Optional[Dict[str, bytes]] = None,
     ) -> Tuple[int, Dict[str, Any], bytes]:
-        method = RequestMethod.get(method)
-        if not method:
+        m = RequestMethod.get(method)
+        if not m:
             raise NotImplementedError("Not implementer method: %s", method)
         metrics["httpclient_requests", ("method", method.lower())] += 1
         try:
-            r = super().request(method, url, body=body, headers=headers)
+            r = super().request(m, url, body=body, headers=headers)
         except ConnectionResetError:
             metrics["httpclient_timeouts"] += 1
             return ERR_TIMEOUT, {}, b"Connection reset while sending request"
