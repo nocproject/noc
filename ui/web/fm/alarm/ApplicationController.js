@@ -94,6 +94,7 @@ Ext.define("NOC.fm.alarm.ApplicationController", {
     onChangeActiveFilters: function(data) {
         var listsView = this.getView().lookupReference("fm-alarm-list"),
             grid = listsView.lookupReference("fm-alarm-active"),
+            recentFilter = this.getViewModel().get("recentFilter"),
             store = grid.getStore(),
             filter = this.serialize(data);
         grid.mask(__("Loading..."));
@@ -105,16 +106,19 @@ Ext.define("NOC.fm.alarm.ApplicationController", {
             }
         });
         this.activeSelectionFiltered(data);
+        this.onChangeRecentParams(recentFilter);
         this.updateHash(false);
     },
     onChangeRecentParams: function(data) {
         var listsView = this.getView().lookupReference("fm-alarm-list"),
-            filter = this.getViewModel().get("recentFilter"),
+            filter = Ext.clone(this.getViewModel().get("recentFilter")),
+            activeFilter = this.getViewModel().get("activeFilter"),
             panel = listsView.lookupReference("fm-alarm-recent"),
             store = panel.getStore();
         // don't change, http params is string compare with int,  1 == "1"
         panel.setHidden(data == 0);
         panel.mask(__("Loading..."));
+        filter = Ext.applyIf(filter, this.serialize(activeFilter));
         store.getProxy().setExtraParams(filter);
         store.load({
             params: filter,
