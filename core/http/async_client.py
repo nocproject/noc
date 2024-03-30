@@ -7,7 +7,8 @@
 
 # Python modules
 import logging
-from typing import Optional, Dict, Tuple, Any
+from urllib.parse import urlparse
+from typing import Optional, Dict, Tuple, Any, Callable
 
 # Third-party modules
 from gufo.http import BasicAuth, RequestMethod, DEFLATE, GZIP, BROTLI, Proxy
@@ -17,12 +18,14 @@ from gufo.http.async_client import HttpClient as GufoHttpClient
 from noc.core.perf import metrics
 from noc.core.comp import DEFAULT_ENCODING
 from noc.config import config
+from noc.core.validators import is_ipv4
 from .proxy import SYSTEM_PROXIES
 
 logger = logging.getLogger(__name__)
 
 ERR_TIMEOUT = 599
 ERR_READ_TIMEOUT = 598
+DEFAULT_PORTS = {"http": config.http_client.http_port, "https": config.http_client.https_port}
 
 
 class HttpClient(GufoHttpClient):
@@ -63,6 +66,7 @@ class HttpClient(GufoHttpClient):
         password: Optional[str] = None,
         allow_proxy=False,
         proxies=None,
+        resolver=None,
     ) -> None:
         auth = None
         if user:
@@ -71,6 +75,7 @@ class HttpClient(GufoHttpClient):
             proxy = (proxies or SYSTEM_PROXIES).get("https")
         else:
             proxy = None
+        self.resolver: Optional[Callable] = resolver
         super().__init__(
             max_redirects=max_redirects,
             headers=headers,
@@ -82,6 +87,27 @@ class HttpClient(GufoHttpClient):
             auth=auth,
             proxy=[Proxy(proxy)] if proxy else None,
         )
+
+    async def resolve(self, url: str) -> str:
+        if not self.resolver:
+            return url
+
+        u = urlparse(str(url))
+        if ":" in u.netloc:
+            host, port = u.netloc.rsplit(":")
+        else:
+            host = u.netloc
+        if is_ipv4(host):
+            addr, port = host, None
+        else:
+            addr, *port = await self.resolver(host)
+        if not addr:
+            raise TimeoutError("Cannot resolve host: %s" % host)
+        if port:
+            host = f"{addr}:{port[0]}"
+        else:
+            host = addr
+        return u._replace(netloc=host).geturl()
 
     async def request(
         self: "HttpClient",
@@ -95,6 +121,10 @@ class HttpClient(GufoHttpClient):
         if not m:
             raise NotImplementedError("Not implementer method: %s", method)
         metrics["httpclient_requests", ("method", method.lower())] += 1
+        try:
+            url = await self.resolve(url)
+        except TimeoutError as e:
+            return ERR_TIMEOUT, {}, b"Cannot resolve host: %s" % str(e).encode(DEFAULT_ENCODING)
         try:
             r = await super().request(m, url, body=body, headers=headers)
         except ConnectionResetError:
@@ -112,6 +142,10 @@ class HttpClient(GufoHttpClient):
         self, url: str, /, headers: Optional[Dict[str, bytes]] = None
     ) -> Tuple[int, Dict[str, Any], bytes]:
         metrics["httpclient_requests", ("method", "get")] += 1
+        try:
+            url = await self.resolve(url)
+        except TimeoutError as e:
+            return ERR_TIMEOUT, {}, b"Cannot resolve host: %s" % str(e).encode(DEFAULT_ENCODING)
         try:
             r = await super().get(url, headers=headers)
         except ConnectionResetError:
@@ -133,6 +167,10 @@ class HttpClient(GufoHttpClient):
         headers: Optional[Dict[str, bytes]] = None,
     ) -> Tuple[int, Dict[str, Any], bytes]:
         metrics["httpclient_requests", ("method", "post")] += 1
+        try:
+            url = await self.resolve(url)
+        except TimeoutError as e:
+            return ERR_TIMEOUT, {}, b"Cannot resolve host: %s" % str(e).encode(DEFAULT_ENCODING)
         try:
             r = await super().post(url, body, headers=headers)
         except ConnectionResetError:

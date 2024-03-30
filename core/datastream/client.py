@@ -30,7 +30,8 @@ class DataStreamClient(object):
         self.service = service
         self._is_ready = False
         self.client = HttpClient(
-            headers={"X-NOC-API-Access": f"datastream:{self.name}".encode(DEFAULT_ENCODING)}
+            headers={"X-NOC-API-Access": f"datastream:{self.name}".encode(DEFAULT_ENCODING)},
+            resolver=self.resolve,
         )
 
     async def on_change(self, data):
@@ -141,7 +142,7 @@ class DataStreamClient(object):
                 self._is_ready = True
             # Continue from last change
             if "X-NOC-DataStream-Last-Change" in headers:
-                change_id = headers["X-NOC-DataStream-Last-Change"]
+                change_id = headers["X-NOC-DataStream-Last-Change"].decode(DEFAULT_ENCODING)
                 continue
             if block and self._is_ready:
                 # Do not set block=1 before is_ready, otherwise

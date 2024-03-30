@@ -13,6 +13,7 @@ from urllib.request import parse_http_list, parse_keqv_list
 
 # NOC modules
 from .base import BaseMiddleware
+from noc.core.comp import DEFAULT_ENCODING
 from noc.core.http.sync_client import HttpClient
 from noc.core.comp import smart_bytes
 
@@ -134,12 +135,14 @@ class DigestAuthMiddeware(BaseMiddleware):
                 body,
             )
             if "WWW-Authenticate" in resp_headers and resp_headers["WWW-Authenticate"].startswith(
-                "Digest"
+                b"Digest"
             ):
-                items = parse_http_list(resp_headers["WWW-Authenticate"][7:])
+                items = parse_http_list(
+                    resp_headers["WWW-Authenticate"].decode(DEFAULT_ENCODING)[7:]
+                )
                 digest_response = parse_keqv_list(items)
                 headers["Authorization"] = self.build_digest_header(
                     url, self.method, digest_response
-                )
+                ).encode(DEFAULT_ENCODING)
             self.logger.debug("[%s] Set headers, %s", self.name, headers)
             return url, body, headers
