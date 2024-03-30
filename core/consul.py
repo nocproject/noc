@@ -27,7 +27,7 @@ class ConsulHTTPClient(consul.base.HTTPClient):
             timeout=config.consul.request_timeout,
             validate_cert=self.verify,
         ) as client:
-            code, headers, body = client.request(method, url, body=body)
+            code, headers, body = await client.request(method, url, body=body)
 
             if code in ConsulRepeatableCodes:
                 raise consul.base.Timeout

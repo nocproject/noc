@@ -158,7 +158,7 @@ class CHWriterService(FastAPIService):
                             f"database={config.clickhouse.db}&"
                             f"query={ch.q_sql}"
                         )
-                        code, headers, body = http_client.post(url, ch.get_data())
+                        code, headers, body = await http_client.post(url, ch.get_data())
                         if code == 200:
                             self.logger.info(
                                 "[%s] %d records sent in %.2fms",
