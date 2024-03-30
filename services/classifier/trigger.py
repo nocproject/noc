@@ -1,7 +1,7 @@
 # ---------------------------------------------------------------------
 # Trigger
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2013 The NOC Project
+# Copyright (C) 2007-2024 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -24,7 +24,7 @@ class Trigger(object):
         # Action
         self.notification_group = t.notification_group
         self.template = t.template
-        self.handler = get_handler(handler)
+        self.handler = get_handler(handler) if handler else None
 
     def match(self, event):
         """
