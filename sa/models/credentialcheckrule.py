@@ -121,7 +121,7 @@ class CredentialCheckRule(Document):
                 )
             )
         for au in self.suggest_auth_profile:
-            if not au.auth_profile.snmp_ro:
+            if au.auth_profile.snmp_ro and au.auth_profile.enable_suggest:
                 r.append(
                     SNMPCredential(snmp_ro=au.auth_profile.snmp_ro, snmp_rw=au.auth_profile.snmp_rw)
                 )
@@ -136,7 +136,7 @@ class CredentialCheckRule(Document):
                 )
             )
         for au in self.suggest_auth_profile:
-            if not au.auth_profile.snmp_ro:
+            if au.auth_profile.user and au.auth_profile.enable_suggest:
                 r.append(
                     CLICredential(
                         username=au.auth_profile.user,
