@@ -98,14 +98,14 @@ class HttpClient(GufoHttpClient):
         else:
             host = u.netloc
         if is_ipv4(host):
-            addr, port = host, None
-        else:
-            addr = await self.resolver(host)
+            return url
+        addr = await self.resolver(host)
         if not addr:
             raise TimeoutError("Cannot resolve host: %s" % host)
         if isinstance(addr, tuple):
             host = "%s:%s" % addr
         else:
+            # Port ?
             host = addr
         return u._replace(netloc=host).geturl()
 
