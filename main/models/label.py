@@ -492,8 +492,8 @@ class Label(Document):
             wildcards += [label]
         coll = cls._get_collection()
         match = {"$match": {"name": {"$in": wildcards}, "propagate": True}}
-        if all_settings:
-            match["$match"]["propagate"] = False
+        # if all_settings:
+        #     match["$match"]["propagate"] = False
         r = next(
             coll.aggregate(
                 [
@@ -603,7 +603,7 @@ class Label(Document):
         if label:
             return  # Exists
         logger.info("[%s] Create label by ensure", name)
-        settings = cls.get_effective_settings(name, all_settings=True)
+        settings = cls.get_effective_settings(name, include_label=True)
         if not settings.get("allow_auto_create"):
             logger.warning("[%s] Not allowed autocreate label", name)
             return
