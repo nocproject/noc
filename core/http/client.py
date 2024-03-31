@@ -31,8 +31,6 @@ from noc.config import config
 from noc.core.comp import smart_bytes, smart_text
 from noc.core.ioloop.util import run_sync
 
-from http_parser.parser import HttpParser
-
 logger = logging.getLogger(__name__)
 
 DEFAULT_CONNECT_TIMEOUT = config.http_client.connect_timeout
@@ -137,6 +135,8 @@ async def fetch(
                 ctx.verify_mode = ssl.CERT_NONE
             opts["ssl"] = ctx
         return opts
+
+    from http_parser.parser import HttpParser
 
     metrics["httpclient_requests", ("method", method.lower())] += 1
     #
