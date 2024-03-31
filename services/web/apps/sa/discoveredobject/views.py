@@ -20,6 +20,7 @@ from noc.sa.interfaces.base import (
     IntParameter,
 )
 from noc.wf.models.workflow import Workflow
+from noc.wf.models.state import State
 from noc.core.translation import ugettext as _
 
 
@@ -98,6 +99,7 @@ class DiscoveredObjectApplication(ExtDocApplication):
 
     @view(url=r"actions/send_event/$", method=["POST"], access="action", api=True)
     def api_send_event_action(self, request):
+
         print(request)
         return {"status": True}
 
@@ -116,17 +118,24 @@ class DiscoveredObjectApplication(ExtDocApplication):
 
     @view(url=r"^action_lookup/$", method=["GET"], access="read", api=True)
     def api_action_lookup(self, request):
-        r = []
-        for event in ["approve", "ignore", "remove"]:
-            r += [
-                {
+        r = {"approve": {
+                "id": f"active_event",
+                "label": "Approve",
+                "is_default": True,
+                "args": {"action": "send_event", "event": "approve"},
+            }
+        }
+        wfs = Workflow.objects.filter(allowed_models__in=["sa.DiscoveredObject"])
+        for st in State.objects.filter(workflow__in=wfs):
+            if not st.event or st.event in r:
+                continue
+            r[st.event] = {
                     "id": f"active_event",
-                    "label": _(event.capitalize()),
-                    "is_default": event == "approve",
-                    "args": {"action": "send_event", "event": event},
+                    "label": str(st),
+                    "is_default": False,
+                    "args": {"action": "send_event", "event": st.event},
                 }
-            ]
-        return r
+        return list(r.values())
 
     @view(
         url=r"^scan_run/$",
@@ -135,14 +144,15 @@ class DiscoveredObjectApplication(ExtDocApplication):
         api=True,
         validate={
             "addresses": StringListParameter(),
-            "checks": DictListParameter(
-                attrs={
-                    "name": StringParameter(required=True),
-                    "port": IntParameter(required=False, default=0),
-                }
-            ),
+            # "checks": DictListParameter(
+            #     attrs={
+            #         "name": StringParameter(required=True),
+            #         "port": IntParameter(required=False, default=0),
+            #     }, required=False,
+            # ),
+            "checks": ListOfParameter(StringParameter(), required=False),
             "credentials": StringListParameter(required=False),
         },
     )
-    def api_sync_lookup(self, request, addresses, checks, credentials):
+    def api_sync_lookup(self, request, addresses, checks=None, credentials=None):
         return {"status": True}

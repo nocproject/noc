@@ -1,0 +1,12 @@
+{
+    "workflow__name": "Discovered Object Default",
+    "from_state__uuid": "dfc9adde-6802-433e-b1e0-67d33bc39e35",
+    "to_state__uuid": "None",
+    "uuid": null,
+    "is_active": true,
+    "$collection": "wf.transitions",
+    "event": "remove",
+    "label": "Remove",
+    "description": "Remove record from Discovered Object",
+    "enable_manual": true
+}

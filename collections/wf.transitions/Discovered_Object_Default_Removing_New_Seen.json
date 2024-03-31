@@ -1,0 +1,15 @@
+{
+    "workflow__name": "Discovered Object Default",
+    "from_state__uuid": "None",
+    "to_state__uuid": "50a6934f-e29c-4bae-a834-8bd6b97fbbdf",
+    "uuid": null,
+    "is_active": true,
+    "$collection": "wf.transitions",
+    "event": "seen",
+    "label": "Seen",
+    "enable_manual": false,
+    "vertices": [{
+        "x": 430,
+        "y": 300
+    }]
+}
