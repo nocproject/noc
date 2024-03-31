@@ -88,7 +88,10 @@ class ProfileChecker(Checker):
 
     def iter_result(self, checks) -> Iterable[CheckResult]:
         check = checks[0]
-        profile, error = self.get_profile(check.address, check.snmp_credential)
+        profile, error = self.get_profile(
+            check.address or self.address,
+            check.snmp_credential,
+        )
         if profile:
             # Skipped
             yield CheckResult(

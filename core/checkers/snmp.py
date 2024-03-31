@@ -62,7 +62,7 @@ class SNMPProtocolChecker(Checker):
                 continue
             yield Check(
                 name=c,
-                address=check.address,
+                address=check.address or self.address,
                 port=check.port,
                 arg0=check.arg0,
                 credentials=check.credentials,
@@ -76,7 +76,7 @@ class SNMPProtocolChecker(Checker):
             for c in self.iter_suggest_check(check):
                 if c.name not in self.CHECKS:
                     continue
-                if not c.credentials:
+                if not c.credentials and not self.rules:
                     continue
                 key = (c.address, c.port)
                 if key not in processed:
@@ -85,6 +85,7 @@ class SNMPProtocolChecker(Checker):
                     processed[key][cred].add(c)
                 for cred in self.rules:
                     processed[key][cred].add(c)
+        self.logger.debug("Processed SNMP checks: %s", processed)
         # Process checks
         result = {}
         for cc in processed.values():
@@ -100,6 +101,7 @@ class SNMPProtocolChecker(Checker):
                         continue
                     result[c] = CheckResult(
                         check=c.name,
+                        arg0=c.arg0,
                         status=not bool(message) and bool(data),
                         is_access=bool(data),
                         is_available=not bool(message),
@@ -139,7 +141,7 @@ class SNMPProtocolChecker(Checker):
             and isinstance(cred, SNMPv3Credential)
         ):
             r, message = self.check_v3_oid_on_pool(
-                check.address,
+                check.address or self.address,
                 check.port,
                 cred.oids or CHECK_OIDS,
                 cred.username,
@@ -161,7 +163,7 @@ class SNMPProtocolChecker(Checker):
             and isinstance(cred, SNMPCredential)
         ):
             r, message = await self.check_v2_oid(
-                check.address,
+                check.address or self.address,
                 check.port,
                 cred.oids or CHECK_OIDS,
                 cred.snmp_ro,
@@ -170,7 +172,7 @@ class SNMPProtocolChecker(Checker):
             )
         elif protocol.config.snmp_version != SNMP_v3 and isinstance(cred, SNMPCredential):
             r, message = self.check_v2_oid_on_pool(
-                check.address,
+                check.address or self.address,
                 check.port,
                 cred.oids or CHECK_OIDS,
                 cred.snmp_ro,
