@@ -1006,28 +1006,26 @@ class ManagedObjectProfile(NOCModel):
         """
         if o:
             ac = o.get_access_preference()
+            snmp_cred = o.credentials.get_snmp_credential()
         else:
             ac = self.access_preference
+            snmp_cred = None
         if not o or Interaction.ServiceActivation in o.interactions:
             # SNMP Diagnostic
-            snmp_cred = o.credentials.get_snmp_credential() if o else None
             yield DiagnosticConfig(
                 SNMP_DIAG,
                 display_description="Check Device response by SNMP request",
                 checks=[
                     Check(
                         name="SNMPv1",
-                        address=o.address if o else None,
                         credentials=[snmp_cred] if snmp_cred else [],
                     ),
                     Check(
                         name="SNMPv2c",
-                        address=o.address if o else None,
                         credentials=[snmp_cred] if snmp_cred else [],
                     ),
                     Check(
                         name="SNMPv3",
-                        address=o.address if o else None,
                         credentials=[snmp_cred] if snmp_cred else [],
                     ),
                 ],
@@ -1045,11 +1043,7 @@ class ManagedObjectProfile(NOCModel):
                 display_description="Check device profile",
                 show_in_display=False,
                 checks=[
-                    Check(
-                        name="PROFILE",
-                        address=o.address if o else None,
-                        credentials=[snmp_cred] if snmp_cred else [],
-                    ),
+                    Check(name="PROFILE", credentials=[snmp_cred] if snmp_cred else []),
                 ],
                 alarm_class="Discovery | Guess | Profile",
                 blocked=not self.enable_box_discovery_profile,
@@ -1069,14 +1063,10 @@ class ManagedObjectProfile(NOCModel):
                 checks=[
                     Check(
                         name="TELNET",
-                        address=o.address if o else None,
-                        arg0=o.profile.name if o else None,
                         credentials=[cli_cred] if cli_cred else [],
                     ),
                     Check(
                         name="SSH",
-                        address=o.address if o else None,
-                        arg0=o.profile.name if o else None,
                         credentials=[cli_cred] if cli_cred else [],
                     ),
                 ],
@@ -1095,10 +1085,7 @@ class ManagedObjectProfile(NOCModel):
                 show_in_display=False,
                 alarm_class="NOC | Managed Object | Access Lost",
                 alarm_labels=["noc::access::method::HTTP"],
-                checks=[
-                    Check("HTTP", address=o.address if o else None),
-                    Check("HTTPS", address=o.address if o else None),
-                ],
+                checks=[Check("HTTP"), Check("HTTPS")],
                 blocked=False,
                 run_policy="D",  # Not supported
                 run_order="S",
