@@ -70,7 +70,7 @@ class CLIProtocolChecker(Checker):
                 continue
             for cred in chain(c.credentials, self.rules):
                 status, error = self.check_login(
-                    c.address,
+                    c.address or self.address,
                     c.port,
                     cred.username,
                     cred.password,

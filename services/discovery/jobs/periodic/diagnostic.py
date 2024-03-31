@@ -124,29 +124,19 @@ class DiagnosticCheck(DiscoveryCheck):
     def iter_checks(self, checks: List[Check]) -> Iterable[CheckResult]:
         # Group check by checker
         do_checks: Dict[str, List[Check]] = defaultdict(list)
-        kwargs = {
-            "logger": self.logger,
-            "calling_service": "discovery",
-            "pool": self.object.pool.name,
-        }
         for check in checks:
             checker = loader[check.name]
             if not checker:
                 self.logger.warning("[%s] Unknown check. Skipping", check.name)
                 continue
+            if check.name == "PROFILE":
+                cred = self.object.credentials.get_snmp_credential()
+                if cred:
+                    check = Check(check.name, credentials=[cred])
             do_checks[checker.name] += [check]
         for checker, d_checks in do_checks.items():
-            if checker == "profile":
-                kwargs["rules"] = ProfileCheckRule.get_profile_check_rules()
-            elif checker in ["snmp", "cli"] and (
-                not self.object.auth_profile or self.object.auth_profile.enable_suggest
-            ):
-                kwargs["rules"] = CredentialCheckRule.get_suggests(self.object)
-            else:
-                kwargs["object"] = self.object.id
-            if checker == "cli":
-                kwargs["profile"] = self.object.profile
-            checker = loader[checker](**kwargs)
+            params = self.get_checker_param(checker)
+            checker = loader[checker](**params)
             self.logger.info("[%s] Run checker", ";".join(f"{c.name}({c.arg0})" for c in d_checks))
             try:
                 for check in checker.iter_result(d_checks):
@@ -155,6 +145,24 @@ class DiagnosticCheck(DiscoveryCheck):
                 if self.logger.isEnabledFor(logging.DEBUG):
                     error_report()
                 self.logger.error("[%s] Error when run checker: %s", checker.name, str(e))
+
+    def get_checker_param(self, checker: str) -> Dict[str, str]:
+        r = {
+            "logger": self.logger,
+            "calling_service": "discovery",
+            "pool": self.object.pool.name,
+            "object": self.object.id,
+            "address": self.object.address,
+        }
+        if checker == "profile":
+            r["rules"] = ProfileCheckRule.get_profile_check_rules()
+        elif checker in ["snmp", "cli"] and (
+            not self.object.auth_profile or self.object.auth_profile.enable_suggest
+        ):
+            r["rules"] = CredentialCheckRule.get_suggests(self.object)
+        if checker == "cli":
+            r["profile"] = self.object.profile
+        return r
 
     def set_profile(self, profile: str) -> bool:
         profile = Profile.get_by_name(profile)

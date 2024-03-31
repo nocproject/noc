@@ -48,7 +48,7 @@ class Check(object):
     address: str = field(default=None, compare=False)  # IP Address
     credentials: Optional[
         List[Union[SNMPCredential, SNMPv3Credential, CLICredential, HTTPCredential]]
-    ] = field(default=None, compare=False)
+    ] = field(default=None, compare=False, hash=False)
 
     def __hash__(self):
         if self.address or self.port:
@@ -124,9 +124,10 @@ class Checker(object):
             f"{calling_service or self.name}]",
         )
         self.calling_service = calling_service or self.name
-        # Set for pooled check
+        # Set for pooled check, Default value
         self.pool = pool
         self.object = kwargs.get("object")
+        self.address = kwargs.get("address")
         self._script_caller: Optional["ScriptCaller"] = None
 
     def get_script(self, name: str) -> "ScriptCaller":
