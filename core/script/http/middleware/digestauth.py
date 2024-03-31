@@ -13,7 +13,8 @@ from urllib.request import parse_http_list, parse_keqv_list
 
 # NOC modules
 from .base import BaseMiddleware
-from noc.core.http.client import fetch_sync
+from noc.core.comp import DEFAULT_ENCODING
+from noc.core.http.sync_client import HttpClient
 from noc.core.comp import smart_bytes
 
 
@@ -119,28 +120,29 @@ class DigestAuthMiddeware(BaseMiddleware):
             headers = {}
         self.logger.debug("[%s] Process middleware on: %s", self.name, url)
         # First query - 401
-        code, resp_headers, result = fetch_sync(
-            url,
-            headers=None,
-            request_timeout=60,
-            follow_redirects=True,
+        with HttpClient(
+            timeout=60,
             allow_proxy=False,
             validate_cert=False,
-            eof_mark=self.eof_mark,
-        )
-        self.logger.debug(
-            "[%s] Response code %s, headers %s on: %s, body: %s",
-            self.name,
-            code,
-            resp_headers,
-            url,
-            body,
-        )
-        if "WWW-Authenticate" in resp_headers and resp_headers["WWW-Authenticate"].startswith(
-            "Digest"
-        ):
-            items = parse_http_list(resp_headers["WWW-Authenticate"][7:])
-            digest_response = parse_keqv_list(items)
-            headers["Authorization"] = self.build_digest_header(url, self.method, digest_response)
-        self.logger.debug("[%s] Set headers, %s", self.name, headers)
-        return url, body, headers
+        ) as client:
+            code, resp_headers, result = client.get(url)
+            self.logger.debug(
+                "[%s] Response code %s, headers %s on: %s, body: %s",
+                self.name,
+                code,
+                resp_headers,
+                url,
+                body,
+            )
+            if "WWW-Authenticate" in resp_headers and resp_headers["WWW-Authenticate"].startswith(
+                b"Digest"
+            ):
+                items = parse_http_list(
+                    resp_headers["WWW-Authenticate"].decode(DEFAULT_ENCODING)[7:]
+                )
+                digest_response = parse_keqv_list(items)
+                headers["Authorization"] = self.build_digest_header(
+                    url, self.method, digest_response
+                ).encode(DEFAULT_ENCODING)
+            self.logger.debug("[%s] Set headers, %s", self.name, headers)
+            return url, body, headers

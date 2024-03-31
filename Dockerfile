@@ -13,8 +13,7 @@ RUN \
     build-essential \
     && pip install --upgrade pip \
     && pip install -r .requirements/cython.txt \
-    && cythonize -i speedup/*.pyx \
-    && pip wheel $(grep http-parser .requirements/node.txt)
+    && cythonize -i speedup/*.pyx
 
 # Base layer containing system packages and requirements
 FROM python AS code
@@ -28,8 +27,8 @@ ENV\
     NOC_SPEEDUP_PATH=/opt/nocspeedup
 COPY . /opt/noc/
 COPY --from=build /build/speedup/*.so /opt/nocspeedup/
-COPY --from=build /build/*.whl /tmp
 WORKDIR /opt/noc/
+
 RUN \
     set -x \
     && apt-get update\
@@ -40,7 +39,6 @@ RUN \
     libjemalloc2 \
     libpq-dev \
     && pip3 install --upgrade pip \
-    && pip install /tmp/*.whl \
     && pip3 install\
     -r ./.requirements/node.txt\
     -r ./.requirements/bh.txt\

@@ -16,7 +16,7 @@ from typing import Dict
 
 # NOC modules
 from noc.core.service.fastapi import FastAPIService
-from noc.core.http.client import fetch
+from noc.core.http.async_client import HttpClient, DEFLATE, GZIP
 from noc.config import config
 from noc.core.perf import metrics
 from noc.services.chwriter.channel import Channel
@@ -126,7 +126,16 @@ class CHWriterService(FastAPIService):
         Flush data
         :return:
         """
-        async with MessageStreamClient() as client:
+        compression = None
+        if config.clickhouse.encoding == "deflate":
+            compression = DEFLATE
+        elif config.clickhouse.encoding == "gzip":
+            compression = GZIP
+        async with MessageStreamClient() as client, HttpClient(
+            user=config.clickhouse.rw_user,
+            password=config.clickhouse.rw_password or "",
+            compression=compression,
+        ) as http_client:
             cursor_id = self.get_cursor_id()
             partition_id = config.chwriter.shard_id
             if MessageStreamClient.has_bulk_mode():
@@ -149,14 +158,7 @@ class CHWriterService(FastAPIService):
                             f"database={config.clickhouse.db}&"
                             f"query={ch.q_sql}"
                         )
-                        code, headers, body = await fetch(
-                            url,
-                            method="POST",
-                            body=ch.get_data(),
-                            user=config.clickhouse.rw_user,
-                            password=config.clickhouse.rw_password or "",
-                            content_encoding=config.clickhouse.encoding,
-                        )
+                        code, headers, body = await http_client.post(url, ch.get_data())
                         if code == 200:
                             self.logger.info(
                                 "[%s] %d records sent in %.2fms",
