@@ -480,19 +480,21 @@ class Label(Document):
         return bool(r.get(setting))
 
     @classmethod
-    def get_effective_settings(cls, label: str, all_settings: bool = False) -> Dict[str, Any]:
+    def get_effective_settings(cls, label: str, include_current: bool = False) -> Dict[str, Any]:
         """
         Returns dict with effective settings
+        :param label: Checked label name
+        :param include_current: Include current label settings
         """
         # es = {ff: False for ff in cls._fields if ff[:2] in {"en", "bg", "fg"}}
         wildcards = cls.get_wildcards(label)
         if "noc::*" in wildcards:
             wildcards.remove("noc::*")
-        if all_settings:
+        if include_current:
             wildcards += [label]
         coll = cls._get_collection()
         match = {"$match": {"name": {"$in": wildcards}, "propagate": True}}
-        # if all_settings:
+        # if include_current:
         #     match["$match"]["propagate"] = False
         r = next(
             coll.aggregate(
@@ -603,7 +605,7 @@ class Label(Document):
         if label:
             return  # Exists
         logger.info("[%s] Create label by ensure", name)
-        settings = cls.get_effective_settings(name, include_label=True)
+        settings = cls.get_effective_settings(name, include_current=True)
         if not settings.get("allow_auto_create"):
             logger.warning("[%s] Not allowed autocreate label", name)
             return
