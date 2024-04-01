@@ -16,13 +16,15 @@ Ext.define("NOC.sa.discoveredobject.controller.Container", {
         searchField.getTrigger("clear").hide();
     },
     onChangeSearchField: function(searchField, event) {
+        var sidebarHiddenSearchField = this.lookup("sa-discovered-sidebar").down("[name=__query]");
         if(searchField.getValue()) {
             searchField.getTrigger("clear").show();
             if(event.keyCode === event.ENTER) {
-                this.lookup("sa-discovered-sidebar").down("[name=__query]").setValue(searchField.getValue());
+                sidebarHiddenSearchField.setValue(searchField.getValue());
             }
         } else {
             searchField.getTrigger("clear").hide();
+            sidebarHiddenSearchField.setValue(searchField.getValue());
         }
 
     },
@@ -36,31 +38,40 @@ Ext.define("NOC.sa.discoveredobject.controller.Container", {
         this.fillMenu(button, "/sa/discoveredobject/template_lookup/", "/sa/discoveredobject/actions/sync_records/");
     },
     fillMenu: function(button, url, actionUrl) {
-        var actionFn = function(args, actionUrl) {
-            var filterPanel = button.up("[appId=sa.discoveredobject]").lookup("sa-discoveredobject-list").lookup("sa-discovered-sidebar"),
-                grid = button.up("[appId=sa.discoveredobject]").lookup("sa-discoveredobject-list").lookup("sa-discoveredobject-grid"),
-                ids = Ext.Array.map(grid.getSelection(), function(item) {return item.get("id")}),
-                filterObject = filterPanel.getController().notEmptyValues(),
-                params = Ext.apply(filterObject, {ids: ids}, {args: args});
+        var me = this,
+            actionFn = function(args, actionUrl) {
+                var filterPanel = button.up("[appId=sa.discoveredobject]").lookup("sa-discoveredobject-list").lookup("sa-discovered-sidebar"),
+                    grid = button.up("[appId=sa.discoveredobject]").lookup("sa-discoveredobject-list").lookup("sa-discoveredobject-grid"),
+                    ids = Ext.Array.map(grid.getSelection(), function(item) {return item.get("id")}),
+                    filterObject = filterPanel.getController().notEmptyValues(),
+                    params = Ext.apply(filterObject, {ids: ids}, {args: args});
 
-            Ext.Ajax.request({
-                url: actionUrl,
-                method: "POST",
-                jsonData: params,
-                success: function(response) {
-                    var data = Ext.decode(response.responseText);
+                Ext.Ajax.request({
+                    url: actionUrl,
+                    method: "POST",
+                    jsonData: params,
+                    scope: me,
+                    success: function(response) {
+                        var data = Ext.decode(response.responseText),
+                            grid = this.lookup("sa-discoveredobject-grid");
 
-                    if(data.status) {
-                        NOC.info(button.text + __(" - Success"));
-                    } else {
-                        NOC.error(button.text + __(" - Failed") + " : " + data.error);
+                        if(data.status) {
+                            grid.mask(__("Reloading..."));
+                            grid.getStore().load({
+                                callback: function() {
+                                    grid.unmask();
+                                }
+                            });
+                            NOC.info(button.text + __(" - Success"));
+                        } else {
+                            NOC.error(button.text + __(" - Failed") + " : " + data.error);
+                        }
+                    },
+                    failure: function() {
+                        NOC.error(button.text + __(" - Failed"));
                     }
-                },
-                failure: function() {
-                    NOC.error(button.text + __(" - Failed"));
-                }
-            });
-        };
+                });
+            };
 
         Ext.Ajax.request({
             url: url,
@@ -190,6 +201,11 @@ Ext.define("NOC.sa.discoveredobject.controller.Container", {
 
         if(value.hasOwnProperty("__query")) {
             v = value.__query;
+        }
+        if(!Ext.isEmpty(v)) {
+            this.getView().down("[xtype=searchfield]").getTrigger("clear").show();
+        } else {
+            this.getView().down("[xtype=searchfield]").getTrigger("clear").hide();
         }
         this.getView().down("[xtype=searchfield]").setValue(v);
     },
