@@ -9,7 +9,7 @@
 import datetime
 from typing import Optional, List, Union
 from enum import Enum
-from pydantic import IPvAnyAddress, validator
+from pydantic import IPvAnyAddress, field_validator
 
 # Third-party modules
 from pydantic import ConfigDict
@@ -82,10 +82,11 @@ class ManagedObject(BaseModel):
     capabilities: Optional[List[CapsItem]] = None
     checkpoint: Optional[str] = None
 
-    @validator("address")
-    def address_must_ipaddress(cls, v):  # pylint: disable=no-self-argument
-        IPvAnyAddress().validate(v)
-        return str(v)
+    @field_validator("address")
+    @classmethod
+    def address_must_ipaddress(cls, v: str) -> str:
+        IPvAnyAddress(v)
+        return v.strip()
 
     model_config = ConfigDict(exclude={"is_managed"}, populate_by_name=True)
 
