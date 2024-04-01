@@ -9,7 +9,7 @@
 from typing import Optional, List
 
 # Third-party modules
-from pydantic import BaseModel, Field, Extra
+from pydantic import BaseModel, Field
 
 
 class ZkConfigConfigZeroconf(BaseModel):
