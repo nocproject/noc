@@ -28,10 +28,7 @@ class ZkConfigConfig(BaseModel):
     metrics: Optional[ZkConfigMetrics]
 
 
-class ZkConfigCollector(BaseModel):
-    class Config:
-        extra = Extra.allow  # Allow additional configuration attributes
-
+class ZkConfigCollector(BaseModel, extra="allow"):
     id: str
     type: str
     service: int

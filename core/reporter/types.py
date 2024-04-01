@@ -263,4 +263,4 @@ class OutputDocument(BaseModel):
         return self.content
 
 
-ReportBand.update_forward_refs()
+ReportBand.model_rebuild()
