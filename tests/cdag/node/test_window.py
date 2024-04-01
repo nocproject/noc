@@ -87,7 +87,7 @@ def test_window_filled_ticks(min_window, data, expected):
     for ts, value in data:
         node = get_node()
         node.push(ts, value)
-        state = node.get_state().dict()
+        state = node.get_state().model_dump()
     node = get_node()
     assert node.is_filled_ticks() is expected
 
@@ -108,7 +108,7 @@ def test_window_filled_seconds(min_window, ts, data, expected):
     for t, value in data:
         node = get_node()
         node.push(t, value)
-        state = node.get_state().dict()
+        state = node.get_state().model_dump()
     node = get_node()
     is_filled = node.is_filled_seconds(ts)
     assert is_filled is expected
@@ -133,10 +133,10 @@ def test_window_trim_ticks(max_window, data, expected):
     for t, value in data:
         node = get_node()
         node.push(t, value)
-        state = node.get_state().dict()
+        state = node.get_state().model_dump()
     node = get_node()
     node.trim_ticks()
-    state = node.get_state().dict()
+    state = node.get_state().model_dump()
     assert "timestamps" in state
     assert "values" in state
     expected_timestamps = [x[0] for x in expected]
@@ -162,10 +162,10 @@ def test_window_trim_seconds(max_window, data, expected):
     for t, value in data:
         node = get_node()
         node.push(t, value)
-        state = node.get_state().dict()
+        state = node.get_state().model_dump()
     node = get_node()
     node.trim_seconds(data[-1][0] if data else T0)
-    state = node.get_state().dict()
+    state = node.get_state().model_dump()
     assert "timestamps" in state
     assert "values" in state
     expected_timestamps = [x[0] for x in expected]

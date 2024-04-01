@@ -217,7 +217,7 @@ DiagnosticItems = RootModel[Dict[str, DiagnosticItem]]
 
 def default(obj):
     if isinstance(obj, BaseModel):
-        return obj.dict()
+        return obj.model_dump()
     elif isinstance(obj, datetime.datetime):
         return obj.replace(microsecond=0).isoformat(sep=" ")
     raise TypeError

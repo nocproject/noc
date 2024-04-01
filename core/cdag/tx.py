@@ -70,7 +70,7 @@ class Transaction(object):
         state = node.get_state()
         if not state:
             return
-        d = state.dict()
+        d = state.model_dump()
         if d:
             self._states[node.node_id, node.name] = d
 
