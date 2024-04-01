@@ -15,7 +15,7 @@ from dataclasses import dataclass
 from typing import Dict, List, Optional, Any, Iterable, ForwardRef
 
 # Third-party modules
-from pydantic import BaseModel
+from pydantic import BaseModel, ConfigDict
 
 # NOC modules
 from noc.models import get_model, is_document
@@ -140,6 +140,8 @@ class Parameter(BaseModel):
     required: bool = False
     default_value: Optional[str] = None
     model_id: Optional[str] = None
+
+    model_config = ConfigDict(protected_namespaces=())
 
     def clean_value(self, value):
         if self.type == "integer":
