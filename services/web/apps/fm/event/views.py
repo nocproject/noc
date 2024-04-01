@@ -1,7 +1,7 @@
 # ---------------------------------------------------------------------
 # fm.event application
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2023 The NOC Project
+# Copyright (C) 2007-2024 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 import datetime
@@ -83,9 +83,9 @@ class EventApplication(ExtDocApplication):
         def make_where_section(query_params):
             where_list = []
             for k, v in query_params.items():
-                if k == "ts__gte":
+                if k == "timestamp__gte":
                     where_list += [f"timestamp>='{v}'"]
-                elif k == "ts__lte":
+                elif k == "timestamp__lte":
                     where_list += [f"timestamp<='{v}'"]
                 elif k == "managed_object":
                     where_list += [f"managed_object_bi_id={v.bi_id}"]
@@ -121,14 +121,15 @@ class EventApplication(ExtDocApplication):
         if self.row_limit:
             limit = min(limit or self.row_limit, self.row_limit + 1)
         # Apply date filter
-        start_ts = q.pop("ts__gte", None)
-        end_ts = q.pop("ts__lte", None)
+        start_ts = q.pop("timestamp__gte", None)
+        end_ts = q.pop("timestamp__lte", None)
         if start_ts:
-            start_ts = datetime.datetime.fromtimestamp(start_ts)
+            start_ts = datetime.datetime.strptime(start_ts, "%Y-%m-%dT%H:%M:%S")
         if end_ts:
-            end_ts = datetime.datetime.fromtimestamp(end_ts)
-        if not start_ts and not end_ts:
+            end_ts = datetime.datetime.strptime(end_ts, "%Y-%m-%dT%H:%M:%S")
+        if not end_ts:
             end_ts = datetime.datetime.now()
+        if not start_ts:
             start_ts = end_ts - datetime.timedelta(days=self.DEFAULT_EVENT_INTERVAL)
         order_list = []
         if request.is_extjs and self.sort_param in q:
