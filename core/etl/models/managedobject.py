@@ -11,6 +11,9 @@ from typing import Optional, List, Union
 from enum import Enum
 from pydantic import IPvAnyAddress, validator
 
+# Third-party modules
+from pydantic import ConfigDict
+
 # NOC modules
 from .base import BaseModel, _BaseModel
 from .typing import Reference
@@ -84,9 +87,7 @@ class ManagedObject(BaseModel):
         IPvAnyAddress().validate(v)
         return str(v)
 
-    class Config:
-        exclude = {"is_managed"}
-        populate_by_name = True
+    model_config = ConfigDict(exclude={"is_managed"}, populate_by_name=True)
 
     _csv_fields = [
         "id",
