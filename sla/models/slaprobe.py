@@ -33,7 +33,6 @@ from .slaprofile import SLAProfile
 from noc.wf.models.state import State
 from noc.sa.models.managedobject import ManagedObject
 from noc.sa.interfaces.igetslaprobes import IGetSLAProbes
-from noc.sa.models.service import Service
 from noc.pm.models.agent import Agent
 from noc.pm.models.metricrule import MetricRule
 from noc.main.models.label import Label
@@ -44,7 +43,6 @@ from noc.core.bi.decorator import bi_sync
 from noc.core.wf.decorator import workflow
 from noc.core.models.cfgmetrics import MetricCollectorConfig, MetricItem
 from noc.core.model.sql import SQL
-from noc.inv.models.subinterface import SubInterface
 from noc.config import config
 
 PROBE_TYPES = IGetSLAProbes.returns.element.attrs["type"].choices
@@ -97,7 +95,6 @@ class SLAProbe(Document):
     effective_labels = ListField(StringField())
     extra_labels = DictField()
     #
-    service = ReferenceField(Service)
 
     _id_cache = cachetools.TTLCache(maxsize=100, ttl=60)
     _bi_id_cache = cachetools.TTLCache(maxsize=100, ttl=60)
@@ -129,6 +126,8 @@ class SLAProbe(Document):
 
     @cachetools.cached(_target_cache, key=lambda x: str(x.id), lock=id_lock)
     def get_target(self) -> Optional[ManagedObject]:
+        from noc.inv.models.subinterface import SubInterface
+
         address = self.target
         if ":" in address:
             # port

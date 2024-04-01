@@ -7,14 +7,15 @@
 
 # Python modules
 import operator
+from enum import IntEnum
 from threading import Lock
-from typing import Optional, Union
+from typing import Optional, Union, Tuple, List, Dict
 from functools import partial
 
 # Third-party modules
 from bson import ObjectId
 from pymongo import UpdateOne
-from mongoengine.document import Document
+from mongoengine.document import Document, EmbeddedDocument
 from mongoengine.fields import (
     StringField,
     ReferenceField,
@@ -23,6 +24,9 @@ from mongoengine.fields import (
     LongField,
     ListField,
     EmbeddedDocumentField,
+    EmbeddedDocumentListField,
+    DynamicField,
+    EnumField,
 )
 import cachetools
 
@@ -35,13 +39,70 @@ from noc.core.model.decorator import on_save
 from noc.core.bi.decorator import bi_sync
 from noc.core.defer import defer
 from noc.core.hash import hash_int
-from noc.inv.models.capsitem import CapsItem
+from noc.inv.models.capability import Capability
 from noc.wf.models.workflow import Workflow
+from noc.fm.models.alarmseverity import AlarmSeverity
 from noc.core.model.decorator import on_delete_check
 from noc.core.change.decorator import change
 
 
 id_lock = Lock()
+
+
+class Status(IntEnum):
+    UNKNOWN = 0
+    UP = 1
+    SLIGHTLY_DEGRADED = 2
+    DEGRADED = 3
+    DOWN = 4
+
+
+class CapsSettings(EmbeddedDocument):
+    capability = ReferenceField(Capability)
+    default_value = DynamicField()
+    allowed_manual = BooleanField(default=False)
+    alarm_var = StringField()
+
+
+class StatusTransferRule(EmbeddedDocument):
+    service_profile = PlainReferenceField("sa.ServiceProfile", required=False)
+    op = StringField(choices=["=", ">=", "<="], default="=")
+    status = EnumField(Status, required=False)
+    weight = IntField(min_value=0)
+    ignore = BooleanField(default=False)
+    to_status = EnumField(Status, required=True)
+
+    def is_match(
+        self,
+        profile: Optional[str] = None,
+        status: Optional[Status] = None,
+        weight: Optional[int] = None,
+    ) -> bool:
+        if self.service_profile and profile != self.service_profile:
+            return False
+        if self.status and status > self.status:
+            return False
+        if self.op and self.weight and weight < self.weight:
+            return False
+        return True
+
+
+class AlarmFilter(EmbeddedDocument):
+    alarm_class = PlainReferenceField(AlarmSeverity)
+    include_labels = ListField(StringField())
+    exclude_labels = ListField(StringField())
+    include_object = BooleanField(default=False)  # Include ManagedObject to filter
+    # resource_group
+    # Vars ?
+
+
+class AlarmStatusMap(EmbeddedDocument):
+    # alarm_class = PlainReferenceField(AlarmClass)  # Name RE
+    transfer_function = StringField(choices=["min", "max", "percent", "sum"])  # Handler ?
+    op = StringField(choices=["<=", ">=", "="])
+    severity = PlainReferenceField(AlarmSeverity)  # Min Severity
+    # weight = IntField()
+    status = EnumField(Status, required=True)
 
 
 @Label.match_labels("serviceprofile", allowed_op={"="})
@@ -69,15 +130,46 @@ class ServiceProfile(Document):
     display_order = IntField(default=100)
     # Show in total summary
     show_in_summary = BooleanField(default=True)
-    workflow = PlainReferenceField(
+    workflow: Workflow = PlainReferenceField(
         Workflow, default=partial(Workflow.get_default_workflow, "sa.ServiceProfile")
     )
     # Auto-assign interface profile when service binds to interface
-    interface_profile = ReferenceField(InterfaceProfile)
+    interface_profile: "InterfaceProfile" = ReferenceField(InterfaceProfile)
     # Alarm weight
-    weight = IntField(default=0)
+    weight: int = IntField(default=0)
+    #
+    status_transfer_policy = StringField(
+        choices=[
+            ("D", "Disable"),
+            ("T", "Transparent"),
+            ("R", "By Rule"),
+        ],
+        default="T",
+    )
+    status_transfer_function = StringField(
+        choices=[
+            ("P", "By percent count"),
+            ("MIN", "Minimal on all Children"),
+            ("MAX", "Maximum on all children"),
+            # ("W", "Weight Sum Condition"),
+        ],
+        default="MIN",
+    )
+    # For Wight and Percent
+    status_transfer_rule: List[StatusTransferRule] = EmbeddedDocumentListField(StatusTransferRule)
+    # Alarm Binding
+    alarm_affected_policy = StringField(
+        choices=[
+            ("D", "Disable"),
+            ("A", "Any"),
+            ("O", "By Filter"),
+        ],
+        default="D",
+    )
+    alarm_filter: List["AlarmFilter"] = EmbeddedDocumentListField(AlarmFilter)
+    alarm_status_map: List["AlarmStatusMap"] = EmbeddedDocumentListField(AlarmStatusMap)
     # Capabilities
-    caps = ListField(EmbeddedDocumentField(CapsItem))
+    caps = ListField(EmbeddedDocumentField(CapsSettings))
     # Integration with external NRI and TT systems
     # Reference to remote system object has been imported from
     remote_system = ReferenceField(RemoteSystem)
@@ -117,6 +209,17 @@ class ServiceProfile(Document):
     @classmethod
     def iter_lazy_labels(cls, service_profile: "ServiceProfile"):
         yield f"noc::serviceprofile::{service_profile.name}::="
+
+    def calculate_status(self, services: List[Tuple[Status, int]]) -> Status:
+        if self.status_transfer_function == "MIN":
+            return min(svc for svc, weigh in services)
+        elif self.status_transfer_function == "MAX":
+            return max(svc for svc, weigh in services)
+        return Status.UP
+
+    @classmethod
+    def get_alarm_service_filter(cls):
+        ...
 
 
 def refresh_interface_profiles(sp_id, ip_id):

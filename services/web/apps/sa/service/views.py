@@ -56,6 +56,9 @@ class ServiceApplication(ExtDocApplication):
         # Expand resource groups fields
         for fn in self.resource_group_fields:
             data[fn] = sg_to_list(data.get(fn) or [])
+        if isinstance(o, Service):
+            data["in_maintenance"] = o.in_maintenance
+            data["service_path"] = [str(sp) for sp in data["service_path"]]
         return data
 
     def clean(self, data):

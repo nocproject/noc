@@ -44,6 +44,7 @@ from noc.sa.models.managedobject import ManagedObject
 from noc.sa.models.servicesummary import ServiceSummary, SummaryItem, ObjectSummaryItem
 from noc.core.change.decorator import change
 from noc.core.defer import call_later
+from noc.core.defer import defer
 from noc.core.debug import error_report
 from noc.config import config
 from noc.core.span import get_current_span
@@ -191,18 +192,7 @@ class ActiveAlarm(Document):
             # Update effective labels
             self.effective_labels = list(chain.from_iterable(self.iter_effective_labels(self)))
             # Update affected_services
-            self.components._ComponentHub__refresh_all_components()
-            for component in self.components._ComponentHub__all_components:
-                component = self.components.get(component, None)
-                if not component:
-                    continue
-                # If Component is Service or assigned service to it
-                if isinstance(component, Service):
-                    svc = component
-                else:
-                    svc = getattr(component, "service", None)
-                if svc and svc.id and svc.id not in self.affected_services:
-                    self.affected_services += [svc.id]
+            self.affected_services = Service.get_services_by_alarm(self)
 
     def safe_save(self, **kwargs):
         """
@@ -389,6 +379,12 @@ class ActiveAlarm(Document):
             )
         # Clear alarm
         self.delete()
+        # Refresh Services
+        if self.affected_services:
+            defer(
+                "noc.sa.models.service.refresh_service_status",
+                svc_ids=self.affected_services,
+            )
         # Close TT
         # MUST be after .delete() to prevent race conditions
         if a.escalation_tt or self.clear_template:

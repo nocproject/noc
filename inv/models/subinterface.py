@@ -11,7 +11,7 @@ from typing import Optional, Iterable, List, Union
 # Third-party modules
 from bson import ObjectId
 from mongoengine.document import Document
-from mongoengine.fields import StringField, IntField, ListField, ReferenceField
+from mongoengine.fields import StringField, IntField, ListField
 
 # NOC modules
 from noc.config import config
@@ -21,7 +21,6 @@ from noc.sa.models.managedobject import ManagedObject
 from noc.sa.interfaces.igetinterfaces import IGetInterfaces
 from noc.project.models.project import Project
 from noc.core.change.decorator import change
-from noc.sa.models.service import Service
 from noc.vc.models.l2domain import L2Domain
 from noc.main.models.label import Label
 from .forwardinginstance import ForwardingInstance
@@ -69,7 +68,6 @@ class SubInterface(Document):
             "tagged_vlans",
             "enabled_afi",
             "forwarding_instance",
-            "service",
             {"fields": ["ipv4_addresses"], "sparse": True},
             "labels",
             "effective_labels",
@@ -103,8 +101,6 @@ class SubInterface(Document):
     tunnel_local_address = StringField(required=False)
     tunnel_remote_address = StringField(required=False)
     project = ForeignKeyField(Project)
-    #
-    service = ReferenceField(Service)
     # Labels
     labels = ListField(StringField())
     effective_labels = ListField(StringField())
