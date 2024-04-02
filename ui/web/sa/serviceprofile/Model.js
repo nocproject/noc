@@ -112,6 +112,10 @@ Ext.define("NOC.sa.serviceprofile.Model", {
             type: "auto"
         },
         {
+            name: "status_transfer_map",
+            type: "auto"
+        },
+        {
             name: "alarm_filter",
             type: "auto"
         },

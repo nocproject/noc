@@ -229,7 +229,7 @@ class Service(Document):
             sev = AlarmSeverity.get_severity(aa.severity)
             if sev in s_map:
                 r.append(s_map[sev])
-        return max(r)
+        return max(r) if r else Status.UP
 
     def get_affected_status(self) -> Status:
         """
@@ -241,13 +241,16 @@ class Service(Document):
             return Status.UNKNOWN
         for svc in Service.objects.filter(parent=self):
             if self.profile.status_transfer_policy == "T" or not self.profile.status_transfer_rule:
+                if svc.oper_status == Status.UNKNOWN:
+                    # Skip Unknown status
+                    continue
                 r.append((svc.oper_status, svc.profile.weight))
                 continue
             for rule in self.profile.status_transfer_rule:
-                if rule.is_match(svc) and rule.ignore:
+                if rule.is_match(svc.profile, svc.oper_status, svc.profile.weight) and rule.ignore:
                     break
-                elif rule.is_match(svc):
-                    r.append(rule.to_status)
+                elif rule.is_match(svc.profile, svc.oper_status, svc.profile.weight):
+                    r.append((rule.to_status, svc.profile.weight))
         if not r:
             return Status.UNKNOWN
         return self.profile.calculate_status(r)
@@ -278,6 +281,7 @@ class Service(Document):
                 effective_client_groups__in=alarm.managed_object.effective_service_groups,
             )
         q = m_q(profile__in=profiles) & q
+        logger.info("Get services by alarm: %s/%s", alarm, q)
         return list(Service.objects.filter(q).scalar("id"))
 
     def get_alarm_filter(self) -> m_q:
@@ -374,6 +378,14 @@ class Service(Document):
 
 
 def refresh_service_status(svc_ids: List[str]):
-    logger.info("[%s] Refresh service status: %s", svc_ids)
+    logger.info("Refresh service status: %s", svc_ids)
+    affected_paths = set()
     for svc in Service.objects.filter(id__in=svc_ids):
+        os = svc.oper_status
+        svc.refresh_status()
+        if svc.parent and svc.oper_status != os:
+            affected_paths.update(set(svc.parent.service_path))
+    # Check changed
+    # Update linked
+    for svc in Service.objects.filter(id__in=list(affected_paths)):
         svc.refresh_status()

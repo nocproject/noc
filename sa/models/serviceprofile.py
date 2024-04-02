@@ -64,6 +64,13 @@ class CapsSettings(EmbeddedDocument):
     alarm_var = StringField()
 
 
+condition_map = {
+    "=": lambda s, w: s == w,
+    ">=": lambda s, w: s >= w,
+    "<=": lambda s, w: s <= w,
+}
+
+
 class StatusTransferRule(EmbeddedDocument):
     service_profile = PlainReferenceField("sa.ServiceProfile", required=False)
     op = StringField(choices=["=", ">=", "<="], default="=")
@@ -80,11 +87,29 @@ class StatusTransferRule(EmbeddedDocument):
     ) -> bool:
         if self.service_profile and profile != self.service_profile:
             return False
-        if self.status and status > self.status:
+        if self.status and status == self.status:
             return False
         if self.op and self.weight and weight < self.weight:
             return False
         return True
+
+
+class StatusMapRule(EmbeddedDocument):
+    op = StringField(choices=["=", ">=", "<="], default="=")
+    weight = IntField(min_value=0)
+    status = EnumField(Status)
+    to_status = EnumField(Status, required=True)
+
+    def is_match(self, status, weight) -> bool:
+        if not self.status and not self.weight:
+            return self.to_status
+        if not self.status:
+            return condition_map[self.op](weight, self.weight)
+        if not self.weight:
+            return condition_map[self.op](status, self.status)
+        return condition_map[self.op](status, self.status) and condition_map[self.op](
+            weight, self.weight
+        )
 
 
 class AlarmFilter(EmbeddedDocument):
@@ -100,6 +125,7 @@ class AlarmStatusMap(EmbeddedDocument):
     # alarm_class = PlainReferenceField(AlarmClass)  # Name RE
     transfer_function = StringField(choices=["min", "max", "percent", "sum"])  # Handler ?
     op = StringField(choices=["<=", ">=", "="])
+    percent = IntField(min_value=0)
     severity = PlainReferenceField(AlarmSeverity)  # Min Severity
     # weight = IntField()
     status = EnumField(Status, required=True)
@@ -146,17 +172,18 @@ class ServiceProfile(Document):
         ],
         default="T",
     )
+    # For Wight and Percent
+    status_transfer_rule: List[StatusTransferRule] = EmbeddedDocumentListField(StatusTransferRule)
     status_transfer_function = StringField(
         choices=[
             ("P", "By percent count"),
             ("MIN", "Minimal on all Children"),
             ("MAX", "Maximum on all children"),
-            # ("W", "Weight Sum Condition"),
+            ("SUM", "Sum Weight"),
         ],
         default="MIN",
     )
-    # For Wight and Percent
-    status_transfer_rule: List[StatusTransferRule] = EmbeddedDocumentListField(StatusTransferRule)
+    status_transfer_map: List[StatusMapRule] = EmbeddedDocumentListField(StatusMapRule)
     # Alarm Binding
     alarm_affected_policy = StringField(
         choices=[
@@ -210,12 +237,25 @@ class ServiceProfile(Document):
     def iter_lazy_labels(cls, service_profile: "ServiceProfile"):
         yield f"noc::serviceprofile::{service_profile.name}::="
 
-    def calculate_status(self, services: List[Tuple[Status, int]]) -> Status:
+    def calculate_status(self, statuses: List[Tuple[Status, int]]) -> Status:
+        if not statuses:
+            return Status.UNKNOWN
+        status = (status for status, _ in statuses)
+        weight = (weight for _, weight in statuses)
         if self.status_transfer_function == "MIN":
-            return min(svc for svc, weigh in services)
+            status = min(status)
+            weight = min(weight)
         elif self.status_transfer_function == "MAX":
-            return max(svc for svc, weigh in services)
-        return Status.UP
+            status = max(status)
+            weight = max(weight)
+        elif self.status_transfer_function == "SUM":
+            weight = sum(weight for status, weight in statuses if status == Status.DOWN)
+            status = sum(status)
+        for rule in self.status_transfer_map:
+            if rule.is_match(status, weight):
+                status = rule.to_status
+                break
+        return status or Status.UNKNOWN
 
     @classmethod
     def get_alarm_service_filter(cls):

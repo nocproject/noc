@@ -327,7 +327,6 @@ class ActiveAlarm(Document):
             total_objects=self.total_objects,
             total_services=self.total_services,
             total_subscribers=self.total_subscribers,
-            affected_services=self.affected_services,
             adm_path=self.adm_path,
             segment_path=self.segment_path,
             container_path=self.container_path,
@@ -383,7 +382,7 @@ class ActiveAlarm(Document):
         if self.affected_services:
             defer(
                 "noc.sa.models.service.refresh_service_status",
-                svc_ids=self.affected_services,
+                svc_ids=[str(x) for x in self.affected_services],
             )
         # Close TT
         # MUST be after .delete() to prevent race conditions

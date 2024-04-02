@@ -59,6 +59,7 @@ from noc.sa.models.servicesummary import ServiceSummary, SummaryItem, ObjectSumm
 from noc.core.version import version
 from noc.core.debug import format_frames, get_traceback_frames, error_report
 from noc.services.correlator import utils
+from noc.core.defer import defer
 from noc.core.perf import metrics
 from noc.core.fm.enum import RCA_RULE, RCA_TOPOLOGY, RCA_DOWNLINK_MERGE
 from noc.core.msgstream.message import Message
@@ -560,6 +561,11 @@ class CorrelatorService(FastAPIService):
         # Watch for escalations, when necessary
         if config.correlator.auto_escalation and not a.root:
             AlarmEscalation.watch_escalations(a)
+        if a.affected_services:
+            defer(
+                "noc.sa.models.service.refresh_service_status",
+                svc_ids=[str(x) for x in a.affected_services],
+            )
         return a
 
     async def raise_alarm_from_rule(self, rule: Rule, event: ActiveEvent) -> Optional[ActiveAlarm]:
