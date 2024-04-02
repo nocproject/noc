@@ -14,10 +14,7 @@ from noc.sa.models.discoveredobject import DiscoveredObject, CheckStatus
 from noc.sa.interfaces.base import (
     ListOfParameter,
     StringListParameter,
-    DictListParameter,
     StringParameter,
-    BooleanParameter,
-    IntParameter,
 )
 from noc.wf.models.workflow import Workflow
 from noc.wf.models.transition import Transition
@@ -121,7 +118,8 @@ class DiscoveredObjectApplication(ExtDocApplication):
 
     @view(url=r"^action_lookup/$", method=["GET"], access="read", api=True)
     def api_action_lookup(self, request):
-        r = {"approve": {
+        r = {
+            "approve": {
                 "id": f"active_event",
                 "label": "Approve",
                 "is_default": True,
@@ -133,11 +131,11 @@ class DiscoveredObjectApplication(ExtDocApplication):
             if not tr.event or tr.event in r:
                 continue
             r[tr.event] = {
-                    "id": f"active_event",
-                    "label": str(tr),
-                    "is_default": False,
-                    "args": {"action": "send_event", "event": tr.event},
-                }
+                "id": f"active_event",
+                "label": str(tr),
+                "is_default": False,
+                "args": {"action": "send_event", "event": tr.event},
+            }
         return list(r.values())
 
     @view(

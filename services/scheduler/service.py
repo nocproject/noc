@@ -55,7 +55,8 @@ class SchedulerService(FastAPIService):
         """
         scheduler = Scheduler(cls.name)
         scheduler.submit(
-            jcls=cls.SYNC_PURGATORIUM_JOB, ts=datetime.datetime.now() + datetime.timedelta(seconds=60)
+            jcls=cls.SYNC_PURGATORIUM_JOB,
+            ts=datetime.datetime.now() + datetime.timedelta(seconds=60),
         )
 
 
