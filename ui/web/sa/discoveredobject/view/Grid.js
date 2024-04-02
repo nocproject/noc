@@ -37,6 +37,7 @@ Ext.define("NOC.sa.discoveredobject.view.Grid", {
         {
             text: __("Pool"),
             dataIndex: "pool",
+            width: 100,
             renderer: NOC.render.Lookup("pool"),
         },
         {
@@ -49,11 +50,13 @@ Ext.define("NOC.sa.discoveredobject.view.Grid", {
         {
             text: __("State"),
             dataIndex: "state",
+            width: 200,
             renderer: NOC.render.Lookup("state"),
         },
         {
             text: __("Checks"),
             dataIndex: "checks",
+            width: 250,
             renderer: "checksRenderer",
         },
         {

@@ -20,7 +20,7 @@ from noc.sa.interfaces.base import (
     IntParameter,
 )
 from noc.wf.models.workflow import Workflow
-from noc.wf.models.state import State
+from noc.wf.models.transition import Transition
 from noc.core.translation import ugettext as _
 
 
@@ -94,13 +94,16 @@ class DiscoveredObjectApplication(ExtDocApplication):
 
     @view(url=r"actions/sync_records/$", method=["POST"], access="action", api=True)
     def api_sync_action(self, request):
-        print(request)
+        req = self.parse_request_query(request)
+        for do in DiscoveredObject.objects.filter(id__in=req["ids"]):
+            do.sync()
         return {"status": True}
 
     @view(url=r"actions/send_event/$", method=["POST"], access="action", api=True)
     def api_send_event_action(self, request):
-
-        print(request)
+        req = self.parse_request_query(request)
+        for do in DiscoveredObject.objects.filter(id__in=req["ids"]):
+            do.fire_event(req["args"]["event"])
         return {"status": True}
 
     @view(url=r"^template_lookup/$", method=["GET"], access="read", api=True)
@@ -126,14 +129,14 @@ class DiscoveredObjectApplication(ExtDocApplication):
             }
         }
         wfs = Workflow.objects.filter(allowed_models__in=["sa.DiscoveredObject"])
-        for st in State.objects.filter(workflow__in=wfs):
-            if not st.event or st.event in r:
+        for tr in Transition.objects.filter(workflow__in=wfs):
+            if not tr.event or tr.event in r:
                 continue
-            r[st.event] = {
+            r[tr.event] = {
                     "id": f"active_event",
-                    "label": str(st),
+                    "label": str(tr),
                     "is_default": False,
-                    "args": {"action": "send_event", "event": st.event},
+                    "args": {"action": "send_event", "event": tr.event},
                 }
         return list(r.values())
 

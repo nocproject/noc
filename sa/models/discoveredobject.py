@@ -60,7 +60,7 @@ FROM (
      argMax(source, ts) as source, argMax(hostname, ts) as hostname, argMax(description, ts) as description,
      argMax(uptime, ts) as uptime, argMax(remote_id, ts) as remote_id, argMax(checks, ts) as checks, 
      argMax(data, ts) as data, argMax(labels, ts) as labels, argMax(ts, ts) as max_ts,
-     max(ts) as last_ts
+     argMax(ts, ts) as last_ts
     FROM noc.purgatorium
     GROUP BY ip, pool, remote_system
     )
@@ -294,6 +294,7 @@ class DiscoveredObject(Document):
         :param data: Source, labels, data
         :param checks: List of checks
         :param labels: Manual Set labels
+        :param update_ts: Last update time
         :param rule:
         :return:
         """
@@ -432,7 +433,7 @@ def sync_purgatorium():
      approve ?
     :return:
     """
-    logger.info("Start Purgatorium Sync")
+    logger.info("Start Purgatorium Sync: %s", ls)
     ranges = defaultdict(list)
     # ranges filter
     for r in ObjectDiscoveryRule.objects.filter(is_active=True):
