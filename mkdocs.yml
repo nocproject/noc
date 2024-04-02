@@ -453,6 +453,7 @@ nav:
           - Telecom:
               - Overview: profiles-reference/Telecom/index.md
               - Telecom.CPE: profiles-reference/Telecom/CPE.md
+              - Telecom.FXS: profiles-reference/Telecom/FXS.md
           - Telindus:
               - Overview: profiles-reference/Telindus/index.md
               - Telindus.SHDSL: profiles-reference/Telindus/SHDSL.md

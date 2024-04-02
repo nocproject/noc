@@ -1,0 +1,13 @@
+{
+    "name": "Telecom | FXS",
+    "$collection": "sa.profilecheckrules",
+    "uuid": "36196467-a9ac-4270-b684-51757fb00ba0",
+    "description": "VOIP ШЛЮЗ FXS",
+    "preference": 500,
+    "method": "snmp_v2c_get",
+    "param": "1.3.6.1.4.1.40248.4.1.87",
+    "match_method": "re",
+    "value": "FXS",
+    "action": "match",
+    "profile__name": "Telecom.FXS"
+}
