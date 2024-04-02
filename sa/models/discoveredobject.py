@@ -58,7 +58,7 @@ SELECT
 FROM (
     SELECT ip, pool, remote_system,
      argMax(source, ts) as source, argMax(hostname, ts) as hostname, argMax(description, ts) as description,
-     argMax(uptime, ts) as uptime, argMax(remote_id, ts) as remote_id, argMax(checks, ts) as checks, 
+     argMax(uptime, ts) as uptime, argMax(remote_id, ts) as remote_id, argMax(checks, ts) as checks,
      argMax(data, ts) as data, argMax(labels, ts) as labels, argMax(ts, ts) as max_ts,
      argMax(ts, ts) as last_ts
     FROM noc.purgatorium
