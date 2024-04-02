@@ -2784,7 +2784,6 @@ class ManagedObject(NOCModel):
         template=None,
         **data,
     ) -> "ManagedObject":
-        segment = NetworkSegment.objects.filter().first()
         mo = ManagedObject(
             name=name or address,
             address=address,

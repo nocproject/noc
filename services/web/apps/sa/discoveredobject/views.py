@@ -120,7 +120,7 @@ class DiscoveredObjectApplication(ExtDocApplication):
     def api_action_lookup(self, request):
         r = {
             "approve": {
-                "id": f"active_event",
+                "id": "active_event",
                 "label": "Approve",
                 "is_default": True,
                 "args": {"action": "send_event", "event": "approve"},
@@ -131,7 +131,7 @@ class DiscoveredObjectApplication(ExtDocApplication):
             if not tr.event or tr.event in r:
                 continue
             r[tr.event] = {
-                "id": f"active_event",
+                "id": "active_event",
                 "label": str(tr),
                 "is_default": False,
                 "args": {"action": "send_event", "event": tr.event},
