@@ -1,0 +1,6 @@
+{
+    "name": "Telecom.FXS",
+    "uuid": "998c6bd0-7c75-4b1c-8dbd-d6289c949734",
+    "description": "VOIP ШЛЮЗ FXS",
+    "$collection": "sa.profiles"
+}
