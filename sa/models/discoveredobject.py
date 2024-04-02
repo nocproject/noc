@@ -335,6 +335,33 @@ class DiscoveredObject(Document):
         Sync with ManagedObject or Agent
         :return:
         """
+        ctx = {
+            "hostname": self.hostname,
+            "description": self.description,
+            "address": self.address,
+            "effective_labels": self.effective_labels,
+        }
+        ctx |= self.effective_data
+        if self.managed_object:
+            # Sync data
+            mo = ManagedObject.objects.filter(id=self.managed_object).first()
+        else:
+            # Check Removed Managed Object ?
+            pool = self.rule.get_pool(self.address)
+            # Check duplicate
+            mo = ManagedObject.objects.filter(address=self.address, pool=pool).first()
+            if not mo:
+                mo = ManagedObject.get_object_by_template(
+                    address=self.address, pool=pool, name=self.hostname
+                )
+        mo.update_template_data(ctx)
+        self.managed_object = mo.id
+        self.is_dirty = False
+        # Send approve
+        DiscoveredObject.objects.filter(id=self.id).update(
+            is_dirty=self.is_dirty,
+            managed_object=self.managed_object,
+        )
 
     @property
     def is_approved(self) -> bool:
@@ -417,9 +444,23 @@ class DiscoveredObject(Document):
             self.is_dirty = True
 
 
+def sync_object():
+    """
+    Sync Object with discovered records.
+    Working with records with new and approved records with is_dirty flag
+    1. Deduplicate
+    2. Synchronize records with Agent and ManagedObject
+    3. Synchronize data with ManagedObject
+    :return:
+    """
+    for do in DiscoveredObject.objects.filter(is_dirty=True):
+        if do.rule.allow_sync and not do.origin:
+            do.sync()
+
+
 def sync_purgatorium():
     """
-    Sync Discovered object with Purgatorium
+    Sync Discovered records with Purgatorium
     1. Load by CHUNK from Purgatorium
     2. Query records from DiscoveredObject
     3. -> register (for new), seen/unseen, update_data (update_data, is_dirty)
@@ -433,6 +474,7 @@ def sync_purgatorium():
      approve ?
     :return:
     """
+    ls = DiscoveredObject.objects.filter().order_by("-last_seen").scalar("last_seen").first()
     logger.info("Start Purgatorium Sync: %s", ls)
     ranges = defaultdict(list)
     # ranges filter

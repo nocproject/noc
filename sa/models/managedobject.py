@@ -106,7 +106,13 @@ from noc.core.cache.decorator import cachedmethod
 from noc.core.cache.base import cache
 from noc.core.script.caller import SessionContext, ScriptCaller
 from noc.core.bi.decorator import bi_sync
-from noc.core.script.scheme import SCHEME_CHOICES, SNMPCredential, SNMPv3Credential, CLICredential
+from noc.core.script.scheme import (
+    SCHEME_CHOICES,
+    SNMPCredential,
+    SNMPv3Credential,
+    CLICredential,
+    TELNET,
+)
 from noc.core.matcher import match
 from noc.core.change.decorator import change, get_datastreams
 from noc.core.change.policy import change_tracker
@@ -2768,6 +2774,31 @@ class ManagedObject(NOCModel):
             return interactions
         self._interactions = InteractionHub(self)
         return self._interactions
+
+    @classmethod
+    def get_object_by_template(
+        cls,
+        address: str,
+        pool: str,
+        name: Optional[str] = None,
+        template=None,
+        **data,
+    ) -> "ManagedObject":
+        segment = NetworkSegment.objects.filter().first()
+        mo = ManagedObject(
+            name=name or address,
+            address=address,
+            pool=pool,
+            description=data.get("description"),
+            scheme=TELNET,
+            object_profile=ManagedObjectProfile.objects.filter().first(),
+            administrative_domain=AdministrativeDomain.objects.filter().first(),
+            segment=NetworkSegment.objects.filter().first(),
+        )
+        return mo
+
+    def update_template_data(self, data, template=None):
+        ...
 
 
 @on_save
