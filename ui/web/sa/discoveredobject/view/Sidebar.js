@@ -25,7 +25,7 @@ Ext.define("NOC.sa.discoveredobject.view.Sidebar", {
     twoWayBindable: ["value"],
     publishes: ["value"],
     scrollable: "y",
-    minWidth: 350,
+    minWidth: 250,
     layout: {
         type: "vbox",
         align: "right"

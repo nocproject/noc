@@ -86,7 +86,7 @@ Ext.define("NOC.sa.discoveredobject.view.Container", {
             xtype: "sa.discoveredobject.sidebar",
             reference: "sa-discovered-sidebar",
             region: "east",
-            width: "20%",
+            width: 250,
             split: true,
             resizable: true,
             border: false,
