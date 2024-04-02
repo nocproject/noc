@@ -1,0 +1,15 @@
+{
+    "workflow__name": "Discovered Object Default",
+    "from_state__uuid": "30f3f4ff-07a8-4edd-9b6d-b7252069d57c",
+    "to_state__uuid": "fc728920-9525-4fab-9c02-81c3c74320af",
+    "uuid": "155a5981-d59f-495c-a2a1-9a7d0e3fef5f",
+    "is_active": true,
+    "$collection": "wf.transitions",
+    "event": "remove",
+    "label": "Remove",
+    "enable_manual": true,
+    "vertices": [{
+        "x": 610,
+        "y": 390
+    }]
+}

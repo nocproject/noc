@@ -1,0 +1,12 @@
+{
+    "workflow__name": "Discovered Object Default",
+    "from_state__uuid": "50a6934f-e29c-4bae-a834-8bd6b97fbbdf",
+    "to_state__uuid": "dfc9adde-6802-433e-b1e0-67d33bc39e35",
+    "uuid": "e0536169-fb2f-4ee5-b35b-ba6334b0a51a",
+    "is_active": true,
+    "$collection": "wf.transitions",
+    "event": "ignore",
+    "label": "Ignore",
+    "description": "Ignore Discovered Address for action.",
+    "enable_manual": true
+}

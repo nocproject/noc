@@ -1,0 +1,16 @@
+{
+    "workflow__name": "Discovered Object Default",
+    "name": "Removing",
+    "uuid": "fc728920-9525-4fab-9c02-81c3c74320af",
+    "$collection": "wf.states",
+    "is_default": false,
+    "is_productive": false,
+    "is_wiping": true,
+    "hide_with_state": false,
+    "update_last_seen": false,
+    "ttl": 0,
+    "update_expired": false,
+    "x": 270,
+    "y": 420,
+    "disable_all_interaction": false
+}
