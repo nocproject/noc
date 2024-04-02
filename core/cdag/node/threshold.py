@@ -215,4 +215,4 @@ class ThresholdNode(BaseCDAGNode):
             return None
         state = state or {}
         c_state = self.state_cls(**state)
-        return c_state
+        return self.slotify(self.state_cls_slot, c_state)
