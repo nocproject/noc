@@ -148,7 +148,7 @@ class ObjectDiscoveryRule(Document):
     # label =
     # groups =
     stop_processed = BooleanField(default=False)
-    # allow_sync = BooleanField(default=True)  # sync record on
+    allow_sync = BooleanField(default=True)  # sync record on
     # templates
 
     _id_cache = cachetools.TTLCache(maxsize=100, ttl=60)
@@ -268,3 +268,16 @@ class ObjectDiscoveryRule(Document):
                 # Unknown format
                 continue
         return r
+
+    def get_pool(self, address: str) -> Optional[Pool]:
+        """
+        Return pool for address
+        :param address:
+        :return:
+        """
+        address = IP.prefix(address)
+        for net in self.network_ranges:
+            prefix = IP.prefix(net.network)
+            if address in prefix:
+                return net.pool
+        return None

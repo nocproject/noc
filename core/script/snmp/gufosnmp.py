@@ -114,7 +114,10 @@ class GufoSNMP(SNMP):
                 config["user"] = cred
                 config["engine_id"] = self._get_engine_id()
             self.socket = SnmpSession(**config)
-            await self.socket.refresh()
+            try:
+                await self.socket.refresh()
+            except TimeoutError:
+                raise SNMPError(code=-1)
         return self.socket
 
     def close(self):

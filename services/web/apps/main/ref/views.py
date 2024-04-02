@@ -209,7 +209,7 @@ class RefAppplication(ExtApplication):
                 # Filter System Only Checks
                 continue
             for check in checker.CHECKS:
-                r += [{"id": check, "label": check}]
+                r += [{"id": check, "label": check, "has_port": hasattr(checker, "SOCKET_TIMEOUT")}]
         return r  # list(sorted(r))
 
     def build_topologygen(self):
