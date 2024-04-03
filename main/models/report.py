@@ -46,7 +46,16 @@ class ReportParam(EmbeddedDocument):
     description = StringField(required=False)
     label = StringField()
     type = StringField(
-        choices=["integer", "string", "date", "model", "choice", "bool", "fields_selector"],
+        choices=[
+            "integer",
+            "string",
+            "date",
+            "model",
+            "model_multi",
+            "choice",
+            "bool",
+            "fields_selector",
+        ],
         required=True,
     )
     model_id = StringField()
