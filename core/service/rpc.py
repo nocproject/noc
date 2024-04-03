@@ -58,6 +58,7 @@ class RPCProxy(object):
         self._hints = hints
         self._sync = sync
         self._client = HttpClient(
+            max_redirects=None,
             headers={
                 "X-NOC-Calling-Service": self._service.name.encode(DEFAULT_ENCODING),
                 "Content-Type": b"application/json",
@@ -93,7 +94,7 @@ class RPCProxy(object):
                             raise RPCException("Redirects limit exceeded")
                         url = headers.get("location")
                         self._logger.debug("Redirecting to %s", url)
-                        r = await make_call(url, data, limit - 1)
+                        r = await make_call(url.decode(DEFAULT_ENCODING), data, limit - 1)
                         return r
                     elif code in (598, 599):
                         span.set_error(code)
