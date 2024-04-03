@@ -17,5 +17,5 @@
     "allow_ifdesc": false,
     "allow_mx_transmutation": false,
     "allow_match_rule": false,
-    "allow_fm_alarmgrouprule": null,
+    "allow_fm_alarmgrouprule": null
 }
