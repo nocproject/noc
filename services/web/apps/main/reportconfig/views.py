@@ -175,7 +175,7 @@ class ReportConfigApplication(ExtDocApplication):
                 cfg["xtype"] = "core.tagfield"
                 cfg["url"] = f'/{"/".join(param.model_id.lower().split("."))}/'
                 cfg["displayField"] = "name"
-                cfg["uiStyle"] = "medium"
+                cfg["uiStyle"] = "large"
             elif param.type == "integer":
                 cfg["xtype"] = "numberfield"
                 cfg["uiStyle"] = "small"
