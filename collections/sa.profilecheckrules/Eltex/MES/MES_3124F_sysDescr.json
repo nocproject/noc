@@ -7,7 +7,7 @@
     "method": "snmp_v2c_get",
     "param": "SNMPv2-MIB::sysDescr.0",
     "match_method": "re",
-    "value": "^(MES-|MES\\d+)",
+    "value": "^\\s*(MES-|MES\\d+)",
     "action": "match",
     "profile__name": "Eltex.MES"
 }
