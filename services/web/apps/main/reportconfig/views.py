@@ -170,6 +170,12 @@ class ReportConfigApplication(ExtDocApplication):
                     cfg["xtype"] = "core.combo"
                     cfg["restUrl"] = f'/{"/".join(param.model_id.lower().split("."))}/lookup/'
                     cfg["uiStyle"] = "medium-combo"
+            elif param.type == "model_multi":
+                model = get_model(param.model_id)
+                cfg["xtype"] = "core.tagfield"
+                cfg["url"] = f'/{"/".join(param.model_id.lower().split("."))}/'
+                cfg["displayField"] = "name"
+                cfg["uiStyle"] = "large"
             elif param.type == "integer":
                 cfg["xtype"] = "numberfield"
                 cfg["uiStyle"] = "small"
