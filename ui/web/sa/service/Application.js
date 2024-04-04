@@ -96,6 +96,11 @@ Ext.define("NOC.sa.service.Application", {
                     renderer: NOC.render.Lookup("profile")
                 },
                 {
+                    text: __("Label"),
+                    dataIndex: "label",
+                    width: 260
+                },
+                {
                     text: __("Subscriber"),
                     dataIndex: "subscriber",
                     width: 250,

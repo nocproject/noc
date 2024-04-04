@@ -157,3 +157,9 @@ class SubInterface(Document):
             yield Label.get_effective_prefixfilter_labels(
                 "subinterface_ipv4_addresses", instance.ipv4_addresses
             )
+
+    @property
+    def service(self):
+        from noc.sa.models.service import Service
+
+        return Service.objects.filter(subinterface_id=self.id).first()

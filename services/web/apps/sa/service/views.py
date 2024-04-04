@@ -38,6 +38,9 @@ class ServiceApplication(ExtDocApplication):
         "effective_client_groups",
     ]
 
+    def field_label(self, o):
+        return o.label
+
     def get_Q(self, request, query):
         if is_objectid(query):
             q = Q(id=query)

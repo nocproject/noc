@@ -1,7 +1,7 @@
 # ----------------------------------------------------------------------
 # Service
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2021 The NOC Project
+# Copyright (C) 2007-2024 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -45,6 +45,7 @@ from noc.sla.models.slaprobe import SLAProbe
 from noc.wf.models.state import State
 from noc.inv.models.capsitem import CapsItem
 from noc.inv.models.capability import Capability
+from noc.inv.models.subinterface import SubInterface
 from noc.pm.models.agent import Agent
 
 logger = logging.getLogger(__name__)
@@ -76,6 +77,8 @@ class Service(Document):
             "subscriber",
             "supplier",
             "managed_object",
+            "interface_id",
+            "subinterface_id",
             "parent",
             "order_id",
             "agent",
@@ -121,6 +124,8 @@ class Service(Document):
     address = StringField()
     # For port services
     managed_object = ForeignKeyField(ManagedObject)
+    interface_id = ObjectIdField()  # Interface mapping
+    subinterface_id = ObjectIdField()  # Subinterface mapping cache
     # NRI port id, converted by portmapper to native name
     nri_port = StringField()
     # SLAProbe
@@ -375,6 +380,20 @@ class Service(Document):
     @property
     def weight(self) -> int:
         return self.profile.weight
+
+    @property
+    def label(self) -> str:
+        return self.description
+
+    @property
+    def interface(self) -> Optional[Union[SubInterface]]:
+        from noc.inv.models.interface import Interface
+
+        if not self.subinterface_id and not self.interface:
+            return None
+        if self.subinterface_id:
+            return SubInterface.objects.filter(id=self.subinterface_id).first()
+        return Interface.objects.filter(id=self.interface_id).first()
 
 
 def refresh_service_status(svc_ids: List[str]):

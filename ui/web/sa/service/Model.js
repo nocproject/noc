@@ -101,8 +101,9 @@ Ext.define("NOC.sa.service.Model", {
             type: "string"
         },
         {
-            name: "tags",
-            type: "auto"
+            name: "label",
+            type: "string",
+            persist: false
         },
         {
             name: "order_id",
