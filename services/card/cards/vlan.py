@@ -10,8 +10,8 @@ from collections import defaultdict
 
 # NOC modules
 from .base import BaseCard
-from noc.inv.models.networksegment import NetworkSegment
 from noc.inv.models.subinterface import SubInterface
+from noc.vc.models.l2domain import L2Domain
 from noc.vc.models.vlan import VLAN
 
 
@@ -30,12 +30,13 @@ class VLANCard(BaseCard):
         return {"object": self.object, "interfaces": self.get_interfaces()}
 
     def get_interfaces(self):
-        # Managed objects in VC domain
-        objects = NetworkSegment.get_vlan_domain_object_ids(self.object.segment)
+        vlan = self.object
+        # Managed objects in L2 Domain
+        objects = L2Domain.get_l2_domain_object_ids(vlan.l2_domain.id)
         # Find untagged interfaces
         si_objects = defaultdict(list)
         for si in SubInterface.objects.filter(
-            managed_object__in=objects, untagged_vlan=self.object.vlan, enabled_afi="BRIDGE"
+            managed_object__in=objects, untagged_vlan=vlan.vlan, enabled_afi="BRIDGE"
         ):
             si_objects[si.managed_object] += [{"name": si.name}]
         untagged = [
@@ -45,7 +46,7 @@ class VLANCard(BaseCard):
         # Find tagged interfaces
         si_objects = defaultdict(list)
         for si in SubInterface.objects.filter(
-            managed_object__in=objects, tagged_vlans=self.object.vlan, enabled_afi="BRIDGE"
+            managed_object__in=objects, tagged_vlans=vlan.vlan, enabled_afi="BRIDGE"
         ):
             si_objects[si.managed_object] += [{"name": si.name}]
         tagged = [
@@ -54,9 +55,7 @@ class VLANCard(BaseCard):
         ]
         # Find l3 interfaces
         si_objects = defaultdict(list)
-        for si in SubInterface.objects.filter(
-            managed_object__in=objects, vlan_ids=self.object.vlan
-        ):
+        for si in SubInterface.objects.filter(managed_object__in=objects, vlan_ids=vlan.vlan):
             si_objects[si.managed_object] += [
                 {
                     "name": si.name,
