@@ -1,7 +1,7 @@
 # ---------------------------------------------------------------------
 # Juniper.JUNOS.get_metrics
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2024 The NOC Project
+# Copyright (C) 2007-2023 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -63,37 +63,37 @@ class Script(GetMetricsScript):
             metric="SLA | Jitter | Avg",
             oid=("JUNIPER-RPM-MIB::jnxRpmResCalcAverage", 4),
             sla_types=["udp-jitter", "icmp-echo"],
-            scale=scale(0.001),
-            units="m,s",
+            scale=1,
+            units="u,s",
         ),
         "SLA | Jitter | Out | Avg": ProfileMetricConfig(
             metric="SLA | Jitter | Out | Avg",
             oid=("JUNIPER-RPM-MIB::jnxRpmResCalcAverage", RPMMeasurement.egress.value),
             sla_types=["udp-jitter", "icmp-echo"],
-            scale=scale(0.001),
-            units="m,s",
+            scale=1,
+            units="u,s",
         ),
         "SLA | Jitter | In | Avg": ProfileMetricConfig(
             metric="SLA | Jitter | In | Avg",
             oid=("JUNIPER-RPM-MIB::jnxRpmResCalcAverage", RPMMeasurement.ingress.value),
             sla_types=["udp-jitter", "icmp-echo"],
-            scale=scale(0.001),
-            units="m,s",
+            scale=1,
+            units="u,s",
         ),
         #
         "SLA | RTT | Min": ProfileMetricConfig(
             metric="SLA | RTT | Min",
             oid=("JUNIPER-RPM-MIB::jnxRpmResCalcMin", RPMMeasurement.roundTripTime.value),
             sla_types=["udp-jitter", "icmp-echo"],
-            scale=scale(0.001),
-            units="m,s",
+            scale=1,
+            units="u,s",
         ),
         "SLA | RTT | Max": ProfileMetricConfig(
             metric="SLA | RTT | Max",
             oid=("JUNIPER-RPM-MIB::jnxRpmResCalcMax", RPMMeasurement.roundTripTime.value),
             sla_types=["udp-jitter", "icmp-echo"],
-            scale=scale(0.001),
-            units="m,s",
+            scale=1,
+            units="u,s",
         ),
     }
 

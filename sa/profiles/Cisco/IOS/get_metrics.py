@@ -1,7 +1,7 @@
 # ---------------------------------------------------------------------
 # Cisco.IOS.get_metrics
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2024 The NOC Project
+# Copyright (C) 2007-2022 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -65,64 +65,64 @@ class Script(GetMetricsScript):
             metric="SLA | OneWayLatency | Out | Max",
             oid="CISCO-RTTMON-MIB::rttMonLatestJitterOperOWAvgSD",
             sla_types=["udp-jitter"],
-            scale=scale(0.001),
-            units="m,s",
+            scale=1,
+            units="u,s",
         ),
         "SLA | OneWayLatency | In | Max": ProfileMetricConfig(
             metric="SLA | OneWayLatency | In | Max",
             oid="CISCO-RTTMON-MIB::rttMonLatestJitterOperOWAvgDS",
             sla_types=["udp-jitter"],
-            scale=scale(0.001),
-            units="m,s",
+            scale=1,
+            units="u,s",
         ),
         "SLA | Jitter | Avg": ProfileMetricConfig(
             metric="SLA | Jitter | Avg",
             oid="CISCO-RTTMON-MIB::rttMonLatestJitterOperAvgJitter",
             sla_types=["udp-jitter"],
-            scale=scale(0.001),
-            units="m,s",
+            scale=1,
+            units="u,s",
         ),
         "SLA | Jitter | Out | Avg": ProfileMetricConfig(
             metric="SLA | Jitter | Out | Avg",
             oid="CISCO-RTTMON-MIB::rttMonLatestJitterOperAvgSDJ",
             sla_types=["udp-jitter"],
-            scale=scale(0.001),
-            units="m,s",
+            scale=1,
+            units="u,s",
         ),
         "SLA | Jitter | In | Avg": ProfileMetricConfig(
             metric="SLA | Jitter | In | Avg",
             oid="CISCO-RTTMON-MIB::rttMonLatestJitterOperAvgDSJ",
             sla_types=["udp-jitter"],
-            scale=scale(0.001),
-            units="m,s",
+            scale=1,
+            units="u,s",
         ),
         "SLA | Jitter | MOS": ProfileMetricConfig(
             metric="SLA | Jitter | MOS",
             oid="CISCO-RTTMON-MIB::rttMonLatestJitterOperMOS",
             sla_types=["udp-jitter"],
-            scale=scale(0.001),
-            units="m,s",
+            scale=1,
+            units="u,s",
         ),
         "SLA | Jitter | ICPIF": ProfileMetricConfig(
             metric="SLA | Jitter | ICPIF",
             oid="CISCO-RTTMON-MIB::rttMonLatestJitterOperICPIF",
             sla_types=["udp-jitter"],
-            scale=scale(0.001),
-            units="m,s",
+            scale=1,
+            units="u,s",
         ),
         "SLA | RTT | Min": ProfileMetricConfig(
             metric="SLA | RTT | Min",
             oid="CISCO-RTTMON-MIB::rttMonLatestJitterOperRTTMin",
             sla_types=["udp-jitter", "icmp-echo"],
-            scale=scale(0.001),
-            units="m,s",
+            scale=1,
+            units="u,s",
         ),
         "SLA | RTT | Max": ProfileMetricConfig(
             metric="SLA | RTT | Max",
             oid="CISCO-RTTMON-MIB::rttMonLatestJitterOperRTTMax",
             sla_types=["udp-jitter", "icmp-echo"],
-            scale=scale(0.001),
-            units="m,s",
+            scale=1,
+            units="u,s",
         ),
     }
 
