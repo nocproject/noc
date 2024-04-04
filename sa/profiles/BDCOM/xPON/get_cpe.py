@@ -11,6 +11,7 @@ import re
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetcpe import IGetCPE
+from noc.sa.interfaces.base import MACAddressParameter
 
 
 class Script(BaseScript):
@@ -66,7 +67,7 @@ class Script(BaseScript):
                         onu_id = line[0]
                         onu_vendor = line[1]
                         onu_model = line[2]
-                        onu_mac = line[3]
+                        onu_mac = MACAddressParameter().clean(line[3])
                         onu_status = self.get_onu_status(line[6])
                     else:
                         # Sometimes first fields overlaps on some firmware version
@@ -81,7 +82,7 @@ class Script(BaseScript):
                         onu_id = self.get_onu_local_id(line[0])
                         onu_vendor = line[0].replace(onu_id, "")
                         onu_model = line[1]
-                        onu_mac = line[2]
+                        onu_mac = MACAddressParameter().clean(line[2])
                         onu_status = self.get_onu_status(line[5])
 
                     r.append(
