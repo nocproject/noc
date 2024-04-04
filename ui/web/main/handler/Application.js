@@ -9,6 +9,7 @@ console.debug("Defining NOC.main.handler.Application");
 Ext.define("NOC.main.handler.Application", {
     extend: "NOC.core.ModelApplication",
     requires: [
+        "NOC.core.JSONPreview",
         "NOC.main.handler.Model"
     ],
     model: "NOC.main.handler.Model",
@@ -17,6 +18,13 @@ Ext.define("NOC.main.handler.Application", {
 
     initComponent: function() {
         var me = this;
+        // JSON Panel
+        me.jsonPanel = Ext.create("NOC.core.JSONPreview", {
+            app: me,
+            restUrl: new Ext.XTemplate('/main/handler/{id}/json/'),
+            previewName: new Ext.XTemplate('Handler: {name}')
+        });
+        me.ITEM_JSON = me.registerItem(me.jsonPanel);
         Ext.apply(me, {
             columns: [
                 {
@@ -195,8 +203,24 @@ Ext.define("NOC.main.handler.Application", {
                         }
                     ]
                 }
+            ],
+            formToolbar: [
+                {
+                    text: __("JSON"),
+                    glyph: NOC.glyph.file,
+                    tooltip: __("Show JSON"),
+                    hasAccess: NOC.hasPermission("read"),
+                    scope: me,
+                    handler: me.onJSON
+                }
             ]
         });
         me.callParent();
+    },
+    //
+    onJSON: function() {
+        var me = this;
+        me.showItem(me.ITEM_JSON);
+        me.jsonPanel.preview(me.currentRecord);
     }
 });
