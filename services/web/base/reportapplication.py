@@ -11,7 +11,6 @@ import logging
 # NOC modules
 from noc.core.translation import ugettext as _
 from noc.core.middleware.tls import get_user
-from noc.settings import INSTALLED_APPS
 from .application import Application, view
 from .access import Permission
 
@@ -109,7 +108,7 @@ class ReportByConfigApplication(Application):
     Report Config application
     """
 
-    CATEGORY_MAP = {c.split(".")[1] for c in INSTALLED_APPS}
+    CATEGORY_MAP = {"main", "fm", "sa", "inv", "sla"}
 
     report_id: str = None
     report_config = None
