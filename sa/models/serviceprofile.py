@@ -9,7 +9,8 @@
 import operator
 from enum import IntEnum
 from threading import Lock
-from typing import Optional, Union, Tuple, List, Dict
+from typing import Optional, Union, Tuple, List
+from collections import Counter
 from functools import partial
 
 # Third-party modules
@@ -129,6 +130,31 @@ class AlarmStatusMap(EmbeddedDocument):
     severity = PlainReferenceField(AlarmSeverity)  # Min Severity
     # weight = IntField()
     status = EnumField(Status, required=True)
+
+    def get_status(
+        self, severities: List[int], max_services: Optional[int] = None
+    ) -> Optional[AlarmSeverity]:
+        severity = 0
+        if self.transfer_function == "max":
+            severity = max(severities)
+        elif self.transfer_function == "min":
+            severity = min(severities)
+        elif self.transfer_function == "percent" and self.percent:
+            c = Counter(sorted(severities, reverse=True))
+            r = 0
+            r_max = max_services or sum(c.values())
+            for s, count in c.items():
+                r += count
+                if (r / r_max) * 100 >= self.percent:
+                    if not self.severity:
+                        severity = s
+                        break
+                    if self.severity and AlarmSeverity.get_severity(s) >= self.severity:
+                        severity = s
+                        break
+        if not severity:
+            return None
+        return self.status
 
 
 @Label.match_labels("serviceprofile", allowed_op={"="})
@@ -256,6 +282,30 @@ class ServiceProfile(Document):
                 status = rule.to_status
                 break
         return status or Status.UNKNOWN
+
+    def calculate_alarm_status(self, severities, max_object: Optional[int] = None) -> Status:
+        """
+
+        :param severities: List of alarms severities
+        :param max_object: Max objects that may be alarmed
+        :return:
+        """
+        if not self.alarm_status_map:
+            # Default behaivour
+            alarm_sev = AlarmSeverity.get_severity(max(severities))
+            for num, s in enumerate(AlarmSeverity.objects.filter().order_by("-severity")):
+                if num > 3:
+                    break
+                status = Status(4 - num)
+                if s == alarm_sev and status > Status.SLIGHTLY_DEGRADED:
+                    return status
+                else:
+                    break
+        for rule in self.alarm_status_map:
+            s = rule.get_status(severities, max_services=max_object)
+            if s:
+                return rule.status
+        return Status.UP
 
     @classmethod
     def get_alarm_service_filter(cls):

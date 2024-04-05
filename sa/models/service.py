@@ -45,7 +45,7 @@ from noc.sla.models.slaprobe import SLAProbe
 from noc.wf.models.state import State
 from noc.inv.models.capsitem import CapsItem
 from noc.inv.models.capability import Capability
-from noc.inv.models.subinterface import SubInterface
+from noc.inv.models.resourcegroup import ResourceGroup
 from noc.pm.models.agent import Agent
 
 logger = logging.getLogger(__name__)
@@ -219,22 +219,19 @@ class Service(Document):
         :return:
         """
         from noc.fm.models.activealarm import ActiveAlarm
-        from noc.fm.models.alarmseverity import AlarmSeverity
 
         # if not self.state.is_productive:
         #    return Status.UNKNOWN
-        s_map = {}
-        for num, s in enumerate(AlarmSeverity.objects.filter().order_by("-severity")):
-            if num > 3:
-                break
-            status = Status(4 - num)
-            s_map[s] = Status.UP if status < Status.SLIGHTLY_DEGRADED else status
-        r = []
-        for aa in ActiveAlarm.objects.filter(affected_services=self.id):
-            sev = AlarmSeverity.get_severity(aa.severity)
-            if sev in s_map:
-                r.append(s_map[sev])
-        return max(r) if r else Status.UP
+        # Max objects
+        max_object = None
+        if self.effective_client_groups:
+            max_object = sum(
+                rg.resource_count
+                for rg in ResourceGroup.objects.filter(id__in=self.effective_client_groups)
+            )
+        # Calculate Severity - group by object, max severity
+        r = ActiveAlarm.objects.filter(affected_services=self.id).scalar("severity")
+        return self.profile.calculate_alarm_status(r, max_object=max_object)
 
     def get_affected_status(self) -> Status:
         """
@@ -265,17 +262,21 @@ class Service(Document):
         profiles = list(ServiceProfile.objects.filter(alarm_affected_policy__ne="D").scalar("id"))
         if not profiles:
             return []
-        q = m_q(managed_object=alarm.managed_object)
+        # q = m_q(managed_object=alarm.managed_object)
+        q = m_q()
         if hasattr(alarm.components, "slaprobe") and alarm.components.slaprobe:
             q |= m_q(sla_probe=alarm.components.slaprobe.id)
-        if (
-            hasattr(alarm.components, "interface")
-            and alarm.components.inteface
-            and alarm.components.inteface.service
-        ):
+        if hasattr(alarm.components, "interface") and alarm.components.inteface:
             # q |= m_q(managed_object=alarm.managed_object, interface=alarm.components.inteface)
-            q |= m_q(id=alarm.components.inteface.serivce)
-        address = alarm.vars.get("address")
+            # q |= m_q(id=alarm.components.inteface.serivce)
+            q |= m_q(interface_id=alarm.components.inteface.id)
+            q |= m_q(subinterface_id=alarm.components.inteface.id)
+        address = None
+        if "address" in alarm.vars:
+            address = alarm.vars.get("address")
+        elif "peer" in alarm.vars:
+            # BGP alarms
+            address = alarm.vars.get("peer")
         if address:
             c = Capability.get_by_name("Channel | Address")
             # managed_object=alarm.managed_object,
@@ -285,6 +286,8 @@ class Service(Document):
                 managed_object=None,
                 effective_client_groups__in=alarm.managed_object.effective_service_groups,
             )
+        if not m_q:
+            q = m_q(managed_object=alarm.managed_object)
         q = m_q(profile__in=profiles) & q
         logger.info("Get services by alarm: %s/%s", alarm, q)
         return list(Service.objects.filter(q).scalar("id"))
@@ -386,14 +389,15 @@ class Service(Document):
         return self.description
 
     @property
-    def interface(self) -> Optional[Union[SubInterface]]:
+    def interface(self):
         from noc.inv.models.interface import Interface
+        from noc.inv.models.subinterface import SubInterface
 
-        if not self.subinterface_id and not self.interface:
-            return None
         if self.subinterface_id:
             return SubInterface.objects.filter(id=self.subinterface_id).first()
-        return Interface.objects.filter(id=self.interface_id).first()
+        if self.interface_id:
+            Interface.objects.filter(id=self.interface_id).first()
+        return
 
 
 def refresh_service_status(svc_ids: List[str]):
