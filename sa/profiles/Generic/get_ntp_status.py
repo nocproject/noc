@@ -41,13 +41,15 @@ class Script(BaseScript):
                 self.NTPv4_ADDRESS_OID: render_bin,
             },
         ):
-            assoc_name = x[1]
+            assoc_name = ""
             if len(x[1]) == 4:
                 assoc_name = IPv4Parameter().clean(x[1])
+            else:
+                assoc_name = x[1].decode()
 
             ntp_associations[x[0]] = {
                 "name": assoc_name,
-                "address": IPv4Parameter().clean(x[2]),
+                "address": x[2],
                 "stratum": x[3],
                 "status": "unknown",
                 "is_synchronized": False,
@@ -66,7 +68,5 @@ class Script(BaseScript):
         if status["active_id"] in ntp_associations:
             current_id = status["active_id"]
             ntp_associations[current_id]["status"] = "master"
-
-        self.logger.debug("|%s|", [ntp_associations[x] for x in ntp_associations])
 
         return [ntp_associations[x] for x in ntp_associations]
