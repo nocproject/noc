@@ -120,10 +120,28 @@ Ext.define('NOC.main.reportconfig.Application', {
                                     fieldLabel: __("Category"),
                                     allowBlank: true,
                                     store: [
-                                        ["main", __("Main")],
+                                        ["aaa", __("AAA")],
+                                        ["bi", __("BI")],
+                                        ["cm", __("Configuration Management")],
+                                        ["crm", __("CRM")],
+                                        ["dev", __("Development")],
+                                        ["dns", __("DNS")],
                                         ["fm", __("Fault Management")],
+                                        ["gis", __("GIS")],
+                                        ["inv", __("Inventory")],
+                                        ["ip", __("IPAM")],
+                                        ["kb", __("Knowledge Base")],
+                                        ["main", __("Main")],
+                                        ["maintenance", __("Maintenance")],
+                                        ["peer", __("Peering Management")],
+                                        ["phone", __("Phone")],
+                                        ["pm", __("Performance Management")],
+                                        ["project", __("Project Management")],
                                         ["sa", __("Service Activation")],
-                                        ["inv", __("Inventory")]
+                                        ["sla", __("SLA")],
+                                        ["support", __("Support")],
+                                        ["vc", __("VC Management")],
+                                        ["wf", __("Workflow")]
                                     ]
                                 },
                                 {
