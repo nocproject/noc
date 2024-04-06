@@ -632,7 +632,7 @@ class Application(object, metaclass=ApplicationBase):
         if v is None:
             return None
         elif isinstance(v, datetime.datetime):
-            return self.TZ.localize(v).isoformat()
+            return v.astimezone(self.TZ).isoformat()
         else:
             raise Exception("Invalid to_json type")
 

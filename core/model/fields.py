@@ -10,7 +10,6 @@ from pickle import loads, dumps, HIGHEST_PROTOCOL
 
 # Third-party modules
 import psycopg2
-import orjson
 from pydantic import RootModel, ValidationError
 from psycopg2.extensions import adapt
 from django.db import models
@@ -383,11 +382,6 @@ class PydanticField(models.JSONField):
             except ValidationError as e:
                 raise ValueError(e)
         return super().get_db_prep_value(value, connection, prepared=prepared)
-
-    def get_prep_value(self, value):
-        if value is None:
-            return value
-        return orjson.dumps(value).decode("utf-8")
 
     def validate(self, value, model_instance):
         # Only form.full_clean execute
