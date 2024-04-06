@@ -92,4 +92,3 @@ DISPLAY_HINTS = {
     "1.3.6.1.2.1.197.1.2.10": ("OctetString", "4d:4d:4d.4d"),  # NTPv4-MIB::ntpEntStatusLeapSecond
     "1.3.6.1.2.1.197.1.3.1.1.7": ("Unsigned32", "d"),  # NTPv4-MIB::ntpAssocStratum
 }
-
