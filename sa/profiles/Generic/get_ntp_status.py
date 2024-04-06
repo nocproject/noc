@@ -9,18 +9,20 @@
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetntpstatus import IGetNTPStatus
 from noc.core.mib import mib
-from noc.sa.interfaces.base import IPv4Parameter
+from noc.sa.interfaces.base import IPv4Parameter, IPv6Parameter
 from noc.core.snmp.render import render_bin
+from noc.core.interface.error import InterfaceTypeError
 
 
 class Script(BaseScript):
     name = "Generic.get_ntp_status"
     interface = IGetNTPStatus
 
-    NTPv4_REF_ID_OID = mib["NTPv4-MIB::ntpAssocRefId"]
-    NTPv4_STRATUM_OID = mib["NTPv4-MIB::ntpAssocStratum"]
-    NTPv4_ADDRESS_OID = mib["NTPv4-MIB::ntpAssocAddress"]
-    NTPv4_NAME_OID = mib["NTPv4-MIB::ntpAssocName"]
+    NTPv4_ASSOC_NAME_OID = mib["NTPv4-MIB::ntpAssocName"]
+    NTPv4_ASSOC_ADDRESS_TYPE_OID = mib["NTPv4-MIB::ntpAssocAddressType"]
+    NTPv4_ASSOC_ADDRESS_OID = mib["NTPv4-MIB::ntpAssocAddress"]
+    NTPv4_ASSOC_STRATUM_OID = mib["NTPv4-MIB::ntpAssocStratum"]
+    NTPv4_ASSOC_REF_ID_OID = mib["NTPv4-MIB::ntpAssocRefId"]
 
     NTPv4_STATUS_MODE_OID = mib["NTPv4-MIB::ntpEntStatusCurrentMode", 0]
     NTPv4_STATUS_STRATUM_OID = mib["NTPv4-MIB::ntpEntStatusStratum", 0]
@@ -29,31 +31,52 @@ class Script(BaseScript):
 
     def execute_snmp(self, **kwargs):
         ntp_associations = {}
-        for x in self.snmp.get_tables(
+        for (
+            assoc_id,
+            assoc_name,
+            assoc_addr_type,
+            assoc_address,
+            assoc_stratum,
+            assoc_refid,
+        ) in self.snmp.get_tables(
             [
-                self.NTPv4_NAME_OID,
-                self.NTPv4_ADDRESS_OID,
-                self.NTPv4_STRATUM_OID,
-                self.NTPv4_REF_ID_OID,
+                self.NTPv4_ASSOC_NAME_OID,
+                self.NTPv4_ASSOC_ADDRESS_TYPE_OID,
+                self.NTPv4_ASSOC_ADDRESS_OID,
+                self.NTPv4_ASSOC_STRATUM_OID,
+                self.NTPv4_ASSOC_REF_ID_OID,
             ],
             display_hints={
-                self.NTPv4_NAME_OID: render_bin,
-                self.NTPv4_ADDRESS_OID: render_bin,
+                self.NTPv4_ASSOC_NAME_OID: render_bin,
+                self.NTPv4_ASSOC_ADDRESS_OID: render_bin,
             },
         ):
-            assoc_name = ""
-            if len(x[1]) == 4:
-                assoc_name = IPv4Parameter().clean(x[1])
-            else:
-                assoc_name = x[1].decode()
+            try:
+                if len(assoc_name) == 4:
+                    assoc_name = IPv4Parameter().clean(assoc_name)
+                elif len(assoc_name) == 16:
+                    assoc_name = IPv6Parameter().clean(assoc_name)
+                else:
+                    assoc_name = assoc_name.decode()
+            except InterfaceTypeError as e:
+                self.logger.debug("Cannot interpret name |%s| as IP", assoc_name)
+                assoc_name = assoc_name.decode()
 
-            ntp_associations[x[0]] = {
+            # Remove zone index from address if exists
+            # InetAddressType { ipv4(1), ipv6(2), ipv4z(3), ipv6z(4) }
+            # InetAddress (SIZE (4|8|16|20))
+            if assoc_addr_type == 3:
+                assoc_address = assoc_address[0:4]
+            elif assoc_addr_type == 4:
+                assoc_address = assoc_address[0:16]
+
+            ntp_associations[assoc_id] = {
                 "name": assoc_name,
-                "address": x[2],
-                "stratum": x[3],
+                "address": assoc_address,
+                "stratum": assoc_stratum,
                 "status": "unknown",
                 "is_synchronized": False,
-                "ref_id": x[4],
+                "ref_id": assoc_refid,
             }
 
         status = self.snmp.get(
