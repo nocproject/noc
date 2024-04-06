@@ -643,6 +643,8 @@ class IPv6Parameter(StringParameter):
     def clean(self, value):
         if value is None and self.default is not None:
             return self.default
+        if len(value) == 16 and isinstance(value, bytes):
+            value = ":".join("%02X%02X" % (x, y) for x, y in zip(value[0::2], value[1::2]))
         v = super().clean(value)
         if not is_ipv6(v):
             self.raise_error(value)
@@ -677,8 +679,13 @@ class IPParameter(StringParameter):
     """
 
     def clean(self, value):
-        if len(value) == 4 and isinstance(value, bytes):
-            return IPv4Parameter().clean(value)
+        if isinstance(value, bytes):
+            if len(value) == 4:
+                return IPv4Parameter().clean(value)
+            elif len(value) == 16:
+                return IPv6Parameter().clean(value)
+            else:
+                self.raise_error(value)
 
         if ":" in value:
             return IPv6Parameter().clean(value)
