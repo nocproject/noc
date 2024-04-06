@@ -2471,8 +2471,9 @@ class ManagedObject(NOCModel):
         return r
 
     def get_message_context(self) -> Dict[str, Any]:
-        return {
-            "id": self.id,
+        r = {
+            "id": str(self.id),
+            "bi_id": str(self.bi_id),
             "name": self.name,
             "description": self.description,
             "address": self.address,
@@ -2480,9 +2481,28 @@ class ManagedObject(NOCModel):
                 "id": str(self.profile.id),
                 "name": self.administrative_domain.name,
             },
+            "labels": [
+                ll
+                for ll in Label.objects.filter(
+                    name__in=self.labels, expose_datastream=True
+                ).values_list("name")
+            ],
             "profile": {"id": str(self.profile.id), "name": self.profile.name},
             "object_profile": {"id": str(self.object_profile.id), "name": self.object_profile.name},
         }
+        if self.remote_system:
+            r["remote_system"] = {
+                "id": str(self.remote_system.id),
+                "name": self.remote_system.name,
+            }
+            r["remote_id"] = self.remote_id
+        if self.administrative_domain.remote_system:
+            r["administrative_domain"]["remote_system"] = {
+                "id": str(self.administrative_domain.remote_system.id),
+                "name": self.administrative_domain.remote_system.name,
+            }
+            r["administrative_domain"]["remote_id"] = o.administrative_domain.remote_id
+        return r
 
     def iter_diagnostic_configs(self) -> Iterable[DiagnosticConfig]:
         """
