@@ -91,5 +91,6 @@ class Script(BaseScript):
         if status["active_id"] in ntp_associations:
             current_id = status["active_id"]
             ntp_associations[current_id]["status"] = "master"
+            ntp_associations[current_id]["is_synchronized"] = True
 
         return [ntp_associations[x] for x in ntp_associations]
