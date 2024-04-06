@@ -59,7 +59,7 @@ class Script(BaseScript):
                 else:
                     assoc_name = assoc_name.decode()
             except InterfaceTypeError as e:
-                self.logger.debug("Cannot interpret name |%s| as IP", assoc_name)
+                self.logger.debug("Cannot interpret name |%s| as IP (%s)", assoc_name, e)
                 assoc_name = assoc_name.decode()
 
             # Remove zone index from address if exists
