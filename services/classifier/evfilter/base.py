@@ -15,7 +15,7 @@ from bson import ObjectId
 
 # NOC modules
 from noc.config import config
-from noc.fm.models.activeevent import ActiveEvent
+from noc.core.models.event import Event
 
 
 class BaseEvFilter(object):
@@ -35,7 +35,7 @@ class BaseEvFilter(object):
         self.pq: List[Tuple[int, int]] = []
 
     @staticmethod
-    def event_hash(event: ActiveEvent) -> int:
+    def event_hash(event: Event) -> int:
         """
         Collapse event to a hash
         :param event:
@@ -44,7 +44,7 @@ class BaseEvFilter(object):
         raise NotImplementedError
 
     @staticmethod
-    def get_window(event: ActiveEvent) -> int:
+    def get_window(event: Event) -> int:
         """
         Return filter window in seconds or 0, if disabled
         :param event:
@@ -53,10 +53,10 @@ class BaseEvFilter(object):
         raise NotImplementedError
 
     @staticmethod
-    def _get_timestamp(event: ActiveEvent) -> int:
-        return int(event.timestamp.timestamp())
+    def _get_timestamp(event: Event) -> int:
+        return int(event.ts.timestamp())
 
-    def register(self, event: ActiveEvent) -> None:
+    def register(self, event: Event) -> None:
         """
         Register event to filter
         :param event:
@@ -78,7 +78,7 @@ class BaseEvFilter(object):
             event_id = event.id
         self.events[eh] = (deadline, event_id)
 
-    def find(self, event: ActiveEvent) -> Optional[ObjectId]:
+    def find(self, event: Event) -> Optional[ObjectId]:
         """
         Check if event is duplicated
         :param event:

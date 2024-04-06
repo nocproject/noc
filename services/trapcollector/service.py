@@ -22,6 +22,7 @@ from noc.config import config
 from noc.core.perf import metrics
 from noc.core.error import NOCError
 from noc.core.service.fastapi import FastAPIService
+from noc.core.models.event import EventSource
 from noc.core.mx import (
     MX_STREAM,
     get_mx_partitions,
@@ -39,6 +40,7 @@ from noc.core.ioloop.timers import PeriodicCallback
 from noc.core.comp import smart_bytes
 
 TRAPCOLLECTOR_STORM_ALARM_CLASS = "NOC | Managed Object | Storm Control | SNMP"
+SNMP_TRAP_OID = "1.3.6.1.6.3.1.1.4.1.0"
 
 
 class TrapCollectorService(FastAPIService):
@@ -128,19 +130,24 @@ class TrapCollectorService(FastAPIService):
         cfg: SourceConfig,
         timestamp: int,
         data: Dict[str, Any],
+        address: str = None
     ):
         """
         Spool message to be sent
         """
         metrics["events_out"] += 1
         self.publish(
-            orjson.dumps(
-                {
-                    "ts": timestamp,
+            orjson.dumps({
+                "ts": timestamp,
+                "target": {
+                    "address": address,
+                    "name": cfg.name or "",
+                    "pool": config.pool,
                     "object": cfg.id,
-                    "data": data,
-                }
-            ),
+                },
+                "type": {"source": EventSource.SNMP_TRAP.value, "id": data.get(SNMP_TRAP_OID)},
+                "data": [{"name": k, "value": v, "snmp_raw": True} for k, v in data.items()]
+            }),
             stream=cfg.stream,
             partition=cfg.partition,
         )

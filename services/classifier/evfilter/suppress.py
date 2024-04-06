@@ -6,7 +6,7 @@
 # ----------------------------------------------------------------------
 
 # NOC modules
-from noc.fm.models.activeevent import ActiveEvent
+from noc.core.models.event import Event
 from noc.core.hash import hash_int, dict_hash_int
 from .base import BaseEvFilter
 
@@ -19,7 +19,7 @@ class SuppressFilter(BaseEvFilter):
     update_deadline = True
 
     @staticmethod
-    def event_hash(event: ActiveEvent) -> int:
+    def event_hash(event: Event) -> int:
         e_vars = {
             v.name: event.vars.get(v.name, "") or ""
             for v in event.event_class.vars
@@ -29,5 +29,5 @@ class SuppressFilter(BaseEvFilter):
         return hash_int(f"{event.managed_object.id}:{event.event_class.id}:{var_hash}")
 
     @staticmethod
-    def get_window(event: ActiveEvent) -> int:
+    def get_window(event: Event) -> int:
         return event.event_class.suppression_window or 0

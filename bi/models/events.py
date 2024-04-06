@@ -14,10 +14,12 @@ from noc.core.clickhouse.fields import (
     ReferenceField,
     IPv4Field,
     MapField,
+    ArrayField,
 )
 from noc.core.clickhouse.engines import MergeTree
 from noc.core.clickhouse.connect import ClickhouseClient
 from noc.core.bi.dictionaries.managedobject import ManagedObject
+from noc.core.bi.dictionaries.remotesystem import RemoteSystem
 from noc.core.bi.dictionaries.vendor import Vendor
 from noc.core.bi.dictionaries.platform import Platform
 from noc.core.bi.dictionaries.version import Version
@@ -47,13 +49,20 @@ class Events(Model):
     event_id = StringField(description=_("Id"))
     event_class = ReferenceField(EventClass, description=_("Event Class"))
     source = StringField(description=_("Id"), low_cardinality=True)
+    # Tags
+    labels = ArrayField(StringField(), description=_("Tags"))
+    data = StringField(description="All data on JSON")
     raw_vars = MapField(StringField(), description=_("Raw Variables"))
     resolved_vars = MapField(StringField(), description=_("Resolved Variables"))
     vars = MapField(StringField(), description=_("Vars"))
     #
+    remote_system = ReferenceField(RemoteSystem, description="Remote System")
+    remote_id = StringField(description="Event Id on Remote System")
+    #
     snmp_trap_oid = StringField(description=_("snmp Trap OID"))
     message = StringField(description=_("Syslog Message"))
-    #
+    target = MapField(StringField(), description=_("Vars"))
+    # Object
     managed_object = ReferenceField(ManagedObject, description=_("Object Name"))
     pool = ReferenceField(Pool, description=_("Pool Name"))
     ip = IPv4Field(description=_("IP Address"))
