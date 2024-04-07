@@ -554,6 +554,10 @@ class IPv4(IP):
             sa.add(self.last.set_mask())
         return sa
 
+    @property
+    def is_internal(self) -> bool:
+        return self in IP.prefix("127.0.0.0/8")
+
 
 class IPv6(IP):
     """

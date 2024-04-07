@@ -119,14 +119,8 @@ class SubInterface(Document):
     def iter_changed_datastream(self, changed_fields=None):
         if config.datastream.enable_managedobject:
             yield "managedobject", self.managed_object.id
-        if config.datastream.enable_cfgsyslog and (
-            "ipv4_addresses" in changed_fields or "id" in changed_fields
-        ):
-            yield "cfgsyslog", self.managed_object.id
-        if config.datastream.enable_cfgtrap and (
-            "ipv4_addresses" in changed_fields or "id" in changed_fields
-        ):
-            yield "cfgtrap", self.managed_object.id
+        if "ipv4_addresses" in changed_fields or "id" in changed_fields:
+            yield "cfgtarget", self.managed_object.id
 
     def on_delete(self):
         from noc.fm.models.activealarm import ActiveAlarm

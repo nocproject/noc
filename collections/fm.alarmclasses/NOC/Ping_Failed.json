@@ -1,0 +1,66 @@
+{
+    "name": "NOC | Ping Failed",
+    "$collection": "fm.alarmclasses",
+    "uuid": "2f5a6c7f-da78-4ca4-af0b-596046efc017",
+    "description": "Alarm Class for address availability check",
+    "is_unique": true,
+    "reference": ["address"],
+    "is_ephemeral": false,
+    "user_clearable": true,
+    "components": [
+        {
+            "name": "interface",
+            "model": "inv.Interface",
+            "args": [{
+                "param": "interface",
+                "var": "interface"
+            }]
+        }
+    ],
+    "vars": [
+        {
+            "name": "address",
+            "description": "Checked address"
+        },
+        {
+            "name": "interface",
+            "description": "Address for interface"
+        }
+    ],
+    "subject_template": "Ping Failed",
+    "body_template": "Failed to ping managed object {{alarm.vars.address}} (IP: {{alarm.vars.address}}). All SA tasks to this object are temporary suspended",
+    "symptoms": "Cannot execute SA tasks on the object",
+    "probable_causes": "The address is not responding to ICMP echo-requests",
+    "recommended_actions": "Check address is alive. Check routing to this object. Check firewalls",
+    "root_cause": [
+        {
+            "name": "Power Failed",
+            "root__name": "Chassis | PSU | Power Failed",
+            "window": 30,
+            "condition": "True",
+            "match_condition": {
+                "managed_object": "alarm.managed_object.id"
+            }
+        },
+        {
+            "name": "Total Power Loss",
+            "root__name": "Environment | Total Power Loss",
+            "window": 30,
+            "condition": "True",
+            "match_condition": {
+                "managed_object": "alarm.managed_object.id"
+            }
+        },
+        {
+            "name": "System Reboot",
+            "root__name": "System | Reboot",
+            "window": 120,
+            "condition": "True",
+            "match_condition": {
+                "managed_object": "alarm.managed_object.id"
+            }
+        }
+    ],
+    "recover_time": 300,
+    "labels": []
+}
