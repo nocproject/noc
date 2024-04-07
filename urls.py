@@ -24,6 +24,7 @@ site.autodiscover()
 urlpatterns = site.urls + [path("jsi18n/", JavaScriptCatalog.as_view(), name="javascript-catalog")]
 
 
+#
 def handler500(request):
     error_report()
     return HttpResponseServerError("Internal Server Error")
