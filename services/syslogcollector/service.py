@@ -230,7 +230,7 @@ class SyslogCollectorService(FastAPIService):
         # Build new config
         cfg = SourceConfig(
             id=data["id"],
-            addresses=tuple([a["address"] for a in data["addresses"] if a["trap_source"]]),
+            addresses=tuple([a["address"] for a in data["addresses"] if a["syslog_source"]]),
             bi_id=data.get("bi_id"),  # For backward compatibility
             process_events=data.get("process_events", True),  # For backward compatibility
             archive_events=cfg_syslog.get("archive_events", False) if cfg_syslog else False,

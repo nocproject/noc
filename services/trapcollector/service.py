@@ -242,7 +242,7 @@ class TrapCollectorService(FastAPIService):
             id=data["id"],
             name=data["name"],
             bi_id=data.get("bi_id"),
-            addresses=tuple([a["address"] for a in data["addresses"] if a["syslog_source"]]),
+            addresses=tuple([a["address"] for a in data["addresses"] if a["trap_source"]]),
             stream=f"events.{fm_pool}",
             partition=int(data["id"]) % num_partitions,
             effective_labels=data.get("effective_labels", []),
