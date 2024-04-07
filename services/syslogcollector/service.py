@@ -146,7 +146,7 @@ class SyslogCollectorService(FastAPIService):
         if config.message.enable_syslog and not cfg.managed_object:
             self.logger.warning(
                 "[%s] Cfg source not ManagedObject Meta."
-                " Please Reboot cfgsyslog datastream and reboot collector. Skipping..",
+                " Please Reboot cfgtarget datastream and reboot collector. Skipping..",
                 source_address,
             )
             return
@@ -187,7 +187,7 @@ class SyslogCollectorService(FastAPIService):
         Subscribe and track datastream changes
         """
         # Register RPC aliases
-        client = SysologDataStreamClient("cfgsyslog", service=self)
+        client = SysologDataStreamClient("cfgtarget", service=self)
         # Track stream changes
         while True:
             self.logger.info("Starting to track object mappings")
@@ -223,22 +223,26 @@ class SyslogCollectorService(FastAPIService):
             old_addresses = set(old_cfg.addresses)
         else:
             old_addresses = set()
+        cfg_syslog = data.pop("syslog", None)
         # Get pool and sharding information
         fm_pool = data.get("fm_pool", None) or config.pool
         num_partitions = await self.get_pool_partitions(fm_pool)
         # Build new config
         cfg = SourceConfig(
             id=data["id"],
-            addresses=tuple(data["addresses"]),
+            addresses=tuple([a["address"] for a in data["addresses"] if a["trap_source"]]),
             bi_id=data.get("bi_id"),  # For backward compatibility
             process_events=data.get("process_events", True),  # For backward compatibility
-            archive_events=data.get("archive_events", False),
+            archive_events=cfg_syslog.get("archive_events", False) if cfg_syslog else False,
             stream=f"events.{fm_pool}",
             partition=int(data["id"]) % num_partitions,
             effective_labels=data.get("effective_labels", []),
         )
-        if config.message.enable_syslog and "managed_object" in data:
-            cfg.managed_object = ManagedObjectData(**data["managed_object"])
+        if not cfg_syslog or not cfg.addresses:
+            await self.delete_source(data["id"])
+            return
+        if config.message.enable_syslog and "opaque_data" in data:
+            cfg.managed_object = ManagedObjectData(**data["opaque_data"])
         new_addresses = set(cfg.addresses)
         # Add new addresses, update remaining
         for addr in new_addresses:

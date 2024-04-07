@@ -13,9 +13,7 @@ def fix():
     for ds in [
         "managedobject",
         "administrativedomain",
-        "cfgping",
-        "cfgsyslog",
-        "cfgtrap",
+        "cfgtarget",
         "dnszone",
         "address",
         "prefix",

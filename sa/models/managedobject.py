@@ -394,7 +394,7 @@ class ManagedObject(NOCModel):
             ("l", "Loopback address"),
             ("a", "All interface addresses"),
         ],
-        default="d",
+        default="m",
         null=False,
         blank=False,
     )
@@ -408,7 +408,7 @@ class ManagedObject(NOCModel):
             ("l", "Loopback address"),
             ("a", "All interface addresses"),
         ],
-        default="d",
+        default="m",
         null=False,
         blank=False,
     )
@@ -872,54 +872,8 @@ class ManagedObject(NOCModel):
         changed_fields = set(changed_fields or [])
         if config.datastream.enable_managedobject:
             yield "managedobject", self.id
-        if config.datastream.enable_cfgping and changed_fields.intersection(
-            {
-                "id",  # Create object
-                "name",
-                "bi_id",
-                "state",
-                "pool",
-                "fm_pool",
-                "address",
-                "object_profile",
-                "time_pattern",
-                "event_processing_policy",
-            }
-        ):
-            yield "cfgping", self.id
-        if config.datastream.enable_cfgsyslog and changed_fields.intersection(
-            {
-                "id",  # Create object
-                "name",
-                "bi_id",
-                "state",
-                "pool",
-                "fm_pool",
-                "address",
-                "object_profile",
-                "event_processing_policy",
-                "syslog_archive_policy",
-                "syslog_source_type",
-                "syslog_source_ip",
-            }
-        ):
-            yield "cfgsyslog", self.id
-        if config.datastream.enable_cfgtrap and changed_fields.intersection(
-            {
-                "id",  # Create object
-                "name",
-                "bi_id",
-                "state",
-                "pool",
-                "fm_pool",
-                "address",
-                "object_profile",
-                "event_processing_policy",
-                "trap_source_type",
-                "trap_source_ip",
-            }
-        ):
-            yield "cfgtrap", self.id
+        if config.datastream.enable_cfgtarget:
+            yield "cfgtarget", self.id
         if config.datastream.enable_cfgmetricsources and changed_fields.intersection(
             {"id", "bi_id", "state", "pool", "fm_pool", "labels", "effective_labels"}
         ):

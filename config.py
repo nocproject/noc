@@ -854,32 +854,11 @@ class Config(BaseConfig):
             default="0",
             help="Removing datastream CfgMOMappingcollector records older days",
         )
-        enable_cfgping = BooleanParameter(default=True)
-        enable_cfgping_wait = BooleanParameter(
-            default=True,
-            help="Activate Wait Mode for CfgPing datastream (Mongo greater 3.6 needed)",
-        )
-        cfgping_ttl = SecondsParameter(
+        enable_cfgtarget = BooleanParameter(default=True)
+        enable_cfgtarget_wait = BooleanParameter(default=True)
+        cfgtarget_ttl = SecondsParameter(
             default="0",
-            help="Removing datastream cfgping records older days",
-        )
-        enable_cfgsyslog = BooleanParameter(default=True)
-        enable_cfgsyslog_wait = BooleanParameter(
-            default=True,
-            help="Activate Wait Mode for CfgSyslog datastream (Mongo greater 3.6 needed)",
-        )
-        cfgsyslog_ttl = SecondsParameter(
-            default="0",
-            help="Removing datastream cfgsyslog records older days",
-        )
-        enable_cfgtrap = BooleanParameter(default=True)
-        enable_cfgtrap_wait = BooleanParameter(
-            default=True,
-            help="Activate Wait Mode for CfgTrap datastream (Mongo greater 3.6 needed)",
-        )
-        cfgtrap_ttl = SecondsParameter(
-            default="0",
-            help="Removing datastream cfgtrap records older days",
+            help="Removing datastream cfgtarget records older days",
         )
         enable_dnszone = BooleanParameter(default=False)
         enable_dnszone_wait = BooleanParameter(

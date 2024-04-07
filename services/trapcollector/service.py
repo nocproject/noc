@@ -198,7 +198,7 @@ class TrapCollectorService(FastAPIService):
         Coroutine to request object mappings
         """
         self.logger.info("Starting to track object mappings")
-        client = TrapDataStreamClient("cfgtrap", service=self)
+        client = TrapDataStreamClient("cfgtarget", service=self)
         # Track stream changes
         while True:
             try:
@@ -233,23 +233,28 @@ class TrapCollectorService(FastAPIService):
             old_addresses = set(old_cfg.addresses)
         else:
             old_addresses = set()
+        cfg_trap = data.pop("trap", None)
         # Get pool and sharding information
         fm_pool = data.get("fm_pool", None) or config.pool
         num_partitions = await self.get_pool_partitions(fm_pool)
         # Build new config
         cfg = SourceConfig(
             id=data["id"],
+            name=data["name"],
             bi_id=data.get("bi_id"),
-            addresses=tuple(data["addresses"]),
+            addresses=tuple([a["address"] for a in data["addresses"] if a["syslog_source"]]),
             stream=f"events.{fm_pool}",
             partition=int(data["id"]) % num_partitions,
             effective_labels=data.get("effective_labels", []),
         )
-        if config.message.enable_snmptrap and "managed_object" in data:
-            cfg.managed_object = ManagedObjectData(**data["managed_object"])
-        if "storm_policy" in data:
-            cfg.storm_policy = data["storm_policy"]
-            cfg.storm_threshold = data["storm_threshold"]
+        if not cfg_trap or not cfg.addresses:
+            await self.delete_source(data["id"])
+            return
+        if config.message.enable_snmptrap and "opaque_data" in data:
+            cfg.managed_object = ManagedObjectData(**data["opaque_data"])
+        if "storm_policy" in cfg_trap:
+            cfg.storm_policy = cfg_trap["storm_policy"]
+            cfg.storm_threshold = cfg_trap["storm_threshold"]
         new_addresses = set(cfg.addresses)
         # Add new addresses, update remaining
         for addr in new_addresses:

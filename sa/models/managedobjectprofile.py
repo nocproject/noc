@@ -773,7 +773,7 @@ class ManagedObjectProfile(NOCModel):
                 "id", flat=True
             ):
                 yield "managedobject", mo_id
-        if config.datastream.enable_cfgping and changed_fields.intersection(
+        if config.datastream.enable_cfgtarget and changed_fields.intersection(
             {
                 "enable_ping",
                 "ping_interval",
@@ -785,24 +785,13 @@ class ManagedObjectProfile(NOCModel):
                 "report_ping_rtt",
                 "report_ping_attempts",
                 "event_processing_policy",
+                "syslog_archive_policy",
             }
         ):
             for mo_id in ManagedObject.objects.filter(object_profile=self).values_list(
                 "id", flat=True
             ):
-                yield "cfgping", mo_id
-        if config.datastream.enable_cfgsyslog and changed_fields.intersection(
-            {"event_processing_policy", "syslog_archive_policy"}
-        ):
-            for mo_id in ManagedObject.objects.filter(object_profile=self).values_list(
-                "id", flat=True
-            ):
-                yield "cfgsyslog", mo_id
-        if config.datastream.enable_cfgtrap and "event_processing_policy" in changed_fields:
-            for mo_id in ManagedObject.objects.filter(object_profile=self).values_list(
-                "id", flat=True
-            ):
-                yield "cfgtrap", mo_id
+                yield "cfgtarget", mo_id
         if config.datastream.enable_cfgmetricsources and (
             "metrics" in changed_fields
             or "enable_metrics" in changed_fields
