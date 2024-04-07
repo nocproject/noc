@@ -34,7 +34,7 @@ class PingService(FastAPIService):
     pooled = True
     process_name = "noc-%(name).10s-%(pool).5s"
 
-    PING_CLS = {True: "NOC | Managed Object | Ping OK", False: "NOC | Managed Object | Ping Failed"}
+    PING_CLS = "NOC | Ping Failed"
 
     def __init__(self):
         super().__init__()
@@ -323,7 +323,7 @@ class PingService(FastAPIService):
                             # "reference": "areference or self.get_default_reference(mo, ac, a_vars),
                             "timestamp": ts,
                             "managed_object": ps.id,
-                            "alarm_class": self.PING_CLS[True],
+                            "alarm_class": self.PING_CLS,
                             "reference": f"a:{ps.id}:{address}",
                             "vars": {"address": address, "interface": ps.interface},
                             # "labels": labels.split(",") if a_vars else [],
@@ -358,6 +358,8 @@ class PingService(FastAPIService):
                 data["rtt"] = int(rtt * 1000000)
             if ps.report_attempts:
                 data["attempts"] = attempts
+            if not ps.is_fatal:
+                data["labels"] = [f"noc::address::{address}"]
             self.register_metrics("ping", [data], key=ps.bi_id)
 
 
