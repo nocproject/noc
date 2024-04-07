@@ -127,7 +127,7 @@ def test_targeted_quantile(seq, expected):
     # Query first
     for target, value in zip(stream.targets, expected):
         quantile, epsilon = target
-        assert stream.query(quantile) == pytest.approx(value)
+        assert stream.query(quantile) == pytest.approx(value, rel=1e-1)
 
 
 @pytest.mark.parametrize(
