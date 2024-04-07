@@ -7,7 +7,7 @@
 
 # Python modules
 from enum import Enum
-from typing import Optional, List, Dict
+from typing import Optional
 from types import CodeType
 import sys
 
