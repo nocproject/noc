@@ -394,7 +394,7 @@ class ManagedObject(NOCModel):
             ("l", "Loopback address"),
             ("a", "All interface addresses"),
         ],
-        default="d",
+        default="m",
         null=False,
         blank=False,
     )
@@ -408,7 +408,7 @@ class ManagedObject(NOCModel):
             ("l", "Loopback address"),
             ("a", "All interface addresses"),
         ],
-        default="d",
+        default="m",
         null=False,
         blank=False,
     )

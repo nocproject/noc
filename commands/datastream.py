@@ -47,6 +47,11 @@ class Command(BaseCommand):
         "cfgmxroute": "main.MessageRoute",
         "cfgmetricrules": "pm.MetricRule",
     }
+    OLD_MAP = {
+        "cfgsyslog": "cfgtarget",
+        "cfgtrap": "cfgtarget",
+        "cfgping": "cfgtarget",
+    }
     BI_ID_DATASTREAM = {"cfgmetricsources"}  # DataStream that used bi_id as ID
 
     def add_arguments(self, parser):
@@ -139,6 +144,8 @@ class Command(BaseCommand):
 
         if not datastream:
             self.die("--datastream is not set. Set one from list: %s" % ", ".join(self.MODELS))
+        if datastream in self.OLD_MAP:
+            datastream = self.OLD_MAP[datastream]
         model = self.get_model(datastream)
         connect()
         ds = loader[datastream]
@@ -180,6 +187,8 @@ class Command(BaseCommand):
         if not datastream:
             self.die("--datastream is not set. Set one from list: %s" % ", ".join(self.MODELS))
         connect()
+        if datastream in self.OLD_MAP:
+            datastream = self.OLD_MAP[datastream]
         ds = loader[datastream]
         if not ds:
             self.die("Cannot initialize datastream")

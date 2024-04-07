@@ -191,12 +191,12 @@ Ext.define("NOC.sa.managedobject.Model", {
         {
             name: "trap_source_type",
             type: "string",
-            defaultValue: "d"
+            defaultValue: "m"
         },
         {
             name: "syslog_source_type",
             type: "string",
-            defaultValue: "d"
+            defaultValue: "m"
         },
         {
             name: "trap_community",
