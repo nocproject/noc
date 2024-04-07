@@ -353,7 +353,7 @@ class CfgTrapDataStream(DataStream):
         # Get all interfaces
         if_ids = {}
         for d in Interface._get_collection().find(
-            {"managed_object": int(mo_id), "type": "loopback"}, {"_id": 1, "name": 1, "type": 1}
+            {"managed_object": int(mo_id)}, {"_id": 1, "name": 1, "type": 1}
         ):
             if_ids[str(d["_id"])] = (d["name"], d["type"])
 

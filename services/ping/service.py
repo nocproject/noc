@@ -108,10 +108,21 @@ class PingService(FastAPIService):
                 await asyncio.sleep(5)
 
     async def update_probe(self, data):
+        """
+        Update probe data
+        :param data:
+        :return:
+        """
         addresses = data.pop("addresses", [])
         if not addresses and "address" in data:
             # Old format
             addresses += [{"address": data.pop("address"), "interface": None, "is_fatal": True}]
+        elif not data["ping"]:
+            await self.delete_probe(data["id"])
+        else:
+            del data["trap"]
+            del data["syslog"]
+            data |= data.pop("ping")
 
         if data["id"] not in self.probes:
             probes = set()
@@ -121,7 +132,6 @@ class PingService(FastAPIService):
         for d in addresses:
             if not d["ping_check"]:
                 continue
-            d |= data.pop("ping")
             d |= data
             if d["address"] not in probes:
                 await self._create_probe(d)
@@ -184,8 +194,8 @@ class PingService(FastAPIService):
             if ps.address != data["address"]:
                 continue
             # ps = self.probes[data["id"]]
-            if ps.interval != data["ping"]["interval"]:
-                ps.task.set_interval(data["ping"]["interval"] * 1000)
+            if ps.interval != data["interval"]:
+                ps.task.set_interval(data["interval"] * 1000)
             if ps.address != data["address"]:
                 self.logger.info("Changing address: %s -> %s", ps.address, data["address"])
                 ps.address = data["address"]
@@ -193,7 +203,7 @@ class PingService(FastAPIService):
                 ps.fm_pool = data["fm_pool"]
                 ps.set_stream()
                 ps.set_partition(await self.get_pool_partitions(ps.fm_pool))
-            ps.update(**data["ping"], fm_pool=data["fm_pool"])
+            ps.update(**data)
             metrics["ping_probe_update"] += 1
             metrics["ping_objects"] = len(self.probes)
 
@@ -312,7 +322,7 @@ class PingService(FastAPIService):
                     stream=ps.stream,
                     partition=ps.partition,
                 )
-            elif s:
+            elif not s:
                 # Raise Alarm
                 self.publish(
                     orjson.dumps(

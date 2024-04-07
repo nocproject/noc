@@ -7,10 +7,24 @@
     "reference": ["address"],
     "is_ephemeral": false,
     "user_clearable": true,
+    "components": [
+        {
+            "name": "interface",
+            "model": "inv.Interface",
+            "args": [{
+                "param": "interface",
+                "var": "interface"
+            }]
+        }
+    ],
     "vars": [
         {
             "name": "address",
             "description": "Checked address"
+        },
+        {
+            "name": "interface",
+            "description": "Address for interface"
         }
     ],
     "subject_template": "Ping Failed",

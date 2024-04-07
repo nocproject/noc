@@ -96,15 +96,6 @@ class ProbeSetting(object):
         self.is_fatal = is_fatal
         self.interface = interface
 
-    @classmethod
-    def from_config(cls, data) -> "ProbeSetting":
-        d = data.pop("ping")
-        d["managed_object"] = data.pop("opaque_data")
-        del d["syslog"]
-        del d["trap"]
-        del d["dependencies"]
-        return ProbeSetting(**d)
-
     @staticmethod
     def get_pool_stream(pool: str) -> str:
         return sys.intern(f"dispose.{pool}")
