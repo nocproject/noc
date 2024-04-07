@@ -378,7 +378,7 @@ class ClassifierService(FastAPIService):
 
         # event.event_class = rule.event_class
         # Calculate rule variables
-        r_vars = self.ruleset.eval_vars(event, event.event_class, r_vars)
+        r_vars = self.ruleset.eval_vars(event, rule.event_class, r_vars)
         # message = f"Classified as '{rule.event_class.name}' by rule '{rule.name}'"
         # event.log += [
         #     EventLog(
@@ -423,13 +423,14 @@ class ClassifierService(FastAPIService):
         )
         metrics[EventMetrics.CR_DISPOSED] += 1
 
-    def deduplicate_event(self, event: Event) -> bool:
+    def deduplicate_event(self, event: Event, event_class: EventClass) -> bool:
         """
         Deduplicate event when necessary
         :param event:
+        :param event_class:
         :return: True, if event is duplication of existent one
         """
-        de_id = self.dedup_filter.find(event)
+        de_id = self.dedup_filter.find(event, event_class)
         if not de_id:
             return False
         self.logger.info(
@@ -443,13 +444,14 @@ class ClassifierService(FastAPIService):
         metrics[EventMetrics.CR_DUPLICATED] += 1
         return True
 
-    def suppress_repeats(self, event: Event) -> bool:
+    def suppress_repeats(self, event: Event, event_class: EventClass) -> bool:
         """
         Suppress repeated events
         :param event:
+        :param event_class:
         :return:
         """
-        se_id = self.suppress_filter.find(event)
+        se_id = self.suppress_filter.find(event, event_class)
         if not se_id:
             return False
         self.logger.info(
@@ -569,8 +571,8 @@ class ClassifierService(FastAPIService):
         :return:
         """
         mo = None
-        if target.object:
-            mo = ManagedObject.get_by_id(int(target.object))
+        if target.id and not target.is_agent:
+            mo = ManagedObject.get_by_id(int(target.id))
         if not mo and target.remote_id:
             mo = ManagedObject.objects.filter(remote_id=target.remote_id)
         if not mo and target.pool:
@@ -620,13 +622,14 @@ class ClassifierService(FastAPIService):
         # Process event
         r_vars = self.resolve_vars(event)
         try:
-            event_class, vars = await self.classify_event(event, r_vars, mo)
+            event_class, e_vars = await self.classify_event(event, r_vars, mo)
             event.type.event_class = event_class.name
         except Exception as e:
             self.logger.error(
                 "[%s|%s|%s] Failed to process event: %s", event.id, mo.name, mo.address, e
             )
             metrics[EventMetrics.CR_FAILED] += 1
+            error_report()
             return
         if not event_class:
             # Dropped message
@@ -637,15 +640,19 @@ class ClassifierService(FastAPIService):
             event.target.name,
             event.target.address,
         )
-        self.register_event(event, event_class, r_vars, mo)
         # Deduplication
-        if self.deduplicate_event(event):
+        if self.deduplicate_event(event, event_class):
             return
         # Suppress repeats
-        if self.suppress_repeats(event):
+        if self.suppress_repeats(event, event_class):
             return
+        self.register_event(event, event_class, r_vars, e_vars, mo)
+        # Fill deduplication filter
+        self.dedup_filter.register(event, event_class)
+        # Fill suppress filter
+        self.suppress_filter.register(event, event_class)
         if config.message.enable_event:
-            await self.register_mx_message(event, r_vars)
+            await self.register_mx_message(event, event_class, r_vars, e_vars, mo)
         if event_class:
             # Call handlers
             if self.call_event_handlers(event, event_class):
@@ -737,6 +744,7 @@ class ClassifierService(FastAPIService):
         event: Event,
         event_class: EventClass,
         resolved_vars: Dict[str, Any],
+        e_vars: Dict[str, Any],
         mo: Optional[ManagedObject] = None,
     ):
         """
@@ -744,13 +752,15 @@ class ClassifierService(FastAPIService):
         :param event: Event instance
         :param event_class: Event Class
         :param resolved_vars: Processed event data
+        :param e_vars: Event variables
         :param mo: Managed Object mapping
         :return:
         """
+        timestamp = event.timestamp
         data = {
-            "date": event.timestamp.date(),
-            "ts": event.timestamp.isoformat(),
-            "start_ts": event.start_timestamp,
+            "date": timestamp.date(),
+            "ts": timestamp.isoformat(),
+            "start_ts": timestamp.isoformat(),
             "event_id": str(event.id),
             "event_class": event_class.bi_id if event_class else None,
             "source": event.type.source.value,
@@ -759,10 +769,10 @@ class ClassifierService(FastAPIService):
             "data": orjson.dumps([d.to_json() for d in event.data]).decode(DEFAULT_ENCODING),
             "raw_vars": {d.name: str(d.value) for d in event.data},
             "resolved_vars": {k: str(v) for k, v in resolved_vars.items()},
-            "vars": {k: str(v) for k, v in event.vars.items()},
+            "vars": {k: str(v) for k, v in e_vars.items()},
             "snmp_trap_oid": event.type.id if event.type.source == EventSource.SNMP_TRAP else "",
             "message": event.message or "",
-            "target": event.target.model_dump(),
+            "target": event.target.model_dump(exclude={"is_agent"}, exclude_none=True),
             "managed_object": None,
             "pool": None,
             "ip": struct.unpack("!I", socket.inet_aton(event.target.address))[0],

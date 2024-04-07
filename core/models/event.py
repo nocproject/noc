@@ -15,12 +15,12 @@ from pydantic import BaseModel
 
 
 class EventSeverity(enum.Enum):
-    CLEARED: 0
-    INDETERMINATE: 1
-    CRITICAL: 5
-    MAJOR: 4
-    MINOR: 3
-    WARNING: 2
+    CLEARED = 0
+    INDETERMINATE = 1
+    CRITICAL = 5
+    MAJOR = 4
+    MINOR = 3
+    WARNING = 2
 
 
 class EventSource(enum.Enum):
@@ -63,6 +63,9 @@ class Var(BaseModel):
     value: str  # Variable Value
     scope: Optional[str] = None  # Scope for variable
     snmp_raw: bool = False  # SNMP Raw value
+
+    def __str__(self):
+        return f"{self.name}: {self.value}"
 
     def to_json(self):
         if self.scope:

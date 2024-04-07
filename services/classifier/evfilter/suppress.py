@@ -19,15 +19,15 @@ class SuppressFilter(BaseEvFilter):
     update_deadline = True
 
     @staticmethod
-    def event_hash(event: Event) -> int:
-        e_vars = {
-            v.name: event.vars.get(v.name, "") or ""
-            for v in event.event_class.vars
-            if v.match_suppress
-        }
-        var_hash = dict_hash_int(event.vars) if e_vars else 0
-        return hash_int(f"{event.managed_object.id}:{event.event_class.id}:{var_hash}")
+    def event_hash(event: Event, event_class) -> int:
+        # e_vars = {
+        #     v.name: event.vars.get(v.name, "") or ""
+        #     for v in event_class.vars
+        #     if v.match_suppress
+        # }
+        var_hash = hash_int(sorted(f"{d.name}:{d.value}" for d in event.data)) if True else 0
+        return hash_int(f"{event.target.id}:{event_class.id}:{var_hash}")
 
     @staticmethod
-    def get_window(event: Event) -> int:
-        return event.event_class.suppression_window or 0
+    def get_window(event_class) -> int:
+        return event_class.suppression_window or 0

@@ -143,7 +143,7 @@ class TrapCollectorService(FastAPIService):
                     "address": address,
                     "name": cfg.name or "",
                     "pool": config.pool,
-                    "object": cfg.id,
+                    "id": cfg.id,
                 },
                 "type": {"source": EventSource.SNMP_TRAP.value, "id": data.get(SNMP_TRAP_OID)},
                 "data": [{"name": k, "value": v, "snmp_raw": True} for k, v in data.items()]

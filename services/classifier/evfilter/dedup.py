@@ -17,10 +17,10 @@ class DedupFilter(BaseEvFilter):
     """
 
     @staticmethod
-    def event_hash(event: Event) -> int:
-        var_hash = dict_hash_int(event.vars) if event.vars else 0
-        return hash_int(f"{event.managed_object.id}:{event.event_class.id}:{var_hash}")
+    def event_hash(event: Event, event_class) -> int:
+        var_hash = hash_int(sorted(f"{d.name}:{d.value}" for d in event.data)) if event.data else 0
+        return hash_int(f"{event.target.id}:{event_class.id}:{var_hash}")
 
     @staticmethod
-    def get_window(event: ActiveEvent) -> int:
-        return event.event_class.deduplication_window or 0
+    def get_window(event_class) -> int:
+        return event_class.deduplication_window or 0
