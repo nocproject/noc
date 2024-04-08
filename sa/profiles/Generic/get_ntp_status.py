@@ -66,9 +66,9 @@ class Script(BaseScript):
             # InetAddressType { ipv4(1), ipv6(2), ipv4z(3), ipv6z(4) }
             # InetAddress (SIZE (4|8|16|20))
             if assoc_addr_type == 3:
-                assoc_address = assoc_address[0:4]
+                assoc_address = assoc_address[:4]
             elif assoc_addr_type == 4:
-                assoc_address = assoc_address[0:16]
+                assoc_address = assoc_address[:16]
 
             ntp_associations[assoc_id] = {
                 "name": assoc_name,
