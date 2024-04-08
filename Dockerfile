@@ -1,5 +1,5 @@
 # Basic Python image
-FROM python:3.9-slim-bullseye AS python
+FROM python:3.11-slim-bookworm AS python
 
 # Build speedups
 FROM python AS build
@@ -35,7 +35,6 @@ RUN \
     && apt-get install -y --no-install-recommends \
     bzip2 \
     curl \
-    libffi7 \
     libjemalloc2 \
     libpq-dev \
     && pip3 install --upgrade pip \
@@ -92,5 +91,5 @@ FROM nginx:alpine AS static
 
 RUN apk add --no-cache curl
 
-COPY --from=code /usr/local/lib/python3.9/site-packages/django /usr/lib/python3.9/site-packages/django
+COPY --from=code /usr/local/lib/python3.11/site-packages/django /usr/lib/python3.11/site-packages/django
 COPY --from=code /opt/noc/ui /opt/noc/ui
