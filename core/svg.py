@@ -15,6 +15,12 @@ from pathlib import Path
 
 
 class SVG(object):
+    """
+    SVG image wrapper.
+
+    To instantiate use `.read()` or `.from_xxx()` methods.
+    """
+
     DEFS = "{http://www.w3.org/2000/svg}defs"
     NAMESPACES = {
         "": "http://www.w3.org/2000/svg",
@@ -27,25 +33,67 @@ class SVG(object):
 
     @classmethod
     def read(cls: Type["SVG"], fp: TextIO) -> "SVG":
+        """
+        Read from open file.
+
+        Args:
+            fp: Open file.
+
+        Returns:
+            New SVG instance.
+        """
         svg = SVG()
         svg._tree = cls.parse(fp)
         return svg
 
     @classmethod
     def from_string(cls: Type["SVG"], data: str) -> "SVG":
+        """
+        Create SVG from string.
+
+        Args:
+            data: String containing SVG image.
+
+        Returns:
+            New SVG instance.
+        """
         return cls.read(StringIO(data))
 
     @classmethod
     def from_file(cls: Type["SVG"], path: Union[str, Path]) -> "SVG":
+        """
+        Create SVG from file.
+
+        Args:
+            path: Filesystem path.
+
+        Returns:
+            New SVG instance.
+        """
         with open(path) as fp:
             return cls.read(fp)
 
     def to_string(self: "SVG") -> str:
+        """
+        Convert to string containing XML.
+
+        Returns:
+            Fortatted XML string.
+        """
         ET.indent(self._tree)
         return ET.tostring(self._tree.getroot(), encoding="unicode", method=None)
 
     @classmethod
     def parse(cls: Type["SVG"], fp: TextIO) -> ET.ElementTree:
+        """
+        Parse SVG from file.
+
+        Args:
+            fp: Open file.
+
+        Returns:
+            Parsed ElementTree.
+        """
         try:
             return ET.parse(fp, parser=cls.get_parser())
         except ET.ParseError as e:
@@ -53,14 +101,32 @@ class SVG(object):
 
     @classmethod
     def get_parser(cls: Type["SVG"]) -> ET.XMLParser:
+        """
+        Get XMLParser instance.
+
+        Returns:
+            XMLParser instance.
+        """
         return ET.XMLParser()
 
     def clone(self: "SVG") -> "SVG":
+        """
+        Clone SVG.
+
+        Returns:
+            Cloned instance.
+        """
         svg = SVG()
         svg._tree = deepcopy(self._tree)
         return svg
 
     def get_tree(self: "SVG") -> ET.ElementTree:
+        """
+        Get element tree.
+
+        Returns:
+            Internal ElementTree
+        """
         return self._tree
 
     @staticmethod
@@ -73,25 +139,45 @@ class SVG(object):
             e2: Second Element.
 
         Returns:
-            True, if both elements are equal
+            * True, if both elements are equal
+            * False otherwise.
         """
+        # Same element?
         if id(e1) == id(e2):
             return True
+        # Tag match?
         if e1.tag != e2.tag:
             return False
+        # Attributes match?
         if e1.attrib != e2.attrib:
             return False
+        # Children match
         for c1, c2 in zip_longest(e1, e2):
+            # Same length?
             if c1 is None or c2 is None:
                 return False
+            # Childrens are equal
             if not SVG.is_equal(c1, c2):
                 return False
         return True
 
     def get_defs(self: "SVG") -> Optional[ET.Element]:
+        """
+        Get `<defs>` element.
+
+        Returns:
+            * `Element` if found.
+            * `None` otherwise.
+        """
         return self._tree.find(self.DEFS)
 
     def append_def(self: "SVG", el: ET.Element) -> None:
+        """
+        Append new definition.
+
+        Args:
+            el: Definition item.
+        """
         # Check id
         el_id = el.get("id")
         if not el_id:
@@ -116,6 +202,16 @@ class SVG(object):
     def validate(self: "SVG") -> None: ...
 
     def embed(self: "SVG", element_id: str, source: "SVG") -> None:
+        """
+        Embed SVG instead of element.
+
+        Args:
+            element_id: Id of the element.
+            source: Source SVG instance.
+
+        Raises:
+            ValueError: If element not found.
+        """
         source = source.clone()
         # Find node
         el = self._tree.find(f".//*[@id='{element_id}']")
@@ -147,6 +243,13 @@ class SVG(object):
             el.append(c)
 
     def add_prefix(self: "SVG", prefix: str) -> None:
+        """
+        Add prefix to `id` of all nested elements.
+
+        Args:
+            prefix: Prefix to find.
+        """
+
         def _add_prefix(el: ET.Element) -> None:
             el_id = el.get("id")
             if el_id:
@@ -197,6 +300,19 @@ class SVG(object):
 
     @classmethod
     def get_transform(cls: Type["SVG"], source: ET.Element) -> str:
+        """
+        Calculate `transform` property.
+
+        `transform` property is necessary to place an element
+        exactly on place of the `source`.
+
+        Args:
+            source: Source element.
+
+        Returns:
+            The value of `transform` property.
+        """
+
         def translate(x: float, y: float) -> Optional[str]:
             """
             Get `translate` transform code.
