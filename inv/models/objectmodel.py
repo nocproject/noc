@@ -45,6 +45,7 @@ from .connectionrule import ConnectionRule
 from .unknownmodel import UnknownModel
 from .vendor import Vendor
 from .protocol import Protocol
+from .facade import Facade
 
 id_lock = Lock()
 
@@ -338,6 +339,9 @@ class ObjectModel(Document):
     cross: List[Crossing] = EmbeddedDocumentListField(Crossing)
     sensors: List["ObjectModelSensor"] = EmbeddedDocumentListField(ObjectModelSensor)
     plugins = ListField(StringField(), required=False)
+    # Facades
+    front_facade = PlainReferenceField(Facade, required=False)
+    rear_facade = PlainReferenceField(Facade, required=False)
     # Labels
     labels = ListField(StringField())
     category = ObjectIdField()
@@ -547,6 +551,10 @@ class ObjectModel(Document):
             r["cr_context"] = self.cr_context
         if self.plugins:
             r["plugins"] = self.plugins
+        if self.front_facade:
+            r["front_facade"] = self.front_facade
+        if self.rear_facade:
+            r["rear_facade"] = self.rear_facade
         if self.labels:
             r["labels"] = self.labels
         return r

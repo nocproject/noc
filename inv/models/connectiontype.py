@@ -27,6 +27,7 @@ from noc.core.prettyjson import to_json
 from noc.core.text import quote_safe_path
 from noc.main.models.doccategory import category
 from noc.core.model.decorator import on_delete_check
+from .facade import Facade
 
 
 class ConnectionMatcher(EmbeddedDocument):
@@ -89,6 +90,8 @@ class ConnectionType(Document):
     uuid = UUIDField(binary=True)
     # Connection matchers
     matchers = ListField(EmbeddedDocumentField(ConnectionMatcher))
+    # Facade
+    facade = PlainReferenceField(Facade, required=False)
 
     OPPOSITE_GENDER = {"s": "s", "m": "f", "f": "m"}
     category = ObjectIdField()
@@ -110,6 +113,8 @@ class ConnectionType(Document):
             r["extend__name"] = self.extend.name
         if self.matchers:
             r["matchers"] = [m.json_data for m in self.matchers]
+        if self.facade:
+            r["facade__name"] = self.facade
         return r
 
     def to_json(self) -> str:
