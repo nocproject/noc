@@ -10,6 +10,7 @@ from django.http import HttpResponse
 
 # NOC modules
 from noc.services.web.base.extdocapplication import ExtDocApplication, view
+from noc.main.models.doccategory import DocCategory
 from noc.inv.models.facade import Facade
 from noc.core.translation import ugettext as _
 
@@ -22,6 +23,9 @@ class FacadeApplication(ExtDocApplication):
     title = "Facade"
     menu = [_("Setup"), _("Facades")]
     model = Facade
+    parent_model = DocCategory
+    parent_field = "parent"
+    query_fields = ["name__icontains", "description__icontains"]
 
     @view(url="^(?P<id>[0-9a-f]{24})/facade.svg$", method=["GET"], access="read", api=True)
     def api_svg(self, request, id: str):
