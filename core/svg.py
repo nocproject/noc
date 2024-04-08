@@ -199,8 +199,6 @@ class SVG(object):
         defs.append(el)
         self._defs[el_id] = el
 
-    def validate(self: "SVG") -> None: ...
-
     def embed(self: "SVG", element_id: str, source: "SVG") -> None:
         """
         Embed SVG instead of element.
