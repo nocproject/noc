@@ -54,6 +54,15 @@ Ext.define("NOC.inv.connectiontype.Model", {
         {
             name: "matchers",
             type: "auto"
+        },
+        {
+            name: "facade",
+            type: "string",
+        },
+        {
+            name: "facade__label",
+            type: "string",
+            persist: false
         }
     ]
 });

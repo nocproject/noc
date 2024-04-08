@@ -12,7 +12,8 @@ Ext.define("NOC.inv.connectiontype.Application", {
         "NOC.core.JSONPreview",
         "NOC.core.TemplatePreview",
         "Ext.ux.form.ModelDataField",
-        "NOC.inv.connectiontype.LookupField"
+        "NOC.inv.connectiontype.LookupField",
+        "NOC.inv.facade.LookupField",
     ],
     model: "NOC.inv.connectiontype.Model",
     search: true,
@@ -25,7 +26,7 @@ Ext.define("NOC.inv.connectiontype.Application", {
         }
     ],
     //
-    initComponent: function() {
+    initComponent: function () {
         var me = this;
         // JSON Panel
         me.jsonPanel = Ext.create("NOC.core.JSONPreview", {
@@ -106,6 +107,12 @@ Ext.define("NOC.inv.connectiontype.Application", {
                     allowBlank: false
                 },
                 {
+                    name: "facade",
+                    xtype: "inv.facade.LookupField",
+                    fieldLabel: __("Facade"),
+                    allowBlank: true
+                },
+                {
                     name: "data",
                     xtype: "modeldatafield",
                     fieldLabel: __("Model Data")
@@ -157,23 +164,23 @@ Ext.define("NOC.inv.connectiontype.Application", {
         me.callParent();
     },
     //
-    onJSON: function() {
+    onJSON: function () {
         var me = this;
         me.showItem(me.ITEM_JSON);
         me.jsonPanel.preview(me.currentRecord);
     },
     //
-    onTest: function() {
+    onTest: function () {
         var me = this;
         Ext.Ajax.request({
             url: "/inv/connectiontype/" + me.currentRecord.get("id") + "/compatible/",
             method: "GET",
             scope: me,
-            success: function(response) {
+            success: function (response) {
                 var data = Ext.decode(response.responseText);
-                me.showItem(me.ITEM_TEST).preview(me.currentRecord, {data: data});
+                me.showItem(me.ITEM_TEST).preview(me.currentRecord, { data: data });
             },
-            failure: function() {
+            failure: function () {
                 NOC.error(__("Failed to get data"));
             }
         });
