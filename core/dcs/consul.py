@@ -463,7 +463,7 @@ class ConsulDCS(DCSBase):
                     value=smart_text(
                         orjson.dumps(
                             {"Limit": total_slots, "Holders": holders}, option=orjson.OPT_INDENT_2
-                        )
+                        ).decode()
                     ),
                     cas=cas,
                 )
