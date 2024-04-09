@@ -355,6 +355,7 @@ class DiscoveredObject(Document):
                     address=self.address, pool=pool, name=self.hostname
                 )
         mo.update_template_data(ctx)
+        mo.save()
         self.managed_object = mo.id
         self.is_dirty = False
         # Send approve
