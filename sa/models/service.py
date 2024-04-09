@@ -13,6 +13,7 @@ from threading import Lock
 from typing import Any, Dict, Optional, Iterable, List, Union
 
 # Third-party modules
+import orjson
 from bson import ObjectId
 from mongoengine.document import Document
 from mongoengine.fields import (
@@ -36,6 +37,7 @@ from noc.core.model.decorator import on_save, on_delete, on_delete_check
 from noc.core.resourcegroup.decorator import resourcegroup
 from noc.core.wf.decorator import workflow
 from noc.core.change.decorator import change
+from noc.core.service.loader import get_service
 from noc.crm.models.subscriber import Subscriber
 from noc.crm.models.supplier import Supplier
 from noc.main.models.remotesystem import RemoteSystem
@@ -52,6 +54,8 @@ logger = logging.getLogger(__name__)
 
 id_lock = Lock()
 _path_cache = cachetools.TTLCache(maxsize=100, ttl=60)
+SVC_REF_PREFIX = "svc"
+SVC_AC = "Service | Status | Change"
 
 
 @Label.model
@@ -199,7 +203,11 @@ class Service(Document):
     def set_oper_status(self, status: Status):
         if self.oper_status == status:
             return
+        logger.info(
+            "[%s] Change service status: %s -> %s", self.id, self.oper_status, status,
+        )
         # Register Outage, Register Maintenance
+        os = self.oper_status
         self.oper_status = status
         self.oper_status_change = datetime.datetime.now().replace(microsecond=0)
         Service.objects.filter(id=self.id).update(
@@ -207,6 +215,45 @@ class Service(Document):
         )
         # Run Service Status Refresh
         # Set Outage
+        if len(self.service_path) != 1:
+            # only Root service
+            return
+        mo = self.managed_object or ManagedObject.objects.get(id=1)
+        # Raise alarm
+        if self.oper_status > Status.UP >= os:
+            msg = {
+                "$op": "raise",
+                "reference": f"{SVC_REF_PREFIX}:{self.id}",
+                "timestamp": self.oper_status_change.isoformat(),
+                "managed_object": str(mo.id),
+                "alarm_class": SVC_AC,
+                "labels": list(self.labels),
+                "vars": {
+                    "title": self.description,
+                    "type": self.profile.name,
+                    "service": str(self.id),
+                    "status": self.oper_status.name,
+                    "message": f"Service status changed from {os.name} to {self.oper_status.name}",
+                },
+            }
+            caps = self.get_caps()
+            if caps and "Channel | Address" in caps:
+                msg["vars"]["address"] = caps["Channel | Address"]
+            if self.interface_id:
+                msg["vars"]["interface"] = self.interface.name
+        elif self.oper_status <= Status.UP < os:
+            msg = {
+                "$op": "clear",
+                "reference": f"{SVC_REF_PREFIX}:{self.id}",
+                "timestamp": datetime.datetime.now().isoformat(),
+                "message": f"Service status to {self.oper_status.name}",
+            }
+        else:
+            return
+        svc = get_service()
+        stream, partition = mo.alarms_stream_and_partition
+        logger.info(f"[%s] Send message: %s", self.id, msg)
+        svc.publish(orjson.dumps(msg), stream=stream, partition=partition)
 
     def refresh_status(self):
         status = self.get_direct_status()
@@ -286,8 +333,8 @@ class Service(Document):
                 managed_object=None,
                 effective_client_groups__in=alarm.managed_object.effective_service_groups,
             )
-        if not m_q:
-            q = m_q(managed_object=alarm.managed_object)
+        if not q:
+            q = m_q(managed_object=alarm.managed_object.id)
         q = m_q(profile__in=profiles) & q
         logger.info("Get services by alarm: %s/%s", alarm, q)
         return list(Service.objects.filter(q).scalar("id"))

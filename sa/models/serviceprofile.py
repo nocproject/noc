@@ -277,11 +277,12 @@ class ServiceProfile(Document):
         elif self.status_transfer_function == "SUM":
             weight = sum(weight for status, weight in statuses if status == Status.DOWN)
             status = sum(status)
+        if not self.status_transfer_map:
+            return status
         for rule in self.status_transfer_map:
             if rule.is_match(status, weight):
-                status = rule.to_status
-                break
-        return status or Status.UNKNOWN
+                return rule.to_status
+        return Status.UNKNOWN
 
     def calculate_alarm_status(self, severities, max_object: Optional[int] = None) -> Status:
         """
@@ -290,8 +291,10 @@ class ServiceProfile(Document):
         :param max_object: Max objects that may be alarmed
         :return:
         """
+        if not severities:
+            return Status.UP
         if not self.alarm_status_map:
-            # Default behaivour
+            # Default behaviour
             alarm_sev = AlarmSeverity.get_severity(max(severities))
             for num, s in enumerate(AlarmSeverity.objects.filter().order_by("-severity")):
                 if num > 3:
