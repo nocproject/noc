@@ -9,6 +9,9 @@ omit = ['*tests*']
 [tool.coverage.report]
 ignore_errors = true
 
+[tool.coverage.html]
+directory = "build/coverage"
+
 [tool.ruff]
 # Exclude a variety of commonly ignored directories.
 exclude = [".git", "build", "dist", "var", "share", "collections"] 
