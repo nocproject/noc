@@ -191,8 +191,6 @@ class ActiveAlarm(Document):
         if not self.id:
             # Update effective labels
             self.effective_labels = list(chain.from_iterable(self.iter_effective_labels(self)))
-            # Update affected_services
-            self.affected_services = Service.get_services_by_alarm(self)
 
     def safe_save(self, **kwargs):
         """

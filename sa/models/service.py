@@ -204,7 +204,10 @@ class Service(Document):
         if self.oper_status == status:
             return
         logger.info(
-            "[%s] Change service status: %s -> %s", self.id, self.oper_status, status,
+            "[%s] Change service status: %s -> %s",
+            self.id,
+            self.oper_status,
+            status,
         )
         # Register Outage, Register Maintenance
         os = self.oper_status
