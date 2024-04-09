@@ -234,8 +234,9 @@ class RedPandaClient(object):
             return {}
         cfg = get_stream(name)
         # Replica not more 3
+        isr = min(cfg.config.replication_factor or 3, replication_factor or 1) - 1
         r = {
-            "min.insync.replicas": min(cfg.config.replication_factor or 3, replication_factor or 1)
+            "min.insync.replicas": max(isr, 1),
         }
         if cfg.config.retention_bytes:
             r["retention.bytes"] = str(cfg.config.retention_bytes)
