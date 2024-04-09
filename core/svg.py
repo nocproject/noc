@@ -387,6 +387,12 @@ class SVG(object):
         parts = vb.split()
         return float(parts[3])
 
+    @property
+    def root(self)->ET.Element:
+        """
+        Get root element.
+        """
+        return self._tree.getroot()
 
 # WARNING: Modifying global state
 # MUST find proper solution
