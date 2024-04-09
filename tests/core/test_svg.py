@@ -361,3 +361,26 @@ def test_embed() -> None:
     outer.embed("slot-2", inner)
     out = outer.to_string()
     assert out == OUTER_OUT
+
+
+D1 = """<svg width="15"></svg>"""
+D2 = """<svg width="15mm"></svg>"""
+D3 = """<svg height="10"></svg>"""
+D4 = """<svg height="10mm"></svg>"""
+D5 = """<svg viewBox="0 0 15 10"></svg>"""
+
+
+@pytest.mark.parametrize(
+    ("s", "expected"), [(D1, 15.0), (D2, 15.0), (D3, 0.0), (D4, 0.0), (D5, 15.0)]
+)
+def test_width(s, expected) -> None:
+    svg = SVG.from_string(s)
+    assert svg.width == expected
+
+
+@pytest.mark.parametrize(
+    ("s", "expected"), [(D1, 0.0), (D2, 0.0), (D3, 10.0), (D4, 10.0), (D5, 10.0)]
+)
+def test_height(s, expected) -> None:
+    svg = SVG.from_string(s)
+    assert svg.height == expected

@@ -342,6 +342,51 @@ class SVG(object):
         # Collect all together
         return " ".join(x for x in (start_transform, tag_transform, end_transform) if x)
 
+    @staticmethod
+    def _get_size(s: str) -> float:
+        """
+        Convert attribute to float size.
+        """
+        if s.endswith("mm"):
+            s = s[:-2]
+        return float(s)
+
+    @property
+    def width(self) -> float:
+        """
+        Get SVG width.
+
+        Returns:
+            SVG width in mm.
+        """
+        el = self._tree.getroot()
+        w = el.get("width")
+        if w is not None:
+            return self._get_size(w)
+        vb = el.get("viewBox")
+        if not vb:
+            return 0.0
+        parts = vb.split()
+        return float(parts[2])
+
+    @property
+    def height(self) -> float:
+        """
+        Get SVG height.
+
+        Returns:
+            SVG height in mm.
+        """
+        el = self._tree.getroot()
+        h = el.get("height")
+        if h is not None:
+            return self._get_size(h)
+        vb = el.get("viewBox")
+        if not vb:
+            return 0.0
+        parts = vb.split()
+        return float(parts[3])
+
 
 # WARNING: Modifying global state
 # MUST find proper solution
