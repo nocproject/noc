@@ -1,7 +1,7 @@
 # ----------------------------------------------------------------------
 # Label model
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2021 The NOC Project
+# Copyright (C) 2007-2024 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -39,7 +39,7 @@ from noc.core.mongo.fields import ForeignKeyField, PlainReferenceField
 from noc.core.change.decorator import change
 from noc.main.models.handler import Handler
 from noc.main.models.remotesystem import RemoteSystem
-from noc.main.models.prefixtable import PrefixTable
+from noc.main.models.prefixtable import PrefixTable, PrefixTablePrefix
 from noc.models import get_model, is_document, get_model_id, LABEL_MODELS
 from noc.vc.models.vlanfilter import VLANFilter
 
@@ -97,13 +97,13 @@ class RegexItem(EmbeddedDocument):
 
 
 class VLANFilterItem(EmbeddedDocument):
-    vlan_filter = PlainReferenceField(VLANFilter)
+    vlan_filter = PlainReferenceField(VLANFilter, required=True)
     condition = StringField(choices=["all", "any"])
     scope = StringField(choices=list(VLANFILTER_LABEL_SCOPES), required=True)
 
 
 class PrefixFilterItem(EmbeddedDocument):
-    prefix_table = ForeignKeyField(PrefixTable)
+    prefix_table = ForeignKeyField(PrefixTable, required=True)
     condition = StringField(choices=["all", "any"])
     scope = StringField(choices=list(PREFIXFILTER_LABEL_SCOPES), required=True)
 
@@ -155,6 +155,7 @@ class Label(Document):
         "json_collection": "main.labels",
         "json_unique_fields": ["name"],
         "indexes": [
+            "name",
             "allow_models",
             ("is_matching", "match_regex.scope"),
             (
@@ -405,14 +406,16 @@ class Label(Document):
             self._ensure_wildcards()
         Label._reset_caches(self.name)
         # Check if unset enable and label added to model
-        if self._created or getattr(self, "_changed_fields", None):
-            if self.is_matching and self.match_regex:
-                self._refresh_regex_labels()
-            # Propagate Wildcard Settings
-            if self.is_wildcard and self.propagate:
-                settings = self.effective_settings
-                coll = Label._get_collection()
-                coll.update_many({"name": re.compile(f"{self.scope}::[^*].+")}, {"$set": settings})
+        cf = getattr(self, "_changed_fields", None) or {}
+        if not cf or "match_regex" in cf or "is_matching" in cf:
+            self._refresh_regex_labels()
+        if not cf or "match_prefixfilter" in cf or "is_matching" in cf:
+            self._refresh_prefixfilter_labels()
+        # Propagate Wildcard Settings
+        if self.is_wildcard and self.propagate:
+            settings = self.effective_settings
+            coll = Label._get_collection()
+            coll.update_many({"name": re.compile(f"{self.scope}::[^*].+")}, {"$set": settings})
 
     def on_delete(self):
         """
@@ -690,6 +693,45 @@ class Label(Document):
                 continue
             r[REGEX_LABEL_SCOPES[ri.scope]] += [ri.regexp]
         return r
+
+    def _refresh_prefixfilter_labels(self):
+        """
+        Recalculate labels on model
+        :return:
+        """
+        c_map = {"all": " AND ", "any": " OR "}
+        logger.info("[%s] Refresh Prefix Filter", self.name)
+        if "sa.ManagedObject" in self.allow_models:
+            Label.remove_model_labels("sa.ManagedObject", [self.name])
+        if not self.is_matching:
+            return
+        for rule in self.match_prefixfilter:
+            model_id, field = PREFIXFILTER_LABEL_SCOPES[rule.scope]
+            if model_id not in self.allow_models:
+                continue
+            model = get_model(model_id)
+            prefixes = [
+                str(p)
+                for p in PrefixTablePrefix.objects.filter(table=rule.prefix_table.id).values_list(
+                    "prefix", flat=True
+                )
+            ]
+            if is_document(model):
+                ...
+            else:
+                condition = c_map[rule.condition].join(
+                    [f"cast_test_to_inet({field}) <<= %s"] * len(prefixes)
+                )
+                params = [[self.name]] + prefixes
+                sql = f"""
+                UPDATE {model._meta.db_table}
+                SET effective_labels=ARRAY (
+                SELECT DISTINCT e FROM unnest(effective_labels || %s::varchar[]) AS a(e)
+                )
+                WHERE {condition}
+                """
+                with pg_connection.cursor() as cursor:
+                    cursor.execute(sql, params)
 
     def _refresh_regex_labels(self):
         """

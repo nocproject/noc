@@ -103,10 +103,10 @@ class Target(
         :param source:
         :return:
         """
-        if self.syslog_source_type == "a":
-            return True
         if source == "s" and not self.syslog_source_ip:
             return False
+        if self.syslog_source_type == "a":
+            return True
         return self.syslog_source_type == source
 
     def enable_snmptrap_source(self, source: str) -> bool:
@@ -115,10 +115,10 @@ class Target(
         :param source:
         :return:
         """
-        if self.trap_source_type == "a":
-            return True
         if source == "s" and not self.trap_source_ip:
             return False
+        if self.trap_source_type == "a":
+            return True
         return self.trap_source_type == source
 
     def get_syslog_archive_policy(self):

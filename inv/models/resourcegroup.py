@@ -262,7 +262,7 @@ class ResourceGroup(Document):
         if is_document(model):
             return list(model.objects.filter(**{query: resource_group}).values_list("id"))
         return list(
-            model.objects.filter(**{f"{query}__contains": str(resource_group)}).values_list(
+            model.objects.filter(**{f"{query}__contains": [str(resource_group)]}).values_list(
                 "id", flat=True
             )
         )
