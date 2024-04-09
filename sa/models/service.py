@@ -255,7 +255,7 @@ class Service(Document):
             return
         svc = get_service()
         stream, partition = mo.alarms_stream_and_partition
-        logger.info(f"[%s] Send message: %s", self.id, msg)
+        logger.info("[%s] Send message: %s", self.id, msg)
         svc.publish(orjson.dumps(msg), stream=stream, partition=partition)
 
     def refresh_status(self):

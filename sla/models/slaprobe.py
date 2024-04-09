@@ -23,7 +23,6 @@ from mongoengine.fields import (
     DateTimeField,
     LongField,
     IntField,
-    ReferenceField,
     DictField,
 )
 from pymongo import ReadPreference

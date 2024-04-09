@@ -990,4 +990,3 @@ class ComponentHub(object):
 # Avoid circular references
 from .archivedalarm import ArchivedAlarm
 from .utils import get_alarm
-from noc.sa.models.service import Service
