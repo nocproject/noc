@@ -178,7 +178,6 @@ class MapApplication(ExtApplication):
         :param link_id:
         :return:
         """
-        self.get_object_or_404(NetworkSegment, id=id)
         link = self.get_object_or_404(Link, id=link_id)
         r = {
             "id": str(link.id),
