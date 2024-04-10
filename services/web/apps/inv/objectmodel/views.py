@@ -8,8 +8,10 @@
 # Python modules
 from collections import defaultdict
 
+
 # Third-party modules
 from mongoengine.queryset import Q
+from django.http import HttpResponse
 
 # NOC modules
 from noc.services.web.base.extdocapplication import ExtDocApplication, view
@@ -20,6 +22,7 @@ from noc.inv.models.protocol import ProtocolVariant
 from noc.sa.interfaces.base import ListOfParameter, DocumentParameter
 from noc.core.prettyjson import to_json
 from noc.core.translation import ugettext as _
+from noc.core.facade.template import get_facade_template
 
 
 class ObjectModelApplication(ExtDocApplication):
@@ -159,3 +162,8 @@ class ObjectModelApplication(ExtDocApplication):
         r = [o.json_data for o in ids]
         s = to_json(r, order=["name", "vendor__code", "description"])
         return {"data": s}
+
+    @view(url="^(?P<id>[0-9a-f]{24})/template.svg$", method=["GET"], access="read", api=True)
+    def api_template(self, request, id):
+        o=self.get_object_or_404(ObjectModel, id=id)
+        return HttpResponse(get_facade_template(o), content_type="image/svg+xml", status=200)

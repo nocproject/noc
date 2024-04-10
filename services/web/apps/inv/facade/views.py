@@ -20,12 +20,13 @@ class FacadeApplication(ExtDocApplication):
     Facade application
     """
 
-    title = "Facade"
+    title = _("Facades")
     menu = [_("Setup"), _("Facades")]
     model = Facade
     parent_model = DocCategory
     parent_field = "parent"
     query_fields = ["name__icontains", "description__icontains"]
+    glyph = "table"
 
     @view(url="^(?P<id>[0-9a-f]{24})/facade.svg$", method=["GET"], access="read", api=True)
     def api_svg(self, request, id: str):

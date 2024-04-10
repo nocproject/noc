@@ -104,17 +104,18 @@ class ConnectionType(Document):
         r = {
             "name": self.name,
             "$collection": self._meta["json_collection"],
-            "uuid": self.uuid,
-            "description": self.description,
-            "genders": self.genders,
-            "c_group": self.c_group,
+            "uuid": self.uuid
         }
+        if self.description:
+            r["description"]=self.description,
+        r["genders"]= self.genders,
+        r["c_group"]= self.c_group,
         if self.extend:
             r["extend__name"] = self.extend.name
         if self.matchers:
             r["matchers"] = [m.json_data for m in self.matchers]
         if self.facade:
-            r["facade__name"] = self.facade
+            r["facade__name"] = self.facade.name
         return r
 
     def to_json(self) -> str:
