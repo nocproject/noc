@@ -108,8 +108,8 @@ class ConnectionType(Document):
         }
         if self.description:
             r["description"]=self.description,
-        r["genders"]= self.genders,
-        r["c_group"]= self.c_group,
+        r["genders"]= self.genders
+        r["c_group"]= self.c_group
         if self.extend:
             r["extend__name"] = self.extend.name
         if self.matchers:
