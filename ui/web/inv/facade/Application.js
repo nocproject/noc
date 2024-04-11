@@ -46,30 +46,33 @@ Ext.define("NOC.inv.facade.Application", {
                     name: "uuid",
                     xtype: "displayfield",
                     fieldLabel: __("UUID"),
+                    allowBlank: false,
                 },
                 {
                     name: "description",
                     xtype: "textarea",
                     fieldLabel: __("Description"),
+                    allowBlank: false,
                 },
                 {
                   
                     xtype: "filefield",
                     name: "svgFile",
-                    fieldLabel: "SVG",
+                    fieldLabel: __("SVG"),
+                    allowBlank: false,
                     labelWidth: 50,
-                    buttonText: "Select file...",
+                    buttonText: __("Select file..."),
+                    emptyText: __("Please upload an SVG image"),
                     listeners: {
                         change: function(field){
-                            var element, file,
+                            var file,
                                 elementExt = field.getEl();
 
                             if(!elementExt){
                                 return;
                             }
 
-                            element = elementExt.down("input[type=file]");
-                            file = element.dom.files[0];
+                            file = field.fileInputEl.dom.files[0];
 
                             if(file){
                                 var reader = new FileReader();
@@ -85,7 +88,8 @@ Ext.define("NOC.inv.facade.Application", {
 
                                 reader.readAsText(file);
                             }
-                        }
+                        },
+                        afterrender: this.setAccept,
                     },
                 },
                 {
@@ -105,6 +109,20 @@ Ext.define("NOC.inv.facade.Application", {
             ],
         });
         me.callParent();
+    },
+    newRecord: function(defaults){
+        this.callParent([defaults]);
+        this.setAccept();
+    },
+    editRecord: function(record){
+        this.callParent([record]);
+        this.setAccept();
+    },
+    setAccept: function(){
+        if(Ext.isFunction(this.down)){
+            this.down("button[itemId=save]").setDisabled(true);
+            this.down("field[name=svgFile]").fileInputEl.dom.setAttribute("accept", ".svg");
+        }
     },
     //
     onJSON: function(){
