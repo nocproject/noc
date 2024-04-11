@@ -17,6 +17,7 @@ from .base import InvPlugin
 from noc.inv.models.facade import Facade
 from noc.inv.models.object import Object
 from noc.core.svg import SVG
+from noc.core.facade.utils import slot_to_id
 
 
 class FacadePlugin(InvPlugin):
@@ -88,7 +89,7 @@ class FacadePlugin(InvPlugin):
             if mod_svg:
                 # Embed module
                 try:
-                    svg.embed(f"slot-{name}", mod_svg)
+                    svg.embed(slot_to_id(name), mod_svg)
                 except ValueError:
                     pass
         return svg

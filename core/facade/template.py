@@ -6,17 +6,15 @@
 # ---------------------------------------------------------------------
 
 # Python modules
-import re
 import xml.etree.ElementTree as ET
-from typing import Dict, Tuple, Optional
+from typing import Dict, Optional
 from dataclasses import dataclass
 
 # NOC modules
 from noc.inv.models.objectmodel import ObjectModel
 from noc.core.svg import SVG
+from .utils import name_to_id, name_to_title, slot_to_id
 
-rx_id = re.compile("[^a-z-A-Z0-9]")
-PLACEHOLDER = "-"
 NS_SVG = "http://www.w3.org/2000/svg"
 NS_XLINK = "http://www.w3.org/1999/xlink"
 DIR_FILTER = ("i", "s")
@@ -52,29 +50,6 @@ class ConnectionTypeInfo(object):
     def inc_x(self: "ConnectionTypeInfo") -> None:
         """Increase current x position to width"""
         self.x += self.width + HORIZONTAL_GAP
-
-
-def name_to_id(name: str) -> str:
-    """
-    Convert name to valid id.
-    """
-    parts = [rx_id.sub(PLACEHOLDER, x.strip()).lower() for x in name.split("|")]
-    return f"noc-{PLACEHOLDER.join(parts)}"
-
-
-def name_to_title(name: str) -> str:
-    """
-    Use last part of name as title.
-    """
-    return name.split("|")[-1].strip()
-
-
-def slot_to_id(name: str) -> str:
-    """
-    Convert slot name to id.
-    """
-    s = rx_id.sub(PLACEHOLDER, name).lower()
-    return f"slot-{s}"
 
 
 def get_facade_template(model: ObjectModel) -> str:
@@ -132,7 +107,10 @@ def get_facade_template(model: ObjectModel) -> str:
         slot_id = slot_to_id(conn.name)
         # Append connnection type if necessary
         if ct_id not in conn_types:
-            y = VERTICAL_GAP * len(conn_types) + sum(ct.height for ct in conn_types.values())
+            y = max(
+                VERTICAL_GAP * len(conn_types) + sum(ct.height for ct in conn_types.values()),
+                VERTICAL_GAP,
+            )
             if conn.type.facade:
                 svg_el = SVG.from_string(conn.type.facade.data)
                 width = svg_el.width
@@ -181,9 +159,9 @@ def get_facade_template(model: ObjectModel) -> str:
     if conn_types:
         el = ET.Element(f"{{{NS_SVG}}}defs")
         svg.insert(0, el)
-        for sn, d in conn_types.items():
-            if d.el:
-                el.append(d.el)
+        for ct in conn_types.values():
+            if ct.el:
+                el.append(ct.el)
     # Format tree
     ET.indent(tree)
     out = ET.tostring(tree.getroot(), encoding="unicode", method=None)
