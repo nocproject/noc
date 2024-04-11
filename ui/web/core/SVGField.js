@@ -10,9 +10,9 @@ Ext.define("NOC.core.SVGField", {
   extend: "Ext.form.field.Base",
   alias: "widget.svgfield",
 
-  requires: ["Ext.form.field.File"],
   config: {
     accept: ".svg",
+    glyph: NOC.glyph.upload,
   },
 
   fieldSubTpl: [
@@ -20,10 +20,10 @@ Ext.define("NOC.core.SVGField", {
     '<img id="{cmpId}-inputEl-imageEl" src="" height="100" width="100">',
     '<input id="{cmpId}-inputEl-fileInputEl" type="file" accept="{accept}" style="display:none">',
     '<label for="{cmpId}-inputEl-fileInputEl" class="x-btn x-btn-default-toolbar-small" style="height:32px">',
-    '<span style="font-family:FontAwesome" class="x-btn-glyph">' +
-      NOC.glyph.save +
-      "</span>",
-    __("Select File..."),
+    '<span style="font-family:FontAwesome" class="x-btn-glyph x-btn-icon-el-default-toolbar-small">{glyph}</span>',
+    '<span class="x-btn-innner x-btn-inner-default-toolbar-small">',
+    __("Select Image..."),
+    "</span>",
     "</label>",
     "</div>",
   ],
@@ -39,6 +39,7 @@ Ext.define("NOC.core.SVGField", {
       args;
     args = me.callParent([data]);
     args.accept = me.accept || null;
+    args.glyph = "&#x" + me.glyph.toString(16) + ";";
     return args;
   },
 
