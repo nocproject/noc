@@ -18,7 +18,13 @@ Ext.define("NOC.core.SVGField", {
   fieldSubTpl: [
     "<div style='display:flex;'>",
     '<img id="{cmpId}-inputEl-imageEl" src="" height="100" width="100">',
-    '<input id="{cmpId}-inputEl-fileInputEl" type="file" accept="{accept}">',
+    '<input id="{cmpId}-inputEl-fileInputEl" type="file" accept="{accept}" style="display:none">',
+    '<label for="{cmpId}-inputEl-fileInputEl" class="x-btn x-btn-default-toolbar-small" style="height:32px">',
+    '<span style="font-family:FontAwesome" class="x-btn-glyph">' +
+      NOC.glyph.save +
+      "</span>",
+    __("Select File..."),
+    "</label>",
     "</div>",
   ],
 
@@ -33,7 +39,6 @@ Ext.define("NOC.core.SVGField", {
       args;
     args = me.callParent([data]);
     args.accept = me.accept || null;
-    console.log(">", args);
     return args;
   },
 
