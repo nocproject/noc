@@ -138,16 +138,52 @@ Ext.define("NOC.inv.objectmodel.Application", {
           allowBlank: false,
         },
         {
-          name: "front_facade",
-          xtype: "inv.facade.LookupField",
-          fieldLabel: __("Front Facade"),
-          allowBlank: true
+          xtype: "container",
+          layout: {
+            type: "hbox",
+          },
+          items: [
+            {
+              name: "front_facade",
+              xtype: "inv.facade.LookupField",
+              fieldLabel: __("Front Facade"),
+              allowBlank: true,
+              listeners: {
+                change: this.changeTemplateButtonState
+              }
+            },
+            {
+              xtype: "button",
+              itemId: "front_facadeBtn",
+              text: __("Download template"),
+              margin: "0 0 0 5",
+              handler: this.templateCheck,
+            }
+          ]
         },
         {
-          name: "rear_facade",
-          xtype: "inv.facade.LookupField",
-          fieldLabel: __("Rear Facade"),
-          allowBlank: true
+          xtype: "container",
+          layout: {
+            type: "hbox",
+          },
+          items: [
+            {
+              name: "rear_facade",
+              xtype: "inv.facade.LookupField",
+              fieldLabel: __("Rear Facade"),
+              allowBlank: true,
+              listeners: {
+                change: this.changeTemplateButtonState
+              }
+            },
+            {
+              xtype: "button",
+              itemId: "rear_facadeBtn",
+              text: __("Download template"),
+              margin: "0 0 0 5",
+              handler: this.templateCheck,
+            }
+          ]
         },
         {
           name: "configuration_rule",
@@ -562,6 +598,10 @@ Ext.define("NOC.inv.objectmodel.Application", {
     });
     me.callParent();
   },
+  editRecord: function(record){
+    this.callParent([record]);
+    this.enableRearFacade(record);
+  },
   //
   onJSON: function () {
     var me = this;
@@ -616,5 +656,21 @@ Ext.define("NOC.inv.objectmodel.Application", {
     }
     var n = +m[2] + 1;
     record.set("name", m[1] + n);
+  },
+  enableRearFacade: function (record) {
+    var hasRearFacade = Ext.Array.findBy(record.get("connections"), function (e) { return e.direction === "i" }) ? true : false;
+    Ext.Array.each(["front_facade", "rear_facade"], function (btn) {
+      this.down("button[itemId=" + btn + "Btn]").setDisabled(record.get(btn));
+    }, this);
+    this.down("field[name=rear_facade]").setDisabled(!hasRearFacade); 
+  },
+  changeTemplateButtonState: function (field, value) {
+    var btn = field.up().down("button[itemId=" + field.name + "Btn]");
+    btn.setDisabled(value);
+  },
+  templateCheck: function (btn) {
+    var id = this.up("[appId=inv.objectmodel]").currentRecord.id,
+        path = Ext.String.format("/inv/objectmodel/{0}/template.svg", id);
+    window.open(path, "_blank");
   },
 });
