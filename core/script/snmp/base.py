@@ -16,8 +16,7 @@ from gufo.snmp.user import User, Aes128Key, DesKey, Md5Key, Sha1Key, KeyType
 
 
 # NOC modules
-from noc.core.ioloop.snmp import snmp_get, snmp_count, snmp_getnext, snmp_set
-from noc.core.snmp.error import SNMPError, TIMED_OUT, BAD_VALUE
+from noc.core.snmp.error import SNMPError, BAD_VALUE
 from noc.core.snmp.version import SNMP_v1, SNMP_v2c, SNMP_v3
 from noc.core.log import PrefixLoggerAdapter
 from noc.core.ioloop.udp import UDPSocket
