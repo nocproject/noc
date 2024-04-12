@@ -262,7 +262,6 @@ class SNMP(object):
         if raw_varbinds:
             raise NotImplementedError(
                 "`raw_varbinds` parameter is not supported in gufo SNMP implementation."
-                "Use native SNMP implementation. Set config.activator.snmp_backend to 'native'"
             )
 
         oid_map = {}
@@ -285,7 +284,6 @@ class SNMP(object):
         """
         raise NotImplementedError(
             "Method `set` is not yet implemented in gufo SNMP implementation."
-            "Use native SNMP implementation. Set config.activator.snmp_backend to 'native'"
         )
 
     def count(self, oid, filter=None, version=None, timeout: int = 10) -> int:
@@ -383,7 +381,6 @@ class SNMP(object):
         if raw_varbinds:
             raise NotImplementedError(
                 "`raw_varbinds` parameter is not supported in gufo SNMP implementation."
-                "Use native SNMP implementation. Set config.activator.snmp_backend to 'native'"
             )
         bulk = self.script.has_snmp_bulk() if bulk is None else bulk
         if display_hints is None:
