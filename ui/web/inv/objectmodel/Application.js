@@ -598,7 +598,7 @@ Ext.define("NOC.inv.objectmodel.Application", {
     });
     me.callParent();
   },
-  editRecord: function(record){
+  editRecord: function (record) {
     this.callParent([record]);
     this.enableRearFacade(record);
   },
@@ -658,19 +658,47 @@ Ext.define("NOC.inv.objectmodel.Application", {
     record.set("name", m[1] + n);
   },
   enableRearFacade: function (record) {
-    var hasRearFacade = Ext.Array.findBy(record.get("connections"), function (e) { return e.direction === "i" }) ? true : false;
+    var hasRearFacade = Ext.Array.findBy(record.get("connections"), function (e) {return e.direction === "i"}) ? true : false;
     Ext.Array.each(["front_facade", "rear_facade"], function (btn) {
       this.down("button[itemId=" + btn + "Btn]").setDisabled(record.get(btn));
     }, this);
-    this.down("field[name=rear_facade]").setDisabled(!hasRearFacade); 
+    this.down("field[name=rear_facade]").setDisabled(!hasRearFacade);
   },
   changeTemplateButtonState: function (field, value) {
     var btn = field.up().down("button[itemId=" + field.name + "Btn]");
     btn.setDisabled(value);
   },
-  templateCheck: function (btn) {
-    var id = this.up("[appId=inv.objectmodel]").currentRecord.id,
-        path = Ext.String.format("/inv/objectmodel/{0}/template.svg", id);
-    window.open(path, "_blank");
+  templateCheck: function () {
+    var me = this.up("[appId=inv.objectmodel]"),
+      record = me.currentRecord,
+      path = Ext.String.format("/inv/objectmodel/{0}/template.svg", record.id),
+      isRack = me.checkAttrData(record.get("data"));
+    if(isRack) {
+      var a = document.createElement("a");
+      a.href = path;
+      a.download = '';
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+    }
   },
+  checkAttrData: function (array) {
+    var result,
+      isRack = Ext.Array.findBy(array, function(e) {return e.attr === "units" && e.interface === "rackmount"}) ? true : false,
+      dimensionsArray = Ext.Array.findBy(array, function(e) {return e.attr === "dimensions"});
+    if(isRack) {return true;}
+    if(dimensionsArray.length !== 2) {
+      return false;
+    }
+    result = Ext.Array.reduce(dimensionsArray, function(acc, item) {
+      if(item.dimensions === "width") {
+        acc.width = true;
+      }
+      if(item.dimensions === "height") {
+        acc.height = true;
+      }
+      return acc;
+    }, {width: false, height: false});
+    return result.width && result.height;
+  }
 });
