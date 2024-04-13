@@ -200,8 +200,15 @@ class Service(Document):
         if mo:
             ServiceSummary.refresh_object(mo)
 
-    def set_oper_status(self, status: Status):
+    def set_oper_status(self, status: Status, timestamp: Optional[datetime.datetime] = None):
+        """
+
+        :param status:
+        :param timestamp: Time when status changed
+        :return:
+        """
         if self.oper_status == status:
+            logger.debug("[%s] Status is same. Skipping", self.id, self.oper_status)
             return
         logger.info(
             "[%s] Change service status: %s -> %s",
@@ -209,21 +216,61 @@ class Service(Document):
             self.oper_status,
             status,
         )
+        timestamp = timestamp or datetime.datetime.now().replace(microsecond=0)
+        if self.oper_status_change and self.oper_status_change > timestamp:
+            logger.warning(
+                "[%s] New status timestamp LESS then current: '%s'. Reset timestamp",
+                self.id,
+                timestamp,
+            )
+            timestamp = datetime.datetime.now().replace(microsecond=0)
+            return
         # Register Outage, Register Maintenance
-        os = self.oper_status
+        os, ots = self.oper_status, self.oper_status_change
+
         self.oper_status = status
-        self.oper_status_change = datetime.datetime.now().replace(microsecond=0)
+        self.oper_status_change = timestamp
         Service.objects.filter(id=self.id).update(
             oper_status=self.oper_status, oper_status_change=self.oper_status_change
         )
+        # Register outage
+        now = datetime.datetime.now().replace(microsecond=0)
+        svcs = get_service()
+        svcs.register_metrics(
+            "serviceoutages",
+            [
+                {
+                    "date": now.date().isoformat(),
+                    "ts": now.replace(microsecond=0).isoformat(sep=" "),
+                    "service": self.bi_id,
+                    "service_id": str(self.id),
+                    # Outage
+                    "start": ots.isoformat(sep=" "),
+                    "stop": self.oper_status_change.isoformat(sep=" "),
+                    "from_status": os,
+                    "to_status": self.oper_status,
+                    "in_maintenance": self.in_maintenance,
+                    # "caps": orjson.dumps(service.get_caps()).decode("utf-8")
+                }
+            ],
+        )
+
         # Run Service Status Refresh
         # Set Outage
         if len(self.service_path) != 1:
-            # only Root service
+            # Only Root service
             return
-        mo = self.managed_object or ManagedObject.objects.get(id=1)
+        self.register_alarm(os)
+
+    def register_alarm(self, old_status: Status):
+        """
+        Register Group alarm when changed Oper Status
+        :param old_status:
+        :return:
+        """
+        mo = self.managed_object or ManagedObject.get_by_id(id=1)
         # Raise alarm
-        if self.oper_status > Status.UP >= os:
+        if self.oper_status > Status.UP >= old_status:
             msg = {
                 "$op": "raise",
                 "reference": f"{SVC_REF_PREFIX}:{self.id}",
@@ -236,7 +283,7 @@ class Service(Document):
                     "type": self.profile.name,
                     "service": str(self.id),
                     "status": self.oper_status.name,
-                    "message": f"Service status changed from {os.name} to {self.oper_status.name}",
+                    "message": f"Service status changed from {old_status.name} to {self.oper_status.name}",
                 },
             }
             caps = self.get_caps()
@@ -244,7 +291,7 @@ class Service(Document):
                 msg["vars"]["address"] = caps["Channel | Address"]
             if self.interface_id:
                 msg["vars"]["interface"] = self.interface.name
-        elif self.oper_status <= Status.UP < os:
+        elif self.oper_status <= Status.UP < old_status:
             msg = {
                 "$op": "clear",
                 "reference": f"{SVC_REF_PREFIX}:{self.id}",
@@ -255,7 +302,7 @@ class Service(Document):
             return
         svc = get_service()
         stream, partition = mo.alarms_stream_and_partition
-        logger.info("[%s] Send message: %s", self.id, msg)
+        logger.info("[%s] Send alarm message: %s", self.id, msg)
         svc.publish(orjson.dumps(msg), stream=stream, partition=partition)
 
     def refresh_status(self):

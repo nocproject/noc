@@ -42,6 +42,7 @@ from noc.core.bi.decorator import bi_sync
 from noc.core.wf.decorator import workflow
 from noc.core.models.cfgmetrics import MetricCollectorConfig, MetricItem
 from noc.core.model.sql import SQL
+from noc.core.model.decorator import on_delete_check
 from noc.config import config
 
 PROBE_TYPES = IGetSLAProbes.returns.element.attrs["type"].choices
@@ -54,6 +55,9 @@ _target_cache = cachetools.TTLCache(maxsize=100, ttl=60)
 @change
 @bi_sync
 @workflow
+@on_delete_check(
+    clean=[("sa.Service", "sla_probe")],
+)
 class SLAProbe(Document):
     meta = {
         "collection": "noc.sla_probes",

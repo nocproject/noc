@@ -134,213 +134,217 @@ Ext.define("NOC.sa.serviceprofile.Application", {
                 {
                     name: "weight",
                     xtype: "numberfield",
-                    fieldLabel: __("Alarm weight"),
+                    fieldLabel: __("Service weight"),
                     allowBlank: true,
                     uiStyle: "small"
                 },
                 {
-                    name: "status_transfer_policy",
-                    xtype: "combobox",
-                    fieldLabel: __("Status Transfer Policy"),
-                    tooltip: __("Transfer children Status to OperStatus <br/>" +
-                        'D - Disable Status Transfer<br/>' +
-                        'T - All Status transfer' +
-                        'R - Transfer By Rule'),
-                    store: [
-                        ["D", __("Disable")],
-                        ["T", __("Transparent")],
-                        ["R", __("By Rule")]
-                    ],
-                    allowBlank: true,
-                    value: "T",
-                    uiStyle: "medium",
-                    listeners: {
-                        render: me.addTooltip
-                    }
-                },
-                {
-                    name: "status_transfer_rule",
-                    fieldLabel: __("Status Transfer Rule"),
-                    xtype: "gridfield",
-                    allowBlank: true,
-                    width: 350,
-                    columns: [
+                    xtype: "fieldset",
+                    title: __("Nested Status Transfer"),
+                    items: [
                         {
-                            text: __("Service Profile"),
-                            dataIndex: "service_profile",
-                            width: 200,
-                            editor: "sa.serviceprofile.LookupField",
+                            name: "status_transfer_policy",
+                            xtype: "combobox",
+                            fieldLabel: __("Status Transfer Policy"),
+                            tooltip: __("Transfer children Status to OperStatus <br/>" +
+                                'D - Disable Status Transfer<br/>' +
+                                'T - All Status transfer' +
+                                'R - Transfer By Rule'),
+                            store: [
+                                ["D", __("Disable")],
+                                ["T", __("Transparent")],
+                                ["R", __("By Rule")]
+                            ],
                             allowBlank: true,
-                            renderer: NOC.render.Lookup("service_profile")
-                        },
-                        {
-                            text: __("Op"),
-                            dataIndex: "op",
-                            width: 100,
-                            editor: {
-                                xtype: "combobox",
-                                store: [
-                                    ["<=", "<="],
-                                    ["=", "="],
-                                    [">=", ">="]
-                                ]
-                            },
-                            renderer: NOC.render.Choices({
-                                "<=": "<=",
-                                "=": "=",
-                                ">=": ">="
-                            })
-                        },
-                        {
-                            text: __("Weight"),
-                            dataIndex: "weight",
-                            editor: {
-                                xtype: "numberfield"
+                            value: "T",
+                            uiStyle: "medium",
+                            listeners: {
+                                render: me.addTooltip
                             }
                         },
                         {
-                            text: __("Status"),
-                            dataIndex: "status",
-                            width: 100,
-                            editor: {
-                                xtype: "combobox",
-                                store: [
-                                    [0, "UNKNOWN"],
-                                    [1, "UP"],
-                                    [2, "SLIGHTLY_DEGRADED"],
-                                    [3, "DEGRADED"],
-                                    [4, "DOWN"]
-                                ]
-                            },
-                            renderer: NOC.render.Choices({
-                                0: "UNKNOWN",
-                                1: "UP",
-                                2: "SLIGHTLY_DEGRADED",
-                                3: "DEGRADED",
-                                4: "DOWN"
-                            })
+                            name: "status_transfer_rule",
+                            fieldLabel: __("Status Transfer Rule"),
+                            xtype: "gridfield",
+                            allowBlank: true,
+                            columns: [
+                                {
+                                    text: __("Service Profile"),
+                                    dataIndex: "service_profile",
+                                    width: 200,
+                                    editor: "sa.serviceprofile.LookupField",
+                                    allowBlank: true,
+                                    renderer: NOC.render.Lookup("service_profile")
+                                },
+                                {
+                                    text: __("Op"),
+                                    dataIndex: "op",
+                                    width: 100,
+                                    editor: {
+                                        xtype: "combobox",
+                                        store: [
+                                            ["<=", "<="],
+                                            ["=", "="],
+                                            [">=", ">="]
+                                        ]
+                                    },
+                                    renderer: NOC.render.Choices({
+                                        "<=": "<=",
+                                        "=": "=",
+                                        ">=": ">="
+                                    })
+                                },
+                                {
+                                    text: __("Weight"),
+                                    dataIndex: "weight",
+                                    editor: {
+                                        xtype: "numberfield"
+                                    }
+                                },
+                                {
+                                    text: __("Status"),
+                                    dataIndex: "status",
+                                    width: 100,
+                                    editor: {
+                                        xtype: "combobox",
+                                        store: [
+                                            [0, "UNKNOWN"],
+                                            [1, "UP"],
+                                            [2, "SLIGHTLY_DEGRADED"],
+                                            [3, "DEGRADED"],
+                                            [4, "DOWN"]
+                                        ]
+                                    },
+                                    renderer: NOC.render.Choices({
+                                        0: "UNKNOWN",
+                                        1: "UP",
+                                        2: "SLIGHTLY_DEGRADED",
+                                        3: "DEGRADED",
+                                        4: "DOWN"
+                                    })
+                                },
+                                {
+                                    text: __("To Status"),
+                                    dataIndex: "to_status",
+                                    width: 100,
+                                    editor: {
+                                        xtype: "combobox",
+                                        store: [
+                                            [0, "UNKNOWN"],
+                                            [1, "UP"],
+                                            [2, "SLIGHTLY_DEGRADED"],
+                                            [3, "DEGRADED"],
+                                            [4, "DOWN"]
+                                        ]
+                                    },
+                                    renderer: NOC.render.Choices({
+                                        0: "UNKNOWN",
+                                        1: "UP",
+                                        2: "SLIGHTLY_DEGRADED",
+                                        3: "DEGRADED",
+                                        4: "DOWN"
+                                    })
+                                }
+                            ]
                         },
                         {
-                            text: __("To Status"),
-                            dataIndex: "to_status",
-                            width: 100,
-                            editor: {
-                                xtype: "combobox",
-                                store: [
-                                    [0, "UNKNOWN"],
-                                    [1, "UP"],
-                                    [2, "SLIGHTLY_DEGRADED"],
-                                    [3, "DEGRADED"],
-                                    [4, "DOWN"]
-                                ]
-                            },
-                            renderer: NOC.render.Choices({
-                                0: "UNKNOWN",
-                                1: "UP",
-                                2: "SLIGHTLY_DEGRADED",
-                                3: "DEGRADED",
-                                4: "DOWN"
-                            })
-                        }
-                    ]
-                },
-                {
-                    name: "status_transfer_function",
-                    xtype: "combobox",
-                    fieldLabel: __("Status Transfer Function"),
-                    tooltip: __("Aggregate function apply to statuses <br/>" +
-                        'P - Calculate status percent<br/>' +
-                        'MIN - Minimal Status and Weight' +
-                        'MAX - Maximum Status and Weight' +
-                        'SUM - Summary Status and Weight'),
-                    store: [
-                        ["P", __("By Percent")],
-                        ["MIN", __("Minimal")],
-                        ["MAX", __("Maximal")],
-                        ["SUM", __("Sum Weight")]
-                    ],
-                    allowBlank: true,
-                    value: "MIN",
-                    uiStyle: "medium",
-                    listeners: {
-                        render: me.addTooltip
-                    }
-                },
-                {
-                    name: "status_transfer_map",
-                    fieldLabel: __("Status Transfer Map"),
-                    xtype: "gridfield",
-                    allowBlank: true,
-                    width: 350,
-                    columns: [
-                        {
-                            text: __("Op"),
-                            dataIndex: "op",
-                            width: 100,
-                            editor: {
-                                xtype: "combobox",
-                                store: [
-                                    ["<=", "<="],
-                                    ["=", "="],
-                                    [">=", ">="]
-                                ]
-                            },
-                            renderer: NOC.render.Choices({
-                                "<=": "<=",
-                                "=": "=",
-                                ">=": ">="
-                            })
-                        },
-                        {
-                            text: __("Weight"),
-                            dataIndex: "weight",
-                            editor: {
-                                xtype: "numberfield"
+                            name: "status_transfer_function",
+                            xtype: "combobox",
+                            fieldLabel: __("Status Transfer Function"),
+                            tooltip: __("Aggregate function apply to statuses <br/>" +
+                                'P - Calculate status percent<br/>' +
+                                'MIN - Minimal Status and Weight' +
+                                'MAX - Maximum Status and Weight' +
+                                'SUM - Summary Status and Weight'),
+                            store: [
+                                ["P", __("By Percent")],
+                                ["MIN", __("Minimal")],
+                                ["MAX", __("Maximal")],
+                                ["SUM", __("Sum Weight")]
+                            ],
+                            allowBlank: true,
+                            value: "MIN",
+                            uiStyle: "medium",
+                            listeners: {
+                                render: me.addTooltip
                             }
                         },
                         {
-                            text: __("Status"),
-                            dataIndex: "status",
-                            width: 100,
-                            editor: {
-                                xtype: "combobox",
-                                store: [
-                                    [0, "UNKNOWN"],
-                                    [1, "UP"],
-                                    [2, "SLIGHTLY_DEGRADED"],
-                                    [3, "DEGRADED"],
-                                    [4, "DOWN"]
-                                ]
-                            },
-                            renderer: NOC.render.Choices({
-                                0: "UNKNOWN",
-                                1: "UP",
-                                2: "SLIGHTLY_DEGRADED",
-                                3: "DEGRADED",
-                                4: "DOWN"
-                            })
-                        },
-                        {
-                            text: __("To Status"),
-                            dataIndex: "to_status",
-                            width: 100,
-                            editor: {
-                                xtype: "combobox",
-                                store: [
-                                    [0, "UNKNOWN"],
-                                    [1, "UP"],
-                                    [2, "SLIGHTLY_DEGRADED"],
-                                    [3, "DEGRADED"],
-                                    [4, "DOWN"]
-                                ]
-                            },
-                            renderer: NOC.render.Choices({
-                                0: "UNKNOWN",
-                                1: "UP",
-                                2: "SLIGHTLY_DEGRADED",
-                                3: "DEGRADED",
-                                4: "DOWN"
-                            })
+                            name: "status_transfer_map",
+                            fieldLabel: __("Status Transfer Map"),
+                            xtype: "gridfield",
+                            allowBlank: true,
+                            columns: [
+                                {
+                                    text: __("Op"),
+                                    dataIndex: "op",
+                                    width: 100,
+                                    editor: {
+                                        xtype: "combobox",
+                                        store: [
+                                            ["<=", "<="],
+                                            ["=", "="],
+                                            [">=", ">="]
+                                        ]
+                                    },
+                                    renderer: NOC.render.Choices({
+                                        "<=": "<=",
+                                        "=": "=",
+                                        ">=": ">="
+                                    })
+                                },
+                                {
+                                    text: __("Weight"),
+                                    dataIndex: "weight",
+                                    editor: {
+                                        xtype: "numberfield"
+                                    }
+                                },
+                                {
+                                    text: __("Min. Status"),
+                                    dataIndex: "status",
+                                    width: 100,
+                                    editor: {
+                                        xtype: "combobox",
+                                        store: [
+                                            [0, "UNKNOWN"],
+                                            [1, "UP"],
+                                            [2, "SLIGHTLY_DEGRADED"],
+                                            [3, "DEGRADED"],
+                                            [4, "DOWN"]
+                                        ]
+                                    },
+                                    renderer: NOC.render.Choices({
+                                        0: "UNKNOWN",
+                                        1: "UP",
+                                        2: "SLIGHTLY_DEGRADED",
+                                        3: "DEGRADED",
+                                        4: "DOWN"
+                                    })
+                                },
+                                {
+                                    text: __("To Status"),
+                                    dataIndex: "to_status",
+                                    width: 100,
+                                    editor: {
+                                        xtype: "combobox",
+                                        store: [
+                                            [0, "UNKNOWN"],
+                                            [1, "UP"],
+                                            [2, "SLIGHTLY_DEGRADED"],
+                                            [3, "DEGRADED"],
+                                            [4, "DOWN"]
+                                        ]
+                                    },
+                                    renderer: NOC.render.Choices({
+                                        0: "UNKNOWN",
+                                        1: "UP",
+                                        2: "SLIGHTLY_DEGRADED",
+                                        3: "DEGRADED",
+                                        4: "DOWN"
+                                    })
+                                }
+                            ]
                         }
                     ]
                 },
@@ -449,7 +453,7 @@ Ext.define("NOC.sa.serviceprofile.Application", {
                                 }
 
                             ]
-                        },
+                        }
                     ]
                 },
                 {
