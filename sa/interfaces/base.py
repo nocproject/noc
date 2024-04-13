@@ -679,18 +679,11 @@ class IPParameter(StringParameter):
     """
 
     def clean(self, value):
-        if isinstance(value, bytes):
-            if len(value) == 4:
-                return IPv4Parameter().clean(value)
-            elif len(value) == 16:
-                return IPv6Parameter().clean(value)
-            else:
-                self.raise_error(value)
-
-        if ":" in value:
+        if (len(value) == 16 and isinstance(value, bytes)) or (
+            not isinstance(value, bytes) and ":" in value
+        ):
             return IPv6Parameter().clean(value)
-        else:
-            return IPv4Parameter().clean(value)
+        return IPv4Parameter().clean(value)
 
 
 #
