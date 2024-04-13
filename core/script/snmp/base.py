@@ -27,7 +27,6 @@ from noc.core.error import (
     ERR_SNMP_BAD_COMMUNITY,
 )
 from noc.core.ioloop.util import run_sync
-from noc.core.ratelimit.asyncio import AsyncRateLimit
 from noc.core.mib import mib
 
 
