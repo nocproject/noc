@@ -609,7 +609,7 @@ class BaseLoader(object):
         """
         Cleanup row and return a dict of field name -> value
         """
-        r = {k: self.clean_map.get(k, self.clean_any)(v) for k, v in item.dict().items()}
+        r = {k: self.clean_map.get(k, self.clean_any)(v) for k, v in item.model_dump().items()}
         # Fill integration fields
         r["remote_system"] = self.system.remote_system
         r["remote_id"] = self.clean_str(item.id)
@@ -792,7 +792,7 @@ class BaseLoader(object):
         # Process data
         n_errors = 0
         for row in new_state:
-            row = row.dict()
+            row = row.model_dump()
             lr = len(row)
             # Check required fields
             for f in required_fields:

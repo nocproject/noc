@@ -51,7 +51,7 @@ DIAGNOCSTIC_LABEL_SCOPE = "diag"
 
 def json_default(obj):
     if isinstance(obj, BaseModel):
-        return obj.dict()
+        return obj.model_dump()
     elif isinstance(obj, datetime.datetime):
         return obj.replace(microsecond=0).isoformat(sep=" ")
     raise TypeError
@@ -425,7 +425,7 @@ class DiagnosticHub(object):
                     reason=d_new.reason,
                     ts=d_new.changed,
                 )
-            self.__object.diagnostics[d_name] = d_new.dict()
+            self.__object.diagnostics[d_name] = d_new.model_dump()
             updated += [d_new]
         removed = set(self.__object.diagnostics) - set(self.__diagnostics)
         if changed_state:
