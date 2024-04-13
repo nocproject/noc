@@ -192,6 +192,8 @@ class Service(Document):
             self._refresh_managed_object()
             self.service_path = self.get_path()
             Service.objects.filter(id=self.id).update(service_path=self.service_path)
+        # Register Final Outage
+        # Refresh Service Status
 
     def _refresh_managed_object(self):
         from noc.sa.models.servicesummary import ServiceSummary
@@ -207,6 +209,9 @@ class Service(Document):
         :param timestamp: Time when status changed
         :return:
         """
+        # Check state on is_productive
+        # if not self.state.is_productive:
+        #    return
         if self.oper_status == status:
             logger.debug("[%s] Status is same. Skipping", self.id, self.oper_status)
             return
@@ -249,8 +254,7 @@ class Service(Document):
                     "stop": self.oper_status_change.isoformat(sep=" "),
                     "from_status": os,
                     "to_status": self.oper_status,
-                    "in_maintenance": self.in_maintenance,
-                    # "caps": orjson.dumps(service.get_caps()).decode("utf-8")
+                    "in_maintenance": int(self.in_maintenance),
                 }
             ],
         )
@@ -268,7 +272,10 @@ class Service(Document):
         :param old_status:
         :return:
         """
-        mo = self.managed_object or ManagedObject.get_by_id(id=1)
+        mo = self.get_managed_object()
+        if not mo:
+            logger.warning("[%s] Unknown ManagedObject for Raise alarm. Skipping", self.id)
+            return
         # Raise alarm
         if self.oper_status > Status.UP >= old_status:
             msg = {

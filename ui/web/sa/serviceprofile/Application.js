@@ -513,8 +513,15 @@ Ext.define("NOC.sa.serviceprofile.Application", {
                         {
                             text: __("Default Value"),
                             dataIndex: "default_value",
-                            flex: 1,
+                            width: 150,
                             editor: "textfield"
+                        },
+                        {
+                            text: __("Allowed Manual"),
+                            dataIndex: "allowed_manual",
+                            width: 150,
+                            editor: "checkbox",
+                            renderer: NOC.render.Bool
                         }
                     ]
                 }

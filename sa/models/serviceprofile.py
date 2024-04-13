@@ -62,7 +62,6 @@ class CapsSettings(EmbeddedDocument):
     capability = ReferenceField(Capability)
     default_value = DynamicField()
     allowed_manual = BooleanField(default=False)
-    alarm_var = StringField()
 
 
 condition_map = {
