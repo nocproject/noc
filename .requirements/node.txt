@@ -14,7 +14,7 @@ atomicl==0.1.1
 blinker==1.7.0
 bsdiff4==1.2.4
 cachetools==5.3.2
-crontab==0.22.9
+crontab==1.0.1
 siphash24==1.4
 demjson3==3.0.6
 dnspython==2.4.2
