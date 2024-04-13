@@ -70,7 +70,7 @@ class SNMP(object):
         self.socket = None
         self.display_hints = None
         self.snmp_version = None
-        self.rate_limit: Optional[AsyncRateLimit] = AsyncRateLimit(rate) if rate else None
+        self.rate_limit = rate
 
     def _get_auth_key(self) -> Union[Md5Key, Sha1Key]:
         """
