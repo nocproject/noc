@@ -8,10 +8,14 @@
 # Python modules
 import enum
 import datetime
-from typing import Optional, List
+from typing import Optional, List, Dict, Any
 
 # Third-party modules
+import orjson
 from pydantic import BaseModel
+
+# NOC modules
+from noc.core.bi.decorator import bi_hash
 
 
 class EventSeverity(enum.Enum):
@@ -35,11 +39,21 @@ class EventSource(enum.Enum):
 class Target(BaseModel):
     address: str  # IP Address message initiator
     name: str  # Name message initiator
-    id: Optional[str]  # For ManagedObject message Send
+    id: Optional[str]  # For ManagedObject or Agent message Send
     pool: Optional[str] = None  # Pool message receiver
     is_agent: bool = False  # Agent message send
     remote_id: Optional[str] = None  # Id on remote System that message Send
     service: Optional[str] = None  # Service ID (for monitoring integration) ?
+
+    @property
+    def reference(self) -> int:
+        """
+        Calculate target reference
+        :return:
+        """
+        if not self.id:
+            return bi_hash((self.pool, self.address))
+        return bi_hash(self.id)
 
 
 class MessageType(BaseModel):
@@ -92,7 +106,48 @@ class Event(BaseModel):
     remote_id: Optional[str] = None  # Remote Id event on Remote System
     labels: Optional[List[str]] = None  # Event labels
     message: Optional[str] = None  # Event message string
+    vars: Dict[str, Any] = None  # Event variables
 
     @property
     def timestamp(self):
         return datetime.datetime.fromtimestamp(self.ts)
+
+    @classmethod
+    def from_json(cls, data: Dict[str, Any]) -> "Event":
+        """
+        Build instance from clickhouse query
+        :param data:
+        :return:
+        """
+        r = {
+            "ts": data["ts"],
+            "id": data["event_id"],
+            "labels": data["labels"],
+            "message": data["message"],
+            "vars": data["vars"],
+            "type": {
+                "source": data["source"],
+                "id": data.get("snmp_trap_oid"),
+                "event_class": data.get("event_class"),
+            },
+        }
+        if "target" not in data:
+            # Old format
+            r["data"] = [{"name": k, "value": v} for k, v in data["resolved_vars"].items()]
+            if data["source"] == "SNMP Trap":
+                r["data"] += [
+                    {"name": k, "value": v, "snmp_raw": True} for k, v in data["raw_vars"].items()
+                ]
+            r["target"] = {
+                "address": data["address"],
+                "name": data["name"],
+                "id": data["managed_object"],
+                "pool": data["pool_name"],
+            }
+        else:
+            r["target"] = orjson.loads(data["target"])
+            r["data"]: orjson.loads(data["data"])
+        if data.get("remote_system"):
+            r["remote_system"] = data["remote_system"]
+            r["remote_id"] = data["remote_id"]
+        return Event.model_validate(r)
