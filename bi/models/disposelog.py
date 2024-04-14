@@ -43,5 +43,5 @@ class DisposeLog(Model):
     alarm_class = ReferenceField(AlarmClass, description=_("Alarm Class"))
     message = StringField(description=_("Event Message"))
     target = MapField(StringField(), description=_("Target"))
-    target_ref = UInt64Field(description="Target reference")
+    target_reference = UInt64Field(description="Target reference")
     reopens = UInt32Field(description=_("Reopens"))

@@ -38,7 +38,7 @@ from noc.core.comp import DEFAULT_ENCODING
 from noc.core.msgstream.message import Message
 from noc.core.mx import MX_LABELS, MX_H_VALUE_SPLITTER, MX_ADMINISTRATIVE_DOMAIN_ID
 from noc.core.wf.diagnostic import SNMPTRAP_DIAG, SYSLOG_DIAG, DiagnosticState
-from noc.core.models.event import Event, EventSource, Target
+from noc.core.models.event import Event, EventSource, Target, Var
 from noc.fm.models.eventclass import EventClass
 from noc.fm.models.mib import MIB
 from noc.fm.models.mibdata import MIBData
@@ -336,7 +336,7 @@ class ClassifierService(FastAPIService):
                 metrics[EventMetrics.CR_FAILED] += 1
                 return None, None  # Drop malformed message
             metrics[EventMetrics.CR_PREPROCESSED] += 1
-            return event_class
+            return event_class, event.vars
         # Prevent unclassified events flood
         if self.check_unclassified_syslog_flood(event):
             return None, None
@@ -504,7 +504,7 @@ class ClassifierService(FastAPIService):
                 h(event)
             except Exception:
                 error_report()
-            if event.to_drop:
+            if event.id is None:
                 self.logger.info(
                     "[%s|%s|%s] Dropped by handler",
                     event.id,
@@ -512,9 +512,9 @@ class ClassifierService(FastAPIService):
                     event.target.address,
                 )
                 event.id = event_id  # Restore event id
-                event.delete()
+                # event.delete()
                 metrics[EventMetrics.CR_DELETED] += 1
-                return True
+                return False
         return False
 
     def call_event_triggers(self, event: Event, event_class: EventClass) -> bool:
@@ -584,8 +584,13 @@ class ClassifierService(FastAPIService):
                 raw_vars[d.name] = fm_unescape(d.value).decode(DEFAULT_ENCODING)
         # Resolve MIB variables for SNMP Traps
         if snmp_vars:
-            s_vars = MIB.resolve_vars(snmp_vars, include_raw=config.message.enable_event)
-            raw_vars.update({k: fm_unescape(s_vars[k]).decode(DEFAULT_ENCODING) for k in s_vars})
+            for k, v in MIB.resolve_vars(
+                snmp_vars, include_raw=config.message.enable_event
+            ).items():
+                v = fm_unescape(v).decode(DEFAULT_ENCODING)
+                event.data.append(Var(name=k, value=v))
+                raw_vars[k] = v
+            # Append resolved vars to data
         return raw_vars
 
     def resolve_object(self, target: Target) -> Optional[ManagedObject]:
@@ -608,15 +613,15 @@ class ClassifierService(FastAPIService):
         # Decode message
         try:
             event = Event(**orjson.loads(msg.value))
-        except ValueError:
+        except ValueError as e:
             metrics[EventMetrics.CR_FAILED] += 1
             # Convert Old
-            self.logger.error("Unknown message format")
+            self.logger.error("Unknown message format: %s", e)
             return
         # Generate or reuse existing object id
         event_id = ObjectId(event.id)
         if not event.id:
-            event.id = event_id
+            event.id = str(event_id)
         # Calculate message processing delay
         lag = (time.time() - float(msg.timestamp) / NS) * 1000
         metrics["lag_us"] = int(lag * 1000)
@@ -645,7 +650,6 @@ class ClassifierService(FastAPIService):
             return
         # Process event
         resolved_vars = self.resolve_vars(event)
-        # Append resolved vars to data
         try:
             event_class, event_vars = await self.classify_event(event, resolved_vars, mo)
             event.type.event_class = event_class.name
@@ -794,7 +798,7 @@ class ClassifierService(FastAPIService):
             "data": orjson.dumps([d.to_json() for d in event.data]).decode(DEFAULT_ENCODING),
             "message": event.message or "",
             #
-            "raw_vars": {d.name: str(d.value) for d in event.data},
+            "raw_vars": {d.name: str(d.value) for d in event.data if d.name not in resolved_vars},
             "resolved_vars": {k: str(v) for k, v in resolved_vars.items()},
             "vars": {k: str(v) for k, v in event.vars.items()},
             "snmp_trap_oid": event.type.id if event.type.source == EventSource.SNMP_TRAP else "",
