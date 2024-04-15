@@ -12,6 +12,13 @@ Ext.define("NOC.inv.facade.Application", {
   model: "NOC.inv.facade.Model",
   search: true,
   treeFilter: "category",
+  filters: [
+    {
+      title: __("By Is Builtin"),
+      name: "is_builtin",
+      ftype: "boolean",
+    },
+  ],
   initComponent: function () {
     var me = this;
     // JSON Panel
@@ -28,6 +35,13 @@ Ext.define("NOC.inv.facade.Application", {
           text: __("Name"),
           width: 300,
           dataIndex: "name",
+        },
+        {
+          text: __("Builtin"),
+          width: 50,
+          dataIndex: "is_builtin",
+          renderer: NOC.render.Bool,
+          sortable: false,
         },
         {
           text: __("Description"),
