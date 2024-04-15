@@ -22,7 +22,7 @@ Ext.define("NOC.inv.objectmodel.Application", {
     "NOC.inv.modelinterface.LookupField",
     "NOC.inv.objectconfigurationrule.LookupField",
     "Ext.ux.form.GridField",
-    "NOC.inv.facade.LookupField"
+    "NOC.inv.facade.LookupField",
   ],
   model: "NOC.inv.objectmodel.Model",
   search: true,
@@ -149,17 +149,18 @@ Ext.define("NOC.inv.objectmodel.Application", {
               fieldLabel: __("Front Facade"),
               allowBlank: true,
               listeners: {
-                change: this.changeTemplateButtonState
-              }
+                change: this.changeTemplateButtonState,
+              },
             },
             {
               xtype: "button",
               itemId: "front_facadeBtn",
-              text: __("Download template"),
+              glyph: NOC.glyph.download,
+              text: __("Template"),
               margin: "0 0 0 5",
               handler: this.templateCheck,
-            }
-          ]
+            },
+          ],
         },
         {
           xtype: "container",
@@ -173,17 +174,18 @@ Ext.define("NOC.inv.objectmodel.Application", {
               fieldLabel: __("Rear Facade"),
               allowBlank: true,
               listeners: {
-                change: this.changeTemplateButtonState
-              }
+                change: this.changeTemplateButtonState,
+              },
             },
             {
               xtype: "button",
               itemId: "rear_facadeBtn",
-              text: __("Download template"),
+              glyph: NOC.glyph.download,
+              text: __("Template"),
               margin: "0 0 0 5",
               handler: this.templateCheck,
-            }
-          ]
+            },
+          ],
         },
         {
           name: "configuration_rule",
@@ -438,10 +440,10 @@ Ext.define("NOC.inv.objectmodel.Application", {
               onBeforeEdit: function (editor, context) {
                 if (["input", "output"].includes(context.column.dataIndex)) {
                   var connectionsField = context.view
-                    .up("[xtype=form]")
-                    .down("[name=connections]"),
+                      .up("[xtype=form]")
+                      .down("[name=connections]"),
                     data = Ext.Array.map(connectionsField.value, function (value) {
-                      return { id: value.name, text: value.name };
+                      return {id: value.name, text: value.name};
                     }),
                     combo = editor.getEditor(context.record, context.column).field;
                   combo.getStore().loadData(data);
@@ -658,10 +660,18 @@ Ext.define("NOC.inv.objectmodel.Application", {
     record.set("name", m[1] + n);
   },
   enableRearFacade: function (record) {
-    var hasRearFacade = Ext.Array.findBy(record.get("connections"), function (e) {return e.direction === "i"}) ? true : false;
-    Ext.Array.each(["front_facade", "rear_facade"], function (btn) {
-      this.down("button[itemId=" + btn + "Btn]").setDisabled(record.get(btn));
-    }, this);
+    var hasRearFacade = Ext.Array.findBy(record.get("connections"), function (e) {
+      return e.direction === "o";
+    })
+      ? false
+      : true;
+    Ext.Array.each(
+      ["front_facade", "rear_facade"],
+      function (btn) {
+        this.down("button[itemId=" + btn + "Btn]").setDisabled(record.get(btn));
+      },
+      this,
+    );
     this.down("field[name=rear_facade]").setDisabled(!hasRearFacade);
   },
   changeTemplateButtonState: function (field, value) {
@@ -673,10 +683,10 @@ Ext.define("NOC.inv.objectmodel.Application", {
       record = me.currentRecord,
       path = Ext.String.format("/inv/objectmodel/{0}/template.svg", record.id),
       isRack = me.checkAttrData(record.get("data"));
-    if(isRack) {
+    if (isRack) {
       var a = document.createElement("a");
       a.href = path;
-      a.download = '';
+      a.download = "";
       document.body.appendChild(a);
       a.click();
       document.body.removeChild(a);
@@ -684,21 +694,33 @@ Ext.define("NOC.inv.objectmodel.Application", {
   },
   checkAttrData: function (array) {
     var result,
-      isRack = Ext.Array.findBy(array, function(e) {return e.attr === "units" && e.interface === "rackmount"}) ? true : false,
-      dimensionsArray = Ext.Array.findBy(array, function(e) {return e.attr === "dimensions"});
-    if(isRack) {return true;}
-    if(dimensionsArray.length !== 2) {
+      isRack = Ext.Array.findBy(array, function (e) {
+        return e.attr === "units" && e.interface === "rackmount";
+      })
+        ? true
+        : false,
+      dimensionsArray = Ext.Array.findBy(array, function (e) {
+        return e.attr === "dimensions";
+      });
+    if (isRack) {
+      return true;
+    }
+    if (dimensionsArray.length !== 2) {
       return false;
     }
-    result = Ext.Array.reduce(dimensionsArray, function(acc, item) {
-      if(item.dimensions === "width") {
-        acc.width = true;
-      }
-      if(item.dimensions === "height") {
-        acc.height = true;
-      }
-      return acc;
-    }, {width: false, height: false});
+    result = Ext.Array.reduce(
+      dimensionsArray,
+      function (acc, item) {
+        if (item.dimensions === "width") {
+          acc.width = true;
+        }
+        if (item.dimensions === "height") {
+          acc.height = true;
+        }
+        return acc;
+      },
+      {width: false, height: false},
+    );
     return result.width && result.height;
-  }
+  },
 });
