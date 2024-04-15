@@ -17,7 +17,7 @@ Ext.define("NOC.core.SVGField", {
 
   fieldSubTpl: [
     "<div style='display:flex;'>",
-    '<img id="{cmpId}-inputEl-imageEl" src="" height="100" width="100">',
+    '<img id="{cmpId}-inputEl-imageEl" src="" height="100" width="100" class="x-hidden">',
     '<input id="{cmpId}-inputEl-fileInputEl" type="file" accept="{accept}" style="display:none">',
     '<label for="{cmpId}-inputEl-fileInputEl" class="x-btn x-btn-default-toolbar-small" style="height:32px">',
     '<span style="font-family:FontAwesome" class="x-btn-glyph x-btn-icon-el-default-toolbar-small">{glyph}</span>',
@@ -78,13 +78,18 @@ Ext.define("NOC.core.SVGField", {
 
   setValue: function (data) {
     var me = this;
+    if (data === "") {
+      me.imageEl.addCls("x-hidden");
+    } else {
+      // Update the src attribute of the existing img tag to display the new SVG content
+      me.imageEl.set({
+        src: "data:image/svg+xml," + encodeURIComponent(data),
+      });
+      // Make visible
+      me.imageEl.removeCls("x-hidden");
+    }
 
     // Call parent's setData method
     me.callParent(arguments);
-
-    // Update the src attribute of the existing img tag to display the new SVG content
-    me.imageEl.set({
-      src: "data:image/svg+xml," + encodeURIComponent(data),
-    });
   },
 });
