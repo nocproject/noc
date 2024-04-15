@@ -23,13 +23,13 @@ EVENT_QUERY = f"""
     SELECT
         e.event_id as id,
         e.ts as timestamp,
-        e.event_class as event_class_bi_id,
-        e.managed_object as managed_object_bi_id,
+        nullIf(e.event_class, 0) as event_class_bi_id,
+        nullIf(e.managed_object, 0) as managed_object_bi_id,
         e.target as target,
         IPv4NumToString(e.ip) as address,
         dictGet('{config.clickhouse.db_dictionaries}.pool', 'name', e.pool) as pool_name,
-        dictGet('{config.clickhouse.db_dictionaries}.eventclass', ('id', 'name'), e.event_class) as event_class,
-        dictGet('{config.clickhouse.db_dictionaries}.managedobject', ('id', 'name'), e.managed_object) as managed_object,
+        dictGetOrNull('{config.clickhouse.db_dictionaries}.eventclass', ('id', 'name'), e.event_class) as event_class,
+        dictGetOrNull('{config.clickhouse.db_dictionaries}.managedobject', ('id', 'name'), e.managed_object) as managed_object,
         e.start_ts as start_timestamp,
         e.source, e.raw_vars, e.resolved_vars, e.vars, e.labels, e.message, e.data,
         d.alarms as alarms
@@ -63,7 +63,7 @@ class EventSource(enum.Enum):
 class Target(BaseModel):
     address: str  # IP Address message initiator
     name: str  # Name message initiator
-    id: Optional[str]  # For ManagedObject or Agent message Send
+    id: Optional[str] = None  # For ManagedObject or Agent message Send
     pool: Optional[str] = None  # Pool message receiver
     is_agent: bool = False  # Agent message send
     remote_id: Optional[str] = None  # Id on remote System that message Send
@@ -130,7 +130,7 @@ class Event(BaseModel):
     remote_id: Optional[str] = None  # Remote Id event on Remote System
     labels: Optional[List[str]] = None  # Event labels
     message: Optional[str] = None  # Event message string
-    vars: Dict[str, Any] = None  # Event variables
+    vars: Optional[Dict[str, Any]] = None  # Event variables
 
     @property
     def timestamp(self):
@@ -167,7 +167,7 @@ class Event(BaseModel):
             "type": {
                 "source": data["source"],
                 "id": data.get("snmp_trap_oid"),
-                "event_class": data.get("event_class")[1],
+                "event_class": data["event_class"]["name"],
             },
         }
         if "target" not in data or not data["target"]:
@@ -179,7 +179,7 @@ class Event(BaseModel):
             # target
             # Old format
             mo_id, mo_name = data["managed_object"]
-            if mo_id == "0" and "managed_object_bi_id" in data:
+            if not data["managed_object"] and data["managed_object_bi_id"]:
                 mo_id, mo_name = cls.resolve_managed_object_target(data["managed_object_bi_id"])
             r["target"] = {
                 "address": data["address"],

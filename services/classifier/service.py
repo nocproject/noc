@@ -22,7 +22,7 @@ from typing import Optional, Dict, List, Callable, Tuple, Any
 # Third-party modules
 import cachetools
 import orjson
-from bson import ObjectId
+import bson
 
 
 # NOC modules
@@ -39,6 +39,8 @@ from noc.core.msgstream.message import Message
 from noc.core.mx import MX_LABELS, MX_H_VALUE_SPLITTER, MX_ADMINISTRATIVE_DOMAIN_ID
 from noc.core.wf.diagnostic import SNMPTRAP_DIAG, SYSLOG_DIAG, DiagnosticState
 from noc.core.models.event import Event, EventSource, Target, Var
+from noc.main.models.remotesystem import RemoteSystem
+from noc.main.models.pool import Pool
 from noc.fm.models.eventclass import EventClass
 from noc.fm.models.mib import MIB
 from noc.fm.models.mibdata import MIBData
@@ -603,9 +605,9 @@ class ClassifierService(FastAPIService):
         if target.id and not target.is_agent:
             mo = ManagedObject.get_by_id(int(target.id))
         if not mo and target.remote_id:
-            mo = ManagedObject.objects.filter(remote_id=target.remote_id)
+            mo = ManagedObject.objects.filter(remote_id=target.remote_id).first()
         if not mo and target.pool:
-            mo = ManagedObject.objects.filter(pool=target.pool, address=target.address)
+            mo = ManagedObject.objects.filter(pool=target.pool, address=target.address).first()
         return mo
 
     async def on_event(self, msg: Message):
@@ -619,29 +621,31 @@ class ClassifierService(FastAPIService):
             self.logger.error("Unknown message format: %s", e)
             return
         # Generate or reuse existing object id
-        event_id = ObjectId(event.id)
-        if not event.id:
-            event.id = str(event_id)
+        try:
+            event.id = str(bson.ObjectId(event.id))
+        except bson.errors.InvalidId:
+            self.logger.warning("Invalid event_id: %s", event.id)
+            event.id = str(bson.ObjectId())
         # Calculate message processing delay
         lag = (time.time() - float(msg.timestamp) / NS) * 1000
         metrics["lag_us"] = int(lag * 1000)
-        self.logger.debug("[%s] Receiving new event: %s (Lag: %.2fms)", event_id, event.data, lag)
+        self.logger.debug("[%s] Receiving new event: %s (Lag: %.2fms)", event.id, event.data, lag)
         metrics[EventMetrics.CR_PROCESSED] += 1
         # Resolve managed object
         mo = self.resolve_object(event.target)
         if not mo:
-            self.logger.info("[%s] Unknown managed object id %s. Skipping", event_id, event.target)
+            self.logger.info("[%s] Unknown managed object id %s. Skipping", event.id, event.target)
             event.type.profile = GENERIC_PROFILE
             metrics[EventMetrics.CR_UOBJECT] += 1
         else:
             self.update_diagnostic(mo, event)
             event.type.profile = mo.profile.name
-            self.logger.info("[%s|%s|%s] Managed object found", event_id, mo.name, mo.address)
+            self.logger.info("[%s|%s|%s] Managed object found", event.id, mo.name, mo.address)
         # Ignore event
         if self.pattern_set.find_ignore_rule(event):
             self.logger.debug(
                 "[%s|%s|%s] Ignored event %s vars %s",
-                event_id,
+                event.id,
                 event.target.name,
                 event.target.address,
                 event,
@@ -652,17 +656,23 @@ class ClassifierService(FastAPIService):
         resolved_vars = self.resolve_vars(event)
         try:
             event_class, event_vars = await self.classify_event(event, resolved_vars, mo)
-            event.type.event_class = event_class.name
         except Exception as e:
             self.logger.error(
-                "[%s|%s|%s] Failed to process event: %s", event.id, mo.name, mo.address, e
+                "[%s|%s|%s] Failed to process event: %s",
+                event.id,
+                event.target.name,
+                event.target.address,
+                e,
             )
             metrics[EventMetrics.CR_FAILED] += 1
             error_report()
             return
         if not event_class:
             # Dropped message
-            return  # Or drop flag
+            # return  # Or drop flag
+            pass
+        else:
+            event.type.event_class = event_class.name
         event.vars = event_vars
         self.logger.info(
             "[%s|%s|%s] Event processed successfully",
@@ -674,16 +684,16 @@ class ClassifierService(FastAPIService):
         if self.deduplicate_event(event, event_class):
             return
         # Suppress repeats
-        if self.suppress_repeats(event, event_class):
+        if event_class and self.suppress_repeats(event, event_class):
             return
         self.register_event(event, event_class, resolved_vars, mo)
         # Fill deduplication filter
         self.dedup_filter.register(event, event_class)
-        # Fill suppress filter
-        self.suppress_filter.register(event, event_class)
         if config.message.enable_event:
             await self.register_mx_message(event, event_class, resolved_vars, mo)
         if event_class:
+            # Fill suppress filter
+            self.suppress_filter.register(event, event_class)
             # Call handlers
             if self.call_event_handlers(event, event_class):
                 return
@@ -694,7 +704,7 @@ class ClassifierService(FastAPIService):
             if self.call_event_triggers(event, event_class):
                 return
         # Finally dispose event to further processing by correlator
-        if len(event_class.disposition) > 0:
+        if event_class and mo and len(event_class.disposition) > 0:
             await self.dispose_event(event, mo)
 
     async def report(self):
@@ -800,7 +810,7 @@ class ClassifierService(FastAPIService):
             #
             "raw_vars": {d.name: str(d.value) for d in event.data if d.name not in resolved_vars},
             "resolved_vars": {k: str(v) for k, v in resolved_vars.items()},
-            "vars": {k: str(v) for k, v in event.vars.items()},
+            "vars": {k: str(v) for k, v in event.vars.items()} if event_class else {},
             "snmp_trap_oid": event.type.id if event.type.source == EventSource.SNMP_TRAP else "",
             #
             "target": event.target.model_dump(exclude={"is_agent"}, exclude_none=True),
@@ -823,6 +833,13 @@ class ClassifierService(FastAPIService):
                     "administrative_domain": mo.administrative_domain.bi_id,
                 }
             )
+        elif not mo and event.target.pool:
+            p = Pool.get_by_name(event.target.pool)
+            data["pool"] = p.bi_id
+        if event.remote_system:
+            rs = RemoteSystem.get_by_name(event.remote_system)
+            data["remote_system"] = rs.bi_id
+            data["remote_id"] = event.remote_id
         self.register_metrics("events", [data])
 
 

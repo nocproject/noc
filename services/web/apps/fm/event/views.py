@@ -39,13 +39,13 @@ EVENT_QUERY = f"""
     SELECT
         e.event_id as id,
         e.ts as timestamp,
-        e.event_class as event_class_bi_id,
-        e.managed_object as managed_object_bi_id,
+        nullIf(e.event_class, 0) as event_class_bi_id,
+        nullIf(e.managed_object, 0) as managed_object_bi_id,
         e.target as target,
         IPv4NumToString(e.ip) as address,
         dictGet('{config.clickhouse.db_dictionaries}.pool', 'name', e.pool) as pool_name,
-        dictGet('{config.clickhouse.db_dictionaries}.eventclass', ('id', 'name'), e.event_class) as event_class,
-        dictGet('{config.clickhouse.db_dictionaries}.managedobject', ('id', 'name'), e.managed_object) as managed_object,
+        dictGetOrNull('{config.clickhouse.db_dictionaries}.eventclass', ('id', 'name'), e.event_class) as event_class,
+        dictGetOrNull('{config.clickhouse.db_dictionaries}.managedobject', ('id', 'name'), e.managed_object) as managed_object,
         e.start_ts as start_timestamp,
         e.source, e.raw_vars, e.resolved_vars, e.vars, e.labels, e.message, e.data,
         d.alarms as alarms
@@ -223,7 +223,7 @@ class EventApplication(ExtApplication):
         )
         out = []
         for r in res["data"]:
-            if r["managed_object"][0] == "0" and r["managed_object_bi_id"] and not r["target"]:
+            if not r["managed_object"]["id"] and r["managed_object_bi_id"] and not r["target"]:
                 # Unknown object
                 self.logger.debug("Unknown managed_object: %s", r)
                 mo = ManagedObject.get_by_bi_id(r["managed_object_bi_id"])
@@ -274,9 +274,7 @@ class EventApplication(ExtApplication):
             "event_class": str(event_class.id) if event_class else None,
             "event_class__label": event_class.name if event_class else None,
             "timestamp": self.to_json(o.timestamp),
-            "subject": self.render_event_template(event_class.subject_template, ctx)
-            if event_class
-            else "",
+            "subject": "",
             "repeats": None,
             "duration": None,
             "alarms": [],
@@ -284,6 +282,10 @@ class EventApplication(ExtApplication):
         }
         if fields:
             d = {k: d[k] for k in fields}
+        if not event_class:
+            d["subject"] = o.message
+        else:
+            d["subject"] = self.render_event_template(event_class.subject_template, ctx)
         return d
 
     def instance_to_dict(self, event: Event, fields=None, nocustom=False):
@@ -391,11 +393,13 @@ class EventApplication(ExtApplication):
             return HttpResponse("", status=self.NOT_FOUND)
         res = res["data"][0]
         event = Event.from_json(res)
-        if event.target.id == "0" and res["managed_object_bi_id"]:
+        if not event.target.id and res["managed_object_bi_id"]:
             # Unknown object
             mo = ManagedObject.get_by_bi_id(res["managed_object_bi_id"])
+        elif event.target.id:
+            mo = ManagedObject.get_by_id(int())
         else:
-            mo = ManagedObject.get_by_id(int(event.target.id))
+            mo = None
 
         event_class = EventClass.get_by_name(event.type.event_class)
         ctx = {"event": event}
@@ -452,6 +456,8 @@ class EventApplication(ExtApplication):
                 if is_trap and "::" in v.name:
                     desc = MIB.get_description(v.name)
                 d["resolved_vars"] += [(v.name, v.value, desc)]
+        if not d["raw_vars"]:
+            d["raw_vars"] = {v.name: v.value for v in event.data}
         # ManagedObject
         if mo:
             d |= {

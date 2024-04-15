@@ -19,8 +19,10 @@ class DedupFilter(BaseEvFilter):
     @staticmethod
     def event_hash(event: Event, event_class) -> int:
         var_hash = hash_int(sorted(f"{d.name}:{d.value}" for d in event.data)) if event.data else 0
-        return hash_int(f"{event.target.id}:{event_class.id}:{var_hash}")
+        return hash_int(f"{event.target.id}:{event_class.id if event_class else ''}:{var_hash}")
 
     @staticmethod
     def get_window(event_class) -> int:
+        if not event_class:
+            return 5
         return event_class.deduplication_window or 0
