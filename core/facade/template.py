@@ -81,9 +81,6 @@ def get_facade_template(model: ObjectModel) -> str:
         },
     )
     tree = ET.ElementTree(svg)
-    # Outer group
-    g = ET.Element("g")
-    svg.append(g)
     # Bounding rectanle
     rect = ET.Element(
         f"{{{NS_SVG}}}rect",
@@ -92,10 +89,10 @@ def get_facade_template(model: ObjectModel) -> str:
             "y": "0",
             "width": str(w),
             "height": str(h),
-            "style": "stroke: rgb(0, 0, 0); fill: rgb(255, 255, 255);",
+            "style": "stroke: rgb(0, 0, 0); fill: rgb(255, 255, 255); stroke-width: 0px;",
         },
     )
-    g.append(rect)
+    svg.append(rect)
     # Get s/i slots
     conn_types: Dict[str, ConnectionTypeInfo] = {}
     for conn in model.connections:
@@ -150,10 +147,10 @@ def get_facade_template(model: ObjectModel) -> str:
                     "y": str(ct.y),
                     "width": str(ct.width),
                     "height": str(ct.height),
-                    "style": "stroke: rgb(0, 0, 0); fill: rgb(255, 255, 255);",
+                    "style": "stroke: rgb(0, 0, 0); fill: rgb(128, 128, 128); stroke-width: 0px;",
                 },
             )
-        g.append(el)
+        svg.append(el)
         ct.inc_x()
     # Append defs
     if conn_types:
