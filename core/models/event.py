@@ -158,6 +158,14 @@ class Event(BaseModel):
         :return:
         """
         ts = datetime.datetime.fromisoformat(data["timestamp"])
+        if "managed_object" in data and isinstance(data["managed_object"], list):
+            # For Clickhouse before 23.XXX
+            data["managed_object"] = {
+                "id": data["managed_object"][0],
+                "name": data["managed_object"][1],
+            }
+        if "event_class" in data and isinstance(data["event_class"], list):
+            data["event_class"] = {"id": data["event_class"][0], "name": data["event_class"][1]}
         r = {
             "ts": ts.timestamp(),
             "id": data["id"],
@@ -178,9 +186,10 @@ class Event(BaseModel):
                 ]
             # target
             # Old format
-            mo_id, mo_name = data["managed_object"]
-            if not data["managed_object"] and data["managed_object_bi_id"]:
+            if not data["managed_object"]["id"] and data["managed_object_bi_id"]:
                 mo_id, mo_name = cls.resolve_managed_object_target(data["managed_object_bi_id"])
+            else:
+                mo_id, mo_name = data["managed_object"]["id"], data["managed_object"]["name"]
             r["target"] = {
                 "address": data["address"],
                 "name": mo_name,

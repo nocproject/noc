@@ -223,12 +223,16 @@ class EventApplication(ExtApplication):
         )
         out = []
         for r in res["data"]:
+            if isinstance(r["managed_object"], list):
+                # For Clickhouse before 23.XXX
+                r["managed_object"] = {"id": r["managed_object"][0], "name": r["managed_object"][1]}
+                r["event_class"] = {"id": r["event_class"][0], "name": r["event_class"][1]}
             if not r["managed_object"]["id"] and r["managed_object_bi_id"] and not r["target"]:
                 # Unknown object
                 self.logger.debug("Unknown managed_object: %s", r)
                 mo = ManagedObject.get_by_bi_id(r["managed_object_bi_id"])
                 if mo:
-                    r["managed_object"] = (str(mo.id), mo.name)
+                    r["managed_object"] = {"id": str(mo.id), "name": mo.name}
             x = formatter(Event.from_json(r))
             alarms = [str(a) for a in r["alarms"]]
             if alarms:
