@@ -38,7 +38,7 @@ from noc.core.comp import DEFAULT_ENCODING
 from noc.core.msgstream.message import Message
 from noc.core.mx import MX_LABELS, MX_H_VALUE_SPLITTER, MX_ADMINISTRATIVE_DOMAIN_ID
 from noc.core.wf.diagnostic import SNMPTRAP_DIAG, SYSLOG_DIAG, DiagnosticState
-from noc.core.models.event import Event, EventSource, Target, Var
+from noc.core.models.event import Event, EventSource, Target, Var, EventSeverity
 from noc.main.models.remotesystem import RemoteSystem
 from noc.main.models.pool import Pool
 from noc.fm.models.eventclass import EventClass
@@ -661,7 +661,7 @@ class ClassifierService(FastAPIService):
                     managed_object.name,
                     managed_object.address,
                 )
-            event.do_not_dispose()
+            event.type.severity = EventSeverity.IGNORED  # do_not_dispose
         return False
 
     def resolve_vars(self, event: Event) -> Dict[str, Any]:
@@ -798,8 +798,14 @@ class ClassifierService(FastAPIService):
             # Call triggers
             if self.call_event_triggers(event, event_class):
                 return
+        if event.type.severity == EventSeverity.IGNORED:
+            # Severity ignored
+            return
+        if not event_class or not mo:
+            # Dispose only of detect ManagedObject
+            return
         # Finally dispose event to further processing by correlator
-        if event_class and mo and len(event_class.disposition) > 0:
+        if len(event_class.disposition) > 0:
             await self.dispose_event(event, mo)
 
     async def report(self):

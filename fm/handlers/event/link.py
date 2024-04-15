@@ -24,7 +24,7 @@ def oper_up(event, managed_object):
     ).first()
     if iface:
         iface.set_oper_status(True)
-        event.set_hint("link_status", True)
+        # event.set_hint("link_status", True)
 
 
 def oper_down(event, managed_object):
@@ -38,4 +38,4 @@ def oper_down(event, managed_object):
     ).first()
     if iface:
         iface.set_oper_status(False)
-        event.set_hint("link_status", False)
+        # event.set_hint("link_status", False)

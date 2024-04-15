@@ -43,12 +43,14 @@ EVENT_QUERY = f"""
 
 
 class EventSeverity(enum.Enum):
+    # Bind color, Bind glif
+    IGNORED = -1
     CLEARED = 0
     INDETERMINATE = 1
-    CRITICAL = 5
-    MAJOR = 4
-    MINOR = 3
     WARNING = 2
+    MINOR = 3
+    MAJOR = 4
+    CRITICAL = 5
 
 
 class EventSource(enum.Enum):
