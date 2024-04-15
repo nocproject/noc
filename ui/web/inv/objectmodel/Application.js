@@ -678,49 +678,32 @@ Ext.define("NOC.inv.objectmodel.Application", {
     var btn = field.up().down("button[itemId=" + field.name + "Btn]");
     btn.setDisabled(value);
   },
-  templateCheck: function () {
+  templateCheck: function (btn) {
     var me = this.up("[appId=inv.objectmodel]"),
       record = me.currentRecord,
-      path = Ext.String.format("/inv/objectmodel/{0}/template.svg", record.id),
-      isRack = me.checkAttrData(record.get("data"));
-    if (isRack) {
-      var a = document.createElement("a");
-      a.href = path;
-      a.download = "";
-      document.body.appendChild(a);
-      a.click();
-      document.body.removeChild(a);
-    }
-  },
-  checkAttrData: function (array) {
-    var result,
-      isRack = Ext.Array.findBy(array, function (e) {
-        return e.attr === "units" && e.interface === "rackmount";
-      })
-        ? true
-        : false,
-      dimensionsArray = Ext.Array.findBy(array, function (e) {
-        return e.attr === "dimensions";
-      });
-    if (isRack) {
-      return true;
-    }
-    if (dimensionsArray.length !== 2) {
-      return false;
-    }
-    result = Ext.Array.reduce(
-      dimensionsArray,
-      function (acc, item) {
-        if (item.dimensions === "width") {
-          acc.width = true;
+      side = btn.itemId.replace("_facadeBtn", ""),
+      downloadPath = Ext.String.format("/inv/objectmodel/{0}/{1}/template.js", record.id, side),
+      checkPath = Ext.String.format("/inv/objectmodel/{0}/is_valid_template/", record.id);
+    Ext.Ajax.request({ 
+      url: checkPath,
+      method: "GET",
+      scope: me,
+      success: function (response) {
+        var data = Ext.decode(response.responseText);
+        if (data.status) {
+          var a = document.createElement("a");
+          a.href = downloadPath;
+          a.download = "";
+          document.body.appendChild(a);
+          a.click();
+          document.body.removeChild(a);
+        } else {
+          NOC.error(__("Dimensions must be set to generate template"));
         }
-        if (item.dimensions === "height") {
-          acc.height = true;
-        }
-        return acc;
       },
-      {width: false, height: false},
-    );
-    return result.width && result.height;
+      failure: function () {
+        NOC.error(__("Failed to get data"));
+      },
+    });
   },
 });
