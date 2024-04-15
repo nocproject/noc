@@ -575,6 +575,95 @@ class ClassifierService(FastAPIService):
                 return True
         return False
 
+    @classmethod
+    @cachetools.cachedmethod(operator.attrgetter("interface_cache"))
+    def get_interface(cls, managed_object_id, name):
+        """
+        Get interface instance
+        """
+        from noc.inv.models.interface import Interface
+
+        return Interface.objects.filter(managed_object=managed_object_id, name=name).first()
+
+    async def check_link_event(
+        self, event: Event, event_class: EventClass, managed_object: ManagedObject
+    ):
+        """
+        Additional link events check
+        :param event:
+        :param event_class:
+        :param managed_object:
+        :return: True - stop processing, False - continue
+        """
+        if (
+            not managed_object
+            or not event_class
+            or not event_class.link_event
+            or "interface" not in event.vars
+        ):
+            return False
+        if_name = managed_object.get_profile().convert_interface_name(event.vars["interface"])
+        iface = self.get_interface(managed_object.id, if_name)
+        if iface:
+            self.logger.info(
+                "[%s|%s|%s] Found interface %s",
+                event.id,
+                managed_object.name,
+                managed_object.address,
+                iface.name,
+            )
+            action = iface.profile.link_events
+        else:
+            self.logger.info(
+                "[%s|%s|%s] Interface not found:%s",
+                event.id,
+                managed_object.name,
+                managed_object.address,
+                if_name,
+            )
+            action = self.default_link_action
+        # Link actions
+        if action == "I":
+            # Ignore
+            if iface:
+                self.logger.info(
+                    "[%s|%s|%s] Marked as ignored by interface profile '%s' (%s)",
+                    event.id,
+                    managed_object.name,
+                    managed_object.address,
+                    iface.profile.name,
+                    iface.name,
+                )
+            else:
+                self.logger.info(
+                    "[%s|%s|%s] Marked as ignored by default interface profile",
+                    event.id,
+                    managed_object.name,
+                    managed_object.address,
+                )
+            metrics[EventMetrics.CR_DELETED] += 1
+            return True
+        elif action == "L":
+            # Do not dispose
+            if iface:
+                self.logger.info(
+                    "[%s|%s|%s] Marked as not disposable by interface profile '%s' (%s)",
+                    event.id,
+                    managed_object.name,
+                    managed_object.address,
+                    iface.profile.name,
+                    iface.name,
+                )
+            else:
+                self.logger.info(
+                    "[%s|%s|%s] Marked as not disposable by default interface",
+                    event.id,
+                    managed_object.name,
+                    managed_object.address,
+                )
+            event.do_not_dispose()
+        return False
+
     def resolve_vars(self, event: Event) -> Dict[str, Any]:
         """
         Resolve Event vars
@@ -692,6 +781,9 @@ class ClassifierService(FastAPIService):
         # Suppress repeats
         if event_class and self.suppress_repeats(event, event_class):
             return
+        # Additionally check link events
+        if await self.check_link_event(event, event_class, mo):
+            return
         self.register_event(event, event_class, resolved_vars, mo)
         # Fill deduplication filter
         self.dedup_filter.register(event, event_class)
@@ -703,9 +795,6 @@ class ClassifierService(FastAPIService):
             # Call handlers
             if self.call_event_handlers(event, event_class, mo):
                 return
-            # Additionally check link events
-            # if await self.check_link_event(event):
-            #     return
             # Call triggers
             if self.call_event_triggers(event, event_class):
                 return
