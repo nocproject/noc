@@ -166,4 +166,6 @@ class ObjectModelApplication(ExtDocApplication):
     @view(url="^(?P<id>[0-9a-f]{24})/template.svg$", method=["GET"], access="read", api=True)
     def api_template(self, request, id):
         o=self.get_object_or_404(ObjectModel, id=id)
-        return HttpResponse(get_facade_template(o), content_type="image/svg+xml", status=200)
+        last_part = o.name.split("|")[-1].strip()
+        file_name = f"{last_part}.svg"
+        return HttpResponse(get_facade_template(o), content_type="image/svg+xml", headers={"Content-Disposition":f"attachment; filename=\"{file_name}\""},status=200)
