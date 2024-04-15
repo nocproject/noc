@@ -22,7 +22,7 @@ from noc.inv.models.protocol import ProtocolVariant
 from noc.sa.interfaces.base import ListOfParameter, DocumentParameter
 from noc.core.prettyjson import to_json
 from noc.core.translation import ugettext as _
-from noc.core.facade.template import get_facade_template
+from noc.core.facade.template import get_facade_template, is_valid_model_for_template
 
 
 class ObjectModelApplication(ExtDocApplication):
@@ -163,9 +163,32 @@ class ObjectModelApplication(ExtDocApplication):
         s = to_json(r, order=["name", "vendor__code", "description"])
         return {"data": s}
 
-    @view(url="^(?P<id>[0-9a-f]{24})/template.svg$", method=["GET"], access="read", api=True)
-    def api_template(self, request, id):
-        o=self.get_object_or_404(ObjectModel, id=id)
+    @view(
+        url="^(?P<id>[0-9a-f]{24})/(?P<name>front|rear)/template.svg$",
+        method=["GET"],
+        access="read",
+        api=True,
+    )
+    def api_template(self, request, id: str, name: str):
+        o = self.get_object_or_404(ObjectModel, id=id)
         last_part = o.name.split("|")[-1].strip()
-        file_name = f"{last_part}.svg"
-        return HttpResponse(get_facade_template(o), content_type="image/svg+xml", headers={"Content-Disposition":f"attachment; filename=\"{file_name}\""},status=200)
+        if name == "rear":
+            file_name = f"{last_part} (Rear).svg"
+        else:
+            file_name = f"{last_part}.svg"
+        return HttpResponse(
+            get_facade_template(o),
+            content_type="image/svg+xml",
+            headers={"Content-Disposition": f'attachment; filename="{file_name}"'},
+            status=200,
+        )
+
+    @view(
+        url="^(?P<id>[0-9a-f]{24})/is_valid_template/$",
+        method=["GET"],
+        access="read",
+        api=True,
+    )
+    def api_is_valid_template(request, id: str):
+        o = self.get_object_or_404(ObjectModel, id=id)
+        return self.render_json({"status": is_valid_model_for_template(o)})

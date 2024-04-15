@@ -7,7 +7,7 @@
 
 # Python modules
 import xml.etree.ElementTree as ET
-from typing import Dict, Optional
+from typing import Dict, Optional, Tuple
 from dataclasses import dataclass
 
 # NOC modules
@@ -56,20 +56,7 @@ def get_facade_template(model: ObjectModel) -> str:
     """
     Get SVG containig facade templates for object model.
     """
-    # Check we have dimensions
-    w = model.get_data("dimensions", "width")
-    h = model.get_data("dimensions", "height")
-    units = model.get_data("rackmount", "units")
-    # Try to deduce size from rack units
-    if not w and units:
-        w = str(RACK_WIDTH)
-    if not h and units:
-        ru = float(units)
-        h = str(UNIT * ru)
-    # Check we have dimensions
-    if not w or not h:
-        msg = "width and height dimensions must be set"
-        raise ValueError(msg)
+    w, h = get_model_dimensions(model)
     # SVG structure and element tree
     svg = ET.Element(
         f"{{{NS_SVG}}}svg",
@@ -163,3 +150,44 @@ def get_facade_template(model: ObjectModel) -> str:
     ET.indent(tree)
     out = ET.tostring(tree.getroot(), encoding="unicode", method=None)
     return out
+
+
+def get_model_dimensions(model: ObjectModel) -> Tuple[int, int]:
+    """
+    Get dimenstions from model.
+
+    Args:
+        model: Object Model instance
+
+    Returns:
+        width, height tuple
+
+    Raises:
+        ValueError: if dimensions cannot be deduced.
+    """
+    # Check we have dimensions
+    w = model.get_data("dimensions", "width")
+    h = model.get_data("dimensions", "height")
+    units = model.get_data("rackmount", "units")
+    # Try to deduce size from rack units
+    if not w and units:
+        w = str(RACK_WIDTH)
+    if not h and units:
+        ru = float(units)
+        h = str(UNIT * ru)
+    # Check we have dimensions
+    if not w or not h:
+        msg = "width and height dimensions must be set"
+        raise ValueError(msg)
+    return w, h
+
+
+def is_valid_model_for_template(model: ObjectModel) -> bool:
+    """
+    Check if template may be created for model.
+    """
+    try:
+        get_model_dimensions(model)
+        return True
+    except ValueError:
+        return False
