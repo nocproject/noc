@@ -622,6 +622,21 @@ class ClassifierService(FastAPIService):
                 if_name,
             )
             action = self.default_link_action
+        # Abduct detection
+        # link_status = event.get_hint("link_status")
+        # if (
+        #     link_status is not None
+        #     and iface
+        #     and iface.profile.enable_abduct_detection
+        #     and event.managed_object.object_profile.abduct_detection_window
+        #     and event.managed_object.object_profile.abduct_detection_threshold
+        # ):
+        #     ts = int(event.timestamp.timestamp())
+        #     if link_status:
+        #         self.abduct_detector.register_up(ts, iface)
+        #     else:
+        #         if self.abduct_detector.register_down(ts, iface):
+        #             await self.raise_abduct_event(event)
         # Link actions
         if action == "I":
             # Ignore
