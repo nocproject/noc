@@ -491,11 +491,17 @@ class ClassifierService(FastAPIService):
         metrics[EventMetrics.CR_SUPPRESSED] += 1
         return True
 
-    def call_event_handlers(self, event: Event, event_class: EventClass) -> bool:
+    def call_event_handlers(
+        self,
+        event: Event,
+        event_class: EventClass,
+        managed_object: Optional[ManagedObject] = None,
+    ) -> bool:
         """
         Call handlers associated with event class
         :param event:
-        :param event_class:
+        :param event_class: Event Class
+        :param managed_object: Managed Object event
         :return:
         """
         if event_class.id not in self.handlers:
@@ -503,7 +509,7 @@ class ClassifierService(FastAPIService):
         event_id = event.id  # Temporary store id
         for h in self.handlers[event_class.id]:
             try:
-                h(event)
+                h(event, managed_object)
             except Exception:
                 error_report()
             if event.id is None:
@@ -695,7 +701,7 @@ class ClassifierService(FastAPIService):
             # Fill suppress filter
             self.suppress_filter.register(event, event_class)
             # Call handlers
-            if self.call_event_handlers(event, event_class):
+            if self.call_event_handlers(event, event_class, mo):
                 return
             # Additionally check link events
             # if await self.check_link_event(event):

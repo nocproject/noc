@@ -1,13 +1,15 @@
 # ---------------------------------------------------------------------
 # Managed Object operations
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2014 The NOC Project
+# Copyright (C) 2007-2024 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
 
-def reboot(event):
+def reboot(event, managed_object):
     """
     Reload managed object
     """
-    event.managed_object.scripts.reboot()
+    if not managed_object:
+        return
+    managed_object.scripts.reboot()
