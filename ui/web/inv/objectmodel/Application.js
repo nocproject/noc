@@ -682,9 +682,16 @@ Ext.define("NOC.inv.objectmodel.Application", {
     var me = this.up("[appId=inv.objectmodel]"),
       record = me.currentRecord,
       side = btn.itemId.replace("_facadeBtn", ""),
-      downloadPath = Ext.String.format("/inv/objectmodel/{0}/{1}/template.js", record.id, side),
-      checkPath = Ext.String.format("/inv/objectmodel/{0}/is_valid_template/", record.id);
-    Ext.Ajax.request({ 
+      downloadPath = Ext.String.format(
+        "/inv/objectmodel/{0}/{1}/template.svg",
+        record.id,
+        side,
+      ),
+      checkPath = Ext.String.format(
+        "/inv/objectmodel/{0}/is_valid_template/",
+        record.id,
+      );
+    Ext.Ajax.request({
       url: checkPath,
       method: "GET",
       scope: me,

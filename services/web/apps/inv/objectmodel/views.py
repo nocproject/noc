@@ -189,6 +189,6 @@ class ObjectModelApplication(ExtDocApplication):
         access="read",
         api=True,
     )
-    def api_is_valid_template(request, id: str):
+    def api_is_valid_template(self, request, id: str):
         o = self.get_object_or_404(ObjectModel, id=id)
         return self.render_json({"status": is_valid_model_for_template(o)})
