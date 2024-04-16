@@ -244,7 +244,7 @@ class ManagedObjectManager(Manager):
 
 @full_text_search
 @Label.dynamic_classification(
-    profile_model_id="sa.ManagedObjectProfile", profile_field="object_profile"
+    profile_model_id="sa.ManagedObjectProfile", profile_field="object_profile_id"
 )
 @bi_sync
 @on_init
