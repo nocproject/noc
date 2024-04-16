@@ -1,0 +1,8 @@
+{
+    "name": "SNMP | MIB | NTPv4-MIB",
+    "$collection": "inv.capabilities",
+    "uuid": "8e859fb8-7b65-4cec-8417-8dac79b52bf5",
+    "description": "SNMP NTPv4-MIB support.",
+    "type": "bool",
+    "card_template": null
+}
