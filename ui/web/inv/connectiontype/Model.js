@@ -56,11 +56,20 @@ Ext.define("NOC.inv.connectiontype.Model", {
             type: "auto"
         },
         {
-            name: "facade",
+            name: "male_facade",
             type: "string",
         },
         {
-            name: "facade__label",
+            name: "male_facade__label",
+            type: "string",
+            persist: false
+        },
+        {
+            name: "female_facade",
+            type: "string",
+        },
+        {
+            name: "female_facade__label",
             type: "string",
             persist: false
         }

@@ -1,5 +1,5 @@
 {
-    "name": "Transceiver | SFP",
+    "name": "Transceiver | SFP (F)",
     "$collection": "inv.facades",
     "uuid": "0ebf3e88-4463-4a50-86c5-0346dfc63545",
     "description": "SFP Hole",

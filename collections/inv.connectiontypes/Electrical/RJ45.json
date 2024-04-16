@@ -3,7 +3,7 @@
     "$collection": "inv.connectiontypes",
     "uuid": "350706f6-4694-440d-80f7-6aa4b31a8ad9",
     "c_group": [],
-    "facade__name": "Electrical | RJ45",
+    "female_facade__name": "Electrical | RJ45 (F)",
     "genders": "mf",
     "matchers": [
         {

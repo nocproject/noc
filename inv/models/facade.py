@@ -29,7 +29,8 @@ id_lock = threading.Lock()
 @category
 @on_delete_check(
     check=[
-        ("inv.ConnectionType", "facade"),
+        ("inv.ConnectionType", "male_facade"),
+        ("inv.ConnectionType", "female_facade"),
         ("inv.ObjectModel", "front_facade"),
         ("inv.ObjectModel", "rear_facade"),
     ]

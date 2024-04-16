@@ -110,9 +110,15 @@ Ext.define("NOC.inv.connectiontype.Application", {
           uiStyle: "medium",
         },
         {
-          name: "facade",
+          name: "male_facade",
           xtype: "inv.facade.LookupField",
-          fieldLabel: __("Facade"),
+          fieldLabel: __("Male Facade"),
+          allowBlank: true,
+        },
+        {
+          name: "female_facade",
+          xtype: "inv.facade.LookupField",
+          fieldLabel: __("Female Facade"),
           allowBlank: true,
         },
         {

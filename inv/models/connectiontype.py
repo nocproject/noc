@@ -91,7 +91,8 @@ class ConnectionType(Document):
     # Connection matchers
     matchers = ListField(EmbeddedDocumentField(ConnectionMatcher))
     # Facade
-    facade = PlainReferenceField(Facade, required=False)
+    male_facade = PlainReferenceField(Facade, required=False)
+    female_facade = PlainReferenceField(Facade, required=False)
 
     OPPOSITE_GENDER = {"s": "s", "m": "f", "f": "m"}
     category = ObjectIdField()
@@ -101,21 +102,19 @@ class ConnectionType(Document):
 
     @property
     def json_data(self) -> Dict[str, Any]:
-        r = {
-            "name": self.name,
-            "$collection": self._meta["json_collection"],
-            "uuid": self.uuid
-        }
+        r = {"name": self.name, "$collection": self._meta["json_collection"], "uuid": self.uuid}
         if self.description:
-            r["description"]=self.description
-        r["genders"]= self.genders
-        r["c_group"]= self.c_group
+            r["description"] = self.description
+        r["genders"] = self.genders
+        r["c_group"] = self.c_group
         if self.extend:
             r["extend__name"] = self.extend.name
         if self.matchers:
             r["matchers"] = [m.json_data for m in self.matchers]
-        if self.facade:
-            r["facade__name"] = self.facade.name
+        if self.male_facade:
+            r["male_facade__name"] = self.male_facade.name
+        if self.female_facade:
+            r["female_facade__name"] = self.female_facade.name
         return r
 
     def to_json(self) -> str:

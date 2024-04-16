@@ -11,7 +11,7 @@ from typing import Dict, Optional, Tuple
 from dataclasses import dataclass
 
 # NOC modules
-from noc.inv.models.objectmodel import ObjectModel
+from noc.inv.models.objectmodel import ObjectModel, ObjectModelConnection
 from noc.core.svg import SVG
 from .utils import name_to_id, name_to_title, slot_to_id
 
@@ -87,7 +87,7 @@ def get_facade_template(model: ObjectModel) -> str:
         if conn.direction not in DIR_FILTER:
             continue
         #
-        ct_id = name_to_id(conn.type.name)
+        ct_id = f"{name_to_id(conn.type.name)}-{conn.gender}"
         slot_id = slot_to_id(conn.name)
         # Append connnection type if necessary
         if ct_id not in conn_types:
@@ -95,8 +95,8 @@ def get_facade_template(model: ObjectModel) -> str:
                 VERTICAL_GAP * len(conn_types) + sum(ct.height for ct in conn_types.values()),
                 VERTICAL_GAP,
             )
-            if conn.type.facade:
-                svg_el = SVG.from_string(conn.type.facade.data)
+            svg_el = get_connection_facade(conn)
+            if svg_el:
                 width = svg_el.width
                 height = svg_el.height
                 el = svg_el.root
@@ -191,3 +191,26 @@ def is_valid_model_for_template(model: ObjectModel) -> bool:
         return True
     except ValueError:
         return False
+
+def get_connection_facade(conn: ObjectModelConnection)->Optional[SVG]:
+    """
+    Get facade for connection.
+
+    Args:
+        conn: Connection item.
+
+    Returns:
+        SVG element, if applicable.
+    """
+    if conn.gender == "m":
+        if conn.type.male_facade:
+            return SVG.from_string(conn.type.male_facade.data)
+    elif conn.gender == "f":
+        if conn.type.female_facade:
+            return SVG.from_string(conn.type.female_facade.data)
+    else:
+        if conn.type.male_facade:
+            return SVG.from_string(conn.type.male_facade.data)
+        if conn.type.female_facade:
+            return SVG.from_string(conn.type.female_facade.data)
+    return None

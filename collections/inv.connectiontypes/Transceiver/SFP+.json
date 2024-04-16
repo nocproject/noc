@@ -4,7 +4,7 @@
     "uuid": "6086d594-515d-400c-8351-aceff54e6d2b",
     "description": "SFP+ transceiver slot",
     "c_group": [],
-    "facade__name": "Transceiver | SFP",
+    "female_facade__name": "Transceiver | SFP (F)",
     "genders": "mf",
     "matchers": [
         {
