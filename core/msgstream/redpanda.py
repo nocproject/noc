@@ -479,3 +479,77 @@ class RedPandaClient(object):
         if TopicPartition(topic=stream, partition=partition) not in consumer.assignment():
             consumer.assign([TopicPartition(topic=stream, partition=partition)])
         await consumer.commit({TopicPartition(topic=stream, partition=partition): offset})
+
+    async def move_to_tmp_stream(
+        self,
+        name: str,
+        partitions: int,
+        tmp_stream: Optional[str] = None,
+    ) -> Dict[int, int]:
+        """
+        Move messages to tmp stream and return count
+        :param name:
+        :param partitions: Number partitions
+        :param tmp_stream: Temporary stream name
+        :return:
+        """
+        tmp_stream = tmp_stream or f"__tmp-{name}"
+        n_msg: Dict[int, int] = {}  # partition -> copied messages
+        s = get_stream(name)
+        logger.info("Creating temporary stream %s", tmp_stream)
+        await self.delete_stream(tmp_stream)
+        await self.create_stream(
+            name=tmp_stream,
+            partitions=partitions,
+            replication_factor=1,
+        )
+        consumer = AIOKafkaConsumer(
+            loop=self.loop,
+            bootstrap_servers=self.bootstrap,
+            client_id=CLIENT_ID,
+            enable_auto_commit=False,
+            group_id=name,
+        )
+        consumer.subscribe(topics=[name])
+        await consumer.start()
+        # Copy all unread data to temporary stream as is
+        for partition in range(partitions):
+            logger.info("Copying partition %s:%s to %s:%s", name, partition, tmp_stream, partition)
+            n_msg[partition] = 0
+            # Get current offset
+            p_meta = await self.fetch_partition_metadata(name, partition)
+            newest_offset = p_meta.newest_offset or 0
+            # Fetch cursor
+            tp = TopicPartition(topic=name, partition=partition)
+            r = await consumer.seek_to_committed(tp)
+            if r[tp] is not None:
+                logger.info("Resuming from offset %d", r[tp])
+            else:
+                continue
+            current_offset = r[tp]
+            # For -1 as nothing messages
+            current_offset = max(0, current_offset)
+            if current_offset > newest_offset:
+                # Fix if cursor not set properly
+                current_offset = newest_offset
+            logger.info(
+                "Start copying from current_offset: %s to newest offset: %s",
+                current_offset,
+                newest_offset,
+            )
+            if current_offset < newest_offset:
+                async for msg in consumer:
+                    await self.publish(
+                        msg.value,
+                        stream=tmp_stream,
+                        partition=partition,
+                    )
+                    n_msg[partition] += 1
+                    if msg.offset == newest_offset:
+                        break
+            if n_msg[partition]:
+                logger.info("  %d messages has been copied", n_msg[partition])
+            else:
+                logger.info("  nothing to copy")
+        await consumer.stop()
+        return n_msg

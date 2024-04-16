@@ -167,3 +167,70 @@ class LiftBridgeClient(GugoLiftbridgeClient):
         self, stream: str, partition: int, wait_for_stream: bool = False
     ) -> PartitionMetadata:
         return await self.get_partition_metadata(stream, partition, wait_for_stream)
+
+    async def move_to_tmp_stream(
+        self,
+        name: str,
+        partitions: int,
+        tmp_stream: Optional[str] = None,
+    ) -> Dict[int, int]:
+        """
+        Move messages to tmp stream and return count
+        :param name:
+        :param partitions: Number partitions
+        :param tmp_stream: Temporary stream name
+        :return:
+        """
+        tmp_stream = tmp_stream or f"__tmp-{name}"
+        n_msg: Dict[int, int] = {}  # partition -> copied messages
+        s = get_stream(name)
+        logger.info("Creating temporary stream %s", tmp_stream)
+        await self.delete_stream(tmp_stream)
+        await self.create_stream(
+            name=tmp_stream,
+            partitions=partitions,
+            replication_factor=1,
+        )
+        # Copy all unread data to temporary stream as is
+        for partition in range(partitions):
+            logger.info("Copying partition %s:%s to %s:%s", name, partition, tmp_stream, partition)
+            n_msg[partition] = 0
+            # Get current offset
+            p_meta = await self.fetch_partition_metadata(name, partition)
+            newest_offset = p_meta.newest_offset or 0
+            # Fetch cursor
+            current_offset = (
+                await self.fetch_cursor(
+                    stream=name,
+                    partition=partition,
+                    cursor_id=s.cursor_name,
+                )
+                or 0
+            )
+            # For -1 as nothing messages
+            current_offset = max(0, current_offset)
+            if current_offset > newest_offset:
+                # Fix if cursor not set properly
+                current_offset = newest_offset
+            logger.info(
+                "Start copying from current_offset: %s to newest offset: %s",
+                current_offset,
+                newest_offset,
+            )
+            if current_offset < newest_offset:
+                async for msg in self.subscribe(
+                    stream=name, partition=partition, start_offset=current_offset
+                ):
+                    await self.publish(
+                        msg.value,
+                        stream=tmp_stream,
+                        partition=partition,
+                    )
+                    n_msg[partition] += 1
+                    if msg.offset == newest_offset:
+                        break
+            if n_msg[partition]:
+                logger.info("  %d messages has been copied", n_msg[partition])
+            else:
+                logger.info("  nothing to copy")
+        return n_msg

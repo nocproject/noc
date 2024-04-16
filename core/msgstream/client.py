@@ -4,6 +4,7 @@
 # Copyright (C) 2007-2022 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
+import asyncio
 
 # Python modules
 import logging
@@ -267,64 +268,15 @@ class MessageStreamClient(object):
         new_partitions: Optional[int] = None,
         replication_factor: Optional[int] = None,
     ) -> bool:
+        tmp_stream = f"__tmp-{name}"
         old_partitions = len(current_meta)
-        n_msg: Dict[int, int] = {}  # partition -> copied messages
-        s = get_stream(name)
         logger.info("Altering stream %s", name)
         # Create temporary stream with same structure, as original one
-        tmp_stream = f"__tmp-{name}"
-        logger.info("Creating temporary stream %s", tmp_stream)
-        await self.delete_stream(tmp_stream)
-        await self.create_stream(
-            name=tmp_stream,
-            partitions=old_partitions,
-            replication_factor=1,
-        )
-        # Copy all unread data to temporary stream as is
-        for partition in range(old_partitions):
-            logger.info("Copying partition %s:%s to %s:%s", name, partition, tmp_stream, partition)
-            n_msg[partition] = 0
-            # Get current offset
-            p_meta = await self.fetch_partition_metadata(name, partition)
-            newest_offset = p_meta.newest_offset or 0
-            # Fetch cursor
-            current_offset = (
-                await self.fetch_cursor(
-                    stream=name,
-                    partition=partition,
-                    cursor_id=s.cursor_name,
-                )
-                or 0
-            )
-            # For -1 as nothing messages
-            current_offset = max(0, current_offset)
-            if current_offset > newest_offset:
-                # Fix if cursor not set properly
-                current_offset = newest_offset
-            logger.info(
-                "Start copying from current_offset: %s to newest offset: %s",
-                current_offset,
-                newest_offset,
-            )
-            if current_offset < newest_offset:
-                async for msg in self.subscribe(
-                    stream=name, partition=partition, start_offset=current_offset
-                ):
-                    await self.publish(
-                        msg.value,
-                        stream=tmp_stream,
-                        partition=partition,
-                    )
-                    n_msg[partition] += 1
-                    if msg.offset == newest_offset:
-                        break
-            if n_msg[partition]:
-                logger.info("  %d messages has been copied", n_msg[partition])
-            else:
-                logger.info("  nothing to copy")
+        n_msg = await self.client.move_to_tmp_stream(name, old_partitions, tmp_stream)
         # Drop original stream
         logger.info("Dropping original stream %s", name)
         await self.delete_stream(name)
+        await asyncio.sleep(1)
         # Create new stream with required structure
         logger.info("Creating stream %s", name)
         await self.create_stream(
@@ -332,9 +284,10 @@ class MessageStreamClient(object):
             partitions=new_partitions,
             replication_factor=replication_factor,
         )
+        await asyncio.sleep(1)
         # Copy data from temporary stream to a new one
         for partition in range(old_partitions):
-            logger.info("Restoring partition %s:%s to %s" % (tmp_stream, partition, new_partitions))
+            logger.info("Restoring partition %s:%s to %s", tmp_stream, partition, new_partitions)
             # Re-route dropped partitions to partition 0
             dest_partition = partition if partition < new_partitions else 0
             n = n_msg[partition]
