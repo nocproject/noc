@@ -1,0 +1,38 @@
+{
+    "name": "Service | Status | Change",
+    "$collection": "fm.alarmclasses",
+    "uuid": "3779f88f-3bf3-4c52-a142-6f3a7242e0c6",
+    "description": "Group alarm class for service status change event",
+    "is_unique": false,
+    "reference": ["service"],
+    "is_ephemeral": false,
+    "user_clearable": false,
+    "vars": [
+        {
+            "name": "title",
+            "description": "Service title"
+        },
+        {
+            "name": "type",
+            "description": "Service type"
+        },
+        {
+            "name": "service",
+            "description": "Service Id"
+        },
+        {
+            "name": "status",
+            "description": "Current service status"
+        },
+        {
+            "name": "message",
+            "description": "Change message"
+        }
+    ],
+    "subject_template": "Service {{ alarm.vars.type }} ({{ alarm.vars.title }}) changed to {{ alarm.vars.status }}",
+    "body_template": "Service status was changed to {{ alarm.vars.status }} by alarm or nested services.",
+    "symptoms": "",
+    "probable_causes": "",
+    "recommended_actions": "",
+    "labels": []
+}

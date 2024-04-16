@@ -38,6 +38,9 @@ class ServiceApplication(ExtDocApplication):
         "effective_client_groups",
     ]
 
+    def field_label(self, o):
+        return o.label
+
     def get_Q(self, request, query):
         if is_objectid(query):
             q = Q(id=query)
@@ -56,6 +59,9 @@ class ServiceApplication(ExtDocApplication):
         # Expand resource groups fields
         for fn in self.resource_group_fields:
             data[fn] = sg_to_list(data.get(fn) or [])
+        if isinstance(o, Service):
+            data["in_maintenance"] = o.in_maintenance
+            data["service_path"] = [str(sp) for sp in data["service_path"]]
         return data
 
     def clean(self, data):

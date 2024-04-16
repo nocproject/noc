@@ -33,6 +33,7 @@ from noc.core.service.fastapi import FastAPIService
 from noc.core.mongo.connection import connect
 from noc.core.change.policy import change_tracker
 from noc.sa.models.managedobject import ManagedObject
+from noc.sa.models.service import Service, SVC_REF_PREFIX
 from noc.services.correlator.alarmrule import AlarmRuleSet, AlarmRule as CAlarmRule
 from noc.services.correlator.rule import Rule
 from noc.services.correlator.rcacondition import RCACondition
@@ -59,6 +60,7 @@ from noc.sa.models.servicesummary import ServiceSummary, SummaryItem, ObjectSumm
 from noc.core.version import version
 from noc.core.debug import format_frames, get_traceback_frames, error_report
 from noc.services.correlator import utils
+from noc.core.defer import defer
 from noc.core.perf import metrics
 from noc.core.fm.enum import RCA_RULE, RCA_TOPOLOGY, RCA_DOWNLINK_MERGE
 from noc.core.msgstream.message import Message
@@ -505,6 +507,7 @@ class CorrelatorService(FastAPIService):
         a.total_objects = ObjectSummaryItem.dict_to_items(summary["object"])
         a.total_services = a.direct_services
         a.total_subscribers = a.direct_subscribers
+        a.affected_services = Service.get_services_by_alarm(a)
         # Static groups
         alarm_groups: Dict[str, GroupItem] = {}
         if groups:
@@ -525,6 +528,9 @@ class CorrelatorService(FastAPIService):
         a.deferred_groups = deferred_groups
         # Save
         a.save()
+        # Update group if Service Group Alarm
+        if reference.startswith(SVC_REF_PREFIX):
+            self.resolve_deferred_groups(a.reference)
         # if event:
         #     event.contribute_to_alarm(a)
         self.logger.info(
@@ -560,6 +566,11 @@ class CorrelatorService(FastAPIService):
         # Watch for escalations, when necessary
         if config.correlator.auto_escalation and not a.root:
             AlarmEscalation.watch_escalations(a)
+        if a.affected_services:
+            defer(
+                "noc.sa.models.service.refresh_service_status",
+                svc_ids=[str(x) for x in a.affected_services],
+            )
         return a
 
     async def raise_alarm_from_rule(self, rule: Rule, event: ActiveEvent) -> Optional[ActiveAlarm]:
@@ -1366,6 +1377,16 @@ class CorrelatorService(FastAPIService):
                 active.append(g_alarm)
                 if def_h_ref:
                     self.resolve_deferred_groups(def_h_ref)
+        # Service groups
+        for svc_id in alarm.affected_services:
+            ref = f"{SVC_REF_PREFIX}:{svc_id}"
+            sg_alarm = self.get_by_reference(ref)
+            if sg_alarm:
+                active.append(sg_alarm)
+                continue
+            # s_ref = self.get_reference_hash(ref)
+            if alarm.raw_reference != ref:
+                deferred.append(self.get_reference_hash(ref))
         return active, deferred
 
     async def clear_groups(self, groups: List[bytes], ts: Optional[datetime.datetime]) -> None:
