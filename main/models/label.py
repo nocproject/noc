@@ -1254,7 +1254,9 @@ class Label(Document):
                     instance_filters=[(f"{profile_field}_id", instance.id)],
                 )
             if "match_rules" in changed_fields and not document:
-                Label.sync_model_profile(instance_model_id, profile_model_id)
+                Label.sync_model_profile(
+                    instance_model_id, profile_model_id, profile_field=profile_field
+                )
 
         def inner(m_cls):
             # Install profile set handlers
