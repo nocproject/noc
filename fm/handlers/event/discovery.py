@@ -32,7 +32,7 @@ def schedule_discovery_config(event, managed_object):
     )
 
 
-def on_system_start(event,  managed_object):
+def on_system_start(event, managed_object):
     """
     Called when reboot detected
     :param event:

@@ -126,28 +126,26 @@ class TrapCollectorService(FastAPIService):
         return None
 
     def register_trap_message(
-        self,
-        cfg: SourceConfig,
-        timestamp: int,
-        data: Dict[str, Any],
-        address: str = None
+        self, cfg: SourceConfig, timestamp: int, data: Dict[str, Any], address: str = None
     ):
         """
         Spool message to be sent
         """
         metrics["events_out"] += 1
         self.publish(
-            orjson.dumps({
-                "ts": timestamp,
-                "target": {
-                    "address": address,
-                    "name": cfg.name or "",
-                    "pool": config.pool,
-                    "id": cfg.id,
-                },
-                "type": {"source": EventSource.SNMP_TRAP.value, "id": data.get(SNMP_TRAP_OID)},
-                "data": [{"name": k, "value": v, "snmp_raw": True} for k, v in data.items()]
-            }),
+            orjson.dumps(
+                {
+                    "ts": timestamp,
+                    "target": {
+                        "address": address,
+                        "name": cfg.name or "",
+                        "pool": config.pool,
+                        "id": cfg.id,
+                    },
+                    "type": {"source": EventSource.SNMP_TRAP.value, "id": data.get(SNMP_TRAP_OID)},
+                    "data": [{"name": k, "value": v, "snmp_raw": True} for k, v in data.items()],
+                }
+            ),
             stream=cfg.stream,
             partition=cfg.partition,
         )
