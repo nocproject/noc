@@ -245,7 +245,7 @@ class CorrelatorService(FastAPIService):
         self.alarm_rule_set.compile()
         self.logger.info("%d Alam Rules have been loaded", n)
 
-    def mark_as_failed(self, event: "ActiveEvent"):
+    def mark_as_failed(self, event: "Event"):
         """
         Write error log and mark event as failed
         """
@@ -701,7 +701,7 @@ class CorrelatorService(FastAPIService):
         )
         ref_hash = self.get_reference_hash(reference)
         ws = event.timestamp - datetime.timedelta(seconds=rule.combo_window)
-        de = ActiveEvent.objects.filter(
+        de = Event.objects.filter(
             managed_object=event.managed_object_id,
             event_class=rule.event_class,
             reference=ref_hash,
@@ -713,7 +713,7 @@ class CorrelatorService(FastAPIService):
         # Probable starting event found, get all interesting following event classes
         fe = [
             ee.event_class.id
-            for ee in ActiveEvent.objects.filter(
+            for ee in Event.objects.filter(
                 managed_object=event.managed_object_id,
                 event_class__in=rule.combo_event_classes,
                 reference=ref_hash,

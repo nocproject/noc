@@ -2501,7 +2501,7 @@ class ManagedObject(NOCModel):
                 "id": str(self.administrative_domain.remote_system.id),
                 "name": self.administrative_domain.remote_system.name,
             }
-            r["administrative_domain"]["remote_id"] = o.administrative_domain.remote_id
+            r["administrative_domain"]["remote_id"] = self.administrative_domain.remote_id
         return r
 
     def iter_diagnostic_configs(self) -> Iterable[DiagnosticConfig]:
