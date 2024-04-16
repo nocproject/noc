@@ -52,13 +52,13 @@ def test_stream_f():
 @pytest.mark.parametrize("r,n,expected", [(0, 100, 0.0), (50, 100, 5.0), (100, 100, 10.0)])
 def test_low_biased_f(r, n, expected):
     stream = LowBiasedStream(100, Q_DEFAULT_EPS)
-    assert pytest.approx(stream.f(r, n), expected)
+    assert stream.f(r, n) == pytest.approx(expected)
 
 
 @pytest.mark.parametrize("r,n,expected", [(0, 100, 10.0), (50, 100, 5.0), (100, 100, 0.0)])
 def test_high_biased_f(r, n, expected):
     stream = HighBiasedStream(100, Q_DEFAULT_EPS)
-    assert pytest.approx(stream.f(r, n), expected)
+    assert stream.f(r, n) == pytest.approx(expected)
 
 
 @pytest.mark.parametrize(
@@ -79,7 +79,7 @@ def test_high_biased_f(r, n, expected):
 )
 def test_targeted_f(r, n, expected):
     stream = TargetedStream(100, Q_DEFAULT_TARGET)
-    assert pytest.approx(stream.f(r, n), expected)
+    assert stream.f(r, n) == pytest.approx(expected)
 
 
 def test_targeted_f_extremums():
@@ -127,7 +127,7 @@ def test_targeted_quantile(seq, expected):
     # Query first
     for target, value in zip(stream.targets, expected):
         quantile, epsilon = target
-        assert pytest.approx(stream.query(quantile), value)
+        assert stream.query(quantile) == pytest.approx(value, rel=1e-1)
 
 
 @pytest.mark.parametrize(
