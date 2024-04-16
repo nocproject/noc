@@ -56,6 +56,15 @@ class AlarmSeverity(Document):
     def __str__(self):
         return self.name
 
+    def __gt__(self, other):
+        return self.severity > other.severity
+
+    def __ge__(self, other):
+        return self.severity >= other.severity
+
+    def __eq__(self, other):
+        return self.severity == other.severity
+
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_id_cache"), lock=lambda _: id_lock)
     def get_by_id(cls, oid: Union[str, ObjectId]) -> Optional["AlarmSeverity"]:

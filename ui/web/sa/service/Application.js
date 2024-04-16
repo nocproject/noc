@@ -27,11 +27,63 @@ Ext.define("NOC.sa.service.Application", {
     search: true,
     helpId: "reference-service",
 
-    initComponent: function () {
+    initComponent: function() {
         var me = this;
 
         Ext.apply(me, {
             columns: [
+                {
+                    text: __("S"),
+                    dataIndex: "oper_status",
+                    sortable: false,
+                    width: 30,
+                    renderer: function(value, metaData, record) {
+                        var color;
+
+                        metaData.tdAttr = "data-qtip='<table style=\"font-size: 11px;\">" +
+                            "<tr><td style=\"padding-right: 10px;\"><div class=\"noc-object-oper-state\" style=\"background: grey;\"></div></td><td>" + __("Unknown") + "</td></tr>" +
+                            "<tr><td><div class=\"noc-object-oper-state\" style=\"background: green;\"></div></td><td>" + __("UP") + "</td></tr>" +
+                            "<tr><td><div class=\"noc-object-oper-state\" style=\"background: yellow;\"></div></td><td>" + __("SLIGHTLY_DEGRADED") + "</td></tr>" +
+                            "<tr><td><div class=\"noc-object-oper-state\" style=\"background: orange;\"></div></td><td>" + __("DEGRADED") + "</td></tr>" +
+                            "<tr><td><div class=\"noc-object-oper-state\" style=\"background: red;\"></div></td><td>" + __("DOWN") + "</td></tr>" +
+                            "<tr><td><div class=\"noc-object-oper-state\" style=\"background: linear-gradient(to right, green 50%, brown 50%);\"></div></td><td>" + __("In maintenance") + "</td></tr>" +
+                            "</table>'";
+                        switch(value) {
+                            case 0:
+                                color = "grey";
+                                if(record.get("in_maintenance")) {
+                                    color = "linear-gradient(to right, grey 50%, brown 50%)";
+                                }
+                                break;
+                            case 1:
+                                color = "green";
+                                if(record.get("in_maintenance")) {
+                                    color = "linear-gradient(to right, green 50%, brown 50%)";
+                                }
+                                break;
+                            case 2:
+                                color = "yellow";
+                                if(record.get("in_maintenance")) {
+                                    color = "linear-gradient(to right, yellow 50%, brown 50%)";
+                                }
+                                break;
+                            case 3:
+                                color = "orange";
+                                if(record.get("in_maintenance")) {
+                                    color = "linear-gradient(to right, orange 50%, brown 50%)";
+                                }
+                                break;
+                            case 4:
+                                color = "red";
+                                if(record.get("in_maintenance")) {
+                                    color = "linear-gradient(to right, red 50%, brown 50%)";
+                                }
+                                break;
+                        }
+
+                        return "<div class='noc-object-oper-state' style='background: " + color + "'></div>";
+                    }
+                },
                 {
                     text: __("ID"),
                     dataIndex: "id",
@@ -42,6 +94,11 @@ Ext.define("NOC.sa.service.Application", {
                     dataIndex: "profile",
                     width: 200,
                     renderer: NOC.render.Lookup("profile")
+                },
+                {
+                    text: __("Label"),
+                    dataIndex: "label",
+                    width: 260
                 },
                 {
                     text: __("Subscriber"),

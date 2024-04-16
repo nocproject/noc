@@ -106,9 +106,9 @@ class InterfaceAppplication(ExtDocApplication):
             "project__label": str(si.project) if si.project else None,
             "l2_domain": str(si.l2_domain.id) if si.l2_domain else None,
             "l2_domain__label": str(si.l2_domain) if si.l2_domain else None,
+            "vrf": si.forwarding_instance.name if si.forwarding_instance else "",
             "service": str(si.service.id) if si.service else None,
             "service__label": str(si.service) if si.service else None,
-            "vrf": si.forwarding_instance.name if si.forwarding_instance else "",
         }
         return r
 

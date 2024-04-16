@@ -121,7 +121,7 @@ class ResourceGroup(Document):
 
     # Group | Name
     name = StringField()
-    technology = PlainReferenceField(Technology)
+    technology: Technology = PlainReferenceField(Technology)
     parent = PlainReferenceField("inv.ResourceGroup", validation=check_rg_parent)
     description = StringField()
     dynamic_service_labels = ListField(EmbeddedDocumentField(MatchLabels))
@@ -690,6 +690,14 @@ class ResourceGroup(Document):
             params += [v[1] for v in table_filter]
         with pg_connection.cursor() as cursor:
             cursor.execute(SQL_SYNC, params)
+
+    @property
+    def resource_count(self) -> int:
+        """
+        Calculate number of resources associated to group
+        :return:
+        """
+        return len(self.get_model_instance_ids(self.technology.service_model, self.id))
 
 
 def invalidate_instance_cache(model_id: str, ids: List[int]):
