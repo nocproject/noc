@@ -1,5 +1,5 @@
 {
-    "name": "Electrical | C14",
+    "name": "Power | IEC 60320 C14",
     "$collection": "inv.facades",
     "uuid": "eb2f432b-18f0-480a-bb96-c889bdda14c5",
     "description": "C14 socket",

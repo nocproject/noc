@@ -107,7 +107,7 @@ class ConnectionType(Document):
             "uuid": self.uuid
         }
         if self.description:
-            r["description"]=self.description,
+            r["description"]=self.description
         r["genders"]= self.genders
         r["c_group"]= self.c_group
         if self.extend:
