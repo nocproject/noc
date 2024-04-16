@@ -28,5 +28,19 @@ Ext.define("NOC.inv.inv.plugins.facade.FacadePanel", {
   //
   preview: function (data) {
     var me = this;
+    Ext.each(data.views, function(view) {
+      me.facadeViewPanel.add([
+        {
+          xtype: "component",
+          html: Ext.String.format("<h2 style='padding-left: 10px;'>{0}</h2>", view.name),
+        },
+        {
+          xtype: "image",
+          src: view.src,
+          title: view.name,
+          padding: 5,
+        }
+      ]);
+    });
   },
 });
