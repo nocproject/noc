@@ -586,7 +586,9 @@ class IPv4Parameter(StringParameter):
             return value
         except ValueError:
             pass
-        if len(value) == 4:
+        if len(value) == 4 and isinstance(value, bytes):
+            value = ".".join(str(c) for c in value)
+        elif len(value) == 4:
             # IP address in binary form
             value = ".".join(["%02X" % ord(c) for c in value])
         v = super().clean(value)
@@ -640,6 +642,8 @@ class IPv6Parameter(StringParameter):
     def clean(self, value):
         if value is None and self.default is not None:
             return self.default
+        if len(value) == 16 and isinstance(value, bytes):
+            value = ":".join("%02X%02X" % (x, y) for x, y in zip(value[0::2], value[1::2]))
         v = super().clean(value)
         if not is_ipv6(v):
             self.raise_error(value)
@@ -674,10 +678,11 @@ class IPParameter(StringParameter):
     """
 
     def clean(self, value):
-        if ":" in value:
+        if (len(value) == 16 and isinstance(value, bytes)) or (
+            not isinstance(value, bytes) and ":" in value
+        ):
             return IPv6Parameter().clean(value)
-        else:
-            return IPv4Parameter().clean(value)
+        return IPv4Parameter().clean(value)
 
 
 #
