@@ -351,6 +351,17 @@ class Script(BaseScript):
             return engine_id.hex()
         return None
 
+    @false_on_snmp_error
+    def has_ntpv4(self):
+        """
+        True if NTPv4-MIB supported
+        :return:
+        """
+        if self.has_snmp():
+            self.snmp.get(mib["NTPv4-MIB::ntpEntStatusActiveRefSourceId", 0])
+            return True
+        return False
+
     def execute_platform_cli(self, caps):
         """
         Method to be overriden in subclasses. Execute if C preffered
@@ -481,6 +492,8 @@ class Script(BaseScript):
             caps["Network | BFD"] = True
         if self.is_requested("rep") and self.has_rep():
             caps["Network | REP"] = True
+        if self.has_ntpv4():
+            caps["SNMP | MIB | NTPv4-MIB"] = True
         self.call_method(
             cli_handler="execute_platform_cli",
             snmp_handler="execute_platform_snmp",
