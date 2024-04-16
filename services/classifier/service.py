@@ -488,6 +488,20 @@ class ClassifierService(FastAPIService):
         # Activate event
         event.expires = event.timestamp + datetime.timedelta(seconds=event.event_class.ttl)
 
+        # Fill deduplication filter
+        self.dedup_filter.register(event)
+        # Fill suppress filter
+        self.suppress_filter.register(event)
+        # Call handlers
+        if self.call_event_handlers(event):
+            return
+        # Send Event to MX
+        if config.message.enable_event:
+            await self.register_mx_message(event, resoved_raws)
+        # Additionally check link events
+        if await self.check_link_event(event):
+            return
+
         # Send event to clickhouse
         mo = event.managed_object
         data = {
@@ -513,18 +527,6 @@ class ClassifierService(FastAPIService):
         }
         self.register_metrics("events", [data])
 
-        # Fill deduplication filter
-        self.dedup_filter.register(event)
-        # Fill suppress filter
-        self.suppress_filter.register(event)
-        if config.message.enable_event:
-            await self.register_mx_message(event, resoved_raws)
-        # Call handlers
-        if self.call_event_handlers(event):
-            return
-        # Additionally check link events
-        if await self.check_link_event(event):
-            return
         # Call triggers
         if self.call_event_triggers(event):
             return
