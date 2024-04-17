@@ -13,7 +13,7 @@ Ext.define("NOC.inv.inv.Application", {
         "NOC.inv.inv.NavModel",
         "NOC.inv.inv.CreateConnectionForm"
     ],
-    initComponent: function() {
+    initComponent: function(){
         var me = this;
         me.invPlugins = {};
         // Navigation tree
@@ -153,19 +153,19 @@ Ext.define("NOC.inv.inv.Application", {
         //
         me.callParent();
         // Process commands
-        switch(me.getCmd()) {
-            case "history":
+        switch(me.getCmd()){
+            case"history":
                 me.restoreHistory(me.noc.cmd.args);
                 return;
         }
     },
     //
-    onReloadNav: function() {
+    onReloadNav: function(){
         var me = this;
         me.store.reload({node: me.store.getRootNode()});
     },
     //
-    runPlugin: function(objectId, pData) {
+    runPlugin: function(objectId, pData){
         var me = this,
             plugin = Ext.create(pData.xtype, {app: me});
         me.tabPanel.add(plugin);
@@ -174,17 +174,17 @@ Ext.define("NOC.inv.inv.Application", {
             url: "/inv/inv/" + objectId + "/plugin/" + pData.name + "/",
             method: "GET",
             scope: me,
-            success: function(response) {
+            success: function(response){
                 var data = Ext.decode(response.responseText);
                 plugin.preview(data, objectId);
             },
-            failure: function() {
+            failure: function(){
                 NOC.error(__("Failed to get data for plugin") + " " + pData.name);
             }
         });
     },
     //
-    addAppForm: function(parent, app, objectId) {
+    addAppForm: function(parent, app, objectId){
         var me = this,
             url = "/" + app.replace(".", "/") + "/launch_info/",
             c;
@@ -192,7 +192,7 @@ Ext.define("NOC.inv.inv.Application", {
             url: url,
             method: "GET",
             scope: me,
-            success: function(response) {
+            success: function(response){
                 var li = Ext.decode(response.responseText),
                     params = {};
                 Ext.merge(params, li.params);
@@ -200,18 +200,18 @@ Ext.define("NOC.inv.inv.Application", {
                     noc: params,
                     controller: me.controller
                 });
-                c.loadById(objectId, function(record) {
+                c.loadById(objectId, function(record){
                     c.onEditRecord(record);
                 });
                 parent.items.add(c);
             },
-            failure: function() {
+            failure: function(){
                 NOC.error(__("Failed to launch application") + " " + app);
             }
         });
     },
     //
-    onSelectNav: function(panel, record, index, eOpts) {
+    onSelectNav: function(panel, record){
         var me = this,
             objectId = record.get("id"),
             plugins = record.get("plugins");
@@ -221,62 +221,64 @@ Ext.define("NOC.inv.inv.Application", {
         Ext.Ajax.request({
             url: "/inv/inv/" + objectId + "/map_lookup/",
             method: "GET",
-            success: function(response) {
-                var data = Ext.decode(response.responseText);
+            success: function(response){
+                var defaultHandler, menuItems,
+                    data = Ext.decode(response.responseText);
 
-                if(Ext.isEmpty(data)) {
+                if(Ext.isEmpty(data)){
                     me.mapButton.setDisabled(true);
                     me.mapButton.setArrowVisible(false);
                     return;
                 }
-                defaultHandler = data.filter(function(el) {
+                defaultHandler = data.filter(function(el){
                     return el.is_default
                 })[0];
-                me.mapButton.setHandler(function() {
+                me.mapButton.setHandler(function(){
                     NOC.launch("inv.map", "history", {
                         args: defaultHandler.args
                     });
                 }, me);
                 me.mapButton.getMenu().removeAll();
-                menuItems = data.filter(function(el) {
-                    return !el.is_default
-                }).map(function(el) {
-                    return {
+                menuItems = data.filter(function(el){
+                    return!el.is_default
+                }).map(function(el){
+                    return{
                         text: el.label,
-                        handler: function() {
+                        handler: function(){
                             NOC.launch("inv.map", "history", {
                                 args: el.args
                             })
                         }
                     }
                 });
-                Ext.Array.each(menuItems, function(item) {
+                Ext.Array.each(menuItems, function(item){
                     me.mapButton.getMenu().add(item);
                 });
                 me.mapButton.setArrowVisible(menuItems.length);
                 me.mapButton.setDisabled(false);
             },
-            failure: function() {
+            failure: function(){
                 NOC.error(__("Failed get map menu"));
             }
         });
         me.invPlugins = {};
         me.tabPanel.removeAll();
-        Ext.each(plugins, function(p) {
+        Ext.each(plugins, function(p){
             me.runPlugin(objectId, p);
         });
+        me.tabPanel.setActiveTab(0);
         me.setHistoryHash(objectId);
     },
     //
-    onDeselect: function() {
+    onDeselect: function(){
         var me = this;
         me.dashboardButton.setDisabled(true);
     },
     // Expand nav tree to object
-    showObject: function(objectId, reload) {
+    showObject: function(objectId, reload){
         var me = this;
-        if(reload) {
-            me.store.on("load", function() {
+        if(reload){
+            me.store.on("load", function(){
                 me.showObject(objectId)
             }, {
                 scope: me,
@@ -288,42 +290,42 @@ Ext.define("NOC.inv.inv.Application", {
             url: "/inv/inv/" + objectId + "/path/",
             method: "GET",
             scope: me,
-            success: function(response) {
+            success: function(response){
                 var data = Ext.decode(response.responseText),
                     path = [, me.navTree.getRootNode().get("id")];
-                path = path.concat(data.map(function(v) {
+                path = path.concat(data.map(function(v){
                     return v.id
                 }));
                 me.navTree.selectPath(
                     path.join("/"), "id", "/",
-                    function(success, lastNode) {
-                        if(!success) {
+                    function(success){
+                        if(!success){
                             NOC.error(__("Failed to find node"));
                         }
                     }, me
                 );
             },
-            failure: function(response) {
+            failure: function(){
                 NOC.error(__("Failed to get path"));
             }
         })
     },
     //
-    onAddObject: function() {
+    onAddObject: function(){
         var me = this,
             sm = me.navTree.getSelectionModel(),
             sel = sm.getSelection(),
             container = null;
-        if(sel.length > 0) {
+        if(sel.length > 0){
             container = sel[0];
         }
         var i = me.showItem(me.ITEM_ADD);
         i.setContainer(container);
     },
     //
-    onNavDrop: function(node, data, overModel, dropPosition, eOpts) {
+    onNavDrop: function(node, data, overModel, dropPosition){
         var me = this,
-            objects = data.records.map(function(r) {
+            objects = data.records.map(function(r){
                 return r.get("id")
             });
         Ext.Ajax.request({
@@ -335,30 +337,30 @@ Ext.define("NOC.inv.inv.Application", {
                 position: dropPosition
             },
             scope: me,
-            success: function() {
+            success: function(){
             },
-            failure: function() {
+            failure: function(){
                 NOC.error(__("Failed to move"));
             }
         });
     },
     //
-    onRemoveGroup: function() {
+    onRemoveGroup: function(){
         var me = this,
             sm = me.navTree.getSelectionModel(),
             sel = sm.getSelection(),
             container = null;
-        if(sel.length > 0) {
+        if(sel.length > 0){
             container = sel[0];
         }
-        if(container) {
+        if(container){
             Ext.Msg.show({
                 title: __("Remove group '") + container.get("name") + "'?",
                 msg: "Would you like to remove group. All nested groups will be removed. All nested objects will be moved to Lost&Found folder",
                 buttons: Ext.Msg.YESNO,
                 glyph: NOC.glyph.question_circle,
-                fn: function(rec) {
-                    if(rec === "yes") {
+                fn: function(rec){
+                    if(rec === "yes"){
                         Ext.Ajax.request({
                             url: "/inv/inv/remove_group/",
                             method: "DELETE",
@@ -366,10 +368,10 @@ Ext.define("NOC.inv.inv.Application", {
                                 container: container.get("id")
                             },
                             scope: me,
-                            success: function() {
+                            success: function(){
                                 me.store.reload({node: me.store.getRootNode()});
                             },
-                            failure: function() {
+                            failure: function(){
                                 NOC.error(__("Failed to delete group"));
                             }
                         });
@@ -379,31 +381,30 @@ Ext.define("NOC.inv.inv.Application", {
         }
     },
     //
-    restoreHistory: function(args) {
-        var me = this,
-            objectId = args[0];
+    restoreHistory: function(args){
+        var me = this;
         me.showObject(args[0]);
     },
     //
-    onCreateConnection: function() {
+    onCreateConnection: function(){
         var me = this;
-        if(me.mainPanel.items.items.length > 2) {
+        if(me.mainPanel.items.items.length > 2){
             me.mainPanel.remove(me.mainPanel.items.items[2], false);
         }
         me.mainPanel.add(me.connectionPanel);
     },
     //
-    onOpenDashboard: function() {
+    onOpenDashboard: function(){
         var me = this,
             sm = me.navTree.getSelectionModel(),
             sel = sm.getSelection(),
             container = null;
 
-        if(sel.length > 0) {
+        if(sel.length > 0){
             container = sel[0];
         }
 
-        if(container) {
+        if(container){
             window.open("/ui/grafana/dashboard/script/noc.js?dashboard=container&id=" + container.get("id") + "&orgId=1");
         }
     }
