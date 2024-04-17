@@ -19,7 +19,7 @@ class Migration(BaseMigration):
         platform_coll = self.mongo_db["noc.platforms"]
         bulk = []
         for p in platform_coll.find({}, {"name": 1}):
-            if len(p["name"]) > 200:
+            if len(p["name"]) > MAX_PLATFORM_LENGTH:
                 bulk += [
                     UpdateOne(
                         {"_id": p["_id"]}, {"$set": {"name": p["name"][:MAX_PLATFORM_LENGTH]}}
