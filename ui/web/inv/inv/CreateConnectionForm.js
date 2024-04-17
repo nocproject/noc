@@ -62,6 +62,7 @@ Ext.define("NOC.inv.inv.CreateConnectionForm", {
                 spritemouseout: me.onSpriteMouseOut,
                 spriteclick: me.onSpriteClick,
                 scope: me,
+                boxready: me.drawEmptyText,
                 afterrender: function(container) {
                     container.getEl().on("keydown", me.cancelDrawConnection);
                     container.getEl().set({
@@ -235,6 +236,15 @@ Ext.define("NOC.inv.inv.CreateConnectionForm", {
         }
         canvas.getSurface().renderFrame();
     },
+    cleanForm: function () {
+        var me = this;
+
+        me.setTitle(__("Object connections"));
+        me.cleanViewModel();
+        me.drawPanel.removeAll(true);
+        me.drawPanel.renderFrame();
+        me.drawEmptyText(me.drawPanel);
+    },
     cleanViewModel: function() {
         this.getViewModel().set("leftObject", null);
         this.getViewModel().set("rightObject", null);
@@ -348,6 +358,37 @@ Ext.define("NOC.inv.inv.CreateConnectionForm", {
                 NOC.error(__("Failed to disconnect objects : ") + response.responseText);
             }
         });
+    },
+    drawEmptyText: function (container) {
+        var text = __("Drag objects from left tree to start"),
+            fontSize = 16,
+            offset = 50,
+            font = Ext.String.format("normal {0}px arial", fontSize),
+            textWidth = Ext.draw.TextMeasurer.measureText(text, font).width,
+            squareSprite = {
+                type: "rect",
+                x: offset,
+                y: offset,
+                width: container.getWidth() - offset * 2,
+                height: container.getHeight() - offset * 2,
+                fillStyle: "none",
+                strokeStyle: "black",
+                lineWidth: 3,
+                lineDash: [10, 10],
+                radius: 20
+            },
+            textSprite = {
+                type: "text",
+                text: text,
+                x: (container.getWidth() - textWidth) / 2,
+                y: container.getHeight() / 2 - fontSize,
+                fillStyle: "black",
+                font: font
+            };
+        
+        container.getSurface().removeAll(true);
+        container.getSurface().add(squareSprite, textSprite);
+        container.getSurface().renderFrame();
     },
     drawInternalConnections: function(data, surface, side) {
         var me = this;
@@ -822,27 +863,22 @@ Ext.define("NOC.inv.inv.CreateConnectionForm", {
         });
     },
     onCleanClick: function() {
-        var me = this,
-            action = function() {
-                me.setTitle(__("Object connections"));
-                me.cleanViewModel();
-                me.drawPanel.removeAll(true);
-                me.drawPanel.renderFrame();
-            };
+        var me = this;
 
         if(me.getViewModel().get("isDirty")) {
             Ext.Msg.confirm(__("Confirm"), __("There is unsaved data, do you really want to clean?"), function(btn) {
                 if(btn === "yes") {
-                    action();
+                    me.cleanForm();
                 }
             });
         } else {
-            action();
+            me.cleanForm();
         }
     },
     onCloseClick: function() {
         var me = this,
-            action = function() {
+            action = function () {
+                me.cleanForm();
                 me.app.mainPanel.remove(me.app.connectionPanel, false);
                 me.app.mainPanel.add(me.app.tabPanel);
             };
