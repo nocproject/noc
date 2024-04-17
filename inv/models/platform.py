@@ -62,7 +62,7 @@ class Platform(Document):
         ],
     }
     vendor = PlainReferenceField(Vendor)
-    name = StringField(max_length=200)
+    name = StringField(max_length=MAX_PLATFORM_LENGTH)
     description = StringField(required=False)
     # Full name, combined from vendor platform
     full_name = StringField(unique=True)
