@@ -12,6 +12,7 @@ from dataclasses import dataclass
 
 # NOC modules
 from noc.inv.models.objectmodel import ObjectModel, ObjectModelConnection
+from noc.inv.models.connectiontype import ConnectionType
 from noc.core.svg import SVG
 from .utils import name_to_id, name_to_title, slot_to_id
 
@@ -60,11 +61,7 @@ def get_facade_template(model: ObjectModel) -> str:
     # SVG structure and element tree
     svg = ET.Element(
         f"{{{NS_SVG}}}svg",
-        {
-            "version": "1.0",
-            "xmlns:xlink": NS_XLINK,
-            "viewBox": f"0 0 {w} {h}"
-        },
+        {"version": "1.0", "xmlns:xlink": NS_XLINK, "viewBox": f"0 0 {w} {h}"},
     )
     tree = ET.ElementTree(svg)
     # Bounding rectanle
@@ -174,11 +171,37 @@ def get_model_dimensions(model: ObjectModel) -> Tuple[int, int]:
     if not h and units:
         ru = float(units)
         h = str(UNIT * ru)
+    # Get from `o` connection type
+    if not h or not w:
+        ct = _get_outer_connection_type(model)
+        if ct:
+            if not w:
+                w = ct.get_data("dimensions", "width")
+            if not h:
+                h = ct.get_data("dimensions", "height")
     # Check we have dimensions
     if not w or not h:
         msg = "width and height dimensions must be set"
         raise ValueError(msg)
     return w, h
+
+
+def _get_outer_connection_type(model: ObjectModel) -> Optional[ConnectionType]:
+    """
+    Get connection type for outer connection.
+
+    Outer connection must be single.
+
+    Args:
+        model: Object model instance.
+
+    Returns:
+        Connection type.
+    """
+    outers = [c for c in model.connections if c.is_outer]
+    if len(outers) != 1:
+        return None
+    return outers[0].type
 
 
 def is_valid_model_for_template(model: ObjectModel) -> bool:
@@ -191,7 +214,8 @@ def is_valid_model_for_template(model: ObjectModel) -> bool:
     except ValueError:
         return False
 
-def get_connection_facade(conn: ObjectModelConnection)->Optional[SVG]:
+
+def get_connection_facade(conn: ObjectModelConnection) -> Optional[SVG]:
     """
     Get facade for connection.
 
