@@ -130,6 +130,10 @@ class Script(GetMetricsScript):
     @metrics(
         [
             "Interface | CBQOS | Drops | Out | Delta",
+            "Interface | CBQOS | Octets | In",
+            "Interface | CBQOS | Octets | In | Delta",
+            "Interface | CBQOS | Packets | In",
+            "Interface | CBQOS | Packets | In | Delta",
             "Interface | CBQOS | Octets | Out",
             "Interface | CBQOS | Octets | Out | Delta",
             "Interface | CBQOS | Packets | Out",
@@ -141,10 +145,20 @@ class Script(GetMetricsScript):
     )
     def get_interface_cbqos_metrics_snmp(self, metrics):
         ifaces = {str(m.ifindex): m.labels for m in metrics if m.ifindex}
+        service = {str(m.ifindex): m.service for m in metrics if m.service}
         for ifindex in ifaces:
-            for index, packets, octets, discards in self.snmp.get_tables(
+            for (
+                index,
+                in_packets,
+                out_packets,
+                in_octets,
+                out_octets,
+                discards,
+            ) in self.snmp.get_tables(
                 [
+                    mib["JUNIPER-COS-MIB::jnxCosIfqQedPkts", ifindex],
                     mib["JUNIPER-COS-MIB::jnxCosIfqTxedPkts", ifindex],
+                    mib["JUNIPER-COS-MIB::jnxCosIfqQedBytes", ifindex],
                     mib["JUNIPER-COS-MIB::jnxCosIfqTxedBytes", ifindex],
                     mib["JUNIPER-COS-MIB::jnxCosIfqTailDropPkts", ifindex],
                 ]
@@ -156,10 +170,14 @@ class Script(GetMetricsScript):
                 ts = self.get_ts()
                 for metric, value in [
                     ("Interface | CBQOS | Drops | Out | Delta", discards),
-                    ("Interface | CBQOS | Octets | Out | Delta", octets),
-                    ("Interface | CBQOS | Octets | Out", octets),
-                    ("Interface | CBQOS | Packets | Out | Delta", packets),
-                    ("Interface | CBQOS | Packets | Out", packets),
+                    ("Interface | CBQOS | Octets | Out | Delta", out_octets),
+                    ("Interface | CBQOS | Octets | Out", out_octets),
+                    ("Interface | CBQOS | Octets | In | Delta", in_octets),
+                    ("Interface | CBQOS | Octets | In", in_octets),
+                    ("Interface | CBQOS | Packets | Out | Delta", out_packets),
+                    ("Interface | CBQOS | Packets | Out", out_packets),
+                    ("Interface | CBQOS | Packets | In | Delta", in_packets),
+                    ("Interface | CBQOS | Packets | In", in_packets),
                 ]:
                     if not value:
                         continue
@@ -174,6 +192,7 @@ class Script(GetMetricsScript):
                         type="delta" if metric.endswith("Delta") else "gauge",
                         scale=scale,
                         units="byte" if "Octets" in metric else "pkt",
+                        service=service.get(ifindex),
                     )
 
     def collect_sla_metrics(self, metrics):
