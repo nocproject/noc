@@ -662,7 +662,7 @@ Ext.define("NOC.inv.objectmodel.Application", {
   enableRearFacade: function (record) {
     var hasRearFacade = Ext.Array.findBy(record.get("connections"), function (e) {
       return e.direction === "o";
-    })
+    }) === null
       ? false
       : true;
     Ext.Array.each(
