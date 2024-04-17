@@ -131,6 +131,7 @@ Ext.define("NOC.inv.inv.CreateConnectionForm", {
                 },
                 {
                     text: __("Close"),
+                    itemId: "closeBtn",
                     scope: me,
                     glyph: NOC.glyph.arrow_left,
                     handler: me.onCloseClick
@@ -363,6 +364,7 @@ Ext.define("NOC.inv.inv.CreateConnectionForm", {
         var text = __("Drag objects from left tree to start"),
             fontSize = 16,
             offset = 50,
+            color = window.getComputedStyle(container.up("panel").down("button[itemId=closeBtn]").btnIconEl.dom).color,
             font = Ext.String.format("normal {0}px arial", fontSize),
             textWidth = Ext.draw.TextMeasurer.measureText(text, font).width,
             squareSprite = {
@@ -372,7 +374,7 @@ Ext.define("NOC.inv.inv.CreateConnectionForm", {
                 width: container.getWidth() - offset * 2,
                 height: container.getHeight() - offset * 2,
                 fillStyle: "none",
-                strokeStyle: "black",
+                strokeStyle: color,
                 lineWidth: 3,
                 lineDash: [10, 10],
                 radius: 20
@@ -382,7 +384,7 @@ Ext.define("NOC.inv.inv.CreateConnectionForm", {
                 text: text,
                 x: (container.getWidth() - textWidth) / 2,
                 y: container.getHeight() / 2 - fontSize,
-                fillStyle: "black",
+                fillStyle: color,
                 font: font
             };
         
@@ -1510,7 +1512,6 @@ Ext.define("NOC.inv.inv.CreateConnectionForm", {
             drawPanel.isModalOpen = false;
         });
     },
-
     removeWire: function(wireSprite) {
         var connections,
             me = this,
