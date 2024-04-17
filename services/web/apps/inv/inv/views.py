@@ -301,7 +301,9 @@ class InvApplication(ExtApplication):
             internal,
         )
         lo: Object = self.get_object_or_404(Object, id=o1)  # Left Object
-        check = [("left", lo, left_filter, None, None)]
+        check: List[Tuple[str, Object, str, Optional[Object], Optional[str]]] = [
+            ("left", lo, left_filter, None, None)
+        ]
         ro: Optional[Object] = None  # Right Object
         cable: Optional[ObjectModel] = None
         if o2:
@@ -339,11 +341,25 @@ class InvApplication(ExtApplication):
                 id_ports_map[c.name] = cid
                 c_data = o_from.get_effective_connection_data(c.name)
                 oc, oo, _ = o_from.get_p2p_connection(c.name)
+                self.logger.debug(
+                    "[%s -> %s][%s] Checking connections: free: %s, valid: %s",
+                    o_from,
+                    o_to,
+                    cid,
+                    oc,
+                    oo,
+                )
                 # Deny same and internal <-> external
-                valid = not internal and c.name != left_filter and c.type.name != "Composed"
+                valid = not internal and c.type.name != "Composed"
+                if left_filter == c.name and o_from == o1:
+                    # Same connection
+                    valid = False
                 if o_to or cable_filter:
                     cp = o_from.get_connection_proposals(
-                        c.name, cable or o_to.model, right_filter, only_first=True
+                        c.name,
+                        cable or o_to.model,
+                        right_filter if not cable else None,
+                        only_first=True,
                     )
                     valid = bool(cp)
                 if oc and o_from == lo:
@@ -533,9 +549,12 @@ class InvApplication(ExtApplication):
         lo: Object = self.get_object_or_404(Object, id=object)
         if is_internal:
             # Cross-connect
-            lo.disconnect_internal(name)
+            lo.disconnect_internal(name, remote_name)
         else:
+            ro: Object = self.get_object_or_404(Object, id=remote_object)
             lo.disconnect_p2p(name)
+            ro.disconnect_p2p(remote_name)
+        lo.save()
         return self.render_json({"status": True, "text": ""})
 
     def get_remote_slot(self, left_slot, lo, ro):

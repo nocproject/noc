@@ -307,46 +307,43 @@ Ext.define("NOC.inv.inv.CreateConnectionForm", {
                 {id: prevPinSprite.id, side: prevPinSprite.side, isNew: true, cable: cable},
             ];
 
-        if(cable) {
-            if(prevPinSprite && prevPinSprite.side !== pinSprite.side && prevPinSprite.side === "left") {
-                fromName = prevPinSprite.pinName + " => " + pinSprite.pinName;
-                toName = prevPinSprite.pinName + " <= " + pinSprite.pinName;
-            }
-            if(prevPinSprite && prevPinSprite.side !== pinSprite.side && prevPinSprite.side === "right") {
-                fromName = pinSprite.pinName + " <= " + prevPinSprite.pinName;
-                toName = pinSprite.pinName + " => " + prevPinSprite.pinName;
-            }
-
-            prevPinSprite.setAttributes({
-                pinColor: me.OCCUPIED_COLOR,
-                enabled: false,
-                isSelected: false,
-                pinName: fromName,
-            });
-            // reDraw label for zIndex workaround
-            mainSurface.get("label" + prevPinSprite.id).setAttributes({
-                labelText: fromName,
-                backgroundTranslationX: prevPinSprite.labelBackground.attr.translationX,
-                backgroundWidth: prevPinSprite.labelBackground.attr.width,
-            });
-            pinSprite.setAttributes({
-                pinColor: me.OCCUPIED_COLOR,
-                enabled: false,
-                isSelected: false,
-                pinName: toName,
-            });
-            // reDraw label for zIndex workaround
-            mainSurface.get("label" + pinSprite.id).setAttributes({
-                labelText: toName,
-                backgroundTranslationX: pinSprite.labelBackground.attr.translationX,
-                backgroundWidth: pinSprite.labelBackground.attr.width
-            });
-            wires.push(wire);
-            me.drawWires(wires, mainSurface);
-            me.getViewModel().set("isDirty", true);
-        } else {
-            NOC.error(__("Cable is not selected"));
+        if(prevPinSprite && prevPinSprite.side !== pinSprite.side && prevPinSprite.side === "left") {
+            fromName = prevPinSprite.pinName + " => " + pinSprite.pinName;
+            toName = prevPinSprite.pinName + " <= " + pinSprite.pinName;
         }
+        if(prevPinSprite && prevPinSprite.side !== pinSprite.side && prevPinSprite.side === "right") {
+            fromName = pinSprite.pinName + " <= " + prevPinSprite.pinName;
+            toName = pinSprite.pinName + " => " + prevPinSprite.pinName;
+        }
+
+        prevPinSprite.setAttributes({
+            pinColor: me.OCCUPIED_COLOR,
+            enabled: false,
+            isSelected: false,
+            pinName: fromName,
+        });
+        // reDraw label for zIndex workaround
+        mainSurface.get("label" + prevPinSprite.id).setAttributes({
+            labelText: fromName,
+            backgroundTranslationX: prevPinSprite.labelBackground.attr.translationX,
+            backgroundWidth: prevPinSprite.labelBackground.attr.width,
+        });
+        pinSprite.setAttributes({
+            pinColor: me.OCCUPIED_COLOR,
+            enabled: false,
+            isSelected: false,
+            pinName: toName,
+        });
+        // reDraw label for zIndex workaround
+        mainSurface.get("label" + pinSprite.id).setAttributes({
+            labelText: toName,
+            backgroundTranslationX: pinSprite.labelBackground.attr.translationX,
+            backgroundWidth: pinSprite.labelBackground.attr.width
+        });
+        wires.push(wire);
+        me.drawWires(wires, mainSurface);
+        me.getViewModel().set("isDirty", true);
+
     },
     disconnectConnection: function(params, callBack) {
         Ext.Ajax.request({

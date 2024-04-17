@@ -823,10 +823,16 @@ class Object(Document):
         """
         Remove connection *name*
         """
-        c = self.get_p2p_connection(name)[0]
-        if c:
-            self.log("'%s' disconnected" % name, system="CORE", op="DISCONNECT")
-            c.delete()
+        from .objectconnection import ObjectConnection
+
+        c, o, _ = self.get_p2p_connection(name)
+        if not c:
+            return
+        self.log(f"'{name}' disconnected", system="CORE", op="DISCONNECT")
+        c.delete()
+        if o.is_wire and not ObjectConnection.objects.filter(connection__object=o.id).first():
+            # Check wire connection and remove
+            o.delete()
 
     def connect_p2p(
         self,
@@ -1444,13 +1450,17 @@ class Object(Document):
                 )
             ]
 
-    def disconnect_internal(self, name: str):
+    def disconnect_internal(self, name: str, remote_name: Optional[str] = None):
         """
         Remove internal crossing
         """
         if not self.model.has_connection(name):
             raise ValueError("Unknown input")
-        self.cross = [c for c in self.cross if c.input != name]
+        self.cross = [
+            c
+            for c in self.cross
+            if c.input != name and (not remote_name or remote_name == c.output)
+        ]
 
 
 signals.pre_delete.connect(Object.detach_children, sender=Object)
