@@ -660,11 +660,12 @@ Ext.define("NOC.inv.objectmodel.Application", {
     record.set("name", m[1] + n);
   },
   enableRearFacade: function (record) {
-    var hasRearFacade = Ext.Array.findBy(record.get("connections"), function (e) {
-      return e.direction === "o";
-    }) === null
-      ? false
-      : true;
+    var hasRearFacade =
+      Ext.Array.findBy(record.get("connections"), function (e) {
+        return e.direction === "o";
+      }) === null
+        ? true
+        : false;
     Ext.Array.each(
       ["front_facade", "rear_facade"],
       function (btn) {
