@@ -301,7 +301,9 @@ class InvApplication(ExtApplication):
             internal,
         )
         lo: Object = self.get_object_or_404(Object, id=o1)  # Left Object
-        check = [("left", lo, left_filter, None, None)]
+        check: List[Tuple[str, Object, str, Optional[Object], Optional[str]]] = [
+            ("left", lo, left_filter, None, None)
+        ]
         ro: Optional[Object] = None  # Right Object
         cable: Optional[ObjectModel] = None
         if o2:
@@ -348,10 +350,16 @@ class InvApplication(ExtApplication):
                     oo,
                 )
                 # Deny same and internal <-> external
-                valid = not internal and c.name != left_filter and c.type.name != "Composed"
+                valid = not internal and c.type.name != "Composed"
+                if left_filter == c.name and o_from == o1:
+                    # Same connection
+                    valid = False
                 if o_to or cable_filter:
                     cp = o_from.get_connection_proposals(
-                        c.name, cable or o_to.model, right_filter, only_first=True
+                        c.name,
+                        cable or o_to.model,
+                        right_filter if not cable else None,
+                        only_first=True,
                     )
                     valid = bool(cp)
                 if oc and o_from == lo:
