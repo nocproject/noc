@@ -35,6 +35,8 @@ from .vendor import Vendor
 
 id_lock = threading.Lock()
 
+MAX_PLATFORM_LENGTH = 200
+
 
 @Label.model
 @bi_sync
@@ -60,7 +62,7 @@ class Platform(Document):
         ],
     }
     vendor = PlainReferenceField(Vendor)
-    name = StringField()
+    name = StringField(max_length=MAX_PLATFORM_LENGTH)
     description = StringField(required=False)
     # Full name, combined from vendor platform
     full_name = StringField(unique=True)
@@ -178,6 +180,8 @@ class Platform(Document):
         if platform or strict:
             return platform
         # Try to create
+        if len(name) > MAX_PLATFORM_LENGTH:
+            return
         labels = labels or []
         pu = uuid.uuid4()
         d = Platform._get_collection().find_one_and_update(
