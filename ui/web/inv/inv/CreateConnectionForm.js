@@ -45,11 +45,6 @@ Ext.define("NOC.inv.inv.CreateConnectionForm", {
             cable: null,
             isDirty: false,
         },
-        // formulas: {
-        //     isValid: function(get) {
-        //         return get("leftSelectedPin") && get("rightSelectedPin");
-        //     }
-        // }
     },
     initComponent: function() {
         var me = this;
@@ -67,6 +62,7 @@ Ext.define("NOC.inv.inv.CreateConnectionForm", {
                 spritemouseout: me.onSpriteMouseOut,
                 spriteclick: me.onSpriteClick,
                 scope: me,
+                boxready: me.drawEmptyText,
                 afterrender: function(container) {
                     container.getEl().on("keydown", me.cancelDrawConnection);
                     container.getEl().set({
@@ -125,7 +121,17 @@ Ext.define("NOC.inv.inv.CreateConnectionForm", {
             },
             tbar: [
                 {
+                    text: __("Save"),
+                    scope: me,
+                    glyph: NOC.glyph.save,
+                    bind: {
+                        disabled: "{!isDirty}"
+                    },
+                    handler: me.onSaveClick
+                },
+                {
                     text: __("Close"),
+                    itemId: "closeBtn",
                     scope: me,
                     glyph: NOC.glyph.arrow_left,
                     handler: me.onCloseClick
@@ -149,15 +155,6 @@ Ext.define("NOC.inv.inv.CreateConnectionForm", {
                     }
                 },
                 me.cableCombo,
-                "->",
-                {
-                    text: __("Save"),
-                    scope: me,
-                    bind: {
-                        disabled: "{!isDirty}"
-                    },
-                    handler: me.onSaveClick
-                }
             ],
         });
         me.callParent();
@@ -238,8 +235,16 @@ Ext.define("NOC.inv.inv.CreateConnectionForm", {
         if(pointer) {
             pointer.remove();
         }
-        console.log("renderFrame: cancelDrawConnection");
         canvas.getSurface().renderFrame();
+    },
+    cleanForm: function () {
+        var me = this;
+
+        me.setTitle(__("Object connections"));
+        me.cleanViewModel();
+        me.drawPanel.removeAll(true);
+        me.drawPanel.renderFrame();
+        me.drawEmptyText(me.drawPanel);
     },
     cleanViewModel: function() {
         this.getViewModel().set("leftObject", null);
@@ -275,7 +280,6 @@ Ext.define("NOC.inv.inv.CreateConnectionForm", {
                     handler: function(button) {
                         me.addConnectionSprite(button, fromSprite, toSprite, side);
                         me.getViewModel().set("isDirty", true);
-                        console.log("renderFrame: createInternalConnections");
                         mainSurface.renderFrame();
                         button.up("window").close();
                     },
@@ -295,7 +299,7 @@ Ext.define("NOC.inv.inv.CreateConnectionForm", {
             }
         });
     },
-    createWire(prevPinSprite, pinSprite) {
+    createWire: function(prevPinSprite, pinSprite) {
         var me = this,
             cable = me.cableCombo.getValue(),
             mainSurface = me.drawPanel.getSurface(),
@@ -350,19 +354,49 @@ Ext.define("NOC.inv.inv.CreateConnectionForm", {
             url: "/inv/inv/disconnect/",
             method: "POST",
             jsonData: params,
-            // scope: me,
             success: callBack,
             failure: function(response) {
                 NOC.error(__("Failed to disconnect objects : ") + response.responseText);
             }
         });
     },
+    drawEmptyText: function (container) {
+        var text = __("Drag objects from left tree to start"),
+            fontSize = 16,
+            offset = 50,
+            color = window.getComputedStyle(container.up("panel").down("button[itemId=closeBtn]").btnIconEl.dom).color,
+            font = Ext.String.format("normal {0}px arial", fontSize),
+            textWidth = Ext.draw.TextMeasurer.measureText(text, font).width,
+            squareSprite = {
+                type: "rect",
+                x: offset,
+                y: offset,
+                width: container.getWidth() - offset * 2,
+                height: container.getHeight() - offset * 2,
+                fillStyle: "none",
+                strokeStyle: color,
+                lineWidth: 3,
+                lineDash: [10, 10],
+                radius: 20
+            },
+            textSprite = {
+                type: "text",
+                text: text,
+                x: (container.getWidth() - textWidth) / 2,
+                y: container.getHeight() / 2 - fontSize,
+                fillStyle: color,
+                font: font
+            };
+        
+        container.getSurface().removeAll(true);
+        container.getSurface().add(squareSprite, textSprite);
+        container.getSurface().renderFrame();
+    },
     drawInternalConnections: function(data, surface, side) {
         var me = this;
         // surface => (left|right) + _internal_conn
         surface.removeAll(true);
         surface.add(me.makeInternalConnections(data.internal_connections, side));
-        console.log("renderFrame: drawInternalConnections");
         surface.renderFrame();
     },
     drawLegend: function(surface) {
@@ -385,7 +419,6 @@ Ext.define("NOC.inv.inv.CreateConnectionForm", {
         Ext.Array.each(wiresToRemove, function(sprite) {
             sprite.remove();
         });
-        console.log("renderFrame: drawWire");
         surface.add(me.makeWires(wires));
         surface.renderFrame();
     },
@@ -406,7 +439,7 @@ Ext.define("NOC.inv.inv.CreateConnectionForm", {
     getBodyWidth: function(me, pins, side) {
         return (this.internalPinQty(pins) + 1) * me.gap + Math.abs(me.discriminatorWidth[side]);
     },
-    getConnectionById(sprite) {
+    getConnectionById: function(sprite) {
         var surface,
             me = this;
         if(sprite.connectionType === "internal") {
@@ -505,7 +538,6 @@ Ext.define("NOC.inv.inv.CreateConnectionForm", {
             toDiscriminator = values ? values.toDiscriminator : '',
             gainDb = values ? values.gainDb : 0,
             setTriggers = function(value) {
-                console.log("setTriggers value is ", value);
                 return {
                     clear: {
                         cls: 'x-form-clear-trigger',
@@ -587,7 +619,6 @@ Ext.define("NOC.inv.inv.CreateConnectionForm", {
                 params = "o1=" + leftObjectId + (rightObjectId ? "&o2=" + rightObjectId : "");
                 params += cable ? "&cable_filter=" + cable : "";
                 me.mask(__("Loading..."));
-                console.log("load() : " + "/inv/inv/crossing_proposals/?" + params);
                 Ext.Ajax.request({
                     url: "/inv/inv/crossing_proposals/?" + params,
                     method: "GET",
@@ -615,7 +646,6 @@ Ext.define("NOC.inv.inv.CreateConnectionForm", {
                         // workaround zIndex, redraw labels and set zIndex to 60
                         me.reDrawLabels(mainSurface);
                         me.drawLegend(mainSurface);
-                        console.log("renderFrame: load");
                         mainSurface.renderFrame();
                     },
                     failure: function() {
@@ -835,28 +865,22 @@ Ext.define("NOC.inv.inv.CreateConnectionForm", {
         });
     },
     onCleanClick: function() {
-        var me = this,
-            action = function() {
-                me.setTitle(__("Object connections"));
-                me.cleanViewModel();
-                me.drawPanel.removeAll(true);
-                console.log("renderFrame: onCleanClick");
-                me.drawPanel.renderFrame();
-            };
+        var me = this;
 
         if(me.getViewModel().get("isDirty")) {
             Ext.Msg.confirm(__("Confirm"), __("There is unsaved data, do you really want to clean?"), function(btn) {
                 if(btn === "yes") {
-                    action();
+                    me.cleanForm();
                 }
             });
         } else {
-            action();
+            me.cleanForm();
         }
     },
     onCloseClick: function() {
         var me = this,
-            action = function() {
+            action = function () {
+                me.cleanForm();
                 me.app.mainPanel.remove(me.app.connectionPanel, false);
                 me.app.mainPanel.add(me.app.tabPanel);
             };
@@ -924,7 +948,6 @@ Ext.define("NOC.inv.inv.CreateConnectionForm", {
         } else {
             ObjectIds.right = ObjectIds.left;
         }
-        console.log(connections);
 
         params = Ext.Array.map(connections, function(connection) {
             var param = {
@@ -1123,7 +1146,6 @@ Ext.define("NOC.inv.inv.CreateConnectionForm", {
                     object = viewModel.get(side + "Object");
 
                 if(pin.remoteId !== "none") {
-                    console.log(pin.remoteId, object.id);
                     if(side === "left") {
                         viewModel.set("leftObject", Ext.data.Model.create({
                             id: pin.remoteId,
@@ -1148,7 +1170,6 @@ Ext.define("NOC.inv.inv.CreateConnectionForm", {
                 break;
             }
         }
-        console.log("renderFrame: onSpriteClick");
         surface.renderFrame();
     },
     onSpriteMouseOut: function(element, event, args) {
@@ -1192,10 +1213,6 @@ Ext.define("NOC.inv.inv.CreateConnectionForm", {
                     mainSurface.get("label" + sprite.id).setAttributes({
                         isSelected: false,
                     });
-                    // console.log("renderFrame (main): onSpriteMouseOut");
-                    // me.drawPanel.getSurface().renderFrame();
-                    // console.log("renderFrame (internal): onSpriteMouseOut");
-                    // me.drawPanel.getSurface(sprite.side + "_internal_conn").renderFrame();
                     break;
                 }
                 case "connection": {
@@ -1220,13 +1237,9 @@ Ext.define("NOC.inv.inv.CreateConnectionForm", {
                         if(sprite.fromDiscriminatorTooltip && !sprite.fromDiscriminatorTooltip.isHidden()) {
                             sprite.fromDiscriminatorTooltip.hide();
                         }
-                        // console.log("renderFrame (internal): onSpriteMouseOut");
-                        // me.drawPanel.getSurface(sprite.side + "_internal_conn").renderFrame();
                     }
                     if(Ext.Array.contains(["wire", "loopback"], sprite.connectionType)) {
                         sprite.setAttributes({isSelected: false});
-                        // console.log("renderFrame (main): onSpriteMouseOver");
-                        // me.drawPanel.getSurface().renderFrame();
                     }
                     break;
                 }
@@ -1276,10 +1289,6 @@ Ext.define("NOC.inv.inv.CreateConnectionForm", {
                             xOffsets: me.getWiresOffset(firstSide, sprite.side),
                         });
                     }
-                    // console.log("renderFrame (main): onSpriteMouseOver");
-                    // me.drawPanel.getSurface().renderFrame();
-                    // console.log("renderFrame (internal): onSpriteMouseOver");
-                    // me.drawPanel.getSurface(sprite.side + "_internal_conn").renderFrame();
                     break;
                 }
                 case "connection": {
@@ -1305,8 +1314,6 @@ Ext.define("NOC.inv.inv.CreateConnectionForm", {
                     if(sprite.connectionType === "internal") {
                         me.drawPanel.selectedSprite = sprite;
                         sprite.setAttributes({isSelected: true});
-                        // console.log("renderFrame (internal): onSpriteMouseOver");
-                        // me.drawPanel.getSurface(sprite.side + "_internal_conn").renderFrame();
                         if(sprite.toDiscriminatorTooltip && sprite.toDiscriminatorTooltip.isHidden()) {
                             sprite.toDiscriminatorTooltip.showAt([event.pageX + (sprite.side === "left" ? 20 : -20), event.pageY + 20]);
                         }
@@ -1316,7 +1323,6 @@ Ext.define("NOC.inv.inv.CreateConnectionForm", {
                     }
                     if(Ext.Array.contains(["wire", "loopback"], sprite.connectionType)) {
                         sprite.setAttributes({isSelected: true});
-                        console.log("renderFrame (main): onSpriteMouseOver");
                         me.drawPanel.getSurface().renderFrame();
                     }
                     break;
@@ -1428,7 +1434,6 @@ Ext.define("NOC.inv.inv.CreateConnectionForm", {
         params += cable ? "&cable_filter=" + cable : "";
         params += filter ? "&" + filter : "";
         me.mask(__("Loading..."));
-        console.log("reload() : " + "/inv/inv/crossing_proposals/?" + params);
         Ext.Ajax.request({
             url: "/inv/inv/crossing_proposals/?" + params,
             method: "GET",
@@ -1466,20 +1471,14 @@ Ext.define("NOC.inv.inv.CreateConnectionForm", {
             surface = drawPanel.getSurface(side + "_internal_conn"),
             pinEnabled = {internalColor: me.AVAILABLE_COLOR, internalEnabled: true};
 
-        console.log(connectionSpire);
         mainSurface.get(connectionSpire.fromPortId).setAttributes(pinEnabled);
         mainSurface.get(connectionSpire.toPortId).setAttributes(pinEnabled);
-        console.log(surface.getItems().length);
-        console.log(connectionSpire.remove());
-        console.log(surface.getItems().length);
         connections = me.getInternalConnections(surface);
-        console.log(connections.internal_connections.length);
         if(!me.hasDiscriminator(connections.internal_connections)) {
             me.switchInternalLabel(body, false);
         }
         me.reloadStatuses(false);
         me.drawInternalConnections(connections, surface, side);
-        console.log("renderFrame: removeInternalConnections");
         mainSurface.renderFrame();
     },
     removeWireMsg: function(wireSprite) {
@@ -1487,7 +1486,6 @@ Ext.define("NOC.inv.inv.CreateConnectionForm", {
             drawPanel = me.drawPanel;
 
         drawPanel.isModalOpen = true;
-        console.log("deleteWire", wireSprite.fromPortId, wireSprite.toPortId);
         Ext.Msg.confirm(__("Confirm"), __("Are you sure you want to delete this wire") + " " + wireSprite.fromPort + "=>" + wireSprite.toPort, function(btn) {
             if(btn === "yes") {
                 var vm = me.getViewModel(),
@@ -1514,7 +1512,6 @@ Ext.define("NOC.inv.inv.CreateConnectionForm", {
             drawPanel.isModalOpen = false;
         });
     },
-
     removeWire: function(wireSprite) {
         var connections,
             me = this,
@@ -1531,7 +1528,6 @@ Ext.define("NOC.inv.inv.CreateConnectionForm", {
         if(wireSprite.toPort.indexOf(" <= ") !== -1) {
             wireSprite.toPort = wireSprite.toPort.split(" <= ")[1];
         }
-        console.log(wireSprite.toPort, wireSprite.fromPort);
         fromSprite.setAttributes({
             pinColor: me.AVAILABLE_COLOR,
             enabled: true,
@@ -1555,7 +1551,6 @@ Ext.define("NOC.inv.inv.CreateConnectionForm", {
         wireSprite.remove();
         connections = me.getWires(mainSurface);
         me.drawWires(connections, mainSurface);
-        console.log("renderFrame: deleteWires");
         mainSurface.renderFrame();
     },
     scaleCalculate: function() {
@@ -1600,7 +1595,6 @@ Ext.define("NOC.inv.inv.CreateConnectionForm", {
             mainSurface = me.drawPanel.getSurface(),
             internalPins = Ext.Array.filter(mainSurface.getItems(), function(sprite) {return sprite.type === "pin" && sprite.side === body.side});
 
-        console.log("switchInternalLabel", body.side, state);
         Ext.Array.map(internalPins, function(pin) {
             pin.setAttributes({
                 hasInternalLabel: state,
@@ -1622,7 +1616,6 @@ Ext.define("NOC.inv.inv.CreateConnectionForm", {
                 toDiscriminator: sprite.toDiscriminator,
             };
 
-        console.log("updateDeleteInternalConnection", sprite.fromPortId, sprite.toPortId);
         drawPanel.isModalOpen = true;
 
         Ext.create("Ext.window.Window", {
@@ -1644,7 +1637,6 @@ Ext.define("NOC.inv.inv.CreateConnectionForm", {
                         sprite.remove();
                         me.addConnectionSprite(button, fromSprite, toSprite, side);
                         me.getViewModel().set("isDirty", true);
-                        console.log("renderFrame: createInternalConnections");
                         mainSurface.renderFrame();
                         button.up("window").close();
                     },

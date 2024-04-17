@@ -12,13 +12,13 @@ Ext.define("NOC.inv.inv.AddObjectForm", {
     app: null,
     groupContainer: null,
 
-    initComponent: function() {
+    initComponent: function(){
         var me = this,
             title;
 
-        if(me.groupContainer) {
+        if(me.groupContainer){
             title = __("Create new object in '") + me.groupContainer.get("name") + "'";
-        } else {
+        } else{
             title = __("Create new top-level object");
         }
 
@@ -41,12 +41,14 @@ Ext.define("NOC.inv.inv.AddObjectForm", {
                     xtype: "textfield",
                     name: "name",
                     fieldLabel: __("Name"),
+                    uiStyle: "medium",
                     allowBlank: false
                 },
                 {
                     xtype: "textfield",
                     name: "serial",
                     fieldLabel: __("Serial"),
+                    uiStyle: "medium",
                     allowBlank: true
                 }
             ]
@@ -61,16 +63,16 @@ Ext.define("NOC.inv.inv.AddObjectForm", {
                     dock: "top",
                     items: [
                         {
-                            text: __("Close"),
-                            scope: me,
-                            glyph: NOC.glyph.arrow_left,
-                            handler: me.onPressClose
-                        },
-                        {
                             text: __("Save"),
                             glyph: NOC.glyph.save,
                             scope: me,
                             handler: me.onPressAdd
+                        },
+                        {
+                            text: __("Close"),
+                            scope: me,
+                            glyph: NOC.glyph.arrow_left,
+                            handler: me.onPressClose
                         }
                     ]
                 }
@@ -79,17 +81,17 @@ Ext.define("NOC.inv.inv.AddObjectForm", {
         me.callParent();
     },
 
-    setContainer: function(c) {
+    setContainer: function(c){
         var me = this;
         me.groupContainer = c;
     },
 
-    onPressClose: function() {
+    onPressClose: function(){
         var me = this;
         me.app.showItem(me.app.ITEM_MAIN);
     },
 
-    onPressAdd: function() {
+    onPressAdd: function(){
         var me = this,
             values = me.form.getValues();
         Ext.Ajax.request({
@@ -102,15 +104,15 @@ Ext.define("NOC.inv.inv.AddObjectForm", {
                 container: me.groupContainer ? me.groupContainer.get("id") : null
             },
             scope: me,
-            success: function() {
+            success: function(){
                 me.app.showItem(me.app.ITEM_MAIN);
-                if(me.groupContainer) {
+                if(me.groupContainer){
                     me.app.store.reload({node: me.groupContainer});
-                } else {
+                } else{
                     me.app.store.reload();
                 }
             },
-            failure: function() {
+            failure: function(){
                 NOC.error(__("Failed to save"));
             }
         });
