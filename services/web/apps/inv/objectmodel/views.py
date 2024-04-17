@@ -143,9 +143,9 @@ class ObjectModelApplication(ExtDocApplication):
         # Crossing
         # @todo: Count splitter interface
         rc = []
-        for c in o.connections:
-            if c.cross:
-                rc += [{"y": c.name, "x": c.cross, "v": "1"}]
+        # for c in o.connections:
+        #     if c.cross:
+        #         rc += [{"y": c.name, "x": c.cross, "v": "1"}]
         return {"connections": r, "crossing": rc}
 
     @view(
