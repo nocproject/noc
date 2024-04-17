@@ -666,12 +666,9 @@ Ext.define("NOC.inv.objectmodel.Application", {
       }) === null
         ? true
         : false;
-    Ext.Array.each(
-      ["front_facade", "rear_facade"],
-      function (btn) {
-        this.down("button[itemId=" + btn + "Btn]").setDisabled(record.get(btn));
-      },
-      this,
+    this.down("button[itemId=front_facadeBtn]").setDisabled(record.get("front_facade"));
+    this.down("button[itemId=rear_facadeBtn]").setDisabled(
+      !hasRearFacade || record.get("rear_facade"),
     );
     this.down("field[name=rear_facade]").setDisabled(!hasRearFacade);
   },
