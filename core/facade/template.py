@@ -63,8 +63,7 @@ def get_facade_template(model: ObjectModel) -> str:
         {
             "version": "1.0",
             "xmlns:xlink": NS_XLINK,
-            "width": f"{w}mm",
-            "height": f"{h}mm",
+            "viewBox": f"0 0 {w} {h}"
         },
     )
     tree = ET.ElementTree(svg)
