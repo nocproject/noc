@@ -73,7 +73,6 @@ class ObjectModelApplication(ExtDocApplication):
                 connection_data[c].append(d)
             else:
                 model_data.append(d)
-        print("connection data", connection_data)
         if model_data:
             data["data"] = ModelInterface.clean_data(model_data)
         if "data" in data:
@@ -96,7 +95,6 @@ class ObjectModelApplication(ExtDocApplication):
                 if p.discriminator:
                     protocols[-1]["discriminator"] = p.discriminator
             c["protocols"] = protocols
-        print("D", data)
         return super().clean(data)
 
     def cleaned_query(self, q):

@@ -7,18 +7,19 @@
 
 # Python modules
 import os
-from typing import Any, Dict
+from typing import Any, Dict, List
 
 # Third-party modules
 from mongoengine.document import Document, EmbeddedDocument
 from mongoengine.fields import (
     StringField,
     BooleanField,
-    DictField,
+    EmbeddedDocumentListField,
     ListField,
     UUIDField,
     ObjectIdField,
     EmbeddedDocumentField,
+    DynamicField,
 )
 
 # NOC modules
@@ -45,6 +46,25 @@ class ConnectionMatcher(EmbeddedDocument):
             "scope": self.scope,
             "protocol": self.protocol,
         }
+
+
+class ModelAttr(EmbeddedDocument):
+    meta = {"strict": False, "auto_create_index": False}
+    interface = StringField()
+    attr = StringField()
+    value = DynamicField()
+
+    def __str__(self) -> str:
+        return "%s.%s = %s" % (self.interface, self.attr, self.value)
+
+    @property
+    def json_data(self) -> Dict[str, Any]:
+        r = {
+            "interface": self.interface,
+            "attr": self.attr,
+            "value": self.value,
+        }
+        return r
 
 
 @category
@@ -82,7 +102,7 @@ class ConnectionType(Document):
         default="mf",
     )
     # ModelData
-    data = DictField(default={})
+    data: List["ModelAttr"] = EmbeddedDocumentListField(ModelAttr)
     # Compatible group
     # Connection compatible with opposite gender of same type
     # and all types having any c_group
@@ -115,6 +135,8 @@ class ConnectionType(Document):
             r["male_facade__name"] = self.male_facade.name
         if self.female_facade:
             r["female_facade__name"] = self.female_facade.name
+        if self.data:
+            r["data"] = [c.json_data for c in self.data]
         return r
 
     def to_json(self) -> str:
@@ -123,6 +145,26 @@ class ConnectionType(Document):
     def get_json_path(self) -> str:
         p = [quote_safe_path(n.strip()) for n in self.name.split("|")]
         return os.path.join(*p) + ".json"
+
+    def get_data(
+        self,
+        interface: str,
+        key: str,
+    ) -> Any:
+        """
+        Get connnection type data.
+
+        Args:
+            interface: Interface name
+            key: attribute name
+
+        Returns:
+            Data or None
+        """
+        for item in self.data:
+            if item.interface == interface and item.attr == key:
+                return item.value
+        return None
 
     def get_effective_data(self):
         """

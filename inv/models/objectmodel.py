@@ -268,6 +268,27 @@ class ObjectModelConnection(EmbeddedDocument):
             r.append(p)
         return r
 
+    @property
+    def is_inner(self) -> bool:
+        """
+        Check if connection is inner.
+        """
+        return self.direction == "i"
+
+    @property
+    def is_outer(self) -> bool:
+        """
+        Check if connection is outer.
+        """
+        return self.direction == "o"
+
+    @property
+    def is_same_level(self) -> bool:
+        """
+        Check if connection is on same level.
+        """
+        return self.direction == "s"
+
 
 class ObjectModelSensor(EmbeddedDocument):
     # Sensor name, may be duplicated for various collection methods

@@ -121,10 +121,37 @@ Ext.define("NOC.inv.connectiontype.Application", {
           fieldLabel: __("Female Facade"),
           allowBlank: true,
         },
+        // {
+        //   name: "data",
+        //   xtype: "modeldatafield",
+        //   fieldLabel: __("Model Data"),
+        // },
         {
           name: "data",
-          xtype: "modeldatafield",
-          fieldLabel: __("Model Data"),
+          fieldLabel: __("Data"),
+          xtype: "gridfield",
+          allowBlank: true,
+          columns: [
+            {
+              text: __("Interface"),
+              dataIndex: "interface",
+              editor: {
+                xtype: "inv.modelinterface.LookupField",
+                forceSelection: true,
+                valueField: "label",
+              },
+            },
+            {
+              text: __("Key"),
+              dataIndex: "attr",
+              editor: "textfield",
+            },
+            {
+              text: __("Value"),
+              dataIndex: "value",
+              editor: "textfield",
+            }
+          ]
         },
         {
           name: "c_group",
