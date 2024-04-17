@@ -552,9 +552,9 @@ class ObjectModel(Document):
         if self.plugins:
             r["plugins"] = self.plugins
         if self.front_facade:
-            r["front_facade"] = self.front_facade
+            r["front_facade__name"] = self.front_facade.name
         if self.rear_facade:
-            r["rear_facade"] = self.rear_facade
+            r["rear_facade__name"] = self.rear_facade.name
         if self.labels:
             r["labels"] = self.labels
         return r
