@@ -495,7 +495,6 @@ class RedPandaClient(object):
         """
         tmp_stream = tmp_stream or f"__tmp-{name}"
         n_msg: Dict[int, int] = {}  # partition -> copied messages
-        s = get_stream(name)
         logger.info("Creating temporary stream %s", tmp_stream)
         await self.delete_stream(tmp_stream)
         await self.create_stream(
