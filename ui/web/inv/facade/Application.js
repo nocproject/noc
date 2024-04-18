@@ -104,7 +104,7 @@ Ext.define("NOC.inv.facade.Application", {
         if(Ext.isEmpty(name)){
             name = "image";
         }
-        name = name.split("|")[name.split("|").length - 1] || "image  ";
+        name = name.split("|")[name.split("|").length - 1] || "image";
         field.downloadFile(name + ".svg", data);
     },
 });
