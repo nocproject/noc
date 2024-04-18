@@ -106,6 +106,7 @@ state, including capabilities, interfaces and topology
 | {{ tab }} model                | Object {{ complex }}          | Inventory model (Object model)                                             |
 | {{ tab2 }} id                  | String                        | Inventory model\'s ID                                                      |
 | {{ tab2 }} name                | String                        | Inventory model\'s name                                                    |
+| {{ tab2 }} description         | String                        | Inventory model\'s description                                             |
 | {{ tab2 }} tags                | Array of String               | [Object model's tags](../object-models-reference/tags.md)                  |
 | {{ tab2 }} vendor              | Object {{ complex }}          | Inventory model\'s vendor                                                  |
 | {{ tab3 }} id                  | String                        | Vendor\'s ID                                                               |
