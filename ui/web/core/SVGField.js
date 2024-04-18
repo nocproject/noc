@@ -64,19 +64,23 @@ Ext.define("NOC.core.SVGField", {
     me.imageEl = me.el.down(idPrefix + "-imageEl");
   },
 
-  onDownloadFile: function(){
-    if(Ext.isEmpty(this.getValue())){
+  onDownloadFile: function () {
+    var data = this.getValue();
+    if(Ext.isEmpty(data)){
       return;
     }
-    var data = this.getValue(),
-      blob = new Blob([data], {type: 'image/svg+xml;charset=utf-8'}),
+    this.fireEvent("download", this, data);
+  },
+
+  downloadFile: function (filename, data) {
+    var blob = new Blob([data], {type: 'image/svg+xml;charset=utf-8'}),
       url = URL.createObjectURL(blob),
       link = document.createElement('a');
-  link.download = "image.svg";
-  link.href = url;
-  document.body.appendChild(link);
-  link.click();
-  document.body.removeChild(link); 
+    link.download = filename;
+    link.href = url;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
   },
 
   onFileChange: function(){
