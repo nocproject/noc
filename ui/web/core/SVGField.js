@@ -19,7 +19,7 @@ Ext.define("NOC.core.SVGField", {
   fieldSubTpl: [
     "<div style='display: flex'>",
     '<img id="{cmpId}-inputEl-imageEl" src="" height="100" width="100" class="x-hidden">',
-    "<div style='display: flex; flex-direction: column;padding-left: 10px;'>",
+    "<div style='display: flex; flex-direction: column;padding-left: 10px;gap: 10px;'>",
     '<input id="{cmpId}-inputEl-fileInputEl" type="file" accept="{accept}" style="display:none">',
     '<label for="{cmpId}-inputEl-fileInputEl" class="x-btn x-btn-default-toolbar-small" style="height:32px">',
     '<span style="font-family:FontAwesome" class="x-btn-glyph x-btn-icon-el-default-toolbar-small">{uploadIcon}</span>',
@@ -65,6 +65,9 @@ Ext.define("NOC.core.SVGField", {
   },
 
   onDownloadFile: function(){
+    if(Ext.isEmpty(this.getValue())){
+      return;
+    }
     var data = this.getValue(),
       blob = new Blob([data], {type: 'image/svg+xml;charset=utf-8'}),
       url = URL.createObjectURL(blob),
