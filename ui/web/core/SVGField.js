@@ -64,7 +64,7 @@ Ext.define("NOC.core.SVGField", {
     me.imageEl = me.el.down(idPrefix + "-imageEl");
   },
 
-  onDownloadFile: function () {
+  onDownloadFile: function(){
     var data = this.getValue();
     if(Ext.isEmpty(data)){
       return;
@@ -72,7 +72,7 @@ Ext.define("NOC.core.SVGField", {
     this.fireEvent("download", this, data);
   },
 
-  downloadFile: function (filename, data) {
+  downloadFile: function(filename, data){
     var blob = new Blob([data], {type: 'image/svg+xml;charset=utf-8'}),
       url = URL.createObjectURL(blob),
       link = document.createElement('a');
