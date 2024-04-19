@@ -1368,6 +1368,8 @@ class Label(Document):
                 where += [f"{field} = %s"]
             params += [ids]
         where = ("WHERE " + " AND ".join(where)) if where else ""
+        if not is_document(profile):
+            profile_field = f"{profile_field}_id"
         # Build query
         SQL = f"""
             UPDATE {table} AS update_t SET {profile_field} = sq.erg[1]
