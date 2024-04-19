@@ -289,7 +289,8 @@ class ManagedObjectApplication(ExtModelApplication):
                             "state": {True: "OK", False: "Error"}[c.status],
                             "error": c.error,
                         }
-                        for c in d.checks or [] if not c.skipped
+                        for c in d.checks or []
+                        if not c.skipped
                     ],
                     "reason": d.reason or "",
                 }
