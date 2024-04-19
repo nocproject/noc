@@ -556,7 +556,7 @@ class MetricsService(FastAPIService):
         :return:
         """
         card = self.cards[k]
-        if not card.config:
+        if not card.config or card.is_dirty:
             # Getting Context
             card.config = self.get_source_info(k)
         if not card.config:
@@ -753,6 +753,8 @@ class MetricsService(FastAPIService):
         elif sc == self.sources_config[sc_id]:
             self.logger.info("Source config is same. Continue")
             return
+        else:
+            self.sources_config[sc_id] = sc
         self.invalidate_card_config(sc)
         # diff = self.sources_config[sc_id].is_differ(sc)
         # if "condition" in diff:
