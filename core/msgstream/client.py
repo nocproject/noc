@@ -4,12 +4,12 @@
 # Copyright (C) 2007-2022 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
-import asyncio
 
 # Python modules
+import asyncio
 import logging
 from functools import partial
-from typing import Optional, Dict, AsyncIterable, Any
+from typing import Optional, Dict, AsyncIterable, Any, Union
 
 # Third-party modules
 import orjson
@@ -272,7 +272,15 @@ class MessageStreamClient(object):
         old_partitions = len(current_meta)
         logger.info("Altering stream %s", name)
         # Create temporary stream with same structure, as original one
-        n_msg = await self.client.move_to_tmp_stream(name, old_partitions, tmp_stream)
+        logger.info("Creating temporary stream %s", tmp_stream)
+        await self.delete_stream(tmp_stream)
+        await self.create_stream(
+            name=tmp_stream,
+            partitions=old_partitions,
+            replication_factor=1,
+        )
+        # Copy messages from original to tmp stream
+        n_msg = await self.client.copy_topic_messages(name, tmp_stream, old_partitions)
         # Drop original stream
         logger.info("Dropping original stream %s", name)
         await self.delete_stream(name)
@@ -284,24 +292,19 @@ class MessageStreamClient(object):
             partitions=new_partitions,
             replication_factor=replication_factor,
         )
-        await asyncio.sleep(1)
+        await asyncio.sleep(2)  # Fix for wait update cluster metadata
         # Copy data from temporary stream to a new one
         for partition in range(old_partitions):
             logger.info("Restoring partition %s:%s to %s", tmp_stream, partition, new_partitions)
             # Re-route dropped partitions to partition 0
             dest_partition = partition if partition < new_partitions else 0
-            n = n_msg[partition]
-            if n > 0:
-                async for msg in self.subscribe(
-                    stream=tmp_stream,
-                    partition=partition,
-                    start_offset=0,
-                ):
-                    await self.publish(msg.value, stream=name, partition=dest_partition)
-                    n -= 1
-                    if not n:
-                        break
-                logger.info("  %s messages restored", n_msg[partition])
+            if n_msg[partition] > 0:
+                restore_num = await self.client.copy_topic_messages(
+                    tmp_stream,
+                    name,
+                    partitions={partition: dest_partition},
+                )
+                logger.info("  %s messages restored", restore_num[partition])
             else:
                 logger.info("  nothing to restore")
         # Drop temporary stream
@@ -310,3 +313,18 @@ class MessageStreamClient(object):
         # Uh-oh
         logger.info("Stream %s has been altered", name)
         return True
+
+    async def copy_topic_messages(
+        self,
+        from_topic,
+        to_topic,
+        partitions: Optional[Union[Dict[int, int], int]] = None,
+    ) -> Dict[int, int]:
+        """
+        Copy message from one topic to another
+        :param from_topic: From topic
+        :param to_topic: To topic
+        :param partitions: Number of from partition or MAP
+        :return:
+        """
+        raise NotImplementedError()

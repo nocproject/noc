@@ -9,7 +9,7 @@
 import logging
 import asyncio
 import random
-from typing import Optional, Dict, AsyncIterable, List
+from typing import Optional, Dict, AsyncIterable, List, Union
 from collections import defaultdict
 
 # Third-party modules
@@ -467,7 +467,7 @@ class RedPandaClient(object):
 
     async def set_cursor(self, stream: str, partition: int, cursor_id: str, offset: int) -> None:
         """
-        Settint cursor offset for stream
+        Setting cursor offset for stream
         :param stream: Topic name
         :param partition: Partition number
         :param cursor_id:
@@ -480,46 +480,43 @@ class RedPandaClient(object):
             consumer.assign([TopicPartition(topic=stream, partition=partition)])
         await consumer.commit({TopicPartition(topic=stream, partition=partition): offset})
 
-    async def move_to_tmp_stream(
+    async def copy_topic_messages(
         self,
-        name: str,
-        partitions: int,
-        tmp_stream: Optional[str] = None,
+        from_topic,
+        to_topic,
+        partitions: Optional[Union[Dict[int, int], int]] = None,
     ) -> Dict[int, int]:
         """
-        Move messages to tmp stream and return count
-        :param name:
-        :param partitions: Number partitions
-        :param tmp_stream: Temporary stream name
+        Copy message from one topic to another
+        :param from_topic: From topic
+        :param to_topic: To topic
+        :param partitions: Number of from partition
         :return:
         """
-        tmp_stream = tmp_stream or f"__tmp-{name}"
         n_msg: Dict[int, int] = {}  # partition -> copied messages
-        logger.info("Creating temporary stream %s", tmp_stream)
-        await self.delete_stream(tmp_stream)
-        await self.create_stream(
-            name=tmp_stream,
-            partitions=partitions,
-            replication_factor=1,
-        )
+        if not partitions:
+            partitions = {0: 0}
+        elif isinstance(partitions, int):
+            partitions = {p: p for p in range(0, partitions)}
+        elif not isinstance(partitions, dict):
+            raise AttributeError("Partitions must be Int or Dict")
         consumer = AIOKafkaConsumer(
             loop=self.loop,
             bootstrap_servers=self.bootstrap,
             client_id=CLIENT_ID,
             enable_auto_commit=False,
-            group_id=name,
+            group_id=from_topic,
         )
-        consumer.subscribe(topics=[name])
+        consumer.subscribe(topics=[from_topic])
         await consumer.start()
-        # Copy all unread data to temporary stream as is
-        for partition in range(partitions):
-            logger.info("Copying partition %s:%s to %s:%s", name, partition, tmp_stream, partition)
-            n_msg[partition] = 0
+        for from_p, to_p in partitions.items():
+            logger.info("Copying partition %s:%s to %s:%s", from_topic, from_p, to_topic, to_p)
+            n_msg[to_p] = 0
             # Get current offset
-            p_meta = await self.fetch_partition_metadata(name, partition)
+            p_meta = await self.fetch_partition_metadata(from_topic, from_p)
             newest_offset = p_meta.newest_offset or 0
             # Fetch cursor
-            tp = TopicPartition(topic=name, partition=partition)
+            tp = TopicPartition(topic=from_topic, partition=from_p)
             r = await consumer.seek_to_committed(tp)
             if r[tp] is not None:
                 logger.info("Resuming from offset %d", r[tp])
@@ -540,14 +537,14 @@ class RedPandaClient(object):
                 async for msg in consumer:
                     await self.publish(
                         msg.value,
-                        stream=tmp_stream,
-                        partition=partition,
+                        stream=to_topic,
+                        partition=to_p,
                     )
-                    n_msg[partition] += 1
+                    n_msg[to_p] += 1
                     if msg.offset == newest_offset:
                         break
-            if n_msg[partition]:
-                logger.info("  %d messages has been copied", n_msg[partition])
+            if n_msg[to_p]:
+                logger.info("  %d messages has been copied", n_msg[to_p])
             else:
                 logger.info("  nothing to copy")
         await consumer.stop()

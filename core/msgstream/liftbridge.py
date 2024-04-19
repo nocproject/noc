@@ -6,7 +6,7 @@
 # Python modules
 import logging
 import random
-from typing import Optional, Dict, AsyncIterable
+from typing import Optional, Dict, AsyncIterable, Union
 from collections import defaultdict
 
 # Third-party modules
@@ -168,41 +168,39 @@ class LiftBridgeClient(GugoLiftbridgeClient):
     ) -> PartitionMetadata:
         return await self.get_partition_metadata(stream, partition, wait_for_stream)
 
-    async def move_to_tmp_stream(
+    async def copy_topic_messages(
         self,
-        name: str,
-        partitions: int,
-        tmp_stream: Optional[str] = None,
+        from_topic,
+        to_topic,
+        partitions: Optional[Union[Dict[int, int], int]] = None,
     ) -> Dict[int, int]:
         """
-        Move messages to tmp stream and return count
-        :param name:
-        :param partitions: Number partitions
-        :param tmp_stream: Temporary stream name
+        Copy message from one topic to another
+        :param from_topic: From topic
+        :param to_topic: To topic
+        :param partitions: Number of from partition or MAP
         :return:
         """
-        tmp_stream = tmp_stream or f"__tmp-{name}"
         n_msg: Dict[int, int] = {}  # partition -> copied messages
-        s = get_stream(name)
-        logger.info("Creating temporary stream %s", tmp_stream)
-        await self.delete_stream(tmp_stream)
-        await self.create_stream(
-            name=tmp_stream,
-            partitions=partitions,
-            replication_factor=1,
-        )
-        # Copy all unread data to temporary stream as is
-        for partition in range(partitions):
-            logger.info("Copying partition %s:%s to %s:%s", name, partition, tmp_stream, partition)
-            n_msg[partition] = 0
+        s = get_stream(from_topic)
+        if not partitions:
+            partitions = {0: 0}
+        elif isinstance(partitions, int):
+            partitions = {p: p for p in range(0, partitions)}
+        elif not isinstance(partitions, dict):
+            raise AttributeError("Partitions must be Int or Dict")
+            # Copy all unread data to temporary stream as is
+        for from_p, to_p in partitions.items():
+            logger.info("Copying partition %s:%s to %s:%s", from_topic, from_p, to_topic, to_p)
+            n_msg[to_p] = 0
             # Get current offset
-            p_meta = await self.fetch_partition_metadata(name, partition)
+            p_meta = await self.fetch_partition_metadata(from_topic, from_p)
             newest_offset = p_meta.newest_offset or 0
             # Fetch cursor
             current_offset = (
                 await self.fetch_cursor(
-                    stream=name,
-                    partition=partition,
+                    stream=from_topic,
+                    partition=from_p,
                     cursor_id=s.cursor_name,
                 )
                 or 0
@@ -219,18 +217,18 @@ class LiftBridgeClient(GugoLiftbridgeClient):
             )
             if current_offset < newest_offset:
                 async for msg in self.subscribe(
-                    stream=name, partition=partition, start_offset=current_offset
+                    stream=from_topic, partition=from_p, start_offset=current_offset
                 ):
                     await self.publish(
                         msg.value,
-                        stream=tmp_stream,
-                        partition=partition,
+                        stream=to_topic,
+                        partition=to_p,
                     )
-                    n_msg[partition] += 1
+                    n_msg[to_p] += 1
                     if msg.offset == newest_offset:
                         break
-            if n_msg[partition]:
-                logger.info("  %d messages has been copied", n_msg[partition])
+            if n_msg[to_p]:
+                logger.info("  %d messages has been copied", n_msg[to_p])
             else:
                 logger.info("  nothing to copy")
         return n_msg
