@@ -7,7 +7,7 @@
 
 # Python modules
 import xml.etree.ElementTree as ET
-from typing import Type, Optional, Dict, Tuple, TextIO, Union
+from typing import Type, Optional, Dict, Tuple, TextIO, Union, Iterable
 from io import StringIO
 from copy import deepcopy
 from itertools import zip_longest
@@ -393,6 +393,15 @@ class SVG(object):
         Get root element.
         """
         return self._tree.getroot()
+
+    def iter_id(self) -> Iterable[str]:
+        """
+        Iterate over element ids
+        """
+        for el in self._tree.iter():
+            el_id = el.get("id")
+            if el_id:
+                yield el_id
 
 
 # WARNING: Modifying global state

@@ -6,7 +6,7 @@
 # ---------------------------------------------------------------------
 
 # Python modules
-from typing import Optional, Tuple, Dict
+from typing import Optional, Tuple, Dict, List
 import xml.etree.ElementTree as ET
 import tempfile
 
@@ -384,3 +384,12 @@ def test_width(s, expected) -> None:
 def test_height(s, expected) -> None:
     svg = SVG.from_string(s)
     assert svg.height == expected
+
+
+@pytest.mark.parametrize(
+    ("s", "expected"), [(G1, ["1", "2", "3", "4"]), (G2, ["1", "2", "3", "4", "5"])]
+)
+def test_iter_id(s: str, expected: List[str]) -> None:
+    svg = SVG.from_string(s)
+    ids = list(svg.iter_id())
+    assert ids == expected
