@@ -36,6 +36,11 @@ Ext.define("NOC.inv.facade.Model", {
             name: "is_builtin",
             type: "boolean",
             persist: false
+        },
+        {
+            name: "slots",
+            type: "auto",
+            persist: false
         }
     ]
 });

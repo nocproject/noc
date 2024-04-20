@@ -10,6 +10,8 @@ import re
 
 rx_id = re.compile("[^a-z-A-Z0-9]")
 PLACEHOLDER = "-"
+SLOT_PREFIX = "noc-slot-"
+SLOT_PREFIX_LEN = len(SLOT_PREFIX)
 
 
 def name_to_id(name: str) -> str:
@@ -32,4 +34,11 @@ def slot_to_id(name: str) -> str:
     Convert slot name to id.
     """
     s = rx_id.sub(PLACEHOLDER, name).lower()
-    return f"noc-slot-{s}"
+    return f"{SLOT_PREFIX}{s}"
+
+
+def is_slot_id(name: str) -> str:
+    """
+    Check if id is slot name.
+    """
+    return name.startswith(SLOT_PREFIX)

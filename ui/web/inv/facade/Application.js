@@ -19,7 +19,7 @@ Ext.define("NOC.inv.facade.Application", {
             ftype: "boolean",
         },
     ],
-    initComponent: function(){
+    initComponent: function () {
         var me = this;
         // JSON Panel
         me.jsonPanel = Ext.create("NOC.core.JSONPreview", {
@@ -69,6 +69,12 @@ Ext.define("NOC.inv.facade.Application", {
                     allowBlank: true,
                 },
                 {
+                    name: "slots",
+                    xtype: "displayfield",
+                    fieldLabel: __("Slots"),
+                    allowBlank: true
+                },
+                {
                     xtype: "svgfield",
                     name: "data",
                     fieldLabel: __("Image"),
@@ -93,15 +99,15 @@ Ext.define("NOC.inv.facade.Application", {
         me.callParent();
     },
     //
-    onJSON: function(){
+    onJSON: function () {
         var me = this;
         me.showItem(me.ITEM_JSON);
         me.jsonPanel.preview(me.currentRecord);
     },
     //
-    onDownload: function(field, data){
+    onDownload: function (field, data) {
         var name = this.form.getValues().name;
-        if(Ext.isEmpty(name)){
+        if (Ext.isEmpty(name)) {
             name = "image";
         }
         name = name.split("|")[name.split("|").length - 1] || "image";
