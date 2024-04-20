@@ -58,10 +58,19 @@ class ObjectModelApplication(ExtDocApplication):
         r = super().instance_to_dict(o, fields, nocustom=nocustom)
         if isinstance(o, ObjectModel) and "connections" in r:
             for c in r["connections"]:
-                data = c.pop("data", None)
-                for d in data or []:
+                data = c.pop("data", None) or []
+                for d in data:
                     d["connection"] = c["name"]
                     r["data"].append(d)
+                # Facades
+                name = c.get("name", "")
+                if o.front_facade and o.front_facade.has_slot(name or ""):
+                    facade = "f"
+                elif o.rear_facade and o.rear_facade.has_slot(name or ""):
+                    facade = "r"
+                else:
+                    facade = ""
+                c["facade"] = facade
         return r
 
     def clean(self, data):
@@ -81,20 +90,21 @@ class ObjectModelApplication(ExtDocApplication):
             data["plugins"] = [x.strip() for x in data["plugins"].split(",") if x.strip()]
         else:
             data["plugins"] = None
-        if "connections" not in data:
-            return super().clean(data)
-        for c in data["connections"]:
-            if connection_data and c["name"] in connection_data:
-                c["data"] = ModelInterface.clean_data(connection_data[c["name"]])
-            if "protocols" not in c:
-                continue
-            protocols = []
-            for p in c.get("protocols") or []:
-                p = ProtocolVariant.get_by_code(p)
-                protocols += [{"protocol": p.protocol.id, "direction": p.direction}]
-                if p.discriminator:
-                    protocols[-1]["discriminator"] = p.discriminator
-            c["protocols"] = protocols
+        if "connections" in data:
+            for c in data["connections"]:
+                if connection_data and c["name"] in connection_data:
+                    c["data"] = ModelInterface.clean_data(connection_data[c["name"]])
+                if "protocols" not in c:
+                    continue
+                protocols = []
+                for p in c.get("protocols") or []:
+                    p = ProtocolVariant.get_by_code(p)
+                    protocols += [{"protocol": p.protocol.id, "direction": p.direction}]
+                    if p.discriminator:
+                        protocols[-1]["discriminator"] = p.discriminator
+                c["protocols"] = protocols
+                # Remove facade
+                c.pop("facade", None)
         return super().clean(data)
 
     def cleaned_query(self, q):

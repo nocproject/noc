@@ -270,6 +270,18 @@ Ext.define("NOC.inv.objectmodel.Application", {
           fieldLabel: __("Connections"),
           columns: [
             {
+              text: __("Facade"),
+              dataIndex: "facade",
+              width: 25,
+              renderer: function (v) {
+                return {
+                  "f": "<i class='x-btn-icon-el-default-toolbar-small fa fa-hand-o-right' title='Front'></i>",
+                  "r": "<i class='x-btn-icon-el-default-toolbar-small fa fa-hand-o-left' title='Rear'></i>",
+                  "": ""
+                }[v];
+              }
+            },
+            {
               text: __("Name"),
               dataIndex: "name",
               editor: "textfield",
@@ -440,10 +452,10 @@ Ext.define("NOC.inv.objectmodel.Application", {
               onBeforeEdit: function (editor, context) {
                 if (["input", "output"].includes(context.column.dataIndex)) {
                   var connectionsField = context.view
-                      .up("[xtype=form]")
-                      .down("[name=connections]"),
+                    .up("[xtype=form]")
+                    .down("[name=connections]"),
                     data = Ext.Array.map(connectionsField.value, function (value) {
-                      return {id: value.name, text: value.name};
+                      return { id: value.name, text: value.name };
                     }),
                     combo = editor.getEditor(context.record, context.column).field;
                   combo.getStore().loadData(data);
