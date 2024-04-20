@@ -34,7 +34,7 @@ class FacadePlugin(InvPlugin):
         )
 
     def get_data(self, request, o: Object):
-        r = {"views": []}
+        r = {"id": str(o.id), "views": []}
         if o.model.front_facade:
             r["views"].append(
                 {

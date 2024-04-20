@@ -13,75 +13,98 @@ Ext.define("NOC.inv.inv.plugins.facade.FacadePanel", {
   closable: false,
   scrollable: true,
   //
-  initComponent: function(){
+  initComponent: function () {
     var me = this;
+
+    me.reloadButton = Ext.create("Ext.button.Button", {
+      glyph: NOC.glyph.refresh,
+      scope: me,
+      tooltip: __("Reload"),
+      handler: me.onReload,
+    });
+
+    me.sideFrontButton = Ext.create("Ext.button.Button", {
+      glyph: NOC.glyph.hand_o_right,
+      text: __("Front"),
+      scope: me,
+      toggleGroup: "side",
+      pressed: true,
+      handler: function () {
+        me.viewCard.setActiveItem(0);
+      },
+    });
+
+    me.sideRearButton = Ext.create("Ext.button.Button", {
+      glyph: NOC.glyph.hand_o_left,
+      text: __("Rear"),
+      scope: me,
+      toggleGroup: "side",
+      handler: function () {
+        me.viewCard.setActiveItem(1);
+      },
+    });
+
+    me.viewCard = Ext.create("Ext.container.Container", {
+      xtype: "container",
+      layout: "card",
+      activeItem: 0,
+    });
     me.facadeViewPanel = Ext.create("Ext.container.Container", {
       scrollable: true,
       layout: "fit",
+      items: [me.viewCard],
     });
     Ext.apply(me, {
       items: [me.facadeViewPanel],
+      dockedItems: [
+        {
+          xtype: "toolbar",
+          dock: "top",
+          items: [me.reloadButton, "-", me.sideFrontButton, me.sideRearButton],
+        },
+      ],
     });
     me.callParent();
   },
   //
-  preview: function(data){
-    var me = this,
-      viewQty = data.views.length;
-    me.facadeViewPanel.removeAll();
-    switch(viewQty){
-      case 1:
-        me.facadeViewPanel.add(me.makeView(data.views[0]));
-        break;
-      default:
-        me.facadeViewPanel.add([
-          {
-            xtype: "container",
-            padding: 10,
-            items: [{
-              xtype: "radiogroup",
-              fieldLabel: __("Choose view"),
-              vertical: false,
-              items: Ext.Array.map(data.views, function(view, index){
-                return{
-                  boxLabel: view.name,
-                  name: "chooseView",
-                  margin: "0 10 0 0",
-                  inputValue: index,
-                }
-              }),
-              listeners: {scope: me, change: me.onChooseView},
-            }],
-          },
-          {
-            xtype: "container",
-            itemId: "viewPanel",
-            layout: "card",
-            activeItem: 0,
-            items: Ext.Array.map(data.views, function(view){ return{xtype: "container", layout: "fit", items: me.makeView(view)} }), 
-          },
-        ]);
-        me.facadeViewPanel.down("radiogroup").setValue({chooseView: 0});
-        break;
-    }
+  preview: function (data) {
+    var me = this;
+    me.currentId = data.id;
+    // Add views
+    me.viewCard.removeAll();
+    me.viewCard.add(
+      Ext.Array.map(data.views, function (view) {
+        return {
+          xtype: "container",
+          layout: "fit",
+          items: [
+            {
+              xtype: "image",
+              src: view.src,
+              title: view.name,
+              padding: 5,
+            },
+          ],
+        };
+      }),
+    );
+    // Disable rear button if necessary
+    me.sideRearButton.setDisabled(data.views.length < 2);
+    // Press front button
+    me.sideFrontButton.setPressed(true);
   },
-  //
-  onChooseView: function(field){
-    this.down("[itemId=viewPanel]").setActiveItem(field.getValue().chooseView);
-  },
-  //
-  makeView: function(view){
-    return[
-      {
-        xtype: "component",
-        html: Ext.String.format("<h2 style='padding: 10px 0 0 10px;'>{0}</h2>", view.name),
+  onReload: function () {
+    var me = this;
+    Ext.Ajax.request({
+      url: "/inv/inv/" + me.currentId + "/plugin/facade/",
+      method: "GET",
+      scope: me,
+      success: function (response) {
+        me.preview(Ext.decode(response.responseText));
       },
-      {
-        xtype: "image",
-        src: view.src,
-        title: view.name,
-        padding: 5,
+      failure: function () {
+        NOC.error(__("Failed to get data"));
       },
-    ]
+    });
   },
 });
