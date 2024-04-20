@@ -33,8 +33,9 @@ logger = logging.getLogger(__name__)
 class Router(object):
     def __init__(self):
         self.chains: DefaultDict[bytes, List[Route]] = defaultdict(list)
-        self.routes: Dict[str, Route] = {}
-        self.default_route: Optional[DefaultNotificationRoute] = DefaultNotificationRoute()
+        self.routes: Dict[str, Route] = {
+            "default": DefaultNotificationRoute(),  # Add default route for notification
+        }
         self.stream_partitions: Dict[str, int] = {}
         self.svc = get_service()
         # self.out_queue: Optional[QBuffer] = None
@@ -149,15 +150,9 @@ class Router(object):
                 )
             )
 
-    def iter_route(self, msg: Message) -> Iterator[Route]:
-        mt = msg.headers.get(MX_MESSAGE_TYPE)
-        if not mt:
-            return
-        # Check default Route
-        if self.default_route and self.default_route.is_match(msg):
-            yield self.default_route
+    def iter_route(self, msg: Message, message_type: bytes) -> Iterator[Route]:
         # Iterate over routes
-        for route in self.chains[mt]:
+        for route in self.chains[message_type]:
             if route.is_match(msg):
                 yield route
 
@@ -222,8 +217,11 @@ class Router(object):
         :param msg_id:
         :return:
         """
+        mt = msg.headers.get(MX_MESSAGE_TYPE)
+        if not mt:
+            return
         # Apply routes
-        for route in self.iter_route(msg):
+        for route in self.iter_route(msg, mt):
             metrics["route_hits", ("type", route.type)] += 1
             logger.debug("[%s] Applying route %s", msg_id, route.name)
             # Apply actions
@@ -234,7 +232,7 @@ class Router(object):
                 service=route.name,
                 in_label=msg.key,
             ) as span:
-                for stream, action_headers, body in route.iter_action(msg):
+                for stream, action_headers, body in route.iter_action(msg, mt):
                     metrics["action_hits", ("stream", stream)] += 1
                     # Fameless drop
                     if stream == DROP:

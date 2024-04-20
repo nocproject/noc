@@ -24,6 +24,7 @@ from noc.core.service.fastapi import FastAPIService
 from noc.core.perf import metrics
 from noc.core.mx import (
     MX_STREAM,
+    MessageType,
     get_mx_partitions,
     MX_MESSAGE_TYPE,
     MX_SHARDING_KEY,
@@ -174,7 +175,7 @@ class SyslogCollectorService(FastAPIService):
                 stream=MX_STREAM,
                 partition=int(cfg.id) % n_partitions,
                 headers={
-                    MX_MESSAGE_TYPE: b"syslog",
+                    MX_MESSAGE_TYPE: MessageType.SYSLOG.value,
                     MX_LABELS: MX_H_VALUE_SPLITTER.join(cfg.effective_labels).encode(
                         DEFAULT_ENCODING
                     ),

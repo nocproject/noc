@@ -21,6 +21,8 @@ from noc.core.mx import (
     MX_LABELS,
     MX_H_VALUE_SPLITTER,
     MX_ADMINISTRATIVE_DOMAIN_ID,
+    MX_RESOURCE_GROUPS,
+    MX_PROFILE_ID,
     MX_NOTIFICATION_CHANNEL,
     MX_NOTIFICATION,
     MX_MESSAGE_TYPE,
@@ -80,6 +82,8 @@ class MatchItem(object):
     labels: Optional[List[str]] = None
     exclude_labels: Optional[List[str]] = None
     administrative_domain: Optional[int] = None
+    resource_groups: Optional[List[str]] = None
+    profile: Optional[str] = None
     headers: Optional[List[HeaderMatchItem]] = None
 
     @classmethod
@@ -91,6 +95,8 @@ class MatchItem(object):
                     labels=match["labels"],
                     exclude_labels=match["exclude_labels"],
                     administrative_domain=match.get("administrative_domain"),
+                    resource_groups=match.get("resource_groups"),
+                    profile=match.get("profile"),
                     headers=[
                         HeaderMatchItem(header=h["header"], op=h["op"], value=h["value"])
                         for h in match["headers"]
@@ -105,6 +111,8 @@ class Route(object):
     Route Notification. Contains condition and action.
     If condition is matched - do action
     """
+
+    MX_H_VALUE_SPLITTER = MX_H_VALUE_SPLITTER.encode(DEFAULT_ENCODING)
 
     def __init__(self, name: str, r_type: str, order: int, telemetry_sample: Optional[int] = None):
         self.name = name
@@ -123,10 +131,12 @@ class Route(object):
         :param msg:
         :return:
         """
-        ctx = {"headers": msg.headers, "labels": set()}
+        ctx = {"headers": msg.headers, "labels": set(), "resource_groups": set()}
         if MX_LABELS in msg.headers and msg.headers[MX_LABELS]:
-            ctx["labels"] = set(
-                msg.headers[MX_LABELS].split(MX_H_VALUE_SPLITTER.encode(encoding=DEFAULT_ENCODING))
+            ctx["labels"] = set(msg.headers[MX_LABELS].split(self.MX_H_VALUE_SPLITTER))
+        if MX_RESOURCE_GROUPS in msg.headers and msg.headers[MX_RESOURCE_GROUPS]:
+            ctx["resource_groups"] = set(
+                msg.headers[MX_RESOURCE_GROUPS].split(self.MX_H_VALUE_SPLITTER)
             )
         return eval(self.match_co, ctx)
 
@@ -146,14 +156,16 @@ class Route(object):
             data = self.transmute_template.render_body(ctx)
         return data
 
-    def iter_action(self, msg: Message) -> Iterator[Tuple[str, Dict[str, bytes]]]:
+    def iter_action(
+        self, msg: Message, message_type: bytes
+    ) -> Iterator[Tuple[str, Dict[str, bytes]]]:
         """
         Iterate over available actions
 
         :return: Stream name or empty string, dict of headers
         """
         for a in self.actions:
-            yield from a.iter_action(msg)
+            yield from a.iter_action(msg, message_type)
 
     def set_type(self, r_type: str):
         self.type = r_type.encode(encoding=DEFAULT_ENCODING)
@@ -205,6 +217,10 @@ class Route(object):
                 expr += [
                     f"int(headers[{MX_ADMINISTRATIVE_DOMAIN_ID!r}]) in {set(match.administrative_domain)}"
                 ]
+            if match.resource_groups:
+                expr += [
+                    f"{set(rg.encode(encoding=DEFAULT_ENCODING) for rg in match.resource_groups)!r}.intersection(resource_groups)"
+                ]
             for h_match in match.headers:
                 if h_match.is_eq:
                     match_eq[h_match.header] += [h_match.value.encode(encoding=DEFAULT_ENCODING)]
@@ -254,15 +270,13 @@ class DefaultNotificationRoute(Route):
     Route by Notification-Channel message header
     """
 
-    MX_NOTIFICATION_EN = MX_NOTIFICATION.encode(DEFAULT_ENCODING)
-
     def __init__(self):
-        super().__init__(name="default", r_type=MX_NOTIFICATION, order=0)
+        super().__init__(name="default", r_type=MX_NOTIFICATION, order=999)
 
     def is_match(self, msg: Message) -> bool:
         if (
             MX_NOTIFICATION_CHANNEL in msg.headers
-            and msg.headers.get(MX_MESSAGE_TYPE) == self.MX_NOTIFICATION_EN
+            and msg.headers.get(MX_MESSAGE_TYPE) == MX_NOTIFICATION
         ):
             return True
         return False
@@ -271,7 +285,7 @@ class DefaultNotificationRoute(Route):
         return data
 
     def iter_action(self, msg: Message) -> Iterator[Tuple[str, Dict[str, bytes]]]:
-        method = msg.headers.get(MX_NOTIFICATION_CHANNEL).decode(DEFAULT_ENCODING)
+        method = msg.headers[MX_NOTIFICATION_CHANNEL].decode(DEFAULT_ENCODING)
         if method not in NOTIFICATION_METHODS:
             # Check available channel for sender
             return
