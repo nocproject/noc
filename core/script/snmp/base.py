@@ -369,8 +369,8 @@ class SNMP(object):
                         if isinstance(v, bytes):
                             v = mib.render(oid_, v, display_hints)
                         result += [(oid_, v)]
-                    if only_first and result:
-                        result = result[0:1]
+                        if only_first:
+                            break
                     self.logger.debug("[%s] GETNEXT result: %s", address, result)
                     return result
                 except TimeoutError:
