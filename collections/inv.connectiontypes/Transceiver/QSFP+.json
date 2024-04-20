@@ -4,5 +4,11 @@
     "uuid": "8730ba07-e0e8-4022-a2cb-103400651a2f",
     "description": "QSFP+ transceiver slot",
     "c_group": [],
-    "genders": "mf"
+    "genders": "mf",
+    "matchers": [
+        {
+            "protocol": "TransEth40G",
+            "scope": "physical"
+        }
+    ]
 }
