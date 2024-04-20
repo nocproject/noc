@@ -348,7 +348,12 @@ class SNMP(object):
 
         async def run(max_retries, filter):
             address = self.script.credentials["address"]
-            self.logger.debug("[%s] SNMP GETNEXT %s", address, oid)
+            self.logger.debug(
+                "[%s] SNMP GETNEXT%s %s",
+                address,
+                "(With Bulk)" if bulk else "",
+                oid,
+            )
             session = await self.get_session(version)
             oids_iter = session.getnext(oid)
             if bulk:

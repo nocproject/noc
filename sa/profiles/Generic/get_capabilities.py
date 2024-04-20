@@ -406,7 +406,9 @@ class Script(BaseScript):
                     snmp_version = SNMP_v1
                 else:
                     caps["SNMP | v1"] = False
+                self.snmp.close()
             if self.is_requested("snmp_v2c"):
+                self.snmp.close()
                 if self.check_snmp_get(self.SNMP_GET_CHECK_OID, version=SNMP_v2c):
                     caps["SNMP | v2c"] = True
                     snmp_version = SNMP_v2c
@@ -414,6 +416,7 @@ class Script(BaseScript):
                         caps["SNMP | Bulk"] = True
                 else:
                     caps["SNMP | v2c"] = False
+                self.snmp.close()
             if self.is_requested("snmp_v2c"):
                 if self.check_snmp_get(self.SNMP_GET_CHECK_OID, version=SNMP_v3):
                     caps["SNMP | v3"] = True
@@ -425,6 +428,7 @@ class Script(BaseScript):
                         caps["SNMP | Bulk"] = True
                 else:
                     caps["SNMP | v3"] = False
+                self.snmp.close()
             if snmp_version is not None:
                 # SNMP is enabled
                 caps["SNMP"] = True
