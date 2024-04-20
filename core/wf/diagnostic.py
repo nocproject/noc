@@ -232,10 +232,14 @@ class DiagnosticHub(object):
         Bulk mode. Sync diagnostic after exit from context
         """
         self.bulk_mode = True
+        self.bulk_changes = 0
         return self
 
     def __exit__(self, exc_type, exc_val, exc_tb):
         self.bulk_mode = False
+        if not self.bulk_changes:
+            self.bulk_changes = 0
+            return
         self.sync_diagnostics()
         # Hack for refresh diagnostic Hub on object
         # For fix it may be use set __diagnostics to object diagnostic
@@ -401,6 +405,7 @@ class DiagnosticHub(object):
         """
         if self.bulk_mode:
             self.logger.debug("Bulk mode. Sync blocked")
+            self.bulk_changes += 1
             return
         changed_state = set()
         updated = []
@@ -657,7 +662,7 @@ class DiagnosticHub(object):
                         "state": state,
                         "from_state": from_state,
                         "reason": reason,
-                        "managed_object": self.get_message_context(),
+                        "managed_object": self.__object.get_message_context(),
                     },
                     "diagnostic_change",
                     {
