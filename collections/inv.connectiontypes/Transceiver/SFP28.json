@@ -4,6 +4,7 @@
     "uuid": "9cabe898-11f9-4c67-bf38-53b59d2c4bfa",
     "description": "SFP28 transceiver slot",
     "c_group": [],
+    "female_facade__name": "Transceiver | SFP (F)",
     "genders": "mf",
     "matchers": [
         {
