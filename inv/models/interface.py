@@ -41,6 +41,7 @@ from noc.core.model.decorator import on_delete, on_delete_check
 from noc.core.change.decorator import change
 from noc.core.comp import DEFAULT_ENCODING
 from noc.core.wf.decorator import workflow
+from noc.core.wf.diagnostic import DIAGNOCSTIC_LABEL_SCOPE
 from noc.core.bi.decorator import bi_hash
 from noc.wf.models.state import State
 from .interfaceprofile import InterfaceProfile
@@ -491,7 +492,7 @@ class Interface(Document):
             yield [
                 ll
                 for ll in instance.managed_object.get_effective_labels()
-                if ll != "noc::is_linked::="
+                if ll != "noc::is_linked::=" and not ll.startswith(f"{DIAGNOCSTIC_LABEL_SCOPE}::")
             ]
         if instance.service:
             yield from Service.iter_effective_labels(instance.service)
