@@ -290,6 +290,7 @@ class ManagedObjectApplication(ExtModelApplication):
                             "error": c.error,
                         }
                         for c in d.checks or []
+                        if not c.skipped
                     ],
                     "reason": d.reason or "",
                 }
