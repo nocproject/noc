@@ -13,6 +13,7 @@ from noc.sa.profiles.Generic.get_metrics import (
     Script as GetMetricsScript,
     metrics,
     ProfileMetricConfig,
+    MetricConfig,
 )
 from noc.core.models.cfgmetrics import MetricCollectorConfig
 from .oidrules.slot import SlotRule
@@ -211,9 +212,9 @@ class Script(GetMetricsScript):
         elif self.has_capability("Huawei | OID | hwCBQoSClassifierStatisticsTable"):
             self.get_interface_cbqos_metrics_classifier_snmp(metrics)
 
-    def get_interface_cbqos_metrics_classifier_snmp(self, metrics):
+    def get_interface_cbqos_metrics_classifier_snmp(self, metrics: List[MetricConfig]):
         self.logger.debug("Use hwCBQoSClassifierStatisticsTable for collected metrics")
-        ifaces = {m.ifindex: m.labels for m in metrics if m.ifindex}
+        ifaces = {m.ifindex: m for m in metrics if m.ifindex}
         direction_map = {1: "In", 2: "Out"}
         class_map = {}
         for oid, name in self.snmp.getnext(mib["HUAWEI-CBQOS-MIB::hwCBQoSClassifierName"]):
@@ -237,21 +238,23 @@ class Script(GetMetricsScript):
                 # (f"Interface | CBQOS | Packets | {direction_map[direction]}", packets),
             ]:
                 scale = 1
+                sc = ifaces[ifindex]
                 self.set_metric(
-                    id=(metric, ifaces[ifindex]),
+                    id=(metric, sc.labels),
                     metric=metric,
                     value=float(value),
                     ts=ts,
-                    labels=ifaces[ifindex] + [f"noc::traffic_class::{class_map[classifier]}"],
+                    labels=sc.labels + [f"noc::traffic_class::{class_map[classifier]}"],
                     multi=True,
                     type="delta" if metric.endswith("Delta") else "gauge",
                     scale=scale,
                     units="byte" if "Octets" in metric else "pkt",
+                    service=sc.service,
                 )
 
-    def get_interface_cbqos_metrics_policy_snmp(self, metrics):
+    def get_interface_cbqos_metrics_policy_snmp(self, metrics: List[MetricConfig]):
         self.logger.debug("Use hwCBQoSPolicyStatisticsClassifierTable for collected metrics")
-        ifaces = {m.ifindex: m.labels for m in metrics if m.ifindex}
+        ifaces = {m.ifindex: m for m in metrics if m.ifindex}
         direction_map = {"1": "In", "2": "Out"}
         class_tos_map = self.get_classifier_tos()
         self.logger.debug("Class TOS map: %s", class_tos_map)
@@ -287,16 +290,18 @@ class Script(GetMetricsScript):
                     ]
                 else:
                     labels = [f"noc::traffic_class::{traffic_class}"]
+                sc = ifaces[ifindex]
                 self.set_metric(
-                    id=(metric, ifaces[ifindex]),
+                    id=(metric, sc.labels),
                     metric=metric,
                     value=float(value),
                     ts=ts,
-                    labels=ifaces[ifindex] + labels,
+                    labels=sc.labels + labels,
                     multi=True,
                     type=mtype,
                     scale=scale,
                     units="pkt" if "Octets" in metric else "byte",
+                    service=sc.service,
                 )
 
     def collect_sla_metrics(self, metrics: List[MetricCollectorConfig]):
