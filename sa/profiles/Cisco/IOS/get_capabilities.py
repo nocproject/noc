@@ -196,6 +196,10 @@ class Script(BaseScript):
         v = self.cli("show vrrp detail")
         return bool(v)
 
+    @false_on_snmp_error
+    def has_ip_sla_probes(self):
+        return self.snmp.get(mib["CISCO-RTTMON-MIB::rttMonApplProbeCapacity", 0])
+
     def execute_platform_cli(self, caps):
         # Check IP SLA status
         sla_v = self.get_syntax_variant(self.SYNTAX_IP_SLA_APPLICATION)
@@ -212,7 +216,7 @@ class Script(BaseScript):
                 caps["Cisco | IP | SLA | Probes"] = np
 
     def execute_platform_snmp(self, caps):
-        sla_v = self.snmp.get(mib["CISCO-RTTMON-MIB::rttMonApplProbeCapacity", 0])
+        sla_v = self.has_ip_sla_probes()
         if sla_v:
             # IP SLA responder
             if self.has_ip_sla_responder_snmp():
