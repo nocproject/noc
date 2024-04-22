@@ -120,42 +120,44 @@ class InvApplication(ExtApplication):
                 "can_add": bool(o.get_data("container", "container")),
                 "can_delete": str(o.model.uuid) not in self.UNDELETABLE,
             }
+            plugins = []
             if o.get_data("container", "container") or o.has_inner_connections():
                 # n["expanded"] = Object.objects.filter(container=o.id).count() == 1
                 n["expanded"] = False
             else:
                 n["leaf"] = True
+            if o.model.front_facade or o.model.rear_facade:
+                plugins.append(self.get_plugin_data("facade"))
             if o.get_data("rack", "units"):
-                n["plugins"] += [self.get_plugin_data("rack")]
+                plugins.append(self.get_plugin_data("rack"))
             if o.model.connections:
-                n["plugins"] += [self.get_plugin_data("inventory")]
+                plugins.append(self.get_plugin_data("inventory"))
             if o.get_data("geopoint", "layer"):
-                n["plugins"] += [self.get_plugin_data("map")]
+                plugins.append(self.get_plugin_data("map"))
             if o.get_data("management", "managed_object"):
-                n["plugins"] += [self.get_plugin_data("managedobject")]
+                plugins.append(self.get_plugin_data("managedobject"))
             if o.get_data("contacts", "has_contacts"):
-                n["plugins"] += [self.get_plugin_data("contacts")]
+                plugins.append(self.get_plugin_data("contacts"))
             if o.model.sensors or Sensor.objects.filter(object=o.id).first():
-                n["plugins"] += [self.get_plugin_data("sensor")]
-                n["plugins"] += [self.get_plugin_data("metric")]
+                plugins.append(self.get_plugin_data("sensor"))
+                plugins.append(self.get_plugin_data("metric"))
             if o.model.configuration_rule:
-                n["plugins"] += [self.get_plugin_data("param")]
+                plugins.append(self.get_plugin_data("param"))
             # Append model's plugins
-            for p in m_plugins:
-                if not p.startswith("-"):
-                    n["plugins"] += [self.get_plugin_data(p)]
-            n["plugins"] += [
+            plugins += [self.get_plugin_data(p) for p in m_plugins if not p.startswith("-")]
+            # Common plugins
+            plugins += [
                 self.get_plugin_data("data"),
                 self.get_plugin_data("comment"),
                 self.get_plugin_data("file"),
                 self.get_plugin_data("log"),
             ]
             if o.get_data("container", "container"):
-                n["plugins"] += [self.get_plugin_data("sensor")]
-            n["plugins"] += [self.get_plugin_data("crossing")]
+                plugins.append(self.get_plugin_data("sensor"))
+            plugins.append(self.get_plugin_data("crossing"))
             # Process disabled plugins
-            n["plugins"] = [p for p in n["plugins"] if p["name"] not in disabled_plugins]
-            r += [n]
+            n["plugins"] = [p for p in plugins if p["name"] not in disabled_plugins]
+            r.append(n)
         return r
 
     @view(

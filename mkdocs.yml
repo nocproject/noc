@@ -932,6 +932,7 @@ nav:
       - Create Object Models:
           - Overview: create-object-models-howto/index.md
           - Connection Rules: create-object-models-howto/connection-rule.md
+          - Facades: facades-howto/index.md
       - Writing NOC Command: writing-noc-command-howto/index.md
   - Background:
       - Overview: sections-overview/background.md
