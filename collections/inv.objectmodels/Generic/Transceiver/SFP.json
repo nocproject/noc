@@ -43,5 +43,6 @@
             "interface": "optical",
             "value": false
         }
-    ]
+    ],
+    "front_facade__name": "Transceiver | SFP LC"
 }

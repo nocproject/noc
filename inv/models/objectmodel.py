@@ -45,6 +45,7 @@ from .connectionrule import ConnectionRule
 from .unknownmodel import UnknownModel
 from .vendor import Vendor
 from .protocol import Protocol
+from .facade import Facade
 
 id_lock = Lock()
 
@@ -267,6 +268,27 @@ class ObjectModelConnection(EmbeddedDocument):
             r.append(p)
         return r
 
+    @property
+    def is_inner(self) -> bool:
+        """
+        Check if connection is inner.
+        """
+        return self.direction == "i"
+
+    @property
+    def is_outer(self) -> bool:
+        """
+        Check if connection is outer.
+        """
+        return self.direction == "o"
+
+    @property
+    def is_same_level(self) -> bool:
+        """
+        Check if connection is on same level.
+        """
+        return self.direction == "s"
+
 
 class ObjectModelSensor(EmbeddedDocument):
     # Sensor name, may be duplicated for various collection methods
@@ -338,6 +360,9 @@ class ObjectModel(Document):
     cross: List[Crossing] = EmbeddedDocumentListField(Crossing)
     sensors: List["ObjectModelSensor"] = EmbeddedDocumentListField(ObjectModelSensor)
     plugins = ListField(StringField(), required=False)
+    # Facades
+    front_facade = PlainReferenceField(Facade, required=False)
+    rear_facade = PlainReferenceField(Facade, required=False)
     # Labels
     labels = ListField(StringField())
     category = ObjectIdField()
@@ -547,6 +572,10 @@ class ObjectModel(Document):
             r["cr_context"] = self.cr_context
         if self.plugins:
             r["plugins"] = self.plugins
+        if self.front_facade:
+            r["front_facade__name"] = self.front_facade.name
+        if self.rear_facade:
+            r["rear_facade__name"] = self.rear_facade.name
         if self.labels:
             r["labels"] = self.labels
         return r

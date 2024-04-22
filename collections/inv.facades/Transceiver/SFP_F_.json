@@ -1,0 +1,7 @@
+{
+    "name": "Transceiver | SFP (F)",
+    "$collection": "inv.facades",
+    "uuid": "0ebf3e88-4463-4a50-86c5-0346dfc63545",
+    "description": "SFP Hole",
+    "data": "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n<svg viewBox=\"0 0 13.4 8.5\" width=\"13.4mm\" height=\"8.5mm\" xmlns=\"http://www.w3.org/2000/svg\">\n  <rect width=\"13.4\" height=\"8.5\" style=\"\"/>\n  <rect x=\"4.7\" y=\"7.5\" width=\"4\" height=\"1\" style=\"fill: rgb(204, 204, 204);\"/>\n</svg>"
+}
