@@ -7,9 +7,13 @@
 
 # Python modules
 import os
-from typing import Any, Dict, List
+from typing import Any, Dict, List, Optional, Union
+from threading import Lock
+import operator
 
 # Third-party modules
+from bson import ObjectId
+import cachetools
 from mongoengine.document import Document, EmbeddedDocument
 from mongoengine.fields import (
     StringField,
@@ -29,6 +33,8 @@ from noc.core.text import quote_safe_path
 from noc.main.models.doccategory import category
 from noc.core.model.decorator import on_delete_check
 from .facade import Facade
+
+id_lock = Lock()
 
 
 class ConnectionMatcher(EmbeddedDocument):
@@ -117,8 +123,21 @@ class ConnectionType(Document):
     OPPOSITE_GENDER = {"s": "s", "m": "f", "f": "m"}
     category = ObjectIdField()
 
+    _id_cache = cachetools.TTLCache(maxsize=1000, ttl=60)
+    _name_cache = cachetools.TTLCache(maxsize=1000, ttl=60)
+
     def __str__(self):
         return self.name
+
+    @classmethod
+    @cachetools.cachedmethod(operator.attrgetter("_id_cache"), lock=lambda _: id_lock)
+    def get_by_id(cls, oid: Union[str, ObjectId]) -> Optional["ConnectionType"]:
+        return ConnectionType.objects.filter(id=oid).first()
+
+    @classmethod
+    @cachetools.cachedmethod(operator.attrgetter("_name_cache"), lock=lambda _: id_lock)
+    def get_by_name(cls, name: str) -> Optional["ConnectionType"]:
+        return ConnectionType.objects.filter(name=name).first()
 
     @property
     def json_data(self) -> Dict[str, Any]:
