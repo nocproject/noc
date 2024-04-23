@@ -311,6 +311,7 @@ Ext.define("NOC.inv.objectmodel.Application", {
               dataIndex: "direction",
               editor: {
                 xtype: "combobox",
+                minWidth: 150,
                 store: [
                   ["i", "Inner"],
                   ["o", "Outer"],
@@ -324,6 +325,7 @@ Ext.define("NOC.inv.objectmodel.Application", {
               dataIndex: "gender",
               editor: {
                 xtype: "combobox",
+                minWidth: 150,
                 store: [
                   ["m", "Male"],
                   ["f", "Female"],
