@@ -633,12 +633,6 @@ Ext.define("NOC.core.ModelApplication", {
     });
     // Build form fields
     var formFields = [me.formTitle];
-    // append copy to clipboard icon
-    Ext.each(me.fields, function(f){
-      if(f && f.xtype === "displayfield" && ["uuid", "bi_id"].indexOf(f.name) !== -1){
-        f.renderer = NOC.clipboard;
-      }
-    });
     // Append configured fields
     formFields = formFields.concat(me.fields);
     // Append custom fields
@@ -704,6 +698,12 @@ Ext.define("NOC.core.ModelApplication", {
       },
     });
     me.form = me.formPanel.items.first().getForm();
+    // append copy to clipboard icon
+    Ext.each(me.form.getFields().items, function(f){
+      if(f && f.xtype === "displayfield" && ["uuid"].indexOf(f.name) !== -1){
+        f.renderer = NOC.clipboard;
+      }
+    });
     // detect autofocus field
     autoFocusFields = Ext.ComponentQuery.query("[autoFocus=true]", me.formPanel);
     if(autoFocusFields && autoFocusFields.length > 0){
