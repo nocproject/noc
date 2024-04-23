@@ -1138,9 +1138,7 @@ Ext.define("NOC.core.ModelApplication", {
         if(me.formTitle) {
             t = "<b>" + Ext.String.format(tpl, me.appTitle) + "</b>";
             if(itemId !== "NEW" && itemId !== "CLONE") {
-                itemId = "<b>ID: </b>" + itemId
-                    + "<i class='fas fa fa-clipboard noc-to-clipboard' style='padding-left: 5px;cursor: pointer' title='"
-                    + __("Copy to clipboard") + "' onclick='NOC.toClipboard(\"" + itemId + "\")'></i>";
+                itemId = "<b>ID: </b>" + itemId + NOC.clipboardIcon(itemId);
             } else {
                 itemId = "<b>" + itemId + "</b>";
             }

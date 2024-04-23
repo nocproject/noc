@@ -798,9 +798,7 @@ Ext.define('NOC.sa.managedobject.Controller', {
       formTitle = this.view.down('[itemId=formTitle]'),
       itemId = data.id;
     if(itemId !== "NEW" && itemId !== "CLONE"){
-      itemId = "<b>ID:</b>" + itemId
-          + "<i class='fas fa fa-clipboard noc-to-clipboard' style='padding-left: 5px;cursor: pointer' title='"
-          + __("Copy to clipboard") + "' onclick='NOC.toClipboard(\"" + itemId + "\")'></i>";
+      itemId = "<b>ID:</b>" + itemId + NOC.clipboardIcon(itemId);
     } else{
       itemId = "<b>" + itemId + "</b>";
     }
