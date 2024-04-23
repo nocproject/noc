@@ -1138,7 +1138,7 @@ Ext.define("NOC.core.ModelApplication", {
         if(me.formTitle) {
             t = "<b>" + Ext.String.format(tpl, me.appTitle) + "</b>";
             if(itemId !== "NEW" && itemId !== "CLONE") {
-                itemId = "<b>ID: </b>" + itemId;
+                itemId = "<b>ID: </b>" + itemId + NOC.clipboardIcon(itemId);
             } else {
                 itemId = "<b>" + itemId + "</b>";
             }
