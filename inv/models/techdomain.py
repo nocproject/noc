@@ -146,7 +146,7 @@ class TechDomain(Document):
         }
         if self.description:
             r["description"] = self.description
-        if self.max_endpoints is not None:
+        if self.max_endpoints is not None and self.max_endpoints:
             r["max_endpoints"] = self.max_endpoints
         r["full_mesh"] = self.full_mesh
         r["require_unique"] = self.require_unique
