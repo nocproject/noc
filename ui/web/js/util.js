@@ -779,3 +779,16 @@ NOC.helpOpener = function(topic) {
         NOC.openHelp(topic)
     }
 };
+NOC.clipboard = function(value){
+  if(!Ext.isEmpty(value)){
+    return value
+      + "<i class='fas fa fa-clipboard noc-to-clipboard' style='padding-left: 5px;cursor: pointer' title='"
+      + __("Copy to clipboard") + "' onclick='NOC.toClipboard(\"" + value + "\")'></i>"
+  } value;
+};
+                  
+NOC.toClipboard = function(text){
+  navigator.clipboard.writeText(text)
+  NOC.info(__("Copy to clipboard"));
+};
+
