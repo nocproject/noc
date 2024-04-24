@@ -74,7 +74,7 @@ Ext.define("NOC.inv.channel.Application", {
         },
         {
           name: "is_free",
-          xtype: "checkbox",
+          xtype: "checkboxfield",
           boxLabel: __("Free"),
         },
         {
