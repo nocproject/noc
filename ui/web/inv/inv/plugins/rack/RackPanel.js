@@ -14,7 +14,7 @@ Ext.define("NOC.inv.inv.plugins.rack.RackPanel", {
   title: __("Rack"),
   layout: "border",
 
-  initComponent: function () {
+  initComponent: function(){
     var me = this;
 
     me.reloadButton = Ext.create("Ext.button.Button", {
@@ -39,6 +39,10 @@ Ext.define("NOC.inv.inv.plugins.rack.RackPanel", {
       scope: me,
       toggleGroup: "side",
       handler: me.onReload,
+    });
+
+    me.segmentedButton = Ext.create("Ext.button.Segmented", {
+      items: [me.sideFrontButton, me.sideRearButton],
     });
 
     me.editLoadButton = Ext.create("Ext.button.Button", {
@@ -126,8 +130,7 @@ Ext.define("NOC.inv.inv.plugins.rack.RackPanel", {
           items: [
             me.reloadButton,
             "-",
-            me.sideFrontButton,
-            me.sideRearButton,
+            me.segmentedButton,
             "-",
             me.editLoadButton,
           ],
@@ -138,15 +141,15 @@ Ext.define("NOC.inv.inv.plugins.rack.RackPanel", {
     me.callParent();
   },
   //
-  preview: function (data) {
+  preview: function(data){
     var me = this,
       sprites = NOC.core.Rack.getRack(me, 5, 5, data.rack, data.content, me.getSide()),
       dc = Ext.create("Ext.draw.Container", {
         sprites: sprites,
         height: me.rackViewPanel.getHeight(),
         listeners: {
-          spriteclick: function (sprite, event) {
-            if (sprite.sprite.managed_object_id) {
+          spriteclick: function(sprite){
+            if(sprite.sprite.managed_object_id){
               window.open(
                 "/api/card/view/managedobject/" + sprite.sprite.managed_object_id + "/",
               );
@@ -162,46 +165,45 @@ Ext.define("NOC.inv.inv.plugins.rack.RackPanel", {
     me.rackLoadStore.loadData(data.load);
   },
   //
-  getSide: function () {
+  getSide: function(){
     var me = this;
     return me.sideRearButton.pressed ? "r" : "f";
   },
   //
-  onReload: function () {
+  onReload: function(){
     var me = this;
     Ext.Ajax.request({
       url: "/inv/inv/" + me.currentId + "/plugin/rack/",
       method: "GET",
       scope: me,
-      success: function (response) {
+      success: function(response){
         me.preview(Ext.decode(response.responseText));
       },
-      failure: function () {
+      failure: function(){
         NOC.error(__("Failed to get data"));
       },
     });
   },
   //
-  onEdit: function () {
+  onEdit: function(){
     var me = this;
 
-    if (me.editLoadButton.pressed) {
+    if(me.editLoadButton.pressed){
       me.rackLoadPanel.show();
-    } else {
+    } else{
       me.rackLoadPanel.hide();
     }
   },
-  onCellValidateEdit: function (editor, e, eOpts) {
-    var me = this;
+  onCellValidateEdit: function(){
     return true;
   },
   //
-  onCellEdit: function (editor, e) {
+  onCellEdit: function(editor, e){
     var me = this;
-    if (e.field === "position_front") {
+    if(e.field === "position_front"){
       e.record.set("position_rear", 0);
     }
-    if (e.field === "position_rear") {
+    if(e.field === "position_rear"){
       e.record.set("position_front", 0);
     }
     // Submit
@@ -216,16 +218,16 @@ Ext.define("NOC.inv.inv.plugins.rack.RackPanel", {
         shift: e.record.get("shift"),
       },
       loadMask: me,
-      success: function () {
+      success: function(){
         me.onReload();
       },
-      failure: function () {
+      failure: function(){
         NOC.error(__("Failed to save"));
       },
     });
   },
   //
-  onObjectSelect: function (objectId) {
+  onObjectSelect: function(objectId){
     var me = this;
     me.app.showObject(objectId);
   },
