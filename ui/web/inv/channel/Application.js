@@ -20,7 +20,7 @@ Ext.define("NOC.inv.channel.Application", {
   model: "NOC.inv.channel.Model",
   search: true,
 
-  initComponent: function () {
+  initComponent: function(){
     var me = this;
     Ext.apply(me, {
       columns: [
@@ -74,7 +74,7 @@ Ext.define("NOC.inv.channel.Application", {
         },
         {
           name: "is_free",
-          xtype: "checkboxfield",
+          xtype: "checkbox",
           boxLabel: __("Free"),
         },
         {
