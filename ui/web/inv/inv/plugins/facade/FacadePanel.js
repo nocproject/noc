@@ -13,7 +13,7 @@ Ext.define("NOC.inv.inv.plugins.facade.FacadePanel", {
   closable: false,
   scrollable: true,
   //
-  initComponent: function () {
+  initComponent: function(){
     var me = this;
 
     me.reloadButton = Ext.create("Ext.button.Button", {
@@ -29,7 +29,7 @@ Ext.define("NOC.inv.inv.plugins.facade.FacadePanel", {
       scope: me,
       toggleGroup: "side",
       pressed: true,
-      handler: function () {
+      handler: function(){
         me.viewCard.setActiveItem(0);
       },
     });
@@ -39,9 +39,13 @@ Ext.define("NOC.inv.inv.plugins.facade.FacadePanel", {
       text: __("Rear"),
       scope: me,
       toggleGroup: "side",
-      handler: function () {
+      handler: function(){
         me.viewCard.setActiveItem(1);
       },
+    });
+
+    me.segmentedButton = Ext.create("Ext.button.Segmented", {
+      items: [me.sideFrontButton, me.sideRearButton],
     });
 
     me.viewCard = Ext.create("Ext.container.Container", {
@@ -60,21 +64,21 @@ Ext.define("NOC.inv.inv.plugins.facade.FacadePanel", {
         {
           xtype: "toolbar",
           dock: "top",
-          items: [me.reloadButton, "-", me.sideFrontButton, me.sideRearButton],
+          items: [me.reloadButton, "-", me.segmentedButton],
         },
       ],
     });
     me.callParent();
   },
   //
-  preview: function (data) {
+  preview: function(data){
     var me = this;
     me.currentId = data.id;
     // Add views
     me.viewCard.removeAll();
     me.viewCard.add(
-      Ext.Array.map(data.views, function (view) {
-        return {
+      Ext.Array.map(data.views, function(view){
+        return{
           xtype: "container",
           layout: "fit",
           items: [
@@ -93,16 +97,16 @@ Ext.define("NOC.inv.inv.plugins.facade.FacadePanel", {
     // Press front button
     me.sideFrontButton.setPressed(true);
   },
-  onReload: function () {
+  onReload: function(){
     var me = this;
     Ext.Ajax.request({
       url: "/inv/inv/" + me.currentId + "/plugin/facade/",
       method: "GET",
       scope: me,
-      success: function (response) {
+      success: function(response){
         me.preview(Ext.decode(response.responseText));
       },
-      failure: function () {
+      failure: function(){
         NOC.error(__("Failed to get data"));
       },
     });
