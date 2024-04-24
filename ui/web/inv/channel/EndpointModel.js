@@ -1,14 +1,14 @@
 //---------------------------------------------------------------------
-// inv.coverage EndpointModel
+// inv.channel EndpointModel
 //---------------------------------------------------------------------
 // Copyright (C) 2007-2014 The NOC Project
 // See LICENSE for details
 //---------------------------------------------------------------------
-console.debug("Defining NOC.inv.endpoint.EndpointModel");
+console.debug("Defining NOC.inv.channel.EndpointModel");
 
-Ext.define("NOC.inv.endpoint.EndpointModel", {
+Ext.define("NOC.inv.channel.EndpointModel", {
     extend: "Ext.data.Model",
-    rest_url: "/inv/endpoint/{{parent}}/endpoints/",
+    rest_url: "/inv/channel/{{parent}}/endpoints/",
 
     fields: [
         {
