@@ -35,3 +35,6 @@ def test_uuid_unique(model):
 
 def test_name_unique(model):
     assert helper.get_name_count(model.name) == 1, "Name '%s' is not unique" % model.name
+
+def test_data_format(model):
+    assert model.data, 'Connection type must have "data" field'
