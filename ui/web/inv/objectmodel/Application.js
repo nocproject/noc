@@ -27,6 +27,10 @@ Ext.define("NOC.inv.objectmodel.Application", {
   model: "NOC.inv.objectmodel.Model",
   search: true,
   treeFilter: "category",
+  formLayout: {
+    type: "vbox",
+    align: "stretch",
+  },
   filters: [
     {
       title: __("By Is Builtin"),
@@ -50,7 +54,7 @@ Ext.define("NOC.inv.objectmodel.Application", {
     },
   ],
 
-  initComponent: function () {
+  initComponent: function(){
     var me = this;
 
     // JSON Panel
@@ -138,7 +142,13 @@ Ext.define("NOC.inv.objectmodel.Application", {
           allowBlank: false,
         },
         {
-          xtype: "container",
+          xtype: "fieldset",
+          title: undefined,
+          border: false,
+          style: {
+            borderTop: "none !important", // remove top border
+            padding: 0,
+          },
           layout: {
             type: "hbox",
           },
@@ -163,7 +173,13 @@ Ext.define("NOC.inv.objectmodel.Application", {
           ],
         },
         {
-          xtype: "container",
+          xtype: "fieldset",
+          title: undefined,
+          border: false,
+          style: {
+            borderTop: "none !important", // remove top border
+            padding: 0,
+          },
           layout: {
             type: "hbox",
           },
@@ -273,13 +289,13 @@ Ext.define("NOC.inv.objectmodel.Application", {
               text: __("Facade"),
               dataIndex: "facade",
               width: 25,
-              renderer: function (v) {
-                return {
+              renderer: function(v){
+                return{
                   "f": "<i class='x-btn-icon-el-default-toolbar-small fa fa-hand-o-right' title='Front'></i>",
                   "r": "<i class='x-btn-icon-el-default-toolbar-small fa fa-hand-o-left' title='Rear'></i>",
-                  "": ""
+                  "": "",
                 }[v];
-              }
+              },
             },
             {
               text: __("Name"),
@@ -451,20 +467,20 @@ Ext.define("NOC.inv.objectmodel.Application", {
                   editor: "textfield",
                 },
               ],
-              onBeforeEdit: function (editor, context) {
-                if (["input", "output"].includes(context.column.dataIndex)) {
+              onBeforeEdit: function(editor, context){
+                if(["input", "output"].includes(context.column.dataIndex)){
                   var connectionsField = context.view
                     .up("[xtype=form]")
                     .down("[name=connections]"),
-                    data = Ext.Array.map(connectionsField.value, function (value) {
-                      return { id: value.name, text: value.name };
+                    data = Ext.Array.map(connectionsField.value, function(value){
+                      return{id: value.name, text: value.name};
                     }),
                     combo = editor.getEditor(context.record, context.column).field;
                   combo.getStore().loadData(data);
                 }
                 context.cancel = context.record.get("is_persist");
               },
-              onCellEdit: function (editor, context) {
+              onCellEdit: function(editor, context){
                 var me = this,
                   app = this.up("[appId=inv.objectmodel]"),
                   diagram = me.up("container").down("#diagram"),
@@ -477,26 +493,26 @@ Ext.define("NOC.inv.objectmodel.Application", {
                   ],
                   field = context.grid.columns[context.colIdx].field;
 
-                if (ed.rawValue) {
+                if(ed.rawValue){
                   context.record.set(context.field + "__label", ed.rawValue);
                 }
-                if (field.xtype === "labelfield") {
+                if(field.xtype === "labelfield"){
                   context.value = field.valueCollection.items;
                 }
-                if (
+                if(
                   !Ext.isEmpty(context.record.get("input")) &&
                   !Ext.isEmpty(context.record.get("output"))
-                ) {
+                ){
                   diagram.drawDiagram(data, diagramSize);
                 }
               },
-              onSelect: function (grid, record, index) {
+              onSelect: function(grid, record, index){
                 var me = this;
 
                 me.currentSelection = index;
                 me.deleteButton.setDisabled(true);
                 me.cloneButton.setDisabled(true);
-                if (!record.get("is_persist")) {
+                if(!record.get("is_persist")){
                   me.deleteButton.setDisabled(false);
                   me.cloneButton.setDisabled(false);
                 }
@@ -511,17 +527,17 @@ Ext.define("NOC.inv.objectmodel.Application", {
               border: false,
               padding: 20,
               listeners: {
-                resize: function (panel, width, height) {
+                resize: function(panel){
                   var app = panel.up("[appId=inv.objectmodel]"),
                     padding = (panel.config.padding || 0) * 2,
                     data = app.getFormData();
 
-                  if (!Ext.isEmpty(data.cross)) {
+                  if(!Ext.isEmpty(data.cross)){
                     panel.drawDiagram(data, [
                       panel.getWidth() - padding,
                       panel.getHeight() - padding,
                     ]);
-                  } else {
+                  } else{
                     panel.getSurface().destroy();
                   }
                 },
@@ -614,47 +630,44 @@ Ext.define("NOC.inv.objectmodel.Application", {
     });
     me.callParent();
   },
-  editRecord: function (record) {
+  editRecord: function(record){
     this.callParent([record]);
     this.enableRearFacade(record);
   },
   //
-  onJSON: function () {
+  onJSON: function(){
     var me = this;
     me.showItem(me.ITEM_JSON);
     me.jsonPanel.preview(me.currentRecord);
   },
   //
-  onTest: function () {
+  onTest: function(){
     var me = this;
     Ext.Ajax.request({
       url: "/inv/objectmodel/" + me.currentRecord.get("id") + "/compatible/",
       method: "GET",
       scope: me,
-      success: function (response) {
+      success: function(response){
         var data = Ext.decode(response.responseText);
         me.showItem(me.ITEM_TEST).preview(me.currentRecord, data);
       },
-      failure: function () {
+      failure: function(){
         NOC.error(__("Failed to get data"));
       },
     });
   },
   //
-  cleanData: function (v) {
-    var me = this,
-      i,
-      c,
-      x;
-    for (i in v.connections) {
+  cleanData: function(v){
+    var i, c, x;
+    for(i in v.connections){
       c = v.connections[i];
-      if (!Ext.isArray(c.protocols)) {
-        if (!Ext.isEmpty(c.protocols)) {
+      if(!Ext.isArray(c.protocols)){
+        if(!Ext.isEmpty(c.protocols)){
           x = c.protocols.trim();
-          if (x === "" || x === undefined || x === null) {
+          if(x === "" || x === undefined || x === null){
             c.protocols = [];
-          } else {
-            c.protocols = c.protocols.split(",").map(function (v) {
+          } else{
+            c.protocols = c.protocols.split(",").map(function(v){
               return v.trim();
             });
           }
@@ -663,19 +676,18 @@ Ext.define("NOC.inv.objectmodel.Application", {
     }
   },
   //
-  onCloneConnection: function (record) {
-    var me = this,
-      v = record.get("name"),
+  onCloneConnection: function(record){
+    var v = record.get("name"),
       m = v.match(/(.*?)(\d+)/);
-    if (m === null) {
+    if(m === null){
       return;
     }
     var n = +m[2] + 1;
     record.set("name", m[1] + n);
   },
-  enableRearFacade: function (record) {
+  enableRearFacade: function(record){
     var hasRearFacade =
-      Ext.Array.findBy(record.get("connections"), function (e) {
+      Ext.Array.findBy(record.get("connections"), function(e){
         return e.direction === "o";
       }) === null
         ? true
@@ -686,11 +698,11 @@ Ext.define("NOC.inv.objectmodel.Application", {
     );
     this.down("field[name=rear_facade]").setDisabled(!hasRearFacade);
   },
-  changeTemplateButtonState: function (field, value) {
+  changeTemplateButtonState: function(field, value){
     var btn = field.up().down("button[itemId=" + field.name + "Btn]");
     btn.setDisabled(value);
   },
-  templateCheck: function (btn) {
+  templateCheck: function(btn){
     var me = this.up("[appId=inv.objectmodel]"),
       record = me.currentRecord,
       side = btn.itemId.replace("_facadeBtn", ""),
@@ -707,20 +719,20 @@ Ext.define("NOC.inv.objectmodel.Application", {
       url: checkPath,
       method: "GET",
       scope: me,
-      success: function (response) {
+      success: function(response){
         var data = Ext.decode(response.responseText);
-        if (data.status) {
+        if(data.status){
           var a = document.createElement("a");
           a.href = downloadPath;
           a.download = "";
           document.body.appendChild(a);
           a.click();
           document.body.removeChild(a);
-        } else {
+        } else{
           NOC.error(__("Dimensions must be set to generate template"));
         }
       },
-      failure: function () {
+      failure: function(){
         NOC.error(__("Failed to get data"));
       },
     });
