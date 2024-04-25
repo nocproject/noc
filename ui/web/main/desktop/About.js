@@ -37,7 +37,7 @@ Ext.define("NOC.main.desktop.About", {
                         '  <div style="font-size: 12pt">Unregistred system</div>\n' +
                         '</tpl>\n' +
                         '<div style="">Copyright &copy; {copyright}</div>\n' +
-                        '<a href=\'http://nocproject.org/\' target=\'_\'>nocproject.org</a>\n' + '</div>',
+                        '<a href=\'http://getnoc.com/\' target=\'_\'>getnoc.com</a>\n' + '</div>',
           ).apply(me.aboutCfg),
         },
       ],
