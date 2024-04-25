@@ -109,8 +109,8 @@ class ObjectModelApplication(ExtDocApplication):
 
     def cleaned_query(self, q):
         if "is_container" in q:
-            q["data__container__container"] = True
             q["name__ne"] = "Root"
+            q["data__match"] = {"interface": "container", "attr": "container", "value": True}
             del q["is_container"]
         return super().cleaned_query(q)
 

@@ -20,7 +20,8 @@ class ReportCompareApplication(SimpleReport):
         for v in Vendor.objects.order_by("name"):
             vd = []
             for m in ObjectModel.objects.filter(
-                vendor=v.id, data__management__managed=True
+                vendor=v.id,
+                data__match={"interface": "management", "attr": "managed", "value": True},
             ).order_by("name"):
                 ru = m.get_data("rackmount", "units")
                 if ru:
