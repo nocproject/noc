@@ -70,6 +70,7 @@ class Command(BaseCommand):
         "DictField": "auto",
         "RawDictField": "auto",
         "ListField": "auto",
+        "EmbeddedDocumentListField": "auto",
         "ObjectIdField": "string",
         "UUIDField": "string",
         "BinaryField": "string",
@@ -88,6 +89,7 @@ class Command(BaseCommand):
         "DictField": "textfield",
         "RawDictField": "textfield",
         "ListField": "textfield",
+        "EmbeddedDocumentListField": "textfield",
         "ObjectIdField": "textfield",
         "UUIDField": "displayfield",
     }
