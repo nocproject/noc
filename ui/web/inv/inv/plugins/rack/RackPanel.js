@@ -53,9 +53,24 @@ Ext.define("NOC.inv.inv.plugins.rack.RackPanel", {
       enableToggle: true,
     });
 
+    me.drawPanel = Ext.create("Ext.draw.Container", {
+      scrollable: true,
+      plugins: ["spriteevents"],
+      listeners: {
+        spriteclick: function(sprite){
+          if(sprite.sprite.managed_object_id){
+            window.open(
+              "/api/card/view/managedobject/" + sprite.sprite.managed_object_id + "/",
+            );
+          }
+        },
+      },
+    });
+
     me.rackViewPanel = Ext.create("Ext.container.Container", {
       scrollable: true,
       region: "center",
+      items: me.drawPanel,
     });
 
     me.rackLoadStore = Ext.create("Ext.data.Store", {
@@ -143,25 +158,12 @@ Ext.define("NOC.inv.inv.plugins.rack.RackPanel", {
   //
   preview: function(data){
     var me = this,
-      sprites = NOC.core.Rack.getRack(me, 5, 5, data.rack, data.content, me.getSide()),
-      dc = Ext.create("Ext.draw.Container", {
-        sprites: sprites,
-        height: me.rackViewPanel.getHeight(),
-        listeners: {
-          spriteclick: function(sprite){
-            if(sprite.sprite.managed_object_id){
-              window.open(
-                "/api/card/view/managedobject/" + sprite.sprite.managed_object_id + "/",
-              );
-            }
-          },
-        },
-        plugins: ["spriteevents"],
-      });
-
+      {sprites, height} = NOC.core.Rack.getRack(me, 5, 5, data.rack, data.content, me.getSide());
+    me.drawPanel.getSurface().removeAll();
+    me.drawPanel.getSurface().add(sprites);
+    me.drawPanel.renderFrame();
+    me.drawPanel.setHeight(height);
     me.currentId = data.id;
-    me.rackViewPanel.removeAll();
-    me.rackViewPanel.add(dc);
     me.rackLoadStore.loadData(data.load);
   },
   //
