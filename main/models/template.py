@@ -62,7 +62,11 @@ class Template(NOCModel):
         verbose_name_plural = "Templates"
         ordering = ["name"]
 
-    meta = {"collection": "templates", "json_collection": "main.templates"}
+    meta = {
+        "collection": "templates",
+        "json_collection": "main.templates",
+        "json_unique_fields": ["name"],
+    }
 
     name = models.CharField("Name", unique=True, max_length=128)
     subject = models.TextField("Subject", validators=[template_validator])

@@ -39,6 +39,7 @@ from noc.config import config
 from noc.core.mongo.connection import get_db
 from noc.core.comp import smart_bytes
 from noc.models import is_document
+from django.db.utils import IntegrityError
 
 state_lock = threading.Lock()
 
@@ -221,6 +222,7 @@ class Collection(object):
                     )
         return items
 
+    @property
     def iter_fields(self):
         if is_document(self.model):
             return self.model._fields
@@ -243,13 +245,13 @@ class Collection(object):
             if "__" in k:
                 # Lookup
                 k, f = k.split("__")
-                if k not in self.iter_fields():
+                if k not in self.iter_fields:
                     raise ValueError("Invalid lookup field: %s" % k)
-                ref = self.iter_fields()[k].document_type
+                ref = self.iter_fields[k].document_type
                 v = self.lookup(ref, f, v)
             # Get field
             try:
-                field = self.iter_fields()[k]
+                field = self.iter_fields[k]
             except KeyError:
                 continue  # Ignore unknown fields
             # Dereference ListFields
@@ -339,6 +341,32 @@ class Collection(object):
                         )
                         o.uuid = data["uuid"]
                         o.save(clean=bool(o.uuid))
+                        # Try again
+                        return self.update_item(data)
+                    self.stdout.write("Not find object by query: %s\n" % qs)
+                raise
+            # Try to find conflicting item to PostrgreSQL
+            except IntegrityError:
+                if not self.model.meta.get("json_unique_fields"):
+                    self.stdout.write("Not json_unique_fields on object\n")
+                    raise
+                for k in self.model.meta["json_unique_fields"]:
+                    if not isinstance(k, tuple):
+                        k = (k,)
+                    qs = {}
+                    for fk in k:
+                        if isinstance(d[fk], list):
+                            qs["%s__in" % fk] = d[fk]
+                        else:
+                            qs[fk] = d[fk]
+                    o = self.model.objects.filter(**qs).first()
+                    if o:
+                        self.stdout.write(
+                            "[%s|%s] Changing local uuid %s (%s)\n"
+                            % (self.name, data["uuid"], o.uuid, getattr(o, self.name_field))
+                        )
+                        o.uuid = data["uuid"]
+                        o.save()
                         # Try again
                         return self.update_item(data)
                     self.stdout.write("Not find object by query: %s\n" % qs)
