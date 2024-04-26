@@ -38,6 +38,7 @@ from noc.core.fileutils import safe_rewrite
 from noc.config import config
 from noc.core.mongo.connection import get_db
 from noc.core.comp import smart_bytes
+from noc.models import is_document
 
 state_lock = threading.Lock()
 
@@ -75,7 +76,10 @@ class Collection(object):
 
         for c in COLLECTIONS:
             cm = get_model(c)
-            cn = cm._meta["json_collection"]
+            if is_document(cm):
+                cn = cm._meta["json_collection"]
+            else:
+                cn = cm.meta.get("json_collection")
             cls._MODELS[cn] = cm
             yield Collection(cn)
 
@@ -93,12 +97,9 @@ class Collection(object):
             if hasattr(self.model, "name"):
                 self._name_field = "name"
                 return "name"
-            elif hasattr(self.model, "json_name"):
-                self._name_field = "json_name"
-                return "json_name"
             else:
                 for spec in self.model._meta["index_specs"]:
-                    if spec.get("unique") and len(spec["fields"]) == 1:
+                    if spec["unique"] and len(spec["fields"]) == 1:
                         nf = spec["fields"][0][0]
                         self._name_field = nf
                         return nf
@@ -191,7 +192,10 @@ class Collection(object):
 
         # Get current API version and select proper hashing function
         # And build proper hashing function
-        api_version = self.model._meta.get("json_api_version", self.DEFAULT_API_VERSION)
+        if is_document(self.model):
+            api_version = self.model._meta.get("json_api_version", self.DEFAULT_API_VERSION)
+        else:
+            api_version = self.DEFAULT_API_VERSION
         if api_version == self.DEFAULT_API_VERSION:
             item_hash = item_hash_default
         else:
@@ -217,6 +221,14 @@ class Collection(object):
                     )
         return items
 
+    def iter_fields(self):
+        if is_document(self.model):
+            return self.model._fields
+        else:
+            ls_field = self.model._meta.local_fields
+            dc_field = {field.name: field.__class__ for field in ls_field}
+            return dc_field
+
     def dereference(self, d, model=None):
         r = {}
         model = model or self.model
@@ -231,13 +243,13 @@ class Collection(object):
             if "__" in k:
                 # Lookup
                 k, f = k.split("__")
-                if k not in model._fields:
+                if k not in self.iter_fields():
                     raise ValueError("Invalid lookup field: %s" % k)
-                ref = model._fields[k].document_type
+                ref = self.iter_fields()[k].document_type
                 v = self.lookup(ref, f, v)
             # Get field
             try:
-                field = model._fields[k]
+                field = self.iter_fields()[k]
             except KeyError:
                 continue  # Ignore unknown fields
             # Dereference ListFields
@@ -353,8 +365,8 @@ class Collection(object):
         new_uuids = set(cdata)
         changed = self.get_changed_status()
         #
-        self.fix_uuids()
-        # New items
+        if is_document(self.model):
+            self.fix_uuids()
         for u in new_uuids - current_uuids:
             self.update_item(cdata[u].data)
             changed = True

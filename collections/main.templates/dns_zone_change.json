@@ -1,0 +1,7 @@
+{
+    "uuid": "f2ae3304-e463-4b63-9ff2-383c0b2e5b62",
+    "$collection": "main.templates",
+    "name": "dns.zone.change",
+    "subject": "NOC: {{ name }} zone has been changed",
+    "body": "Zone has been changed: {{ name }}\n=============[Diff]=============\n{{ diff }}\n==========[End of Diff]==========\n"
+}
