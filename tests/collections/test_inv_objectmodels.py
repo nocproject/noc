@@ -73,7 +73,7 @@ def check_protocols(c, protocols):
 
 
 def test_data_format(model):
-    if not model.data is None:
+    if model.data is not None:
         assert isinstance(model.data, list), 'Connection type field "data" must have type "list"'
 
 
