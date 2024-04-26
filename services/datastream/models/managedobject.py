@@ -137,7 +137,7 @@ class VendorItem(BaseModel):
 class ModelItem(BaseModel):
     id: str
     name: str
-    description: str
+    description: Optional[str]
     vendor: VendorItem
     labels: Optional[List[str]]
     tags: Optional[List[str]]
