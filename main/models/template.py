@@ -62,7 +62,7 @@ class Template(NOCModel):
         verbose_name_plural = "Templates"
         ordering = ["name"]
 
-    __meta = {
+    meta = {
         "collection": "templates",
         "json_collection": "main.templates",
         "json_unique_fields": ["name"],
