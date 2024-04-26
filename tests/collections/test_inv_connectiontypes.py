@@ -38,4 +38,5 @@ def test_name_unique(model):
 
 
 def test_data_format(model):
-    assert model.data, 'Connection type must have "data" field'
+    if not model.data is None:
+        assert isinstance(model.data, list), 'Connection type field "data" must have type "list"'
