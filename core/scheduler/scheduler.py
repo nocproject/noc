@@ -128,10 +128,13 @@ class Scheduler(object):
 
         scheduler.run()
         """
+        reset_statuses = []
         if self.to_reset_running:
-            self.reset_running()
+            reset_statuses.append(Job.S_RUN)
         if self.ignore_import_errors:
-            self.reset_postponed()
+            reset_statuses.append(Job.S_POSTPONED)
+        if reset_statuses:
+            self.reset_to_waiting(reset_statuses)
         self.ensure_indexes()
         self.logger.info("Running scheduler")
         asyncio.create_task(self.scheduler_loop())
@@ -155,13 +158,14 @@ class Scheduler(object):
             self.executor = ThreadPoolExecutor(self.max_threads, name=self.name)
         return self.executor
 
-    def reset_running(self):
+    def reset_to_waiting(self, statuses: List[str]) -> None:
         """
         Reset all running jobs to waiting status
         """
-        self.logger.debug("Reset running jobs")
+        self.logger.debug("Reset jobs")
         r = self.get_collection().update_many(
-            self.get_query({Job.ATTR_STATUS: Job.S_RUN}), {"$set": {Job.ATTR_STATUS: Job.S_WAIT}}
+            self.get_query({Job.ATTR_STATUS: {"$in": statuses}}),
+            {"$set": {Job.ATTR_STATUS: Job.S_WAIT}},
         )
         if r.acknowledged:
             if r.modified_count:
@@ -169,25 +173,7 @@ class Scheduler(object):
             else:
                 self.logger.info("Nothing to reset")
         else:
-            self.logger.info("Failed to reset running jobs")
-
-    def reset_postponed(self):
-        """
-        Reset all postponed jobs to valid timestamps
-        and waiting status.
-        """
-        self.logger.debug("Revive postponed jobs")
-        r = self.get_collection().update_many(
-            self.get_query({Job.ATTR_TS: Job.POSTPONED_TS}),
-            {"$set": {Job.ATTR_TS: datetime.datetime.now()}},
-        )
-        if r.acknowledged:
-            if r.modified_count:
-                self.logger.info("Revived: %d", r.modified_count)
-            else:
-                self.logger.info("Nothing to revive")
-        else:
-            self.logger.info("Failed to revive postponed jobs")
+            self.logger.info("Failed to reset jobs")
 
     def suspend_keys(self, keys: List[int], suspend: bool = True):
         self.logger.debug("Suspend jobs")
@@ -431,11 +417,7 @@ class Scheduler(object):
         """
         self.logger.info("Postpoing job until restart: %s", jid)
         with self.bulk_lock:
-            self.bulk.append(
-                UpdateOne(
-                    {Job.ATTR_ID: jid}, {Job.ATTR_STATUS: Job.S_WAIT, Job.ATTR_TS: Job.POSTPONED_TS}
-                )
-            )
+            self.bulk.append(UpdateOne({Job.ATTR_ID: jid}, {Job.ATTR_STATUS: Job.S_POSTPONED}))
 
     def submit(
         self,

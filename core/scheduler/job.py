@@ -69,6 +69,7 @@ class Job(object):
     S_STOP = "S"  # Stopped by operator
     S_DISABLED = "D"  # Disabled by system
     S_SUSPEND = "s"  # Suspended by system
+    S_POSTPONED = "P"  # Postponed until next restart
 
     # Exit statuses
     E_SUCCESS = "S"  # Completed successfully
@@ -86,9 +87,6 @@ class Job(object):
         E_DEREFERENCE: "DEREFERENCE",
         E_RETRY: "RETRY",
     }
-
-    # Datetime for postponed/broken jobs
-    POSTPONED_TS = datetime.datetime(year=2030, month=1, day=1)
 
     # List of contexts should be initialized
     default_contexts = None
