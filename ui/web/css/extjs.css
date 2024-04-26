@@ -266,14 +266,13 @@ table {
  * Welcome page style
  */
 .noc-welcome-title {
-    font-size: 18px;
+    font-size: 24px;
     font-weight: bold;
     padding: 4px 4px 4px 8px;
 }
 
 .noc-welcome-body {
     padding: 4px 4px 4px 8px;
-    font-size: 14px;
 }
 
 .noc-welcome-body a:visited,
