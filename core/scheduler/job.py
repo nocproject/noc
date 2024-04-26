@@ -87,6 +87,9 @@ class Job(object):
         E_RETRY: "RETRY",
     }
 
+    # Datetime for postponed/broken jobs
+    POSTPONED_TS = datetime.datetime(year=2030, month=1, day=1)
+
     # List of contexts should be initialized
     default_contexts = None
 
