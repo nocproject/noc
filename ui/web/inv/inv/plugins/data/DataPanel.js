@@ -38,6 +38,7 @@ Ext.define("NOC.inv.inv.plugins.data.DataPanel", {
             {
               text: __("Name"),
               dataIndex: "name",
+              renderer: me.nameRenderer,
             },
             {
               text: __("Description"),
@@ -85,12 +86,6 @@ Ext.define("NOC.inv.inv.plugins.data.DataPanel", {
   preview: function(data){
     var me = this;
     me.currentId = data.id;
-    Ext.each(data.data, function(item){
-      if(item.name === "ID"){
-        item.value = NOC.clipboard(item.value);
-        return;
-      }
-    });
     me.store.loadData(data.data);
   },
   //
@@ -159,6 +154,13 @@ Ext.define("NOC.inv.inv.plugins.data.DataPanel", {
     }
     if(record.get("type") === "bool"){
       return NOC.render.Bool(value);
+    }
+    return value;
+  },
+  //
+  nameRenderer: function(value, meta, record){
+    if(value === "ID"){
+      return value + NOC.clipboardIcon(record.get("value"));
     }
     return value;
   },
