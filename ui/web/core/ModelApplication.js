@@ -692,6 +692,9 @@ Ext.define("NOC.core.ModelApplication", {
           },
           items: me.applyPermissions(formToolbar),
         },
+        listeners: {
+          dirtychange: me.onDirtyChange,
+        },
       },
       getDefaultFocus: function(){
         return focusField;
@@ -923,7 +926,9 @@ Ext.define("NOC.core.ModelApplication", {
     // Show edit form
     me.showForm();
     // Load records
+    console.log(me.form.isDirty(), me.form.getValues());
     me.form.reset();
+    console.log(me.form.isDirty(), me.form.getValues());
     me.form.setValues(r);
     me.loadInlines();
     // Activate delete button
@@ -1187,8 +1192,7 @@ Ext.define("NOC.core.ModelApplication", {
       if(status.status === 400){
         m = status.traceback;
       }
-      text = Ext.String.format("Failed to {0}!<br>{1}",
-                               action, m);
+      text = Ext.String.format("Failed to {0}!<br>{1}", action, m);
     }
     NOC.error(text);
   },
@@ -1196,8 +1200,21 @@ Ext.define("NOC.core.ModelApplication", {
   onClose: function(){
     var me = this,
       toReload = me.idField in me.currentQuery;
+    if(me.form.isDirty()){
+      Ext.Msg.confirm(__("Confirm"), __("You have unsaved data, do you really want to close the form?"), function(buttonId){
+        if(buttonId === "yes"){
+          me.closeForm(toReload);
+        }
+      });
+    } else{
+      me.closeForm(toReload);
+    }
+  },
+  //
+  closeForm: function(toReload){
+    var me = this;
     if(toReload){
-      // Remove filter set by loadById
+    // Remove filter set by loadById
       delete me.currentQuery[me.idField];
     }
     me.clearNavTabTooltip();
@@ -1207,6 +1224,8 @@ Ext.define("NOC.core.ModelApplication", {
     if(toReload){
       me.reloadStore();
     }
+    NOC.hasUnsavedData = false;
+    console.log("onClose, hasUnsavedData: ", NOC.hasUnsavedData);
   },
   // "clone" button pressed
   onClone: function(){
@@ -1368,9 +1387,7 @@ Ext.define("NOC.core.ModelApplication", {
           xtype: "form",
           items: action.form,
         }],
-        title: Ext.String.format("{0} on {1} records",
-                                 action.text,
-                                 records.length),
+        title: Ext.String.format("{0} on {1} records", action.text, records.length),
         buttons: [{
           text: __("Run"),
           glyph: NOC.glyph.play,
@@ -1690,6 +1707,7 @@ Ext.define("NOC.core.ModelApplication", {
       listeners: {
         dirtychange: function(form, dirty){
           me.saveGroupButton.setDisabled(!dirty);
+          me.onDirtyChange(form, dirty);
         },
       },
       items: [me.groupFormTitle].concat(getFormItems(me.fields)),
@@ -1711,6 +1729,11 @@ Ext.define("NOC.core.ModelApplication", {
     });
     me.groupForm = form.getForm();
     return form;
+  },
+  //
+  onDirtyChange: function(form, dirty){
+    console.log("onDirtyChange : ", this.form.isDirty(), dirty);
+    NOC.hasUnsavedData = dirty;
   },
   //
   createActionMenu: function(){
