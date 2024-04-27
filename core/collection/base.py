@@ -80,9 +80,7 @@ class Collection(object):
             if is_document(cm):
                 cn = cm._meta["json_collection"]
             else:
-                mangled_meta_name = "_%s__meta" % cm.__name__
-                meta = getattr(cm, mangled_meta_name, None)
-                cn = meta.get("json_collection", None)
+                cn = cm._json_collection["json_collection"]
             cls._MODELS[cn] = cm
             yield Collection(cn)
 
@@ -324,7 +322,7 @@ class Collection(object):
                 if is_document(self.model):
                     union_meta = self.model._meta
                 else:
-                    union_meta = self.model.__meta
+                    union_meta = self.model._json_collection
                 # Possible local alternative with different uuid
                 if not union_meta.get("json_unique_fields"):
                     self.stdout.write("Not json_unique_fields on object\n")
@@ -349,7 +347,7 @@ class Collection(object):
                         if is_document(self.model):
                             o.save(clean=bool(o.uuid))
                         else:
-                            o.save(clean=bool(o.uuid))
+                            o.save()
                         # Try again
                         return self.update_item(data)
                     self.stdout.write("Not find object by query: %s\n" % qs)

@@ -123,7 +123,7 @@ class Command(BaseCommand):
             if is_document(cm):
                 cn = cm._meta["json_collection"]
             else:
-                cn = cm.__meta.get("json_collection")
+                cn = cm._json_collection.get("json_collection")
             MODELS[cn] = cm
         if list_collection is not None:
             if list_collection is True:
