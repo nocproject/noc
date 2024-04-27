@@ -175,7 +175,7 @@ class SyslogCollectorService(FastAPIService):
                 stream=MX_STREAM,
                 partition=int(cfg.id) % n_partitions,
                 headers={
-                    MX_MESSAGE_TYPE: MessageType.SYSLOG.value,
+                    MX_MESSAGE_TYPE: MessageType.SYSLOG.value.encode(),
                     MX_LABELS: MX_H_VALUE_SPLITTER.join(cfg.effective_labels).encode(
                         DEFAULT_ENCODING
                     ),

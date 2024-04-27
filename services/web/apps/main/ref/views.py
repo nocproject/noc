@@ -193,7 +193,7 @@ class RefAppplication(ExtApplication):
 
     def build_messagetype(self):
         return [
-            {"id": x.value.decode(), "label": x.name}
+            {"id": x.value, "label": x.name}
             for x in sorted([m for m in MessageType], key=lambda x: x.name)
         ]
 
