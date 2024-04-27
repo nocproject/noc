@@ -1,0 +1,7 @@
+{
+    "uuid": "ac712d9b-df24-4d21-9cf1-d8528330c630",
+    "$collection": "main.templates",
+    "name": "sa.mnaged_object.config_change",
+    "subject": "{% if is_new %}New config for {{ managed_object.name }}{% else %}{{ managed_object.name }} config has been changed{% endif %}",
+    "body": "{% if is_new %}\n{{config|safe}}\n{% else %}\n{{diff|safe}}\n{% endif %}\n"
+}

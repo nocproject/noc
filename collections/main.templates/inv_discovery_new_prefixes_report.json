@@ -1,0 +1,7 @@
+{
+    "uuid": "010593a4-2403-4386-9aed-9c7114480074",
+    "$collection": "main.templates",
+    "name": "inv.discovery.new_prefixes_report",
+    "subject": "{{ count }} new prefixes discovered",
+    "body": "{{ count }} new prefixes discovered\n\n{% for p in prefixes %}{{p.vrf.name}}: {{p.prefix}}{% if p.description %}\n ({{p.description}}){% endif %} at {{p.object.name}}:{{p.interface}}\n{% endfor %}\n"
+}

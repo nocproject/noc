@@ -1,0 +1,7 @@
+{
+    "uuid": "30c31c2f-0b94-4cf8-b404-c13179c0756b",
+    "$collection": "main.templates",
+    "name": "inv.discovery.address_collision_report",
+    "subject": "{{ count }} address collisions found",
+    "body": "{{ count }} address collisions found\n\n{% for c in collisions %}{{ c.address }}: {{ c.vrf_old.name }}{% if c.object_old %} at {{ c.object_old.name }}\n {% endif %} vs {{ c.vrf_new.name }} at {{ c.object_new.name }}:{{ c.interface_new }}\n{% endfor %}\n"
+}

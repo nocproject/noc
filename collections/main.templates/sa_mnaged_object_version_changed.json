@@ -1,0 +1,7 @@
+{
+    "uuid": "51e7dfa6-09ee-4f8d-8f4f-01a3bf6e7ce5",
+    "$collection": "main.templates",
+    "name": "sa.mnaged_object.version_changed",
+    "subject": "{% if is_new %}New version for {{ managed_object.name }} ({{ managed_object.address }}) {% else %}{{ managed_object.name }} ({{ managed_object.address }}) version has been changed: {{prev}} -> {{current}}{% endif %}",
+    "body": ""
+}
