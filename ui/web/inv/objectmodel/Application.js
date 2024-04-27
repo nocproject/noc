@@ -335,6 +335,13 @@ Ext.define("NOC.inv.objectmodel.Application", {
                 ],
               },
               width: 50,
+              renderer: function(v){
+                return{
+                  i: "<i class='fa fa-arrow-down' title='" + __("Inner") + "'></i>",
+                  o: "<i class='fa fa-arrow-up' title='" + __("Outer") + "'></i>",
+                  s: "<i class='fa fa-arrows-h' title='" + __("Connection") + "'></i>",
+                }[v];
+              },
             },
             {
               text: __("Gender"),
@@ -349,6 +356,14 @@ Ext.define("NOC.inv.objectmodel.Application", {
                 ],
               },
               width: 50,
+              renderer: function(v){
+                return{
+                  m: "<i class='fa fa-mars' title='" + __("Male") + "'></i>",
+                  f: "<i class='fa fa-venus' title='" + __("Female") + "'></i>",
+                  s: "<i class='fa fa-genderless' title='" + __("Genderless") + "'></i>",
+                }[v];
+              },
+
             },
             {
               text: __("Composite"),
