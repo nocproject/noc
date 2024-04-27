@@ -338,8 +338,8 @@ Ext.define("NOC.inv.objectmodel.Application", {
               renderer: function(v){
                 return{
                   i: "<i class='fa fa-arrow-down' title='" + __("Inner") + "'></i>",
-                  o: "<i class='fa fa-arrow-down' title='" + __("Outer") + "'></i>",
-                  s: "<i class='fa fa-arrow-down' title='" + __("Connection") + "'></i>",
+                  o: "<i class='fa fa-arrow-up' title='" + __("Outer") + "'></i>",
+                  s: "<i class='fa fa-arrows-h' title='" + __("Connection") + "'></i>",
                 }[v];
               },
             },
