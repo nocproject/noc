@@ -27,10 +27,6 @@ Ext.define("NOC.inv.objectmodel.Application", {
   model: "NOC.inv.objectmodel.Model",
   search: true,
   treeFilter: "category",
-  formLayout: {
-    type: "vbox",
-    align: "stretch",
-  },
   filters: [
     {
       title: __("By Is Builtin"),
