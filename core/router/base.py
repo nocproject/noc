@@ -51,9 +51,7 @@ class Router(object):
         for num, route in enumerate(
             MessageRoute.objects.filter(is_active=True).order_by("order"), start=1
         ):
-            self.chains[route.type.encode(encoding=DEFAULT_ENCODING)] += [
-                Route.from_data(route.get_route_config())
-            ]
+            self.chains[route.type] += [Route.from_data(route.get_route_config())]
         logger.info("Loading %s route", num)
 
     def has_route(self, route_id: str) -> bool:

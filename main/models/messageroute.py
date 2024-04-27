@@ -131,6 +131,8 @@ class MessageRoute(Document):
             raise ValidationError(
                 {"notification_group": "For 'notification' action NotificationGroup must be set"}
             )
+        if isinstance(self.type, str):
+            self.type = self.type.encode()
         super().clean()
 
     def get_route_config(self):

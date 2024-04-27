@@ -192,7 +192,10 @@ class RefAppplication(ExtApplication):
         return [{"id": x.value, "label": x.name} for x in ShapeOverlayForm]
 
     def build_messagetype(self):
-        return [{"id": x, "label": x} for x in sorted([m.name for m in MessageType])]
+        return [
+            {"id": x.value.decode(), "label": x.name}
+            for x in sorted([m for m in MessageType], key=lambda x: x.name)
+        ]
 
     def build_messageheader(self):
         return [{"id": x, "label": x} for x in sorted(MESSAGE_HEADERS)]

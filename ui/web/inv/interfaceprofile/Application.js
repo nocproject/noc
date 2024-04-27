@@ -13,6 +13,7 @@ Ext.define("NOC.inv.interfaceprofile.Application", {
         "NOC.core.ListFormField",
         "NOC.inv.interfaceprofile.Model",
         "NOC.main.style.LookupField",
+        "NOC.main.notificationgroup.LookupField",
         "Ext.ux.form.MultiIntervalField",
         "NOC.pm.metrictype.LookupField",
         "NOC.main.remotesystem.LookupField",
@@ -254,9 +255,16 @@ Ext.define("NOC.inv.interfaceprofile.Application", {
                                 defaultValue: "d",
                                 store: [
                                     ["d", __("Disabled")],
-                                    ["e", __("Enable")],
+                                    ["e", __("Enable Message")],
                                 ],
                                 uiStyle: "medium"
+                            },
+                            {
+                                name: "default_notification_group",
+                                xtype: "main.notificationgroup.LookupField",
+                                fieldLabel: __("Status Change Notification"),
+                                labelWidth: 200,
+                                allowBlank: true
                             },
                             {
                                 xtype: "checkbox",

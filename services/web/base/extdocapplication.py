@@ -21,6 +21,7 @@ from mongoengine.fields import (
     BinaryField,
     DynamicField,
     GeoPointField,
+    EnumField,
     EmbeddedDocumentListField,
 )
 from mongoengine.errors import ValidationError, NotUniqueError
@@ -332,6 +333,9 @@ class ExtDocApplication(ExtApplication):
                     v = str(v)
                 elif isinstance(f, GeoPointField):
                     pass
+                elif isinstance(f, EnumField):
+                    r["%s__label" % f.name] = v.name
+                    v = v.value
                 elif isinstance(f, ForeignKeyListField):
                     v = [{"label": str(vv.name), "id": vv.id} for vv in v]
                 elif isinstance(f, ForeignKeyField):

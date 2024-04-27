@@ -54,7 +54,7 @@ USER_NOTIFICATION_METHOD_CHOICES = NOTIFICATION_METHOD_CHOICES
         ("fm.AlarmTrigger", "notification_group"),
         ("fm.EventTrigger", "notification_group"),
         ("fm.AlarmRule", "actions.notification_group"),
-        ("inv.InterfaceProfile", "status_change_notification"),
+        ("inv.InterfaceProfile", "default_notification_group"),
         ("main.ReportSubscription", "notification_group"),
         ("main.NotificationGroupOther", "notification_group"),
         ("main.NotificationGroupUser", "notification_group"),

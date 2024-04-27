@@ -15,6 +15,7 @@ Ext.define("NOC.main.messageroute.Application", {
         "NOC.main.ref.messageheader.LookupField",
         "NOC.main.notificationgroup.LookupField",
         "NOC.sa.administrativedomain.LookupField",
+        "NOC.core.tagfield.Tagfield",
         "NOC.core.label.LabelField",
         "NOC.main.template.LookupField",
         "NOC.main.handler.LookupField"
@@ -233,6 +234,16 @@ Ext.define("NOC.main.messageroute.Application", {
                             uiStyle: "extra",
                             query: {
                                 "allow_matched": true
+                            }
+                        },
+                        {
+                            xtype: "core.tagfield",
+                            url: "/inv/resourcegroup/lookup/",
+                            fieldLabel: __("Object Groups"),
+                            tooltip: __("Resource Groups for object"),
+                            name: "resource_groups",
+                            listeners: {
+                                render: me.addTooltip
                             }
                         },
                         {
