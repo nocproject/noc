@@ -34,6 +34,7 @@ from pymongo import UpdateOne
 import cachetools
 
 # NOC modules
+from noc.core.model.base import NOCModel
 from noc.core.fileutils import safe_rewrite
 from noc.config import config
 from noc.core.mongo.connection import get_db
@@ -225,14 +226,14 @@ class Collection(object):
                     )
         return items
 
-    @property
-    def iter_fields(self):
-        if is_document(self.model):
-            return self.model._fields
-        else:
-            ls_field = self.model._meta.local_fields
-            dc_field = {field.name: field.__class__ for field in ls_field}
-            return dc_field
+    def get_fields(self, model: None):
+        model = model or self.model
+        if not issubclass(model, NOCModel):
+            # Check Django Model
+            return model._fields
+        ls_field = model._meta.local_fields
+        dc_field = {field.name: field.__class__ for field in ls_field}
+        return dc_field
 
     def dereference(self, d, model=None):
         r = {}
@@ -248,13 +249,13 @@ class Collection(object):
             if "__" in k:
                 # Lookup
                 k, f = k.split("__")
-                if k not in self.iter_fields:
+                if k not in self.get_fields(model):
                     raise ValueError("Invalid lookup field: %s" % k)
-                ref = self.iter_fields[k].document_type
+                ref = self.get_fields(model)[k].document_type
                 v = self.lookup(ref, f, v)
             # Get field
             try:
-                field = self.iter_fields[k]
+                field = self.get_fields(model)[k]
             except KeyError:
                 continue  # Ignore unknown fields
             # Dereference ListFields
