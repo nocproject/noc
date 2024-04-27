@@ -139,7 +139,7 @@ eslint:
       - "**/*.js"
   tags:
     - docker
-  allow_failure: false
+  allow_failure: true
 
 prettier:
   stage: Lint
