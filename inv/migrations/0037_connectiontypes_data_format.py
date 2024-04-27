@@ -19,7 +19,7 @@ class Migration(BaseMigration):
         coll = self.mongo_db["noc.connectiontypes"]
         bulk = []
 
-        for doc in coll.find({}, no_cursor_timeout=True):
+        for doc in coll.find({}):
             data = doc.get("data")
             if isinstance(data, dict):
                 new_data = []
