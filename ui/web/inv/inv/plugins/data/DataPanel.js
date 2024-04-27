@@ -149,7 +149,7 @@ Ext.define("NOC.inv.inv.plugins.data.DataPanel", {
   //
   onValueRender: function(value, meta, record){
     if(record.get("is_const")){
-      value = "<i class='fas fa fa-lock' style='padding-right: 4px;' title=" + __("Read only") + "></i>" + value;
+      value = "<i class='fas fa fa-lock' style='padding-right: 4px;' title='" + __("Read only") + "'></i>" + value;
     }
     if(record.get("type") === "bool"){
       return NOC.render.Bool(value);
