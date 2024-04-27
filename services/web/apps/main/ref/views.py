@@ -25,7 +25,7 @@ from noc.core.checkers.loader import loader as checker_loader
 from noc.core.window import wf_choices
 from noc.core.topology.types import ShapeOverlayPosition, ShapeOverlayForm
 from noc.core.topology.loader import loader as topo_loader
-from noc.core.mx import MESSAGE_TYPES, MESSAGE_HEADERS
+from noc.core.mx import MessageType, MESSAGE_HEADERS
 from noc.core.datasources.loader import loader as ds_loader
 from noc.core.protodcsources.loader import loader as pds_loader
 from noc.main.reportsources.loader import loader as rds_loader
@@ -192,7 +192,7 @@ class RefAppplication(ExtApplication):
         return [{"id": x.value, "label": x.name} for x in ShapeOverlayForm]
 
     def build_messagetype(self):
-        return [{"id": x, "label": x} for x in sorted(MESSAGE_TYPES)]
+        return [{"id": x, "label": x} for x in sorted([m.name for m in MessageType])]
 
     def build_messageheader(self):
         return [{"id": x, "label": x} for x in sorted(MESSAGE_HEADERS)]

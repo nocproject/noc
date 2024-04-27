@@ -1,7 +1,7 @@
 # ----------------------------------------------------------------------
 # MessageRoute
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2022 The NOC Project
+# Copyright (C) 2007-2024 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -21,6 +21,7 @@ from mongoengine.fields import (
     ListField,
     EmbeddedDocumentField,
     EmbeddedDocumentListField,
+    EnumField,
 )
 from mongoengine.errors import ValidationError
 
@@ -92,7 +93,7 @@ class MessageRoute(Document):
     description = StringField()
     order = IntField(default=0)
     # Message-Type header value
-    type = StringField(choices=list(sorted(MessageType)))
+    type = EnumField(MessageType, required=True)
     # Match message headers
     match: List[MRMatch] = ListField(EmbeddedDocumentField(MRMatch))
     #

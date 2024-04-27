@@ -25,3 +25,4 @@ class Migration(BaseMigration):
             "context_data",
             models.TextField("ContextTestData", blank=True, null=True),
         )
+        self.db.execute("ALTER TABLE main_template ALTER COLUMN body DROP NOT NULL")

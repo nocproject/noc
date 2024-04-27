@@ -7,6 +7,7 @@
 
 # Python modules
 import datetime
+import os
 from collections import defaultdict
 from functools import reduce
 
@@ -48,6 +49,7 @@ from noc.aaa.models.modelprotectionprofile import ModelProtectionProfile
 from noc.main.models.label import Label
 from noc.core.middleware.tls import get_user
 from noc.core.comp import smart_text
+from noc.core.collection.base import Collection
 from noc.models import get_model_id
 from noc.core.model.util import is_related_field
 from noc.inv.models.resourcegroup import ResourceGroup
@@ -80,6 +82,7 @@ class ExtModelApplication(ExtApplication):
         self.db_table = self.model._meta.db_table
         self.pk_field_name = self.model._meta.pk.name
         self.pk = self.pk_field_name
+        self.has_uuid = False
         # Prepare field converters
         self.clean_fields = self.clean_fields.copy()  # name -> Parameter
         self.fk_fields = {}
@@ -94,6 +97,8 @@ class ExtModelApplication(ExtApplication):
                 self.clean_fields[f.name] = vf
             if f.default is not None and not f.blank:
                 self.field_defaults[f.name] = f.default
+            if f.name == "uuid":
+                self.has_uuid = True
         # m2m fields
         self.m2m_fields = {}  # Name -> Model
         if self.custom_m2m_fields:
@@ -120,6 +125,35 @@ class ExtModelApplication(ExtApplication):
             for f in self.get_custom_fields()
             if f.is_searchable
         ]
+        # Install JSON API call when necessary
+        if hasattr(self.model, "_json_collection"):
+            self.json_collection = self.model._json_collection["json_collection"]
+        else:
+            self.json_collection = None
+        if (
+            self.has_uuid
+            and hasattr(self.model, "to_json")
+            and not hasattr(self, "api_to_json")
+            and not hasattr(self, "api_json")
+        ):
+            self.add_view(
+                "api_json",
+                self._api_to_json,
+                url=r"^(?P<id>\d+)/json/$",
+                method=["GET"],
+                access="read",
+                api=True,
+            )
+            self.add_view(
+                "api_share_info",
+                self._api_share_info,
+                url=r"^(?P<id>\d+)/share_info/$",
+                method=["GET"],
+                access="read",
+                api=True,
+            )
+        if self.json_collection:
+            self.bulk_fields += [self._bulk_field_is_builtin]
 
     def get_permissions(self):
         p = super().get_permissions()
@@ -757,6 +791,41 @@ class ExtModelApplication(ExtApplication):
                 {"success": False, "message": "ERROR: %s" % e}, status=self.CONFLICT
             )
         return HttpResponse(status=self.DELETED)
+
+    def _api_to_json(self, request, id):
+        """
+        Expose JSON collection item when available
+        """
+        o = self.get_object_or_404(self.model, id=id)
+        return o.to_json()
+
+    def _api_share_info(self, request, id):
+        """
+        Additional information for JSON sharing process
+        :param request:
+        :param id:
+        :return:
+        """
+        o = self.get_object_or_404(self.model, id=id)
+        coll_name = self.model._json_collection["json_collection"]
+        return {
+            "path": os.path.join("collections", coll_name, o.get_json_path()),
+            "title": "%s: %s" % (coll_name, str(o)),
+            "content": o.to_json(),
+            "description": "",
+        }
+
+    def _bulk_field_is_builtin(self, data):
+        """
+        Apply is_builtin field
+        :param data:
+        :return:
+        """
+        builtins = Collection.get_builtins(self.json_collection)
+        for x in data:
+            u = x.get("uuid")
+            x["is_builtin"] = u and u in builtins
+        return data
 
     @view(url=r"^actions/group_edit/$", method=["POST"], access="update", api=True)
     def api_action_group_edit(self, request):

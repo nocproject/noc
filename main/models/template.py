@@ -71,11 +71,11 @@ class Template(NOCModel):
 
     name = models.CharField("Name", unique=True, max_length=128)
     subject = models.TextField("Subject", validators=[template_validator])
-    body = models.TextField("Body", validators=[template_validator])
+    body = models.TextField("Body", validators=[template_validator], null=True, blank=True)
     uuid = models.UUIDField()
     is_system: bool = models.BooleanField("SystemTemplate", default=False)
     message_type = models.TextField(
-        "MessageType", choices=[m.name for m in MessageType], null=True, blank=True
+        "MessageType", choices=[(m.name, m.name) for m in MessageType], null=True, blank=True
     )
     context_data: str = models.TextField("ContextTestData", blank=True, null=True)
     # ? RU
@@ -89,23 +89,24 @@ class Template(NOCModel):
     @property
     def json_data(self) -> Dict[str, Any]:
         r = {
-            "uuid": self.uuid,
-            "$collection": self.meta["json_collection"],
             "name": self.name,
+            "$collection": self._json_collection["json_collection"],
+            "uuid": self.uuid,
             "subject": self.subject,
             "body": self.body,
-            "is_system": self.is_system,
-            "message_type": self.message_type,
+            "is_system": self.is_system
         }
+        if self.message_type:
+            r["message_type"] = self.message_type
         return r
 
     def to_json(self) -> str:
         return to_json(
             self.json_data,
             order=[
-                "uuid",
-                "$collection",
                 "name",
+                "$collection",
+                "uuid",
                 "subject",
                 "body",
                 "message_type",
@@ -128,7 +129,7 @@ class Template(NOCModel):
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_message_type_cache"), lock=lambda _: id_lock)
     def get_by_message_type(cls, m_type: MessageType) -> Optional["Template"]:
-        return Template.objects.filter(is_system=True, message_type=m_type.name).first()
+        return Template.objects.filter(message_type=m_type.name).first()
 
     def render_subject(self, LANG=None, **kwargs):
         return jinja2.Template(self.subject).render(**kwargs)
