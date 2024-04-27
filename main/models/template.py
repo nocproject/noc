@@ -94,7 +94,7 @@ class Template(NOCModel):
             "uuid": self.uuid,
             "subject": self.subject,
             "body": self.body,
-            "is_system": self.is_system
+            "is_system": self.is_system,
         }
         if self.message_type:
             r["message_type"] = self.message_type
