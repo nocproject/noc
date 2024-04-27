@@ -947,6 +947,7 @@ nav:
       - Cards: card/index.md
       - ETL: etl/index.md
       - Storm Protection: storm-protection/index.md
+      - UI Guideline: ui-guideline/index.md
       - NOC Products Highlights:
           - Overview: highlights/index.md
           - Vendor-Agnostic: highlights/vendor-agnostic.md
