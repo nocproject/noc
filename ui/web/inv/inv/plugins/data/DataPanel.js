@@ -38,7 +38,6 @@ Ext.define("NOC.inv.inv.plugins.data.DataPanel", {
             {
               text: __("Name"),
               dataIndex: "name",
-              renderer: me.nameRenderer,
             },
             {
               text: __("Description"),
@@ -58,7 +57,7 @@ Ext.define("NOC.inv.inv.plugins.data.DataPanel", {
               flex: 1,
               editor: "textfield",
               getEditor: me.onGetEditor,
-              renderer: me.onCellRender,
+              renderer: me.onValueRender,
             },
           ],
           features: [{
@@ -148,12 +147,15 @@ Ext.define("NOC.inv.inv.plugins.data.DataPanel", {
     }
   },
   //
-  onCellRender: function(value, meta, record){
+  onValueRender: function(value, meta, record){
     if(record.get("is_const")){
-      meta.tdCls = "noc-const";
+      value = "<i class='fas fa fa-lock' style='padding-right: 4px;' title=" + __("Read only") + "></i>" + value;
     }
     if(record.get("type") === "bool"){
       return NOC.render.Bool(value);
+    }
+    if(record.get("name") === "ID"){
+      return value + NOC.clipboardIcon(record.get("value"));
     }
     return value;
   },
