@@ -210,7 +210,6 @@ Ext.define("NOC.inv.objectmodel.Application", {
           xtype: "inv.connectionrule.LookupField",
           fieldLabel: __("Connection Rule"),
           allowBlank: true,
-          uiStyle: "medium",
         },
         {
           name: "cr_context",
