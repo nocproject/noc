@@ -19,7 +19,6 @@ from mongoengine.fields import (
     BooleanField,
     IntField,
     ListField,
-    EmbeddedDocumentField,
     EmbeddedDocumentListField,
     EnumField,
 )
@@ -93,9 +92,9 @@ class MessageRoute(Document):
     description = StringField()
     order = IntField(default=0)
     # Message-Type header value
-    type = EnumField(MessageType, required=True)
+    type: MessageType = EnumField(MessageType, required=True)
     # Match message headers
-    match: List[MRMatch] = ListField(EmbeddedDocumentField(MRMatch))
+    match: List[MRMatch] = EmbeddedDocumentListField(MRMatch)
     #
     telemetry_sample = IntField()
     # Message transmuting handler
@@ -131,8 +130,6 @@ class MessageRoute(Document):
             raise ValidationError(
                 {"notification_group": "For 'notification' action NotificationGroup must be set"}
             )
-        if isinstance(self.type, str):
-            self.type = self.type.encode()
         super().clean()
 
     def get_route_config(self):

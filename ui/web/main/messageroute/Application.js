@@ -240,11 +240,7 @@ Ext.define("NOC.main.messageroute.Application", {
                             xtype: "core.tagfield",
                             url: "/inv/resourcegroup/lookup/",
                             fieldLabel: __("Object Groups"),
-                            tooltip: __("Resource Groups for object"),
-                            name: "resource_groups",
-                            listeners: {
-                                render: me.addTooltip
-                            }
+                            name: "resource_groups"
                         },
                         {
                             name: "administrative_domain",

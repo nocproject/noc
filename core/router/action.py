@@ -139,7 +139,7 @@ class NotificationAction(Action):
         from noc.main.models.template import Template
 
         if not self.rt:
-            mt = MessageType(message_type)
+            mt = MessageType(message_type.decode())
             template = Template.get_by_message_type(mt)
         else:
             template = Template.get_by_id(self.rt)

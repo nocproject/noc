@@ -725,9 +725,10 @@ class DataStream(object):
         }
         if additional_headers:
             headers.update(additional_headers)
-        message_type = MessageType(cls.name.encode())
         if mtype:
             message_type = MessageType.OTHER
+        else:
+            message_type = MessageType(cls.name)
         # Schedule to send
         send_message(
             data,

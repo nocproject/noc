@@ -33,6 +33,7 @@ from noc.core.mongo.fields import (
     ForeignKeyField,
     PlainReferenceField,
     ForeignKeyListField,
+    PlainReferenceListField,
 )
 from noc.sa.interfaces.base import (
     BooleanParameter,
@@ -86,6 +87,8 @@ class ExtDocApplication(ExtApplication):
                 self.clean_fields[name] = GeoPointParameter()
             elif isinstance(f, ForeignKeyListField):
                 self.clean_fields[f.name] = ListOfParameter(element=ModelParameter(f.document_type))
+            # elif isinstance(f, PlainReferenceListField):
+            #     self.clean_fields[f.name] = ListOfParameter(element=ModelParameter(f.document_type))
             elif isinstance(f, ForeignKeyField):
                 self.clean_fields[f.name] = ModelParameter(f.document_type, required=f.required)
             elif isinstance(f, EmbeddedDocumentListField):
@@ -335,9 +338,11 @@ class ExtDocApplication(ExtApplication):
                     pass
                 elif isinstance(f, EnumField):
                     r["%s__label" % f.name] = v.name
-                    v = v.value
+                    v = smart_text(v.value)
                 elif isinstance(f, ForeignKeyListField):
                     v = [{"label": str(vv.name), "id": vv.id} for vv in v]
+                elif isinstance(f, PlainReferenceListField):
+                    v = [{"label": str(vv.name), "id": str(vv.id)} for vv in v]
                 elif isinstance(f, ForeignKeyField):
                     r["%s__label" % f.name] = smart_text(v)
                     v = v.id
@@ -368,6 +373,8 @@ class ExtDocApplication(ExtApplication):
                         v = [self.instance_to_dict(vv, nocustom=True) for vv in v]
                     elif hasattr(f, "field") and isinstance(f.field, ReferenceField):
                         v = [{"label": str(vv), "id": str(vv.id)} for vv in v]
+                elif isinstance(f, PlainReferenceListField):
+                    v = [{"label": str(vv), "id": str(vv.id)} for vv in v]
                 elif isinstance(f, EmbeddedDocumentField):
                     v = self.instance_to_dict(v, nocustom=True)
                 elif isinstance(f, BinaryField):

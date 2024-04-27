@@ -1324,7 +1324,7 @@ class ManagedObject(NOCModel):
             headers[MX_NOTIFICATION_DELAY] = delay
         send_message(
             data=d,
-            message_type=MessageType(event_id.encode()),
+            message_type=MessageType(event_id),
             headers=headers,
         )
 
