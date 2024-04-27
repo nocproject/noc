@@ -402,9 +402,9 @@ class ActiveAlarm(Document):
                 tt_id=self.escalation_tt,
                 subject=subject,
                 body=body,
-                notification_group_id=self.clear_notification_group.id
-                if self.clear_notification_group
-                else None,
+                notification_group_id=(
+                    self.clear_notification_group.id if self.clear_notification_group else None
+                ),
                 close_tt=self.close_tt,
                 login="correlator",
                 queue=a.managed_object.tt_queue,
@@ -612,8 +612,12 @@ class ActiveAlarm(Document):
             path = path or []
             if alarm_id in path:
                 raise ValueError("Loop detected: %s" % (str(x) for x in path))
+            alarm = alarms.get(alarm_id)
+            if not alarm:
+                # not in alarms - Alarm in the chain already closed
+                return path
             path = path + [alarm_id]
-            root = alarms[alarm_id].get("root")
+            root = alarm.get("root")
             if not root or root not in alarms:
                 # root not in alarms - Root alarm already closed
                 return path
