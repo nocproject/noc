@@ -33,7 +33,7 @@ Ext.define("NOC.core.ModelApplication", {
 
   layout: "card",
   search: false,
-  searchPlaceholder: undefined,
+  searchPlaceholder: __("Search ..."),
   searchTooltip: undefined,
   recordReload: false,
   filters: null,
