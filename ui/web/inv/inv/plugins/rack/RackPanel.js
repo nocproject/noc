@@ -14,7 +14,7 @@ Ext.define("NOC.inv.inv.plugins.rack.RackPanel", {
   title: __("Rack"),
   layout: "border",
 
-  initComponent: function(){
+  initComponent: function () {
     var me = this;
 
     me.reloadButton = Ext.create("Ext.button.Button", {
@@ -103,23 +103,55 @@ Ext.define("NOC.inv.inv.plugins.rack.RackPanel", {
           tooltip: __("Position Front"),
           dataIndex: "position_front",
           width: 50,
-          editor: "numberfield",
+          editor: {
+            xtype: "numberfield",
+            minWidth: 75,
+            minValue: 0,
+          },
+          renderer: function (v) {
+            if (v === 0) {
+              return "-";
+            } else {
+              return v.toString();
+            }
+          },
         },
         {
           text: __("Rear"),
           tooltip: __("Position Rear"),
           dataIndex: "position_rear",
           width: 50,
-          editor: "numberfield",
+          editor: {
+            xtype: "numberfield",
+            minWidth: 75,
+            minValue: 0,
+          },
+          renderer: function (v) {
+            if (v === 0) {
+              return "-";
+            } else {
+              return v.toString();
+            }
+          },
         },
         {
           text: __("Shift"),
           dataIndex: "shift",
-          width: 50,
+          width: 70,
           editor: {
-            xtype: "numberfield",
-            minValue: 0,
-            maxValue: 2,
+            xtype: "combobox",
+            store: [
+              [0, "-"],
+              [1, "1"],
+              [2, "2"],
+            ],
+          },
+          renderer: function (v) {
+            if (v === 0) {
+              return "-";
+            } else {
+              return v.toString();
+            }
           },
         },
       ],
@@ -142,13 +174,7 @@ Ext.define("NOC.inv.inv.plugins.rack.RackPanel", {
         {
           xtype: "toolbar",
           dock: "top",
-          items: [
-            me.reloadButton,
-            "-",
-            me.segmentedButton,
-            "-",
-            me.editLoadButton,
-          ],
+          items: [me.reloadButton, "-", me.segmentedButton, "-", me.editLoadButton],
         },
       ],
     });
@@ -156,7 +182,7 @@ Ext.define("NOC.inv.inv.plugins.rack.RackPanel", {
     me.callParent();
   },
   //
-  preview: function(data){
+  preview: function (data) {
     var me = this,
       {sprites, height} = NOC.core.Rack.getRack(me, 5, 5, data.rack, data.content, me.getSide());
     me.drawPanel.getSurface().removeAll();
@@ -167,45 +193,45 @@ Ext.define("NOC.inv.inv.plugins.rack.RackPanel", {
     me.rackLoadStore.loadData(data.load);
   },
   //
-  getSide: function(){
+  getSide: function () {
     var me = this;
     return me.sideRearButton.pressed ? "r" : "f";
   },
   //
-  onReload: function(){
+  onReload: function () {
     var me = this;
     Ext.Ajax.request({
       url: "/inv/inv/" + me.currentId + "/plugin/rack/",
       method: "GET",
       scope: me,
-      success: function(response){
+      success: function (response) {
         me.preview(Ext.decode(response.responseText));
       },
-      failure: function(){
+      failure: function () {
         NOC.error(__("Failed to get data"));
       },
     });
   },
   //
-  onEdit: function(){
+  onEdit: function () {
     var me = this;
 
-    if(me.editLoadButton.pressed){
+    if (me.editLoadButton.pressed) {
       me.rackLoadPanel.show();
-    } else{
+    } else {
       me.rackLoadPanel.hide();
     }
   },
-  onCellValidateEdit: function(){
+  onCellValidateEdit: function () {
     return true;
   },
   //
-  onCellEdit: function(editor, e){
+  onCellEdit: function (editor, e) {
     var me = this;
-    if(e.field === "position_front"){
+    if (e.field === "position_front") {
       e.record.set("position_rear", 0);
     }
-    if(e.field === "position_rear"){
+    if (e.field === "position_rear") {
       e.record.set("position_front", 0);
     }
     // Submit
@@ -220,16 +246,16 @@ Ext.define("NOC.inv.inv.plugins.rack.RackPanel", {
         shift: e.record.get("shift"),
       },
       loadMask: me,
-      success: function(){
+      success: function () {
         me.onReload();
       },
-      failure: function(){
+      failure: function () {
         NOC.error(__("Failed to save"));
       },
     });
   },
   //
-  onObjectSelect: function(objectId){
+  onObjectSelect: function (objectId) {
     var me = this;
     me.app.showObject(objectId);
   },
