@@ -29,7 +29,7 @@ from noc.inv.models.discoveryid import DiscoveryID
 from noc.inv.models.object import Object
 from noc.sa.models.service import Service
 from noc.core.text import alnum_key
-from noc.core.comp import smart_text, smart_bytes
+from noc.core.comp import smart_text
 from noc.core.mx import (
     MX_ADMINISTRATIVE_DOMAIN_ID,
     MX_LABELS,

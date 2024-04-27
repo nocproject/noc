@@ -1,7 +1,7 @@
 # ---------------------------------------------------------------------
 # Template model
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2020 The NOC Project
+# Copyright (C) 2007-2024 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -94,6 +94,8 @@ class Template(NOCModel):
             "name": self.name,
             "subject": self.subject,
             "body": self.body,
+            "is_system": self.is_system,
+            "message_type": self.message_type,
         }
         return r
 
@@ -106,6 +108,7 @@ class Template(NOCModel):
                 "name",
                 "subject",
                 "body",
+                "message_type",
             ],
         )
 
