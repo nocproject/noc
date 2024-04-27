@@ -33,6 +33,10 @@
 					"editor.autoIndent": "advanced",
 					"editor.tabSize": 2,
 					"editor.detectIndentation": false
+				},
+				"[javascript]": {
+					"editor.defaultFormatter": "dbaeumer.vscode-eslint",
+					"editor.formatOnSave": true
 				}
 			},
 			// Add the IDs of extensions you want installed when the container is created.
@@ -43,7 +47,8 @@
 				"ms-azuretools.vscode-docker",
 				"be5invis.toml",
 				"redhat.vscode-yaml",
-				"charliermarsh.ruff"
+				"charliermarsh.ruff",
+				"dbaeumer.vscode-eslint"
 			]
 		}
 	},
