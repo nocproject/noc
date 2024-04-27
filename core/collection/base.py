@@ -80,7 +80,9 @@ class Collection(object):
             if is_document(cm):
                 cn = cm._meta["json_collection"]
             else:
-                cn = cm.meta.get("json_collection")
+                mangled_meta_name = "_%s__meta" % cm.__name__
+                meta = getattr(cm, mangled_meta_name, None)
+                cn = meta.get("json_collection", None)
             cls._MODELS[cn] = cm
             yield Collection(cn)
 
@@ -318,13 +320,17 @@ class Collection(object):
             try:
                 o.save()
                 return True
-            except NotUniqueError:
+            except (NotUniqueError, IntegrityError):
+                if is_document(self.model):
+                    union_meta = self.model._meta
+                else:
+                    union_meta = self.model.__meta
                 # Possible local alternative with different uuid
-                if not self.model._meta.get("json_unique_fields"):
+                if not union_meta.get("json_unique_fields"):
                     self.stdout.write("Not json_unique_fields on object\n")
                     raise
                 # Try to find conflicting item
-                for k in self.model._meta["json_unique_fields"]:
+                for k in union_meta["json_unique_fields"]:
                     if not isinstance(k, tuple):
                         k = (k,)
                     qs = {}
@@ -340,33 +346,10 @@ class Collection(object):
                             % (self.name, data["uuid"], o.uuid, getattr(o, self.name_field))
                         )
                         o.uuid = data["uuid"]
-                        o.save(clean=bool(o.uuid))
-                        # Try again
-                        return self.update_item(data)
-                    self.stdout.write("Not find object by query: %s\n" % qs)
-                raise
-            # Try to find conflicting item to PostrgreSQL
-            except IntegrityError:
-                if not self.model.meta.get("json_unique_fields"):
-                    self.stdout.write("Not json_unique_fields on object\n")
-                    raise
-                for k in self.model.meta["json_unique_fields"]:
-                    if not isinstance(k, tuple):
-                        k = (k,)
-                    qs = {}
-                    for fk in k:
-                        if isinstance(d[fk], list):
-                            qs["%s__in" % fk] = d[fk]
+                        if is_document(self.model):
+                            o.save(clean=bool(o.uuid))
                         else:
-                            qs[fk] = d[fk]
-                    o = self.model.objects.filter(**qs).first()
-                    if o:
-                        self.stdout.write(
-                            "[%s|%s] Changing local uuid %s (%s)\n"
-                            % (self.name, data["uuid"], o.uuid, getattr(o, self.name_field))
-                        )
-                        o.uuid = data["uuid"]
-                        o.save()
+                            o.save(clean=bool(o.uuid))
                         # Try again
                         return self.update_item(data)
                     self.stdout.write("Not find object by query: %s\n" % qs)
