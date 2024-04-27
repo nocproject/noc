@@ -23,6 +23,8 @@ lib64
 !/.requirements
 !/scripts/build/
 !/docs/blog/.authors.yml
+!/.eslintrc.json
+!/ui/.eslintrc.json
 ext_*
 static/test/
 pip-selfcheck.json
