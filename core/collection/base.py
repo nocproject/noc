@@ -34,7 +34,7 @@ from pymongo import UpdateOne
 import cachetools
 
 # NOC modules
-from noc.core.model.base import NOCModel
+from noc.core.model.base import NOCModelBase
 from noc.core.fileutils import safe_rewrite
 from noc.config import config
 from noc.core.mongo.connection import get_db
@@ -228,7 +228,7 @@ class Collection(object):
 
     def get_fields(self, model: None):
         model = model or self.model
-        if not issubclass(model, NOCModel):
+        if not isinstance(model, NOCModelBase):
             # Check Django Model
             return model._fields
         ls_field = model._meta.local_fields
@@ -237,7 +237,6 @@ class Collection(object):
 
     def dereference(self, d, model=None):
         r = {}
-        model = model or self.model
         for k in d:
             v = d[k]
             if k.startswith("$"):
