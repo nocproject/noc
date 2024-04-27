@@ -1,1 +1,6 @@
-../.eslintrc.json
+{
+    "root": false,
+    "extends": [
+        "../.eslintrc.json"
+    ]
+}
