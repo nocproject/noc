@@ -40,7 +40,12 @@
     "keyword-spacing": [
       "error",
       {
-        "after": false
+        "after": false,
+        "overrides": {
+          "return": {
+            "after": true
+          }
+        }
       }
     ],
     "key-spacing": [
@@ -63,7 +68,8 @@
     "space-before-blocks": [
       "error",
       "never"
-    ]
+    ],
+    "no-multi-spaces": "error"
   },
   "globals": {
     "Ext": "readonly",
