@@ -1,0 +1,7 @@
+{
+    "uuid": "0bc55062-5ff6-4bef-87b5-ea2e2bdc55ba",
+    "$collection": "main.templates",
+    "name": "sa.mnaged_object.config_policy_violation",
+    "subject": "Configration policy violation at {{managed_object.name}}",
+    "body": "{% for w in warnings %}\n{{forloop.counter}}. {{w}}\n{% endfor %}\n"
+}

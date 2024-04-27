@@ -18,6 +18,7 @@ from noc.core.collection.base import Collection
 from noc.core.fileutils import safe_rewrite
 from noc.models import COLLECTIONS, get_model
 from noc.core.mongo.connection import connect
+from noc.models import is_document
 
 
 class Command(BaseCommand):
@@ -119,7 +120,10 @@ class Command(BaseCommand):
         MODELS = {}
         for c in COLLECTIONS:
             cm = get_model(c)
-            cn = cm._meta["json_collection"]
+            if is_document(cm):
+                cn = cm._meta["json_collection"]
+            else:
+                cn = cm._json_collection.get("json_collection")
             MODELS[cn] = cm
         if list_collection is not None:
             if list_collection is True:

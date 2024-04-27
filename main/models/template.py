@@ -7,7 +7,7 @@
 
 # Python modules
 from threading import Lock
-from typing import Optional
+from typing import Optional, Dict, Any
 import operator
 
 # Third-party modules
@@ -19,6 +19,8 @@ import cachetools
 # NOC modules
 from noc.core.model.base import NOCModel
 from noc.core.model.decorator import on_delete_check
+from noc.core.prettyjson import to_json
+from noc.core.text import quote_safe_path
 
 id_lock = Lock()
 
@@ -60,15 +62,48 @@ class Template(NOCModel):
         verbose_name_plural = "Templates"
         ordering = ["name"]
 
+    _json_collection = {
+        "collection": "templates",
+        "json_collection": "main.templates",
+        "json_unique_fields": ["name"],
+    }
+
     name = models.CharField("Name", unique=True, max_length=128)
     subject = models.TextField("Subject", validators=[template_validator])
     body = models.TextField("Body", validators=[template_validator])
+    uuid = models.UUIDField()
 
     _id_cache = cachetools.TTLCache(maxsize=100, ttl=60)
     _name_cache = cachetools.TTLCache(maxsize=100, ttl=60)
 
     def __str__(self):
         return self.name
+
+    @property
+    def json_data(self) -> Dict[str, Any]:
+        r = {
+            "uuid": self.uuid,
+            "$collection": self.meta["json_collection"],
+            "name": self.name,
+            "subject": self.subject,
+            "body": self.body,
+        }
+        return r
+
+    def to_json(self) -> str:
+        return to_json(
+            self.json_data,
+            order=[
+                "uuid",
+                "$collection",
+                "name",
+                "subject",
+                "body",
+            ],
+        )
+
+    def get_json_path(self) -> str:
+        return quote_safe_path(self.name.strip("*")) + ".json"
 
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_id_cache"), lock=lambda _: id_lock)
