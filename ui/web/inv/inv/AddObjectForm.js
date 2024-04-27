@@ -10,20 +10,14 @@ Ext.define("NOC.inv.inv.AddObjectForm", {
   extend: "Ext.panel.Panel",
   requires: ["NOC.inv.objectmodel.LookupField"],
   app: null,
+  padding: 4,
 
   initComponent: function(){
     console.log("initComponent AddObjectForm");
     var me = this,
       title  = __("Create new top-level object");
 
-    // if(me.groupContainer){
-    //   title = __("Create new object in '") + me.groupContainer.get("name") + "'";
-    // } else{
-    //   title = __("Create new top-level object");
-    // }
-
     me.form = Ext.create("Ext.form.Panel", {
-      bodyPadding: 4,
       layout: "anchor",
       defaults: {
         anchor: "100%",
@@ -61,6 +55,7 @@ Ext.define("NOC.inv.inv.AddObjectForm", {
         {
           xtype: "toolbar",
           dock: "top",
+          padding: "4 4 4 0",
           items: [
             {
               text: __("Save"),
