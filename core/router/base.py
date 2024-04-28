@@ -8,7 +8,7 @@
 # Python modules
 import logging
 import operator
-from itertools import chain
+import itertools
 from time import time_ns
 from collections import defaultdict
 from typing import List, DefaultDict, Iterator, Dict, Iterable, Optional, Any
@@ -153,7 +153,7 @@ class Router(object):
 
     def iter_route(self, msg: Message, message_type: bytes) -> Iterator[Route]:
         # Iterate over routes
-        for route in chain(self.chains[message_type], self.chains[b"*"]):
+        for route in itertools.chain(self.chains[message_type], self.chains[b"*"]):
             if route.is_match(msg, message_type):
                 yield route
 
