@@ -41,7 +41,7 @@ class EscalationItem(EmbeddedDocument):
     delay = IntField()
     ack = BooleanField(default=False)  # If acked alarm
     time_pattern: TimePattern = ForeignKeyField(TimePattern)
-    min_severity: AlarmSeverity = AlarmSeverity
+    min_severity: AlarmSeverity = ReferenceField(AlarmSeverity)
     #
     template: Template = ForeignKeyField(Template)
     notification_group: NotificationGroup = ForeignKeyField(NotificationGroup)

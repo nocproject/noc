@@ -26,23 +26,27 @@ Ext.define("NOC.fm.escalationprofile.Model", {
         {
             name: "escalation_policy",
             type: "integer",
-            defaultValue: 2,
+            defaultValue: 2
         },
         {
             name: "maintenance_policy",
-            type: "string"
+            type: "string",
+            defaultValue: "i"
         },
         {
             name: "alarm_consequence_policy",
-            type: "string"
+            type: "string",
+            defaultValue: "a"
         },
         {
             name: "end_condition",
-            type: "string"
+            type: "string",
+            defaultValue: "CR"
         },
         {
             name: "close_alarm",
-            type: "boolean"
+            type: "boolean",
+            defaultValue: false
         },
         {
             name: "escalations",
@@ -54,7 +58,8 @@ Ext.define("NOC.fm.escalationprofile.Model", {
         },
         {
             name: "telemetry_sample",
-            type: "integer"
+            type: "integer",
+            defaultValue: 0
         }
     ]
 });

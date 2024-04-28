@@ -11,6 +11,7 @@ Ext.define("NOC.fm.escalationprofile.Application", {
     requires: [
         "NOC.fm.escalationprofile.Model",
         "NOC.fm.ttsystem.LookupField",
+        "NOC.fm.alarmseverity.LookupField",
         "NOC.main.template.LookupField",
         "NOC.main.notificationgroup.LookupField",
         "NOC.main.timepattern.LookupField",
@@ -139,8 +140,9 @@ Ext.define("NOC.fm.escalationprofile.Application", {
                         {
                             text: __("Severity"),
                             dataIndex: "min_severity",
-                            editor: "numberfield",
-                            width: 70
+                            editor: "fm.alarmseverity.LookupField",
+                            width: 70,
+                            renderer: NOC.render.Lookup("min_severity")
                         },
                         {
                             text: __("Notification Group"),
