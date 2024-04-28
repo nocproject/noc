@@ -2,10 +2,9 @@
 import re
 
 # NOC modules
-from noc.core.mx import send_message, MX_LABELS, MX_H_VALUE_SPLITTER
+from noc.core.mx import send_message, MessageType
 from noc.sa.models.managedobject import ManagedObject
 from noc.inv.models.subinterface import SubInterface
-from noc.core.comp import DEFAULT_ENCODING
 
 MGMT_VLAN_CAPS = "Management | VlanID"
 IPv4 = "IPv4"
@@ -38,13 +37,10 @@ def handler_vlans_script(object: ManagedObject) -> None:
     if not r:
         return
     # Add the label to use in condition
-    labels = ["custom_data"] + object.effective_labels
     send_message(
         r,
-        message_type="event",
-        headers={
-            MX_LABELS: MX_H_VALUE_SPLITTER.join(labels).encode(encoding=DEFAULT_ENCODING),
-        },
+        message_type=MessageType.EVENT,
+        headers=object.get_mx_message_headers(["custom_data"]),
     )
 
 

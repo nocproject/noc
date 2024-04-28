@@ -49,9 +49,8 @@ from noc.services.classifier.abdetector import AbductDetector
 from noc.core.perf import metrics
 from noc.core.handler import get_handler
 from noc.core.ioloop.timers import PeriodicCallback
-from noc.core.comp import smart_text, DEFAULT_ENCODING
+from noc.core.comp import smart_text
 from noc.core.msgstream.message import Message
-from noc.core.mx import MX_LABELS, MX_H_VALUE_SPLITTER, MX_ADMINISTRATIVE_DOMAIN_ID
 from noc.core.wf.diagnostic import SNMPTRAP_DIAG, SYSLOG_DIAG, DiagnosticState
 
 # Patterns
@@ -352,14 +351,7 @@ class ClassifierService(FastAPIService):
             message_type="event",
             data=orjson.dumps(msg),
             sharding_key=int(event.managed_object.id),
-            headers={
-                MX_LABELS: MX_H_VALUE_SPLITTER.join(event.managed_object.effective_labels).encode(
-                    DEFAULT_ENCODING
-                ),
-                MX_ADMINISTRATIVE_DOMAIN_ID: str(
-                    event.managed_object.administrative_domain.id
-                ).encode(DEFAULT_ENCODING),
-            },
+            headers=event.managed_object.get_mx_message_headers(),
         )
 
     @classmethod

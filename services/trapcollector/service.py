@@ -25,6 +25,7 @@ from noc.core.service.fastapi import FastAPIService
 from noc.core.mx import (
     MX_STREAM,
     get_mx_partitions,
+    MessageType,
     MX_MESSAGE_TYPE,
     MX_SHARDING_KEY,
     MX_LABELS,
@@ -187,9 +188,9 @@ class TrapCollectorService(FastAPIService):
             stream=MX_STREAM,
             partition=int(cfg.id) % n_partitions,
             headers={
-                MX_MESSAGE_TYPE: b"snmptrap",
+                MX_MESSAGE_TYPE: MessageType.SNMPTRAP.value.encode(),
                 MX_LABELS: smart_bytes(MX_H_VALUE_SPLITTER.join(cfg.effective_labels)),
-                MX_SHARDING_KEY: smart_bytes(cfg.id),
+                MX_SHARDING_KEY: str(cfg.id).encode(),
             },
         )
 

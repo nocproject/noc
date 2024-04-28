@@ -32,6 +32,7 @@ from noc.main.models.style import Style
 from noc.main.models.remotesystem import RemoteSystem
 from noc.main.models.handler import Handler
 from noc.main.models.label import Label
+from noc.main.models.notificationgroup import NotificationGroup
 from noc.pm.models.metrictype import MetricType
 from noc.cm.models.interfacevalidationpolicy import InterfaceValidationPolicy
 from noc.core.bi.decorator import bi_sync
@@ -58,7 +59,7 @@ class MetricConfig(object):
 class MatchRule(EmbeddedDocument):
     dynamic_order = IntField(default=0)
     labels = ListField(StringField())
-    handler = StringField()
+    resource_groups: ListField(ObjectId())
 
     def __str__(self):
         return f'{self.dynamic_order}: {", ".join(self.labels)}'
@@ -163,10 +164,11 @@ class InterfaceProfile(Document):
     status_change_notification = StringField(
         choices=[
             ("d", "Disabled"),
-            ("e", "Enable"),
+            ("e", "Enable Message"),
         ],
         default="d",
     )
+    default_notification_group = ForeignKeyField(NotificationGroup, required=False)
     #
     metrics_default_interval = IntField(default=0, min_value=0)
     # Interface profile metrics

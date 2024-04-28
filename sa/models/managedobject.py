@@ -55,7 +55,16 @@ from noc.core.wf.diagnostic import (
     ALARM_DIAG,
 )
 from noc.core.wf.interaction import Interaction
-from noc.core.mx import send_message, MX_LABELS, MX_H_VALUE_SPLITTER, MX_ADMINISTRATIVE_DOMAIN_ID
+from noc.core.mx import (
+    send_message,
+    MessageType,
+    MX_LABELS,
+    MX_H_VALUE_SPLITTER,
+    MX_ADMINISTRATIVE_DOMAIN_ID,
+    MX_RESOURCE_GROUPS,
+    MX_PROFILE_ID,
+    MX_NOTIFICATION_DELAY,
+)
 from noc.core.deprecations import RemovedInNOC2301Warning
 from noc.aaa.models.user import User
 from noc.aaa.models.group import Group
@@ -1307,19 +1316,16 @@ class ManagedObject(NOCModel):
         :param tag: Notification tag
         """
         logger.debug("[%s|%s] Sending object event message: %s", self.name, event_id, data)
-        data = data or {}
-        data.update({"managed_object": self.get_message_context()})
+        d = {"managed_object": self.get_message_context()}
+        if data:
+            d.update(data)
+        headers = self.get_mx_message_headers([tag] if tag else None)
+        if delay:
+            headers[MX_NOTIFICATION_DELAY] = delay
         send_message(
-            data=data,
-            message_type=event_id,
-            headers={
-                MX_LABELS: MX_H_VALUE_SPLITTER.join(self.effective_labels).encode(
-                    encoding=DEFAULT_ENCODING
-                ),
-                MX_ADMINISTRATIVE_DOMAIN_ID: str(self.administrative_domain.id).encode(
-                    encoding=DEFAULT_ENCODING
-                ),
-            },
+            data=d,
+            message_type=MessageType(event_id),
+            headers=headers,
         )
 
         # Schedule FTS reindex
@@ -2728,6 +2734,20 @@ class ManagedObject(NOCModel):
             return interactions
         self._interactions = InteractionHub(self)
         return self._interactions
+
+    def get_mx_message_headers(self, labels: Optional[List[str]] = None) -> Dict[str, bytes]:
+        return {
+            MX_LABELS: MX_H_VALUE_SPLITTER.join(self.effective_labels + (labels or [])).encode(
+                DEFAULT_ENCODING
+            ),
+            MX_ADMINISTRATIVE_DOMAIN_ID: str(self.administrative_domain.id).encode(
+                DEFAULT_ENCODING
+            ),
+            MX_PROFILE_ID: str(self.object_profile.id).encode(DEFAULT_ENCODING),
+            MX_RESOURCE_GROUPS: MX_H_VALUE_SPLITTER.join(
+                [str(sg) for sg in self.effective_service_groups]
+            ).encode(DEFAULT_ENCODING),
+        }
 
     @classmethod
     def get_object_by_template(
