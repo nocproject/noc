@@ -1,7 +1,7 @@
 # ----------------------------------------------------------------------
 # Route
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2022 The NOC Project
+# Copyright (C) 2007-2024 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -24,10 +24,10 @@ from noc.core.mx import (
     MX_RESOURCE_GROUPS,
     MX_NOTIFICATION_CHANNEL,
     MX_NOTIFICATION,
-    MX_MESSAGE_TYPE,
-    NOTIFICATION_METHODS,
+    MX_NOTIFICATION_GROUP_ID,
+    MessageType,
 )
-from .action import Action
+from .action import Action, NotificationAction, ActionCfg
 
 T_BODY = Union[bytes, Any]
 
@@ -123,11 +123,12 @@ class Route(object):
         self.transmute_handler: Optional[Callable[[Dict[str, bytes], T_BODY], T_BODY]] = None
         self.transmute_template: Optional[TransmuteTemplate] = None
 
-    def is_match(self, msg: Message) -> bool:
+    def is_match(self, msg: Message, message_type: bytes) -> bool:
         """
         Check if the route is applicable for messages
 
         :param msg:
+        :param message_type:
         :return:
         """
         ctx = {"headers": msg.headers, "labels": set(), "resource_groups": set()}
@@ -269,23 +270,26 @@ class DefaultNotificationRoute(Route):
     Route by Notification-Channel message header
     """
 
-    def __init__(self):
-        super().__init__(name="default", r_type=MX_NOTIFICATION, order=999)
+    MX_METRIC = MessageType.METRICS.value.encode()
 
-    def is_match(self, msg: Message) -> bool:
-        if (
-            MX_NOTIFICATION_CHANNEL in msg.headers
-            and msg.headers.get(MX_MESSAGE_TYPE) == MX_NOTIFICATION
-        ):
+    def __init__(self):
+        super().__init__(name="default", r_type="*", order=999)
+        self.na = NotificationAction(ActionCfg("notification_group"))
+
+    def is_match(self, msg: Message, message_type: bytes) -> bool:
+        if message_type == self.MX_METRIC:
+            return False
+        elif message_type == MX_NOTIFICATION and MX_NOTIFICATION_CHANNEL in msg.headers:
             return True
-        return False
+        return MX_NOTIFICATION_GROUP_ID in msg.headers
 
     def transmute(self, headers: Dict[str, bytes], data: bytes) -> Union[bytes, Dict[str, Any]]:
         return data
 
-    def iter_action(self, msg: Message) -> Iterator[Tuple[str, Dict[str, bytes]]]:
-        method = msg.headers[MX_NOTIFICATION_CHANNEL].decode(DEFAULT_ENCODING)
-        if method not in NOTIFICATION_METHODS:
+    def iter_action(
+        self, msg: Message, message_type: bytes
+    ) -> Iterator[Tuple[str, Dict[str, bytes]]]:
+        if MX_NOTIFICATION_CHANNEL in msg.headers:
             # Check available channel for sender
-            return
-        yield NOTIFICATION_METHODS[method], {}, msg.value
+            yield msg.headers[MX_NOTIFICATION_CHANNEL].decode(DEFAULT_ENCODING), {}, msg.value
+        yield from self.na.iter_action(msg, message_type)

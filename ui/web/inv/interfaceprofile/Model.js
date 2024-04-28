@@ -80,6 +80,15 @@ Ext.define("NOC.inv.interfaceprofile.Model", {
             type: "string"
         },
         {
+            name: "default_notification_group",
+            type: "string"
+        },
+        {
+            name: "default_notification_group__label",
+            type: "string",
+            persist: false
+        },
+        {
             name: "metrics",
             type: "auto"
         },

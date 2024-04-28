@@ -72,6 +72,7 @@ class MessageType(enum.Enum):
     VERSION_CHANGED = "version_changed"
     CONFIG_POLICY_VIOLATION = "config_policy_violation"
     DIAGNOSTIC_CHANGE = "diagnostic_change"
+    NOTIFICATION = "notification"
     OTHER = "other"
 
 
@@ -142,15 +143,15 @@ def send_notification(
     if notification_method not in NOTIFICATION_METHODS:
         raise ValueError("Unknown notification method: %s" % notification_method)
     msg_headers = {
-        MX_MESSAGE_TYPE: MX_NOTIFICATION,
-        MX_NOTIFICATION_METHOD: notification_method.encode(DEFAULT_ENCODING),
+        MX_MESSAGE_TYPE: MessageType.NOTIFICATION.value.encode(),
+        MX_NOTIFICATION_CHANNEL: NOTIFICATION_METHODS[notification_method],
         MX_TO: to.encode(DEFAULT_ENCODING),
     }
     svc = get_service()
     data = {"body": body, "subject": subject, "address": to}
     if kwargs:
         data |= kwargs
-    run_sync(partial(svc.send_message, data, MX_MESSAGE_TYPE, msg_headers))
+    run_sync(partial(svc.send_message, data, MessageType.NOTIFICATION, msg_headers))
 
 
 def get_mx_partitions() -> int:

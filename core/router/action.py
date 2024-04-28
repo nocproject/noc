@@ -20,6 +20,7 @@ from noc.core.mx import (
     NOTIFICATION_METHODS,
     MX_NOTIFICATION_METHOD,
     MX_NOTIFICATION_DELAY,
+    MX_NOTIFICATION_GROUP_ID,
 )
 from noc.config import config
 
@@ -118,11 +119,18 @@ class NotificationAction(Action):
     name = "notification"
 
     def __init__(self, cfg: ActionCfg):
+        super().__init__(cfg)
+        self.ng: Optional[str] = cfg.notification_group
+        self.rt: Optional[int] = cfg.render_template
+
+    def get_notification_group(self, ng: Optional[bytes]):
         from noc.main.models.notificationgroup import NotificationGroup
 
-        super().__init__(cfg)
-        self.ng: NotificationGroup = NotificationGroup.get_by_id(cfg.notification_group)
-        self.rt: Optional[int] = cfg.render_template
+        if ng:
+            return NotificationGroup.get_by_id(int(ng.decode()))
+        elif not self.ng:
+            return
+        return NotificationGroup.get_by_id(self.ng)
 
     def register_escalation(self):
         """
@@ -134,6 +142,7 @@ class NotificationAction(Action):
         """
         Render Body from template
         :param message_type:
+        :param msg:
         :return:
         """
         from noc.main.models.template import Template
@@ -153,7 +162,6 @@ class NotificationAction(Action):
         self, msg: Message, message_type: bytes
     ) -> Iterator[Tuple[str, Dict[str, bytes], bytes]]:
         #
-        # body = self.ng.render_message(mt, orjson.loads(msg.value), self.rt)
         body = self.render_template(message_type, msg)
         if not body:
             # Unknown template
@@ -162,8 +170,11 @@ class NotificationAction(Action):
             ...
         if MX_NOTIFICATION_METHOD in msg.headers:
             yield NOTIFICATION_METHODS[msg.headers[MX_NOTIFICATION_METHOD].decode()], {}, msg.value
-        for method, headers, render_template in self.ng.iter_actions():
-            yield NOTIFICATION_METHODS[method], headers, body
+        ng = self.get_notification_group(msg.headers.get(MX_NOTIFICATION_GROUP_ID))
+        if not ng:
+            return
+        for method, headers, render_template in ng.iter_actions():
+            yield NOTIFICATION_METHODS[method].decode(), headers, body
 
 
 class MetricAction(Action):

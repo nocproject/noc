@@ -1,13 +1,14 @@
 # ----------------------------------------------------------------------
 # Router
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2023 The NOC Project
+# Copyright (C) 2007-2024 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
 # Python modules
 import logging
 import operator
+from itertools import chain
 from time import time_ns
 from collections import defaultdict
 from typing import List, DefaultDict, Iterator, Dict, Iterable, Optional, Any
@@ -31,10 +32,12 @@ logger = logging.getLogger(__name__)
 
 
 class Router(object):
+    DEFAULT_CHAIN = "default"
+
     def __init__(self):
         self.chains: DefaultDict[bytes, List[Route]] = defaultdict(list)
         self.routes: Dict[str, Route] = {
-            "default": DefaultNotificationRoute(),  # Add default route for notification
+            self.DEFAULT_CHAIN: DefaultNotificationRoute(),  # Add default route for notification
         }
         self.stream_partitions: Dict[str, int] = {}
         self.svc = get_service()
@@ -131,8 +134,8 @@ class Router(object):
         :return:
         """
         chains = defaultdict(list)
-        for r in self.routes.values():
-            if r_types and r.type not in r_types:
+        for rid, r in self.routes.items():
+            if r_types and r.type not in r_types and rid != self.DEFAULT_CHAIN:
                 continue
             chains[r.type].append(r)
         if deleted:
@@ -150,8 +153,8 @@ class Router(object):
 
     def iter_route(self, msg: Message, message_type: bytes) -> Iterator[Route]:
         # Iterate over routes
-        for route in self.chains[message_type]:
-            if route.is_match(msg):
+        for route in chain(self.chains[message_type], self.chains[b"*"]):
+            if route.is_match(msg, message_type):
                 yield route
 
     async def publish(

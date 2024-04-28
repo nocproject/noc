@@ -15,13 +15,12 @@ Ext.define("NOC.inv.interfaceprofile.Application", {
         "NOC.main.style.LookupField",
         "NOC.main.notificationgroup.LookupField",
         "Ext.ux.form.MultiIntervalField",
+        "Ext.ux.form.GridField",
         "NOC.pm.metrictype.LookupField",
         "NOC.main.remotesystem.LookupField",
-        "NOC.main.ref.windowfunction.LookupField",
         "NOC.cm.interfacevalidationpolicy.LookupField",
         "NOC.inv.ifdescpatterns.LookupField",
         "NOC.main.handler.LookupField",
-        "Ext.ux.form.GridField",
         "NOC.wf.workflow.LookupField"
     ],
     model: "NOC.inv.interfaceprofile.Model",
@@ -532,16 +531,6 @@ Ext.define("NOC.inv.interfaceprofile.Application", {
                                 uiStyle: "extra",
                                 query: {
                                     "allow_matched": true
-                                }
-                            },
-                            {
-                                name: "handler",
-                                xtype: "main.handler.LookupField",
-                                fieldLabel: __("Match Handler"),
-                                allowBlank: true,
-                                uiStyle: "medium",
-                                query: {
-                                    "allow_match_rule": true
                                 }
                             }
                         ]
