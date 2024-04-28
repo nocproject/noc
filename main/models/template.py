@@ -1,14 +1,14 @@
 # ---------------------------------------------------------------------
 # Template model
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2020 The NOC Project
+# Copyright (C) 2007-2024 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
 # Python modules
+import operator
 from threading import Lock
 from typing import Optional, Dict, Any
-import operator
 
 # Third-party modules
 from django.db import models
@@ -21,6 +21,7 @@ from noc.core.model.base import NOCModel
 from noc.core.model.decorator import on_delete_check
 from noc.core.prettyjson import to_json
 from noc.core.text import quote_safe_path
+from noc.core.mx import MessageType
 
 id_lock = Lock()
 
@@ -70,11 +71,17 @@ class Template(NOCModel):
 
     name = models.CharField("Name", unique=True, max_length=128)
     subject = models.TextField("Subject", validators=[template_validator])
-    body = models.TextField("Body", validators=[template_validator])
+    body = models.TextField("Body", validators=[template_validator], null=True, blank=True)
     uuid = models.UUIDField()
-
+    is_system: bool = models.BooleanField("SystemTemplate", default=False)
+    message_type = models.TextField(
+        "MessageType", choices=[(m.name, m.name) for m in MessageType], null=True, blank=True
+    )
+    context_data: str = models.TextField("ContextTestData", blank=True, null=True)
+    # ? RU
     _id_cache = cachetools.TTLCache(maxsize=100, ttl=60)
     _name_cache = cachetools.TTLCache(maxsize=100, ttl=60)
+    _message_type_cache = cachetools.TTLCache(maxsize=10, ttl=300)
 
     def __str__(self):
         return self.name
@@ -82,23 +89,27 @@ class Template(NOCModel):
     @property
     def json_data(self) -> Dict[str, Any]:
         r = {
-            "uuid": self.uuid,
-            "$collection": self.meta["json_collection"],
             "name": self.name,
+            "$collection": self._json_collection["json_collection"],
+            "uuid": self.uuid,
             "subject": self.subject,
             "body": self.body,
+            "is_system": self.is_system,
         }
+        if self.message_type:
+            r["message_type"] = self.message_type
         return r
 
     def to_json(self) -> str:
         return to_json(
             self.json_data,
             order=[
-                "uuid",
-                "$collection",
                 "name",
+                "$collection",
+                "uuid",
                 "subject",
                 "body",
+                "message_type",
             ],
         )
 
@@ -108,18 +119,17 @@ class Template(NOCModel):
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_id_cache"), lock=lambda _: id_lock)
     def get_by_id(cls, id: int) -> Optional["Template"]:
-        t = Template.objects.filter(id=id)[:1]
-        if t:
-            return t[0]
-        return None
+        return Template.objects.filter(id=id).first()
 
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_name_cache"), lock=lambda _: id_lock)
-    def get_by_name(cls, name):
-        t = Template.objects.filter(name=name)[:1]
-        if t:
-            return t[0]
-        return None
+    def get_by_name(cls, name) -> Optional["Template"]:
+        return Template.objects.filter(name=name).first()
+
+    @classmethod
+    @cachetools.cachedmethod(operator.attrgetter("_message_type_cache"), lock=lambda _: id_lock)
+    def get_by_message_type(cls, m_type: MessageType) -> Optional["Template"]:
+        return Template.objects.filter(message_type=m_type.name).first()
 
     def render_subject(self, LANG=None, **kwargs):
         return jinja2.Template(self.subject).render(**kwargs)

@@ -55,7 +55,7 @@ from noc.core.router.messagebuffer import MBuffer
 from noc.core.ioloop.util import setup_asyncio
 from noc.core.ioloop.timers import PeriodicCallback
 from noc.core.error import NOCError
-from noc.core.mx import MX_STREAM, MX_SPAN_CTX, MX_SPAN_ID
+from noc.core.mx import MX_STREAM, MX_SPAN_CTX, MX_SPAN_ID, MessageType
 from noc.core.span import Span
 from .rpc import RPCProxy
 from .loader import set_service
@@ -878,7 +878,7 @@ class BaseService(object):
     async def send_message(
         self,
         data: Any,
-        message_type: str,
+        message_type: MessageType,
         headers: Optional[Dict[str, bytes]] = None,
         sharding_key: int = 0,
         store: bool = False,
@@ -893,7 +893,7 @@ class BaseService(object):
         :param store: Append message to buffer for deliver
         :return:
         """
-        msg = Router.get_message(data, message_type, headers, sharding_key)
+        msg = Router.get_message(data, message_type.value, headers, sharding_key)
         self.logger.debug("Send message: %s", msg)
         if not config.message.embedded_router:
             self.publish(
@@ -911,7 +911,7 @@ class BaseService(object):
     def register_message(
         self,
         data: Any,
-        message_type: str,
+        message_type: MessageType,
         headers: Optional[Dict[str, bytes]] = None,
         sharding_key: int = 0,
         group_key: Optional[str] = None,
@@ -927,7 +927,7 @@ class BaseService(object):
         """
         msg = Router.get_message(
             data,
-            message_type,
+            message_type.value,
             headers,
             sharding_key,
             raw_value=bool(group_key),

@@ -18,7 +18,7 @@ from noc.core.dcs.loader import get_dcs, DEFAULT_DCS
 from noc.config import config
 from noc.core.msgstream.client import MessageStreamClient
 from noc.core.ioloop.util import run_sync
-from noc.core.mx import MX_STREAM
+from noc.core.mx import MX_STREAM, MessageType
 from noc.core.router.base import Router
 from .rpc import RPCProxy
 
@@ -97,7 +97,7 @@ class ServiceStub(object):
     async def send_message(
         self,
         data: Any,
-        message_type: str,
+        message_type: MessageType,
         headers: Optional[Dict[str, bytes]] = None,
         sharding_key: int = 0,
     ):
@@ -110,7 +110,7 @@ class ServiceStub(object):
         :param sharding_key: Key for sharding over MX services
         :return:
         """
-        msg = Router.get_message(data, message_type, headers, sharding_key)
+        msg = Router.get_message(data, message_type.value, headers, sharding_key)
         self.logger.debug("Send message: %s", msg)
         self.publish(value=msg.value, stream=MX_STREAM, partition=0, headers=msg.headers)
 

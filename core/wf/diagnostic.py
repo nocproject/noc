@@ -623,7 +623,7 @@ class DiagnosticHub(object):
         :return:
         """
         from noc.core.service.loader import get_service
-        from noc.core.mx import MX_LABELS, MX_H_VALUE_SPLITTER, DEFAULT_ENCODING
+        from noc.core.mx import DEFAULT_ENCODING, MessageType
 
         if self.dry_run:
             self.logger.info(
@@ -664,12 +664,8 @@ class DiagnosticHub(object):
                         "reason": reason,
                         "managed_object": self.__object.get_message_context(),
                     },
-                    "diagnostic_change",
-                    {
-                        MX_LABELS: MX_H_VALUE_SPLITTER.join(self.__object.effective_labels).encode(
-                            encoding=DEFAULT_ENCODING
-                        ),
-                    },
+                    MessageType.DIAGNOSTIC_CHANGE,
+                    self.__object.get_mx_message_headers(),
                 )
             )
         # Send Notification
