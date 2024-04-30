@@ -1,7 +1,7 @@
 # ---------------------------------------------------------------------
 # main.desktop application
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2020 The NOC Project
+# Copyright (C) 2007-2024 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -281,6 +281,7 @@ class DesktopApplication(ExtApplication):
         else:
             return self.render_json({"status": False, "error": _("Failed to change credentials")})
 
+    # @todo: Fix simplereport and remove endpoint
     @view(method=["POST"], url="^dlproxy/$", access=True, api=True)
     def api_dlproxy(self, request):
         """
@@ -356,21 +357,18 @@ class DesktopApplication(ExtApplication):
 
     @view(url="^about/", method=["GET"], access=True, api=True)
     def api_about(self, request):
+        current_year = datetime.date.today().year
+        logo_url = config.customization.logo_url
+        if logo_url == "/ui/web/img/logo_white.svg":
+            logo_url = "/ui/web/img/logo_black.svg"
+        data = {
+            "logo_url": logo_url,
+            "brand": config.brand,
+            "version": version.version,
+            "installation": config.installation_name,
+            "copyright": f"2007-{current_year}, {config.brand}",
+        }
         if config.features.cpclient:
             cp = CPClient()
-            return {
-                "logo_url": config.customization.logo_url,
-                "brand": config.brand,
-                "version": version.version,
-                "installation": config.installation_name,
-                "system_id": cp.system_uuid,
-                "copyright": "2007-%d, The NOC Project" % datetime.date.today().year,
-            }
-        else:
-            return {
-                "logo_url": config.customization.logo_url,
-                "brand": config.brand,
-                "version": version.version,
-                "installation": config.installation_name,
-                "copyright": "2007-%d, %s" % (datetime.date.today().year, config.brand),
-            }
+            data["system_id"] = cp.system_uuid
+        return data
