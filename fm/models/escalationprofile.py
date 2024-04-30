@@ -39,15 +39,25 @@ id_lock = Lock()
 class EscalationItem(EmbeddedDocument):
     # Delay part
     delay = IntField()
-    ack = BooleanField(default=False)  # If acked alarm
+    alarm_ack = StringField(
+        choices=[
+            ("ack", "Alarm Acknowledge"),
+            ("nack", "Alarm not Acknowledge"),
+            ("any", "Any Acknowledge"),
+        ],
+        default="any",
+    )
     time_pattern: TimePattern = ForeignKeyField(TimePattern)
     min_severity: AlarmSeverity = ReferenceField(AlarmSeverity)
     #
     template: Template = ForeignKeyField(Template)
-    notification_group: NotificationGroup = ForeignKeyField(NotificationGroup)
     # Acton
-    wait_condition = BooleanField(default=False)
+    notification_group: NotificationGroup = ForeignKeyField(NotificationGroup)
     create_tt = BooleanField(default=False)
+    # Processed condition
+    # wait_condition = BooleanField(default=False)
+    wait_ack = BooleanField(default=False)  # Wait alarm Acknowledge
+    # wait_approve = BooleanField(default=False) # Approved Escalation
     # Stop or continue to next rule
     stop_processing = BooleanField(default=False)
 
@@ -111,6 +121,15 @@ class EscalationProfile(Document):
     # Close alarm after End
     close_alarm = BooleanField(default=False)
     escalations: List[EscalationItem] = EmbeddedDocumentListField(EscalationItem)  # Chain
+    repeat_escalations = StringField(
+        choices=[
+            ("N", "Newer"),
+            ("S", "Severity Change"),
+            ("D", "After delay"),
+        ],
+        default="N",
+    )
+    max_repeats = IntField(default=0)
     # set_labels ?
     telemetry_sample = IntField(default=0)
     delay = IntField()
@@ -125,6 +144,17 @@ class EscalationProfile(Document):
     @cachetools.cachedmethod(operator.attrgetter("_id_cache"), lock=lambda _: id_lock)
     def get_by_id(self, oid: Union[str, ObjectId]) -> Optional["EscalationProfile"]:
         return EscalationProfile.objects.filter(id=oid).first()
+
+    @property
+    def is_wait_ack(self) -> bool:
+        """
+        Check Escalation Wait alarm acknowledge
+        :return:
+        """
+        for item in self.escalations:
+            if item.wait_ack:
+                return True
+        return False
 
     def get_tt_system_config(self, tt_system) -> Dict[str, str]:
         return {}
