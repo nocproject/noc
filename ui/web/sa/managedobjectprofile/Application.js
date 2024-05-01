@@ -1183,42 +1183,9 @@ Ext.define("NOC.sa.managedobjectprofile.Application", {
                                             colspan: 3
                                         },
                                         {
-                                            name: "enable_box_discovery_mac",
-                                            xtype: "checkboxfield",
-                                            boxLabel: __("MAC"),
-                                            reference: "enableBoxDiscoveryMAC",
-                                            colspan: 2
-                                        },
-                                        {
-                                            name: "box_discovery_mac_filter_policy",
-                                            xtype: "combobox",
-                                            fieldLabel: __("Collect Filter Policy"),
-                                            store: [
-                                                ["A", __("All")],
-                                                ["I", __("Interface Profile")]
-                                            ],
-                                            tooltip: __("I - Collect MACs only for allowed interfaces. <br/>" +
-                                        "(MAC Discovery Policy on Inventory -> Setup -> Interface Profile) <br/>") +
-                                            "A - Collect All MACs",
-                                            allowBlank: false,
-                                            bind: {
-                                                disabled: "{!enableBoxDiscoveryMAC.checked}"
-                                            },
-                                            listeners: {
-                                                render: me.addTooltip
-                                            },
-                                            uiStyle: "medium"
-                                        },
-                                        {
                                             name: "enable_box_discovery_cpe",
                                             xtype: "checkboxfield",
                                             boxLabel: __("CPE"),
-                                            colspan: 3
-                                        },
-                                        {
-                                            name: "enable_box_discovery_alarms",
-                                            xtype: "checkboxfield",
-                                            boxLabel: __("Alarms"),
                                             colspan: 3
                                         }
                                     ]
@@ -2593,7 +2560,6 @@ Ext.define("NOC.sa.managedobjectprofile.Application", {
                     {field_name: "enable_box_discovery_config", label: __("Config")},
                     {field_name: "enable_box_discovery_asset", label: __("Asset")},
                     {field_name: "enable_box_discovery_vlan", label: __("VLAN")},
-                    {field_name: "enable_box_discovery_mac", label: __("MAC")},
                     {field_name: "enable_box_discovery_metrics", label: __("Metrics")}
                 ]
             },

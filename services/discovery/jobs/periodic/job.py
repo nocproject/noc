@@ -1,7 +1,7 @@
 # ---------------------------------------------------------------------
 # Periodic Discovery Job
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2021 The NOC Project
+# Copyright (C) 2007-2024 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -45,16 +45,49 @@ class PeriodicDiscoveryJob(MODiscoveryJob):
             else:
                 self.run_checks()
 
+    def is_run_interval(self, interval: int, run: int) -> bool:
+        """
+
+        :param run: Number of job runs
+        :param interval: Job interval
+        :return:
+        """
+        d_interval = self.object.object_profile.periodic_discovery_interval
+        if run and interval != d_interval:
+            p_sc = interval / d_interval
+            if run % p_sc:  # runs
+                return False
+        return True
+
     def run_checks(self):
-        if self.object.object_profile.enable_periodic_discovery_uptime:
+        runs = self.get_runs()
+        if self.object.object_profile.enable_periodic_discovery_uptime and self.is_run_interval(
+            self.object.object_profile.periodic_discovery_uptime_interval,
+            runs,
+        ):
             UptimeCheck(self).run()
-        if self.object.object_profile.enable_periodic_discovery_interface_status:
+        if (
+            self.object.object_profile.enable_periodic_discovery_interface_status
+            and self.is_run_interval(
+                self.object.object_profile.periodic_discovery_interface_status_interval,
+                runs,
+            )
+        ):
             InterfaceStatusCheck(self).run()
-        if self.object.object_profile.enable_periodic_discovery_cpestatus:
+        if self.object.object_profile.enable_periodic_discovery_cpestatus and self.is_run_interval(
+            self.object.object_profile.periodic_discovery_cpestatus_interval,
+            runs,
+        ):
             CPEStatusCheck(self).run()
-        if self.object.object_profile.enable_periodic_discovery_alarms:
+        if self.object.object_profile.enable_periodic_discovery_alarms and self.is_run_interval(
+            self.object.object_profile.periodic_discovery_alarms_interval,
+            runs,
+        ):
             AlarmsCheck(self).run()
-        if self.object.object_profile.enable_periodic_discovery_mac:
+        if self.object.object_profile.enable_periodic_discovery_mac and self.is_run_interval(
+            self.object.object_profile.periodic_discovery_mac_interval,
+            runs,
+        ):
             MACCheck(self).run()
         DiagnosticCheck(self, run_order="E").run()
 
