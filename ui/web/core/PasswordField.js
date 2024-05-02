@@ -8,32 +8,30 @@
 console.debug("Defining NOC.core.PasswordField");
 
 Ext.define("NOC.core.PasswordField", {
-    extend: "Ext.form.field.Text",
-    alias: "widget.password",
-    inputType: "password",
-    initComponent: function() {
-        this.setTriggers({
-            hide: {
-                cls: "fas fa fa-eye",
-                hidden: false,
-                handler: this.showKey
-            },
-            show: {
-                cls: "fas fa fa-eye-slash",
-                hidden: true,
-                handler: this.hideKey
-            }
-        });
-        this.callParent();
+  extend: "Ext.form.field.Text",
+  alias: "widget.password",
+  inputType: "password",
+  triggers: {
+    switch: {
+      cls: "fas fa fa-eye",
+      hidden: false,
+      handler: function(field, trigger){
+        var hideCls = "fas fa fa-eye",
+          showCls = "fas fa fa-eye-slash",
+          type = field.inputEl.dom.getAttribute("type"),
+          inputTag = field.inputEl.dom,
+          triggerEl = trigger.getStateEl();
+
+        if(type === "password"){
+          inputTag.setAttribute("type", "text");
+          triggerEl.removeCls(hideCls);
+          triggerEl.addCls(showCls);
+        } else{
+          inputTag.setAttribute("type", "password");
+          triggerEl.removeCls(showCls);
+          triggerEl.addCls(hideCls);
+        }
+      },
     },
-    showKey: function(self) {
-        self.getTriggers().show.show();
-        self.getTriggers().hide.hide();
-        self.inputEl.dom.setAttribute("type", "text")
-    },
-    hideKey: function(self) {
-        self.getTriggers().hide.show();
-        self.getTriggers().show.hide();
-        self.inputEl.dom.setAttribute("type", "password");
-    }
+  },
 });
