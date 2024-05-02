@@ -153,7 +153,6 @@ Ext.apply(NOC.render, {
 
     let name = v.name,
       scopedName = "",
-      description = v.description || "",
       bg_color1 = toHexColor(v.bg_color1 || 0),
       fg_color1 = toHexColor(v.fg_color1 || 0),
       bg_color2 = toHexColor(v.bg_color2 || 0),
@@ -243,8 +242,8 @@ Ext.apply(NOC.render, {
     }
     // DDd HHh
     var d = Math.floor(val / 86400),
-      h = Math.floor((val - d * 86400) / 3600);
-    return "" + d + "d " + f(h) + "h";
+      hh = Math.floor((val - d * 86400) / 3600);
+    return "" + d + "d " + f(hh) + "h";
   },
 
   Size: function(v){
@@ -539,9 +538,8 @@ NOC.is_asn = function(value){
 };
 //
 NOC.is_ipv4 = function(value){
-  var arrayX = new Array(),
-    arrayoct = new Array(),
-    arrayX = value.split(".");
+  var arrayX = value.split("."),
+    arrayoct = new Array();
   if(arrayX.length != 4)
     return false;
   else{
@@ -558,8 +556,7 @@ NOC.is_ipv4 = function(value){
 };
 //
 NOC.is_ipv4_prefix = function(value){
-  var arrayX = new Array(),
-    arrayX = value.split("/");
+  var arrayX = arrayX = value.split("/");
   if(arrayX.length != 2)
     return false;
   if(!NOC.is_ipv4(arrayX[0]))
@@ -582,7 +579,7 @@ Ext.define("NOC.form.field.VTypes", {
   override: "Ext.form.field.VTypes",
 
   // VLAN ID checking
-  VlanID: function(val, field){
+  VlanID: function(val){
     try{
       var id = parseInt(val);
       return NOC.is_vlanid(id);
@@ -594,7 +591,7 @@ Ext.define("NOC.form.field.VTypes", {
   VlanIDMask: /[\d\/]/,
 
   // Autonomous system name checking
-  ASN: function(val, field){
+  ASN: function(val){
     try{
       var asn = parseInt(val);
       return NOC.is_asn(asn);
@@ -606,7 +603,7 @@ Ext.define("NOC.form.field.VTypes", {
   ASNMask: /[\d\/]/,
 
   // IPv4 check
-  IPv4: function(val, field){
+  IPv4: function(val){
     try{
       return NOC.is_ipv4(val);
     } catch(e){
@@ -616,7 +613,7 @@ Ext.define("NOC.form.field.VTypes", {
   IPv4Text: "Must be a numeric value 0.0.0.0 - 255.255.255.255",
   IPv4Mask: /[\d\.]/i,
   // IPv4 check
-  IPv4Group: function(val, field){
+  IPv4Group: function(val){
     if(val === "Leave unchanged") return true;
     try{
       return NOC.is_ipv4(val);
@@ -628,7 +625,7 @@ Ext.define("NOC.form.field.VTypes", {
   IPv4GroupMask: /[\d\.]/i,
 
   // IPv4 prefix check
-  IPv4Prefix: function(val, field){
+  IPv4Prefix: function(val){
     try{
       return NOC.is_ipv4_prefix(val);
     } catch(e){
@@ -639,7 +636,7 @@ Ext.define("NOC.form.field.VTypes", {
   IPv4PrefixMask: /[\d\.\/]/i,
 
   // FQDN check
-  FQDN: function(val, field){
+  FQDN: function(val){
     var me = this;
     try{
       return me.FQDNRe.test(val);
@@ -656,7 +653,7 @@ Ext.define("NOC.form.field.VTypes", {
   //     AS12345:AS-MEGA-2:AS-MEGA-3-SET
   //   Not valid:
   //     ASMEGA-2:AS-MEGA-3-SET 
-  ASSET: function(val, field){
+  ASSET: function(val){
     var me = this;
     try{
       return me.ASSETRe.test(val);
@@ -675,7 +672,7 @@ Ext.define("NOC.form.field.VTypes", {
   ASorASSETText: "Not valid AS or ASSET, must be in form AS3505, AS-SET, AS-MEGA-SET or AS3245:AS-TEST",
 
   // Color check
-  color: function(val, field){
+  color: function(val){
     var me = this;
     return me.colorRe.test(val);
   },
@@ -692,7 +689,7 @@ Ext.define("NOC.form.field.VTypes", {
   },
   passwordText: "Passwords do not match",
 
-  json: function(val, field){
+  json: function(val){
     try{
       Ext.decode(val);
       return true
@@ -703,14 +700,14 @@ Ext.define("NOC.form.field.VTypes", {
   jsonText: "Invalid JSON",
 
   // Color check
-  handler: function(val, field){
+  handler: function(val){
     var me = this;
     return me.handlerRe.test(val);
   },
   handlerRe: /^noc(\.[a-zA-Z_][a-zA-Z0-9_]*)+$/,
   handlerText: "Invalid handler format",
 
-  float: function(val, field){
+  float: function(val){
     return !isNaN(parseFloat(val))
   },
   floatText: "Invalid floating number",
