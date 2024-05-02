@@ -482,7 +482,7 @@ NOC.error = function(){
 };
 //
 NOC.info = function(){
-  NOC.msg.info_icon.apply(this, [...arguments, "fa-info-circle"]);
+  NOC.msg.info_icon.apply(this, ["fa-info-circle", ...arguments]);
 };
 NOC.info_icon = function(){
   NOC.msg.info_icon.apply(this, arguments);

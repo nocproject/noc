@@ -326,7 +326,7 @@ Ext.define("NOC.main.desktop.Application", {
         me.setIdleTimeout(settings.idle_timeout);
         // permissions cache
         NOC.permissions$.next(me.getPermissions(settings.navigation.children));
-        NOC.info("fa-sign-in", __("Logged in as ") + settings.username);
+        NOC.info_icon("fa-sign-in", __("Logged in as ") + settings.username);
       },
       failure: function(){
         NOC.error(__("Failed to get user settings"));
