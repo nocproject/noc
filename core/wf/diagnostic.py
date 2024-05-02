@@ -547,7 +547,7 @@ class DiagnosticHub(object):
                 alarms[dc.diagnostic] = {
                     "timestamp": now,
                     "reference": f"dc:{self.__object.id}:{d.diagnostic}",
-                    "managed_object": self.__object.id,
+                    "managed_object": str(self.__object.id),
                     "$op": "raise",
                     "alarm_class": dc.alarm_class,
                     "labels": dc.alarm_labels or [],
@@ -570,7 +570,7 @@ class DiagnosticHub(object):
                         {
                             "reference": f'dc:{dd["diagnostic"]}:{self.__object.id}',
                             "alarm_class": alarm_config[dd["diagnostic"]]["alarm_class"],
-                            "managed_object": self.__object.id,
+                            "managed_object": str(self.__object.id),
                             "timestamp": now,
                             "labels": alarm_config[dd["diagnostic"]]["alarm_labels"],
                             "vars": {"reason": dd["reason"] or ""},
