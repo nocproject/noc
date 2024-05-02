@@ -1978,19 +1978,41 @@ Ext.define("NOC.sa.managedobjectprofile.Application", {
                                             name: "enable_periodic_discovery_uptime",
                                             xtype: "checkboxfield",
                                             boxLabel: __("Uptime"),
-                                            colspan: 3
+                                            colspan: 2
+                                        },
+                                        {
+                                            name: "periodic_discovery_uptime_interval",
+                                            xtype: "numberfield",
+                                            fieldLabel: __("Interval, sec"),
+                                            uiStyle: "small",
+                                            minValue: 0
                                         },
                                         {
                                             name: "enable_periodic_discovery_interface_status",
                                             xtype: "checkboxfield",
                                             boxLabel: __("Interface status"),
-                                            colspan: 3
+                                            colspan: 2
+                                        },
+                                        {
+                                            name: "periodic_discovery_interface_status_interval",
+                                            xtype: "numberfield",
+                                            fieldLabel: __("Interval, sec"),
+                                            uiStyle: "small",
+                                            minValue: 0
                                         },
                                         {
                                             name: "enable_periodic_discovery_mac",
                                             xtype: "checkboxfield",
                                             boxLabel: __("MAC"),
-                                            reference: "enablePeriodicDiscoveryMAC"
+                                            reference: "enablePeriodicDiscoveryMAC",
+                                            colspan: 3
+                                        },
+                                        {
+                                            name: "periodic_discovery_mac_interval",
+                                            xtype: "numberfield",
+                                            fieldLabel: __("Interval, sec"),
+                                            uiStyle: "small",
+                                            minValue: 0
                                         },
                                         {
                                             name: "periodic_discovery_mac_filter_policy",
@@ -2030,15 +2052,29 @@ Ext.define("NOC.sa.managedobjectprofile.Application", {
                                             name: "enable_periodic_discovery_alarms",
                                             xtype: "checkboxfield",
                                             boxLabel: __("Alarms"),
-                                            colspan: 3
+                                            colspan: 2
+                                        },
+                                        {
+                                            name: "periodic_discovery_alarms_interval",
+                                            xtype: "numberfield",
+                                            fieldLabel: __("Interval,sec"),
+                                            uiStyle: "small",
+                                            minValue: 0
                                         },
                                         {
                                             name: "enable_periodic_discovery_cpestatus",
                                             xtype: "checkboxfield",
                                             boxLabel: __("CPE status"),
                                             reference: "enablePeriodicDiscoveryCPEStatus",
-                                            colspan: 3
-                                        }
+                                            colspan: 2
+                                        },
+                                        {
+                                            name: "periodic_discovery_cpestatus_interval",
+                                            xtype: "numberfield",
+                                            fieldLabel: __("Interval,sec"),
+                                            uiStyle: "small",
+                                            minValue: 0
+                                        },
                                     ]
                                 },
                                 {
