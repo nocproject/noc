@@ -196,7 +196,7 @@ Ext.define("NOC.inv.inv.plugins.rack.RackPanel", {
         {
           xtype: "toolbar",
           dock: "top",
-          items: [me.reloadButton, "-", me.segmentedButton, me.editLoadButton, me.zoomButton],
+          items: [me.reloadButton, "-", me.segmentedButton, me.zoomButton, "-", me.editLoadButton],
         },
       ],
     });
