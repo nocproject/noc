@@ -67,6 +67,8 @@ class EscalationItem(EmbeddedDocument):
     # stop
     # create_tt
     # repeat
+    def __str__(self):
+        return f"{self.delay}: {self.create_tt}/{self.template}"
 
 
 class TTSystemItem(EmbeddedDocument):

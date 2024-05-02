@@ -132,6 +132,24 @@ Ext.define("NOC.fm.escalationprofile.Application", {
                             width: 75
                         },
                         {
+                            text: __("Match Ack"),
+                            dataIndex: "alarm_ack",
+                            width: 100,
+                            editor: {
+                                xtype: "combobox",
+                                store: [
+                                    ["ack", __("Acknowledge")],
+                                    ["nack", __("Not Acknowledge")],
+                                    ["any", __("Any")]
+                                ]
+                            },
+                            renderer: NOC.render.Choices({
+                                "ack": __("Acknowledge"),
+                                "nack": __("Not Acknowledge"),
+                                "any": __("Any")
+                            })
+                        },
+                        {
                             text: __("Time Pattern"),
                             dataIndex: "time_pattern",
                             editor: "main.timepattern.LookupField",
@@ -161,13 +179,6 @@ Ext.define("NOC.fm.escalationprofile.Application", {
                         {
                             text: __("TT"),
                             dataIndex: "create_tt",
-                            editor: "checkboxfield",
-                            width: 50,
-                            renderer: NOC.render.Bool
-                        },
-                        {
-                            text: __("Wait Condition"),
-                            dataIndex: "wait_condition",
                             editor: "checkboxfield",
                             width: 50,
                             renderer: NOC.render.Bool
