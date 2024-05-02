@@ -26,6 +26,13 @@ class Script(BaseScript):
         "CFGINPROGRESS": "provisioning",
         None: "other",
     }
+    state_map_snmp = {
+        4: "provisioning",
+        5: "active",
+        6: "provisioning",
+        7: "inactive",
+        8: "inactive",
+    }
     kv_map = {
         "serial number": "serial_number",
         "pon-password": "pon_password",
@@ -84,4 +91,33 @@ class Script(BaseScript):
                                     "distance": float(data.get("ont_distance").split()[0]) * 1000,
                                 }
                             ]
+        return r
+
+    def execute_snmp(self, **kwargs):
+        r = []
+        for oid, v in self.snmp.getnext("1.3.6.1.4.1.35265.1.209.4.1.1.1.5.1"):
+            iface = oid[len("1.3.6.1.4.1.35265.1.209.4.1.1.1.5.1") + 1 :].split(".")[0]
+            ont_id = oid[len("1.3.6.1.4.1.35265.1.209.4.1.1.1.5.1") + 1 :].split(".")[1]
+            r += [
+                {
+                    "interface": iface,
+                    "id": ont_id,
+                    "global_id": self.snmp.get(
+                        f"1.3.6.1.4.1.35265.1.209.4.1.1.1.4.1.{iface}.{ont_id}"
+                    ),
+                    "serial": self.snmp.get(
+                        f"1.3.6.1.4.1.35265.1.209.4.1.1.1.4.1.{iface}.{ont_id}"
+                    ),
+                    "model": self.snmp.get(f"1.3.6.1.4.1.35265.1.209.4.1.1.1.8.1.{iface}.{ont_id}"),
+                    "version": self.snmp.get(
+                        f"1.3.6.1.4.1.35265.1.209.4.1.1.1.7.1.{iface}.{ont_id}"
+                    ),
+                    "distance": self.snmp.get(
+                        f"1.3.6.1.4.1.35265.1.209.4.1.1.1.18.1.{iface}.{ont_id}"
+                    ),
+                    "type": "ont",
+                    "status": self.state_map_snmp.get(v, "other"),
+                }
+            ]
+
         return r

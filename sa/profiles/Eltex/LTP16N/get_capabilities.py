@@ -23,3 +23,10 @@ class Script(BaseScript):
         cpe_num = self.get_cpe_num()
         if cpe_num:
             caps["DB | CPEs"] = cpe_num
+            caps["Network | PON | OLT"] = True
+
+    def execute_platform_snmp(self, caps):
+        cpe_num = self.get_cpe_num()
+        if cpe_num:
+            caps["DB | CPEs"] = cpe_num
+            caps["Network | PON | OLT"] = True

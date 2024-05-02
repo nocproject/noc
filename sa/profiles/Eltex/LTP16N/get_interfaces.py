@@ -25,7 +25,7 @@ class Script(BaseScript):
             N = 8
 
         # PON-port
-        ifstatus = dict()
+        ifstatus = {}
         for oid, v in self.snmp.getnext("1.3.6.1.4.1.35265.1.209.4.3.1.1.3", cached=True):
             sindex = oid[len("1.3.6.1.4.1.35265.1.209.4.3.1.1.3") + 1 :].split(".")[1]
             if v == 4:
@@ -44,12 +44,19 @@ class Script(BaseScript):
                 v = False
             ifstatus[str(sindex)] = v
 
+        ifdescr = {}
+        for oid, v in self.snmp.getnext("1.3.6.1.4.1.35265.1.209.1.6.4.1.5", cached=True):
+            sindex = oid[len("1.3.6.1.4.1.35265.1.209.1.6.4.1.5") + 1 :]
+            sindex = int(sindex) + N
+            ifdescr[str(sindex)] = v
+
         for i in ifname:
             iface = {
                 "name": ifname[i],
                 "type": "physical",
                 "admin_status": ifstatus[i],
                 "oper_status": ifstatus[i],
+                "description": ifdescr.get(i),
                 "snmp_ifindex": i,
                 "subinterfaces": [
                     {
