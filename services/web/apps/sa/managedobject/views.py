@@ -153,7 +153,6 @@ class ManagedObjectApplication(ExtModelApplication):
     DISCOVERY_JOBS = [
         ("box", "noc.services.discovery.jobs.box.job.BoxDiscoveryJob"),
         ("periodic", "noc.services.discovery.jobs.periodic.job.PeriodicDiscoveryJob"),
-        ("interval", "noc.services.discovery.jobs.interval.job.IntervalDiscoveryJob"),
     ]
     clean_fields = {"id": IntParameter(), "address": StringParameter(strip_value=True)}
 
@@ -548,12 +547,13 @@ class ManagedObjectApplication(ExtModelApplication):
 
         for name, jcls in self.DISCOVERY_JOBS:
             job = Job.get_job_data("discovery", jcls=jcls, key=o.id, pool=o.pool.name) or {}
-            if name == "interval":
-                enable = getattr(o.object_profile, "enable_metrics")
-            elif name == "box" and Interaction.BoxDiscovery not in o.interactions:
+            if name == "box" and Interaction.BoxDiscovery not in o.interactions:
                 enable = False
-            elif name == "periodic" and Interaction.BoxDiscovery not in o.interactions:
-                enable = False
+            elif name == "periodic":
+                enable = Interaction.BoxDiscovery not in o.interactions and (
+                    getattr(o.object_profile, "enable_metrics")
+                    or getattr(o.object_profile, f"enable_{name}_discovery")
+                )
             else:
                 enable = getattr(o.object_profile, f"enable_{name}_discovery")
             d = {
@@ -610,15 +610,16 @@ class ManagedObjectApplication(ExtModelApplication):
         for name, jcls in self.DISCOVERY_JOBS:
             if name not in r:
                 continue
-            if name == "interval" and not getattr(o.object_profile, "enable_metrics"):
-                continue
             elif name == "box" and Interaction.BoxDiscovery not in o.interactions:
                 continue
             elif name == "periodic" and Interaction.PeriodicDiscovery not in o.interactions:
                 continue
-            elif name != "interval" and not getattr(
-                o.object_profile, f"enable_{name}_discovery", None
+            elif name == "periodic" and not (
+                getattr(o.object_profile, f"enable_{name}_discovery")
+                or getattr(o.object_profile, "enable_metrics")
             ):
+                continue
+            elif not getattr(o.object_profile, f"enable_{name}_discovery", None):
                 continue  # Disabled by profile
             Job.submit("discovery", jcls, key=o.id, pool=o.pool.name, shard=shard)
         return {"success": True}
@@ -634,13 +635,16 @@ class ManagedObjectApplication(ExtModelApplication):
         for name, jcls in self.DISCOVERY_JOBS:
             if name not in r:
                 continue
-            if name == "interval" and not getattr(o.object_profile, "enable_metrics"):
-                continue
             elif name == "box" and Interaction.BoxDiscovery not in o.interactions:
                 continue
             elif name == "periodic" and Interaction.PeriodicDiscovery not in o.interactions:
                 continue
-            elif name != "interval" and not getattr(o.object_profile, f"enable_{name}_discovery"):
+            elif name == "periodic" and not (
+                getattr(o.object_profile, f"enable_{name}_discovery")
+                or getattr(o.object_profile, "enable_metrics")
+            ):
+                continue
+            elif not getattr(o.object_profile, f"enable_{name}_discovery"):
                 continue  # Disabled by profile
             Job.remove("discovery", jcls, key=o.id, pool=o.pool.name)
         return {"success": True}

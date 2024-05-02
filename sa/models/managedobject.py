@@ -813,7 +813,6 @@ class ManagedObject(NOCModel):
 
     BOX_DISCOVERY_JOB = "noc.services.discovery.jobs.box.job.BoxDiscoveryJob"
     PERIODIC_DISCOVERY_JOB = "noc.services.discovery.jobs.periodic.job.PeriodicDiscoveryJob"
-    INTERVAL_DISCOVERY_JOB = "noc.services.discovery.jobs.interval.job.IntervalDiscoveryJob"
 
     _id_cache = cachetools.TTLCache(maxsize=1000, ttl=60)
     _bi_id_cache = cachetools.TTLCache(maxsize=1000, ttl=60)
@@ -1001,7 +1000,6 @@ class ManagedObject(NOCModel):
             pool_name = Pool.get_by_id(self.initial_data["pool"].id).name
             Job.remove("discovery", self.BOX_DISCOVERY_JOB, key=self.id, pool=pool_name)
             Job.remove("discovery", self.PERIODIC_DISCOVERY_JOB, key=self.id, pool=pool_name)
-            Job.remove("discovery", self.INTERVAL_DISCOVERY_JOB, key=self.id, pool=pool_name)
         # Reset matchers
         if (
             "vendor" in self.changed_fields
@@ -1793,9 +1791,8 @@ class ManagedObject(NOCModel):
             )
         else:
             Job.remove("discovery", self.BOX_DISCOVERY_JOB, key=self.id, pool=self.pool.name)
-        if (
-            Interaction.PeriodicDiscovery in self.interactions
-            and self.object_profile.enable_periodic_discovery
+        if Interaction.PeriodicDiscovery in self.interactions and (
+            self.object_profile.enable_periodic_discovery or self.object_profile.enable_metrics
         ):
             Job.submit(
                 "discovery",
@@ -1808,21 +1805,6 @@ class ManagedObject(NOCModel):
             )
         else:
             Job.remove("discovery", self.PERIODIC_DISCOVERY_JOB, key=self.id, pool=self.pool.name)
-        if (
-            Interaction.ServiceActivation in self.interactions
-            and self.object_profile.enable_metrics
-        ):
-            Job.submit(
-                "discovery",
-                self.INTERVAL_DISCOVERY_JOB,
-                key=self.id,
-                pool=self.pool.name,
-                delta=self.pool.get_delta(),
-                keep_ts=True,
-                shard=shard,
-            )
-        else:
-            Job.remove("discovery", self.INTERVAL_DISCOVERY_JOB, key=self.id, pool=self.pool.name)
 
     def update_topology(self):
         """

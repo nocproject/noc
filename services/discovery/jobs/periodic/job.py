@@ -19,7 +19,7 @@ from .mac import MACCheck
 from .alarms import AlarmsCheck
 from .cpestatus import CPEStatusCheck
 from .diagnostic import DiagnosticCheck
-from ..interval.metrics import MetricsCheck
+from .metrics import MetricsCheck
 from noc.config import config
 
 

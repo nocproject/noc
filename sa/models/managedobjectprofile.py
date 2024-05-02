@@ -859,8 +859,7 @@ class ManagedObjectProfile(NOCModel):
         from .managedobject import CREDENTIAL_CACHE_VERSION, MANAGEDOBJECT_CACHE_VERSION
 
         box_changed = self.is_field_changed(["enable_box_discovery"])
-        periodic_changed = self.is_field_changed(["enable_periodic_discovery"])
-        interval_changed = self.is_field_changed(["enable_metrics"])
+        periodic_changed = self.is_field_changed(["enable_periodic_discovery", "enable_metrics"])
         alarm_box_changed = self.is_field_changed(["box_discovery_alarm_policy"])
         access_changed = self.is_field_changed(
             [
@@ -871,14 +870,13 @@ class ManagedObjectProfile(NOCModel):
                 "snmp_rate_limit",
             ]
         )
-        if box_changed or periodic_changed or interval_changed:
+        if box_changed or periodic_changed:
             defer(
                 "noc.sa.models.managedobjectprofile.apply_discovery_jobs",
                 key=self.id,
                 profile_id=self.id,
                 box_changed=box_changed,
                 periodic_changed=periodic_changed,
-                interval_changed=interval_changed,
             )
         if box_changed or periodic_changed or alarm_box_changed:
             defer(
@@ -1226,7 +1224,7 @@ def update_diagnostics_alarms(profile_id, **kwargs):
             d.sync_alarms(alarm_disable=box_alarm == "D" or not enable_box_discovery)
 
 
-def apply_discovery_jobs(profile_id, box_changed, periodic_changed, interval_changed=False):
+def apply_discovery_jobs(profile_id, box_changed, periodic_changed):
     def iter_objects():
         pool_cache = cachetools.LRUCache(maxsize=200)
         pool_cache.__missing__ = lambda x: Pool.objects.get(id=x)
@@ -1274,22 +1272,6 @@ def apply_discovery_jobs(profile_id, box_changed, periodic_changed, interval_cha
                 Job.remove(
                     "discovery",
                     "noc.services.discovery.jobs.periodic.job.PeriodicDiscoveryJob",
-                    key=mo_id,
-                    pool=pool,
-                )
-        if interval_changed:
-            if profile.enable_metrics and is_managed:
-                Job.submit(
-                    "discovery",
-                    "noc.services.discovery.jobs.interval.job.IntervalDiscoveryJob",
-                    key=mo_id,
-                    pool=pool,
-                    shard=shard,
-                )
-            else:
-                Job.remove(
-                    "discovery",
-                    "noc.services.discovery.jobs.interval.job.IntervalDiscoveryJob",
                     key=mo_id,
                     pool=pool,
                 )
