@@ -208,6 +208,7 @@ Ext.define("NOC.inv.inv.plugins.rack.RackPanel", {
     var me = this,
       {sprites, height} = NOC.core.Rack.getRack(me, 5, 5, data.rack, data.content, me.getSide());
     me.drawPanelHeight = height;
+    me.zoomButton.setValue(1.0);
     me.drawPanel.getSurface().removeAll();
     me.drawPanel.getSurface().add(sprites);
     me.drawPanel.renderFrame();
