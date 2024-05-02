@@ -347,6 +347,8 @@ class ManagedObjectProfile(NOCModel):
         max_length=1,
         default="R",
     )
+    # SNMP check in periodic discovery
+    enable_periodic_discovery_snmp_check = models.BooleanField(default=False)
     # Collect uptime
     enable_periodic_discovery_uptime = models.BooleanField(default=False)
     periodic_discovery_uptime_interval = models.IntegerField(default=0)
@@ -1005,9 +1007,10 @@ class ManagedObjectProfile(NOCModel):
                     ),
                 ],
                 blocked=ac == "C",
-                run_policy="F",
+                run_policy="A",
                 run_order="S",
                 discovery_box=True,
+                discovery_periodic=self.enable_periodic_discovery_snmp_check,
                 alarm_class="NOC | Managed Object | Access Lost",
                 alarm_labels=["noc::access::method::SNMP"],
                 reason="Blocked by AccessPreference" if ac == "C" else None,

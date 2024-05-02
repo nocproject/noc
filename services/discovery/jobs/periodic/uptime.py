@@ -25,12 +25,34 @@ class UptimeCheck(DiscoveryCheck):
     required_script = "get_uptime"
 
     def handler(self):
+        mo = self.object
+        if mo.object_profile.enable_periodic_discovery_snmp_check:
+            self.logger.debug("Enabled 'enable_periodic_discovery_snmp_check'")
+            # Check SNMP availability only on SNMP devices
+            snmp_access_preference = ("S", "SC", "CS")
+
+            if mo.access_preference in snmp_access_preference or (
+                mo.access_preference == "P"
+                and mo.object_profile.access_preference in snmp_access_preference
+            ):
+                self.logger.debug("Checking SNMP capability")
+                is_snmp_available = mo.scripts.get_snmp_availability()
+                self.logger.debug("Received SNMP capability %s", is_snmp_available)
+
+                if not is_snmp_available:
+                    self.logger.debug("Raise fatal error because SNMP not available")
+                    self.set_problem(
+                        message="SNMP access problem",
+                        diagnostic="SNMP",
+                        fatal=True,
+                    )
+
         self.logger.debug("Checking uptime")
-        uptime = self.object.scripts.get_uptime()
+        uptime = mo.scripts.get_uptime()
         self.logger.debug("Received uptime: %s", uptime)
         if not uptime:
             return
-        reboot_ts = Uptime.register(self.object, uptime)
+        reboot_ts = Uptime.register(mo, uptime)
         if not reboot_ts:
             return
         self.set_artefact("reboot", True)

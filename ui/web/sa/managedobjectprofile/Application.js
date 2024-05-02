@@ -2001,6 +2001,12 @@ Ext.define("NOC.sa.managedobjectprofile.Application", {
                                             minValue: 0
                                         },
                                         {
+                                            name: "enable_periodic_discovery_snmp_check",
+                                            xtype: "checkboxfield",
+                                            boxLabel: __("SNMP availability"),
+                                            colspan: 3
+                                        },
+                                        {
                                             name: "enable_periodic_discovery_mac",
                                             xtype: "checkboxfield",
                                             boxLabel: __("MAC"),
@@ -2645,6 +2651,7 @@ Ext.define("NOC.sa.managedobjectprofile.Application", {
                 data: [
                     {field_name: "enable_periodic_discovery_uptime", label: __("Uptime")},
                     {field_name: "enable_periodic_discovery_interface_status", label: __("Interface status")},
+                    {field_name: "enable_periodic_discovery_snmp_check", label: __("SNMP availability")},
                     {field_name: "enable_periodic_discovery_mac", label: __("MAC")},
                     {field_name: "enable_periodic_discovery_metrics", label: __("Metrics")}
                 ]
