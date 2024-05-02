@@ -14,7 +14,7 @@ Ext.define("NOC.inv.inv.plugins.rack.RackPanel", {
   title: __("Rack"),
   layout: "border",
 
-  initComponent: function () {
+  initComponent: function(){
     var me = this;
 
     me.reloadButton = Ext.create("Ext.button.Button", {
@@ -22,6 +22,28 @@ Ext.define("NOC.inv.inv.plugins.rack.RackPanel", {
       scope: me,
       tooltip: __("Reload"),
       handler: me.onReload,
+    });
+
+    me.zoomButton = Ext.create("Ext.form.ComboBox", {
+      store: [
+        [0.25, "25%"],
+        [0.5, "50%"],
+        [0.75, "75%"],
+        [1.0, "100%"],
+        [1.25, "125%"],
+        [1.5, "150%"],
+        [2.0, "200%"],
+        [3.0, "300%"],
+        [4.0, "400%"],
+      ],
+      width: 100,
+      value: 1.0,
+      valueField: "zoom",
+      displayField: "label",
+      listeners: {
+        scope: me,
+        select: me.onZoom,
+      },
     });
 
     me.sideFrontButton = Ext.create("Ext.button.Button", {
@@ -108,10 +130,10 @@ Ext.define("NOC.inv.inv.plugins.rack.RackPanel", {
             minWidth: 75,
             minValue: 0,
           },
-          renderer: function (v) {
-            if (v === 0) {
+          renderer: function(v){
+            if(v === 0){
               return "-";
-            } else {
+            } else{
               return v.toString();
             }
           },
@@ -126,10 +148,10 @@ Ext.define("NOC.inv.inv.plugins.rack.RackPanel", {
             minWidth: 75,
             minValue: 0,
           },
-          renderer: function (v) {
-            if (v === 0) {
+          renderer: function(v){
+            if(v === 0){
               return "-";
-            } else {
+            } else{
               return v.toString();
             }
           },
@@ -146,10 +168,10 @@ Ext.define("NOC.inv.inv.plugins.rack.RackPanel", {
               [2, "2"],
             ],
           },
-          renderer: function (v) {
-            if (v === 0) {
+          renderer: function(v){
+            if(v === 0){
               return "-";
-            } else {
+            } else{
               return v.toString();
             }
           },
@@ -174,7 +196,7 @@ Ext.define("NOC.inv.inv.plugins.rack.RackPanel", {
         {
           xtype: "toolbar",
           dock: "top",
-          items: [me.reloadButton, "-", me.segmentedButton, "-", me.editLoadButton],
+          items: [me.zoomButton, me.reloadButton, "-", me.segmentedButton, "-", me.editLoadButton],
         },
       ],
     });
@@ -182,9 +204,10 @@ Ext.define("NOC.inv.inv.plugins.rack.RackPanel", {
     me.callParent();
   },
   //
-  preview: function (data) {
+  preview: function(data){
     var me = this,
       {sprites, height} = NOC.core.Rack.getRack(me, 5, 5, data.rack, data.content, me.getSide());
+    me.drawPanelHeight = height;
     me.drawPanel.getSurface().removeAll();
     me.drawPanel.getSurface().add(sprites);
     me.drawPanel.renderFrame();
@@ -193,45 +216,45 @@ Ext.define("NOC.inv.inv.plugins.rack.RackPanel", {
     me.rackLoadStore.loadData(data.load);
   },
   //
-  getSide: function () {
+  getSide: function(){
     var me = this;
     return me.sideRearButton.pressed ? "r" : "f";
   },
   //
-  onReload: function () {
+  onReload: function(){
     var me = this;
     Ext.Ajax.request({
       url: "/inv/inv/" + me.currentId + "/plugin/rack/",
       method: "GET",
       scope: me,
-      success: function (response) {
+      success: function(response){
         me.preview(Ext.decode(response.responseText));
       },
-      failure: function () {
+      failure: function(){
         NOC.error(__("Failed to get data"));
       },
     });
   },
   //
-  onEdit: function () {
+  onEdit: function(){
     var me = this;
 
-    if (me.editLoadButton.pressed) {
+    if(me.editLoadButton.pressed){
       me.rackLoadPanel.show();
-    } else {
+    } else{
       me.rackLoadPanel.hide();
     }
   },
-  onCellValidateEdit: function () {
+  onCellValidateEdit: function(){
     return true;
   },
   //
-  onCellEdit: function (editor, e) {
+  onCellEdit: function(editor, e){
     var me = this;
-    if (e.field === "position_front") {
+    if(e.field === "position_front"){
       e.record.set("position_rear", 0);
     }
-    if (e.field === "position_rear") {
+    if(e.field === "position_rear"){
       e.record.set("position_front", 0);
     }
     // Submit
@@ -246,17 +269,28 @@ Ext.define("NOC.inv.inv.plugins.rack.RackPanel", {
         shift: e.record.get("shift"),
       },
       loadMask: me,
-      success: function () {
+      success: function(){
         me.onReload();
       },
-      failure: function () {
+      failure: function(){
         NOC.error(__("Failed to save"));
       },
     });
   },
   //
-  onObjectSelect: function (objectId) {
+  onObjectSelect: function(objectId){
     var me = this;
     me.app.showObject(objectId);
+  },
+  //
+  onZoom: function(field){
+    var me = this,
+      zoom = field.getValue();
+    
+    Ext.each(me.drawPanel.getSurface().getItems(), function(sprite){
+      sprite.setTransform([zoom, 0, 0, zoom, 0, 0]);
+    });
+    me.drawPanel.setHeight(parseInt(me.drawPanelHeight * zoom));
+    me.drawPanel.renderFrame();
   },
 });
