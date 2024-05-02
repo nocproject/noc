@@ -242,9 +242,9 @@ Ext.define("NOC.inv.inv.Application", {
         }, me);
         me.mapButton.getMenu().removeAll();
         menuItems = data.filter(function(el){
-          return!el.is_default
+          return !el.is_default
         }).map(function(el){
-          return{
+          return {
             text: el.label,
             handler: function(){
               NOC.launch("inv.map", "history", {
@@ -293,8 +293,8 @@ Ext.define("NOC.inv.inv.Application", {
       method: "GET",
       scope: me,
       success: function(response){
-        var data = Ext.decode(response.responseText),
-          path = [, me.navTree.getRootNode().get("id")];
+        var _, data = Ext.decode(response.responseText),
+          path = [_, me.navTree.getRootNode().get("id")];
         path = path.concat(data.map(function(v){
           return v.id
         }));
@@ -324,7 +324,7 @@ Ext.define("NOC.inv.inv.Application", {
       container = sel[0];
     }
     var i = me.showItem(me.ITEM_ADD);
-    i.setTitle(__("Add object to ") + container.getPath("name"));
+    i.setContainer(container);
   },
   //
   onNavDrop: function(node, data, overModel, dropPosition){
