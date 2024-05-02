@@ -119,6 +119,7 @@ eslint:
   image: node:22-bookworm
   script:
     - set -x
+    - export ESLINT_USE_FLAT_CONFIG=false
     # Get list of changed files
     # @todo: Deprecated, remove in future
     - FLIST=$(git --no-pager diff --diff-filter=d --name-only $(git merge-base --fork-point origin/$CI_MERGE_REQUEST_TARGET_BRANCH_NAME) $CI_COMMIT_SHA  | egrep "\.js$" | grep -v ".docker/"|| true)

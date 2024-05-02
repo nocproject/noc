@@ -13,6 +13,11 @@
 		// Dockerfile target
 		"target": "dev"
 	},
+	// Environment
+	"containerEnv": {
+		"PYTHONPATH": "/opt",
+		"ESLINT_USE_FLAT_CONFIG": "false"
+	},
 	// VSCode settings
 	"customizations": {
 		"vscode": {
