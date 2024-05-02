@@ -59,20 +59,8 @@ py-lint:
     - ruff --format grouped -q . # To see stdout in joblog
     - ruff -q --format=junit . > build/reports/junit-ruff.xml
     - STATUS_RUFF=$?
-    # flake8
-    # @todo: Will be replaced by ruff
-    - >
-      if [ ! -z "$FLIST" ];
-      then
-        flake8 --format junit-xml $FLIST > build/reports/junit-flake8.xml;
-        STATUS_FLAKE8=$?;
-      else
-        echo "No files to lint";
-        true;
-        STATUS_FLAKE8=$?;
-      fi
     # Final result
-    - test $STATUS_BLACK -a $STATUS_RUFF -a $STATUS_FLAKE8
+    - test $STATUS_BLACK -a $STATUS_RUFF
   only:
     refs:
       - merge_requests
