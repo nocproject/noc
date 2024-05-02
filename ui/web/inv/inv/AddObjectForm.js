@@ -13,9 +13,8 @@ Ext.define("NOC.inv.inv.AddObjectForm", {
   padding: 4,
 
   initComponent: function(){
-    console.log("initComponent AddObjectForm");
     var me = this,
-      title  = __("Create new top-level object");
+      title = __("Create new top-level object");
 
     me.form = Ext.create("Ext.form.Panel", {
       layout: "anchor",
@@ -108,4 +107,9 @@ Ext.define("NOC.inv.inv.AddObjectForm", {
     });
   },
 
+  setContainer: function(container){
+    var me = this;
+    me.groupContainer = container;
+    me.setTitle(__("Add object to ") + container.getPath("name"));
+  },
 });
