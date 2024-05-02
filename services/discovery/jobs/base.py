@@ -307,7 +307,7 @@ class MODiscoveryJob(PeriodicJob):
                 {
                     "reference": f"d:{p.alarm_class}:{self.object.id}:{' | '.join(p.path)}",
                     "alarm_class": p.alarm_class,
-                    "managed_object": self.object.id,
+                    "managed_object": str(self.object.id),
                     "timestamp": now,
                     "labels": labels,
                     "vars": d_vars,

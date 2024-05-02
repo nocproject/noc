@@ -330,7 +330,7 @@ class PingService(FastAPIService):
                             "$op": "raise",
                             # "reference": "areference or self.get_default_reference(mo, ac, a_vars),
                             "timestamp": ts,
-                            "managed_object": ps.id,
+                            "managed_object": str(ps.id),
                             "alarm_class": self.PING_CLS,
                             "reference": f"a:{ps.id}:{address}",
                             "vars": {"address": address, "interface": ps.interface},
