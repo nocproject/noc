@@ -550,7 +550,7 @@ class ManagedObjectApplication(ExtModelApplication):
             if name == "box" and Interaction.BoxDiscovery not in o.interactions:
                 enable = False
             elif name == "periodic":
-                enable = Interaction.BoxDiscovery not in o.interactions and (
+                enable = Interaction.BoxDiscovery in o.interactions and (
                     getattr(o.object_profile, "enable_metrics")
                     or getattr(o.object_profile, f"enable_{name}_discovery")
                 )

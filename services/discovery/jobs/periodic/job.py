@@ -53,8 +53,8 @@ class PeriodicDiscoveryJob(MODiscoveryJob):
         :param interval: Job interval
         :return:
         """
-        d_interval = self.object.object_profile.periodic_discovery_interval
-        if run and interval and interval != d_interval:
+        d_interval = self.get_interval()
+        if run and interval != d_interval:
             p_sc = interval / d_interval
             if run % p_sc:  # runs
                 return False
@@ -63,47 +63,48 @@ class PeriodicDiscoveryJob(MODiscoveryJob):
     def run_checks(self):
         runs = self.get_runs()
         if self.object.object_profile.enable_periodic_discovery_uptime and self.is_run_interval(
-            self.object.object_profile.periodic_discovery_uptime_interval,
+            self.get_discovery_interval("uptime"),
             runs,
         ):
             UptimeCheck(self).run()
         if (
             self.object.object_profile.enable_periodic_discovery_interface_status
             and self.is_run_interval(
-                self.object.object_profile.periodic_discovery_interface_status_interval,
+                self.get_discovery_interval("interface_status"),
                 runs,
             )
         ):
             InterfaceStatusCheck(self).run()
+        if self.object.object_profile.enable_metrics:
+            MetricsCheck(self).run()
         if self.object.object_profile.enable_periodic_discovery_cpestatus and self.is_run_interval(
-            self.object.object_profile.periodic_discovery_cpestatus_interval,
+            self.get_discovery_interval("cpestatus"),
             runs,
         ):
             CPEStatusCheck(self).run()
         if self.object.object_profile.enable_periodic_discovery_alarms and self.is_run_interval(
-            self.object.object_profile.periodic_discovery_alarms_interval,
+            self.get_discovery_interval("alarms"),
             runs,
         ):
             AlarmsCheck(self).run()
         if self.object.object_profile.enable_periodic_discovery_mac and self.is_run_interval(
-            self.object.object_profile.periodic_discovery_mac_interval,
+            self.get_discovery_interval("mac"),
             runs,
         ):
             MACCheck(self).run()
-        if self.object.object_profile.enable_metrics:
-            MetricsCheck(self).run()
         DiagnosticCheck(self, run_order="E").run()
 
     def get_running_policy(self):
         return self.object.get_effective_periodic_discovery_running_policy()
 
     def can_run(self):
-        r = super().can_run()
-        r &= (
-            self.object.object_profile.enable_periodic_discovery
-            and self.object.object_profile.periodic_discovery_interval
-        ) or self.object.object_profile.enable_metrics
-        return r
+        return super().can_run() and (
+            (
+                self.object.object_profile.enable_periodic_discovery
+                and self.object.object_profile.periodic_discovery_interval
+            )
+            or self.object.object_profile.enable_metrics
+        )
 
     def get_discovery_interval(self, name) -> int:
         """
@@ -113,7 +114,10 @@ class PeriodicDiscoveryJob(MODiscoveryJob):
         """
         if not getattr(self.object.object_profile, f"enable_periodic_discovery_{name}"):
             return 0
-        return getattr(self.object.object_profile, f"periodic_discovery_{name}_interval")
+        return (
+            getattr(self.object.object_profile, f"periodic_discovery_{name}_interval")
+            or self.object.object_profile.periodic_discovery_interval
+        )
 
     def get_interval(self):
         if not self.object:
