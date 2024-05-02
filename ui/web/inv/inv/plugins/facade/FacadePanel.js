@@ -76,7 +76,6 @@ Ext.define("NOC.inv.inv.plugins.facade.FacadePanel", {
     });
 
     me.facadeViewPanel = Ext.create("Ext.container.Container", {
-      scrollable: true,
       layout: "fit",
       items: [me.viewCard],
     });
@@ -115,6 +114,10 @@ Ext.define("NOC.inv.inv.plugins.facade.FacadePanel", {
         };
       }),
     );
+    me.startWidth = me.facadeViewPanel.getWidth();
+    me.startHeight = me.facadeViewPanel.getHeight();
+    // Reset zoom
+    me.zoomButton.setValue(1.0);
     // Disable rear button if necessary
     me.sideRearButton.setDisabled(data.views.length < 2);
     // Press front button
@@ -137,6 +140,16 @@ Ext.define("NOC.inv.inv.plugins.facade.FacadePanel", {
   },
   //
   onZoom: function(combo){
-    console.log("Zoom to", combo.getValue());
+    var me = this,
+      width = me.startWidth,
+      height = me.startHeight;
+    Ext.each(me.query("image"), function(img){
+      var imgEl = img.getEl().dom;
+      imgEl.style.transformOrigin = "0 0";
+      imgEl.style.transform = "scale(" + combo.getValue() + ")";
+      width = Math.max(width, imgEl.width);
+      height = Math.max(height, imgEl.height);
+      me.facadeViewPanel.setWidth(width);
+    });
   },
 });
