@@ -95,6 +95,11 @@ Ext.define('NOC.LoginView', {
             this.items.items[0].value = param.msg + '<br/>' + this.items.items[0].value
         }
         this.callParent();
+    },
+    afterRender: function(){
+        var me = this;
+        me.callParent();
+        me.hideSplashScreen();
     }
     , onLoginClick: function() {
         var data = this.getViewModel().getData(),
@@ -153,5 +158,19 @@ Ext.define('NOC.LoginView', {
         } else {
             failureFunc();
         }
-    }
+    },
+    hideSplashScreen: function(){
+        var mask = Ext.get("noc-loading-mask"),
+          parent = Ext.get("noc-loading");
+        mask.fadeOut({
+          callback: function(){
+            mask.destroy();
+          },
+        });
+        parent.fadeOut({
+          callback: function(){
+            parent.destroy();
+          },
+        });
+      }
 });

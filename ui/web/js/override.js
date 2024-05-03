@@ -218,9 +218,9 @@ Ext.define('NOC.data.request.Ajax', {
           failure = { success: false, isException: false },
           result, success, response;
 
-        if(xhr.responseURL.includes('/ui/login/index.html')) {
+        if(xhr.responseURL.includes('/main/login/')) {
             NOC.restartReason = "Autologout";
-            window.location.pathname = "/ui/login/index.html";
+            window.location.pathname = "/main/login/";
             window.location.search = "&msg=Session%20Ended.";
         }
         if (!xhr || me.destroyed) {

@@ -82,7 +82,7 @@ server {
     error_log  {{ nginx_log_dir }}/noc.error.log;
 
     location @error401 {
-        return 302 /ui/login/index.html?uri=$request_uri;
+        return 302 /main/login/?uri=$request_uri;
     }
 
     location /ng_stats {
