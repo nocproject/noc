@@ -1,7 +1,7 @@
 # ---------------------------------------------------------------------
 # Periodic Discovery Job
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2021 The NOC Project
+# Copyright (C) 2007-2024 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -19,6 +19,8 @@ from .mac import MACCheck
 from .alarms import AlarmsCheck
 from .cpestatus import CPEStatusCheck
 from .diagnostic import DiagnosticCheck
+from .metrics import MetricsCheck
+from noc.config import config
 
 
 class PeriodicDiscoveryJob(MODiscoveryJob):
@@ -26,10 +28,9 @@ class PeriodicDiscoveryJob(MODiscoveryJob):
     umbrella_cls = "Discovery | Job | Periodic"
 
     # Store context
-    context_version = 1
+    context_version = 2
 
     is_periodic = True
-    default_contexts = ("counters", "metric_windows", "active_thresholds")
 
     def handler(self, **kwargs):
         with Span(sample=self.object.periodic_telemetry_sample), change_tracker.bulk_changes():
@@ -45,16 +46,51 @@ class PeriodicDiscoveryJob(MODiscoveryJob):
             else:
                 self.run_checks()
 
+    def is_run_interval(self, interval: int, run: int) -> bool:
+        """
+
+        :param run: Number of job runs
+        :param interval: Job interval
+        :return:
+        """
+        d_interval = self.get_interval()
+        if run and interval != d_interval:
+            p_sc = interval / d_interval
+            if run % p_sc:  # runs
+                return False
+        return True
+
     def run_checks(self):
-        if self.object.object_profile.enable_periodic_discovery_uptime:
+        runs = self.get_runs()
+        if self.object.object_profile.enable_periodic_discovery_uptime and self.is_run_interval(
+            self.get_discovery_interval("uptime"),
+            runs,
+        ):
             UptimeCheck(self).run()
-        if self.object.object_profile.enable_periodic_discovery_interface_status:
+        if (
+            self.object.object_profile.enable_periodic_discovery_interface_status
+            and self.is_run_interval(
+                self.get_discovery_interval("interface_status"),
+                runs,
+            )
+        ):
             InterfaceStatusCheck(self).run()
-        if self.object.object_profile.enable_periodic_discovery_cpestatus:
+        if self.object.object_profile.enable_metrics:
+            MetricsCheck(self).run()
+        if self.object.object_profile.enable_periodic_discovery_cpestatus and self.is_run_interval(
+            self.get_discovery_interval("cpestatus"),
+            runs,
+        ):
             CPEStatusCheck(self).run()
-        if self.object.object_profile.enable_periodic_discovery_alarms:
+        if self.object.object_profile.enable_periodic_discovery_alarms and self.is_run_interval(
+            self.get_discovery_interval("alarms"),
+            runs,
+        ):
             AlarmsCheck(self).run()
-        if self.object.object_profile.enable_periodic_discovery_mac:
+        if self.object.object_profile.enable_periodic_discovery_mac and self.is_run_interval(
+            self.get_discovery_interval("mac"),
+            runs,
+        ):
             MACCheck(self).run()
         DiagnosticCheck(self, run_order="E").run()
 
@@ -62,18 +98,44 @@ class PeriodicDiscoveryJob(MODiscoveryJob):
         return self.object.get_effective_periodic_discovery_running_policy()
 
     def can_run(self):
+        return super().can_run() and (
+            (
+                self.object.object_profile.enable_periodic_discovery
+                and self.object.object_profile.periodic_discovery_interval
+            )
+            or self.object.object_profile.enable_metrics
+        )
+
+    def get_discovery_interval(self, name) -> int:
+        """
+        Getting discovery interval by check name
+        :param name:
+        :return:
+        """
+        if not getattr(self.object.object_profile, f"enable_periodic_discovery_{name}"):
+            return 0
         return (
-            super().can_run()
-            and self.object.object_profile.enable_periodic_discovery
-            and self.object.object_profile.periodic_discovery_interval
+            getattr(self.object.object_profile, f"periodic_discovery_{name}_interval")
+            or self.object.object_profile.periodic_discovery_interval
         )
 
     def get_interval(self):
-        if self.object:
-            return self.object.object_profile.periodic_discovery_interval
-        else:
+        if not self.object:
             # Dereference error
             return random.randint(60, 120)
+        intervals = [self.object.object_profile.periodic_discovery_interval]
+        for check in ["uptime", "interface_status", "cpestatus", "alarms", "mac"]:
+            interval = self.get_discovery_interval(check)
+            if interval:
+                intervals.append(interval)
+        if self.object.object_profile.enable_metrics:
+            intervals.append(
+                max(
+                    self.object.effective_metric_discovery_interval,
+                    config.discovery.min_metric_interval,
+                )
+            )
+        return min(intervals)
 
     def get_failed_interval(self):
         return self.object.object_profile.periodic_discovery_interval
