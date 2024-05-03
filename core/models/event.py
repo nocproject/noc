@@ -201,6 +201,8 @@ class Event(BaseModel):
         else:
             r["target"] = data["target"]
             r["data"] = orjson.loads(data["data"])
+        if "id" not in r["target"] and data["managed_object"]["id"]:
+            r["target"]["id"] = data["managed_object"]["id"]
         if data.get("remote_system"):
             r["remote_system"] = data["remote_system"]
             r["remote_id"] = data["remote_id"]

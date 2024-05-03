@@ -233,6 +233,9 @@ class EventApplication(ExtApplication):
                 mo = ManagedObject.get_by_bi_id(r["managed_object_bi_id"])
                 if mo:
                     r["managed_object"] = {"id": str(mo.id), "name": mo.name}
+            if not r["event_class"]["id"] and r["event_class_bi_id"]:
+                event_class = EventClass.get_by_bi_id(r["event_class_bi_id"])
+                r["event_class"] = {"id": str(event_class.id), "name": event_class.name}
             x = formatter(Event.from_json(r))
             alarms = [str(a) for a in r["alarms"]]
             if alarms:
@@ -269,7 +272,7 @@ class EventApplication(ExtApplication):
             "status": "A",
             "managed_object": managed_object.id if managed_object else o.target.id,
             "managed_object__label": managed_object.name if managed_object else o.target.name,
-            "administrative_domain": managed_object.administrative_domain_id
+            "administrative_domain": managed_object.administrative_domain.id
             if managed_object
             else None,
             "administrative_domain__label": managed_object.administrative_domain.name
@@ -355,8 +358,11 @@ class EventApplication(ExtApplication):
         event = Event.get_event_by_id(id)
         if not event:
             self.response_not_found()
-        managed_object = ManagedObject.get_by_id(int(event.target.id))
-        stream, partition = managed_object.events_stream_and_partition
+        if event.target.id:
+            managed_object = ManagedObject.get_by_id(int(event.target.id))
+            stream, partition = managed_object.events_stream_and_partition
+        else:
+            managed_object, stream, partition = 0, "events.default", 0
         svc = get_service()
         svc.publish(
             orjson.dumps(event.model_dump()),
