@@ -10,27 +10,3 @@
   tags:
     - config
   when: "'Linux' in ansible_system"
-
-- name: Register supervisord's version 1/2
-  slurp:
-    src: "{{ noc_root }}/.requirements/supervisor.txt"
-  register: node_req
-  tags:
-    - config
-
-- name: Register supervisord's version 2/2
-  set_fact:
-    sup_ver: "{{ node_req['content'] | b64decode | regex_search('supervisor==(\\d+.\\d+.\\d+)', '\\1') | first }}"
-  tags:
-    - config
-
-- name: patch supervisord for oomkiller
-  patch:
-    basedir: "{{ noc_root }}"
-    src: "oom_score_adj_v{{ sup_ver }}.patch"
-  tags:
-    - config
-  when:
-    - "'Linux' in ansible_system"
-    - "'prod' in noc_env_type"
-    - noc_python_interpreter is search "python"
