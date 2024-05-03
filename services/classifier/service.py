@@ -52,6 +52,7 @@ from noc.core.ioloop.timers import PeriodicCallback
 from noc.core.comp import smart_text
 from noc.core.msgstream.message import Message
 from noc.core.wf.diagnostic import SNMPTRAP_DIAG, SYSLOG_DIAG, DiagnosticState
+from noc.core.mx import MessageType
 
 # Patterns
 rx_oid = re.compile(r"^(\d+\.){6,}$")
@@ -348,7 +349,7 @@ class ClassifierService(FastAPIService):
             msg["data"] = event.raw_vars
         # Register MX message
         await self.send_message(
-            message_type="event",
+            message_type=MessageType.EVENT,
             data=orjson.dumps(msg),
             sharding_key=int(event.managed_object.id),
             headers=event.managed_object.get_mx_message_headers(),

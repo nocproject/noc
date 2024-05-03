@@ -1,0 +1,19 @@
+{
+    "name": "noc::interface::role::uplink",
+    "$collection": "main.labels",
+    "uuid": "6f612a20-4667-47d2-8f65-4b68661a6477",
+    "description": "Auto-created",
+    "bg_color1": 15965202,
+    "fg_color1": 16777215,
+    "bg_color2": 9323693,
+    "fg_color2": 16777215,
+    "display_order": 0,
+    "allow_models": ["inv.Interface"],
+    "allow_auto_create": false,
+    "propagate": false,
+    "is_protected": false,
+    "is_matching": false,
+    "expose_metric": false,
+    "expose_datastream": false,
+    "expose_alarm": false
+}
