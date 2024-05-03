@@ -321,15 +321,6 @@ class ManagedObjectProfile(NOCModel):
     enable_box_discovery_sla = models.BooleanField(default=False)
     # Enable CPE discovery
     enable_box_discovery_cpe = models.BooleanField(default=False)
-    # Enable MAC discovery
-    enable_box_discovery_mac = models.BooleanField(default=False)
-    box_discovery_mac_filter_policy = models.CharField(
-        _("Box MAC Collect Policy"),
-        max_length=1,
-        choices=[("I", "Interface Profile"), ("A", "All")],
-        default="A",
-    )
-    mac_collect_vlanfilter = DocumentReferenceField(VLANFilter, null=True, blank=True)
     # Enable extended MAC discovery
     enable_box_discovery_xmac = models.BooleanField(default=False)
     # Enable interface description discovery
@@ -345,15 +336,6 @@ class ManagedObjectProfile(NOCModel):
         choices=[("M", "Manual"), ("D", "Prefer Discovery"), ("O", "Prefer Object")],
         default="O",
     )
-    # Enable Alarms
-    enable_box_discovery_alarms = models.BooleanField(default=False)
-    # Enable Box CPE status policy
-    box_discovery_cpestatus_policy = models.CharField(
-        _("CPE Status Policy"),
-        max_length=1,
-        choices=[("S", "Status Only"), ("F", "Full")],
-        default="S",
-    )
     # Enable periodic discovery.
     # Periodic discovery launched repeatedly
     enable_periodic_discovery = models.BooleanField(default=True)
@@ -367,10 +349,13 @@ class ManagedObjectProfile(NOCModel):
     )
     # Collect uptime
     enable_periodic_discovery_uptime = models.BooleanField(default=False)
+    periodic_discovery_uptime_interval = models.IntegerField(default=0)
     # Collect interface status
     enable_periodic_discovery_interface_status = models.BooleanField(default=False)
+    periodic_discovery_interface_status_interval = models.IntegerField(default=300)
     # Collect mac address table
     enable_periodic_discovery_mac = models.BooleanField(default=False)
+    periodic_discovery_mac_interval = models.IntegerField(default=0)
     # A - Collect all MAC addresses, I - Collect MAC allowed by Interface Profile
     periodic_discovery_mac_filter_policy = models.CharField(
         _("Periodic MAC Collect Policy"),
@@ -378,12 +363,15 @@ class ManagedObjectProfile(NOCModel):
         choices=[("I", "Interface Profile"), ("A", "All")],
         default="A",
     )
+    mac_collect_vlanfilter = DocumentReferenceField(VLANFilter, null=True, blank=True)
     # Collect metrics
     enable_metrics = models.BooleanField(default=False)
     # Enable Alarms
     enable_periodic_discovery_alarms = models.BooleanField(default=False)
+    periodic_discovery_alarms_interval = models.IntegerField(default=0)
     # Enable CPE status
     enable_periodic_discovery_cpestatus = models.BooleanField(default=False)
+    periodic_discovery_cpestatus_interval = models.IntegerField(default=0)
     # CPE status discovery settings
     periodic_discovery_cpestatus_policy = models.CharField(
         _("CPE Status Policy"),
@@ -692,7 +680,7 @@ class ManagedObjectProfile(NOCModel):
     #
     metrics_default_interval = models.IntegerField(default=300, validators=[MinValueValidator(0)])
     #
-    metrics = PydanticField(
+    metrics: List[ModelMetricConfigItem] = PydanticField(
         "Metric Config Items",
         schema=MetricConfigItems,
         blank=True,
@@ -871,8 +859,7 @@ class ManagedObjectProfile(NOCModel):
         from .managedobject import CREDENTIAL_CACHE_VERSION, MANAGEDOBJECT_CACHE_VERSION
 
         box_changed = self.is_field_changed(["enable_box_discovery"])
-        periodic_changed = self.is_field_changed(["enable_periodic_discovery"])
-        interval_changed = self.is_field_changed(["enable_metrics"])
+        periodic_changed = self.is_field_changed(["enable_periodic_discovery", "enable_metrics"])
         alarm_box_changed = self.is_field_changed(["box_discovery_alarm_policy"])
         access_changed = self.is_field_changed(
             [
@@ -883,14 +870,13 @@ class ManagedObjectProfile(NOCModel):
                 "snmp_rate_limit",
             ]
         )
-        if box_changed or periodic_changed or interval_changed:
+        if box_changed or periodic_changed:
             defer(
                 "noc.sa.models.managedobjectprofile.apply_discovery_jobs",
                 key=self.id,
                 profile_id=self.id,
                 box_changed=box_changed,
                 periodic_changed=periodic_changed,
-                interval_changed=interval_changed,
             )
         if box_changed or periodic_changed or alarm_box_changed:
             defer(
@@ -1238,7 +1224,7 @@ def update_diagnostics_alarms(profile_id, **kwargs):
             d.sync_alarms(alarm_disable=box_alarm == "D" or not enable_box_discovery)
 
 
-def apply_discovery_jobs(profile_id, box_changed, periodic_changed, interval_changed=False):
+def apply_discovery_jobs(profile_id, box_changed, periodic_changed):
     def iter_objects():
         pool_cache = cachetools.LRUCache(maxsize=200)
         pool_cache.__missing__ = lambda x: Pool.objects.get(id=x)
@@ -1286,22 +1272,6 @@ def apply_discovery_jobs(profile_id, box_changed, periodic_changed, interval_cha
                 Job.remove(
                     "discovery",
                     "noc.services.discovery.jobs.periodic.job.PeriodicDiscoveryJob",
-                    key=mo_id,
-                    pool=pool,
-                )
-        if interval_changed:
-            if profile.enable_metrics and is_managed:
-                Job.submit(
-                    "discovery",
-                    "noc.services.discovery.jobs.interval.job.IntervalDiscoveryJob",
-                    key=mo_id,
-                    pool=pool,
-                    shard=shard,
-                )
-            else:
-                Job.remove(
-                    "discovery",
-                    "noc.services.discovery.jobs.interval.job.IntervalDiscoveryJob",
                     key=mo_id,
                     pool=pool,
                 )
