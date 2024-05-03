@@ -150,10 +150,12 @@ Ext.define('NOC.LoginView', {
             var param = Ext.urlDecode(location.search);
             if('uri' in param) {
                 if(location.hash) { // web app
-                    document.location = '/' + location.hash;
+                    window.location.href = '/' + location.hash;
                 } else { // cards
-                    document.location = param.uri;
+                    window.location.href = param.uri;
                 }
+            } else {
+                window.location.href = "/";
             }
         } else {
             failureFunc();
