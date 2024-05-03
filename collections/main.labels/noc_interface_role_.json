@@ -1,0 +1,19 @@
+{
+    "name": "noc::interface::role::*",
+    "$collection": "main.labels",
+    "uuid": "5d32ef99-ebf1-4a63-b6c1-f83fec57200f",
+    "description": "Builtin Labels Scope for Interface role: nni or uni",
+    "bg_color1": 15965202,
+    "fg_color1": 16777215,
+    "bg_color2": 9323693,
+    "fg_color2": 16777215,
+    "display_order": 0,
+    "allow_models": ["inv.Interface"],
+    "allow_auto_create": true,
+    "propagate": true,
+    "is_protected": false,
+    "is_matching": false,
+    "expose_metric": false,
+    "expose_datastream": false,
+    "expose_alarm": false
+}

@@ -1,0 +1,19 @@
+{
+    "name": "noc::resourcegroup::*",
+    "$collection": "main.labels",
+    "uuid": "58227d2e-35b8-45b2-ad4a-dcfd9a696c4e",
+    "description": "Labels for Resource Group models",
+    "bg_color1": 2719929,
+    "fg_color1": 16777215,
+    "bg_color2": 15965202,
+    "fg_color2": 16777215,
+    "display_order": 0,
+    "allow_models": [],
+    "allow_auto_create": true,
+    "propagate": true,
+    "is_protected": false,
+    "is_matching": false,
+    "expose_metric": false,
+    "expose_datastream": false,
+    "expose_alarm": false
+}
