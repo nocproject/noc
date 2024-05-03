@@ -93,13 +93,15 @@ Ext.define("NOC.inv.inv.AddObjectForm", {
         container: me.groupContainer ? me.groupContainer.get("id") : null,
       },
       scope: me,
-      success: function(){
+      success: function(response){
+        var objectId = Ext.decode(response.responseText);
         me.app.showItem(me.app.ITEM_MAIN);
         if(me.groupContainer){
           me.app.store.reload({node: me.groupContainer});
         } else{
           me.app.store.reload();
         }
+        me.app.showObject(objectId, true);
       },
       failure: function(){
         NOC.error(__("Failed to save"));
@@ -110,6 +112,6 @@ Ext.define("NOC.inv.inv.AddObjectForm", {
   setContainer: function(container){
     var me = this;
     me.groupContainer = container;
-    me.setTitle(__("Add object to ") + container.getPath("name"));
+    me.setTitle(__("Add object to ") + (container ? container.getPath("name") : __("Root")));
   },
 });
