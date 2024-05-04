@@ -95,7 +95,6 @@ all:
           has_svc_pgbouncer: true
           has_svc_ping: true
           has_svc_postgres: true
-          has_svc_redpanda: true
           has_svc_sae: true
           has_svc_scheduler: true
           has_svc_syslogcollector: true
@@ -1061,9 +1060,6 @@ all:
       vars:
         liftbridge_loglevel: info
     svc-liftbridge-exec:
-      hosts:
-        noc-node-centos7: {}
-    svc-redpanda-exec:
       hosts:
         noc-node-centos7: {}
     svc-login:
