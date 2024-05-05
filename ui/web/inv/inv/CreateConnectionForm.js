@@ -970,7 +970,7 @@ Ext.define("NOC.inv.inv.CreateConnectionForm", {
       if(connection.gainDb != undefined){
         param.gain_db = connection.gainDb;
       }
-      if(connection.cable){
+      if(connection.cable != "null"){ // ExtJS converts values all properties to string
         param.cable = connection.cable;
       }
       if(param.object === param.remote_object){
@@ -1706,26 +1706,18 @@ Ext.define("NOC.inv.inv.CreateConnectionForm", {
         allowDiscriminators = pinObj.internal ? pinObj.internal.allow_discriminators : undefined,
         pinHasNewInternalConnection = Ext.Array.filter(pinsWithNewConnections, function(item){return item.pin === pinObj.id && item.type === "internal"}).length > 0,
         pinHasNewExternalConnection = Ext.Array.filter(pinsWithNewConnections, function(item){return item.pin === pinObj.id && item.type === "external"}).length > 0,
-        {
-          pinColor,
-          internalColor,
-          _name,
-          _remoteId,
-          _remoteName,
-          internalEnabled,
-          enabled,
-        } = me.pinStatus(pinObj, side),
-        _pinColor = pinHasNewExternalConnection ? pinStripe.pinColor : pinColor,
-        _enabled = pinHasNewExternalConnection ? pinStripe.enabled : enabled,
-        _internalColor = pinHasNewInternalConnection ? pinStripe.internalColor : internalColor,
-        _internalEnabled = pinHasNewInternalConnection ? pinStripe.internalEnabled : internalEnabled;
+        status = me.pinStatus(pinObj, side),
+        pinColor = pinHasNewExternalConnection ? pinStripe.pinColor : status.pinColor,
+        enabled = pinHasNewExternalConnection ? pinStripe.enabled : status.enabled,
+        internalColor = pinHasNewInternalConnection ? pinStripe.internalColor : status.internalColor,
+        internalEnabled = pinHasNewInternalConnection ? pinStripe.internalEnabled : status.internalEnabled;
 
       pinStripe.setAttributes({
-        pinColor: _pinColor,
-        enabled: _enabled,
+        pinColor: pinColor,
+        enabled: enabled,
         allowDiscriminators: allowDiscriminators,
-        internalColor: _internalColor,
-        internalEnabled: _internalEnabled,
+        internalColor: internalColor,
+        internalEnabled: internalEnabled,
       });
     });
   },
