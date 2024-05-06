@@ -31,14 +31,8 @@ class UptimeCheck(DiscoveryCheck):
         self.logger.debug("Received uptime: %s", uptime)
 
         if self.has_capability("SNMP"):
-            snmp_access_preference = ("S", "SC", "CS")
-            if uptime is None and (
-                mo.access_preference in snmp_access_preference
-                or (
-                    mo.access_preference == "P"
-                    and mo.object_profile.access_preference in snmp_access_preference
-                )
-            ):
+            mo_ac = mo.get_access_preference()
+            if uptime is None and mo_ac in ("S", "SC", "CS"):
                 self.set_problem(
                     message="SNMP access problem",
                     diagnostic="SNMP",

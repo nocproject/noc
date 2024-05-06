@@ -1005,7 +1005,7 @@ class ManagedObjectProfile(NOCModel):
                     ),
                 ],
                 blocked=ac == "C",
-                run_policy="A",
+                run_policy="F",
                 run_order="S",
                 discovery_box=True,
                 discovery_periodic=ac in ("S", "SC", "CS"),
