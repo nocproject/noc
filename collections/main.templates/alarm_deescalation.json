@@ -1,0 +1,8 @@
+{
+    "name": "Alarm Clear",
+    "$collection": "main.templates",
+    "uuid": "08f1dba5-087d-43d4-94a5-7a597937859a",
+    "subject": "[NOC]{% if alarm.escalation_tt %}[TT {{ alarm.escalation_tt }}]{% endif %}[{{ alarm.managed_object.name }}] Авария закрыта",
+    "body": "Закрыта авария {{ alarm.alarm_class.name }}\nОбъект: {{ alarm.managed_object.name }} ({{ alarm.managed_object.address }})\n",
+    "is_system": false
+}
