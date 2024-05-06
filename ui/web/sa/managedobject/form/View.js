@@ -45,8 +45,8 @@ Ext.define('NOC.sa.managedobject.form.View', {
   controller: 'managedobject.form',
   region: 'center',
   layout: 'card',
-  border: true,
-  padding: 4,
+  border: false,
+  // padding: 4,
   defaults: {
     layout: 'fit',
   },
@@ -58,7 +58,7 @@ Ext.define('NOC.sa.managedobject.form.View', {
       itemId: 'managedobject-form-panel',
       xtype: 'form',
       layout: 'anchor',
-      border: true,
+      border: false,
       padding: 4,
       defaults: {
         anchor: "100%",
@@ -1563,7 +1563,7 @@ Ext.define('NOC.sa.managedobject.form.View', {
       activeItem: 1,
       itemId: 'sa-config',
       xtype: 'sa.repopreview',
-      historyHashPrefix: "config",  // suffix from itemId
+      historyHashPrefix: "config", // suffix from itemId
       app: this,
       previewName: "{0} config",
       restUrl: "/sa/managedobject/{0}/repo/cfg/",
@@ -1576,7 +1576,7 @@ Ext.define('NOC.sa.managedobject.form.View', {
       activeItem: 2,
       itemId: 'sa-confdb',
       xtype: 'sa.confdb',
-      historyHashPrefix: "confdb",  // suffix from itemId
+      historyHashPrefix: "confdb", // suffix from itemId
       app: this,
       onClose: function(){
         this.up().setActiveItem(this.backItem);

@@ -114,8 +114,12 @@ Ext.define("NOC.inv.inv.plugins.facade.FacadePanel", {
         };
       }),
     );
-    me.startWidth = me.facadeViewPanel.getWidth();
-    me.startHeight = me.facadeViewPanel.getHeight();
+    me.startWidth = 0;
+    me.startHeight = 0;
+    if(me.isVisible()){
+      me.startWidth = me.facadeViewPanel.getWidth();
+      me.startHeight = me.facadeViewPanel.getHeight();
+    }
     // Reset zoom
     me.zoomButton.setValue(1.0);
     // Disable rear button if necessary
