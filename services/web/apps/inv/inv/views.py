@@ -462,64 +462,83 @@ class InvApplication(ExtApplication):
         request,
         **kwargs,
     ):
-        data: List[Dict[str, Any]] = self.deserialize(request.body)
-        errors = []
-        for num, link in enumerate(data):
-            lo: Object = self.get_object_or_404(Object, id=link["object"])
+        def register_error(link: Dict[str, Any], err: str) -> None:
+            self.logger.warning("Connection Error: %s", err)
+            link["error"] = err
+            errors.append(link)
+
+        def create_internal_connection(link: Dict[str, Any]) -> None:
             name, remote_name = link["name"], link["remote_name"]
-            remote_object = link.get("remote_object")
+            try:
+                discriminator = link.get("discriminator") or {}
+                lo.set_internal_connection(
+                    name,
+                    remote_name,
+                    data={
+                        "gain_db": link.get("gain_db") or 1.0,
+                        "input_discriminator": discriminator.get("input"),
+                        "output_discriminator": discriminator.get("output"),
+                    },
+                )
+                lo.save()
+            except (ConnectionError, ValidationError) as e:
+                register_error(link, str(e))
+
+        def create_cable_connection(link: Dict[str, Any], lo: Object, ro: Object) -> None:
+            cable_model = ObjectModel.get_by_name(link["cable"])
+            if not cable_model:
+                register_error(link, f"Invalid cable model: {link['cable']}")
+                return
+            name, remote_name = link["name"], link["remote_name"]
+            cable = Object(
+                name=f"Wire {lo.name}:{name} <-> {ro.name}:{remote_name}",
+                model=cable_model,
+                container=lo.container.id if lo.container else None,
+            )
+            cable.save()
+            # Connect to cable
+            c1, c2 = cable.model.connections[:2]
+            self.logger.debug("Wired connect %s:%s", c1, c2)
             reconnect = link.get("reconnect")
+            name, remote_name = link["name"], link["remote_name"]
+            try:
+                lo.connect_p2p(name, cable, c1.name, {}, reconnect=reconnect)
+                ro.connect_p2p(remote_name, cable, c2.name, {}, reconnect=reconnect)
+                lo.save()
+                ro.save()
+            except ConnectionError as e:
+                register_error(link, str(e))
+
+        def create_p2p_connection(link: Dict[str, Any], lo: Object, ro: Object) -> None:
+            name, remote_name = link["name"], link["remote_name"]
+            try:
+                lo.connect_p2p(name, ro, remote_name, {}, reconnect=link.get("reconnect"))
+            except ConnectionError as e:
+                register_error(link, str(e))
+
+        data: List[Dict[str, Any]] = self.deserialize(request.body)
+        errors: List[Dict[str, Any]] = []
+        print(">>>", data)
+        for link in data:
+            lo = self.get_object_or_404(Object, id=link["object"])
+            remote_object = link.get("remote_object")
             if link.get("is_internal"):
-                try:
-                    discriminator = link.get("discriminator") or {}
-                    lo.set_internal_connection(
-                        name,
-                        remote_name,
-                        data={
-                            "gain_db": link.get("gain_db") or 1.0,
-                            "input_discriminator": discriminator.get("input"),
-                            "output_discriminator": discriminator.get("output"),
-                        },
-                    )
-                    lo.save()
-                    continue
-                except (ConnectionError, ValidationError) as e:
-                    self.logger.warning("Connection Error: %s", str(e))
-                    errors.append(link)
-                    link["error"] = str(e)
-                    continue
-            elif remote_object:
-                ro: Object = self.get_object_or_404(Object, id=remote_object)
-            elif name == remote_name:
-                errors.append(link)
-                link["error"] = "Same slot connection is not Allowed"
+                create_internal_connection(link)
+                continue
+            if remote_object:
+                # Connect to the remote object
+                ro = self.get_object_or_404(Object, id=remote_object)
+            elif link["name"] == link["remote_name"]:
+                register_error(link, "Circular connection to same slot is not allowed")
                 continue
             else:
-                # Connect same
+                # Connect the same object
                 ro = lo
-            cable_o: Optional[Object] = None
             if link.get("cable"):
-                cable = ObjectModel.get_by_name(link["cable"])
-                cable_o = Object(
-                    name=f"Wire {lo.name}:{name} <-> {ro.name}:{remote_name}",
-                    model=cable,
-                    container=lo.container.id if lo.container else None,
-                )
-                cable_o.save()
-            try:
-                if cable_o:
-                    c1, c2 = cable_o.model.connections[:2]
-                    self.logger.debug("Wired connect %s:%s", c1, c2)
-                    lo.connect_p2p(name, cable_o, c1.name, {}, reconnect=reconnect)
-                    ro.connect_p2p(remote_name, cable_o, c2.name, {}, reconnect=reconnect)
-                    lo.save()
-                    ro.save()
-                else:
-                    lo.connect_p2p(name, ro, remote_name, {}, reconnect=reconnect)
-            except ConnectionError as e:
-                self.logger.warning("Connection Error: %s", str(e))
-                link["error"] = str(e)
-                errors.append(link)
+                create_cable_connection(link, lo, ro)
+            else:
+                create_p2p_connection(link, lo, ro)
+        # Check for errors
         if errors:
             return self.render_json(
                 {"status": False, "text": "Invalid connections", "invalid_connections": errors}
