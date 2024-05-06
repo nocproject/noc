@@ -77,11 +77,14 @@ RUN \
     snmp \
     vim \
     git \
+    nodejs \
+    npm \
     && pip3 install\
     -r ./.requirements/dev.txt\
     -r ./.requirements/lint.txt\
     -r ./.requirements/test.txt\
     -r ./.requirements/docs.txt\
+    && npm install -g eslint@8\
     && rm -rf /var/lib/apt/lists/*
 
 #
