@@ -56,6 +56,7 @@ class Router(object):
         ):
             self.chains[route.type] += [Route.from_data(route.get_route_config())]
         logger.info("Loading %s route", num)
+        self.rebuild_chains()
 
     def has_route(self, route_id: str) -> bool:
         """
