@@ -18,11 +18,6 @@ Ext.define("NOC.inv.inv.CreateConnectionForm", {
   AVAILABLE_COLOR: "#2c3e50",
   OCCUPIED_COLOR: "lightgray",
   INVALID_COLOR: "lightcoral",
-  boxWidth: 20,
-  boxHeight: 20,
-  schemaPadding: 60, // boxHeight * 3,
-  gap: 12.5,
-  scale: 1,
   discriminatorWidth: {left: -155, right: 155},
   legendHeight: 20,
   firstTrace: 3,
@@ -46,10 +41,18 @@ Ext.define("NOC.inv.inv.CreateConnectionForm", {
       isDirty: false,
     },
   },
+  initValues: function(){
+    var me = this;
+    me.boxWidth = 20;
+    me.boxHeight= 20;
+    me.schemaPadding = 60; // boxHeight * 3,
+    me.gap = 12.5;
+    me.scale = 1;
+  },
   initComponent: function(){
     var me = this;
     me.flag = 0;
-
+    me.initValues();
     me.drawPanel = Ext.create({
       xtype: "draw",
       itemId: "canvas",
@@ -239,7 +242,7 @@ Ext.define("NOC.inv.inv.CreateConnectionForm", {
   },
   cleanForm: function(){
     var me = this;
-
+    me.initValues();
     me.setTitle(__("Object connections"));
     me.cleanViewModel();
     me.drawPanel.removeAll(true);
