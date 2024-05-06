@@ -49,6 +49,15 @@ Ext.define("NOC.fm.escalationprofile.Model", {
             defaultValue: false
         },
         {
+            name: "repeat_escalations",
+            type: "string",
+            defaultValue: "N"
+        },
+        {
+            name: "max_repeats",
+            type: "integer",
+        },
+        {
             name: "escalations",
             type: "auto"
         },

@@ -71,7 +71,7 @@ Ext.define("NOC.fm.escalationprofile.Application", {
                     name: "maintenance_policy",
                     xtype: "combobox",
                     fieldLabel: __("Escalate Maintenance Policy"),
-                    allowBlank: false,
+                    allowBlank: true,
                     queryMode: "local",
                     displayField: "label",
                     valueField: "id",
@@ -88,7 +88,7 @@ Ext.define("NOC.fm.escalationprofile.Application", {
                     name: "alarm_consequence_policy",
                     xtype: "combobox",
                     fieldLabel: __("Escalate Alarm Consequence Policy"),
-                    allowBlank: false,
+                    allowBlank: true,
                     queryMode: "local",
                     displayField: "label",
                     valueField: "id",
@@ -117,6 +117,23 @@ Ext.define("NOC.fm.escalationprofile.Application", {
                             {id: "E", label: "End Escalation"},
                             {id: "CT", label: "Close TT"},
                             {id: "M", label: "Manual"}]
+                    },
+                    uiStyle: "medium"
+                },
+                {
+                    name: "repeat_escalations",
+                    xtype: "combobox",
+                    fieldLabel: __("Repeat Escalations"),
+                    allowBlank: false,
+                    queryMode: "local",
+                    displayField: "label",
+                    valueField: "id",
+                    store: {
+                        fields: ["id", "label"],
+                        data: [
+                            {id: "N", label: "Newer"},
+                            {id: "S", label: "Severity Change"},
+                            {id: "D", label: "After delay"}]
                     },
                     uiStyle: "medium"
                 },
@@ -159,7 +176,7 @@ Ext.define("NOC.fm.escalationprofile.Application", {
                             text: __("Severity"),
                             dataIndex: "min_severity",
                             editor: "fm.alarmseverity.LookupField",
-                            width: 70,
+                            width: 120,
                             renderer: NOC.render.Lookup("min_severity")
                         },
                         {
@@ -193,10 +210,18 @@ Ext.define("NOC.fm.escalationprofile.Application", {
                      ]
                 },
                 {
+                    name: "max_repeats",
+                    xtype: "numberfield",
+                    fieldLabel: __("Max Repeats"),
+                    allowBlank: true,
+                    min: 0,
+                    uiStyle: "small"
+                },
+                {
                     name: "telemetry_sample",
                     xtype: "numberfield",
                     fieldLabel: __("Tememetry Sample"),
-                    allowBlank: false,
+                    allowBlank: true,
                     min: 0,
                     uiStyle: "small"
                 }
