@@ -314,6 +314,7 @@ class ManagedObjectManager(Manager):
         ("inv.Interface", "managed_object"),
         ("inv.SubInterface", "managed_object"),
         ("inv.ForwardingInstance", "managed_object"),
+        ("sa.ManagedObject", "controller"),
         ("sla.SLAProbe", "managed_object"),
     ],
     delete=[
