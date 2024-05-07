@@ -10,12 +10,12 @@
 
 - name: Add firewall permissions for nodes
   firewalld:
-    port: "{{ syslogcollector_listen_syslog.split(':')[1] }}/udp"
+    port: "{{ syslogcollector_listen.split(':')[1] }}/udp"
     permanent: "True"
     state: enabled
     immediate: "True"
   when:
-    - syslogcollector_listen_syslog is defined
+    - syslogcollector_listen is defined
     - "firewalld_state.status.ActiveState == 'active'"
     - syslogcollector_permit_firewall
   tags:

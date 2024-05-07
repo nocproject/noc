@@ -7,7 +7,7 @@ command:
     timeout: 10000
 {% if molecule_yml is not defined %}
 {% if trapcollector_permit_firewall | bool %}
-  /sbin/iptables-save | grep "dport {{ trapcollector_listen_traps.split(':')[1] }}":
+  /sbin/iptables-save | grep "dport {{ trapcollector_listen.split(':')[1] }}":
     exit-status: 0
     stdout:
     - /ACCEPT/
