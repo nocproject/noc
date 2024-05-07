@@ -414,6 +414,9 @@ class Label(Document):
         # Propagate Wildcard Settings
         if self.is_wildcard and self.propagate:
             settings = self.effective_settings
+            if not settings:
+                # Nothing propagate
+                return
             coll = Label._get_collection()
             coll.update_many({"name": re.compile(f"{self.scope}::[^*].+")}, {"$set": settings})
 
