@@ -25,7 +25,7 @@ forms:
         - warning
         - error
         - critical
-    listen_syslog:
+    listen:
       default: "0.0.0.0:514"
       label: "Listen SYSLOG"
       type: str
