@@ -340,7 +340,7 @@ class InvApplication(ExtApplication):
             result[key]["internal_connections"] = left_cross
             for c in o_from.model.connections:
                 cid = f"{str(o_from.id)}{c.name}"
-                id_ports_map[c.name] = cid
+                id_ports_map[key, c.name] = cid
                 c_data = o_from.get_effective_connection_data(c.name)
                 oc, oo, _ = o_from.get_p2p_connection(c.name)
                 self.logger.debug(
@@ -413,9 +413,9 @@ class InvApplication(ExtApplication):
                 if remote:
                     result["wires"].append(
                         [
-                            {"id": id_ports_map.get(p.name, 0), "name": p.name, "side": "left"},
+                            {"id": id_ports_map.get(("left", p.name), 0), "name": p.name, "side": "left"},
                             {
-                                "id": id_ports_map.get(remote.connection, 0),
+                                "id": id_ports_map.get(("right", remote.connection), 0),
                                 "name": remote.connection,
                                 "side": "right",
                             },
