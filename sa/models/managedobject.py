@@ -320,7 +320,7 @@ class ManagedObjectManager(Manager):
     delete=[
         ("sa.ManagedObjectAttribute", "managed_object"),
         ("sa.CPEStatus", "managed_object"),
-        ("inv.CPE", "controller"),
+        ("inv.CPE", "controllers__managed_object"),
         ("inv.MACDB", "managed_object"),
         ("sa.ServiceSummary", "managed_object"),
         ("inv.DiscoveryID", "object"),
