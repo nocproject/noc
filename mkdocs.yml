@@ -1199,4 +1199,4 @@ extra:
   "yes": ":material-check:"
   "no": ":material-close:"
   wbr: "<wbr>"
-  version: "23.1.4"
+  version: "24.1"
