@@ -413,7 +413,11 @@ class InvApplication(ExtApplication):
                 if remote:
                     result["wires"].append(
                         [
-                            {"id": id_ports_map.get(("left", p.name), 0), "name": p.name, "side": "left"},
+                            {
+                                "id": id_ports_map.get(("left", p.name), 0),
+                                "name": p.name,
+                                "side": "left",
+                            },
                             {
                                 "id": id_ports_map.get(("right", remote.connection), 0),
                                 "name": remote.connection,
