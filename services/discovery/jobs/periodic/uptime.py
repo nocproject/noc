@@ -32,13 +32,11 @@ class UptimeCheck(DiscoveryCheck):
 
         if self.has_capability("SNMP"):
             mo_ac = mo.get_access_preference()
-            if uptime is None and mo_ac in ("S", "SC", "CS"):
+            if uptime is None and "S" in mo_ac:
                 self.set_problem(
                     message="SNMP access problem",
                     diagnostic="SNMP",
-                    fatal=True,
                 )
-                return
 
         if not uptime:
             return
