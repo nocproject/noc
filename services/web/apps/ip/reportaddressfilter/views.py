@@ -32,7 +32,7 @@ class ReportFilterApplication(SimpleReport):
                 required=False,
                 choices=[("", "All"), ("4", _("IPv4")), ("6", _("IPv6"))],
             )
-            managed_object = forms.CharField(label=_("Managed object"), required=False)
+            managed_object = forms.CharField(label=_("Managed Object"), required=False)
             description = forms.CharField(label=_("Description"), required=False)
             fqdn = forms.CharField(label=_("FQDN"), required=False)
             name = forms.CharField(label=_("Name"), required=False)
