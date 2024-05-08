@@ -78,7 +78,7 @@ Ext.define("NOC.inv.inv.sprites.Label", {
             translationX: attr.labelTranslationX,
             translationY: attr.labelTranslationY,
             fill: attr.labelColor,
-            globalAlpha: attr.enabled ? 1 : 0.5,
+            globalAlpha: attr.enabled ? 1 : me.getOpacity(),
           });
         },
       },
@@ -86,6 +86,7 @@ Ext.define("NOC.inv.inv.sprites.Label", {
   },
   config: {
     isSelected: false,
+    opacity: 0.7,
   },
   hitTest: function(point){
     var me = this,
@@ -124,7 +125,7 @@ Ext.define("NOC.inv.inv.sprites.Label", {
         y: attr.labelY,
         translationX: attr.labelTranslationX,
         translationY: attr.labelTranslationY,
-        globalAlpha: attr.enabled ? 1 : 0.5,
+        globalAlpha: attr.enabled ? 1 : me.getOpacity(),
         hidden: false,
       });
     }

@@ -83,7 +83,7 @@ Ext.define("NOC.inv.inv.sprites.Pin", {
             fillStyle: attr.pinColor,
             stroke: attr.isSelected && !attr.isInternalFixed ? "lightgreen" : "black",
             lineWidth: attr.isSelected && !attr.isInternalFixed ? 3 : 1,
-            globalAlpha: attr.enabled ? 1 : 0.5,
+            globalAlpha: attr.enabled ? 1 : me.getOpacity(),
           });
           me.pinName = attr.pinName;
           me.pinNameOrig = attr.pinNameOrig;
@@ -155,6 +155,7 @@ Ext.define("NOC.inv.inv.sprites.Pin", {
     fontSize: 12,
     fontFamily: "arial",
     fontWeight: "normal",
+    opacity: 0.7,
   },
   hitTest: function(point){
     // Removed the isVisible check since pin will always be visible.
