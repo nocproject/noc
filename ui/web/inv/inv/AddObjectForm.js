@@ -98,10 +98,16 @@ Ext.define("NOC.inv.inv.AddObjectForm", {
         me.app.showItem(me.app.ITEM_MAIN);
         if(me.groupContainer){
           me.app.store.reload({node: me.groupContainer});
+          me.app.showObject(objectId, false);
+          me.groupContainer.expand();
         } else{
-          me.app.store.reload();
+          me.app.store.reload({
+            callback: function(){
+              me.app.showObject(objectId, false);
+            },
+          });
         }
-        me.app.showObject(objectId, true);
+        me.app.setHistoryHash(objectId);
       },
       failure: function(){
         NOC.error(__("Failed to save"));
