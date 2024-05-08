@@ -338,6 +338,8 @@ class ClassifierService(FastAPIService):
                 metrics[EventMetrics.CR_FAILED] += 1
                 return None, None  # Drop malformed message
             metrics[EventMetrics.CR_PREPROCESSED] += 1
+            if not event.vars:
+                return event_class, self.ruleset.eval_vars(event, event_class, raw_vars)
             return event_class, event.vars
         # Prevent unclassified events flood
         if self.check_unclassified_syslog_flood(event):
@@ -439,6 +441,7 @@ class ClassifierService(FastAPIService):
             num_partitions = await self.get_stream_partitions(stream)
             self.pool_partitions[fm_pool] = num_partitions
         partition = int(mo.id) % num_partitions
+        event.target.id = str(mo.id)
         self.publish(
             orjson.dumps({"$op": "event", "event_id": str(event.id), "event": event.model_dump()}),
             # To dispose
