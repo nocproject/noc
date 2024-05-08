@@ -1198,9 +1198,14 @@ Ext.define("NOC.inv.inv.CreateConnectionForm", {
               });
             }
           }
-          sprite.setAttributes({
-            actualScale: 1,
-          });
+          if(sprite.enabled){
+            sprite.setAttributes({
+              actualScale: 1,
+            });
+            mainSurface.get("label" + sprite.id).setAttributes({
+              isSelected: false,
+            });
+          }
           // wire connections
           Ext.each(me.drawPanel.getSurface().getItems(), function(s){
             if(s.fromPortId === sprite.id || s.toPortId === sprite.id){
@@ -1212,9 +1217,6 @@ Ext.define("NOC.inv.inv.CreateConnectionForm", {
             if(s.fromPortId === sprite.id || s.toPortId === sprite.id){
               s.setAttributes({isSelected: false});
             }
-          });
-          mainSurface.get("label" + sprite.id).setAttributes({
-            isSelected: false,
           });
           break;
         }
@@ -1257,9 +1259,15 @@ Ext.define("NOC.inv.inv.CreateConnectionForm", {
     if(!me.drawPanel.isModalOpen){
       switch(sprite.type){
         case"pin": {
-          sprite.setAttributes({
-            actualScale: 1.2,
-          });
+          if(sprite.enabled){
+            sprite.setAttributes({
+              actualScale: 1.2,
+            });
+            // illumination of selected label
+            mainSurface.get("label" + sprite.id).setAttributes({
+              isSelected: true,
+            });
+          }
           // illumination of ALL wire connections
           Ext.each(mainSurface.getItems(), function(s){
             if(s.fromPortId === sprite.id || s.toPortId === sprite.id){
@@ -1271,10 +1279,6 @@ Ext.define("NOC.inv.inv.CreateConnectionForm", {
             if(s.fromPortId === sprite.id || s.toPortId === sprite.id){
               s.setAttributes({isSelected: true});
             }
-          });
-          // illumination of selected label
-          mainSurface.get("label" + sprite.id).setAttributes({
-            isSelected: true,
           });
           if(me.isPinAvailableForSelect(sprite)){
             var viewModel = me.getViewModel(),
