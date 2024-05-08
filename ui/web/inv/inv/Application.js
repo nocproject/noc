@@ -64,6 +64,7 @@ Ext.define("NOC.inv.inv.Application", {
       glyph: NOC.glyph.plug,
       tooltip: __("Create connection"),
       scope: me,
+      disabled: true,
       handler: me.onCreateConnection,
     });
 
@@ -89,6 +90,7 @@ Ext.define("NOC.inv.inv.Application", {
       glyph: NOC.glyph.minus,
       tooltip: __("Remove group"),
       scope: me,
+      disabled: true,
       handler: me.onRemoveGroup,
     });
 
@@ -233,6 +235,8 @@ Ext.define("NOC.inv.inv.Application", {
     me.addButton.setDisabled(!record.get("can_add"));
     me.removeButton.setDisabled(!record.get("can_delete"));
     me.dashboardButton.setDisabled(false);
+    me.createConnectionButton.setDisabled(false);
+    me.mapButton.setDisabled(false);
     me.tabPanel.mask(__("Loading..."));
     setTimeout(function(){
       Ext.Ajax.request({
@@ -292,17 +296,16 @@ Ext.define("NOC.inv.inv.Application", {
   onDeselect: function(){
     var me = this;
     me.dashboardButton.setDisabled(true);
+    me.removeButton.setDisabled(true);
+    me.createConnectionButton.setDisabled(true);
+    me.mapButton.setDisabled(true);
+    me.tabPanel.removeAll();
+    me.setHistoryHash();
   },
   // Expand nav tree to object
   showObject: function(objectId, reload){
     var me = this;
     if(reload){
-      me.store.on("load", function(){
-        me.showObject(objectId)
-      }, {
-        scope: me,
-        single: true,
-      });
       me.onReloadNav();
     }
     Ext.Ajax.request({
@@ -310,13 +313,14 @@ Ext.define("NOC.inv.inv.Application", {
       method: "GET",
       scope: me,
       success: function(response){
-        var _, data = Ext.decode(response.responseText),
-          path = [_, me.navTree.getRootNode().get("id")];
-        path = path.concat(data.map(function(v){
-          return v.id
-        }));
+        var data = Ext.decode(response.responseText),
+          path = Ext.Array.reduce(data, function(acc, curr){
+            return acc + "/" + curr.id
+          }, "/" + me.navTree.getRootNode().get("id"));
+        
+        console.debug("path : ", path, objectId, me.store.getById(objectId));
         me.navTree.selectPath(
-          path.join("/"), "id", "/",
+          path, "id", "/",
           function(success){
             if(!success){
               NOC.error(__("Failed to find node"));
@@ -386,11 +390,21 @@ Ext.define("NOC.inv.inv.Application", {
               url: "/inv/inv/remove_group/",
               method: "DELETE",
               jsonData: {
-                container: container.get("id"),
+                container: container.id,
               },
               scope: me,
               success: function(){
-                me.store.reload({node: me.store.getRootNode()});
+                var parentId = container.get("parentId");
+                sm.deselect(container);
+                if(parentId === "root"){
+                  me.store.reload({node: me.store.getRootNode()});
+                  me.tabPanel.removeAll();
+                  me.setHistoryHash();
+                } else{
+                  me.showObject(parentId, false);
+                  me.store.remove(container);
+                  me.setHistoryHash(parentId);
+                }
               },
               failure: function(){
                 NOC.error(__("Failed to delete group"));
