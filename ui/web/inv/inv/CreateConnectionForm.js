@@ -16,8 +16,8 @@ Ext.define("NOC.inv.inv.CreateConnectionForm", {
   app: null,
   itemId: "invConnectionForm",
   AVAILABLE_COLOR: NOC.colors.yes,
-  OCCUPIED_COLOR: NOC.colors.no,
-  INVALID_COLOR: "lightcoral",
+  OCCUPIED_COLOR: NOC.colors.midnightblue,
+  INVALID_COLOR: NOC.colors.silver,
   discriminatorWidth: {left: -155, right: 155},
   legendHeight: 20,
   firstTrace: 3,
@@ -403,9 +403,9 @@ Ext.define("NOC.inv.inv.CreateConnectionForm", {
     surface.renderFrame();
   },
   drawLegend: function(surface){
-    surface.add(this.makeLegend(__("Free and valid slot"), this.AVAILABLE_COLOR, 2.5, this.surfaceHeight));
-    surface.add(this.makeLegend(__("Occupied slot"), this.OCCUPIED_COLOR, 250, this.surfaceHeight));
-    surface.add(this.makeLegend(__("Invalid slot"), this.INVALID_COLOR, 500, this.surfaceHeight));
+    surface.add(this.makeLegend(__("Free slot"), this.AVAILABLE_COLOR, 2.5, this.surfaceHeight));
+    surface.add(this.makeLegend(__("Occupied slot"), this.OCCUPIED_COLOR, 100, this.surfaceHeight));
+    //surface.add(this.makeLegend(__("Invalid slot"), this.INVALID_COLOR, 500, this.surfaceHeight));
   },
   drawObject: function(pins, surface, side, hasDiscriminator){
     var me = this;
