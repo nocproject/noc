@@ -30,6 +30,8 @@ Ext.define("NOC.inv.inv.sprites.Label", {
         labelFontWeight: "string",
         labelFontSize: "string",
         isSelected: "bool",
+        labelColor: "string",
+        enabled: "bool",
       },
       triggers: {
         pinId: "recalculate",
@@ -49,6 +51,8 @@ Ext.define("NOC.inv.inv.sprites.Label", {
         labelTranslationX: "recalculate",
         labelTranslationY: "recalculate",
         isSelected: "recalculate",
+        labelColor: "recalculate",
+        enabled: "recalculate",
       },
       updaters: {
         recalculate: function(attr){
@@ -73,6 +77,8 @@ Ext.define("NOC.inv.inv.sprites.Label", {
             y: attr.labelY,
             translationX: attr.labelTranslationX,
             translationY: attr.labelTranslationY,
+            fill: attr.labelColor,
+            globalAlpha: attr.enabled ? 1 : 0.5,
           });
         },
       },
@@ -118,6 +124,7 @@ Ext.define("NOC.inv.inv.sprites.Label", {
         y: attr.labelY,
         translationX: attr.labelTranslationX,
         translationY: attr.labelTranslationY,
+        globalAlpha: attr.enabled ? 1 : 0.5,
         hidden: false,
       });
     }
