@@ -1344,6 +1344,7 @@ Ext.define("NOC.inv.inv.CreateConnectionForm", {
       remoteId = "none",
       remoteName = "none",
       internalEnabled = true,
+      masked = false,
       enabled = true;
 
     if(!pin.free){
@@ -1364,6 +1365,7 @@ Ext.define("NOC.inv.inv.CreateConnectionForm", {
     if(!pin.valid){
       pinColor = me.INVALID_COLOR;
       enabled = false;
+      masked = true;
     }
     if(pin.internal){
       if(!pin.internal.valid){
@@ -1384,6 +1386,7 @@ Ext.define("NOC.inv.inv.CreateConnectionForm", {
       remoteName: remoteName,
       internalEnabled: internalEnabled,
       enabled: enabled,
+      masked: masked,
     };
   },
   /**
@@ -1417,7 +1420,7 @@ Ext.define("NOC.inv.inv.CreateConnectionForm", {
           labelTranslationX: pin.label.attr.translationX,
           labelTranslationY: pin.label.attr.translationY,
           enabled: pin.enabled,
-          labelColor: pin.enabled ? "black" : pin.pinColor,
+          labelColor: pin.masked ? pin.pinColor : "black",
           zIndex: 60,
         });
       });
@@ -1429,7 +1432,7 @@ Ext.define("NOC.inv.inv.CreateConnectionForm", {
         var label = surface.get("label" + pin.id);
         label.setAttributes({
           enabled: pin.enabled,
-          labelColor: pin.enabled ? "black" : pin.pinColor,
+          labelColor: pin.masked ? pin.pinColor : "black",
         });
       });
   },
