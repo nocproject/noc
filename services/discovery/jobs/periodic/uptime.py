@@ -30,13 +30,12 @@ class UptimeCheck(DiscoveryCheck):
         uptime = mo.scripts.get_uptime()
         self.logger.debug("Received uptime: %s", uptime)
 
-        if self.has_capability("SNMP"):
-            mo_ac = mo.get_access_preference()
-            if uptime is None and "S" in mo_ac:
-                self.set_problem(
-                    message="SNMP access problem",
-                    diagnostic="SNMP",
-                )
+        mo_ac = mo.get_access_preference()
+        if uptime is None and "S" in mo_ac:
+            self.set_problem(
+                message="SNMP access problem",
+                diagnostic="SNMP",
+            )
 
         if not uptime:
             return
