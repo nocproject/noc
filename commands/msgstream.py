@@ -51,6 +51,10 @@ class Command(BaseCommand):
         # drop-stream
         delete_parser = subparsers.add_parser("delete-stream")
         delete_parser.add_argument("--name")
+        # alter partition num
+        alter_parser = subparsers.add_parser("alter-stream")
+        alter_parser.add_argument("--name")
+        alter_parser.add_argument("--partitions", type=int, default=0)
         # subscribe
         subscribe_parser = subparsers.add_parser("subscribe")
         subscribe_parser.add_argument("--name")
@@ -153,6 +157,27 @@ class Command(BaseCommand):
                 await client.delete_stream(name)
 
         run_sync(delete)
+
+    def handle_alter_stream(
+        self,
+        name: str,
+        partitions: int = 1,
+        rf: int = 1,
+        *args,
+        **kwargs,
+    ):
+        async def alter():
+            async with MessageStreamClient() as client:
+                meta = await client.fetch_metadata(name)
+                stream_meta = meta.metadata[name] if name in meta.metadata else None
+                await client.alter_stream(
+                    name=name,
+                    current_meta=stream_meta,
+                    new_partitions=partitions,
+                    replication_factor=rf,
+                )
+
+        run_sync(alter)
 
     def handle_subscribe(
         self,
