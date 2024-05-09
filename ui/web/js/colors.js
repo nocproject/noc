@@ -23,6 +23,16 @@ NOC.colors.piterriver = "#3498db";
 NOC.colors.sunflower = "#f1c40f";
 NOC.colors.black = "#232323";
 NOC.colors.while = "#ffffff";
+NOC.colors.turquoise = "#1abc9c";
+NOC.colors.greansea = "#16a085";
+NOC.colors.orange = "#f39c12";
+NOC.colors.nephritis = "#27ae60";
+NOC.colors.carrot = "#e67e22";
+NOC.colors.pumpkin = "#d35400";
+NOC.colors.belizehole = "#2980b9";
+NOC.colors.alizarine = "#e74c3c";
+NOC.colors.amethyst = "#9b59b6";
+NOC.colors.wisteria = "#8e44ad";
 
 //---------------------------------------------------------------------
 // Actions
