@@ -86,7 +86,6 @@ Ext.define("NOC.inv.inv.sprites.Pin", {
             fillStyle: attr.pinColor,
             stroke: attr.isSelected && !attr.isInternalFixed ? "lightgreen" : "black",
             lineWidth: attr.isSelected && !attr.isInternalFixed ? 3 : 1,
-            globalAlpha: attr.enabled ? 1 : me.getOpacity(),
           });
           me.pinName = attr.pinName;
           me.pinNameOrig = attr.pinNameOrig;
