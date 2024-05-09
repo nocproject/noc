@@ -12,7 +12,8 @@ import re
 
 # NOC modules
 from noc.core.validators import is_oid
-from noc.core.models.event import Event, EventSource
+from noc.core.fm.event import Event
+from noc.core.fm.enum import EventSource
 from noc.fm.models.ignorepattern import IgnorePattern
 
 

@@ -12,7 +12,7 @@ from typing import Literal
 from pydantic import BaseModel, Field
 
 # NOC modules
-from noc.core.models.event import Event
+from noc.core.fm.event import Event
 
 
 class EventRequest(BaseModel):

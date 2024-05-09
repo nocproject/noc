@@ -22,7 +22,7 @@ from noc.config import config
 from noc.core.perf import metrics
 from noc.core.error import NOCError
 from noc.core.service.fastapi import FastAPIService
-from noc.core.models.event import EventSource
+from noc.core.fm.enum import EventSource
 from noc.core.mx import (
     MX_STREAM,
     get_mx_partitions,

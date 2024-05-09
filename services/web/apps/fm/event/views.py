@@ -28,7 +28,7 @@ from noc.sa.models.administrativedomain import AdministrativeDomain
 from noc.sa.interfaces.base import ModelParameter, UnicodeParameter, DateTimeParameter
 from noc.inv.models.resourcegroup import ResourceGroup
 from noc.core.service.loader import get_service
-from noc.core.models.event import Event, EVENT_QUERY as EVENT_QUERY_1
+from noc.core.fm.event import Event, EVENT_QUERY as EVENT_QUERY_1
 from noc.core.escape import json_escape
 from noc.core.comp import smart_text
 from noc.core.clickhouse.connect import connection

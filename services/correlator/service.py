@@ -64,7 +64,7 @@ from noc.core.perf import metrics
 from noc.core.fm.enum import RCA_RULE, RCA_TOPOLOGY, RCA_DOWNLINK_MERGE
 from noc.core.msgstream.message import Message
 from noc.core.wf.interaction import Interaction
-from noc.core.models.event import Event
+from noc.core.fm.event import Event
 from noc.services.correlator.rcalock import RCALock
 from noc.services.correlator.alarmrule import GroupItem
 

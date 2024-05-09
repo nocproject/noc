@@ -23,7 +23,8 @@ from noc.fm.models.enumeration import Enumeration
 from noc.core.handler import get_handler
 from noc.core.profile.loader import loader as profile_loader
 from noc.core.perf import metrics
-from noc.core.models.event import Event, EventSource
+from noc.core.fm.event import Event
+from noc.core.fm.enum import EventSource
 from noc.sa.interfaces.base import (
     IPv4Parameter,
     IPv6Parameter,

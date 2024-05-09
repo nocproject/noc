@@ -32,7 +32,7 @@ from noc.core.mx import (
     MX_H_VALUE_SPLITTER,
 )
 from noc.core.ioloop.timers import PeriodicCallback
-from noc.core.models.event import EventSource, SyslogSeverity
+from noc.core.fm.enum import EventSource, SyslogSeverity
 from noc.services.syslogcollector.syslogserver import SyslogServer
 from noc.services.syslogcollector.datastream import SysologDataStreamClient
 from noc.services.syslogcollector.sourceconfig import SourceConfig, ManagedObjectData

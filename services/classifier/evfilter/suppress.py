@@ -6,7 +6,7 @@
 # ----------------------------------------------------------------------
 
 # NOC modules
-from noc.core.models.event import Event
+from noc.core.fm.event import Event
 from noc.core.hash import hash_int, dict_hash_int
 from .base import BaseEvFilter
 

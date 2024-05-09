@@ -15,7 +15,7 @@ from bson import ObjectId
 
 # NOC modules
 from noc.config import config
-from noc.core.models.event import Event
+from noc.core.fm.event import Event
 from noc.fm.models.eventclass import EventClass
 
 

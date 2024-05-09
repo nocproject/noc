@@ -15,11 +15,11 @@ from fs import open_fs
 
 # NOC modules
 from noc.services.classifier.ruleset import RuleSet
+from noc.core.fm.event import Event
 from noc.fm.models.mib import MIB
 from noc.sa.models.managedobject import ManagedObject
 from noc.sa.models.profile import Profile
 from noc.fm.models.eventclass import EventClass
-from noc.fm.models.activeevent import ActiveEvent
 from noc.config import config
 
 
@@ -70,15 +70,14 @@ def event(request):
         profile=Profile.get_by_name(cfg.get("profile__name", DEFAULT_PROFILE)),
     )
     now = datetime.datetime.now()
-    data = cfg.get("data", {})
+    data = cfg.get("data", [])
     source = data.pop("source", "other")
-    event = ActiveEvent(
-        timestamp=now,
-        start_timestamp=now,
-        managed_object=mo,
+    event = Event(
+        ts=now.timestamp(),
+        # start_timestamp=now,
+        ta=mo,
         source=source,
-        raw_vars=data,
-        repeats=1,
+        data=data,
     )
     request.fixturename = "events-%s" % cfg.get("uuid")
     # request.fspath = path

@@ -9,7 +9,7 @@
 from typing import Any, Optional, Dict, List, Set
 
 # NOC modules
-from noc.core.models.event import Event
+from noc.core.fm.event import Event
 from noc.fm.models.eventclass import EventClass, EventDispositionRule
 from noc.fm.models.activealarm import ComponentHub
 from noc.fm.models.alarmclass import AlarmClass

@@ -37,7 +37,7 @@ from noc.core.ioloop.timers import PeriodicCallback
 from noc.core.comp import DEFAULT_ENCODING
 from noc.core.msgstream.message import Message
 from noc.core.wf.diagnostic import SNMPTRAP_DIAG, SYSLOG_DIAG, DiagnosticState
-from noc.core.models.event import Event, EventSource, Target, Var, EventSeverity
+from noc.core.fm.event import Event, EventSource, Target, Var, EventSeverity
 from noc.core.mx import MessageType
 from noc.main.models.remotesystem import RemoteSystem
 from noc.main.models.pool import Pool
