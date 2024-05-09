@@ -105,7 +105,7 @@ class EventDispositionRule(EmbeddedDocument):
     # Applicable for actions: raise and clear
     alarm_class = PlainReferenceField(AlarmClass, required=False)
     # Additional condition. Raise or clear action
-    # will be performed only if additional events occured during time window
+    # will be performed only if additional events occurred during time window
     combo_condition = StringField(
         required=False,
         default="none",

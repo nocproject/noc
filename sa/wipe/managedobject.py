@@ -17,9 +17,6 @@ from noc.inv.models.subinterface import SubInterface
 from noc.inv.models.link import Link
 from noc.inv.models.macdb import MACDB
 from noc.inv.models.discoveryid import DiscoveryID
-from noc.fm.models.failedevent import FailedEvent
-from noc.fm.models.activeevent import ActiveEvent
-from noc.fm.models.archivedevent import ArchivedEvent
 from noc.fm.models.activealarm import ActiveAlarm
 from noc.fm.models.archivedalarm import ArchivedAlarm
 from noc.fm.models.outage import Outage
@@ -42,11 +39,6 @@ def wipe(o):
     log.debug("Wiping discovery tasks")
     for j in [ManagedObject.BOX_DISCOVERY_JOB, ManagedObject.PERIODIC_DISCOVERY_JOB]:
         Job.remove("discovery", j, key=o.id, pool=o.pool.name)
-    # Wiping FM events
-    log.debug("Wiping events")
-    FailedEvent.objects.filter(managed_object=o.id).delete()
-    ActiveEvent.objects.filter(managed_object=o.id).delete()
-    ArchivedEvent.objects.filter(managed_object=o.id).delete()
     # Wiping alarms
     log.debug("Wiping alarms")
     for ac in (ActiveAlarm, ArchivedAlarm):
