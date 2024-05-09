@@ -98,7 +98,9 @@ class DiagnosticCheck(DiscoveryCheck):
                 if d.diagnostic == PROFILE_DIAG and "profile" in d_data[d.diagnostic]:
                     self.set_profile(d_data[d.diagnostic]["profile"])
                 # Apply credentials
-                if credentials:
+                if credentials and (
+                    not self.object.auth_profile or self.object.auth_profile.enable_suggest
+                ):
                     self.logger.debug("Apply credentials: %s", credentials)
                     self.apply_credentials(credentials)
                 # Update diagnostics
