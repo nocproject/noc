@@ -80,15 +80,17 @@ class Service(Document):
         "indexes": [
             "subscriber",
             "supplier",
+            "profile",
             "managed_object",
+            ("managed_object", "effective_client_groups"),
+            ("caps.capability", "caps.value"),
             "interface_id",
             "subinterface_id",
+            "sla_probe",
             "parent",
             "order_id",
             "agent",
-            "static_service_groups",
             "effective_service_groups",
-            "static_client_groups",
             "effective_client_groups",
             "labels",
             "effective_labels",
@@ -368,13 +370,15 @@ class Service(Document):
             return []
         # q = m_q(managed_object=alarm.managed_object)
         q = m_q()
-        if hasattr(alarm.components, "slaprobe") and alarm.components.slaprobe:
+        if hasattr(alarm.components, "slaprobe") and getattr(alarm.components, "slaprobe", None):
             q |= m_q(sla_probe=alarm.components.slaprobe.id)
-        if hasattr(alarm.components, "interface") and alarm.components.inteface:
+        # Check is linked class
+        if hasattr(alarm.components, "interface") and getattr(alarm.components, "inteface", None):
             # q |= m_q(managed_object=alarm.managed_object, interface=alarm.components.inteface)
             # q |= m_q(id=alarm.components.inteface.serivce)
             q |= m_q(interface_id=alarm.components.inteface.id)
             q |= m_q(subinterface_id=alarm.components.inteface.id)
+        # For CPE component
         address = None
         if "address" in alarm.vars:
             address = alarm.vars.get("address")
