@@ -6,7 +6,6 @@
 # ---------------------------------------------------------------------
 
 # Python modules
-import enum
 import datetime
 from typing import Optional, List, Dict, Any, Tuple
 
