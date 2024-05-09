@@ -144,6 +144,7 @@ class TrapCollectorService(FastAPIService):
                     },
                     "type": {"source": EventSource.SNMP_TRAP.value, "id": data.get(SNMP_TRAP_OID)},
                     "data": [{"name": k, "value": v, "snmp_raw": True} for k, v in data.items()],
+                    # + [{"name": "message_id", "value": message_id}]
                 }
             ),
             stream=cfg.stream,

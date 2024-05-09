@@ -54,13 +54,6 @@ from noc.services.classifier.patternset import PatternSet
 from noc.services.classifier.evfilter.dedup import DedupFilter
 from noc.services.classifier.evfilter.suppress import SuppressFilter
 from noc.services.classifier.abdetector import AbductDetector
-from noc.core.perf import metrics
-from noc.core.handler import get_handler
-from noc.core.ioloop.timers import PeriodicCallback
-from noc.core.comp import smart_text
-from noc.core.msgstream.message import Message
-from noc.core.wf.diagnostic import SNMPTRAP_DIAG, SYSLOG_DIAG, DiagnosticState
-from noc.core.mx import MessageType
 
 
 class EventMetrics(enum.Enum):

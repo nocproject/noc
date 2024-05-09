@@ -53,6 +53,34 @@ class EventSeverity(enum.Enum):
     CRITICAL = 5
 
 
+# ITUPerceivedSeverity to Syslog SEVERITY Mapping, rfc5674
+SEVERITY_MAP = {
+    0: EventSeverity.CRITICAL,
+    1: EventSeverity.CRITICAL,
+    2: EventSeverity.MAJOR,
+    3: EventSeverity.MINOR,
+    4: EventSeverity.WARNING,
+    5: EventSeverity.INDETERMINATE,
+    6: EventSeverity.INDETERMINATE,
+    7: EventSeverity.IGNORED,
+}
+
+
+class SyslogSeverity(enum.Enum):
+    @property
+    def noc_severity(self):
+        return SEVERITY_MAP[self.value]
+
+    EMERGENCY = 0  # System is unusable
+    ALERT = 1  # Action must be taken immediately
+    CRITICAL = 2  # Critical conditions
+    ERROR = 3  # Error conditions
+    WARNING = 4  # Warning conditions
+    NOTICE = 5  # Normal but significant conditions
+    INFORMATIONAL = 6  # Informational messages
+    DEBUG = 7  # Debug-level messages
+
+
 class EventSource(enum.Enum):
     SYSLOG = "syslog"
     SNMP_TRAP = "SNMP Trap"

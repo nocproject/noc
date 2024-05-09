@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # Syslog Collector service
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2020 The NOC Project
+# Copyright (C) 2007-2024 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -32,6 +32,7 @@ from noc.core.mx import (
     MX_H_VALUE_SPLITTER,
 )
 from noc.core.ioloop.timers import PeriodicCallback
+from noc.core.models.event import EventSource, SyslogSeverity
 from noc.services.syslogcollector.syslogserver import SyslogServer
 from noc.services.syslogcollector.datastream import SysologDataStreamClient
 from noc.services.syslogcollector.sourceconfig import SourceConfig, ManagedObjectData
@@ -113,15 +114,23 @@ class SyslogCollectorService(FastAPIService):
                 orjson.dumps(
                     {
                         "ts": timestamp,
-                        "object": cfg.id,
-                        "data": {
-                            "source": "syslog",
-                            "collector": config.pool,
-                            "message": message,
-                            "facility": facility,
-                            "severity": severity,
-                            "message_id": message_id,
+                        "target": {
+                            "address": source_address,
+                            "name": cfg.name or "",
+                            "pool": config.pool,
+                            "id": cfg.id,
                         },
+                        "type": {
+                            "source": EventSource.SYSLOG.value,
+                            "facility": facility,
+                            "severity": SyslogSeverity(severity).noc_severity.value,
+                        },
+                        "message": message,
+                        "data": [
+                            {"name": "facility", "value": facility},
+                            {"name": "severity", "value": severity},
+                            {"name": "message_id", "value": message_id},
+                        ],
                     }
                 ),
                 stream=cfg.stream,

@@ -379,6 +379,7 @@ class CorrelatorService(FastAPIService):
         """
         Refresh active alarm data
         """
+        self.logger.info("[%s] Refresh alarm: ts: %s", alarm.id, timestamp)
         if timestamp < alarm.timestamp:
             # Set to earlier date
             alarm.timestamp = timestamp
@@ -589,6 +590,10 @@ class CorrelatorService(FastAPIService):
         if int(event.target.id) != managed_object.id:
             metrics["alarm_change_mo"] += 1
             self.logger.info("Changing managed object to %s", managed_object.name)
+        if event.remote_system:
+            rs = RemoteSystem.get_by_name(event.remote_system)
+        else:
+            rs = None
         # Extract variables
         vars = rule.get_vars(event, managed_object)
         return await self.raise_alarm(
@@ -597,6 +602,8 @@ class CorrelatorService(FastAPIService):
             alarm_class=rule.alarm_class,
             vars=vars,
             event=event,
+            remote_system=rs,
+            remote_id=event.remote_id,
         )
 
     async def correlate(self, a: ActiveAlarm):
@@ -673,11 +680,11 @@ class CorrelatorService(FastAPIService):
             event.id,
             managed_object.name,
             managed_object.address,
-            event.event_class.name,
+            event.type.event_class,
             alarm.alarm_class.name,
             alarm.id,
         )
-        event.contribute_to_alarm(alarm)
+        # event.contribute_to_alarm(alarm)
         alarm.closing_event = ObjectId(event.id)
         alarm.last_update = max(alarm.last_update, event.timestamp)
         groups = alarm.groups
@@ -1118,7 +1125,7 @@ class CorrelatorService(FastAPIService):
         managed_object = ManagedObject.get_by_id(int(e.target.id))
         if not drc:
             self.logger.info(
-                "[%s] No disposition rules for class %s, skipping", event_id, e.event_class.name
+                "[%s] No disposition rules for class %s, skipping", event_id, event_class.name
             )
             return
         # Apply disposition rules
