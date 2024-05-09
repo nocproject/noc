@@ -1,7 +1,7 @@
 # ---------------------------------------------------------------------
 # Rule
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2020 The NOC Project
+# Copyright (C) 2007-2024 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -219,7 +219,7 @@ class Rule(object):
                     if r[1] in ("ifindex",):
                         # call fixup with managed object
                         c += [
-                            'e_vars["%s"] = self.fixup_%s(event.managed_object, smart_text(fm_unescape(e_vars["%s"])))'
+                            'e_vars["%s"] = self.fixup_%s(managed_object, smart_text(fm_unescape(e_vars["%s"])))'
                             % (r[0], r[1], name)
                         ]
                     else:
@@ -240,7 +240,7 @@ class Rule(object):
         c = ["    " + x for x in c]
 
         cc = ["# %s" % self.name]
-        cc += ["def match(self, event, vars):"]
+        cc += ["def match(self, event, vars, managed_object=None):"]
         cc += c
         cc += ["rule.match = types.MethodType(match, rule)"]
         self.code = "\n".join(cc)

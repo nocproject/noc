@@ -13,6 +13,8 @@ from noc.core.clickhouse.fields import (
     StringField,
     ReferenceField,
     UInt32Field,
+    UInt64Field,
+    MapField,
 )
 from noc.core.clickhouse.engines import MergeTree
 from noc.core.bi.dictionaries.managedobject import ManagedObject
@@ -39,4 +41,7 @@ class DisposeLog(Model):
     managed_object = ReferenceField(ManagedObject, description=_("Object Name"))
     event_class = ReferenceField(EventClass, description=_("Event Class"))
     alarm_class = ReferenceField(AlarmClass, description=_("Alarm Class"))
+    message = StringField(description=_("Event Message"))
+    target = MapField(StringField(), description=_("Target"))
+    target_reference = UInt64Field(description="Target reference")
     reopens = UInt32Field(description=_("Reopens"))
