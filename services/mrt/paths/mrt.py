@@ -125,13 +125,15 @@ async def _iterdata(
                     yield await _write_chunk(r)
             yield await _write_chunk({"id": str(oid), "running": True})
             futures.add(
-                _run_script(
-                    current_user,
-                    oid,
-                    d.script,
-                    dict(d.args),
-                    span_id=span.span_id,
-                    bi_id=ids.get(oid),
+                asyncio.create_task(
+                    _run_script(
+                        current_user,
+                        oid,
+                        d.script,
+                        dict(d.args),
+                        span_id=span.span_id,
+                        bi_id=ids.get(oid),
+                    )
                 )
             )
         # Wait for rest
