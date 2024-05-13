@@ -819,15 +819,42 @@ class Object(Document):
                     r += [[c, x.object, x.name]]
         return r
 
+    def get_container(self) -> Optional["Object"]:
+        """
+        Get container for object.
+        """
+        # Direct container
+        if self.container:
+            return self.container
+        # Outer
+        for _, c, _ in self.iter_outer_connections():
+            return c.get_container()
+        return None
+
     def disconnect_p2p(self, name: str):
         """
         Remove connection *name*
         """
         from .objectconnection import ObjectConnection
 
+        def move_to_container(obj: Object) -> None:
+            """
+            Move object to the nearest container.
+            """
+            c = obj.get_container()
+            obj.container = c
+            obj.log(f"Insert into {c}", system="CORE", op="INSERT")
+            obj.save()
+
         c, o, _ = self.get_p2p_connection(name)
         if not c:
             return
+        mc = self.model.get_model_connection(name)
+        if mc:
+            if mc.is_outer:
+                move_to_container(self)
+            elif mc.is_inner:
+                move_to_container(o)
         self.log(f"'{name}' disconnected", system="CORE", op="DISCONNECT")
         c.delete()
         if o.is_wire and not ObjectConnection.objects.filter(connection__object=o.id).first():
@@ -887,10 +914,11 @@ class Object(Document):
             "%s:%s -> %s:%s" % (self, name, remote_object, remote_name), system="CORE", op="CONNECT"
         )
         # Disconnect from container on o-connection
-        if lc.direction == "o" and self.container:
-            self.log("Remove from %s" % self.container, system="CORE", op="REMOVE")
-            self.container = None
-            self.save()
+        for obj, conn in [(self, lc), (remote_object, rc)]:
+            if obj.container and conn.is_outer:
+                obj.log("Remove from %s" % obj.container, system="CORE", op="REMOVE")
+                obj.container = None
+                obj.save()
         return c
 
     def connect_genderless(
@@ -1362,7 +1390,6 @@ class Object(Document):
         modbus = self.get_data("modbus", "type")
         if modbus and modbus in {"RTU", "ASCII"}:
             for name, remote_object, remote_name in self.iter_connections("s"):
-                print(name, remote_object, remote_name)
                 path = find_path(self, name, target_protocols=["<RS485-A", "<RS485-B"])
                 if not path:
                     continue
