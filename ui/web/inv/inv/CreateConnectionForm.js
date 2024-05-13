@@ -895,6 +895,7 @@ Ext.define("NOC.inv.inv.CreateConnectionForm", {
         me.app.mainPanel.add(me.app.tabPanel);
       };
 
+    me.fireEvent("saveInvForm");
     if(me.getViewModel().get("isDirty")){
       Ext.Msg.confirm(__("Confirm"), __("There is unsaved data, do you really want to close the application?"), function(btn){
         if(btn === "yes"){
@@ -1000,6 +1001,7 @@ Ext.define("NOC.inv.inv.CreateConnectionForm", {
         vm.set("isDirty", false);
         if(data && data.status){
           NOC.msg.complete(__("Objects was successfully connected"));
+          this.fireEvent("saveInvForm");
         } else{
           NOC.error(__("Failed to connect objects : ") + data.text);
           invalidConnections = data.invalid_connections;

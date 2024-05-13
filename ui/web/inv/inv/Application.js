@@ -148,6 +148,10 @@ Ext.define("NOC.inv.inv.Application", {
     //
     me.connectionPanel = Ext.create("NOC.inv.inv.CreateConnectionForm", {
       app: me,
+      listeners: {
+        scope: me,
+        saveInvForm: me.onReloadNav, 
+      },
     });
     //
     me.mainPanel = Ext.create("Ext.panel.Panel", {
@@ -178,8 +182,20 @@ Ext.define("NOC.inv.inv.Application", {
   },
   //
   onReloadNav: function(){
-    var me = this;
-    me.store.reload({node: me.store.getRootNode()});
+    var me = this,
+      sel = me.navTree.getSelection();
+
+    me.store.reload({
+      node: me.store.getRootNode(),
+      callback: function(){
+        if(!Ext.isEmpty(sel)){
+          this.showObject(sel[0].get("id"), false);
+        } else{
+          this.onDeselect();
+        }
+      },
+      scope: me,
+    });
   },
   //
   runPlugin: function(objectId, pData){
@@ -318,7 +334,6 @@ Ext.define("NOC.inv.inv.Application", {
             return acc + "/" + curr.id
           }, "/" + me.navTree.getRootNode().get("id"));
         
-        console.debug("path : ", path, objectId, me.store.getById(objectId));
         me.navTree.selectPath(
           path, "id", "/",
           function(success){
