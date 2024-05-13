@@ -77,10 +77,14 @@ class HomeAppplication(ExtApplication):
         # Total amount of objects
         total_objects = Object.objects.count()
         # Point of presences
-        pop_models = ObjectModel.objects.filter(data__match={"interface": "pop", "attr": "level", "value__gte": 0}).values_list("id")
+        pop_models = ObjectModel.objects.filter(
+            data__match={"interface": "pop", "attr": "level", "value__gte": 0}
+        ).values_list("id")
         total_pops = Object.objects.filter(model__in=pop_models).count()
         # Racks
-        rack_models = ObjectModel.objects.filter(data__match={"interface": "rack", "attr": "units", "value__gte": 0}).values_list("id")
+        rack_models = ObjectModel.objects.filter(
+            data__match={"interface": "rack", "attr": "units", "value__gte": 0}
+        ).values_list("id")
         total_racks = Object.objects.filter(model__in=rack_models).count()
         # Chassis
         # Transceivers
@@ -92,13 +96,7 @@ class HomeAppplication(ExtApplication):
                     "text": _("Total objects"),
                     "value": total_objects,
                 },
-                {
-                    "text": _("Points of presence"),
-                    "value": total_pops
-                },
-                {
-                    "text": _("Racks"),
-                    "value": total_racks
-                }
+                {"text": _("Points of presence"), "value": total_pops},
+                {"text": _("Racks"), "value": total_racks},
             ],
         }
