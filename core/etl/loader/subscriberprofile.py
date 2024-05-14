@@ -11,7 +11,7 @@ from ..models.subscriberprofile import SubscriberProfile
 from noc.crm.models.subscriberprofile import SubscriberProfile as SubscriberProfileModel
 from noc.wf.models.workflow import Workflow
 
-DEFAULT_WOKFLOW_NAME = "Default Resource"
+DEFAULT_WORKFLOW_NAME = "Default Resource"
 
 
 class SubscriberProfileLoader(BaseLoader):
@@ -28,5 +28,5 @@ class SubscriberProfileLoader(BaseLoader):
         if "workflow" in d and d["workflow"]:
             d["workflow"] = Workflow.objects.get(name=d["workflow"])
         else:
-            d["workflow"] = Workflow.objects.get(name=DEFAULT_WOKFLOW_NAME)
+            d["workflow"] = Workflow.objects.get(name=DEFAULT_WORKFLOW_NAME)
         return d
