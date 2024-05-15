@@ -18,6 +18,7 @@ Ext.define("NOC.main.home.Application", {
         type: "flex",
         direction: "column",
         wrap: "wrap",
+        gap: "20px",
       },
       scrollable: true,
       smallHeight: 90,
@@ -69,7 +70,7 @@ Ext.define("NOC.main.home.Application", {
                         {
                           xtype: "container",
                           margin: 4,
-                          html: "<table style='100%'>" + rows.join("") + "</table>",
+                          html: "<table style='width: 100%'>" + rows.join("") + "</table>",
                         },
                       ];    
                       break;

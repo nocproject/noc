@@ -18,6 +18,7 @@ Ext.define("NOC.core.layout.Flex", {
     wrap: "wrap",
     justifyContent: "flex-start",
     alignItems: "stretch",
+    gap: "20px",
   },
 
   autoSize: Ext.emptyFn,
@@ -27,13 +28,13 @@ Ext.define("NOC.core.layout.Flex", {
       target = me.getRenderTarget();
 
     me.callParent(arguments);
-
     target.setStyle({
       display: me.display || "flex",
       flexDirection: me.direction || "row",
       flexWrap: me.wrap || "wrap",
       justifyContent: me.justifyContent || "flex-start",
       alignItems: me.alignItems || "stretch",
+      gap: me.gap || "20px",
     });
   },
 
@@ -45,12 +46,12 @@ Ext.define("NOC.core.layout.Flex", {
 
     me.callParent(arguments);
     for(i = 0; i < len; i++){
-      item = items[i];
+      item = items[i];/*
       item.el.setStyle({
         flex: item.flex || "1 1 auto",
         margin: item.margin || "10px",
         minWidth: item.minWidth || "auto",
-      });
+      });*/
     }
   },
 });
