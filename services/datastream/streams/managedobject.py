@@ -419,6 +419,7 @@ class ManagedObjectDataStream(DataStream):
             "model": {
                 "id": str(o.model.id),
                 "name": str(o.model.name),
+                "description": str(o.model.description) if o.model.description else None,
                 "vendor": {"id": str(o.model.vendor.id), "name": str(o.model.vendor.name)},
                 "labels": [str(t) for t in o.model.labels or []],
                 # Alias
