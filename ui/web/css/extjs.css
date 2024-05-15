@@ -705,3 +705,7 @@ table {
     border: 1px solid black;
     position: absolute;
 }
+
+.noc-home-summary-select:hover {
+    color: yellow;
+}

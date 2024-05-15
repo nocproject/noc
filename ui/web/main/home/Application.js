@@ -73,7 +73,7 @@ Ext.define("NOC.main.home.Application", {
                         if(Object.prototype.hasOwnProperty.call(item, "link")){
                           value = "<a href='" + item.link + "'>" + item.value + "</a>";
                         }
-                        return "<tr><td>" + item.text + "</td><td style='padding-left: 5px;text-align: right;'>" + value + "</td></tr>";
+                        return "<tr class='noc-home-summary-select'><td>" + item.text + "</td><td style='padding-left: 5px;text-align: right;'>" + value + "</td></tr>";
                       });
                       items = [
                         {
