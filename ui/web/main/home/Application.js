@@ -99,6 +99,12 @@ Ext.define("NOC.main.home.Application", {
                     Ext.create("Ext.panel.Panel", {
                       title: widget.title,
                       border: true,
+                      style: {
+                        borderRadius: "8px 8px 0 0",
+                      },
+                      bodyStyle: {
+                        borderRadius: "0 0 8px 8px",
+                      },
                       width: this.cellWidth,
                       margin: this.cellMargin,
                       height: this[widget.height + "Height"] || this.normalHeight,
