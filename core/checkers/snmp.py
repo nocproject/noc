@@ -11,7 +11,7 @@ from functools import partial
 from typing import List, Iterable, Dict, Tuple, Union, Optional
 
 # NOC modules
-from .base import Checker, CheckResult, Check, CheckError
+from .base import Checker, CheckResult, Check, CheckError, DataItem
 from ..script.scheme import Protocol, SNMPCredential, SNMPv3Credential
 from noc.core.ioloop.snmp import snmp_get, SNMPError
 from noc.core.ioloop.util import run_sync
@@ -110,7 +110,7 @@ class SNMPProtocolChecker(Checker):
                         )
                     result[c] = CheckResult(
                         check=c.name,
-                        arg0=c.arg0,
+                        args=c.args,
                         status=status,
                         data=data,
                         credential=cred if data else None,
@@ -134,7 +134,7 @@ class SNMPProtocolChecker(Checker):
 
     async def do_snmp_check(
         self, check: Check, cred: Union[SNMPCredential, SNMPv3Credential]
-    ) -> Tuple[bool, Optional[Dict[str, str]], str]:
+    ) -> Tuple[bool, Optional[List[DataItem]], str]:
         """
 
         :param check:
@@ -195,6 +195,8 @@ class SNMPProtocolChecker(Checker):
         #     config.snmp_ro,
         #     config.protocol.config.snmp_version,
         # )
+        if r:
+            r = [DataItem(name=k, value=v) for k, v in r.items()]
         return False, r, message
         # return CheckResult(
         #     check=check.name,

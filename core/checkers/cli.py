@@ -97,7 +97,7 @@ class CLIProtocolChecker(Checker):
                     continue
                 yield CheckResult(
                     check=c.name,
-                    arg0=c.arg0,
+                    args=c.args,
                     status=status,
                     port=c.port,
                     error=error,
@@ -107,7 +107,7 @@ class CLIProtocolChecker(Checker):
             else:
                 yield CheckResult(
                     check=c.name,
-                    arg0=c.arg0,
+                    args=c.args,
                     status=False,
                     port=c.port,
                     error=CheckError(code="0", is_access=False, is_available=True),

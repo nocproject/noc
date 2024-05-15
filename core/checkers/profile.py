@@ -22,7 +22,7 @@ from noc.core.script.scheme import SNMPCredential, Protocol
 from noc.core.error import NOCError
 from noc.core.service.client import open_sync_rpc
 from noc.core.service.error import RPCError
-from .base import Checker, CheckResult
+from .base import Checker, CheckResult, DataItem, CheckError
 
 
 @dataclass(frozen=True)
@@ -98,13 +98,13 @@ class ProfileChecker(Checker):
             yield CheckResult(
                 check="PROFILE",
                 status=bool(profile),
-                data={"profile": profile},
+                data=[DataItem(name="profile", value=profile)],
             )
             return
         yield CheckResult(
             check="PROFILE",
             status=bool(profile),
-            error=filter_non_printable(error)[:200],
+            error=CheckError(code="0", message=filter_non_printable(error)[:200]),
         )
         # If check SNMP failed - Set SNMP error
         # if not checker.ignoring_snmp and checker.snmp_check is False:

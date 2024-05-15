@@ -16,6 +16,7 @@ from noc.services.discovery.jobs.base import DiscoveryCheck
 from noc.core.checkers.base import (
     Check,
     CheckResult,
+    DataItem,
     MetricValue,
 )
 from noc.core.checkers.loader import loader
@@ -75,7 +76,7 @@ class DiagnosticCheck(DiscoveryCheck):
                 # Get checker
                 checks: List[CheckResult] = []
                 credentials: List[Union[SNMPCredential, CLICredential, SNMPv3Credential]] = []
-                data: List[CheckData] = []
+                data: List[DataItem] = []
                 for cr in self.iter_checks(dc.checks):
                     if cr.credential:
                         credentials += [cr.credential]
@@ -94,14 +95,16 @@ class DiagnosticCheck(DiscoveryCheck):
                     if cr.metrics:
                         metrics += cr.metrics
                     if cr.data:
-                        d_data[d.diagnostic].update(cr.data)
+                        d_data[d.diagnostic].update({d.name: d.value for d in cr.data})
                 # Apply Profile
                 if d.diagnostic == PROFILE_DIAG and "profile" in d_data[d.diagnostic]:
                     self.set_profile(d_data[d.diagnostic]["profile"])
                 # Apply credentials
-                if credentials and (
-                    not self.object.auth_profile or self.object.auth_profile.enable_suggest
-                ) and self.suggest_rules:
+                if (
+                    credentials
+                    and (not self.object.auth_profile or self.object.auth_profile.enable_suggest)
+                    and self.suggest_rules
+                ):
                     self.logger.debug("Apply credentials: %s", credentials)
                     self.apply_credentials(credentials)
                 # Update diagnostics
@@ -112,8 +115,8 @@ class DiagnosticCheck(DiscoveryCheck):
                             arg0=cr.arg0,
                             status=cr.status,
                             skipped=cr.skipped,
-                            error=cr.error,
-                            data={d.name: d.value for d in cr.data},  # Apply data
+                            error=cr.error.message if cr.error else None,
+                            data={d.name: d.value for d in data},  # Apply data
                         )
                         for cr in checks
                     ],
@@ -192,7 +195,7 @@ class DiagnosticCheck(DiscoveryCheck):
             ):
                 self.object.snmp_security_level = cred.security_level
                 changed["snmp_security_level"] = cred.security_level
-            elif isinstance(cred, CLICredential) and object_credentials.scheme != cred.protocol.value:
+            elif isinstance(cred, CLICredential) and self.object.scheme != cred.protocol.value:
                 changed["scheme"] = cred.protocol.value
             for f in object_credentials.__dataclass_fields__:
                 if not hasattr(cred, f) or getattr(cred, f) == getattr(object_credentials, f):
