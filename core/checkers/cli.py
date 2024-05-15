@@ -29,14 +29,16 @@ class CLIProtocolChecker(Checker):
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
-        self.rules: List[CLICredential] = self.load_suggests(kwargs.get("rules"))
+        self.rules: List[Tuple[Tuple[Protocol, ...], CLICredential]] = self.load_suggests(
+            kwargs.get("rules")
+        )
         self.profile = kwargs.get("profile")
 
     @staticmethod
     def load_suggests(credentials):
         if not credentials:
             return []
-        return [x for x in credentials if isinstance(x, CLICredential)]
+        return [(p, x) for p, x in credentials if isinstance(x, CLICredential)]
 
     @staticmethod
     def is_unsupported_error(message) -> bool:
@@ -67,7 +69,7 @@ class CLIProtocolChecker(Checker):
         if check.credential:
             yield self.PROTO_CHECK_MAP[check.name], check.credential
         for proto, cred in self.rules:
-            yield proto, cred
+            yield proto[0] if proto else self.PROTO_CHECK_MAP[check.name], cred
 
     def iter_result(self, checks: List[Check]) -> Iterable[CheckResult]:
         """ """
