@@ -69,6 +69,7 @@ class ProfileChecker(Checker):
     CHECKS: List[str] = ["PROFILE"]
     USER_DISCOVERY_USE = False
     SNMP_TIMEOUT_SEC = 5
+    PARAMS = ["rules"]
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)

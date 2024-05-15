@@ -6,11 +6,10 @@
 # ----------------------------------------------------------------------
 
 # Python modules
-from typing import List, Iterable, Dict, Tuple
-from itertools import chain
+from typing import List, Iterable, Dict, Tuple, Optional
 
 # NOC modules
-from .base import Checker, CheckResult, Check
+from .base import Checker, CheckResult, Check, CheckError
 from ..script.scheme import Protocol, CLICredential
 from noc.core.service.client import open_sync_rpc
 from noc.core.service.error import RPCError
@@ -26,6 +25,7 @@ class CLIProtocolChecker(Checker):
     CHECKS: List[str] = ["TELNET", "SSH"]
     GENERIC_PROFILE = "Generic.Host"
     PROTO_CHECK_MAP: Dict[str, Protocol] = {p.config.check: p for p in Protocol if p.config.check}
+    PARAMS = ["profile", "rules"]
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
@@ -55,6 +55,20 @@ class CLIProtocolChecker(Checker):
             return True
         return False
 
+    def iter_credential(
+        self,
+        check: Check,
+    ) -> Iterable[Tuple[Protocol, CLICredential]]:
+        """
+
+        :param check:
+        :return:
+        """
+        if check.credential:
+            yield self.PROTO_CHECK_MAP[check.name], check.credential
+        for cred in self.rules:
+            yield self.PROTO_CHECK_MAP[check.name], cred
+
     def iter_result(self, checks: List[Check]) -> Iterable[CheckResult]:
         """ """
         # Group by address
@@ -68,27 +82,26 @@ class CLIProtocolChecker(Checker):
             if profile == self.GENERIC_PROFILE:
                 self.logger.info("CLI Access for Generic profile is not supported. Ignoring")
                 continue
-            for cred in chain(c.credentials, self.rules):
+            for proto, cred in self.iter_credential(c):
                 status, error = self.check_login(
                     c.address or self.address,
                     c.port,
                     cred.username,
                     cred.password,
                     cred.super_password,
-                    self.PROTO_CHECK_MAP[c.name],
+                    proto,
                     profile,
                     cred.raise_privilege,
                 )
-                if not status and not self.is_unsupported_error(error):
+                if not status and not self.is_unsupported_error(error.message):
                     continue
                 yield CheckResult(
                     check=c.name,
                     arg0=c.arg0,
                     status=status,
                     port=c.port,
-                    is_available=not error or not self.is_unsupported_error(error),
-                    is_access=status,
-                    credentials=[cred] if status else None,
+                    error=error,
+                    credential=cred if status else None,
                 )
                 break
             else:
@@ -97,8 +110,7 @@ class CLIProtocolChecker(Checker):
                     arg0=c.arg0,
                     status=False,
                     port=c.port,
-                    is_available=True,
-                    is_access=False,
+                    error=CheckError(code="0", is_access=False, is_available=True),
                 )
 
     def check_login(
@@ -111,7 +123,7 @@ class CLIProtocolChecker(Checker):
         protocol: Protocol,
         profile: str,
         raise_privilege: bool = True,
-    ) -> Tuple[bool, str]:
+    ) -> Tuple[bool, Optional[CheckError]]:
         """
         Check user, password for cli proto
         :param address:
@@ -152,7 +164,15 @@ class CLIProtocolChecker(Checker):
                 },
             )
             self.logger.info("Result: %s, %s", r, r["message"])
-            return bool(r["result"]), r["message"]  # bool(False) == bool(None)
+            status = bool(r["result"])
+            if status:
+                return True, None
+            return status, CheckError(
+                code="0",
+                message=r["message"],
+                is_available=not status or not self.is_unsupported_error(r["message"]),
+                is_access=status,
+            )  # bool(False) == bool(None)
         except RPCError as e:
             self.logger.debug("RPC Error: %s", e)
-            return False, ""
+            return False, CheckError(code="0", message=str(e))

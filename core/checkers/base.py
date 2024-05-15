@@ -12,6 +12,7 @@ from typing import List, Optional, Dict, Any, Iterable, Literal, Union
 
 # NOC modules
 from noc.core.log import PrefixLoggerAdapter
+from noc.core.hash import dict_hash_int
 from noc.core.script.scheme import SNMPCredential, SNMPv3Credential, CLICredential, HTTPCredential
 from noc.core.script.caller import ScriptCaller
 
@@ -23,37 +24,43 @@ class MetricValue(object):
     labels: Optional[List[str]] = None
 
 
-@dataclass(frozen=True)
-class CapsItem(object):
-    caps: str
-    value: Optional[str] = None
-    scope: Optional[str] = None
-    # source diagnostic
-    # scope - diagnostic_name
+# @dataclass(frozen=True)
+# class CapsItem(object):
+#     caps: str
+#     value: Optional[str] = None
+#     scope: Optional[str] = None
+#     # source diagnostic
+#     # scope - diagnostic_name
 
 
 @dataclass(frozen=True)
-class CredentialItem(object):
-    field: Literal["user", "password", "super_password", "+", "snmp_ro", "snmp_rw", "scheme"]
-    op: Literal["set", "reset"] = "set"
-    value: Optional[str] = None
+class DataItem(object):
+    name: str
+    value: Any
+    scope: Optional[str] = None  # caps/attribute
 
 
 @dataclass(frozen=True, eq=True)
 class Check(object):
     name: str  # Check name
-    port: Optional[int] = None  # TCP/UDP port
-    arg0: Optional[str] = None  #
+    args: Optional[Dict[str, str]] = None  #
     # pool: Optional[str] = field(default=None, hash=False)  # Address Pool
     address: str = field(default=None, compare=False)  # IP Address
-    credentials: Optional[
-        List[Union[SNMPCredential, SNMPv3Credential, CLICredential, HTTPCredential]]
+    port: Optional[int] = None  # TCP/UDP port
+    credential: Optional[
+        Union[SNMPCredential, SNMPv3Credential, CLICredential, HTTPCredential]
     ] = field(default=None, compare=False, hash=False)
 
     def __hash__(self):
         if self.address or self.port:
             return hash((self.name, self.address or "", self.port or 0, self.arg0 or ""))
         return hash((self.name, self.arg0 or ""))
+
+    @property
+    def arg0(self):
+        if self.args:
+            return self.args.get("arg0")
+        return
 
     def arg(self) -> str:
         r = []
@@ -75,31 +82,43 @@ class Check(object):
 
     @property
     def snmp_credential(self) -> Optional[SNMPCredential]:
-        for c in self.credentials:
-            if isinstance(c, SNMPCredential):
-                return c
+        if isinstance(self.credential, SNMPCredential):
+            return self.credential
+        return None
+
+
+@dataclass(frozen=True)
+class CheckError(object):
+    code: str  # Error code
+    message: Optional[str] = None  # Description if Fail
+    is_access: Optional[bool] = None  # Access to resource for credential
+    is_available: Optional[bool] = None  # Port/Address is available
 
 
 @dataclass(frozen=True)
 class CheckResult(object):
     check: str
     status: bool  # True - OK, False - Fail
-    arg0: Optional[str] = None  # Checked Argument
-    skipped: bool = False  # Check was skipped (Example, no credential)
-    is_available: Optional[bool] = None  # Port/Address is available
+    args: Optional[Dict[str, Any]] = None  # Checked Argument
     port: Optional[int] = None
-    is_access: Optional[bool] = None  # Access to resource for credential
-    error: Optional[str] = None  # Description if Fail
-    data: Optional[Dict[str, Any]] = None  # Collected check data
+    address: Optional[str] = None
+    skipped: bool = False  # Check was skipped (Example, no credential)
+    error: Optional[CheckError] = None  # Set if fail
+    data: Optional[List[DataItem]] = None  # Collected check data
     # Action: Set Profile, Credential, Send Notification (Diagnostic Header) ?
-    # action: Optional[Union[ProfileSet, CLICredentialSet, SNMPCredentialSet]] = None
-    # Credentials List, Return if suggests flag is set
-    credentials: Optional[
-        List[Union[SNMPCredential, SNMPv3Credential, CLICredential, HTTPCredential]]
-    ] = None
-    caps: Optional[List[CapsItem]] = None
+    # caps: Optional[List[CapsItem]] = None
     # Metrics collected
     metrics: Optional[List[MetricValue]] = None
+    # Credentials List, Return if suggests flag is set
+    credential: Optional[
+        Union[SNMPCredential, SNMPv3Credential, CLICredential, HTTPCredential]
+    ] = None
+
+    @property
+    def arg0(self):
+        if self.args:
+            return self.args.get("arg0")
+        return
 
 
 class Checker(object):
@@ -110,6 +129,7 @@ class Checker(object):
     name: str
     CHECKS: List[str]
     USER_DISCOVERY_USE: bool = True  # Allow use in User Discovery
+    PARAMS: List[str] = ["address", "object"]  # List of checker params
 
     def __init__(
         self,
