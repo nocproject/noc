@@ -8,18 +8,23 @@ console.debug("Defining NOC.main.home.Application");
 
 Ext.define("NOC.main.home.Application", {
   extend: "NOC.core.Application",
-  requires: [],
+  requires: [
+    "NOC.core.layout.Flex",
+  ],
   items: [
     {
       xtype: "container",
       layout: {
-        type: "table",
-        columns: 3,
-        tdAttrs: {
-          style: {
-            "vertical-align": "top",
-          },
-        },
+        // type: "table",
+        // columns: 3,
+        // tdAttrs: {
+        //   style: {
+        //     "vertical-align": "top",
+        //   },
+        // },
+        type: "flex",
+        direction: "row",
+        wrap: "wrap",
       },
       scrollable: true,
       smallHeight: 90,
