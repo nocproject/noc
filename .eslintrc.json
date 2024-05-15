@@ -44,9 +44,6 @@
         "overrides": {
           "return": {
             "after": true
-          },
-          "case": {
-            "after": true
           }
         }
       }
