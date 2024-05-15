@@ -43,7 +43,7 @@ def check_model(oid):
 class SuggestItem(object):
     credentials: List[Union[SNMPCredential, CLICredential]]
     labels: List[FrozenSet[str]]
-    protocols: FrozenSet[Protocol]
+    protocols: Tuple[Protocol, ...]
 
     def is_match(self, labels: Set[str]) -> bool:
         if not self.labels:
@@ -162,7 +162,7 @@ class CredentialCheckRule(Document):
                     SuggestItem(
                         sr,
                         labels,
-                        frozenset(
+                        tuple(
                             p
                             for p in Protocol
                             if p.config.snmp_version and (not protos or p in protos)
@@ -175,7 +175,7 @@ class CredentialCheckRule(Document):
                     SuggestItem(
                         sr,
                         labels,
-                        frozenset(p for p in CLI_PROTOCOLS if not protos or p in protos),
+                        tuple(p for p in CLI_PROTOCOLS if not protos or p in protos),
                     )
                 )
         return r
@@ -183,7 +183,7 @@ class CredentialCheckRule(Document):
     @classmethod
     def get_suggests(
         cls, o
-    ) -> List[Tuple[FrozenSet[Protocol], Union[SNMPCredential, CLICredential]]]:
+    ) -> List[Tuple[Tuple[Protocol, ...], Union[SNMPCredential, CLICredential]]]:
         r = []
         labels = set(o.effective_labels)
         for s in cls.get_suggest_rules():

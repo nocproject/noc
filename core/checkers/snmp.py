@@ -47,7 +47,7 @@ class SNMPProtocolChecker(Checker):
     def load_suggests(credentials):
         if not credentials:
             return []
-        return [x for x in credentials if isinstance(x, (SNMPCredential, SNMPv3Credential))]
+        return [x for _, x in credentials if isinstance(x, (SNMPCredential, SNMPv3Credential))]
 
     def iter_suggest_check(self, check: Check) -> Iterable[Check]:
         """
@@ -84,7 +84,7 @@ class SNMPProtocolChecker(Checker):
                     processed[key] = defaultdict(set)
                 if c.credential:
                     processed[key][c.credential].add(c)
-                for proto, cred in self.rules:
+                for cred in self.rules:
                     processed[key][cred].add(c)
         self.logger.debug("Processed SNMP checks: %s", processed)
         # Process checks
