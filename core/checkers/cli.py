@@ -66,8 +66,8 @@ class CLIProtocolChecker(Checker):
         """
         if check.credential:
             yield self.PROTO_CHECK_MAP[check.name], check.credential
-        for cred in self.rules:
-            yield self.PROTO_CHECK_MAP[check.name], cred
+        for proto, cred in self.rules:
+            yield proto, cred
 
     def iter_result(self, checks: List[Check]) -> Iterable[CheckResult]:
         """ """

@@ -8,7 +8,7 @@
 # Python modules
 import datetime
 import logging
-from typing import Dict, List, Optional, Literal, Iterable, Any, Union
+from typing import Dict, List, Optional, Literal, Iterable, Any, Union, Tuple
 from collections import defaultdict
 
 # NOC modules
@@ -22,7 +22,7 @@ from noc.core.checkers.base import (
 from noc.core.checkers.loader import loader
 from noc.core.wf.diagnostic import DiagnosticState, DiagnosticHub, CheckData, PROFILE_DIAG
 from noc.core.debug import error_report
-from noc.core.script.scheme import SNMPCredential, CLICredential, SNMPv3Credential
+from noc.core.script.scheme import Protocol, SNMPCredential, CLICredential, SNMPv3Credential
 from noc.sa.models.profile import Profile
 from noc.sa.models.managedobject import ManagedObject
 from noc.sa.models.credentialcheckrule import CredentialCheckRule
@@ -75,11 +75,13 @@ class DiagnosticCheck(DiscoveryCheck):
                     continue
                 # Get checker
                 checks: List[CheckResult] = []
-                credentials: List[Union[SNMPCredential, CLICredential, SNMPv3Credential]] = []
+                credentials: List[
+                    Tuple[Protocol, Union[SNMPCredential, CLICredential, SNMPv3Credential]]
+                ] = []
                 data: List[DataItem] = []
                 for cr in self.iter_checks(dc.checks):
                     if cr.credential:
-                        credentials += [cr.credential]
+                        credentials += [(Protocol[cr.check], cr.credential)]
                     if cr.data:
                         data += cr.data
                     checks.append(cr)
@@ -100,10 +102,8 @@ class DiagnosticCheck(DiscoveryCheck):
                 if d.diagnostic == PROFILE_DIAG and "profile" in d_data[d.diagnostic]:
                     self.set_profile(d_data[d.diagnostic]["profile"])
                 # Apply credentials
-                if (
-                    credentials
-                    and (not self.object.auth_profile or self.object.auth_profile.enable_suggest)
-                    and self.suggest_rules
+                if credentials and (
+                    not self.object.auth_profile or self.object.auth_profile.enable_suggest
                 ):
                     self.logger.debug("Apply credentials: %s", credentials)
                     self.apply_credentials(credentials)
@@ -184,19 +184,20 @@ class DiagnosticCheck(DiscoveryCheck):
         return True
 
     def apply_credentials(
-        self, credentials: List[Union[CLICredential, SNMPCredential, SNMPv3Credential]]
+        self,
+        credentials: List[Tuple[Protocol, Union[CLICredential, SNMPCredential, SNMPv3Credential]]],
     ):
         changed = {}
         object_credentials = self.object.credentials
-        for cred in credentials:
+        for protocol, cred in credentials:
             if (
                 isinstance(cred, (SNMPCredential, SNMPv3Credential))
                 and object_credentials.snmp_security_level != cred.security_level
             ):
                 self.object.snmp_security_level = cred.security_level
                 changed["snmp_security_level"] = cred.security_level
-            elif isinstance(cred, CLICredential) and self.object.scheme != cred.protocol.value:
-                changed["scheme"] = cred.protocol.value
+            elif isinstance(cred, CLICredential) and self.object.scheme != protocol.value:
+                changed["scheme"] = protocol.value
             for f in object_credentials.__dataclass_fields__:
                 if not hasattr(cred, f) or getattr(cred, f) == getattr(object_credentials, f):
                     continue

@@ -8,7 +8,7 @@
 # Python modules
 import operator
 from threading import Lock
-from typing import List, Set, Union, FrozenSet
+from typing import List, Set, Union, FrozenSet, Tuple
 from dataclasses import dataclass
 
 # Third-party modules
@@ -43,7 +43,7 @@ def check_model(oid):
 class SuggestItem(object):
     credentials: List[Union[SNMPCredential, CLICredential]]
     labels: List[FrozenSet[str]]
-    protocols: Set[Protocol]
+    protocols: FrozenSet[Protocol]
 
     def is_match(self, labels: Set[str]) -> bool:
         if not self.labels:
@@ -104,8 +104,6 @@ class CredentialCheckRule(Document):
 
     _rules_cache = cachetools.TTLCache(10, ttl=300)
 
-    check_proto_map = {p.config.check: p for p in Protocol if p.config.enable_suggest}
-
     def __str__(self):
         return self.name
 
@@ -164,11 +162,11 @@ class CredentialCheckRule(Document):
                     SuggestItem(
                         sr,
                         labels,
-                        {
+                        frozenset(
                             p
                             for p in Protocol
                             if p.config.snmp_version and (not protos or p in protos)
-                        },
+                        ),
                     )
                 )
             sr = rule.get_suggest_cli()
@@ -177,13 +175,13 @@ class CredentialCheckRule(Document):
                     SuggestItem(
                         sr,
                         labels,
-                        {p for p in CLI_PROTOCOLS if not protos or p in protos},
+                        frozenset(p for p in CLI_PROTOCOLS if not protos or p in protos),
                     )
                 )
         return r
 
     @classmethod
-    def get_suggests(cls, o) -> List[Union[SNMPCredential, CLICredential]]:
+    def get_suggests(cls, o) -> List[Tuple[FrozenSet[Protocol], Union[SNMPCredential, CLICredential]]]:
         r = []
         labels = set(o.effective_labels)
         for s in cls.get_suggest_rules():
@@ -197,7 +195,7 @@ class CredentialCheckRule(Document):
                         super_password=c.super_password,
                         raise_privilege=o.to_raise_privileges,
                     )
-                r.append(c)
+                r.append((s.protocols, c))
         return r
 
     # def clean(self):

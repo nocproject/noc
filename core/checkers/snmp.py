@@ -84,7 +84,7 @@ class SNMPProtocolChecker(Checker):
                     processed[key] = defaultdict(set)
                 if c.credential:
                     processed[key][c.credential].add(c)
-                for cred in self.rules:
+                for proto, cred in self.rules:
                     processed[key][cred].add(c)
         self.logger.debug("Processed SNMP checks: %s", processed)
         # Process checks

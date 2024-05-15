@@ -8,11 +8,10 @@
 # Python modules
 import logging
 from dataclasses import dataclass, field
-from typing import List, Optional, Dict, Any, Iterable, Literal, Union
+from typing import List, Optional, Dict, Any, Iterable, Union
 
 # NOC modules
 from noc.core.log import PrefixLoggerAdapter
-from noc.core.hash import dict_hash_int
 from noc.core.script.scheme import SNMPCredential, SNMPv3Credential, CLICredential, HTTPCredential
 from noc.core.script.caller import ScriptCaller
 
