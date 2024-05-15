@@ -181,7 +181,9 @@ class CredentialCheckRule(Document):
         return r
 
     @classmethod
-    def get_suggests(cls, o) -> List[Tuple[FrozenSet[Protocol], Union[SNMPCredential, CLICredential]]]:
+    def get_suggests(
+        cls, o
+    ) -> List[Tuple[FrozenSet[Protocol], Union[SNMPCredential, CLICredential]]]:
         r = []
         labels = set(o.effective_labels)
         for s in cls.get_suggest_rules():

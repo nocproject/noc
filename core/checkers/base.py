@@ -23,15 +23,6 @@ class MetricValue(object):
     labels: Optional[List[str]] = None
 
 
-# @dataclass(frozen=True)
-# class CapsItem(object):
-#     caps: str
-#     value: Optional[str] = None
-#     scope: Optional[str] = None
-#     # source diagnostic
-#     # scope - diagnostic_name
-
-
 @dataclass(frozen=True)
 class DataItem(object):
     name: str

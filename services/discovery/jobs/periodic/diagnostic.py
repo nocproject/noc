@@ -96,8 +96,11 @@ class DiagnosticCheck(DiscoveryCheck):
                         ]
                     if cr.metrics:
                         metrics += cr.metrics
-                    if cr.data:
-                        d_data[d.diagnostic].update({d.name: d.value for d in cr.data})
+                    # if cr.data:
+                    #    d_data[d.diagnostic].update({d.name: d.value for d in cr.data})
+                dd = self.apply_data(data)
+                if dd:
+                    d_data[d.diagnostic].update(dd)
                 # Apply Profile
                 if d.diagnostic == PROFILE_DIAG and "profile" in d_data[d.diagnostic]:
                     self.set_profile(d_data[d.diagnostic]["profile"])
@@ -116,7 +119,7 @@ class DiagnosticCheck(DiscoveryCheck):
                             status=cr.status,
                             skipped=cr.skipped,
                             error=cr.error.message if cr.error else None,
-                            data={d.name: d.value for d in data},  # Apply data
+                            data=dd,  # Apply data
                         )
                         for cr in checks
                     ],
@@ -168,6 +171,20 @@ class DiagnosticCheck(DiscoveryCheck):
             r["rules"] = self.suggest_rules
         if checker == "cli":
             r["profile"] = self.object.profile
+        return r
+
+    def apply_data(self, data: List[DataItem]) -> Dict[str, Any]:
+        """
+        Apply data to ManagedObject
+        :param data:
+        :return:
+        """
+        r = {}
+        for d in data:
+            r[d.name] = d.value
+            # caps = Capability.get_by_name(d.name)
+            # if caps:
+            #     value = Capability.clean_value(d.value)
         return r
 
     def set_profile(self, profile: str) -> bool:
