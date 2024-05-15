@@ -29,6 +29,7 @@ Ext.define("NOC.core.layout.Flex", {
     me.callParent(arguments);
 
     target.setStyle({
+      display: me.display || "flex",
       flexDirection: me.direction || "row",
       flexWrap: me.wrap || "wrap",
       justifyContent: me.justifyContent || "flex-start",

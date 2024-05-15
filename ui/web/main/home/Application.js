@@ -15,15 +15,8 @@ Ext.define("NOC.main.home.Application", {
     {
       xtype: "container",
       layout: {
-        // type: "table",
-        // columns: 3,
-        // tdAttrs: {
-        //   style: {
-        //     "vertical-align": "top",
-        //   },
-        // },
         type: "flex",
-        direction: "row",
+        direction: "column",
         wrap: "wrap",
       },
       scrollable: true,
