@@ -102,6 +102,8 @@ Ext.define("NOC.main.home.Application", {
                       },
                       bodyStyle: {
                         borderRadius: "0 0 8px 8px",
+                        backgroundColor: "#ecf0f1",
+                        borderColor: "#ecf0f1 !important",
                       },
                       width: this.cellWidth,
                       margin: this.cellMargin,
