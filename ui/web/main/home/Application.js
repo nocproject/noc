@@ -88,9 +88,6 @@ Ext.define("NOC.main.home.Application", {
                         {
                           xtype: "container",
                           margin: 4,
-                          style: {
-                            textAlign: "center",
-                          },
                           html: widget.data.text,
                         },
                       ];
