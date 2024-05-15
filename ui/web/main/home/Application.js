@@ -25,7 +25,6 @@ Ext.define("NOC.main.home.Application", {
       extraHeight: 310,
       doubleHeight: 420,
       cellWidth: 200,
-      cellMargin: 10,
       items: [],
       listeners: {
         render: function(panel){
@@ -37,14 +36,7 @@ Ext.define("NOC.main.home.Application", {
             success: function(response){
               var data = Ext.decode(response.responseText);
               if(Object.prototype.hasOwnProperty.call(data, "widgets") && !Ext.isEmpty(data.widgets)){
-                var width = panel.getWidth(),
-                  widgets = data.widgets,
-                  columns = Math.floor(width / this.cellWidth);
-                if((columns * (this.cellWidth + this.cellMargin * 2)) > width){
-                  columns -= 1;
-                }
-                panel.layout.columns = columns;
-                Ext.each(widgets, function(widget){
+                Ext.each(data.widgets, function(widget){
                   var items;
                   switch(widget.type){
                     case "favorites":
@@ -77,7 +69,7 @@ Ext.define("NOC.main.home.Application", {
                         {
                           xtype: "container",
                           margin: 4,
-                          html: "<table>" + rows.join("") + "</table>",
+                          html: "<table style='100%'>" + rows.join("") + "</table>",
                         },
                       ];    
                       break;
@@ -104,7 +96,6 @@ Ext.define("NOC.main.home.Application", {
                         borderColor: "#ecf0f1 !important",
                       },
                       width: this.cellWidth,
-                      margin: this.cellMargin,
                       height: this[widget.height + "Height"] || this.normalHeight,
                       scrollable: true,
                       items: items,
