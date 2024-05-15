@@ -62,7 +62,7 @@ Ext.define("NOC.main.home.Application", {
                       items = [
                         {
                           xtype: "container",
-                          margin: 5,
+                          margin: 4,
                           html: html + "</ul>", 
                         },
                       ];    
@@ -78,7 +78,7 @@ Ext.define("NOC.main.home.Application", {
                       items = [
                         {
                           xtype: "container",
-                          margin: 5,
+                          margin: 4,
                           html: "<table>" + rows.join("") + "</table>",
                         },
                       ];    
@@ -87,6 +87,7 @@ Ext.define("NOC.main.home.Application", {
                       items = [
                         {
                           xtype: "container",
+                          margin: 4,
                           style: {
                             textAlign: "center",
                           },
