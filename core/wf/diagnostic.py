@@ -93,6 +93,10 @@ class DiagnosticState(str, enum.Enum):
     def is_blocked(self) -> bool:
         return self.value == "blocked"
 
+    @property
+    def is_active(self) -> bool:
+        return self.value != "blocked" and self.value != "unknown"
+
 
 @dataclass(frozen=True)
 class DiagnosticConfig(object):
@@ -250,6 +254,19 @@ class DiagnosticHub(object):
             self.__diagnostics = self.__load_diagnostics()
         for d in self.__diagnostics.values():
             yield d
+
+    def has_active_diagnostic(self, name: str) -> bool:
+        """
+        Check diagnostic has worked: Enabled or Failed state
+        :param name:
+        :return:
+        """
+        d = self.get(name)
+        if d is None:
+            return False
+        if d.state == DiagnosticState.enabled or d.state == DiagnosticState.failed:
+            return True
+        return False
 
     def get_object_diagnostic(self, name: str) -> Optional[DiagnosticItem]:
         """

@@ -1008,7 +1008,7 @@ class ManagedObjectProfile(NOCModel):
                 run_policy="F",
                 run_order="S",
                 discovery_box=True,
-                discovery_periodic="S" in ac,
+                discovery_periodic=False,
                 alarm_class="NOC | Managed Object | Access Lost",
                 alarm_labels=["noc::access::method::SNMP"],
                 reason="Blocked by AccessPreference" if ac == "C" else None,
