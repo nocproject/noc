@@ -15,9 +15,11 @@ Ext.define("NOC.inv.inv.CreateConnectionForm", {
   scrollable: true,
   app: null,
   itemId: "invConnectionForm",
-  AVAILABLE_COLOR: "#2c3e50",
-  OCCUPIED_COLOR: "lightgray",
-  INVALID_COLOR: "lightcoral",
+  AVAILABLE_COLOR: NOC.colors.yes,
+  OCCUPIED_COLOR: NOC.colors.carrot,
+  INVALID_COLOR: NOC.colors.clouds,
+  UNMASKED_LABEL_COLOR: NOC.colors.black,
+  MASKED_LABEL_COLOR: NOC.colors.asbestos,
   discriminatorWidth: {left: -155, right: 155},
   legendHeight: 20,
   firstTrace: 3,
@@ -403,9 +405,9 @@ Ext.define("NOC.inv.inv.CreateConnectionForm", {
     surface.renderFrame();
   },
   drawLegend: function(surface){
-    surface.add(this.makeLegend(__("Free and valid slot"), this.AVAILABLE_COLOR, 2.5, this.surfaceHeight));
-    surface.add(this.makeLegend(__("Occupied slot"), this.OCCUPIED_COLOR, 250, this.surfaceHeight));
-    surface.add(this.makeLegend(__("Invalid slot"), this.INVALID_COLOR, 500, this.surfaceHeight));
+    surface.add(this.makeLegend(__("Free slot"), this.AVAILABLE_COLOR, 2.5, this.surfaceHeight));
+    surface.add(this.makeLegend(__("Occupied slot"), this.OCCUPIED_COLOR, 100, this.surfaceHeight));
+    //surface.add(this.makeLegend(__("Invalid slot"), this.INVALID_COLOR, 500, this.surfaceHeight));
   },
   drawObject: function(pins, surface, side, hasDiscriminator){
     var me = this;
@@ -625,6 +627,7 @@ Ext.define("NOC.inv.inv.CreateConnectionForm", {
         Ext.Ajax.request({
           url: "/inv/inv/crossing_proposals/?" + params,
           method: "GET",
+          scope: me,
           success: function(response){
             var drawPanel = me.drawPanel,
               mainSurface = drawPanel.getSurface(),
@@ -787,13 +790,14 @@ Ext.define("NOC.inv.inv.CreateConnectionForm", {
       sprites = [];
 
     Ext.each(pins, function(port, index){
-      var{pinColor,
-          internalColor,
-          name,
-          remoteId,
-          remoteName,
-          internalEnabled,
-          enabled} = me.pinStatus(port, side);
+      var {pinColor,
+           internalColor,
+           name,
+           remoteId,
+           remoteName,
+           internalEnabled,
+           enabled,
+           masked} = me.pinStatus(port, side);
 
       sprites.push({
         type: "pin",
@@ -809,6 +813,7 @@ Ext.define("NOC.inv.inv.CreateConnectionForm", {
         remoteId: remoteId,
         remoteName: remoteName,
         enabled: enabled,
+        masked: masked,
         internalEnabled: internalEnabled,
         hasInternalLabel: hasDiscriminator,
         allowDiscriminators: port.internal ? port.internal.allow_discriminators : [],
@@ -1198,9 +1203,14 @@ Ext.define("NOC.inv.inv.CreateConnectionForm", {
               });
             }
           }
-          sprite.setAttributes({
-            actualScale: 1,
-          });
+          if(sprite.enabled){
+            sprite.setAttributes({
+              actualScale: 1,
+            });
+            mainSurface.get("label" + sprite.id).setAttributes({
+              isSelected: false,
+            });
+          }
           // wire connections
           Ext.each(me.drawPanel.getSurface().getItems(), function(s){
             if(s.fromPortId === sprite.id || s.toPortId === sprite.id){
@@ -1212,9 +1222,6 @@ Ext.define("NOC.inv.inv.CreateConnectionForm", {
             if(s.fromPortId === sprite.id || s.toPortId === sprite.id){
               s.setAttributes({isSelected: false});
             }
-          });
-          mainSurface.get("label" + sprite.id).setAttributes({
-            isSelected: false,
           });
           break;
         }
@@ -1257,9 +1264,15 @@ Ext.define("NOC.inv.inv.CreateConnectionForm", {
     if(!me.drawPanel.isModalOpen){
       switch(sprite.type){
         case"pin": {
-          sprite.setAttributes({
-            actualScale: 1.2,
-          });
+          if(sprite.enabled){
+            sprite.setAttributes({
+              actualScale: 1.2,
+            });
+            // illumination of selected label
+            mainSurface.get("label" + sprite.id).setAttributes({
+              isSelected: true,
+            });
+          }
           // illumination of ALL wire connections
           Ext.each(mainSurface.getItems(), function(s){
             if(s.fromPortId === sprite.id || s.toPortId === sprite.id){
@@ -1271,10 +1284,6 @@ Ext.define("NOC.inv.inv.CreateConnectionForm", {
             if(s.fromPortId === sprite.id || s.toPortId === sprite.id){
               s.setAttributes({isSelected: true});
             }
-          });
-          // illumination of selected label
-          mainSurface.get("label" + sprite.id).setAttributes({
-            isSelected: true,
           });
           if(me.isPinAvailableForSelect(sprite)){
             var viewModel = me.getViewModel(),
@@ -1340,6 +1349,7 @@ Ext.define("NOC.inv.inv.CreateConnectionForm", {
       remoteId = "none",
       remoteName = "none",
       internalEnabled = true,
+      masked = false,
       enabled = true;
 
     if(!pin.free){
@@ -1360,6 +1370,7 @@ Ext.define("NOC.inv.inv.CreateConnectionForm", {
     if(!pin.valid){
       pinColor = me.INVALID_COLOR;
       enabled = false;
+      masked = true;
     }
     if(pin.internal){
       if(!pin.internal.valid){
@@ -1371,7 +1382,6 @@ Ext.define("NOC.inv.inv.CreateConnectionForm", {
         internalEnabled = false;
       }
     }
-
     return {
       pinColor: pinColor,
       internalColor: internalColor,
@@ -1380,6 +1390,7 @@ Ext.define("NOC.inv.inv.CreateConnectionForm", {
       remoteName: remoteName,
       internalEnabled: internalEnabled,
       enabled: enabled,
+      masked: masked,
     };
   },
   /**
@@ -1390,6 +1401,7 @@ Ext.define("NOC.inv.inv.CreateConnectionForm", {
      * @return {type} undefined - no return value
      */
   reDrawLabels: function(surface){
+    var me = this;
     Ext.Array.each(
       Ext.Array.filter(surface.getItems(), function(sprite){return sprite.type === "pin"}),
       function(pin){
@@ -1412,7 +1424,21 @@ Ext.define("NOC.inv.inv.CreateConnectionForm", {
           labelY: pin.label.attr.y,
           labelTranslationX: pin.label.attr.translationX,
           labelTranslationY: pin.label.attr.translationY,
+          enabled: pin.enabled,
+          labelColor: pin.masked ? me.MASKED_LABEL_COLOR : me.UNMASKED_LABEL_COLOR,
           zIndex: 60,
+        });
+      });
+  },
+  reDrawLabelsStyle: function(surface){
+    var me = this;
+    Ext.Array.each(
+      Ext.Array.filter(surface.getItems(), function(sprite){ return sprite.type === "pin" }),
+      function(pin){
+        var label = surface.get("label" + pin.id);
+        label.setAttributes({
+          enabled: pin.enabled,
+          labelColor: pin.masked ? me.MASKED_LABEL_COLOR : me.UNMASKED_LABEL_COLOR,
         });
       });
   },
@@ -1723,6 +1749,7 @@ Ext.define("NOC.inv.inv.CreateConnectionForm", {
         internalEnabled: internalEnabled,
       });
     });
+    me.reDrawLabelsStyle(mainSurface);
   },
   wireSort: function(wire){
     return Ext.Array.sort(wire, function(a, b){

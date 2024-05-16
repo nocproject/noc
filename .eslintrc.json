@@ -44,6 +44,9 @@
         "overrides": {
           "return": {
             "after": true
+          },
+          "var": {
+            "after": true
           }
         }
       }
