@@ -130,10 +130,6 @@ class Script(GetMetricsScript):
     @metrics(
         [
             "Interface | CBQOS | Drops | Out | Delta",
-            "Interface | CBQOS | Octets | In",
-            "Interface | CBQOS | Octets | In | Delta",
-            "Interface | CBQOS | Packets | In",
-            "Interface | CBQOS | Packets | In | Delta",
             "Interface | CBQOS | Octets | Out",
             "Interface | CBQOS | Octets | Out | Delta",
             "Interface | CBQOS | Packets | Out",
@@ -144,21 +140,11 @@ class Script(GetMetricsScript):
         access="S",  # CLI version
     )
     def get_interface_cbqos_metrics_snmp(self, metrics):
-        ifaces = {str(m.ifindex): m.labels for m in metrics if m.ifindex}
-        service = {str(m.ifindex): m.service for m in metrics if m.service}
+        ifaces = {m.ifindex: m for m in metrics if m.ifindex}
         for ifindex in ifaces:
-            for (
-                index,
-                in_packets,
-                out_packets,
-                in_octets,
-                out_octets,
-                discards,
-            ) in self.snmp.get_tables(
+            for (index, out_packets, out_octets, discards) in self.snmp.get_tables(
                 [
-                    mib["JUNIPER-COS-MIB::jnxCosIfqQedPkts", ifindex],
                     mib["JUNIPER-COS-MIB::jnxCosIfqTxedPkts", ifindex],
-                    mib["JUNIPER-COS-MIB::jnxCosIfqQedBytes", ifindex],
                     mib["JUNIPER-COS-MIB::jnxCosIfqTxedBytes", ifindex],
                     mib["JUNIPER-COS-MIB::jnxCosIfqTailDropPkts", ifindex],
                 ]
@@ -172,27 +158,24 @@ class Script(GetMetricsScript):
                     ("Interface | CBQOS | Drops | Out | Delta", discards),
                     ("Interface | CBQOS | Octets | Out | Delta", out_octets),
                     ("Interface | CBQOS | Octets | Out", out_octets),
-                    ("Interface | CBQOS | Octets | In | Delta", in_octets),
-                    ("Interface | CBQOS | Octets | In", in_octets),
                     ("Interface | CBQOS | Packets | Out | Delta", out_packets),
                     ("Interface | CBQOS | Packets | Out", out_packets),
-                    ("Interface | CBQOS | Packets | In | Delta", in_packets),
-                    ("Interface | CBQOS | Packets | In", in_packets),
                 ]:
                     if not value:
                         continue
                     scale = 1
+                    sc = ifaces[ifindex]
                     self.set_metric(
-                        id=(metric, ifaces[ifindex]),
+                        id=(metric, sc.labels),
                         metric=metric,
                         value=float(value),
                         ts=ts,
-                        labels=ifaces[ifindex] + [f"noc::traffic_class::{traffic_class}"],
+                        labels=sc.labels + [f"noc::traffic_class::{traffic_class}"],
                         multi=True,
                         type="delta" if metric.endswith("Delta") else "gauge",
                         scale=scale,
                         units="byte" if "Octets" in metric else "pkt",
-                        service=service.get(ifindex),
+                        service=sc.service,
                     )
 
     def collect_sla_metrics(self, metrics):
