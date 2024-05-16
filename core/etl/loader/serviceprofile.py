@@ -11,7 +11,7 @@ from ..models.serviceprofile import ServiceProfile
 from noc.sa.models.serviceprofile import ServiceProfile as ServiceProfileModel
 from noc.wf.models.workflow import Workflow
 
-DEFAULT_WOKFLOW_NAME = "Service Default"
+DEFAULT_WORKFLOW_NAME = "Service Default"
 
 
 class ServiceProfileLoader(BaseLoader):
@@ -28,5 +28,5 @@ class ServiceProfileLoader(BaseLoader):
         if "workflow" in d and d["workflow"]:
             d["workflow"] = Workflow.objects.get(name=d["workflow"])
         else:
-            d["workflow"] = Workflow.objects.get(name=DEFAULT_WOKFLOW_NAME)
+            d["workflow"] = Workflow.objects.get(name=DEFAULT_WORKFLOW_NAME)
         return d
