@@ -20,6 +20,7 @@ Ext.define("NOC.main.home.Application", {
         wrap: "wrap",
         gap: "20px",
       },
+      padding: 10,
       scrollable: true,
       smallHeight: 90,
       normalHeight: 200,
