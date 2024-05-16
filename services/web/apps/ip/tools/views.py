@@ -1,7 +1,7 @@
 # ---------------------------------------------------------------------
 # Tools
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2022 The NOC Project
+# Copyright (C) 2007-2024 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -19,21 +19,20 @@ from django.http import HttpResponse
 from noc.services.web.base.application import Application, HasPerm, view
 from noc.core.ip import IP, IPv4, IPv6
 from noc.core.validators import is_ipv4, is_ipv6
+from noc.core.forms import NOCForm
+from noc.core.translation import ugettext as _
 from noc.ip.models.address import Address
 from noc.ip.models.prefix import Prefix
 from noc.ip.models.vrf import VRF
-from noc.core.forms import NOCForm
-
-# from noc.core.comp import smart_text
 from noc.ip.models.addressprofile import AddressProfile
-from noc.core.translation import ugettext as _
 
 
 #
 # IP Block tools
 #
-class ToolsAppplication(Application):
+class ToolsApplication(Application):
     title = _("Tools")
+    extra_permissions = ["download_ip", "upload_axfr", "view"]
 
     @view(
         url=r"^(?P<vrf_id>\d+)/(?P<afi>[46])/(?P<prefix>\S+?/\d+)/$",
@@ -65,7 +64,7 @@ class ToolsAppplication(Application):
     @view(
         url=r"^(?P<vrf_id>\d+)/(?P<afi>[46])/(?P<prefix>\S+)/download_ip/$",
         url_name="download_ip",
-        access=HasPerm("view"),
+        access=HasPerm("download_ip"),
     )
     def view_download_ip(self, request, vrf_id, afi, prefix):
         """
@@ -111,7 +110,7 @@ class ToolsAppplication(Application):
     @view(
         url=r"^(?P<vrf_id>\d+)/(?P<afi>[46])/(?P<prefix>\S+)/upload_axfr/$",
         url_name="upload_axfr",
-        access=HasPerm("view"),
+        access=HasPerm("upload_axfr"),
     )
     def view_upload_axfr(self, request, vrf_id, afi, prefix):
         """
