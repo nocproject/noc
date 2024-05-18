@@ -14,6 +14,7 @@ from noc.fm.models.uptime import Uptime
 from noc.core.mx import send_message, MessageType
 from noc.config import config
 from noc.core.hash import hash_int
+from noc.core.wf.diagnostic import SNMP_DIAG
 
 
 class UptimeCheck(DiscoveryCheck):
@@ -28,6 +29,13 @@ class UptimeCheck(DiscoveryCheck):
         self.logger.debug("Checking uptime")
         uptime = self.object.scripts.get_uptime()
         self.logger.debug("Received uptime: %s", uptime)
+
+        if uptime is None and self.object.diagnostic.has_active_diagnostic(SNMP_DIAG):
+            self.set_problem(
+                message="Failed getting uptime",
+                diagnostic=SNMP_DIAG,
+            )
+
         if not uptime:
             return
         reboot_ts = Uptime.register(self.object, uptime)
