@@ -46,7 +46,6 @@ class EscalationJob(SequenceJob):
     def __init__(self, job, attrs):
         super().__init__(job, attrs)
         self.alarm_log = []
-        self.object: Escalation = Escalation()
 
     def run_action(self, action: str, key: str) -> EscalationResult:
         """
@@ -61,24 +60,36 @@ class EscalationJob(SequenceJob):
             return True
         return self.object.managed_object.can_escalate()
 
-    def stop_sequence(self):
+    def end_sequence(self):
         """
         Stop sequence
+        """
+        if self.alarm_log:
+            coll = ActiveAlarm._get_collection()
+            coll.bulk_write(self.alarm_log)
+        self.object.save()
+
+    def end_escalation(self, timestamp: Optional[datetime.datetime] = None):
+        """
+        Processed end escalation handlers
         ToDo:
             Check deescalation error before remove job
         """
-        self.object.end_timestamp = datetime.datetime.now().replace(microsecond=0)
-        self.object.save()
-        self.remove_job()
+        self.check_closed()
+        if not self.object.end_timestamp:
+            self.object.end_timestamp = datetime.datetime.now().replace(microsecond=0)
+        self.end_sequence()
 
     def handler(self, **kwargs):
         self.logger.info("Performing escalations")
         if self.object.is_dirty:
             self.object.update_items()
             self.object.is_dirty = False
+        # Check end escalation
         if self.object.check_end():
-            self.check_closed()
-            self.stop_sequence()
+            self.end_escalation()
+            if not self.error:
+                self.remove_job()
             return
         # Check retry and waited escalations
         self.check_escalation_waited()
@@ -129,17 +140,15 @@ class EscalationJob(SequenceJob):
                     self.object.set_escalation(
                         timestamp=datetime.datetime.now().replace(microsecond=0),
                         action="notification",
-                        key=str(esc_item.notification_group),
+                        key=str(esc_item.notification_group.id),
                         status=r.status,
                     )
                 # Execute Diagnostic
                 if esc_item.stop_processing:
                     self.logger.debug("Stopping processing")
                     break
-        self.object.save()
-        if self.alarm_log:
-            coll = ActiveAlarm._get_collection()
-            coll.bulk_write(self.alarm_log)
+        self.logger.info("Saving changes on: %s", self.object.sequence_num)
+        self.end_sequence()
 
     def iter_sequence(self) -> Iterable[EscalationItem]:
         """
@@ -148,13 +157,13 @@ class EscalationJob(SequenceJob):
 
         ts = self.object.timestamp
         now = datetime.datetime.now().replace(microsecond=0)
-        self.logger.info("Start escalation sequence from", self.object.sequence_num)
+        self.logger.info("Start escalation sequence from: %s", self.object.sequence_num)
         for num, item in enumerate(self.object.profile.escalations):
             if num < self.object.sequence_num:
                 continue
             # Set current sequence
             self.object.sequence_num = num
-            if (now - self.object.get_next(num)).total_seconds() > int(item.delay):
+            if (now - self.object.get_next(num)).total_seconds() < int(item.delay):
                 break
             escalation = self.object.get_escalation(action=item.action, key=item.get_key())
             if escalation and escalation.status == EscalationStatus.OK:
@@ -177,6 +186,12 @@ class EscalationJob(SequenceJob):
         if self.object.alarm == "A" and self.object.profile.close_alarm:
             # Clear Alarm after End
             self.close_alarm()
+        if self.object.profile.end_condition == "E":
+            # End if end condition
+            self.end_escalation()
+        # Remove or Suspend
+        if not self.error:
+            self.remove_job()
 
     def check_escalation_waited(self):
         """
