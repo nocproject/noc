@@ -38,7 +38,7 @@ id_lock = Lock()
 
 class EscalationItem(EmbeddedDocument):
     # Delay part
-    delay = IntField()
+    delay = IntField(min_value=0)
     alarm_ack = StringField(
         choices=[
             ("ack", "Alarm Acknowledge"),
@@ -54,6 +54,8 @@ class EscalationItem(EmbeddedDocument):
     # Acton
     notification_group: NotificationGroup = ForeignKeyField(NotificationGroup)
     create_tt = BooleanField(default=False)
+    # TT System that create escalation, Device by default
+    tt_system = ReferenceField(TTSystem, required=False)
     # Processed condition
     # wait_condition = BooleanField(default=False)
     wait_ack = BooleanField(default=False)  # Wait alarm Acknowledge
@@ -70,12 +72,35 @@ class EscalationItem(EmbeddedDocument):
     def __str__(self):
         return f"{self.delay}: {self.create_tt}/{self.template}"
 
+    @property
+    def action(self) -> Optional[str]:
+        if self.create_tt:
+            return "create_tt"
+        elif self.notification_group:
+            return "notification"
+        return None
+
+    def get_key(self, tt_system: Optional[str] = None) -> str:
+        if self.action == "create_tt":
+            return str(tt_system)
+        if self.action == "notification":
+            return str(self.notification_group)
+        return ""
+
 
 class TTSystemItem(EmbeddedDocument):
     tt_system = ReferenceField(TTSystem)
     pre_reason = StringField()
+    login = StringField()
     global_limit = IntField()
     max_escalation_retries = IntField(default=30)
+
+    def get_config(self) -> Dict[str, str]:
+        return {
+            "pre_reason": self.pre_reason,
+            "max_escalation_retries": self.max_escalation_retries,
+            "login": self.login,
+        }
 
 
 @on_delete_check(
@@ -91,7 +116,7 @@ class EscalationProfile(Document):
     escalation_policy = EnumField(EscalationPolicy, default=EscalationPolicy.ROOT)
     #     choices=["never", "rootfirst", "root", "alwaysfirst", "always"], default="root"
     # )
-    tt_system_config = EmbeddedDocumentListField(TTSystemItem)
+    tt_system_config: List[TTSystemItem] = EmbeddedDocumentListField(TTSystemItem)
     maintenance_policy = StringField(choices=["w", "i", "e"], default="end")
     alarm_consequence_policy = StringField(
         required=True,
@@ -144,7 +169,7 @@ class EscalationProfile(Document):
 
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_id_cache"), lock=lambda _: id_lock)
-    def get_by_id(self, oid: Union[str, ObjectId]) -> Optional["EscalationProfile"]:
+    def get_by_id(cls, oid: Union[str, ObjectId]) -> Optional["EscalationProfile"]:
         return EscalationProfile.objects.filter(id=oid).first()
 
     @property
@@ -158,5 +183,9 @@ class EscalationProfile(Document):
                 return True
         return False
 
-    def get_tt_system_config(self, tt_system) -> Dict[str, str]:
-        return {}
+    def get_tt_system_config(self, tt_system: TTSystem) -> Dict[str, str]:
+        r = tt_system.get_config()
+        for item in self.tt_system_config:
+            if item.tt_system.id == tt_system.id:
+                r |= item.get_config()
+        return r

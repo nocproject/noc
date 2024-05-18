@@ -7,10 +7,10 @@
 
 # Python modules
 import operator
-from threading import Lock
-from typing import Optional, Union
 import datetime
 import logging
+from threading import Lock
+from typing import Optional, Union, Dict
 
 # Third-party modules
 from bson import ObjectId
@@ -57,6 +57,9 @@ class TTSystem(Document):
     # Failure condition checking
     failure_cooldown = IntField(default=0)
     failed_till = DateTimeField()
+    #
+    global_limit = IntField()  # Replaced on Escalation Profile
+    max_escalation_retries = IntField(default=30)  # @fixme make it configurable
     # Threadpool settings
     shard_name = StringField(default=DEFAULT_TTSYSTEM_SHARD)
     max_threads = IntField(default=10)
@@ -93,7 +96,7 @@ class TTSystem(Document):
 
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_name_cache"), lock=lambda _: id_lock)
-    def get_by_name(cls, name):
+    def get_by_name(cls, name) -> Optional["TTSystem"]:
         return TTSystem.objects.filter(name=name).first()
 
     def save(self, *args, **kwargs):
@@ -121,10 +124,15 @@ class TTSystem(Document):
             raise ValueError
         return h(self.name, self.connection)
 
+    def get_config(self) -> Dict[str, str]:
+        """
+        Getting TTSystem config
+        """
+        return {"login": "correlator"}
+
     def is_failed(self):
         """
         Check TTSystem is in failed state
-        :return:
         """
         if not self.failed_till:
             return False
