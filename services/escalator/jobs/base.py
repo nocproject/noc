@@ -30,7 +30,10 @@ class SequenceJob(Job):
 
     def schedule_next(self, status):
         # Get next run
-        ts = self.object.get_next()
+        if status == self.E_EXCEPTION:
+            ts = datetime.datetime.now() + datetime.timedelta(seconds=60)
+        else:
+            ts = self.object.get_next()
         # Error
         if not ts:
             # Remove disabled job
