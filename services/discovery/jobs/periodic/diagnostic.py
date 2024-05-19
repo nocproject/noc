@@ -229,6 +229,9 @@ class DiagnosticCheck(DiscoveryCheck):
             self.logger.info("Update field: %s", f)
             setattr(self.object, f, v)
         ManagedObject.objects.filter(id=self.object.id).update(**changed)
+        if "auth_profile" in changed:
+            self.apply_credentials(credentials)
+            return
         self.object._reset_caches(self.object.id, credential=True)
         self.object.update_init()
 
