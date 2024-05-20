@@ -11,7 +11,7 @@ from functools import partial
 from typing import List, Iterable, Dict, Tuple, Union, Optional
 
 # NOC modules
-from .base import Checker, CheckResult, Check
+from .base import Checker, CheckResult, Check, CheckError, DataItem
 from ..script.scheme import Protocol, SNMPCredential, SNMPv3Credential
 from noc.core.ioloop.snmp import snmp_get, SNMPError
 from noc.core.ioloop.util import run_sync
@@ -35,6 +35,7 @@ class SNMPProtocolChecker(Checker):
     CHECKS: List[str] = ["SNMPv1", "SNMPv2c", "SNMPv3", SUGGEST_CHECK]
     PROTO_CHECK_MAP: Dict[str, Protocol] = {p.config.check: p for p in Protocol if p.config.check}
     SNMP_TIMEOUT_SEC = 3
+    PARAMS = ["rules"]
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
@@ -46,7 +47,7 @@ class SNMPProtocolChecker(Checker):
     def load_suggests(credentials):
         if not credentials:
             return []
-        return [x for x in credentials if isinstance(x, (SNMPCredential, SNMPv3Credential))]
+        return [x for _, x in credentials if isinstance(x, (SNMPCredential, SNMPv3Credential))]
 
     def iter_suggest_check(self, check: Check) -> Iterable[Check]:
         """
@@ -64,8 +65,8 @@ class SNMPProtocolChecker(Checker):
                 name=c,
                 address=check.address or self.address,
                 port=check.port,
-                arg0=check.arg0,
-                credentials=check.credentials,
+                args=check.args,
+                credential=check.credential,
             )
 
     def iter_result(self, checks: List[Check]) -> Iterable[CheckResult]:
@@ -76,13 +77,13 @@ class SNMPProtocolChecker(Checker):
             for c in self.iter_suggest_check(check):
                 if c.name not in self.CHECKS:
                     continue
-                if not c.credentials and not self.rules:
+                if not c.credential and not self.rules:
                     continue
                 key = (c.address, c.port)
                 if key not in processed:
                     processed[key] = defaultdict(set)
-                for cred in c.credentials:
-                    processed[key][cred].add(c)
+                if c.credential:
+                    processed[key][c.credential].add(c)
                 for cred in self.rules:
                     processed[key][cred].add(c)
         self.logger.debug("Processed SNMP checks: %s", processed)
@@ -99,15 +100,21 @@ class SNMPProtocolChecker(Checker):
                         continue
                     if skipped:
                         continue
+                    status, error = not bool(message) and bool(data), None
+                    if not status:
+                        error = CheckError(
+                            code="",
+                            is_access=bool(data),
+                            is_available=not bool(message),
+                            message=message,
+                        )
                     result[c] = CheckResult(
                         check=c.name,
-                        arg0=c.arg0,
-                        status=not bool(message) and bool(data),
-                        is_access=bool(data),
-                        is_available=not bool(message),
+                        args=c.args,
+                        status=status,
                         data=data,
-                        credentials=[cred] if data else [],
-                        error=message,
+                        credential=cred if data else None,
+                        error=error,
                     )
         for check in checks:
             for c in self.iter_suggest_check(check):
@@ -127,7 +134,7 @@ class SNMPProtocolChecker(Checker):
 
     async def do_snmp_check(
         self, check: Check, cred: Union[SNMPCredential, SNMPv3Credential]
-    ) -> Tuple[bool, Optional[Dict[str, str]], str]:
+    ) -> Tuple[bool, Optional[List[DataItem]], str]:
         """
 
         :param check:
@@ -188,6 +195,8 @@ class SNMPProtocolChecker(Checker):
         #     config.snmp_ro,
         #     config.protocol.config.snmp_version,
         # )
+        if r:
+            r = [DataItem(name=k, value=v) for k, v in r.items()]
         return False, r, message
         # return CheckResult(
         #     check=check.name,

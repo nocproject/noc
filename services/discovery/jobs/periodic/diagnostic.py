@@ -8,7 +8,7 @@
 # Python modules
 import datetime
 import logging
-from typing import Dict, List, Optional, Literal, Iterable, Any, Union
+from typing import Dict, List, Optional, Literal, Iterable, Any, Union, Tuple
 from collections import defaultdict
 
 # NOC modules
@@ -16,7 +16,7 @@ from noc.services.discovery.jobs.base import DiscoveryCheck
 from noc.core.checkers.base import (
     Check,
     CheckResult,
-    CapsItem,
+    DataItem,
     MetricValue,
 )
 from noc.core.checkers.loader import loader
@@ -41,7 +41,7 @@ class DiagnosticCheck(DiscoveryCheck):
     def __init__(self, job, run_order: Optional[Literal["S", "E"]] = None):
         super().__init__(job)
         self.run_order = run_order
-        self.proto_check_map = {p.config.check: p for p in Protocol if p.config.enable_suggest}
+        self.suggest_rules = CredentialCheckRule.get_suggests(self.object)
 
     def handler(self):
         # Loading checkers
@@ -75,25 +75,32 @@ class DiagnosticCheck(DiscoveryCheck):
                     continue
                 # Get checker
                 checks: List[CheckResult] = []
-                credentials: List[Union[SNMPCredential, CLICredential, SNMPv3Credential]] = []
-                capabilities: List[CapsItem] = []
+                credentials: List[
+                    Tuple[Protocol, Union[SNMPCredential, CLICredential, SNMPv3Credential]]
+                ] = []
+                data: List[DataItem] = []
                 for cr in self.iter_checks(dc.checks):
-                    if cr.credentials:
-                        credentials += cr.credentials
-                    if cr.caps:
-                        capabilities += cr.caps
+                    if cr.credential:
+                        credentials += [(Protocol[cr.check], cr.credential)]
+                    if cr.data:
+                        data += cr.data
                     checks.append(cr)
                     m_labels = [f"noc::check::name::{cr.check}", f"noc::diagnostic::{d.diagnostic}"]
                     if cr.arg0:
                         m_labels += [f"noc::check::arg0::{cr.arg0}"]
+                    if cr.address:
+                        m_labels += [f"noc::check::address::{cr.address}"]
                     if not cr.skipped:
                         metrics += [
                             MetricValue("Check | Status", value=int(cr.status), labels=m_labels)
                         ]
                     if cr.metrics:
                         metrics += cr.metrics
-                    if cr.data:
-                        d_data[d.diagnostic].update(cr.data)
+                    # if cr.data:
+                    #    d_data[d.diagnostic].update({d.name: d.value for d in cr.data})
+                dd = self.apply_data(data)
+                if dd:
+                    d_data[d.diagnostic].update(dd)
                 # Apply Profile
                 if d.diagnostic == PROFILE_DIAG and "profile" in d_data[d.diagnostic]:
                     self.set_profile(d_data[d.diagnostic]["profile"])
@@ -111,8 +118,8 @@ class DiagnosticCheck(DiscoveryCheck):
                             arg0=cr.arg0,
                             status=cr.status,
                             skipped=cr.skipped,
-                            error=cr.error,
-                            data=cr.data,
+                            error=cr.error.message if cr.error else None,
+                            data=dd,  # Apply data
                         )
                         for cr in checks
                     ],
@@ -134,7 +141,7 @@ class DiagnosticCheck(DiscoveryCheck):
             if check.name == "PROFILE":
                 cred = self.object.credentials.get_snmp_credential()
                 if cred:
-                    check = Check(check.name, credentials=[cred])
+                    check = Check(check.name, credential=cred)
             do_checks[checker.name] += [check]
         for checker, d_checks in do_checks.items():
             params = self.get_checker_param(checker)
@@ -161,9 +168,23 @@ class DiagnosticCheck(DiscoveryCheck):
         elif checker in ["snmp", "cli"] and (
             not self.object.auth_profile or self.object.auth_profile.enable_suggest
         ):
-            r["rules"] = CredentialCheckRule.get_suggests(self.object)
+            r["rules"] = self.suggest_rules
         if checker == "cli":
             r["profile"] = self.object.profile
+        return r
+
+    def apply_data(self, data: List[DataItem]) -> Dict[str, Any]:
+        """
+        Apply data to ManagedObject
+        :param data:
+        :return:
+        """
+        r = {}
+        for d in data:
+            r[d.name] = d.value
+            # caps = Capability.get_by_name(d.name)
+            # if caps:
+            #     value = Capability.clean_value(d.value)
         return r
 
     def set_profile(self, profile: str) -> bool:
@@ -180,19 +201,20 @@ class DiagnosticCheck(DiscoveryCheck):
         return True
 
     def apply_credentials(
-        self, credentials: List[Union[CLICredential, SNMPCredential, SNMPv3Credential]]
+        self,
+        credentials: List[Tuple[Protocol, Union[CLICredential, SNMPCredential, SNMPv3Credential]]],
     ):
         changed = {}
         object_credentials = self.object.credentials
-        for cred in credentials:
+        for protocol, cred in credentials:
             if (
                 isinstance(cred, (SNMPCredential, SNMPv3Credential))
                 and object_credentials.snmp_security_level != cred.security_level
             ):
                 self.object.snmp_security_level = cred.security_level
                 changed["snmp_security_level"] = cred.security_level
-            elif isinstance(cred, CLICredential) and self.object.scheme != cred.protocol.value:
-                changed["scheme"] = cred.protocol.value
+            elif isinstance(cred, CLICredential) and self.object.scheme != protocol.value:
+                changed["scheme"] = protocol.value
             for f in object_credentials.__dataclass_fields__:
                 if not hasattr(cred, f) or getattr(cred, f) == getattr(object_credentials, f):
                     continue
@@ -207,6 +229,9 @@ class DiagnosticCheck(DiscoveryCheck):
             self.logger.info("Update field: %s", f)
             setattr(self.object, f, v)
         ManagedObject.objects.filter(id=self.object.id).update(**changed)
+        if "auth_profile" in changed:
+            self.apply_credentials(credentials)
+            return
         self.object._reset_caches(self.object.id, credential=True)
         self.object.update_init()
 
