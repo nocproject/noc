@@ -316,24 +316,6 @@ build:web:
       - build/rust/release
     expire_in: 7 days
 
-Build dnssync:
-  stage: Build
-  extends: .build_rust
-  variables:
-    BUILD_TARGET: dnssync
-  artifacts:
-    paths:
-      - build/rust/release/noc-dns-sync
-
-Build agent:
-  stage: Build
-  extends: .build_rust
-  variables:
-    BUILD_TARGET: agent
-  artifacts:
-    paths:
-      - build/rust/release/noc-agent
-
 # Upload section
 upload docs:
   stage: Upload
@@ -352,19 +334,3 @@ upload docs:
         - "mkdocs.yml"
         - "macros.py"
         - ".requirements/docs.txt"
-
-upload dnssync:
-  stage: Upload
-  environment: dnssync
-  extends: .upload
-  variables:
-    SOURCE: build/rust/release/noc-dns-sync
-    DEST: cdn/$S3_BUCKET/dnssync/
-    BUILD_TARGET: dnssync
-  rules:
-    - if: '$CI_PIPELINE_SOURCE == "schedule"'
-      when: never
-    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
-      changes:
-        - rust/$BUILD_TARGET/*
-        - rust/$BUILD_TARGET/**/*
