@@ -41,6 +41,12 @@ def check_model(oid):
 
 @dataclass(frozen=True)
 class SuggestItem(object):
+    """
+    Attributes:
+        credentials: List of suggests credentials
+        labels: Match labels for rule
+        protocols: List of allowed protocols
+    """
     credentials: List[Union[SNMPCredential, CLICredential]]
     labels: List[FrozenSet[str]]
     protocols: Tuple[Protocol, ...]
@@ -154,9 +160,9 @@ class CredentialCheckRule(Document):
             .read_preference(ReadPreference.SECONDARY_PREFERRED)
             .order_by("preference")
         ):
-            sr = rule.get_suggest_snmp()
+            sr: List[SNMPCredential] = rule.get_suggest_snmp()
             labels = [frozenset(ll.labels) for ll in rule.match]
-            protos = rule.get_suggest_proto()
+            protos: List[Protocol] = rule.get_suggest_proto()
             if sr:
                 r.append(
                     SuggestItem(
@@ -169,13 +175,14 @@ class CredentialCheckRule(Document):
                         ),
                     )
                 )
-            sr = rule.get_suggest_cli()
+            sr: List[CLICredential] = rule.get_suggest_cli()
             if sr:
+                c_protos = protos or CLI_PROTOCOLS
                 r.append(
                     SuggestItem(
                         sr,
                         labels,
-                        tuple(p for p in CLI_PROTOCOLS if not protos or p in protos),
+                        tuple(Protocol(p) for p in c_protos if not protos or p in protos),
                     )
                 )
         return r
