@@ -2,19 +2,19 @@
 
 ## Who Are We?
 
-We are an international team of recognized experts in the design, planning, and operation of communication networks and online services.
+We are an [international team](../noc-community/index.md) of recognized experts in the design, planning, and operation of communication networks and online services.
 
 ## Our Goal
 
 1. Become the leading OSS solution for data networks among open-source and commercial products, including but not limited to:
 
-        * Network Resource Inventory
-        * Fault Management
-        * Performance Analysis
-        * Configuration Management
-        * Network Management System (NMS) and Element Management System (EMS)
-        * Trail Management
-        * Provisioning and Service Activation
+    * Network Resource Inventory
+    * Fault Management
+    * Performance Analysis
+    * Configuration Management
+    * Network Management System (NMS) and Element Management System (EMS)
+    * Trail Management
+    * Provisioning and Service Activation
 
 2. Create an integrated and comprehensive environment for target domains.
 3. Provide an extensible and flexible solution adaptable to various use scenarios.
