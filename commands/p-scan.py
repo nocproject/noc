@@ -9,7 +9,7 @@
 import argparse
 import asyncio
 import socket
-from typing import Optional, Iterable, List
+from typing import Optional, Iterable, List, Tuple, Union, Dict
 from collections import defaultdict
 
 # Third-party modules
@@ -24,10 +24,10 @@ from noc.core.perf import metrics
 from noc.core.ip import IP
 from noc.config import config
 from noc.core.checkers.loader import loader
-from noc.core.checkers.base import Check, Checker
+from noc.core.checkers.base import Check, Checker, DataItem
 from noc.core.checkers.snmp import SUGGEST_CHECK
 from noc.core.checkers.tcp import TCP_DIAG
-from noc.core.script.scheme import SNMPCredential, SNMPv3Credential
+from noc.core.script.scheme import SNMPCredential, SNMPv3Credential, Protocol
 from noc.main.models.pool import Pool
 from noc.sa.models.objectdiscoveryrule import ObjectDiscoveryRule
 from noc.core.purgatorium import ProtocolCheckResult, register
@@ -80,8 +80,7 @@ class Command(BaseCommand):
         address: str,
         checks: Optional[str] = None,
         ports: Optional[str] = None,
-        community: Optional[str] = None,
-        snmp_user: Optional[str] = None,
+        snmp_cred: Optional[SNMPCredential] = None,
         rule: Optional[ObjectDiscoveryRule] = None,
     ) -> Iterable[Check]:
         """
@@ -94,34 +93,13 @@ class Command(BaseCommand):
             except ValueError:
                 continue
             yield Check(name=TCP_DIAG, address=address, port=p)
-        snmp_cred = []
-        for c in (community or "").split(","):
-            snmp_cred.append(SNMPCredential(snmp_ro=c, oids=OIDS))
-        for c in (snmp_user or "").split(","):
-            # user:sha:123456:des:123457
-            creds = {"oids": OIDS}
-            username, *other = c.split(":")
-            creds["username"] = username
-            if len(other) >= 2:
-                # authNoPriv
-                creds.update({"auth_proto": other[0], "auth_key": other[1]})
-            if len(other) > 2:
-                # authPriv
-                creds.update({"private_proto": other[2], "private_key": other[3]})
-            snmp_cred.append(SNMPv3Credential(**creds))
-        if snmp_cred:
-            yield Check(
-                SUGGEST_CHECK,
-                address=address,
-                credentials=snmp_cred,
-            )
         if rule:
             for c in rule.checks:
                 yield Check(
                     name=c.check,
                     address=address,
                     port=c.port,
-                    arg0=c.arg0,
+                    args={"arg0": c.arg0},
                 )
         for c in checks.split(";"):
             name, *other = c.split("?")
@@ -133,8 +111,34 @@ class Command(BaseCommand):
                 name=name,
                 address=address,
                 port=int(other["port"]) if "port" in other else None,
-                credentials=snmp_cred,
+                credential=snmp_cred,
             )
+
+    def parse_credentials(
+        self, community, snmp_user
+    ) -> List[Tuple[Protocol, Union[SNMPCredential, SNMPv3Credential]]]:
+        """
+
+        :param community:
+        :param snmp_user:
+        :return:
+        """
+        r = []
+        for c in (community or "").split(","):
+            r.append(((Protocol(6), Protocol(7)), SNMPCredential(snmp_ro=c, oids=OIDS)))
+        for c in (snmp_user or "").split(","):
+            # user:sha:123456:des:123457
+            creds = {"oids": OIDS}
+            username, *other = c.split(":")
+            creds["username"] = username
+            if len(other) >= 2:
+                # authNoPriv
+                creds.update({"auth_proto": other[0], "auth_key": other[1]})
+            if len(other) > 2:
+                # authPriv
+                creds.update({"private_proto": other[2], "private_key": other[3]})
+            r.append((Protocol(8), SNMPv3Credential(**creds)))
+        return r
 
     def handle(
         self,
@@ -160,6 +164,20 @@ class Command(BaseCommand):
             ]
             await asyncio.gather(*tasks)
 
+        def parse_data(addr, data: List[DataItem]) -> Dict[str, str]:
+            r = {}
+            for d in data:
+                r[d.name] = d.value
+            if HOSTNAME_OID in r:
+                result[addr]["hostname"] = r[HOSTNAME_OID]
+            if DESCR_OID in r:
+                result[addr]["description"] = r[DESCR_OID]
+            if UPTIME_OID in r:
+                result[addr]["uptime"] = r[UPTIME_OID]
+            if CHASSIS_OID in r:
+                result[addr]["chassis_id"] = r[CHASSIS_OID]
+            return r
+
         async def check_worker():
             while True:
                 async with lock:
@@ -179,8 +197,27 @@ class Command(BaseCommand):
                     )
                 )
                 metrics["address_up"] += 1
+                snmp_cred = None
+                if snmp_checker:
+                    for r in snmp_checker.iter_result([Check(SUGGEST_CHECK, address=addr)]):
+                        if r.credential:
+                            snmp_cred = r.credential
+                        data = {}
+                        if r.data:
+                            data = parse_data(addr, r.data)
+                        result[addr]["checks"].append(
+                            ProtocolCheckResult(
+                                check=r.check,
+                                status=r.status,
+                                port=r.port,
+                                available=r.error.is_available if r.error else True,
+                                access=r.error.is_access if r.error else True,
+                                data=data,
+                                error=r.error.message if r.error else "",
+                            )
+                        )
                 # SNMP/HTTP/Agent/TCP Check
-                for c in self.parse_checks(addr, checks, ports, community, snmp_user, rule):
+                for c in self.parse_checks(addr, checks, ports, snmp_cred, rule):
                     h = self.get_checker(c.name)
                     if not h:
                         continue
@@ -189,25 +226,25 @@ class Command(BaseCommand):
                         # self.stdout.write(f"{addr} Port {r.port} is open\n")
                         if r.skipped:
                             continue
+                        data = {}
                         if r.data:
-                            result[addr]["data"].update(r.data)
-                        if r.data and HOSTNAME_OID in r.data:
-                            result[addr]["hostname"] = r.data[HOSTNAME_OID]
-                        if r.data and DESCR_OID in r.data:
-                            result[addr]["description"] = r.data[DESCR_OID]
-                        if r.data and UPTIME_OID in r.data:
-                            result[addr]["uptime"] = r.data[UPTIME_OID]
-                        if r.data and CHASSIS_OID in r.data:
-                            result[addr]["chassis_id"] = r.data[CHASSIS_OID]
+                            data = parse_data(addr, r.data)
+                        error, is_available, is_access = "", r.status, r.status
+                        if r.error:
+                            error, is_available, is_access = (
+                                r.error.message,
+                                r.error.is_available,
+                                r.error.is_access,
+                            )
                         result[addr]["checks"].append(
                             ProtocolCheckResult(
                                 check=r.check,
                                 status=r.status,
                                 port=r.port,
-                                available=r.is_available,
-                                access=r.is_access,
-                                data=r.data,
-                                error=r.error,
+                                available=is_available,
+                                access=is_access,
+                                data=data,
+                                error=error,
                             )
                         )
                 self.print_out(addr, rtt, result[addr]["checks"])
@@ -221,6 +258,13 @@ class Command(BaseCommand):
             if not rule:
                 self.print(f"Unknown Object Discovery Rule: {rule}")
                 self.die(f"Unknown Object Discovery Rule: {rule}")
+        # SNMP Checker
+        snmp_creds = self.parse_credentials(community, snmp_user)
+        if snmp_creds:
+            h = loader[SUGGEST_CHECK]
+            snmp_checker = h(rules=snmp_creds)
+        else:
+            snmp_checker = None
         addr_list = self.get_addresses(addresses, input, rule)
         lock: Optional[asyncio.Lock] = None
         ping = Ping(tos=config.ping.tos, timeout=1.0)
