@@ -92,7 +92,7 @@ class HomeAppplication(ExtApplication):
             self._comminity_text = self._render_template("Community.html.j2")
         return {
             "type": "text",
-            "title": _("Commiunity"),
+            "title": _("Community"),
             "data": {"text": self._comminity_text or ""},
         }
 
@@ -145,6 +145,7 @@ class HomeAppplication(ExtApplication):
         return {
             "type": "summary",
             "title": _("Managed Object Summary"),
+            "height": "small",
             "items": [
                 {
                     "text": _("Managed Objects"),
