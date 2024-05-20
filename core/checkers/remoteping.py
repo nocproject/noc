@@ -1,7 +1,7 @@
 # ----------------------------------------------------------------------
 # RemotePing checker
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2022 The NOC Project
+# Copyright (C) 2007-2024 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -9,7 +9,7 @@
 from typing import List, Iterable
 
 # NOC modules
-from .base import Checker, CheckResult, MetricValue
+from .base import Checker, CheckResult, MetricValue, CheckError
 from noc.core.wf.diagnostic import CLI_DIAG
 from noc.core.validators import is_ipv4
 
@@ -31,28 +31,32 @@ class RemotePing(Checker):
         for c in checks:
             if c.name != RP_DIAG or not c.arg0:
                 continue
-            for address in c.arg0.split(";"):
-                if not is_ipv4(address):
-                    continue
-                try:
-                    ping = self.get_script("ping")
-                    r = ping(address=address)
-                except AttributeError:
-                    yield CheckResult(RP_DIAG, status=True, skipped=True, error="Invalid script")
-                    continue
-                # Remote Ping metrics
+            if not is_ipv4(c.address):
+                continue
+            try:
+                ping = self.get_script("ping")
+                r = ping(address=c.address)
+            except AttributeError:
                 yield CheckResult(
                     RP_DIAG,
-                    status=bool(r["success"]),
-                    arg0=c.arg0,
-                    metrics=[
-                        MetricValue(
-                            "Check | Result",
-                            r["success"],
-                            labels=[
-                                f"noc::check::name::{c.name}",
-                                f"noc::check::arg0::{c.arg0}",
-                            ],
-                        )
-                    ],
+                    status=True,
+                    skipped=True,
+                    error=CheckError(code="0", message="Invalid script"),
                 )
+                continue
+            # Remote Ping metrics
+            yield CheckResult(
+                RP_DIAG,
+                status=bool(r["success"]),
+                address=c.address,
+                metrics=[
+                    MetricValue(
+                        "Check | Result",
+                        r["success"],
+                        labels=[
+                            f"noc::check::name::{c.name}",
+                            f"noc::check::arg0::{c.arg0}",
+                        ],
+                    )
+                ],
+            )
