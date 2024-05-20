@@ -45,5 +45,4 @@ class TCPConnect(Checker):
                     check=TCP_DIAG,
                     port=c.port,
                     status=avail,
-                    is_available=avail,
                 )

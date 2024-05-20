@@ -195,7 +195,7 @@ class ObjectDiagnosticConfig(Document):
     def d_config(self) -> "DiagnosticConfig":
         return DiagnosticConfig(
             diagnostic=self.name,
-            checks=[Check(name=c.check, arg0=c.arg0) for c in self.checks],
+            checks=[Check(name=c.check, args={"arg0": c.arg0}) for c in self.checks],
             dependent=self.diagnostics,
             state_policy=self.state_policy,
             run_policy=self.run_policy,
