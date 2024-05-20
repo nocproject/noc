@@ -39,6 +39,7 @@ from noc.core.scheduler.job import Job
 from noc.core.bi.decorator import bi_sync
 from noc.core.defer import call_later, defer
 from noc.core.topology.types import ShapeOverlayPosition, ShapeOverlayForm
+from noc.core.script.scheme import SSH
 from noc.core.wf.interaction import Interaction
 from noc.core.wf.diagnostic import (
     PROFILE_DIAG,
@@ -993,15 +994,15 @@ class ManagedObjectProfile(NOCModel):
                 checks=[
                     Check(
                         name="SNMPv1",
-                        credentials=[snmp_cred] if snmp_cred else [],
+                        credential=snmp_cred,
                     ),
                     Check(
                         name="SNMPv2c",
-                        credentials=[snmp_cred] if snmp_cred else [],
+                        credential=snmp_cred,
                     ),
                     Check(
                         name="SNMPv3",
-                        credentials=[snmp_cred] if snmp_cred else [],
+                        credential=snmp_cred,
                     ),
                 ],
                 blocked=ac == "C",
@@ -1018,7 +1019,7 @@ class ManagedObjectProfile(NOCModel):
                 display_description="Check device profile",
                 show_in_display=False,
                 checks=[
-                    Check(name="PROFILE", credentials=[snmp_cred] if snmp_cred else []),
+                    Check(name="PROFILE", credential=snmp_cred),
                 ],
                 alarm_class="Discovery | Guess | Profile",
                 blocked=not self.enable_box_discovery_profile,
@@ -1028,23 +1029,25 @@ class ManagedObjectProfile(NOCModel):
                 reason="Profile Discovery " if not self.enable_box_discovery_profile else None,
             )
             blocked = ac == "S"
+            # CLI Diagnostic
             if o:
                 blocked |= o.scheme not in {1, 2}
-            # CLI Diagnostic
-            cli_cred = o.credentials.get_cli_credential() if o else None
+            checks = [
+                Check(
+                    name="TELNET",
+                    credential=o.credentials.get_cli_credential(),
+                ),
+                Check(
+                    name="SSH",
+                    credential=o.credentials.get_cli_credential(),
+                ),
+            ]
+            if o.scheme == SSH:
+                checks.reverse()
             yield DiagnosticConfig(
                 CLI_DIAG,
                 display_description="Check Device response by CLI (TELNET/SSH) request",
-                checks=[
-                    Check(
-                        name="TELNET",
-                        credentials=[cli_cred] if cli_cred else [],
-                    ),
-                    Check(
-                        name="SSH",
-                        credentials=[cli_cred] if cli_cred else [],
-                    ),
-                ],
+                checks=checks,
                 discovery_box=True,
                 alarm_class="NOC | Managed Object | Access Lost",
                 alarm_labels=["noc::access::method::CLI"],

@@ -11,7 +11,7 @@ from typing import List, Iterable
 # NOC modules
 from noc.core.text import filter_non_printable
 from noc.core.snmp.version import SNMP_v1, SNMP_v2c
-from .base import Checker, CheckResult
+from .base import Checker, CheckResult, DataItem, CheckError
 from ..profile.checker import ProfileChecker as ProfileCheckerProfile
 
 
@@ -47,13 +47,13 @@ class ProfileChecker(Checker):
             yield CheckResult(
                 check="PROFILE",
                 status=bool(profile),
-                data={"profile": profile.name},
+                data=[DataItem(name="profile", value=profile.name)],
             )
             return
         yield CheckResult(
             check="PROFILE",
             status=bool(profile),
-            error=filter_non_printable(checker.get_error())[:200],
+            error=CheckError(code="0", message=filter_non_printable(checker.get_error())[:200]),
         )
         # If check SNMP failed - Set SNMP error
         if not checker.ignoring_snmp and checker.snmp_check is False:
@@ -61,5 +61,5 @@ class ProfileChecker(Checker):
                 yield CheckResult(
                     check={SNMP_v1: "SNMPv1", SNMP_v2c: "SNMPv2c"}[sv],
                     status=False,
-                    error="Not getting OID on Profile Discovery",
+                    error=CheckError(code="0", message="Not getting OID on Profile Discovery"),
                 )
