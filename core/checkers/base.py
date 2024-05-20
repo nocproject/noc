@@ -105,9 +105,9 @@ class CheckResult(object):
     # Metrics collected
     metrics: Optional[List[MetricValue]] = None
     # Credentials List, Return if suggests flag is set
-    credential: Optional[Union[SNMPCredential, SNMPv3Credential, CLICredential, HTTPCredential]] = (
-        None
-    )
+    credential: Optional[
+        Union[SNMPCredential, SNMPv3Credential, CLICredential, HTTPCredential]
+    ] = None
 
     @property
     def arg0(self):
