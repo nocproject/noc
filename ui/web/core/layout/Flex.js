@@ -17,6 +17,7 @@ Ext.define("NOC.core.layout.Flex", {
     direction: "row",
     wrap: "wrap",
     justifyContent: "flex-start",
+    alignContent: "flex-start",
     alignItems: "stretch",
     gap: "20px",
   },
@@ -33,6 +34,7 @@ Ext.define("NOC.core.layout.Flex", {
       flexDirection: me.direction || "row",
       flexWrap: me.wrap || "wrap",
       justifyContent: me.justifyContent || "flex-start",
+      alignContent: me.alignContent || "flex-start",
       alignItems: me.alignItems || "stretch",
       gap: me.gap || "20px",
     });
