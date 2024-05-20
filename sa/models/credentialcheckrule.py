@@ -47,6 +47,7 @@ class SuggestItem(object):
         labels: Match labels for rule
         protocols: List of allowed protocols
     """
+
     credentials: List[Union[SNMPCredential, CLICredential]]
     labels: List[FrozenSet[str]]
     protocols: Tuple[Protocol, ...]
