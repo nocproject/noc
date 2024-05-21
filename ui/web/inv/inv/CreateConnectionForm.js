@@ -20,13 +20,13 @@ Ext.define("NOC.inv.inv.CreateConnectionForm", {
   INVALID_COLOR: NOC.colors.clouds,
   UNMASKED_LABEL_COLOR: NOC.colors.black,
   MASKED_LABEL_COLOR: NOC.colors.asbestos,
-  discriminatorWidth: {left: -155, right: 155},
   legendHeight: 20,
   firstTrace: 3,
   requires: [
     "NOC.inv.inv.sprites.Body",
     "NOC.core.ComboBox",
     "NOC.inv.inv.sprites.Connection",
+    "NOC.inv.inv.sprites.External",
     "NOC.inv.inv.sprites.Label",
     "NOC.inv.inv.sprites.Pin",
     "NOC.inv.inv.sprites.Pointer",
@@ -50,6 +50,9 @@ Ext.define("NOC.inv.inv.CreateConnectionForm", {
     me.schemaPadding = 60; // boxHeight * 3,
     me.gap = 12.5;
     me.scale = 1;
+    me.discriminatorWidth = {
+      left: -155, right: 155,
+    };
   },
   initComponent: function(){
     var me = this;
@@ -315,16 +318,6 @@ Ext.define("NOC.inv.inv.CreateConnectionForm", {
         {id: pinSprite.id, side: pinSprite.side, isNew: true, cable: cable},
         {id: prevPinSprite.id, side: prevPinSprite.side, isNew: true, cable: cable},
       ];
-
-    if(prevPinSprite && prevPinSprite.side !== pinSprite.side && prevPinSprite.side === "left"){
-      fromName = prevPinSprite.pinName + " => " + pinSprite.pinName;
-      toName = prevPinSprite.pinName + " <= " + pinSprite.pinName;
-    }
-    if(prevPinSprite && prevPinSprite.side !== pinSprite.side && prevPinSprite.side === "right"){
-      fromName = pinSprite.pinName + " <= " + prevPinSprite.pinName;
-      toName = pinSprite.pinName + " => " + prevPinSprite.pinName;
-    }
-
     prevPinSprite.setAttributes({
       pinColor: me.OCCUPIED_COLOR,
       enabled: false,
@@ -417,6 +410,11 @@ Ext.define("NOC.inv.inv.CreateConnectionForm", {
     var me = this;
 
     surface.add(me.makePins(pins, side, hasDiscriminator));
+    surface.add(me.makeExternalConnection(
+      Ext.Array.filter(pins, function(pin){
+        return pin.remote_device
+      }),
+      side));
     surface.add(me.makeBody(pins, side));
   },
   drawWires: function(wires, surface){
@@ -502,6 +500,33 @@ Ext.define("NOC.inv.inv.CreateConnectionForm", {
 
     return [Ext.Array.max(Ext.Array.map(firstPins, function(pin){return pin.pinNameWidth})) + me.boxWidth,
             (Ext.Array.max(Ext.Array.map(secondPins, function(pin){return pin.pinNameWidth})) || 0) + me.boxWidth];
+  },
+  goToObject: function(leftId, leftName, side){
+    var me = this,
+      viewModel = me.getViewModel(),
+      object = viewModel.get(side + "Object");
+    
+    if(side === "left"){
+      viewModel.set("leftObject", Ext.data.Model.create({
+        id: leftId,
+        name: leftName,
+      }));
+      viewModel.set("rightObject", Ext.data.Model.create({
+        id: object.id,
+        name: object.get("name"),
+      }));
+    } else{
+      viewModel.set("leftObject", Ext.data.Model.create({
+        id: object.id,
+        name: object.get("name"),
+      }));
+      viewModel.set("rightObject", Ext.data.Model.create({
+        id: leftId,
+        name: leftName,
+      }));
+    }
+    me.load();
+
   },
   hasDiscriminator: function(connections){
     var hasDiscriminator = false;
@@ -733,6 +758,35 @@ Ext.define("NOC.inv.inv.CreateConnectionForm", {
       };
     }
   },
+  makeExternalConnection: function(pins, side){
+    var labelsLength = this.getWiresOffset("left", "right");
+
+    return Ext.Array.map(pins, function(pin){
+      var name = "",
+        length = labelsLength[side === "left" ? 0 : 1],
+        remoteName = pin.remote_device.name || "",
+        remoteLink = pin.remote_device.slot || "",
+        pinSprite = this.drawPanel.getSurface().get(pin.id);
+          
+      if(side === "left"){
+        name += Ext.String.format("{0} => {1}/{2}", pin.name, remoteName, remoteLink);
+      } else{
+        name = Ext.String.format("{0}/{1} <= {2}", remoteName, remoteLink, pin.name);
+      }
+      console.log(name);
+      return {
+        type: "external",
+        fromXY: [pinSprite.x, pinSprite.y],
+        length: length,
+        box: [this.boxWidth, this.boxHeight],
+        side: side,
+        actualScale: this.scale,
+        remoteName: remoteName,
+        remoteId: pin.remote_device.id,
+        zIndex: 50,
+      }
+    }, this);
+  },
   makeInternalConnections: function(connections, side){
     var me = this,
       surface = me.drawPanel.getSurface(),
@@ -792,20 +846,21 @@ Ext.define("NOC.inv.inv.CreateConnectionForm", {
     var me = this,
       xOffset = me.xOffset(side, pins),
       selectedPin = me.getViewModel().get("selectedPin"),
-      labelAlign = side === "left" ? "right" : "left",
-      sprites = [];
+      labelAlign = side === "left" ? "right" : "left";
 
-    Ext.each(pins, function(port, index){
-      var {pinColor,
-           internalColor,
-           name,
-           remoteId,
-           remoteName,
-           internalEnabled,
-           enabled,
-           masked} = me.pinStatus(port, side);
+    return Ext.Array.map(pins, function(port, index){
+      var {
+        pinColor,
+        internalColor,
+        name,
+        remoteId,
+        remoteName,
+        internalEnabled,
+        enabled,
+        masked,
+      } = me.pinStatus(port, side);
 
-      sprites.push({
+      return {
         type: "pin",
         id: port.id,
         boxWidth: me.boxWidth,
@@ -830,9 +885,8 @@ Ext.define("NOC.inv.inv.CreateConnectionForm", {
         x: xOffset,
         y: index * (me.boxHeight + me.gap) + me.gap + me.schemaPadding,
         zIndex: 25,
-      });
+      };
     }, me);
-    return sprites;
   },
   makeWire: function(firstPort, secondPort, firstSide, secondSide, firstOffset, secondOffset, isNew, cable){
     return {
@@ -1158,31 +1212,15 @@ Ext.define("NOC.inv.inv.CreateConnectionForm", {
         break;
       }
       case"label": {
-        var pin = sprite.getSurface().get(sprite.pinId),
-          object = viewModel.get(side + "Object");
+        var pin = sprite.getSurface().get(sprite.pinId);
 
         if(pin.remoteId !== "none"){
-          if(side === "left"){
-            viewModel.set("leftObject", Ext.data.Model.create({
-              id: pin.remoteId,
-              name: pin.remoteName,
-            }));
-            viewModel.set("rightObject", Ext.data.Model.create({
-              id: object.id,
-              name: object.get("name"),
-            }));
-          } else{
-            viewModel.set("leftObject", Ext.data.Model.create({
-              id: object.id,
-              name: object.get("name"),
-            }));
-            viewModel.set("rightObject", Ext.data.Model.create({
-              id: pin.remoteId,
-              name: pin.remoteName,
-            }));
-          }
-          me.load();
+          me.goToObject(pin.remoteId, pin.remoteName, side);
         }
+        break;
+      }
+      case"external": {
+        me.goToObject(sprite.remoteId, sprite.remoteName, side);
         break;
       }
     }
@@ -1257,6 +1295,12 @@ Ext.define("NOC.inv.inv.CreateConnectionForm", {
             }
           }
           if(Ext.Array.contains(["wire", "loopback"], sprite.connectionType)){
+            sprite.setAttributes({isSelected: false});
+          }
+          break;
+        }
+        case"external": {
+          if(!sprite.destroyed){
             sprite.setAttributes({isSelected: false});
           }
           break;
@@ -1346,10 +1390,14 @@ Ext.define("NOC.inv.inv.CreateConnectionForm", {
           }
           break;
         }
+        case"external": {
+          sprite.setAttributes({isSelected: true});
+          break;
+        }
       }
     }
   },
-  pinStatus: function(pin, side){
+  pinStatus: function(pin){
     var me = this,
       pinColor = me.AVAILABLE_COLOR,
       internalColor = me.AVAILABLE_COLOR,
@@ -1364,15 +1412,8 @@ Ext.define("NOC.inv.inv.CreateConnectionForm", {
       pinColor = me.OCCUPIED_COLOR;
       enabled = false;
       if(pin.remote_device){
-        var remoteLink = pin.remote_device.slot ? pin.remote_device.slot : "";
-          
-        remoteName = pin.remote_device.name ? pin.remote_device.name + "/" : "";
+        remoteName = pin.remote_device.name || "";
         remoteId = pin.remote_device.id;
-        if(side === "left"){
-          name += " => " + remoteName + remoteLink;
-        } else{
-          name = remoteName + remoteLink + " <= " + pin.name;
-        }
       }
     }
     if(!pin.valid){
@@ -1558,13 +1599,7 @@ Ext.define("NOC.inv.inv.CreateConnectionForm", {
       fromLabelSprite = mainSurface.get("label" + wireSprite.fromPortId),
       toSprite = mainSurface.get(wireSprite.toPortId),
       toLabelSprite = mainSurface.get("label" + wireSprite.toPortId);
-
-    if(wireSprite.fromPort.indexOf(" => ") !== -1){
-      wireSprite.fromPort = wireSprite.fromPort.split(" => ")[0];
-    }
-    if(wireSprite.toPort.indexOf(" <= ") !== -1){
-      wireSprite.toPort = wireSprite.toPort.split(" <= ")[1];
-    }
+    
     fromSprite.setAttributes({
       pinColor: me.AVAILABLE_COLOR,
       enabled: true,
