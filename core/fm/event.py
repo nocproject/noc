@@ -53,6 +53,7 @@ class Target(BaseModel):
         remote_id: Id on remote System that message Send
         service: Service ID (for monitoring integration)
     """
+
     address: str
     name: str
     id: Optional[str] = None

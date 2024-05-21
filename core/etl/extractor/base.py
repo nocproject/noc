@@ -237,7 +237,7 @@ class BaseExtractor(object):
         labels: Optional[List[str]] = None,
         data: List[Var] = None,
         is_cleared: bool = False,
-        pool: Optional[str] = None
+        pool: Optional[str] = None,
     ):
         """
         Register FM Event for send to classifier
