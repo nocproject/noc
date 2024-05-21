@@ -30,11 +30,15 @@ def check_close_consequence(alarm_id):
     alarm.root = None
     alarm.log_message("Detached from root for not recovered", to_save=True)
     metrics["detached_root"] += 1
+    policy = "a"
     # Trigger escalations
-    if alarm.managed_object.tt_system.alarm_consequence_policy == "D":
+    if (
+        alarm.managed_object.tt_system
+        and alarm.managed_object.tt_system.alarm_consequence_policy == "D"
+    ):
         return
+    elif alarm.managed_object.tt_system:
+        policy = alarm.managed_object.tt_system.alarm_consequence_policy
     # @todo check if root is not escalated
     # Do not remove, if escalation is not performed escalation doc not created
-    AlarmEscalation.watch_escalations(
-        alarm, timestamp_policy=alarm.managed_object.tt_system.alarm_consequence_policy
-    )
+    AlarmEscalation.watch_escalations(alarm, timestamp_policy=policy)
