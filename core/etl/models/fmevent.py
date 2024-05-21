@@ -9,11 +9,11 @@
 from typing import Optional, List
 
 # NOC modules
-from .base import BaseModel
+from .base import BaseModel, _BaseModel
 from noc.core.fm.event import Target
 
 
-class Var(BaseModel):
+class Var(_BaseModel):
     name: str  # Variable Name
     value: str  # Variable Value
 

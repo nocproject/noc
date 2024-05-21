@@ -233,10 +233,11 @@ class BaseExtractor(object):
         event_class: str,
         object: RemoteObject,
         message: Optional[str] = None,
-        severity: Optional[str] = None,
+        severity: Optional[EventSeverity] = None,
         labels: Optional[List[str]] = None,
         data: List[Var] = None,
         is_cleared: bool = False,
+        pool: Optional[str] = None
     ):
         """
         Register FM Event for send to classifier
@@ -251,22 +252,25 @@ class BaseExtractor(object):
             labels: List Event labels
             data: Event data vars
             is_cleared: Event for clear
+            pool: Dispose pool
         """
         if not data and not message:
             raise AttributeError("Unknown message data. Set data or message")
+        severity = severity or EventSeverity.INDETERMINATE
         event = Event(
             ts=ts,
             remote_id=event_id,
             remote_system=self.system.remote_system.name,
             target=object.get_target(),
             type=MessageType(
-                severity=EventSeverity(severity) if not is_cleared else EventSeverity.CLEARED,
+                severity=severity if not is_cleared else EventSeverity.CLEARED,
                 event_class=event_class,
             ),
-            data=data,
+            data=[Var(name=d.name, value=d.value) for d in data],
             message=message,
             labels=labels,
         )
+        event.target.pool = pool or "default"
         self.fm_events.append(event)
 
     def register_discovered_address(
