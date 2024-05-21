@@ -43,13 +43,24 @@ EVENT_QUERY = f"""
 
 
 class Target(BaseModel):
-    address: str  # IP Address message initiator
-    name: str  # Name message initiator
-    id: Optional[str] = None  # For ManagedObject or Agent message Send
-    pool: Optional[str] = None  # Pool message receiver
-    is_agent: bool = False  # Agent message send
-    remote_id: Optional[str] = None  # Id on remote System that message Send
-    service: Optional[str] = None  # Service ID (for monitoring integration) ?
+    """
+    Attributes:
+        address: IP Address message initiator
+        name: Name message initiator
+        id: For ManagedObject or Agent message Send
+        pool: Pool message receiver
+        is_agent: Agent message send
+        remote_id: Id on remote System that message Send
+        service: Service ID (for monitoring integration)
+    """
+    address: str
+    name: str
+    id: Optional[str] = None
+    pool: Optional[str] = None
+    is_agent: bool = False
+    remote_id: Optional[str] = None
+    service: Optional[str] = None
+    # Remote System if used remote_id on other RemoteSystem
 
     @property
     def reference(self) -> int:

@@ -202,6 +202,11 @@ Ext.define("NOC.main.remotesystem.Application", {
                             name: "enable_discoveredobject",
                             xtype: "checkbox",
                             boxLabel: __("Enable Discovered")
+                        },
+                        {
+                            name: "enable_fmevent",
+                            xtype: "checkbox",
+                            boxLabel: __("Enable FM Event")
                         }
                     ]
                 },

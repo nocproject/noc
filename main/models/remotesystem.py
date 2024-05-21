@@ -130,12 +130,14 @@ class RemoteSystem(Document):
     enable_ipaddressprofile = BooleanField()
     enable_label = BooleanField()
     enable_discoveredobject = BooleanField()
+    enable_fmevent = BooleanField()
     # Usage statistics
     last_extract = DateTimeField()
     last_successful_extract = DateTimeField()
     extract_error = StringField()
     last_load = DateTimeField()
     last_successful_load = DateTimeField()
+    last_extract_event = DateTimeField()
     load_error = StringField()
     # Object id in BI
     bi_id = LongField(unique=True)
