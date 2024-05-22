@@ -39,7 +39,7 @@ class ConsulHTTPClient(consul.base.HTTPClient):
             )
 
             if code in ConsulRepeatableCodes:
-                raise consul.base.Timeout
+                raise consul.exceptions.Timeout
             return callback(consul.base.Response(code=code, headers=headers, body=body))
 
     def get(self, callback, path, params=None):
@@ -58,7 +58,10 @@ class ConsulHTTPClient(consul.base.HTTPClient):
         url = self.uri(path, params)
         return self._request(callback, url, method="POST", body=data)
 
+    def close(self):
+        pass
+
 
 class ConsulClient(consul.base.Consul):
-    def connect(self, host, port, scheme, verify=True, cert=None):
+    def http_connect(self, host, port, scheme, verify=True, cert=None):
         return ConsulHTTPClient(host, port, scheme, verify=verify)
