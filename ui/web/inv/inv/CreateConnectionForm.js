@@ -491,15 +491,20 @@ Ext.define("NOC.inv.inv.CreateConnectionForm", {
         ]
       });
   },
-  getWiresOffset: function(firstSide, secondSide){
+  getWiresOffset: function(firstSide, secondSide, isLabel){
     var me = this,
       mainSurface = me.drawPanel.getSurface(),
       sprites = mainSurface.getItems(),
       firstPins = Ext.Array.filter(sprites, function(sprite){return sprite.type === "pin" && sprite.side === firstSide}),
-      secondPins = secondSide ? Ext.Array.filter(sprites, function(sprite){return sprite.type === "pin" && sprite.side === secondSide}) : [{pinNameWidth: 0}];
+      secondPins = secondSide ? Ext.Array.filter(sprites, function(sprite){return sprite.type === "pin" && sprite.side === secondSide}) : [{pinNameWidth: 0}],
+      firstNameWidthMax = Ext.Array.max(Ext.Array.map(firstPins, function(pin){return pin.pinNameWidth})) + me.boxWidth,
+      secondNameWidthMax = (Ext.Array.max(Ext.Array.map(secondPins, function(pin){return pin.pinNameWidth})) || 0) + me.boxWidth;
 
-    return [Ext.Array.max(Ext.Array.map(firstPins, function(pin){return pin.pinNameWidth})) + me.boxWidth,
-            (Ext.Array.max(Ext.Array.map(secondPins, function(pin){return pin.pinNameWidth})) || 0) + me.boxWidth];
+    if(isLabel){
+      firstNameWidthMax += Ext.Array.max(Ext.Array.map(firstPins, function(pin){return pin.remoteSlotWidth}));
+      secondNameWidthMax += (Ext.Array.max(Ext.Array.map(secondPins, function(pin){return pin.remoteSlotWidth})) || 0); 
+    }
+    return [firstNameWidthMax, secondNameWidthMax];
   },
   goToObject: function(leftId, leftName, side){
     var me = this,
@@ -759,21 +764,14 @@ Ext.define("NOC.inv.inv.CreateConnectionForm", {
     }
   },
   makeExternalConnection: function(pins, side){
-    var labelsLength = this.getWiresOffset("left", "right");
+    var labelsLength = this.getWiresOffset("left", "right", true); // true doesn't include width name remote slot
 
     return Ext.Array.map(pins, function(pin){
-      var name = "",
-        length = labelsLength[side === "left" ? 0 : 1],
+      var length = labelsLength[side === "left" ? 0 : 1],
         remoteName = pin.remote_device.name || "",
-        remoteLink = pin.remote_device.slot || "",
+        remoteSlot = pin.remote_device.slot || "",
         pinSprite = this.drawPanel.getSurface().get(pin.id);
           
-      if(side === "left"){
-        name += Ext.String.format("{0} => {1}/{2}", pin.name, remoteName, remoteLink);
-      } else{
-        name = Ext.String.format("{0}/{1} <= {2}", remoteName, remoteLink, pin.name);
-      }
-      console.log(name);
       return {
         type: "external",
         fromXY: [pinSprite.x, pinSprite.y],
@@ -782,6 +780,7 @@ Ext.define("NOC.inv.inv.CreateConnectionForm", {
         side: side,
         actualScale: this.scale,
         remoteName: remoteName,
+        remoteSlot: remoteSlot,
         remoteId: pin.remote_device.id,
         zIndex: 50,
       }
@@ -855,6 +854,7 @@ Ext.define("NOC.inv.inv.CreateConnectionForm", {
         name,
         remoteId,
         remoteName,
+        remoteSlot,
         internalEnabled,
         enabled,
         masked,
@@ -873,6 +873,7 @@ Ext.define("NOC.inv.inv.CreateConnectionForm", {
         isSelected: port.name === selectedPin,
         remoteId: remoteId,
         remoteName: remoteName,
+        remoteSlot: remoteSlot,
         enabled: enabled,
         masked: masked,
         internalEnabled: internalEnabled,
@@ -1404,6 +1405,7 @@ Ext.define("NOC.inv.inv.CreateConnectionForm", {
       name = pin.name,
       remoteId = "none",
       remoteName = "none",
+      remoteSlot = "none",
       internalEnabled = true,
       masked = false,
       enabled = true;
@@ -1413,6 +1415,7 @@ Ext.define("NOC.inv.inv.CreateConnectionForm", {
       enabled = false;
       if(pin.remote_device){
         remoteName = pin.remote_device.name || "";
+        remoteSlot = pin.remote_device.slot || "";
         remoteId = pin.remote_device.id;
       }
     }
@@ -1437,6 +1440,7 @@ Ext.define("NOC.inv.inv.CreateConnectionForm", {
       name: name,
       remoteId: remoteId,
       remoteName: remoteName,
+      remoteSlot: remoteSlot,
       internalEnabled: internalEnabled,
       enabled: enabled,
       masked: masked,

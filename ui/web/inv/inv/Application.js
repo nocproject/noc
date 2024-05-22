@@ -442,6 +442,14 @@ Ext.define("NOC.inv.inv.Application", {
       me.mainPanel.remove(me.mainPanel.items.items[2], false);
     }
     me.mainPanel.add(me.connectionPanel);
+    // for development only
+    me.connectionPanel.getViewModel().set("leftObject", Ext.data.Model.create({
+      id: "65812280c29373a46037d129", name: "5",
+    }));
+    // panel.getViewModel().set("rightObject", Ext.data.Model.create({
+    //     id: "6581227fc29373a46037d120", name: "h2-polus",
+    // }));
+    me.connectionPanel.load();
   },
   //
   onOpenDashboard: function(){

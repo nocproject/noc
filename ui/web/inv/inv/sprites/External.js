@@ -21,6 +21,7 @@ Ext.define("NOC.inv.inv.sprites.External", {
         isSelected: "bool",
         remoteId: "string",
         remoteName: "string",
+        remoteSlot: "string",
       },
       triggers: {
         fromXY: "recalculate",
@@ -43,6 +44,14 @@ Ext.define("NOC.inv.inv.sprites.External", {
       },
     },
   },
+  config: {
+    boxWidth: 15,
+    boxHeight: 15,
+    fontSize: 12,
+    fontFamily: "arial",
+    fontWeight: "normal",
+    opacity: 0.7,
+  },
   createSprites: function(attr){
     var me = this;
     
@@ -59,26 +68,66 @@ Ext.define("NOC.inv.inv.sprites.External", {
                                 fromX + offsetX, fromY, fromX + length, fromY),
         strokeStyle: "black",
       });
-      me.marker = me.add(me.getMarker("connector", attr.side, attr.actualScale));
-      me.marker.setAttributes({
-        translationX: parseFloat(fromX + length, 10),
-        translationY: parseFloat(fromY, 10),
-        hidden: false,
+      var labelWidth = me.measureText(me.remoteSlot);
+      var labelXY = [
+        fromX + length + (me.side === "left" ? -0.7 * me.box[0] - labelWidth: 0.7 * me.box[0]),
+        fromY,
+      ];
+      me.labelBackground = me.add({
+        type: "rect",
+        fill: "white",
+        x: labelXY[0] + (me.side === "left" ? - 0.5 * me.box[0] : 0.5 * me.box[0]),
+        y: labelXY[1] - 0.5 * me.box[1],
+        width: labelWidth + 0.5 * me.box[0],
+      });
+      me.label = me.add({
+        type: "text",
+        fontFamily: me.getFontFamily(),
+        fontWeight: me.getFontWeight(),
+        fontSize: me.getFontSize(),
+        textBaseline: "middle",
+        text: me.remoteSlot,
+        x: labelXY[0] + (me.side === "left" ? 0 : 0.7 * me.box[0]),
+        y: labelXY[1],
+      });
+      me.boxSprite = me.add({
+        type: "rect",
+        x: fromX + length,
+        y: fromY - 0.5 * me.box[0],
+        width: me.box[0],
+        height: me.box[1],
+        stroke: "black",
+        lineWidth: 1,
+        fill: "white",
+      });
+      var arrowStartXY = [fromX + length + me.box[0], fromY];
+      var path;
+      if(me.side === "left"){
+        path = Ext.String.format("M{0},{1} L{2},{3} L{4},{5} L{6},{7} L{8},{9} L{10},{11} Z",
+                                 arrowStartXY[0], arrowStartXY[1],
+                                 arrowStartXY[0], arrowStartXY[1] + 0.65 * me.box[1],
+                                 arrowStartXY[0] + 1.25 * me.box[0], arrowStartXY[1] + 0.65 * me.box[1],
+                                 arrowStartXY[0] + 2 * me.box[0], arrowStartXY[1],
+                                 arrowStartXY[0] + 1.25 * me.box[0], arrowStartXY[1] - 0.65 * me.box[1],
+                                 arrowStartXY[0], arrowStartXY[1] - 0.65 * me.box[1],
+        );
+      } else{
+        arrowStartXY = [fromX + length, fromY];
+        path = Ext.String.format("M{0},{1} L{2},{3} L{4},{5} L{6},{7} L{8},{9} L{10},{11} Z",
+                                 arrowStartXY[0], arrowStartXY[1],
+                                 arrowStartXY[0], arrowStartXY[1] + 0.65 * me.box[1],
+                                 arrowStartXY[0] - 1.25 * me.box[0], arrowStartXY[1] + 0.65 * me.box[1],
+                                 arrowStartXY[0] - 2 * me.box[0], arrowStartXY[1],
+                                 arrowStartXY[0] - 1.25 * me.box[0], arrowStartXY[1] - 0.65 * me.box[1],
+                                 arrowStartXY[0], arrowStartXY[1] - 0.65 * me.box[1],
+        );
+      }
+      me.arrow = me.add({
+        type: "path",
+        path: path,
+        stroke: "black",
       });
     }
-  },
-  getMarker: function(id, side, scale){
-    var point1X = (side === "left" ? -1 : 1) * scale * 20,
-      point1Y = (side === "left" ? -1 : 1) * scale * 7.5,
-      path = Ext.String.format("M{0},{1} L{2},{3} L0,0 Z", point1X, point1Y, point1X, (-1) * point1Y);
-
-    return {
-      type: "path",
-      id: id,
-      fillStyle: "red",
-      path: path,
-      hidden: true,
-    };
   },
   hitTest: function(point){
     var me = this,
@@ -90,6 +139,32 @@ Ext.define("NOC.inv.inv.sprites.External", {
         sprite: me,
       };
     }
+    if(me.isOnSprite(me.boxSprite.getBBox(), x, y)){
+      return {
+        sprite: me,
+      };
+    }
+    if(me.isOnSprite(me.labelBackground.getBBox(), x, y)){
+      return {
+        sprite: me,
+      };
+    }
+    if(me.isOnSprite(me.arrow.getBBox(), x, y)){
+      return {
+        sprite: me,
+      };
+    }
     return null;
+  },
+  isOnSprite: function(bbox, x, y){
+    if(bbox && x >= bbox.x && x <= (bbox.x + bbox.width) && y >= bbox.y && y <= (bbox.y + bbox.height)){
+      return true;
+    }
+    return false;
+  },
+  measureText: function(text){
+    var me = this,
+      font = Ext.String.format("{0} {1}px {2}", me.getFontWeight(), me.getFontSize(), me.getFontFamily());
+    return Ext.draw.TextMeasurer.measureText(text, font).width;
   },
 });
