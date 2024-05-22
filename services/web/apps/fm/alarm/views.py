@@ -588,12 +588,14 @@ class AlarmApplication(ExtApplication):
                         "managed_object": a.managed_object.id,
                         "managed_object__label": a.managed_object.name,
                         "timestamp": self.to_json(a.timestamp),
-                        "groups": ", ".join(
-                            ag.alarm_class.name
-                            for ag in ActiveAlarm.objects.filter(reference__in=a.groups)
-                        )
-                        if a.groups
-                        else "",
+                        "groups": (
+                            ", ".join(
+                                ag.alarm_class.name
+                                for ag in ActiveAlarm.objects.filter(reference__in=a.groups)
+                            )
+                            if a.groups
+                            else ""
+                        ),
                         "iconCls": "icon_error",
                         "row_class": s.style.css_class_name,
                     }
@@ -934,14 +936,17 @@ class AlarmApplication(ExtApplication):
         return r
 
     def bulk_field_total_grouped(self, data):
-        if not data:
+        if not data or data[0]["status"] != "A":
+            return data
+        refs = [x["reference"] for x in data if "reference" in x]
+        if not refs:
             return data
         coll = ActiveAlarm._get_collection()
         r = {
             c["_id"]: c["count"]
             for c in coll.aggregate(
                 [
-                    {"$match": {"groups": {"$ne": []}}},
+                    {"$match": {"groups": {"$in": refs}}},
                     {"$unwind": "$groups"},
                     {"$group": {"_id": "$groups", "count": {"$sum": 1}}},
                 ]
