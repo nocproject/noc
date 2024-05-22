@@ -9,7 +9,7 @@
 import asyncio
 
 # Third-party modules
-from consul.base import Timeout
+from consul.exceptions import Timeout
 
 # NOC modules
 from noc.core.consul import ConsulClient

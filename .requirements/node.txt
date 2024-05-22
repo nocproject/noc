@@ -37,7 +37,7 @@ polars-lts-cpu==0.19.17
 pydantic==2.5.2
 pymongo==4.6.1
 pyproj==3.6.1
-python-consul==1.1.0
+py-consul==1.5.0
 python-creole==1.4.10
 python-dateutil==2.8.2
 python-jose[cryptography]==3.3.0

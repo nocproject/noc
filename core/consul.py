@@ -10,6 +10,7 @@ from typing import Optional
 
 # Third-party modules
 import consul.base
+from consul.exceptions import Timeout
 
 # NOC modules
 from noc.config import config
@@ -17,7 +18,7 @@ from noc.core.http.async_client import HttpClient
 from noc.core.comp import DEFAULT_ENCODING
 
 ConsulRepeatableCodes = {500, 598, 599}
-ConsulRepeatableErrors = consul.base.Timeout
+ConsulRepeatableErrors = Timeout
 
 
 class ConsulHTTPClient(consul.base.HTTPClient):

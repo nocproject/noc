@@ -270,7 +270,7 @@ class ConsulDCS(DCSBase):
                         self.logger.debug("Session renewed")
                         touched = True
                         break
-                    except consul.base.NotFound as e:
+                    except consul.exceptions.NotFound as e:
                         self.logger.warning("Session lost by: '%s'. Forcing quit", e)
                         break
                     except ConsulRepeatableErrors as e:
