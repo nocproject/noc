@@ -1303,6 +1303,7 @@ Ext.define("NOC.inv.inv.CreateConnectionForm", {
         case"external": {
           if(!sprite.destroyed){
             sprite.setAttributes({isSelected: false});
+            sprite.remoteNameTooltip.hide();
           }
           break;
         }
@@ -1393,6 +1394,7 @@ Ext.define("NOC.inv.inv.CreateConnectionForm", {
         }
         case"external": {
           sprite.setAttributes({isSelected: true});
+          sprite.remoteNameTooltip.showAt([event.pageX + (sprite.side === "left" ? 20 : -20), event.pageY + 20]);
           break;
         }
       }

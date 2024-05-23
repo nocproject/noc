@@ -127,6 +127,10 @@ Ext.define("NOC.inv.inv.sprites.External", {
         path: path,
         stroke: "black",
       });
+      me.remoteNameTooltip = Ext.create("Ext.tip.ToolTip", {
+        html: __("Remote") + " : " + me.remoteName,
+        hidden: true,
+      });
     }
   },
   hitTest: function(point){
