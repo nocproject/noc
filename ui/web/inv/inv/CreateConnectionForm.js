@@ -779,6 +779,7 @@ Ext.define("NOC.inv.inv.CreateConnectionForm", {
         box: [this.boxWidth, this.boxHeight],
         side: side,
         actualScale: this.scale,
+        pinColor: this.OCCUPIED_COLOR,
         remoteName: remoteName,
         remoteSlot: remoteSlot,
         remoteId: pin.remote_device.id,
@@ -912,11 +913,11 @@ Ext.define("NOC.inv.inv.CreateConnectionForm", {
   makeWires: function(wires){
     var me = this,
       mainSurface = me.drawPanel.getSurface(),
-      offsetX = me.getWiresOffset("left", "right");
+      offsetX = me.getWiresOffset("left", "right", true);
 
     return Ext.Array.map(wires, function(wire){
       wire = me.wireSort(wire);
-      return me.makeWire(mainSurface.get(wire[0].id), mainSurface.get(wire[1].id), wire[0].side, wire[1].side, offsetX[0], offsetX[1], wire[0].isNew, wire[0].cable);
+      return me.makeWire(mainSurface.get(wire[0].id), mainSurface.get(wire[1].id), wire[0].side, wire[1].side, offsetX[0] + me.boxWidth * 2, offsetX[1] + me.boxWidth * 2, wire[0].isNew, wire[0].cable);
     });
   },
   onBoxReady: function(){

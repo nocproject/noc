@@ -19,6 +19,7 @@ Ext.define("NOC.inv.inv.sprites.External", {
         actualScale: "number",
         box: "data",
         isSelected: "bool",
+        pinColor: "string",
         remoteId: "string",
         remoteName: "string",
         remoteSlot: "string",
@@ -57,27 +58,35 @@ Ext.define("NOC.inv.inv.sprites.External", {
     
     if(!me.line){
       var offsetX = attr.box[0] / 2,
-        fromX = attr.fromXY[0],
-        fromY = attr.fromXY[1] + 0.5 * attr.box[1],
-        length = (attr.side === "left" ? 1 : -1) * attr.length;
+        fromXY = [attr.fromXY[0], attr.fromXY[1] + 0.5 * attr.box[1]],
+        endXY = [
+          attr.fromXY[0] + (attr.side === "left" ? attr.length : -attr.length + attr.box[0]),
+          fromXY[1],
+        ],
+        labelWidth = me.measureText(me.remoteSlot);
 
+      me.boxSprite = me.add({
+        type: "rect",
+        x: endXY[0] - 0.5 * me.box[0],
+        y: endXY[1] - 0.5 * me.box[1],
+        width: me.box[0],
+        height: me.box[1],
+        stroke: "black",
+        lineWidth: 1,
+        fill: me.pinColor,
+      });
       me.line = me.add({
         type: "path",
         lineWidth: 2,
         path: Ext.String.format("M{0},{1} L{2},{3}",
-                                fromX + offsetX, fromY, fromX + length, fromY),
+                                fromXY[0] + offsetX, fromXY[1], endXY[0], endXY[1]),
         strokeStyle: "black",
       });
-      var labelWidth = me.measureText(me.remoteSlot);
-      var labelXY = [
-        fromX + length + (me.side === "left" ? -0.7 * me.box[0] - labelWidth: 0.7 * me.box[0]),
-        fromY,
-      ];
       me.labelBackground = me.add({
         type: "rect",
         fill: "white",
-        x: labelXY[0] + (me.side === "left" ? - 0.5 * me.box[0] : 0.5 * me.box[0]),
-        y: labelXY[1] - 0.5 * me.box[1],
+        x: endXY[0] - (me.side === "left" ? 1.25 * me.box[0] + labelWidth : - 0.75 * me.box[0]),
+        y: endXY[1] - 0.5 * me.box[1],
         width: labelWidth + 0.5 * me.box[0],
       });
       me.label = me.add({
@@ -86,21 +95,12 @@ Ext.define("NOC.inv.inv.sprites.External", {
         fontWeight: me.getFontWeight(),
         fontSize: me.getFontSize(),
         textBaseline: "middle",
+        textAlign: (me.side === "left" ? "end" : "start"),
         text: me.remoteSlot,
-        x: labelXY[0] + (me.side === "left" ? 0 : 0.7 * me.box[0]),
-        y: labelXY[1],
+        x: endXY[0] + (me.side === "left" ? -0.75 : 0.85) * me.box[0],
+        y: endXY[1],
       });
-      me.boxSprite = me.add({
-        type: "rect",
-        x: fromX + length,
-        y: fromY - 0.5 * me.box[0],
-        width: me.box[0],
-        height: me.box[1],
-        stroke: "black",
-        lineWidth: 1,
-        fill: "white",
-      });
-      var arrowStartXY = [fromX + length + me.box[0], fromY];
+      var arrowStartXY = [endXY[0] + 0.5 * me.box[0], endXY[1]];
       var path;
       if(me.side === "left"){
         path = Ext.String.format("M{0},{1} L{2},{3} L{4},{5} L{6},{7} L{8},{9} L{10},{11} Z",
@@ -112,7 +112,7 @@ Ext.define("NOC.inv.inv.sprites.External", {
                                  arrowStartXY[0], arrowStartXY[1] - 0.65 * me.box[1],
         );
       } else{
-        arrowStartXY = [fromX + length, fromY];
+        arrowStartXY = [endXY[0] + length - 0.5* me.box[0], endXY[1]];
         path = Ext.String.format("M{0},{1} L{2},{3} L{4},{5} L{6},{7} L{8},{9} L{10},{11} Z",
                                  arrowStartXY[0], arrowStartXY[1],
                                  arrowStartXY[0], arrowStartXY[1] + 0.65 * me.box[1],
@@ -126,6 +126,7 @@ Ext.define("NOC.inv.inv.sprites.External", {
         type: "path",
         path: path,
         stroke: "black",
+        fill: "#bdc3c7",
       });
       me.remoteNameTooltip = Ext.create("Ext.tip.ToolTip", {
         html: __("Remote") + " : " + me.remoteName,
