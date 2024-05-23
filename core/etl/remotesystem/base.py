@@ -43,6 +43,7 @@ class BaseRemoteSystem(object):
         "subscriber",
         "serviceprofile",
         "service",
+        "fmevent",
         "admdiv",
         "street",
         "building",

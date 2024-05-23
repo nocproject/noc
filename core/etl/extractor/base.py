@@ -4,6 +4,7 @@
 # Copyright (C) 2007-2024 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
+import datetime
 
 # Python modules
 import logging
@@ -18,12 +19,18 @@ import dataclasses
 import operator
 import re
 
+# Third-party modules
+import orjson
+
 # NOC modules
 from noc.core.log import PrefixLoggerAdapter
 from noc.config import config
 from noc.core.comp import smart_text
 from noc.core.etl.compression import compressor
+from noc.core.etl.models.fmevent import RemoteObject
 from noc.core.purgatorium import register, ProtocolCheckResult
+from noc.core.fm.event import Event, EventSeverity, MessageType, Var
+from noc.core.service.loader import get_service
 from noc.main.models.pool import Pool
 from ..models.base import BaseModel
 from ..models.discoveredobject import DiscoveredObject
@@ -74,6 +81,7 @@ class BaseExtractor(object):
         self.fatal_problems: List[Problem] = []
         self.quality_problems: List[Problem] = []
         self.discovered_address: List[DiscoveredObject] = []
+        self.fm_events: List[Event] = []
         # Checkpoint
         self._force_checkpoint: Optional[str] = None
 
@@ -217,6 +225,53 @@ class BaseExtractor(object):
             if item.checkpoint and (not cp or item.checkpoint > cp):
                 cp = item.checkpoint
         return cp
+
+    def register_fm_event(
+        self,
+        ts: int,
+        event_id: str,
+        event_class: str,
+        object: RemoteObject,
+        message: Optional[str] = None,
+        severity: Optional[EventSeverity] = None,
+        labels: Optional[List[str]] = None,
+        data: List[Var] = None,
+        is_cleared: bool = False,
+        pool: Optional[str] = None,
+    ):
+        """
+        Register FM Event for send to classifier
+
+        Args:
+            ts: timestamp
+            event_id: Event Id on RemoteSystem
+            event_class: Event class name
+            object: Object event source
+            message: Text message
+            severity: Severity level code
+            labels: List Event labels
+            data: Event data vars
+            is_cleared: Event for clear
+            pool: Dispose pool
+        """
+        if not data and not message:
+            raise AttributeError("Unknown message data. Set data or message")
+        severity = severity or EventSeverity.INDETERMINATE
+        event = Event(
+            ts=ts,
+            remote_id=event_id,
+            remote_system=self.system.remote_system.name,
+            target=object.get_target(),
+            type=MessageType(
+                severity=severity if not is_cleared else EventSeverity.CLEARED,
+                event_class=event_class,
+            ),
+            data=[Var(name=d.name, value=d.value) for d in data],
+            message=message,
+            labels=labels,
+        )
+        event.target.pool = pool or "default"
+        self.fm_events.append(event)
 
     def register_discovered_address(
         self,
@@ -405,6 +460,7 @@ class BaseExtractor(object):
             self.logger.info("No problems detected")
         # Send Discovered Address
         if self.system.remote_system.enable_discoveredobject and self.discovered_address:
+            self.logger.info("Send discovered object: %s", len(self.discovered_address))
             for item in self.discovered_address:
                 pool = Pool.get_by_name(item.pool)
                 register(
@@ -418,3 +474,23 @@ class BaseExtractor(object):
                     checks=item.checks,
                     **(item.data or {}),
                 )
+        # Send Event
+        if self.system.remote_system.enable_fmevent and self.fm_events:
+            self.logger.info("Send FM Event: %s", len(self.fm_events))
+            svc = get_service()
+            max_ts = 0
+            for event in self.fm_events:
+                max_ts = max(max_ts, event.ts)
+                svc.publish(orjson.dumps(event.model_dump()), f"events.{event.target.pool}")
+            if max_ts:
+                self.system.remote_system.last_extract_event = datetime.datetime.fromtimestamp(
+                    max_ts
+                )
+                return
+            now = datetime.datetime.now().replace(microsecond=0)
+            if not self.system.remote_system.last_extract_event:
+                self.system.remote_system.last_extract_event = now
+            else:
+                le = self.system.remote_system.last_extract_event + datetime.timedelta(days=1)
+                self.system.remote_system.last_extract_event = min(le, now)
+            self.logger.info("Last extract event TS", self.system.remote_system.last_extract_event)
