@@ -66,63 +66,63 @@ class Script(GetMetricsScript):
             oid="CISCO-RTTMON-MIB::rttMonLatestJitterOperOWAvgSD",
             sla_types=["udp-jitter"],
             scale=1,
-            units="m,s",
+            units="u,s",
         ),
         "SLA | OneWayLatency | In | Max": ProfileMetricConfig(
             metric="SLA | OneWayLatency | In | Max",
             oid="CISCO-RTTMON-MIB::rttMonLatestJitterOperOWAvgDS",
             sla_types=["udp-jitter"],
             scale=1,
-            units="m,s",
+            units="u,s",
         ),
         "SLA | Jitter | Avg": ProfileMetricConfig(
             metric="SLA | Jitter | Avg",
             oid="CISCO-RTTMON-MIB::rttMonLatestJitterOperAvgJitter",
             sla_types=["udp-jitter"],
             scale=1,
-            units="m,s",
+            units="u,s",
         ),
         "SLA | Jitter | Out | Avg": ProfileMetricConfig(
             metric="SLA | Jitter | Out | Avg",
             oid="CISCO-RTTMON-MIB::rttMonLatestJitterOperAvgSDJ",
             sla_types=["udp-jitter"],
             scale=1,
-            units="m,s",
+            units="u,s",
         ),
         "SLA | Jitter | In | Avg": ProfileMetricConfig(
             metric="SLA | Jitter | In | Avg",
             oid="CISCO-RTTMON-MIB::rttMonLatestJitterOperAvgDSJ",
             sla_types=["udp-jitter"],
             scale=1,
-            units="m,s",
+            units="u,s",
         ),
         "SLA | Jitter | MOS": ProfileMetricConfig(
             metric="SLA | Jitter | MOS",
             oid="CISCO-RTTMON-MIB::rttMonLatestJitterOperMOS",
             sla_types=["udp-jitter"],
             scale=1,
-            units="m,s",
+            units="u,s",
         ),
         "SLA | Jitter | ICPIF": ProfileMetricConfig(
             metric="SLA | Jitter | ICPIF",
             oid="CISCO-RTTMON-MIB::rttMonLatestJitterOperICPIF",
             sla_types=["udp-jitter"],
             scale=1,
-            units="m,s",
+            units="u,s",
         ),
         "SLA | RTT | Min": ProfileMetricConfig(
             metric="SLA | RTT | Min",
             oid="CISCO-RTTMON-MIB::rttMonLatestJitterOperRTTMin",
             sla_types=["udp-jitter", "icmp-echo"],
             scale=1,
-            units="m,s",
+            units="u,s",
         ),
         "SLA | RTT | Max": ProfileMetricConfig(
             metric="SLA | RTT | Max",
             oid="CISCO-RTTMON-MIB::rttMonLatestJitterOperRTTMax",
             sla_types=["udp-jitter", "icmp-echo"],
             scale=1,
-            units="m,s",
+            units="u,s",
         ),
     }
 
@@ -389,6 +389,7 @@ class Script(GetMetricsScript):
                 units=units,
                 service=s_cfg.service,
             )
+
         # print(r)
         # "noc::traffic_class::*", "noc::interface::*"
 

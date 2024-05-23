@@ -1,7 +1,7 @@
 # ---------------------------------------------------------------------
 # Juniper.JUNOS.get_metrics
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2023 The NOC Project
+# Copyright (C) 2007-2024 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -140,9 +140,9 @@ class Script(GetMetricsScript):
         access="S",  # CLI version
     )
     def get_interface_cbqos_metrics_snmp(self, metrics):
-        ifaces = {str(m.ifindex): m.labels for m in metrics if m.ifindex}
+        ifaces = {m.ifindex: m for m in metrics if m.ifindex}
         for ifindex in ifaces:
-            for index, packets, octets, discards in self.snmp.get_tables(
+            for (index, out_packets, out_octets, discards) in self.snmp.get_tables(
                 [
                     mib["JUNIPER-COS-MIB::jnxCosIfqTxedPkts", ifindex],
                     mib["JUNIPER-COS-MIB::jnxCosIfqTxedBytes", ifindex],
@@ -156,24 +156,26 @@ class Script(GetMetricsScript):
                 ts = self.get_ts()
                 for metric, value in [
                     ("Interface | CBQOS | Drops | Out | Delta", discards),
-                    ("Interface | CBQOS | Octets | Out | Delta", octets),
-                    ("Interface | CBQOS | Octets | Out", octets),
-                    ("Interface | CBQOS | Packets | Out | Delta", packets),
-                    ("Interface | CBQOS | Packets | Out", packets),
+                    ("Interface | CBQOS | Octets | Out | Delta", out_octets),
+                    ("Interface | CBQOS | Octets | Out", out_octets),
+                    ("Interface | CBQOS | Packets | Out | Delta", out_packets),
+                    ("Interface | CBQOS | Packets | Out", out_packets),
                 ]:
                     if not value:
                         continue
                     scale = 1
+                    sc = ifaces[ifindex]
                     self.set_metric(
-                        id=(metric, ifaces[ifindex]),
+                        id=(metric, sc.labels),
                         metric=metric,
                         value=float(value),
                         ts=ts,
-                        labels=ifaces[ifindex] + [f"noc::traffic_class::{traffic_class}"],
+                        labels=sc.labels + [f"noc::traffic_class::{traffic_class}"],
                         multi=True,
                         type="delta" if metric.endswith("Delta") else "gauge",
                         scale=scale,
                         units="byte" if "Octets" in metric else "pkt",
+                        service=sc.service,
                     )
 
     def collect_sla_metrics(self, metrics):
@@ -224,7 +226,6 @@ class Script(GetMetricsScript):
                         RPMResultCollection.lastCompletedTest.value,
                         mc.oid[1],
                     ]
-                print(oid, probe, mc)
                 oids[oid] = (probe, mc)
 
         results = self.snmp.get_chunked(
