@@ -8,10 +8,11 @@
 # Python modules
 import datetime
 from dataclasses import dataclass
-from typing import Iterable, Dict, List, Optional, Any, Tuple
+from typing import Iterable, Dict, Optional, Any
 
 # Third-party modules
 import orjson
+from bson import ObjectId
 from pymongo import ReadPreference
 
 # NOC modules
@@ -22,10 +23,8 @@ from noc.core.change.policy import change_tracker
 from noc.core.tt.types import EscalationItem as ECtxItem
 from noc.core.tt.base import TTSystemCtx
 from noc.core.perf import metrics
-from noc.sa.models.managedobject import ManagedObject
 from noc.sa.models.action import Action
 from noc.main.models.notificationgroup import NotificationGroup
-from noc.fm.models.escalation import Escalation
 from noc.fm.models.escalation import Escalation, ItemStatus, EscalationStatus
 from noc.fm.models.escalationprofile import EscalationItem
 from noc.fm.models.activealarm import ActiveAlarm
@@ -45,6 +44,7 @@ class EscalationJob(SequenceJob):
 
     def __init__(self, job, attrs):
         super().__init__(job, attrs)
+        self.object = Escalation()
         self.alarm_log = []
 
     def run_action(self, action: str, key: str) -> EscalationResult:
@@ -120,7 +120,7 @@ class EscalationJob(SequenceJob):
                     # and not self.is_under_maintenance()
                 ):
                     tt_system = esc_item.tt_system or self.object.managed_object.tt_system
-                    r = self.create_tt(tt_system, subject, body)  # ctx
+                    r = self.create_tt(tt_system, subject, body, ctx)
                     self.object.set_escalation(
                         action="tt_system",
                         key=str(tt_system),
@@ -259,8 +259,60 @@ class EscalationJob(SequenceJob):
             self.object.alarm.log_message(msg, bulk=self.alarm_log)
 
     # TT System API
+    def get_tt_system_context(self, tt_system: TTSystem) -> TTSystemCtx:
+        cfg = self.object.profile.get_tt_system_config(tt_system)
+        ctx = TTSystemCtx(
+            tt_system=tt_system.get_system(),
+            queue=self.object.managed_object.tt_queue,
+            reason=cfg.get("pre_reason"),
+            login=cfg.get("login"),
+            timestamp=self.object.timestamp,
+            is_unavailable=False,
+        )
+        return ctx
 
-    def create_tt(self, tt_system: TTSystem, subject: str, body: str) -> EscalationResult:
+    def check_escalated(self):
+        """
+        Process escalation doc and fill already escalated alarms.
+        Note: Must be called under the lock
+        """
+        alarms = [item.alarm for item in self.escalation_doc.items]
+        esc_status: Dict[ObjectId, ObjectId] = {}
+        esc_tt: Dict[ObjectId, str] = {}
+        for doc in Escalation._get_collection().aggregate(
+            [
+                {
+                    "$match": {
+                        "end_timestamp": {"$exists": False},
+                        "items.alarm": {"$in": alarms},
+                        "escalations.document_id": {"$exists": True},
+                    }
+                },
+                {"$project": {"_id": 1, "items": 1, "escalations": 1}},
+                {"$unwind": "$items"},
+                {"$match": {"items.alarm": {"$in": alarms}}},
+            ]
+        ):
+            esc_status[doc["items"]["alarm"]] = doc["_id"]
+            # esc_tt[doc["items"]["alarm"]] = doc.get("escalations", doc["items"].get("current_tt_id"))
+        if not esc_status:
+            return  # No escalated docs
+        for item in self.object.items:
+            if item.alarm in esc_status and item.is_new:
+                self.logger.info(
+                    "Alarm %s is already escalated with TT %s", item.alarm, esc_tt[item.alarm]
+                )
+                item.escalation_status = ItemStatus.EXISTS
+                # item.current_escalation = esc_status[item.alarm]
+                # item.current_tt_id = esc_tt[item.alarm]
+
+    def create_tt(
+        self,
+        tt_system: TTSystem,
+        subject: str,
+        body: str,
+        context: Optional[Dict[str, Any]] = None,
+    ) -> EscalationResult:
         """
         Create Trouble Ticket on TT System
 
@@ -268,13 +320,67 @@ class EscalationJob(SequenceJob):
             tt_system: TT System instance
             subject: Message Subject
             body: Message Body
+            context: Escalation Context
 
         Returns:
             EscalationResult:
         """
         self.logger.debug("Escalation message:\nSubject: %s\n%s", subject, body)
-        self.logger.info("Creating TT in system %s", tt_system)
-        return EscalationResult(document="example")
+        # Build Items for context
+        self.check_escalated()
+        e_ctx_items = [
+            ECtxItem(
+                id=str(self.object.managed_object.id), tt_id=self.object.managed_object.tt_system_id
+            )
+        ]
+        for item in self.object.items[1:]:
+            if item.is_already_escalated:
+                continue
+            if not item.managed_object.can_escalate(True):
+                err = f"Cannot append object {item.managed_object.name} to group tt: Escalations are disabled"
+                self.log_alarm(err)
+                item.escalation_status = ItemStatus.FAIL
+                continue
+            if item.managed_object.tt_system != tt_system:
+                err = f"Cannot append object {item.managed_object.name} to group tt: Belongs to other TT system"
+                self.log_alarm(err)
+                item.escalation_status = ItemStatus.FAIL
+                continue
+            ei = ECtxItem(id=str(item.managed_object.id), tt_id=item.managed_object.tt_system_id)
+            e_ctx_items.append(ei)
+        self.logger.info("Creating TT in system %s", tt_system.name)
+        self.log_alarm(f"Creating TT in system {tt_system.name}")
+        with self.get_tt_system_context(tt_system) as ctx:
+            ctx.add_items(e_ctx_items)
+            doc_id = ctx.create(subject=subject, body=body, data=context)
+            if not doc_id and ctx.error_code:
+                self.log_alarm(f"Failed to escalate: {ctx.error_text}")
+                return EscalationResult(EscalationStatus(ctx.error_code, ctx.error_text))
+            elif not doc_id:
+                return EscalationResult(EscalationStatus.FAIL)
+            # Project result to escalation items
+            ctx_map: Dict[int:ItemStatus] = {}
+            for item in ctx.items:
+                try:
+                    e_status = item.get_status()
+                except AttributeError:
+                    self.log_alarm(f"Adapter malfunction. Status for {item.id} is not set.")
+                    continue
+                if e_status.is_ok:
+                    self.log_alarm(f"{item.id} is appended successfully")
+                    e_status = ItemStatus.CHANGED
+                else:
+                    self.log_alarm(
+                        f"Failed to append {item.id}: {e_status.msg} ({e_status.status})"
+                    )
+                    e_status = ItemStatus.FAIL
+                ctx_map[item.id] = e_status
+            for item in self.object.items:
+                if item.managed_object.id not in ctx_map:
+                    continue
+                item.status = ctx_map[item.managed_object.id]
+            metrics["escalation_tt_create"] += 1
+        return EscalationResult(document=doc_id)
 
     def close_tt(
         self, tt_system: TTSystem, tt_id: str, reason: Optional[str] = None
@@ -291,6 +397,17 @@ class EscalationJob(SequenceJob):
             Escalation Resul instance
         """
         self.logger.info("Closing TT %s:%s", tt_system, tt_id)
+        with self.get_tt_system_context(tt_system) as ctx:
+            ctx.close(tt_id)
+            if ctx.error_code:
+                metrics[f"escalation_tt_comment_fail"] += 1
+                status = EscalationStatus(ctx.error_code)
+                if status == EscalationStatus.TEMP:
+                    error = f"Temporary error detected while closing tt {tt_id}: {ctx.error_text}"
+                elif status == EscalationStatus.FAIL:
+                    error = f"Failed to close tt {tt_id}: {ctx.error_text}"
+                self.logger.info(error)
+                return EscalationResult(status, error=error)
         return EscalationResult()
 
     def comment_tt(self, tt_system: TTSystem, tt_id: str, message: str) -> EscalationResult:
@@ -306,6 +423,15 @@ class EscalationJob(SequenceJob):
             Escalation Resul instance
         """
         self.logger.info("Appending comment to TT %s:%s", tt_system, tt_id)
+        with self.get_tt_system_context(tt_system) as ctx:
+            ctx.comment(tt_id, message)
+            metrics["escalation_tt_comment"] += 1
+            if ctx.error_code:
+                metrics[f"escalation_tt_comment_fail"] += 1
+                return EscalationResult(
+                    EscalationStatus(ctx.error_code),
+                    error=f"Failed to add comment to {tt_id}: {ctx.error_text}",
+                )
         return EscalationResult()
 
     def notify(
@@ -325,6 +451,9 @@ class EscalationJob(SequenceJob):
         self.logger.info(
             "[%s] Notification message:\nSubject: %s\n%s", notification_group, subject, body
         )
+        self.log_alarm(f"Sending notification to group {notification_group.name}")
+        notification_group.notify(subject, body)
+        metrics["escalation_notify"] += 1
         return EscalationResult()
 
     def action(self, action: Action) -> EscalationResult:

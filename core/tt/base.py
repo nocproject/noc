@@ -21,6 +21,7 @@ from .types import (
     EscalationResult,
 )
 from .error import TTError, TemporaryTTError
+from noc.core.perf import metrics
 
 
 class BaseTTSystem(object):
@@ -159,6 +160,7 @@ class TTSystemCtx(object):
         login: TT system's login
         timestamp: Alarm timestamp.
         id: Document id
+        is_unavailable: Alarm triggered unavailable items
         items: Managed object references. Leader is first.
     """
 
@@ -286,7 +288,7 @@ class TTSystemCtx(object):
             self.set_error("skip", str(exc_val))
         return True
 
-    def set_error(self, code: Optional[str] = None, text: Optional[str] = None) -> None:
+    def set_error(self, code: Optional[int] = None, text: Optional[str] = None) -> None:
         """
         Set error result and code for current span
         :param code: Optional error code
