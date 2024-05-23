@@ -501,8 +501,8 @@ Ext.define("NOC.inv.inv.CreateConnectionForm", {
       secondNameWidthMax = (Ext.Array.max(Ext.Array.map(secondPins, function(pin){return pin.pinNameWidth})) || 0) + me.boxWidth;
 
     if(isLabel){
-      firstNameWidthMax += Ext.Array.max(Ext.Array.map(firstPins, function(pin){return pin.remoteSlotWidth}));
-      secondNameWidthMax += (Ext.Array.max(Ext.Array.map(secondPins, function(pin){return pin.remoteSlotWidth})) || 0); 
+      firstNameWidthMax += Ext.Array.max(Ext.Array.map(firstPins, function(pin){return pin.remoteSlotWidth + me.boxWidth}));
+      secondNameWidthMax += (Ext.Array.max(Ext.Array.map(secondPins, function(pin){return pin.remoteSlotWidth + me.boxWidth})) || 0); 
     }
     return [firstNameWidthMax, secondNameWidthMax];
   },

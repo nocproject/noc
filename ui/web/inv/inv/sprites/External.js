@@ -88,6 +88,7 @@ Ext.define("NOC.inv.inv.sprites.External", {
         x: endXY[0] - (me.side === "left" ? 1.25 * me.box[0] + labelWidth : - 0.75 * me.box[0]),
         y: endXY[1] - 0.5 * me.box[1],
         width: labelWidth + 0.5 * me.box[0],
+        height: me.box[1],
       });
       me.label = me.add({
         type: "text",

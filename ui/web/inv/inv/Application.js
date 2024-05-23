@@ -448,7 +448,6 @@ Ext.define("NOC.inv.inv.Application", {
       me.mainPanel.add(me.connectionPanel);
       me.connectionPanel.onDrop({dragData: {records: selected} });
     }
-    me.connectionPanel.load();
   },
   //
   onOpenDashboard: function(){
