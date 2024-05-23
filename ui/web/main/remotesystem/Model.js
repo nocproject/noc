@@ -145,6 +145,10 @@ Ext.define("NOC.main.remotesystem.Model", {
             type: "boolean"
         },
         {
+            name: "enable_fmevent",
+            type: "boolean"
+        },
+        {
             name: "enable_street",
             type: "boolean"
         }
