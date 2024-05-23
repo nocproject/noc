@@ -36,12 +36,14 @@ class Script(BaseScript):
     iftype = {
         "100BASE-TX": "physical",
         "Giga-FX": "physical",
+        "Giga-TX": "physical",
         "Giga-Combo-TX": "physical",
         "10Giga-FX": "physical",
         "10Giga-FX-SFP": "physical",
+        "10G-BASE-DAC": "physical",
         "EtherSVI": "SVI",
-        "PortAggregator": "aggregated",
         "Null": "null",
+        "PortAggregator": "aggregated",
     }
 
     def execute(self):
