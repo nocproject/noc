@@ -437,18 +437,17 @@ Ext.define("NOC.inv.inv.Application", {
   },
   //
   onCreateConnection: function(){
-    var me = this;
+    var me = this,
+      sm = me.navTree.getSelectionModel(),
+      selected = sm.getSelection();
+    
     if(me.mainPanel.items.items.length > 2){
       me.mainPanel.remove(me.mainPanel.items.items[2], false);
     }
-    me.mainPanel.add(me.connectionPanel);
-    // for development only
-    me.connectionPanel.getViewModel().set("leftObject", Ext.data.Model.create({
-      id: "65812280c29373a46037d129", name: "5",
-    }));
-    // panel.getViewModel().set("rightObject", Ext.data.Model.create({
-    //     id: "6581227fc29373a46037d120", name: "h2-polus",
-    // }));
+    if(selected.length > 0){
+      me.mainPanel.add(me.connectionPanel);
+      me.connectionPanel.onDrop({dragData: {records: selected} });
+    }
     me.connectionPanel.load();
   },
   //
