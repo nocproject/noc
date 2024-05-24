@@ -1167,7 +1167,8 @@ Ext.define("NOC.inv.inv.CreateConnectionForm", {
         if(isWire){
           pointerX = sprite.box.attr.translationX + sprite.box.attr.width / 2;
           pointerY = sprite.box.attr.translationY + sprite.box.attr.height / 2;
-          offset = (side === "left" ? 1 : -1) * me.getWiresOffset(side, undefined)[0];
+          offset = (side === "left" ? 1 : -1) * me.getWiresOffset(side, undefined, true)[0];
+          offset += 2 * me.boxWidth * (side === "left" ? 1 : -1); // add offset for external arrow connection
         }
         if(!pointer){
           pointer = surface.add({
@@ -1353,7 +1354,7 @@ Ext.define("NOC.inv.inv.CreateConnectionForm", {
             pointer.setAttributes({
               lineType: firstSide === sprite.side && sprite.attr.cursorOn !== "internal" ? "loopback" : sprite.attr.cursorOn,
               side: sprite.side,
-              xOffsets: me.getWiresOffset(firstSide, sprite.side),
+              xOffsets: Ext.Array.map(me.getWiresOffset(firstSide, sprite.side, true), function(w){return w + this.boxWidth * 2}, me),
             });
           }
           break;
