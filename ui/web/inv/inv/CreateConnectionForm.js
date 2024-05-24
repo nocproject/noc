@@ -1634,12 +1634,13 @@ Ext.define("NOC.inv.inv.CreateConnectionForm", {
     mainSurface.renderFrame();
   },
   scaleCalculate: function(){
-    var me = this,
-      surfaceHeight = me.maxPins * (me.boxHeight + me.gap) + me.gap + me.schemaPadding * 4,
-      containerHeight = me.drawPanel.getHeight() - me.legendHeight;
+    var surfaceHeight, containerHeight,
+      me = this;
+    
+    me.initValues();
+    surfaceHeight = me.maxPins * (me.boxHeight + me.gap) + me.gap + me.schemaPadding * 4,
+    containerHeight = me.drawPanel.getHeight() - me.legendHeight;
     if(surfaceHeight > containerHeight){
-      // calculate needed vertical space for diagram
-      // ToDo calculate width of schema, when two objects and select optimal scale factor, need width body of objects
       me.surfaceHeight = me.maxPins * (me.boxHeight + me.gap) + me.gap + me.schemaPadding * 4;
       me.scale = Math.min(containerHeight / me.surfaceHeight, 0.6);
       me.boxHeight *= me.scale;
