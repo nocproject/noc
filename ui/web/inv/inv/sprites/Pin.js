@@ -96,6 +96,7 @@ Ext.define("NOC.inv.inv.sprites.Pin", {
           me.pinName = attr.pinName;
           me.pinNameOrig = attr.pinNameOrig;
           me.pinNameWidth = me.measureText(attr.pinName) + 0.2 * me.getBoxWidth();
+          me.remoteSlotWidth = 0;
           if(me.remoteSlot !== "none"){
             me.remoteSlotWidth = me.measureText(me.remoteSlot) + 0.2 * me.getBoxWidth() + 20;
           }
