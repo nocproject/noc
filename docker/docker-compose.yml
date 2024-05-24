@@ -1183,7 +1183,7 @@ services:
     image: alpine:latest
     restart: "no"
     command: >
-      sh -c "set -xe;
+      sh -c 'set -xe;
       if [ ! -f /etc/nginx/ssl/noc.crt ]; then
         apk add --no-cache openssl;
         openssl req \
@@ -1195,7 +1195,7 @@ services:
         -days 365 \
         -subj "/C=US/ST=NOC/L=NOC/O=NOC/OU=NOC/CN=NOC/emailAddress=NOC@NOC";
       fi
-      "
+      '
     volumes:
       - nginx_ssl:/etc/nginx/ssl
     env_file:
