@@ -8,6 +8,7 @@
 # Python modules
 import datetime
 import os
+import uuid
 from collections import defaultdict
 from functools import reduce
 
@@ -628,6 +629,8 @@ class ExtModelApplication(ExtApplication):
                 {"success": False, "message": "Bad request", "traceback": str(e)},
                 status=self.BAD_REQUEST,
             )
+        if self.has_uuid and not attrs.get("uuid"):
+            attrs["uuid"] = uuid.uuid4()
         try:
             # Exclude callable values from query
             # (Django raises exception on pyRules)
