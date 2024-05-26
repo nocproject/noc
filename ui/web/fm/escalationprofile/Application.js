@@ -180,6 +180,13 @@ Ext.define("NOC.fm.escalationprofile.Application", {
                             renderer: NOC.render.Lookup("min_severity")
                         },
                         {
+                            text: __("TT System"),
+                            dataIndex: "tt_system",
+                            editor: "fm.ttsystem.LookupField",
+                            width: 120,
+                            renderer: NOC.render.Lookup("tt_system")
+                        },
+                        {
                             text: __("Notification Group"),
                             dataIndex: "notification_group",
                             editor: "main.notificationgroup.LookupField",

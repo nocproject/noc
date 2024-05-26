@@ -32,6 +32,7 @@ class SequenceJob(Job):
         # Get next run
         if status == self.E_EXCEPTION:
             ts = datetime.datetime.now() + datetime.timedelta(seconds=60)
+            self.scheduler.postpone_job(self.attrs[self.ATTR_ID])
         else:
             ts = self.object.get_next()
         # Error

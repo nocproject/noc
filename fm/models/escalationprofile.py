@@ -82,6 +82,7 @@ class EscalationItem(EmbeddedDocument):
 
     def get_key(self, tt_system: Optional[str] = None) -> str:
         if self.action == "create_tt":
+            tt_system = tt_system or self.tt_system.id
             return str(tt_system)
         if self.action == "notification":
             return str(self.notification_group)
