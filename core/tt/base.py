@@ -21,7 +21,6 @@ from .types import (
     EscalationResult,
 )
 from .error import TTError, TemporaryTTError
-from noc.core.perf import metrics
 
 
 class BaseTTSystem(object):
@@ -35,6 +34,7 @@ class BaseTTSystem(object):
 
     Attributes:
         promote_group_tt: Supported Group Alarm
+        processed_items: Supported processed alarm items
         TTError: Basic error.
         TemporaryTTError: Transient error, escalation
             can be restarted.
@@ -43,6 +43,7 @@ class BaseTTSystem(object):
     TTError = TTError
     TemporaryTTError = TemporaryTTError
     promote_group_tt = True
+    processed_items = False
 
     def __init__(self, name: str, connection: str):
         self.connection = connection
@@ -160,7 +161,6 @@ class TTSystemCtx(object):
         login: TT system's login
         timestamp: Alarm timestamp.
         id: Document id
-        is_unavailable: Alarm triggered unavailable items
         items: Managed object references. Leader is first.
     """
 
@@ -173,7 +173,6 @@ class TTSystemCtx(object):
         reason=None,
         login=None,
         items=None,
-        is_unavailable=None,
     ):
         self.tt_system: BaseTTSystem = tt_system
         self.id: Optional[str] = id
@@ -182,7 +181,6 @@ class TTSystemCtx(object):
         self.reason: Optional[str] = reason
         self.login: Optional[str] = login
         self.items: List[EscalationItem] = items or []
-        self.is_unavailable = is_unavailable
         self.error_code: Optional[str] = None
         self.error_text: Optional[str] = ""
 
@@ -288,7 +286,7 @@ class TTSystemCtx(object):
             self.set_error("skip", str(exc_val))
         return True
 
-    def set_error(self, code: Optional[int] = None, text: Optional[str] = None) -> None:
+    def set_error(self, code: Optional[str] = None, text: Optional[str] = None) -> None:
         """
         Set error result and code for current span
         :param code: Optional error code

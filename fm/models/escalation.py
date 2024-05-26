@@ -6,10 +6,10 @@
 # ---------------------------------------------------------------------
 
 # Python modules
-import enum
 import operator
 import datetime
 import logging
+import enum
 from collections import defaultdict
 from typing import List, Set, Iterable, Optional, DefaultDict
 
@@ -33,6 +33,7 @@ from bson import ObjectId
 from noc.core.mongo.fields import PlainReferenceField, ForeignKeyField
 from noc.core.span import get_current_span
 from noc.core.fm.enum import RCA_DOWNLINK_MERGE
+from noc.core.tt.types import EscalationStatus
 from noc.sa.models.managedobject import ManagedObject
 from noc.sa.models.servicesummary import SummaryItem, ObjectSummaryItem
 from noc.sa.models.service import Service
@@ -50,15 +51,6 @@ class ItemStatus(enum.Enum):
     FAIL = "fail"  # escalation fail
     EXISTS = "exists"  # Exists on another escalation
     REMOVED = "removed"  # item removed
-
-
-class EscalationStatus(enum.Enum):
-    OK = "ok"  # escalation success
-    TEMP = "temp"  # temporary error, repeat needed
-    FAIL = "fail"  # escalation fail
-    SKIP = "skip"  # Escalation Skipped
-    WAIT = "wait"  # Escalation Wait
-    # Ack - for acked alarm
 
 
 class EscalationItem(EmbeddedDocument):
@@ -89,6 +81,7 @@ class EscalationItem(EmbeddedDocument):
 
 class EscalationLog(EmbeddedDocument):
     timestamp = DateTimeField()  # Execution time
+    # ack_alarm, close_alarm, add_comment ? User
     action = StringField(choices=["tt_system", "notification", "run_action"], required=True)
     key: str = StringField(required=True)  # Action key
     document_id = StringField()  # Document Id on external system
@@ -433,11 +426,17 @@ class Escalation(Document):
             ts = datetime.datetime.now()
         else:
             ts = alarm.timestamp
+        affected = alarm.affected_services
+        groups = alarm.groups
+        if not alarm.affected_services and "service" in alarm.vars:
+            affected = [alarm.vars["service"]]
+            groups = [alarm.reference]
         return Escalation(
             timestamp=ts,
             profile=profile,
             severity=alarm.severity,
-            groups=alarm.groups,
+            groups=groups,
+            affected_services=affected,
             forced=force,
             items=[
                 EscalationItem(
@@ -480,7 +479,7 @@ class Escalation(Document):
         for alarm in items:
             if alarm.alarm_class.is_ephemeral:
                 # Group alarms are virtual and should be locked, but not escalated
-                self.groups += [str(alarm.reference)]
+                self.groups += [alarm.reference]
                 continue
             if alarm.status == "C":
                 self.set_item_status(alarm, ItemStatus.REMOVED)
@@ -511,9 +510,6 @@ class Escalation(Document):
             return self.leader.status == ItemStatus.REMOVED
         elif self.profile.end_condition == "CA":
             return all(i.status == ItemStatus.REMOVED for i in self.items)
-        elif self.profile.end_condition == "E":
-            # End Chain
-            return self.sequence_num >= len(self.profile.escalations)
         elif self.profile.end_condition == "CT":
             # Close TT
             return self.escalations and self.escalations[0].deescalation_status == "ok"
