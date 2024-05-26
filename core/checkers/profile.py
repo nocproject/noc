@@ -32,6 +32,7 @@ class SuggestProfile(object):
     match: Literal["eq", "contains", "re"]
     value: str
     profile: str
+    preference: int
     name: Optional[str] = None
 
     _re_cache: ClassVar[Dict[str, str]] = {}
@@ -57,7 +58,7 @@ class SuggestProfile(object):
 
     @property
     def query_key(self):
-        return self.method, self.param
+        return self.method, self.param, self.preference
 
 
 class ProfileChecker(Checker):
@@ -75,10 +76,12 @@ class ProfileChecker(Checker):
         super().__init__(**kwargs)
         if "rules" not in kwargs:
             raise AttributeError("Required check rules for works")
-        self.rules: Dict[Tuple[str, str], List[SuggestProfile]] = self.load_rules(kwargs["rules"])
+        self.rules: Dict[Tuple[str, str, int], List[SuggestProfile]] = self.load_rules(
+            kwargs["rules"]
+        )
 
     @staticmethod
-    def load_rules(rules: List[SuggestProfile]) -> Dict[Tuple[str, str], List[SuggestProfile]]:
+    def load_rules(rules: List[SuggestProfile]) -> Dict[Tuple[str, str, int], List[SuggestProfile]]:
         """
         Convert list to tree: (method, param) -> Rules
         """
@@ -127,13 +130,13 @@ class ProfileChecker(Checker):
         result_cache: Dict[Tuple[str, str], str] = {}
         unsupported_method = set()
         snmp_result, http_result = "", ""
-        for key in self.rules:
-            method, param = key
+        for method, param, pref in sorted(self.rules, key=lambda x: x[2]):
+            r_key = (method, param)
             if method in unsupported_method:
                 continue
-            if key in result_cache:
+            if r_key in result_cache:
                 self.logger.debug("Using cached value")
-                result = result_cache[key]
+                result = result_cache[r_key]
             else:
                 try:
                     result = self.do_check(method, param, address, credential=cred)
@@ -143,10 +146,10 @@ class ProfileChecker(Checker):
                     self.logger.error("[%s] Error when doing check: %s", method, error)
                     self.logger.warning("Add method: %s to unsupported", method)
                     continue
-            result_cache[key] = result
+            result_cache[r_key] = result
             if not result:
                 continue
-            rule = self.find_profile(key, result)
+            rule = self.find_profile((method, param, pref), result)
             if rule:
                 self.logger.info("Matched profile: %s (%s)", rule.profile, rule.name)
                 # @todo: process MAYBE rule
