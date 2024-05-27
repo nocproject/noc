@@ -363,7 +363,7 @@ Ext.define("NOC.inv.inv.CreateConnectionForm", {
     });
   },
   drawEmptyText: function(container){
-    var text = __("Drag objects from left tree to start"),
+    var text = __("Drag other object from left tree"),
       fontSize = 16,
       offset = 50,
       color = window.getComputedStyle(container.up("panel").down("button[itemId=closeBtn]").btnIconEl.dom).color,
