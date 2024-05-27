@@ -48,33 +48,32 @@ Ext.define("NOC.sa.service.Application", {
                             "<tr><td><div class=\"noc-object-oper-state\" style=\"background: red;\"></div></td><td>" + __("DOWN") + "</td></tr>" +
                             "<tr><td><div class=\"noc-object-oper-state\" style=\"background: linear-gradient(to right, green 50%, brown 50%);\"></div></td><td>" + __("In maintenance") + "</td></tr>" +
                 "</table>'";
-            value = parseInt(value);
             switch(value){
-              case 0:
+              case "0":
                 color = "grey";
                 if(record.get("in_maintenance")){
                   color = "linear-gradient(to right, grey 50%, brown 50%)";
                 }
                 break;
-              case 1:
+              case "1":
                 color = "green";
                 if(record.get("in_maintenance")){
                   color = "linear-gradient(to right, green 50%, brown 50%)";
                 }
                 break;
-              case 2:
+              case "2":
                 color = "yellow";
                 if(record.get("in_maintenance")){
                   color = "linear-gradient(to right, yellow 50%, brown 50%)";
                 }
                 break;
-              case 3:
+              case "3":
                 color = "orange";
                 if(record.get("in_maintenance")){
                   color = "linear-gradient(to right, orange 50%, brown 50%)";
                 }
                 break;
-              case 4:
+              case "4":
                 color = "red";
                 if(record.get("in_maintenance")){
                   color = "linear-gradient(to right, red 50%, brown 50%)";
