@@ -3,7 +3,7 @@
 The official NOC community unites people with a common goal:
 
 * Using NOC to solve practical problems.
-* Developing NOC in the direction outlined by the [NOC Manifest](../noc-manifest/index.md).
+* Developing NOC in the direction outlined by the [NOC Manifest](../manifest/index.md).
 
 The community has a hierarchical structure and consists of four entities:
 
