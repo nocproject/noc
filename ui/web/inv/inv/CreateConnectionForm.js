@@ -367,14 +367,16 @@ Ext.define("NOC.inv.inv.CreateConnectionForm", {
       fontSize = 16,
       offset = 50,
       color = window.getComputedStyle(container.up("panel").down("button[itemId=closeBtn]").btnIconEl.dom).color,
+      width = container.getWidth(),
+      height =container.getHeight(), 
       font = Ext.String.format("normal {0}px arial", fontSize),
       textWidth = Ext.draw.TextMeasurer.measureText(text, font).width,
       squareSprite = {
         type: "rect",
         x: offset,
         y: offset,
-        width: container.getWidth() - offset * 2,
-        height: container.getHeight() - offset * 2,
+        width: width - offset * 2,
+        height: height - offset * 2,
         fillStyle: "none",
         strokeStyle: color,
         lineWidth: 3,
@@ -384,13 +386,22 @@ Ext.define("NOC.inv.inv.CreateConnectionForm", {
       textSprite = {
         type: "text",
         text: text,
-        x: (container.getWidth() - textWidth) / 2,
-        y: container.getHeight() / 2 - fontSize,
+        x: (width - textWidth) / 2,
+        y: height / 2 - fontSize,
         fillStyle: color,
         font: font,
       };
-        
-    container.getSurface().removeAll(true);
+       
+    if(Ext.isEmpty(this.getViewModel().get("leftObject"))){
+      container.getSurface().removeAll(true);
+    } else if(Ext.isEmpty(this.getViewModel().get("rightObject"))){
+      offset = this.schemaPadding * 0.5; 
+      squareSprite.x = width * 0.5;
+      squareSprite.y = offset;
+      squareSprite.width = width * 0.5 - offset * 2;
+      textSprite.x = width * 0.5 + (width * 0.5 - textWidth) * 0.5;
+      textSprite.y = squareSprite.height * 0.5;
+    }
     container.getSurface().add(squareSprite, textSprite);
     container.getSurface().renderFrame();
   },
@@ -688,6 +699,9 @@ Ext.define("NOC.inv.inv.CreateConnectionForm", {
             // workaround zIndex, redraw labels and set zIndex to 60
             me.reDrawLabels(mainSurface);
             me.drawLegend(mainSurface);
+            if(Ext.isEmpty(rightObjectId)){
+              me.drawEmptyText(me.drawPanel);
+            }
             mainSurface.renderFrame();
           },
           failure: function(){
