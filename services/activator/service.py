@@ -10,6 +10,7 @@
 from noc.core.service.fastapi import FastAPIService
 from noc.config import config
 
+
 class ActivatorService(FastAPIService):
     name = "activator"
     pooled = True
