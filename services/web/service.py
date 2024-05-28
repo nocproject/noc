@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # Web service
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2022 The NOC Project
+# Copyright (C) 2007-2024 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -26,7 +26,7 @@ class WebService(FastAPIService):
     use_translation = True
     use_mongo = True
     use_router = True
-
+    use_watchdog = config.watchdog.enable_watchdog
     if config.features.traefik:
         traefik_backend = "web"
         traefik_frontend_rule = "PathPrefix:/"

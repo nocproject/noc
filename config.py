@@ -1,7 +1,7 @@
 # ----------------------------------------------------------------------
 # NOC config
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2022 The NOC Project
+# Copyright (C) 2007-2024 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -737,6 +737,11 @@ class Config(BaseConfig):
         storm_threshold_reduction = FloatParameter(default=0.9)
         # time to live (rounds quantity) of records in storm protection addresses dictionary
         storm_record_ttl = IntParameter(default=10)
+
+    class watchdog(ConfigSection):
+        enable_watchdog = BooleanParameter(default=True)
+        check_interval = IntParameter(default=30, help="Run interval")
+        failed_count = IntParameter(default=6, help="Failed check for force reboot")
 
     class web(ConfigSection):
         theme = StringParameter(default="gray")
