@@ -1,7 +1,7 @@
 # ----------------------------------------------------------------------
 # Base service
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2022 The NOC Project
+# Copyright (C) 2007-2024 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -13,6 +13,7 @@ import signal
 import uuid
 import argparse
 import threading
+import random
 from time import perf_counter
 import asyncio
 import cachetools
@@ -105,6 +106,8 @@ class BaseService(object):
     # Use service based consul check timeout
     dcs_check_interval: Optional[int] = None
     dcs_check_timeout: Optional[int] = None
+    # Use watchdog for check Service register in consul
+    use_watchdog = False
 
     LOG_FORMAT = config.log_format
 
@@ -152,6 +155,8 @@ class BaseService(object):
         #
         self.active_subscribers = 0
         self.subscriber_shutdown_waiter: Optional[asyncio.Event] = None
+        #
+        self.watchdog_waiter: Optional[asyncio.Event] = None
         # Metrics partitions
         self.n_metrics_partitions = len(config.clickhouse.cluster_topology.split(","))
         #
@@ -415,6 +420,7 @@ class BaseService(object):
 
     async def deactivate(self):
         if not self.is_active:
+            self.logger.info("Not Active")
             return
         self.is_active = False
         self.logger.info("Deactivating")
@@ -485,6 +491,11 @@ class BaseService(object):
             # Finally call on_activate
             await self.on_activate()
             self.logger.info("Service is active (in %.2fms)", self.uptime() * 1000)
+            if self.use_watchdog and not hasattr(self, "slot_number") and not self.leader_lock_name:
+                # Run Watchdog, ignore service with slot
+                self.logger.info("Start Watchdog")
+                self.watchdog_waiter = asyncio.Event()
+                self.loop.create_task(self.watchdog())
         else:
             raise self.RegistrationError()
 
@@ -1007,3 +1018,22 @@ class BaseService(object):
         Called when all Router rules are ready.
         """
         return
+
+    async def watchdog(self):
+        """
+        WatchDog task. View watchdog_waiter event, by setting /health API.
+        If not set event - force reboot process
+        :return:
+        """
+        failed, delay, deviation = 0, config.watchdog.check_interval, 0.5
+        while True:
+            await asyncio.sleep(delay - deviation + 2 * deviation * random.random())
+            self.logger.info("WatchDog loop")
+            if not self.watchdog_waiter.is_set() and failed > config.watchdog.failed_count:
+                self.logger.warning("WatchDog is more %s failed. Deactivate process", failed)
+                self.stop()
+            elif not self.watchdog_waiter.is_set():
+                failed += 1
+                continue
+            self.watchdog_waiter.clear()
+            failed = 0

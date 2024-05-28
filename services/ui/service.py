@@ -2,7 +2,7 @@
 # ----------------------------------------------------------------------
 # <describe module here>
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2020 The NOC Project
+# Copyright (C) 2007-2024 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -13,6 +13,7 @@ from noc.core.service.fastapi import FastAPIService
 
 class UIService(FastAPIService):
     name = "ui"
+    use_watchdog = config.watchdog.enable_watchdog
     if config.features.traefik:
         traefik_backend = "ui"
         traefik_frontend_rule = "PathPrefix:/api/ui"
