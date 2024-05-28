@@ -2,7 +2,7 @@
 # ----------------------------------------------------------------------
 # nbi service
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2023 The NOC Project
+# Copyright (C) 2007-2024 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -17,7 +17,7 @@ class NBIService(FastAPIService):
     name = "nbi"
     use_mongo = True
     use_router = True
-
+    use_watchdog = config.watchdog.enable_watchdog
     if config.features.traefik:
         traefik_backend = "nbi"
         traefik_frontend_rule = "PathPrefix:/api/nbi"
