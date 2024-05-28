@@ -1028,7 +1028,7 @@ class BaseService(object):
         failed, delay, deviation = 0, config.watchdog.check_interval, 0.5
         while True:
             await asyncio.sleep(delay - deviation + 2 * deviation * random.random())
-            self.logger.info("WatchDog loop")
+            self.logger.debug("WatchDog loop")
             if not self.watchdog_waiter.is_set() and failed > config.watchdog.failed_count:
                 self.logger.warning("WatchDog is more %s failed. Deactivate process", failed)
                 self.stop()
