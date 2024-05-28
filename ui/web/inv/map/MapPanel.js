@@ -138,14 +138,14 @@ Ext.define("NOC.inv.map.MapPanel", {
                     glyph: NOC.glyph.eye,
                     scope: me,
                     handler: me.onNodeMenuViewCard,
-                    menuOn: ['managedobject', 'link']
+                    menuOn: ['managedobject']
                 },
                 {
                     text: __("Edit"),
                     glyph: NOC.glyph.pencil,
                     scope: me,
                     handler: me.onNodeMenuEdit,
-                    menuOn: ['managedobject', 'link']
+                    menuOn: ['managedobject']
                 },
                 {
                     text: __("Show dashboard"),
