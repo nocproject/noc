@@ -1,11 +1,12 @@
 # ----------------------------------------------------------------------
 # EscalationContext
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2023, The NOC Project
+# Copyright (C) 2007-2024, The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
 # Python modules
+import enum
 from typing import List, Optional
 from datetime import datetime
 
@@ -13,13 +14,32 @@ from datetime import datetime
 from pydantic import BaseModel, PrivateAttr
 
 
-class EscalationStatus(BaseModel):
-    status: str
-    msg: Optional[str] = None
+class EscalationStatus(enum.Enum):
+    OK = "ok"  # escalation success
+    TEMP = "temp"  # temporary error, repeat needed
+    FAIL = "fail"  # escalation fail
+    SKIP = "skip"  # Escalation Skipped
+    WAIT = "wait"  # Escalation Wait
+    # Ack - for acked alarm
 
+
+class EscalationResult(BaseModel):
+    """
+    Managed object item.
+
+    Attributes:
+        status: Escalation Status
+        error: Error message description
+        document: Escalation TT ID
+    """
+
+    status: EscalationStatus = EscalationStatus.OK
+    error: Optional[str] = None
+    document: Optional[str] = None
+
+    @property
     def is_ok(self) -> bool:
-        """Check if status if ok."""
-        return self.status == "ok"
+        return self.status == EscalationStatus.OK
 
 
 class EscalationItem(BaseModel):
@@ -34,18 +54,21 @@ class EscalationItem(BaseModel):
     id: int
     tt_id: str
     _status: Optional[EscalationStatus] = PrivateAttr()
+    _message: Optional[str] = PrivateAttr()
 
     def set_ok(self) -> None:
         """Mark item as processed successfully."""
-        self._status = EscalationStatus(status="ok")
+        self._status = EscalationStatus.OK
 
     def set_fail(self, msg: str) -> None:
         """Mark item as failed."""
-        self._status = EscalationStatus(status="fail", msg=msg)
+        self._status = EscalationStatus.FAIL
+        self._message = msg
 
     def set_temp(self, msg: str) -> None:
         """Mark item as temporary."""
-        self._status = EscalationStatus(status="temp", msg=msg)
+        self._status = EscalationStatus.FAIL
+        self._message = msg
 
     def get_status(self) -> EscalationStatus:
         """
@@ -74,13 +97,14 @@ class EscalationContext(BaseModel):
         items: Managed object references. Leader is first.
     """
 
-    queue: Optional[str]
-    reason: Optional[str]
-    login: Optional[str]
-    timestamp: Optional[datetime]
     subject: str
-    body: str
     items: List[EscalationItem]
+    id: Optional[str] = None
+    body: Optional[str] = None
+    timestamp: Optional[datetime] = None
+    queue: Optional[str] = None
+    reason: Optional[str] = None
+    login: Optional[str] = None
     is_unavailable: bool = False
 
     @property
@@ -109,8 +133,8 @@ class DeescalationContext(BaseModel):
     queue: Optional[str] = None
     login: Optional[str] = None
     timestamp: Optional[datetime] = None
-    subject: str
-    body: str
+    subject: Optional[str] = None
+    body: Optional[str] = None
     is_unavailable: bool = False
 
 
@@ -166,3 +190,10 @@ class TTCommentRequest(BaseModel):
     subject: Optional[str]
     body: str
     reply_to: Optional[str]
+
+
+class TTConfig(BaseModel):
+    """
+    TT Config Flags: wait_tt, items, alarm_ack, run_action, clear_alarm, changes_severity, add_comment
+    Capabilities Flag
+    """
