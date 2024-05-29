@@ -30,7 +30,6 @@ from noc.fm.models.archivedalarm import ArchivedAlarm
 from noc.core.perf import metrics
 from noc.main.models.notificationgroup import NotificationGroup
 from noc.config import config
-from noc.core.tt.error import TTError, TemporaryTTError
 from noc.core.scheduler.job import Job
 from noc.core.span import Span, PARENT_SAMPLE
 from noc.core.fm.enum import RCA_DOWNLINK_MERGE
@@ -41,12 +40,8 @@ from noc.core.lock.process import ProcessLock
 from noc.core.log import PrefixLoggerAdapter
 from noc.sa.models.servicesummary import SummaryItem, ObjectSummaryItem
 from noc.core.defer import call_later
-from noc.core.tt.types import (
-    EscalationContext,
-    EscalationItem as ECtxItem,
-    DeescalationContext,
-    TTCommentRequest,
-)
+from noc.core.tt.types import EscalationItem as ECtxItem, EscalationStatus
+from noc.core.tt.base import TTSystemCtx
 
 
 logger = logging.getLogger(__name__)
@@ -328,6 +323,25 @@ class EscalationSequence(BaseSequence):
         """
         return self.alarm.alarm_class.name == "NOC | Managed Object | Ping Failed"
 
+    # TT System API
+    def get_tt_system_context(
+        self,
+        tt_system: TTSystem,
+        tt_id: Optional[str] = None,
+        queue: Optional[str] = None,
+        pre_reason: Optional[str] = None,
+    ) -> TTSystemCtx:
+        ctx = TTSystemCtx(
+            id=tt_id,
+            tt_system=tt_system.get_system(),
+            queue=queue,
+            reason=pre_reason,
+            login=self.login,
+            timestamp=self.get_timestamp(),
+            is_unavailable=self.has_unavailable_alarm(),
+        )
+        return ctx
+
     def get_ctx(self):
         """
         Get escalation context
@@ -438,61 +452,54 @@ class EscalationSequence(BaseSequence):
             ei = ECtxItem(id=str(alarm.managed_object.id), tt_id=alarm.managed_object.tt_system_id)
             e_ctx_items.append(ei)
             items_map[str(alarm.managed_object.id)] = item
-        e_ctx = EscalationContext(
-            queue=mo.tt_queue,
-            reason=pre_reason,
-            login=self.login,
-            timestamp=self.get_timestamp(),
-            subject=esc_item.template.render_subject(**ctx),
-            body=esc_item.template.render_body(**ctx),
-            leader=ECtxItem(id=mo.id, tt_id=mo.tt_system_id),
-            is_unavailable=self.has_unavailable_alarm(),
-            items=e_ctx_items,
-        )
         # Render TT subject and body
         #
-        self.logger.debug("Escalation message:\nSubject: %s\n%s", e_ctx.subject, e_ctx.body)
+        subject = esc_item.template.render_subject(**ctx)
+        body = esc_item.template.render_body(**ctx)
+        self.logger.debug("Escalation message:\nSubject: %s\n%s", subject, body)
         self.log_alarm(f"Creating TT in system {mo.tt_system.name}")
-        tts = mo.tt_system.get_system()
-        try:
-            try:
-                tt_id = tts.create(e_ctx)
-            except TemporaryTTError as e:
-                metrics["escalation_tt_retry"] += 1
-                self.log_alarm(f"Temporary error detected. Retry after {RETRY_TIMEOUT}s")
-                mo.tt_system.register_failure()
-                self.retry_job(str(e))
-            ctx["tt"] = f"{mo.tt_system.name}:{tt_id}"
-            self.alarm.escalate(
-                ctx["tt"],
-                close_tt=esc_item.close_tt,
-                wait_tt=ctx["tt"] if esc_item.wait_tt else None,
-            )
-            # Save to escalation context
-            self.escalation_doc.tt_id = ctx["tt"]
-            self.escalation_doc.leader.escalation_status = "ok"
-            # Project result to escalation items
-            for item in e_ctx.items:
-                ei = items_map[str(item.id)]
-                try:
-                    e_status = item.get_status()
-                except AttributeError:
-                    self.log_alarm(f"Adapter malfunction. Status for {item.id} is not set.")
-                    continue
-                if e_status.is_ok:
-                    self.log_alarm(f"{item.id} is appended successfully")
-                else:
-                    self.log_alarm(
-                        f"Failed to append {item.id}: {e_status.msg} ({e_status.status})"
-                    )
-                ei.escalation_status = e_status.status
-                if e_status.msg:
-                    ei.escalation_error = e_status.msg
-            metrics["escalation_tt_create"] += 1
-        except TTError as e:
-            self.log_alarm(f"Failed to create TT: {e}")
+        # tts = mo.tt_system.get_system()
+        with self.get_tt_system_context(
+            mo.tt_system, queue=mo.tt_queue, pre_reason=pre_reason
+        ) as ctx:
+            ctx.add_items(e_ctx_items)
+            ctx.create(subject=subject, body=body)
+        r = ctx.get_result()
+        if r.status == EscalationStatus.TEMP:
+            metrics["escalation_tt_retry"] += 1
+            self.log_alarm(f"Temporary error detected. Retry after {RETRY_TIMEOUT}s")
+            mo.tt_system.register_failure()
+            self.retry_job(str(r.error))
+        elif r.status != EscalationStatus.OK:
+            self.log_alarm(f"Failed to create TT: {r.error}")
             metrics["escalation_tt_fail"] += 1
-            self.alarm.log_message(f"Failed to escalate: {e}", to_save=True)
+            self.alarm.log_message(f"Failed to escalate: {r.error}", to_save=True)
+            return None
+        ctx["tt"] = f"{mo.tt_system.name}:{r.document}"
+        self.alarm.escalate(
+            ctx["tt"],
+            close_tt=esc_item.close_tt,
+            wait_tt=ctx["tt"] if esc_item.wait_tt else None,
+        )
+        # Save to escalation context
+        self.escalation_doc.tt_id = ctx["tt"]
+        self.escalation_doc.leader.escalation_status = "ok"
+        # Project result to escalation items
+        for item in ctx.items:
+            ei = items_map[str(item.id)]
+            try:
+                e_status = item.get_status()
+            except AttributeError:
+                self.log_alarm(f"Adapter malfunction. Status for {item.id} is not set.")
+                continue
+            if e_status == EscalationStatus.OK:
+                self.log_alarm(f"{item.id} is appended successfully")
+            else:
+                self.log_alarm(f"Failed to append {item.id}: {e_status.msg} ({e_status.status})")
+            ei.escalation_status = e_status.value
+            # if e_status:
+            #    ei.escalation_error = e_status.msg
+        metrics["escalation_tt_create"] += 1
 
     def notify_escalated_consequences(self) -> None:
         """
@@ -515,24 +522,18 @@ class EscalationSequence(BaseSequence):
                 self.log_alarm(f"Failed to add comment to {alarm.escalation_tt}: Invalid TT system")
                 metrics["escalation_tt_comment_fail"] += 1
                 continue
-            tts = cts.get_system()
-            try:
-                self.log_alarm(f"Appending comment to TT {self.escalation_doc.tt_id}")
-                tts.add_comment(
-                    c_tt_id,
-                    body=f"Covered by TT {self.escalation_doc.tt_id}",
-                    login=self.login,
-                    queue=mo.tt_queue,
-                )
-                metrics["escalation_tt_comment"] += 1
-            except NotImplementedError:
+            self.log_alarm(f"Appending comment to TT {self.escalation_doc.tt_id}")
+            with self.get_tt_system_context(cts, c_tt_id, queue=mo.tt_queue) as ctx:
+                ctx.comment(f"Covered by TT {self.escalation_doc.tt_id}")
+            r = ctx.get_result()
+            if r.status == EscalationStatus.SKIP:
                 self.log_alarm(
                     f"Cannot add comment to {alarm.escalation_tt}: Feature not implemented"
                 )
                 metrics["escalation_tt_comment_fail"] += 1
-            except TTError as e:
-                self.log_alarm(f"Failed to add comment to {alarm.escalation_tt}: {e}")
+            elif r.status != EscalationStatus.OK:
                 metrics["escalation_tt_comment_fail"] += 1
+                self.log_alarm(f"Failed to add comment to {alarm.escalation_tt}: {r.error}")
 
     def get_escalation_policy(self) -> EscalationPolicy:
         """
@@ -837,6 +838,18 @@ class DeescalationSequence(BaseSequence):
         # self.escalation_doc = escalation_doc
         return escalation_doc
 
+    # TT System API
+    def get_tt_system_context(self) -> TTSystemCtx:
+        ctx = TTSystemCtx(
+            id=self.get_remote_tt_id(),
+            tt_system=self.tts.get_system(),
+            queue=self.queue,
+            reason=self.subject,
+            login=self.login,
+            is_unavailable=self.has_unavailable_alarm(),
+        )
+        return ctx
+
     def get_tts(self, tt_id: Optional[str]) -> Optional[TTSystem]:
         """
         Get TT System from tt_id
@@ -875,68 +888,58 @@ class DeescalationSequence(BaseSequence):
         """
         if not self.tts:
             return
-        try:
-            self.logger.info("Closing TT %s", self.tt_id)
-            self.tts.get_system().close(
-                DeescalationContext(
-                    id=self.get_remote_tt_id(),
-                    is_unavailable=self.has_unavailable_alarm(),
-                    subject=self.subject,
-                    body=self.body,
-                    login=self.login,
-                    queue=self.queue,
-                )
-            )
+        with self.get_tt_system_context() as ctx:
+            ctx.close(self.subject, self.body)
+        r = ctx.get_result()
+        if r.is_ok:
             metrics["escalation_tt_close"] += 1
             self.escalation_doc.leader.deescalation_status = "ok"
             self.alarm.close_escalation()
-        except TemporaryTTError as e:
-            self.logger.info("Temporary error detected while closing tt %s: %s", self.tt_id, e)
+        if r.status == EscalationStatus.TEMP:
+            self.logger.info(
+                "Temporary error detected while closing tt %s: %s", self.tt_id, r.error
+            )
             metrics["escalation_tt_close_retry"] += 1
             self.tts.register_failure()
             self.alarm.set_escalation_close_error(
-                "[%s] %s" % (self.alarm.managed_object.tt_system.name, e)
+                "[%s] %s" % (self.alarm.managed_object.tt_system.name, r.error)
             )
             self.escalation_doc.leader.escalation_status = "temp"
-            self.escalation_doc.leader.escalation_error = str(e)
+            self.escalation_doc.leader.escalation_error = str(r.error)
             self.escalation_doc.save()
-            self.retry_job(str(e))
-        except TTError as e:
-            self.logger.info("Failed to close tt %s: %s", self.tt_id, e)
+            self.retry_job(str(r.error))
+        else:
+            self.logger.info("Failed to close tt %s: %s", self.tt_id, r.error)
             metrics["escalation_tt_close_fail"] += 1
             self.alarm.set_escalation_close_error(
-                "[%s] %s" % (self.alarm.managed_object.tt_system.name, e)
+                "[%s] %s" % (self.alarm.managed_object.tt_system.name, r.error)
             )
             self.escalation_doc.leader.escalation_status = "fail"
-            self.escalation_doc.leader.escalation_error = str(e)
+            self.escalation_doc.leader.escalation_error = str(r.error)
 
     def comment_tt(self) -> None:
-        """Append comment to tt"""
+        """
+        Append Comment to Trouble Ticket
+        """
         if not self.tts:
             return
-        try:
-            self.logger.info("Appending comment to TT %s", self.tt_id)
-            self.tts.get_system().comment(
-                TTCommentRequest(
-                    id=self.get_remote_tt_id(),
-                    subject=self.subject,
-                    body=self.body,
-                    login=self.login,
-                    queue=self.queue,
-                )
-            )
-            self.escalation_doc.leader.deescalation_status = "ok"
+        self.logger.info("Appending comment to TT %s", self.tt_id)
+        with self.get_tt_system_context() as ctx:
+            ctx.comment(self.subject)
+        r = ctx.get_result()
+        if r.is_ok:
             metrics["escalation_tt_comment"] += 1
-        except TemporaryTTError as e:
-            self.logger.info("Failed to add comment to %s: %s", self.tt_id, e)
+            self.escalation_doc.leader.deescalation_status = "ok"
+        if r.status == EscalationStatus.TEMP:
+            self.logger.info("Failed to add comment to %s: %s", self.tt_id, r.errore)
             self.escalation_doc.leader.deescalation_status = "temp"
-            self.escalation_doc.leader.deescalation_error = str(e)
+            self.escalation_doc.leader.deescalation_error = str(r.error)
             metrics["escalation_tt_comment_fail"] += 1
-        except TTError as e:
-            self.logger.info("Failed to add comment to %s: %s", self.tt_id, e)
+        else:
+            self.logger.info("Failed to add comment to %s: %s", self.tt_id, r.error)
             self.escalation_doc.leader.deescalation_status = "fail"
             metrics["escalation_tt_comment_fail"] += 1
-            self.escalation_doc.leader.deescalation_error = str(e)
+            self.escalation_doc.leader.deescalation_error = str(r.error)
 
     def deescalate_tt(self) -> None:
         """
