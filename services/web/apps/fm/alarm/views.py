@@ -1,7 +1,7 @@
 # ---------------------------------------------------------------------
 # fm.alarm application
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2021 The NOC Project
+# Copyright (C) 2007-2024 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -10,7 +10,7 @@ import os
 import inspect
 import datetime
 import operator
-from typing import Tuple
+from typing import Tuple, List, Dict, Any
 import asyncio
 
 # Third-party modules
@@ -378,6 +378,7 @@ class AlarmApplication(ExtApplication):
                 for ll in o.log
                 if getattr(ll, "source", None)
             ][: config.web.api_alarm_comments_limit],
+            "__tmp_groups": self.groups[0] if self.groups else None,
         }
         if fields:
             d = {k: d[k] for k in fields}
@@ -406,10 +407,9 @@ class AlarmApplication(ExtApplication):
         model = self.model_map[status]
         if request.user.is_superuser:
             return model.objects.filter().read_preference(ReadPreference.SECONDARY_PREFERRED).all()
-        else:
-            return model.objects.filter(
-                adm_path__in=UserAccess.get_domains(request.user),
-            ).read_preference(ReadPreference.SECONDARY_PREFERRED)
+        return model.objects.filter(
+            adm_path__in=UserAccess.get_domains(request.user),
+        ).read_preference(ReadPreference.SECONDARY_PREFERRED)
 
     @view(method=["GET", "POST"], url=r"^$", access="launch", api=True)
     def api_list(self, request):
@@ -965,6 +965,28 @@ class AlarmApplication(ExtApplication):
             mtc = set(Maintenance.currently_affected())
             for x in data:
                 x["isInMaintenance"] = x["managed_object"] in mtc
+        return data
+
+    def bulk_field_group_subject(self, data: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
+        if not data or data[0]["status"] != "A":
+            return data
+        # Get existing refs
+        group_refs = {x["__tmp_groups"] for x in data if "__tmp_groups" in x}
+        if not group_refs:
+            return data
+        # Find subject
+        subj_map = {
+            x["_id"]: x["subject"]
+            for x in ActiveAlarm._get_collection().find(
+                {"reference": {"$in": list(group_refs)}}, {"_id": 1, "subject": 1}
+            )
+        }
+        # Apply subjects
+        for x in data:
+            g = x.pop("__tmp_groups", None)
+            if not g:
+                continue
+            x["group_subject"] = subj_map[g]
         return data
 
     @view(url=r"profile_lookup/$", access="launch", method=["GET"], api=True)
