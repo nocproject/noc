@@ -74,7 +74,7 @@ def start_maintenance(maintenance_id):
         metrics["maintenance_tt_fail"] += 1
     logger.info("[%s] TT %s created", maintenance_id, r.document)
     if r.document and not m.escalation_tt:
-        m.escalation_tt = "%s:%s" % (m.escalate_managed_object.tt_system.name, tt_id)
+        m.escalation_tt = f"{m.escalate_managed_object.tt_system.name}:{r.document}"
         m.save()
     metrics["maintenance_tt_create"] += 1
 

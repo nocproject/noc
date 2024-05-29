@@ -475,14 +475,14 @@ class EscalationSequence(BaseSequence):
             metrics["escalation_tt_fail"] += 1
             self.alarm.log_message(f"Failed to escalate: {r.error}", to_save=True)
             return None
-        ctx["tt"] = f"{mo.tt_system.name}:{r.document}"
+        tt = f"{mo.tt_system.name}:{r.document}"
         self.alarm.escalate(
-            ctx["tt"],
+            tt,
             close_tt=esc_item.close_tt,
-            wait_tt=ctx["tt"] if esc_item.wait_tt else None,
+            wait_tt=tt if esc_item.wait_tt else None,
         )
         # Save to escalation context
-        self.escalation_doc.tt_id = ctx["tt"]
+        self.escalation_doc.tt_id = tt
         self.escalation_doc.leader.escalation_status = "ok"
         # Project result to escalation items
         for item in ctx.items:
@@ -495,7 +495,7 @@ class EscalationSequence(BaseSequence):
             if e_status == EscalationStatus.OK:
                 self.log_alarm(f"{item.id} is appended successfully")
             else:
-                self.log_alarm(f"Failed to append {item.id}: {e_status.msg} ({e_status.status})")
+                self.log_alarm(f"Failed to append {item.id}: {e_status} ({item._message})")
             ei.escalation_status = e_status.value
             # if e_status:
             #    ei.escalation_error = e_status.msg
@@ -841,7 +841,7 @@ class DeescalationSequence(BaseSequence):
     # TT System API
     def get_tt_system_context(self) -> TTSystemCtx:
         ctx = TTSystemCtx(
-            id=self.get_remote_tt_id(),
+            id=self.tt_id,
             tt_system=self.tts.get_system(),
             queue=self.queue,
             reason=self.subject,
@@ -895,6 +895,7 @@ class DeescalationSequence(BaseSequence):
             metrics["escalation_tt_close"] += 1
             self.escalation_doc.leader.deescalation_status = "ok"
             self.alarm.close_escalation()
+            return
         if r.status == EscalationStatus.TEMP:
             self.logger.info(
                 "Temporary error detected while closing tt %s: %s", self.tt_id, r.error
@@ -930,6 +931,7 @@ class DeescalationSequence(BaseSequence):
         if r.is_ok:
             metrics["escalation_tt_comment"] += 1
             self.escalation_doc.leader.deescalation_status = "ok"
+            return
         if r.status == EscalationStatus.TEMP:
             self.logger.info("Failed to add comment to %s: %s", self.tt_id, r.errore)
             self.escalation_doc.leader.deescalation_status = "temp"

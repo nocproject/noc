@@ -269,6 +269,8 @@ class TTSystemCtx(object):
         )
 
     def __enter__(self):
+        if not isinstance(self.tt_system, BaseTTSystem):
+            raise AttributeError("tt_system must be BaseTTSystem instance")
         if not self.tt_system:
             return
         return self
