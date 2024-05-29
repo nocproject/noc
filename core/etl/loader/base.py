@@ -364,7 +364,7 @@ class BaseLoader(object):
             self.logger.debug("Object not found")
             return None
 
-    def create_object(self, v):
+    def create_object(self, v, state: Optional[str] = None):
         """
         Create object with attributes. Override to save complex
         data structures
@@ -373,6 +373,12 @@ class BaseLoader(object):
         if self.label_enable_setting and "labels" in v:
             self.ensure_labels(v["labels"])
         o = self.model(**v)
+        if not self.workflow_state_sync or not state:
+            pass
+        elif hasattr(o, "object_profile"):
+            o.state = self.clean_wf_state(o.object_profile.workflow, state)
+        else:
+            o.state = self.clean_wf_state(o.profile.workflow, state)
         try:
             o.save()
         except self.integrity_exception as e:
@@ -460,13 +466,9 @@ class BaseLoader(object):
             )
         else:
             self.c_add += 1
-            o = self.create_object(v)
+            o = self.create_object(v, state=getattr(item, "state", None))
             if self.workflow_event_model:
                 o.fire_event(self.workflow_add_event)
-            elif self.workflow_state_sync:
-                self.change_workflow(
-                    o, getattr(item, "state", None), getattr(item, "state_changed", None)
-                )
         if o and psf:
             self.post_save(o, psf)
         self.set_mappings(item.id, o.id)
@@ -517,6 +519,7 @@ class BaseLoader(object):
         self.pending_deletes += [(item.id, item)]
 
     def change_workflow(self, o, state: str, changed_date: Optional[datetime.datetime] = None):
+        self.logger.debug("Change Workflow state: %s -> %s", o.state, state)
         if not o:
             return
         if hasattr(o, "object_profile"):
