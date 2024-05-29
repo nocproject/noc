@@ -378,7 +378,7 @@ class AlarmApplication(ExtApplication):
                 for ll in o.log
                 if getattr(ll, "source", None)
             ][: config.web.api_alarm_comments_limit],
-            "__tmp_groups": self.groups[0] if self.groups else None,
+            "__tmp_groups": o.groups[0] if o.groups else None,
         }
         if fields:
             d = {k: d[k] for k in fields}
@@ -970,16 +970,20 @@ class AlarmApplication(ExtApplication):
         if not group_refs:
             return data
         # Find subject
-        subj_map = {
-            x["_id"]: x["subject"]
-            for x in ActiveAlarm._get_collection().find(
-                {"reference": {"$in": list(group_refs)}}, {"_id": 1, "subject": 1}
-            )
-        }
+        subj_map = {}
+        for x in ActiveAlarm._get_collection().find(
+            {"reference": {"$in": list(group_refs)}}, {"_id": 1, "reference": 1, "vars": 1}
+        ):
+            av = x.get("vars")
+            if not av:
+                continue
+            name = av.get("name")
+            if name:
+                subj_map[x["reference"]] = name
         # Apply subjects
         for x in data:
             g = x.pop("__tmp_groups", None)
-            if not g:
+            if not g or g not in subj_map:
                 continue
             x["group_subject"] = subj_map[g]
         return data
