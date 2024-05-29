@@ -1,18 +1,13 @@
 ---
-- name: Get Nginx Key from remote server
+- name: Add Nginx apt repository key
   get_url:
     url: "{{ nginx_deb_gpgkey }}"
-    dest: "/tmp/nginx_apt_key.gpg"
+    dest: /etc/apt/trusted.gpg.d/nginx.asc
+    mode: '0644'
+    force: true
   environment:
     https_proxy: "{{ http_proxy }}"
     http_proxy: "{{ http_proxy }}"
-  tags:
-    - repo
-
-- name: Add Nginx apt key
-  apt_key:
-    file: "/tmp/nginx_apt_key.gpg"
-    state: present
   tags:
     - repo
 
