@@ -50,7 +50,7 @@ class Action(object):
     policy: str
     notification_group: Optional[NotificationGroup] = None
     escalation_profile: Optional[EscalationProfile] = None
-    severity_policy: str = "shift"
+    severity_action: str = "set"
     severity: int = 0
     # Sync collection Default ?
     alarm_class: Optional[AlarmClass] = None
@@ -70,6 +70,7 @@ class GroupItem(object):
 @dataclass
 class ActionItem(object):
     severity: Optional[int] = None
+    severity_action: Optional[str] = None
     notification_group: Optional[int] = None
     escalation_profile: Optional[str] = None
 
@@ -125,7 +126,8 @@ class AlarmRule(object):
                     policy=action.policy,
                     notification_group=action.notification_group,
                     escalation_profile=action.escalation,
-                    severity=action.min_severity.severity if action.min_severity else None,
+                    severity_action=action.severity_action,
+                    severity=action.severity.severity if action.severity else None,
                 )
             )
         return rule

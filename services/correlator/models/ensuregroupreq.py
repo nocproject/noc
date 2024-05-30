@@ -16,6 +16,7 @@ class AlarmItem(BaseModel):
     reference: str
     managed_object: str
     alarm_class: str
+    severity: Optional[int] = None
     timestamp: Optional[str] = None
     vars: Optional[Dict[str, Any]] = None
     labels: Optional[List[str]] = None

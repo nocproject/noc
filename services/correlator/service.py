@@ -526,7 +526,7 @@ class CorrelatorService(FastAPIService):
                 if gi.reference and gi.reference not in alarm_groups:
                     alarm_groups[gi.reference] = gi
         # Apply rules
-        a_severity = None
+        a_severity: Optional[int] = None
         for rule in self.alarm_rule_set.iter_rules(a):
             for gi in rule.iter_groups(a):
                 if gi.reference and gi.reference not in alarm_groups:
@@ -543,6 +543,7 @@ class CorrelatorService(FastAPIService):
         if a_severity:
             a.severity = a_severity
         else:
+            # If changed policy
             a.severity = a.get_effective_severity(summary)
         # @todo: Fix
         self.logger.info(

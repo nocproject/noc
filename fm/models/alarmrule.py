@@ -90,8 +90,8 @@ class Action(EmbeddedDocument):
     )
     handler = PlainReferenceField(Handler)
     notification_group = ForeignKeyField(NotificationGroup, required=False)
-    severity_policy = StringField(choices=["set", "shift"])
-    min_severity: AlarmSeverity = ReferenceField(AlarmSeverity)
+    severity_action = StringField(choices=["set", "min", "max", "inc", "dec"])
+    severity: AlarmSeverity = ReferenceField(AlarmSeverity)
     escalation: EscalationProfile = ReferenceField(EscalationProfile)
     # Sync collection Default ?
     alarm_class = PlainReferenceField(AlarmClass)

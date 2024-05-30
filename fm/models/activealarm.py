@@ -99,11 +99,10 @@ class ActiveAlarm(Document):
     last_update = DateTimeField(required=True)
     managed_object: "ManagedObject" = ForeignKeyField(ManagedObject)
     alarm_class: "AlarmClass" = PlainReferenceField(AlarmClass)
+    # Calculated Severity
     severity = IntField(required=True)
     base_severity = IntField(required=False)
     severity_policy = StringField(default="AL")
-    # Base for calculate severity
-    base_weight = IntField(default=0)
     vars = DictField()
     # Alarm reference is a hash of discriminator
     # for external systems
@@ -235,17 +234,17 @@ class ActiveAlarm(Document):
         if isinstance(user, User):
             user = user.username
         if delta:
-            self.severity = max(0, self.base_weight + self.severity + delta)
+            self.severity = max(0, self.severity + delta)
             if delta > 0:
                 self.log_message(f"{user} has increased alarm severity by {delta}")
             else:
                 self.log_message(f"{user} has decreased alarm severity by {delta}")
         elif severity:
             if isinstance(severity, (float, int)):
-                self.severity = self.base_weight + int(severity)
+                self.severity = int(severity)
                 self.log_message(f"{user} has changed severity to {severity}")
             else:
-                self.severity = self.base_weight + severity.severity
+                self.severity = severity.severity
                 self.log_message(f"{user} has changed severity to {severity.name}")
         if to_save:
             self.safe_save()
