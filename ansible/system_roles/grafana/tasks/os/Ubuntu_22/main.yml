@@ -6,21 +6,15 @@
   tags:
     - repo
 
-- name: Get Grafana Key from remote server
+- name: Add Grafana apt repository key
   get_url:
     url: "{{ grafana_deb_gpgkey }}"
-    dest: "/tmp/grafana_apt_key.gpg"
+    dest: /etc/apt/trusted.gpg.d/grafana.asc
+    mode: '0644'
+    force: true
   environment:
     https_proxy: "{{ http_proxy }}"
     http_proxy: "{{ http_proxy }}"
-  when: not grafana_own_install
-  tags:
-    - repo
-
-- name: Add Grafana apt key
-  apt_key:
-    file: "/tmp/grafana_apt_key.gpg"
-    state: present
   when: not grafana_own_install
   tags:
     - repo
