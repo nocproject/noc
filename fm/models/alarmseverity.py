@@ -7,7 +7,7 @@
 
 # Python modules
 from threading import Lock
-from typing import Optional, Union
+from typing import Optional, Union, List
 import operator
 
 # Third-party modules
@@ -42,6 +42,7 @@ class AlarmSeverity(Document):
     uuid = UUIDField(binary=True)
     description = StringField(required=False)
     severity = IntField(required=True)
+    code = StringField(required=False)
     style = ForeignKeyField(Style)
     # Minimal alarm weight to reach severity
     min_weight = IntField(required=False)
@@ -71,8 +72,13 @@ class AlarmSeverity(Document):
         return AlarmSeverity.objects.filter(id=oid).first()
 
     @classmethod
+    @cachetools.cachedmethod(operator.attrgetter("_id_cache"), lock=lambda _: id_lock)
+    def get_by_code(cls, code: str) -> Optional["AlarmSeverity"]:
+        return AlarmSeverity.objects.filter(code=code).first()
+
+    @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_order_cache"), lock=lambda _: id_lock)
-    def get_ordered(cls):
+    def get_ordered(cls) -> List["AlarmSeverity"]:
         """
         Returns list of severities ordered in acvending order
         :return:
@@ -96,7 +102,7 @@ class AlarmSeverity(Document):
         return severities, weights, alpha
 
     @classmethod
-    def get_severity(cls, severity):
+    def get_severity(cls, severity) -> Optional["AlarmSeverity"]:
         """
         Returns Alarm Severity instance corresponding to numeric value
         """
@@ -121,6 +127,8 @@ class AlarmSeverity(Document):
                 "uuid": self.uuid,
                 "description": self.description,
                 "severity": self.severity,
+                "min_weight": self.min_weight,
+                "code": self.code,
                 "style__name": self.style.name,
             },
             order=["name", "$collection", "uuid", "description", "severity", "style"],

@@ -54,6 +54,7 @@ from noc.fm.models.archivedalarm import ArchivedAlarm
 from noc.fm.models.alarmescalation import AlarmEscalation
 from noc.fm.models.alarmdiagnosticconfig import AlarmDiagnosticConfig
 from noc.fm.models.alarmrule import AlarmRule
+from noc.fm.models.alarmseverity import AlarmSeverity
 from noc.main.models.remotesystem import RemoteSystem
 from noc.sa.models.servicesummary import ServiceSummary, SummaryItem, ObjectSummaryItem
 from noc.core.version import version
@@ -375,11 +376,16 @@ class CorrelatorService(FastAPIService):
         metrics["alarm_reopen"] += 1
         return alarm
 
-    def refresh_alarm(self, alarm: ActiveAlarm, timestamp: datetime.datetime):
+    def refresh_alarm(
+        self,
+        alarm: ActiveAlarm,
+        timestamp: datetime.datetime,
+        severity: Optional[AlarmSeverity] = None,
+    ):
         """
         Refresh active alarm data
         """
-        self.logger.info("[%s] Refresh alarm: ts: %s", alarm.id, timestamp)
+        self.logger.info("[%s] Refresh alarm: ts: %s, severity: %s", alarm.id, timestamp, severity)
         if timestamp < alarm.timestamp:
             # Set to earlier date
             alarm.timestamp = timestamp
@@ -388,6 +394,12 @@ class CorrelatorService(FastAPIService):
             # Refresh last update
             alarm.last_update = timestamp
             alarm.save()
+        if severity and alarm.base_severity != severity.severity:
+            alarm.base_severity = severity
+            severity = alarm.get_effective_severity()
+            if severity != alarm.severity:
+                alarm.last_update = datetime.datetime.now().replace(microsecond=0)
+                alarm.save()
 
     async def raise_alarm(
         self,
@@ -402,6 +414,7 @@ class CorrelatorService(FastAPIService):
         groups: Optional[List[GroupItem]] = None,
         labels: Optional[List[str]] = None,
         min_group_size: Optional[int] = None,
+        severity: Optional[AlarmSeverity] = None,
     ) -> Optional[ActiveAlarm]:
         """
         Raise alarm
@@ -416,6 +429,7 @@ class CorrelatorService(FastAPIService):
         :param groups:
         :param labels:
         :param min_group_size: For Group alarm, minimal count alarm on it
+        :param severity: Alarm Severity source
         :returns: Alarm, if created, None otherwise
         """
 
@@ -451,7 +465,12 @@ class CorrelatorService(FastAPIService):
                 if event:
                     # event.contribute_to_alarm(alarm)  # Add Dispose Log
                     metrics["alarm_contribute"] += 1
-                self.refresh_alarm(alarm, timestamp)
+                a_severity = None
+                for rule in self.alarm_rule_set.iter_rules(alarm):
+                    for aa in rule.iter_actions(alarm):
+                        if aa.severity:
+                            a_severity = aa.severity
+                self.refresh_alarm(alarm, timestamp, a_severity or severity)
                 if config.correlator.auto_escalation:
                     AlarmEscalation.watch_escalations(alarm)
                 return alarm
@@ -478,6 +497,7 @@ class CorrelatorService(FastAPIService):
             opening_event=ObjectId(event.id) if event else None,
             labels=labels,
             min_group_size=min_group_size,
+            base_severity=severity,
             remote_system=remote_system,
             remote_id=remote_id,
         )
@@ -491,16 +511,6 @@ class CorrelatorService(FastAPIService):
         summary["object"] = {managed_object.object_profile.id: 1}
         if a.is_link_alarm and a.components.interface:
             summary["interface"] = {a.components.interface.profile.id: 1}
-        #
-        a.severity = max(ServiceSummary.get_severity(summary), 1)
-        # @todo: Fix
-        self.logger.info(
-            "[%s|%s|%s] Calculated alarm severity is: %s",
-            scope_label,
-            managed_object.name,
-            managed_object.address,
-            a.severity,
-        )
         # Set alarm stat fields
         a.direct_objects = [ObjectSummaryItem(profile=managed_object.object_profile.id, summary=1)]
         a.direct_services = SummaryItem.dict_to_items(summary["service"])
@@ -516,17 +526,32 @@ class CorrelatorService(FastAPIService):
                 if gi.reference and gi.reference not in alarm_groups:
                     alarm_groups[gi.reference] = gi
         # Apply rules
+        a_severity = None
         for rule in self.alarm_rule_set.iter_rules(a):
             for gi in rule.iter_groups(a):
                 if gi.reference and gi.reference not in alarm_groups:
                     alarm_groups[gi.reference] = gi
             for ai in rule.iter_actions(a):
                 if ai.severity:
-                    a.base_weight = ai.severity
-                    a.severity = max(a.severity + ai.severity, 0)
+                    a_severity = a.severity
+            if a.severity_policy != rule.severity_policy:
+                a.severity_policy = rule.severity_policy
         all_groups, deferred_groups = await self.get_groups(a, alarm_groups.values())
         a.groups = [g.reference for g in all_groups]
         a.deferred_groups = deferred_groups
+        # Calculate Alarm Severities
+        if a_severity:
+            a.severity = a_severity
+        else:
+            a.severity = a.get_effective_severity(summary)
+        # @todo: Fix
+        self.logger.info(
+            "[%s|%s|%s] Calculated alarm severity is: %s",
+            scope_label,
+            managed_object.name,
+            managed_object.address,
+            a.severity,
+        )
         # Save
         a.save()
         # Update group if Service Group Alarm
@@ -590,6 +615,11 @@ class CorrelatorService(FastAPIService):
         if int(event.target.id) != managed_object.id:
             metrics["alarm_change_mo"] += 1
             self.logger.info("Changing managed object to %s", managed_object.name)
+        if event.type.severity:
+            severity = AlarmSeverity.get_by_code(event.type.severity.name)
+            self.logger.info("Try request severity %s -> %s", event.type.severity, severity)
+        else:
+            severity = None
         if event.remote_system:
             rs = RemoteSystem.get_by_name(event.remote_system)
         else:
@@ -602,6 +632,7 @@ class CorrelatorService(FastAPIService):
             alarm_class=rule.alarm_class,
             vars=vars,
             event=event,
+            severity=severity,
             remote_system=rs,
             remote_id=event.remote_id,
         )
@@ -831,6 +862,10 @@ class CorrelatorService(FastAPIService):
                 x = eval(v, {}, context)
                 if x:
                     r_vars[k] = str(x)
+        if req.severity:
+            severity = AlarmSeverity.get_severity(req.severity)
+        else:
+            severity = None
         try:
             await self.raise_alarm(
                 managed_object=managed_object,
@@ -840,6 +875,7 @@ class CorrelatorService(FastAPIService):
                 reference=req.reference,
                 groups=groups,
                 labels=req.labels or [],
+                severity=severity,
                 remote_system=remote_system,
                 remote_id=req.remote_id if remote_system else None,
             )

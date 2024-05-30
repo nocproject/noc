@@ -13,6 +13,8 @@ Ext.define("NOC.fm.alarmrule.Application", {
         "NOC.core.label.LabelField",
         "NOC.core.ListFormField",
         "NOC.fm.alarmclass.LookupField",
+        "NOC.fm.alarmseverity.LookupField",
+        "NOC.fm.escalationprofile.LookupField",
         "NOC.main.notificationgroup.LookupField",
         "NOC.main.handler.LookupField",
         "Ext.ux.form.GridField"
@@ -26,7 +28,7 @@ Ext.define("NOC.fm.alarmrule.Application", {
                 {
                     text: __("Name"),
                     dataIndex: "name",
-                    width: 100,
+                    width: 300,
                     align: "left"
                 },
                 {
@@ -169,11 +171,12 @@ Ext.define("NOC.fm.alarmrule.Application", {
                             })
                         },
                         {
-                            text: __("Severity"),
-                            dataIndex: "severity",
-                            editor: {
-                                xtype: "numberfield",
-                            }},
+                            text: __("Min. Severity"),
+                            dataIndex: "min_severity",
+                            editor: "fm.alarmseverity.LookupField",
+                            width: 100,
+                            renderer: NOC.render.Lookup("min_severity")
+                        },
                         {
                             text: __("Notification Group"),
                             dataIndex: "notification_group",
@@ -244,6 +247,13 @@ Ext.define("NOC.fm.alarmrule.Application", {
                             allowBlank: true
                         },
                         {
+                            name: "severity",
+                            xtype: "fm.alarmseverity.LookupField",
+                            fieldLabel: __("Alarm Severity"),
+                            uiStyle: 'medium',
+                            allowBlank: true
+                        },
+                        {
                             name: 'reference_rx',
                             xtype: 'textfield',
                             fieldLabel: __('Group Reference Regex'),
@@ -251,6 +261,20 @@ Ext.define("NOC.fm.alarmrule.Application", {
                             allowBlank: true
                         },
                     ]
+                },
+                {
+                    name: "severity_policy",
+                    xtype: "combobox",
+                    fieldLabel: __("Calc Severity Policy"),
+                    allowBlank: false,
+                    store: [
+                        ["CB", __("Class Based Policy")],
+                        ["AB", __("Affected Based Severity Preferred")],
+                        ["AL", __("Affected Limit")],
+                        ["ST", __("By Tokens")]
+                    ],
+                    uiStyle: "medium",
+                    value: "AL",
                 }
             ]
         });

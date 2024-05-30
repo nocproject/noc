@@ -10,7 +10,18 @@ import datetime
 import logging
 from collections import defaultdict
 from itertools import chain
-from typing import Optional, Set, Any, Dict, Iterable, Protocol, runtime_checkable, Generic, Union
+from typing import (
+    Optional,
+    Set,
+    Any,
+    Dict,
+    Iterable,
+    Protocol,
+    runtime_checkable,
+    Generic,
+    Union,
+    List,
+)
 
 # Third-party modules
 from bson import ObjectId
@@ -89,6 +100,8 @@ class ActiveAlarm(Document):
     managed_object: "ManagedObject" = ForeignKeyField(ManagedObject)
     alarm_class: "AlarmClass" = PlainReferenceField(AlarmClass)
     severity = IntField(required=True)
+    base_severity = IntField(required=False)
+    severity_policy = StringField(default="AL")
     # Base for calculate severity
     base_weight = IntField(default=0)
     vars = DictField()
@@ -210,7 +223,11 @@ class ActiveAlarm(Document):
             self.save()
 
     def change_severity(
-        self, user="", delta=None, severity: Optional[AlarmSeverity] = None, to_save=True
+        self,
+        user="",
+        delta=None,
+        severity: Optional[Union[int, AlarmSeverity]] = None,
+        to_save=True,
     ):
         """
         Change alarm severity
@@ -538,6 +555,52 @@ class ActiveAlarm(Document):
             root = get_alarm(root.root)
         return root
 
+    def get_summary(self):
+        r = {
+            "service": SummaryItem.items_to_dict(self.total_services),
+            "subscriber": SummaryItem.items_to_dict(self.total_subscribers),
+            "objects": {self.managed_object.object_profile.id: 1},
+        }
+        if self.is_link_alarm and self.components.interface:
+            r["interface"] = {self.components.interface.profile.id: 1}
+        return r
+
+    def get_effective_severity(
+        self,
+        summary: Optional[Dict[str, Any]] = None,
+        severity: Optional[AlarmSeverity] = None,
+        policy: Optional[str] = None,
+    ) -> int:
+        """
+        Calculate Alarm Severities for policy
+
+        Args:
+            severity: Alarm Based Severity
+            summary: Alarm Affected Summary
+            policy:
+                * CB - Class Based Policy
+                * AB - Affected Based Severity Preferred
+                * AL - Affected Limit
+                * ST - By Tokens
+
+        """
+        policy = policy or self.severity_policy
+        severity = severity.severity or self.base_severity
+        summary = summary or self.get_summary()
+        match policy:
+            case "CB":
+                return severity
+            case "AB":
+                return ServiceSummary.get_severity(summary)
+            case "AL":
+                ss = ServiceSummary.get_severity(summary)
+                if severity <= ss:
+                    return severity
+                return ss
+            case "ST":
+                return 1
+        return 1
+
     def update_summary(self):
         """
         Recalculate all summaries for given alarm.
@@ -555,7 +618,10 @@ class ActiveAlarm(Document):
         services = SummaryItem.items_to_dict(self.direct_services)
         subscribers = SummaryItem.items_to_dict(self.direct_subscribers)
         objects = {self.managed_object.object_profile.id: 1}
-
+        if self.is_link_alarm and self.components.interface:
+            interface = {self.components.interface.profile.id: 1}
+        else:
+            interface = {}
         for a in ActiveAlarm.objects.filter(root=self.id):
             a.update_summary()
             update_dict(objects, SummaryItem.items_to_dict(a.total_objects))
@@ -572,12 +638,17 @@ class ActiveAlarm(Document):
             or sub_list != self.total_subscribers
             or obj_list != self.total_objects
         ):
-            ns = ServiceSummary.get_severity(
-                {"service": services, "subscriber": subscribers, "objects": objects}
-            )
             self.total_objects = obj_list
             self.total_services = svc_list
             self.total_subscribers = sub_list
+            ns = self.get_effective_severity(
+                {
+                    "service": services,
+                    "subscriber": subscribers,
+                    "objects": objects,
+                    "interface": interface,
+                },
+            )
             if ns != self.severity:
                 self.change_severity(severity=ns, to_save=False)
             self.safe_save()

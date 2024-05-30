@@ -30,7 +30,9 @@ from noc.main.models.label import Label
 from noc.main.models.notificationgroup import NotificationGroup
 from noc.main.models.handler import Handler
 from noc.core.bi.decorator import bi_sync
+from .alarmseverity import AlarmSeverity
 from .alarmclass import AlarmClass
+from .escalationprofile import EscalationProfile
 
 
 id_lock = Lock()
@@ -39,7 +41,8 @@ id_lock = Lock()
 class Match(EmbeddedDocument):
     labels = ListField(StringField())
     exclude_labels = ListField(StringField())
-    alarm_class = ReferenceField(AlarmClass)
+    alarm_class: AlarmClass = ReferenceField(AlarmClass)
+    severity: AlarmSeverity = ReferenceField(AlarmSeverity, required=False)
     reference_rx = StringField()
 
     def __str__(self):
@@ -88,7 +91,8 @@ class Action(EmbeddedDocument):
     handler = PlainReferenceField(Handler)
     notification_group = ForeignKeyField(NotificationGroup, required=False)
     severity_policy = StringField(choices=["set", "shift"])
-    severity = IntField()
+    min_severity: AlarmSeverity = ReferenceField(AlarmSeverity)
+    escalation: EscalationProfile = ReferenceField(EscalationProfile)
     # Sync collection Default ?
     alarm_class = PlainReferenceField(AlarmClass)
 
@@ -114,6 +118,17 @@ class AlarmRule(Document):
     groups: List[Group] = ListField(EmbeddedDocumentField(Group))
     #
     actions: List[Action] = ListField(EmbeddedDocumentField(Action))
+    #
+    severity_policy = StringField(
+        choices=[
+            ("CB", "Class Based Policy"),
+            ("AB", "Affected Based Severity Preferred"),
+            ("AL", "Affected Limit"),
+            ("ST", "By Tokens"),
+        ],
+        default="AL",
+    )
+    stop_processing = BooleanField(default=False)
     # BI ID
     bi_id = LongField(unique=True)
 
