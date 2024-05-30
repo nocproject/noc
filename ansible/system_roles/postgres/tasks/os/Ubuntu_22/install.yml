@@ -11,13 +11,6 @@
   tags:
     - repo
 
-- name: Add PostgreSQL apt key
-  apt_key:
-    file: "/tmp/pg_apt_key.gpg"
-    state: present
-  tags:
-    - repo
-
 - name: Add Ubuntu PostgreSQL repo
   apt_repository:
     repo: "deb http://apt.postgresql.org/pub/repos/apt/ {{ ansible_distribution_release }}-pgdg main"
