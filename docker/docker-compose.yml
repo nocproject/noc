@@ -92,6 +92,12 @@ volumes:
       device: ${COMPOSEPATH}/var/${COMPOSEPREFIX}-noc/etlimport
       o: bind
       type: bind
+  noc_biimport:
+    driver: local
+    driver_opts:
+      device: ${COMPOSEPATH}/var/${COMPOSEPREFIX}-noc/biimport
+      o: bind
+      type: bind
   noc_speedup:
     driver: local
     driver_opts:
@@ -165,6 +171,7 @@ services:
       - noc_speedup:/opt/nocspeedup:ro
       - noc_code:/${NOC_CODE_PATH}:ro
       - noc_etlimport:/var/lib/noc/import:ro
+      - noc_biimport:/var/lib/noc/bi
     logging:
       driver: ${COMPOSE_LOG_DRIVER}
       options:
