@@ -191,7 +191,7 @@ def get_interface_metrics(
             metric_map[mo][iface] = defaultdict(dict)
             for field, value in res.items():
                 metric_map[mo][iface][meric_map["map"].get(field)] = (
-                    float(value) if is_float(value) else int(value)
+                    float(value) if is_float(value) else 0
                 )
                 last_ts[mo] = max(ts, last_ts.get(mo, ts))
     except ClickhouseError:
