@@ -43,11 +43,14 @@ class ConfiguredTopology(TopologyBase):
     def meta(self) -> MapMeta:
         return MapMeta(
             title=self.title,
-            image=BackgroundImage(
-                image=str(self.cfgmap.background_image.id), opacity=self.cfgmap.background_opacity
-            )
-            if self.cfgmap.background_image
-            else None,
+            image=(
+                BackgroundImage(
+                    image=str(self.cfgmap.background_image.id),
+                    opacity=self.cfgmap.background_opacity,
+                )
+                if self.cfgmap.background_image
+                else None
+            ),
             width=self.cfgmap.width,
             height=self.cfgmap.height,
             layout=Layout(self.cfgmap.layout),

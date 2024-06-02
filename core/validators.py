@@ -524,6 +524,7 @@ def generic_validator(check, error_message):
     ...
     ValidationError: [u'invalid int']
     """
+
     # Validator closure
     def inner_validator(value, *args, **kwargs):
         if not check(value):

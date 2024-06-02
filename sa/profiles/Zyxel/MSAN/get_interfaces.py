@@ -342,9 +342,11 @@ class Script(BaseScript):
                                     "name": match.group("sub"),
                                     "admin_status": iface["admin_status"],
                                     "enabled_afi": ["BRIDGE", "ATM"],
-                                    "vlan_ids": int(match.group("pvid"))
-                                    if match.group("pvid") != "*"
-                                    else None,
+                                    "vlan_ids": (
+                                        int(match.group("pvid"))
+                                        if match.group("pvid") != "*"
+                                        else None
+                                    ),
                                     "vpi": int(match.group("vpi")),
                                     "vci": int(match.group("vci")),
                                 }

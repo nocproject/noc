@@ -182,9 +182,7 @@ class NetworkSegment(Document):
     @classmethod
     def _reset_caches(cls, id):
         try:
-            del cls._id_cache[
-                str(id),
-            ]  # Tuple
+            del cls._id_cache[str(id),]  # Tuple
         except KeyError:
             pass
 

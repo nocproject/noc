@@ -338,9 +338,11 @@ class MetricAction(Document):
                 name=f"{prefix}deactivation-function",
                 type=self.deactivation_config.activation_function,
                 config=self.deactivation_config.activation_config,
-                inputs=[g_input]
-                if not dkey_input
-                else [InputItem(name="x", node=f"{prefix}deactivation-window")],
+                inputs=(
+                    [g_input]
+                    if not dkey_input
+                    else [InputItem(name="x", node=f"{prefix}deactivation-window")]
+                ),
             )
             dkey_input = InputItem(name="deactivate_x", node=f"{prefix}deactivation-function")
         # Key function
