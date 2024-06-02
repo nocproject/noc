@@ -108,9 +108,11 @@ class BIAPI(JSONRPCAPI):
                         "name": k.field_name,
                         "description": k.field_name,
                         "type": "UInt64",
-                        "dict": f"{config.clickhouse.db_dictionaries}.{cls.ref_dict[k.model]}"
-                        if k.model in cls.ref_dict
-                        else None,
+                        "dict": (
+                            f"{config.clickhouse.db_dictionaries}.{cls.ref_dict[k.model]}"
+                            if k.model in cls.ref_dict
+                            else None
+                        ),
                         "model": k.model,
                     }
                 ]

@@ -167,8 +167,7 @@ class JsonDSAPI(object):
     @staticmethod
     def iter_alarms_annotations(
         annotation: AnnotationSection, f: datetime.datetime, t: datetime.datetime, user: User = None
-    ) -> Iterable["Annotation"]:
-        ...
+    ) -> Iterable["Annotation"]: ...
 
     @classmethod
     def get_metrics(cls) -> List[Dict[str, str]]:

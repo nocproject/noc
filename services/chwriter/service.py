@@ -131,11 +131,14 @@ class CHWriterService(FastAPIService):
             compression = DEFLATE
         elif config.clickhouse.encoding == "gzip":
             compression = GZIP
-        async with MessageStreamClient() as client, HttpClient(
-            user=config.clickhouse.rw_user,
-            password=config.clickhouse.rw_password or "",
-            compression=compression,
-        ) as http_client:
+        async with (
+            MessageStreamClient() as client,
+            HttpClient(
+                user=config.clickhouse.rw_user,
+                password=config.clickhouse.rw_password or "",
+                compression=compression,
+            ) as http_client,
+        ):
             cursor_id = self.get_cursor_id()
             partition_id = config.chwriter.shard_id
             if MessageStreamClient.has_bulk_mode():

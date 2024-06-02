@@ -916,8 +916,7 @@ class ActiveAlarm(Document):
 
 @runtime_checkable
 class AlarmComponent(Protocol):
-    def get_component(self, **kwargs) -> Optional["Generic"]:
-        ...
+    def get_component(self, **kwargs) -> Optional["Generic"]: ...
 
 
 class ComponentHub(object):

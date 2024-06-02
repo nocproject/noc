@@ -114,9 +114,11 @@ class Runner(object):
             "allow_fail": req.allow_fail,
             "status": job.status.value,
             "action": req.action or None,
-            "inputs": [{"name": i.name, "value": i.value, "job": i.job} for i in req.inputs]
-            if req.inputs
-            else None,
+            "inputs": (
+                [{"name": i.name, "value": i.value, "job": i.job} for i in req.inputs]
+                if req.inputs
+                else None
+            ),
             "locks": req.locks,
             "depends_on": [j.id for j in job.iter_depends_on()],
             "environment": req.environment or None,

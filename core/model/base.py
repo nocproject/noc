@@ -69,5 +69,4 @@ class NOCModelBase(ModelBase):
         return kls
 
 
-class NOCModel(Model, metaclass=NOCModelBase):
-    ...
+class NOCModel(Model, metaclass=NOCModelBase): ...
