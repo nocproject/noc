@@ -27,6 +27,7 @@ import cachetools
 from noc.core.model.decorator import on_delete_check
 from noc.core.mongo.fields import ForeignKeyField
 from noc.core.models.escalationpolicy import EscalationPolicy
+from noc.core.tt.types import TTSystemConfig, EscalationMember
 from noc.main.models.notificationgroup import NotificationGroup
 from noc.main.models.timepattern import TimePattern
 from noc.main.models.template import Template
@@ -73,18 +74,18 @@ class EscalationItem(EmbeddedDocument):
         return f"{self.delay}: {self.create_tt}/{self.template}"
 
     @property
-    def action(self) -> Optional[str]:
+    def member(self) -> Optional[EscalationMember]:
         if self.create_tt:
-            return "create_tt"
+            return EscalationMember.TT_SYSTEM
         elif self.notification_group:
-            return "notification"
+            return EscalationMember.NOTIFICATION_GROUP
         return None
 
     def get_key(self, tt_system: Optional[str] = None) -> str:
-        if self.action == "create_tt":
+        if self.member == EscalationMember.TT_SYSTEM:
             tt_system = tt_system or self.tt_system.id
             return str(tt_system)
-        if self.action == "notification":
+        if self.member == EscalationMember.NOTIFICATION_GROUP:
             return str(self.notification_group)
         return ""
 
@@ -94,14 +95,8 @@ class TTSystemItem(EmbeddedDocument):
     pre_reason = StringField()
     login = StringField()
     global_limit = IntField()
+    close_template: Template = ForeignKeyField(Template)
     max_escalation_retries = IntField(default=30)
-
-    def get_config(self) -> Dict[str, str]:
-        return {
-            "pre_reason": self.pre_reason,
-            "max_escalation_retries": self.max_escalation_retries,
-            "login": self.login,
-        }
 
 
 @on_delete_check(
@@ -184,9 +179,16 @@ class EscalationProfile(Document):
                 return True
         return False
 
-    def get_tt_system_config(self, tt_system: TTSystem) -> Dict[str, str]:
+    def get_tt_system_config(self, tt_system: TTSystem) -> TTSystemConfig:
         r = tt_system.get_config()
         for item in self.tt_system_config:
-            if item.tt_system.id == tt_system.id:
-                r |= item.get_config()
+            if item.tt_system.id != tt_system.id:
+                continue
+            if item.login:
+                r.login = item.login
+            if item.global_limit:
+                r.global_limit = item.global_limit
+            if item.max_escalation_retries:
+                r.max_escalation_retries = item.max_escalation_retries
+            break
         return r
