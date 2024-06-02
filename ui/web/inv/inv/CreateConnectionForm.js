@@ -20,7 +20,6 @@ Ext.define("NOC.inv.inv.CreateConnectionForm", {
   INVALID_COLOR: NOC.colors.clouds,
   UNMASKED_LABEL_COLOR: NOC.colors.black,
   MASKED_LABEL_COLOR: NOC.colors.asbestos,
-  discriminatorWidth: {left: -155, right: 155},
   legendHeight: 20,
   firstTrace: 3,
   requires: [
