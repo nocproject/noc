@@ -150,7 +150,7 @@ Ext.define("NOC.inv.inv.Application", {
       app: me,
       listeners: {
         scope: me,
-        reloadInvNav: me.onReloadNav, 
+        reloadInvNav: me.onReloadNav,
       },
     });
     //
