@@ -422,11 +422,17 @@ Ext.define("NOC.inv.inv.Application", {
   },
   //
   onCreateConnection: function(){
-    var me = this;
+    var me = this,
+      sm = me.navTree.getSelectionModel(),
+      selected = sm.getSelection();
+    
     if(me.mainPanel.items.items.length > 2){
       me.mainPanel.remove(me.mainPanel.items.items[2], false);
     }
-    me.mainPanel.add(me.connectionPanel);
+    if(selected.length > 0){
+      me.mainPanel.add(me.connectionPanel);
+      me.connectionPanel.onDrop({dragData: {records: selected} });
+    }
   },
   //
   onOpenDashboard: function(){
