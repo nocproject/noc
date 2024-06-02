@@ -619,7 +619,9 @@ Ext.define("NOC.inv.inv.CreateConnectionForm", {
         if(leftObjectId === rightObjectId){
           return;
         }
-        title = (leftObject ? leftObject.get("name") : __("none")) + " <==> " + (rightObject ? rightObject.get("name") : __("none"));
+        title = (leftObject ? leftObject.get("name") : __("none"))
+          + "<i class='fa fa-arrows-h' style='padding: 0 5px 0 5px;'></i>"
+          + (rightObject ? rightObject.get("name") : __("none"));
         me.setTitle(title);
         params = "o1=" + leftObjectId + (rightObjectId ? "&o2=" + rightObjectId : "");
         params += cable ? "&cable_filter=" + cable : "";
@@ -893,6 +895,7 @@ Ext.define("NOC.inv.inv.CreateConnectionForm", {
         me.app.mainPanel.add(me.app.tabPanel);
       };
 
+    me.fireEvent("saveInvForm");
     if(me.getViewModel().get("isDirty")){
       Ext.Msg.confirm(__("Confirm"), __("There is unsaved data, do you really want to close the application?"), function(btn){
         if(btn === "yes"){
@@ -998,6 +1001,7 @@ Ext.define("NOC.inv.inv.CreateConnectionForm", {
         vm.set("isDirty", false);
         if(data && data.status){
           NOC.msg.complete(__("Objects was successfully connected"));
+          this.fireEvent("saveInvForm");
         } else{
           NOC.error(__("Failed to connect objects : ") + data.text);
           invalidConnections = data.invalid_connections;
