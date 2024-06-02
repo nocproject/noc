@@ -122,6 +122,7 @@ class Template(BaseModel):
         formatter: Formatter name. Or Autodetect by content
         bands_format: BandName -> BandFormat. For autoformat BandsData
     """
+
     output_type: OutputType
     code: str = "DEFAULT"
     # documentPath: str
