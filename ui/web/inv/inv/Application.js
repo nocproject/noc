@@ -150,11 +150,7 @@ Ext.define("NOC.inv.inv.Application", {
       app: me,
       listeners: {
         scope: me,
-<<<<<<< HEAD
         reloadInvNav: me.onReloadNav,
-=======
-        saveInvForm: me.onReloadNav, 
->>>>>>> 1ba3763731 (Merge branch 'uncol-inv-icon-title' into 'master')
       },
     });
     //
