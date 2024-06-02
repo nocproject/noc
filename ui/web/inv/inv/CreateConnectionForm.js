@@ -665,9 +665,7 @@ Ext.define("NOC.inv.inv.CreateConnectionForm", {
         if(leftObjectId === rightObjectId){
           return;
         }
-        title = (leftObject ? leftObject.get("name") : __("none"))
-          + "<i class='fa fa-arrows-h' style='padding: 0 5px 0 5px;'></i>"
-          + (rightObject ? rightObject.get("name") : __("none"));
+        title = (leftObject ? leftObject.get("name") : __("none")) + " <==> " + (rightObject ? rightObject.get("name") : __("none"));
         me.setTitle(title);
         params = "o1=" + leftObjectId + (rightObjectId ? "&o2=" + rightObjectId : "");
         params += cable ? "&cable_filter=" + cable : "";
