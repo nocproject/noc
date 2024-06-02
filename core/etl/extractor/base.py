@@ -448,9 +448,11 @@ class BaseExtractor(object):
                         writer.writerow(
                             [smart_text(c) for c in p.row]
                             + [
-                                "Fatal problem, line was rejected"
-                                if p.is_rej
-                                else "Data quality problem"
+                                (
+                                    "Fatal problem, line was rejected"
+                                    if p.is_rej
+                                    else "Data quality problem"
+                                )
                             ]
                             + [p.message.encode("utf-8")]
                         )

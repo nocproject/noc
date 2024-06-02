@@ -88,6 +88,7 @@ class IPAMApplication(ExtApplication):
         """
         Quickjump to closest suitable block
         """
+
         # Interpolate string to valid IPv4 address
         def interpolate_ipv4(s):
             p = s.split(".")
@@ -270,26 +271,28 @@ class IPAMApplication(ExtApplication):
             },
             "path": [{"id": p.id, "parent_id": p.parent_id, "name": p.prefix} for p in path],
             "prefixes": [
-                {
-                    "id": p.id,
-                    "name": p.prefix,
-                    "row_class": p.profile.style.css_class_name if p.profile.style else "",
-                    "has_bookmark": is_bookmarks,
-                    "description": p.description,
-                    "afi": p.afi,
-                    "project": p.project.code if p.project else None,
-                    "as": f"AS{p.asn.asn}" if p.asn else None,
-                    "vlan": p.vlan.name if p.vlan else None,
-                    "tt": p.tt,
-                    "usage": p.usage_percent,
-                    "address_usage": p.address_usage_percent,
-                    "labels": p.labels,
-                    "state": p.state.name,
-                    "state_desc": p.state.description,
-                    "isFree": False,
-                }
-                if p
-                else {"name": ip.prefix, "isFree": True}
+                (
+                    {
+                        "id": p.id,
+                        "name": p.prefix,
+                        "row_class": p.profile.style.css_class_name if p.profile.style else "",
+                        "has_bookmark": is_bookmarks,
+                        "description": p.description,
+                        "afi": p.afi,
+                        "project": p.project.code if p.project else None,
+                        "as": f"AS{p.asn.asn}" if p.asn else None,
+                        "vlan": p.vlan.name if p.vlan else None,
+                        "tt": p.tt,
+                        "usage": p.usage_percent,
+                        "address_usage": p.address_usage_percent,
+                        "labels": p.labels,
+                        "state": p.state.name,
+                        "state_desc": p.state.description,
+                        "isFree": False,
+                    }
+                    if p
+                    else {"name": ip.prefix, "isFree": True}
+                )
                 for ip, p, is_bookmarks in l_prefixes
             ],
             "addresses": sorted(

@@ -410,9 +410,11 @@ class State(Document):
             blocked=not self.is_enabled_interaction(Interaction.ServiceActivation),
             default_state=DiagnosticState.enabled,
             run_policy="D",
-            reason="Deny by Allowed interaction by State"
-            if not self.is_enabled_interaction(Interaction.ServiceActivation)
-            else "",
+            reason=(
+                "Deny by Allowed interaction by State"
+                if not self.is_enabled_interaction(Interaction.ServiceActivation)
+                else ""
+            ),
         )
         yield DiagnosticConfig(
             ALARM_DIAG,
@@ -420,9 +422,11 @@ class State(Document):
             blocked=not self.is_enabled_interaction(Interaction.Alarm),
             default_state=DiagnosticState.enabled,
             run_policy="D",
-            reason="Deny by Allowed interaction by State"
-            if not self.is_enabled_interaction(Interaction.Alarm)
-            else "",
+            reason=(
+                "Deny by Allowed interaction by State"
+                if not self.is_enabled_interaction(Interaction.Alarm)
+                else ""
+            ),
         )
 
     def sync_referred_labels(self):

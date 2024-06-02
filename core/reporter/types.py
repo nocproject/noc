@@ -116,14 +116,19 @@ class BandFormat(BaseModel):
 
 
 class Template(BaseModel):
+    """
+    Attributes:
+        code: ReportTemplate.DEFAULT_TEMPLATE_CODE
+        formatter: Formatter name. Or Autodetect by content
+        bands_format: BandName -> BandFormat. For autoformat BandsData
+    """
+
     output_type: OutputType
-    code: str = "DEFAULT"  # ReportTemplate.DEFAULT_TEMPLATE_CODE;
+    code: str = "DEFAULT"
     # documentPath: str
     content: Optional[bytes] = None
-    formatter: Optional[str] = None  # Formatter name. Or Autodetect by content
-    bands_format: Optional[
-        Dict[str, BandFormat]
-    ] = None  # BandName -> BandFormat. For autoformat BandsData
+    formatter: Optional[str] = None
+    bands_format: Optional[Dict[str, BandFormat]] = None
     output_name_pattern: Optional[str] = "report.html"
     handler: Optional[str] = None  # For custom code
     custom: bool = False

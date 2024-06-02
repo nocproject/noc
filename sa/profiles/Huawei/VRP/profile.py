@@ -255,7 +255,7 @@ class Profile(BaseProfile):
                 "Gi": "GigabitEthernet",
                 "Eth": "Ethernet",
                 "MEth": "M-Ethernet",
-                "VE": "Virtual-Ethernet"
+                "VE": "Virtual-Ethernet",
                 # "Vlanif": "Vlan-interface" - need testing
             }[match.group("type")],
             match.group("number"),

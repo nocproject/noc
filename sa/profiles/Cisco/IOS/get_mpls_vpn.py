@@ -77,12 +77,14 @@ class Script(BaseScript):
                     "status": match.group("state") == "up",
                     "name": match.group("name"),
                     "vpn_id": match.group("vpn_id"),
-                    "interfaces": [
-                        self.profile.convert_interface_name(x)
-                        for x in match.group("ifaces").split()
-                    ]
-                    if match.group("ifaces")
-                    else [],
+                    "interfaces": (
+                        [
+                            self.profile.convert_interface_name(x)
+                            for x in match.group("ifaces").split()
+                        ]
+                        if match.group("ifaces")
+                        else []
+                    ),
                 }
             ]
         # VPWS

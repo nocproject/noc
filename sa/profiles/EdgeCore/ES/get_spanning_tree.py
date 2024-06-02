@@ -43,7 +43,7 @@ class Script(BaseScript):
     }
     STATE_MAP = {
         "discarding": "discarding",
-        "forwarding": "forwarding"
+        "forwarding": "forwarding",
         # "disabled", "learning",
         # "broken", "listen", "unknown", "loopback"
     }

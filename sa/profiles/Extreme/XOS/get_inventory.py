@@ -69,7 +69,7 @@ class Script(BaseScript):
                 [
                     d.get("type", d.get("ge_compliance", "")).strip(),
                     d.get("wavelength", "").strip() + "nm",
-                    d.get("connector", "").strip()
+                    d.get("connector", "").strip(),
                     # d["Transfer Distance(meter)"].strip() + "m"
                 ]
             )

@@ -434,9 +434,11 @@ class ReportDsAlarms(BaseDataSource):
             yield row_num, "alarm_id", str(aa["_id"])
             yield row_num, "root_id", str(aa["root"]) if aa.get("root") else ""
             yield row_num, "from_ts", aa["timestamp"].strftime("%Y-%m-%d %H:%M:%S")
-            yield row_num, "to_ts", aa["clear_timestamp"].strftime(
-                "%Y-%m-%d %H:%M:%S"
-            ) if "clear_timestamp" in aa else ""
+            yield row_num, "to_ts", (
+                aa["clear_timestamp"].strftime("%Y-%m-%d %H:%M:%S")
+                if "clear_timestamp" in aa
+                else ""
+            )
             yield row_num, "duration_sec", round(aa["duration"])
             yield row_num, "object_name", mo["name"]
             yield row_num, "object_address", mo["address"]
@@ -452,13 +454,15 @@ class ReportDsAlarms(BaseDataSource):
             yield row_num, "objects", aa["total_objects_sum"]["sum"]
             yield row_num, "subscribers", aa["total_subscribers_sum"]["sum"]
             yield row_num, "tt", aa.get("escalation_tt")
-            yield row_num, "escalation_ts", aa["escalation_ts"].strftime(
-                "%Y-%m-%d %H:%M:%S"
-            ) if "escalation_ts" in aa else ""
+            yield row_num, "escalation_ts", (
+                aa["escalation_ts"].strftime("%Y-%m-%d %H:%M:%S") if "escalation_ts" in aa else ""
+            )
             yield row_num, "location", loc
-            yield row_num, "maintenance", "Yes" if "clear_timestamp" not in aa and aa[
-                "managed_object"
-            ] in maintenance else "No"
+            yield row_num, "maintenance", (
+                "Yes"
+                if "clear_timestamp" not in aa and aa["managed_object"] in maintenance
+                else "No"
+            )
 
             for sp_name, sp_id in subscribers_profile:
                 dd = cls.items_to_dict(aa["total_subscribers"])

@@ -164,11 +164,11 @@ class MessageRoute(Document):
                 {
                     "labels": match.labels,
                     "exclude_labels": match.exclude_labels,
-                    "administrative_domain": AdministrativeDomain.get_nested_ids(
-                        match.administrative_domain
-                    )
-                    if match.administrative_domain
-                    else None,
+                    "administrative_domain": (
+                        AdministrativeDomain.get_nested_ids(match.administrative_domain)
+                        if match.administrative_domain
+                        else None
+                    ),
                     "headers": [
                         {"header": m.header, "op": m.op, "value": m.value}
                         for m in match.headers_match

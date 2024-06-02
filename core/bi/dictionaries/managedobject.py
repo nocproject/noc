@@ -45,8 +45,8 @@ class ManagedObject(DictionaryModel):
             "remote_system": item.remote_system.name if item.remote_system else "",
             "administrative_domain_id": str(item.administrative_domain.id),
             "administrative_domain": item.administrative_domain.name,
-            "location_address": item.container.get_data("address", "text")
-            if item.container
-            else "",
+            "location_address": (
+                item.container.get_data("address", "text") if item.container else ""
+            ),
             "project": item.project.name if item.project else "",
         }

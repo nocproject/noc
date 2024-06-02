@@ -297,9 +297,11 @@ class EscalationSequence(BaseSequence):
                     tt_id=alarm.escalation_tt,
                     subject="Closing",
                     body="Closing",
-                    notification_group_id=self.alarm.clear_notification_group.id
-                    if self.alarm.clear_notification_group
-                    else None,
+                    notification_group_id=(
+                        self.alarm.clear_notification_group.id
+                        if self.alarm.clear_notification_group
+                        else None
+                    ),
                     close_tt=self.alarm.close_tt,
                     login=self.login,
                     queue=self.alarm.managed_object.tt_queue,
@@ -741,9 +743,11 @@ class EscalationSequence(BaseSequence):
         # Check maintenance out-of-the-lock
         self.check_maintenance()
         # Perform escalations
-        with Span(client="escalator", sample=self.get_span_sample()) as ctx, self.lock.acquire(
-            self.escalation_doc.get_lock_items()
-        ), change_tracker.bulk_changes():
+        with (
+            Span(client="escalator", sample=self.get_span_sample()) as ctx,
+            self.lock.acquire(self.escalation_doc.get_lock_items()),
+            change_tracker.bulk_changes(),
+        ):
             self.check_escalated()
             self.alarm.set_escalation_context()
             # Evaluate escalation chain
