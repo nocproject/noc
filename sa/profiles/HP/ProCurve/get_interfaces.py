@@ -167,7 +167,7 @@ class Script(BaseScript):
                         "oper_status": True,
                         "enabled_afi": ["IPv4"],
                         "ipv4_addresses": [IPv4(vlan["address"], netmask=vlan["mask"])],
-                        "vlan_ids": [int(vlan["vlan"])]
+                        "vlan_ids": [int(vlan["vlan"])],
                         # "mac": mac,
                         # "snmp_ifindex": self.scripts.get_ifindex(interface=name)
                     }

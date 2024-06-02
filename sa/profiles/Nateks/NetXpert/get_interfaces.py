@@ -189,9 +189,9 @@ class Script(BaseScript):
                         "name": l["name"],
                         "description": l.get("description", ""),
                         "type": "SVI",
-                        "enabled_afi": ["BRIDGE"]
-                        if l["type"] in ["physical", "aggregated"]
-                        else [],
+                        "enabled_afi": (
+                            ["BRIDGE"] if l["type"] in ["physical", "aggregated"] else []
+                        ),
                         "admin_status": l["admin_status"],
                         "oper_status": l["oper_status"],
                         "snmp_ifindex": l["snmp_ifindex"],

@@ -71,9 +71,9 @@ class Script(BaseScript):
                     "ieee_mode": self.get_interface_ieee(value["mode"]),
                     "channel": value["channel"],
                     "freq": self.get_interface_freq(value["mode"]),
-                    "channelbandwidth": value["n-bandwidth"]
-                    if "n-bandwidth" in value
-                    else value["bandwidth"],
+                    "channelbandwidth": (
+                        value["n-bandwidth"] if "n-bandwidth" in value else value["bandwidth"]
+                    ),
                 }
         return r
 

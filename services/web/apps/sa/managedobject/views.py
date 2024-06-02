@@ -504,17 +504,17 @@ class ManagedObjectApplication(ExtModelApplication):
                         "local_interface__label": li.name,
                         "remote_object": ri.managed_object.id,
                         "remote_object__label": ri.managed_object.name,
-                        "remote_platform": ri.managed_object.platform.name
-                        if ri.managed_object.platform
-                        else "",
+                        "remote_platform": (
+                            ri.managed_object.platform.name if ri.managed_object.platform else ""
+                        ),
                         "remote_interface": str(ri.id),
                         "remote_interface__label": ri.name,
                         "discovery_method": link.discovery_method,
                         "local_description": li.description,
                         "remote_description": ri.description,
-                        "first_discovered": link.first_discovered.isoformat()
-                        if link.first_discovered
-                        else None,
+                        "first_discovered": (
+                            link.first_discovered.isoformat() if link.first_discovered else None
+                        ),
                         "last_seen": link.last_seen.isoformat() if link.last_seen else None,
                     }
                 ]
@@ -1224,7 +1224,7 @@ class ManagedObjectApplication(ExtModelApplication):
                 "version": c.version or "",
                 "mac": c.mac or "",
                 "location": c.location or "",
-                "distance": str(c.distance)
+                "distance": str(c.distance),
                 # "row_class": get_style(i)
             }
             for c in CPEStatus.objects.filter(managed_object=o.id)

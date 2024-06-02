@@ -261,9 +261,11 @@ class ReportInterfaceStatusApplication(ExtApplication):
                             "UP" if i["admin_status"] is True else "Down",
                             "UP" if "oper_status" in i and i["oper_status"] is True else "Down",
                             humanize_speed(i["in_speed"]) if "in_speed" in i else "-",
-                            DUPLEX.get(i["full_duplex"])
-                            if "full_duplex" in i and "in_speed" in i
-                            else "-",
+                            (
+                                DUPLEX.get(i["full_duplex"])
+                                if "full_duplex" in i and "in_speed" in i
+                                else "-"
+                            ),
                             untag,
                             tagged,
                         ]

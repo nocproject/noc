@@ -37,9 +37,9 @@ class ProtocolApplication(ExtDocApplication):
                 discriminators[(d.interface, d.attr)] += [{"code": item.code, "value": d.value}]
         if not discriminators:
             return r
-        (r["discriminator_interface"], r["discriminator_attr"]), r[
-            "discriminators"
-        ] = discriminators.popitem()
+        (r["discriminator_interface"], r["discriminator_attr"]), r["discriminators"] = (
+            discriminators.popitem()
+        )
         mi = ModelInterface.get_by_name(r["discriminator_interface"])
         r["discriminator_interface"] = str(mi.id)
         r["discriminator_interface__label"] = mi.name

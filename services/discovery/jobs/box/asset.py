@@ -64,12 +64,12 @@ class AssetCheck(DiscoveryCheck):
                 List[ObjectAttr],
             ]
         ] = []  # [(type, object, context, serial, data)]
-        self.sensors: Dict[
-            Tuple[Optional[Object], str] : Dict[str, Any]
-        ] = {}  # object, sensor -> sensor data
-        self.to_disconnect: Set[
-            Tuple[Object, str, Object, str]
-        ] = set()  # Save processed connection. [(in_connection, object, out_connection), ... ]
+        self.sensors: Dict[Tuple[Optional[Object], str] : Dict[str, Any]] = (
+            {}
+        )  # object, sensor -> sensor data
+        self.to_disconnect: Set[Tuple[Object, str, Object, str]] = (
+            set()
+        )  # Save processed connection. [(in_connection, object, out_connection), ... ]
         self.rule: Dict[str, List[ConnectionRule]] = defaultdict(
             list
         )  # Connection rule. type -> [rule1, ruleN]

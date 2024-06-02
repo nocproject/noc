@@ -85,9 +85,9 @@ class MetricsService(FastAPIService):
         # Sync primitives
         self.mappings_ready_event = asyncio.Event()  # Load Metric Sources
         self.rules_ready_event = asyncio.Event()  # Load Metric Rules
-        self.sync_cursor_condition: Optional[
-            asyncio.Condition
-        ] = None  # Condition for commit stream cursor
+        self.sync_cursor_condition: Optional[asyncio.Condition] = (
+            None  # Condition for commit stream cursor
+        )
 
     async def on_activate(self):
         self.slot_number, self.total_slots = await self.acquire_slot()
@@ -394,14 +394,16 @@ class MetricsService(FastAPIService):
             nodes[node.node_id] = self.clone_and_add_node(
                 node,
                 prefix=prefix,
-                config={
-                    "message_meta": config.meta or {},
-                    "message_labels": MX_H_VALUE_SPLITTER.join(config.labels).encode(
-                        encoding=DEFAULT_ENCODING
-                    ),
-                }
-                if config
-                else None,
+                config=(
+                    {
+                        "message_meta": config.meta or {},
+                        "message_labels": MX_H_VALUE_SPLITTER.join(config.labels).encode(
+                            encoding=DEFAULT_ENCODING
+                        ),
+                    }
+                    if config
+                    else None
+                ),
             )
         # Subscribe
         for o_node in src.nodes.values():

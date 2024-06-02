@@ -411,9 +411,9 @@ class MetricScopeProxy:
         self.scope: "MetricScope" = scope
         self.queries: Dict[str, QueryField] = {}  # Requested Queries to MetricScope
         self.query_conditions: Set[MetricKey] = set()  # Predefined conditions to query
-        self.query_cache: Dict[
-            QueryField, Dict[MetricKey, List["MetricValue"]]
-        ] = {}  # Cached return values
+        self.query_cache: Dict[QueryField, Dict[MetricKey, List["MetricValue"]]] = (
+            {}
+        )  # Cached return values
 
     def get_metric_key(self, fields: Set[str] = None, **kwargs) -> "MetricKey":
         """

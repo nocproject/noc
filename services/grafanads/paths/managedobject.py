@@ -123,7 +123,7 @@ class ManagedObjectJsonDS(JsonDSAPI):
                         "annotation": annotation,
                         "time": mktime(d["timestamp"].timetuple()) * 1000
                         + d["timestamp"].microsecond / 1000,
-                        "title": AlarmClass.get_by_id(d["alarm_class"]).name
+                        "title": AlarmClass.get_by_id(d["alarm_class"]).name,
                         # "tags": X,
                         # "text": X
                     }
@@ -132,7 +132,7 @@ class ManagedObjectJsonDS(JsonDSAPI):
                         "annotation": annotation,
                         "time": mktime(d["timestamp"].timetuple()) * 1000
                         + d["timestamp"].microsecond / 1000,
-                        "title": "[CLEAR] %s" % AlarmClass.get_by_id(d["alarm_class"]).name
+                        "title": "[CLEAR] %s" % AlarmClass.get_by_id(d["alarm_class"]).name,
                         # "tags": X,
                         # "text": X
                     }
