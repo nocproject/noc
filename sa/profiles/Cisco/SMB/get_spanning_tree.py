@@ -105,12 +105,14 @@ class Script(BaseScript):
                 "vlans": "1-4095",
                 "root_id": match.group("root_id"),
                 "root_priority": match.group("root_priority"),
-                "bridge_id": match.group("bridge_id")
-                if match.group("bridge_id")
-                else match.group("root_id"),
-                "bridge_priority": match.group("bridge_priority")
-                if match.group("bridge_priority")
-                else match.group("root_priority"),
+                "bridge_id": (
+                    match.group("bridge_id") if match.group("bridge_id") else match.group("root_id")
+                ),
+                "bridge_priority": (
+                    match.group("bridge_priority")
+                    if match.group("bridge_priority")
+                    else match.group("root_priority")
+                ),
             }
         ]
         for match in self.rx_pvst_interfaces.finditer(spanning_tree_detail):

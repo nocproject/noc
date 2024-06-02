@@ -178,12 +178,12 @@ class Script(BaseScript):
             r += [
                 {
                     "name": int(line[1:6]) if self.is_iscom2924g else int(line[:6]),
-                    "admin_status": "enable" in line[6:13]
-                    if self.is_iscom2924g
-                    else "enable" in line[7:14],
-                    "oper_status": "up" in line[13:28]
-                    if self.is_iscom2924g
-                    else "up" in line[14:29],
+                    "admin_status": (
+                        "enable" in line[6:13] if self.is_iscom2924g else "enable" in line[7:14]
+                    ),
+                    "oper_status": (
+                        "up" in line[13:28] if self.is_iscom2924g else "up" in line[14:29]
+                    ),
                 }
             ]
         return r

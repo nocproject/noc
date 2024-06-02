@@ -588,12 +588,14 @@ class AlarmApplication(ExtApplication):
                         "managed_object": a.managed_object.id,
                         "managed_object__label": a.managed_object.name,
                         "timestamp": self.to_json(a.timestamp),
-                        "groups": ", ".join(
-                            ag.alarm_class.name
-                            for ag in ActiveAlarm.objects.filter(reference__in=a.groups)
-                        )
-                        if a.groups
-                        else "",
+                        "groups": (
+                            ", ".join(
+                                ag.alarm_class.name
+                                for ag in ActiveAlarm.objects.filter(reference__in=a.groups)
+                            )
+                            if a.groups
+                            else ""
+                        ),
                         "iconCls": "icon_error",
                         "row_class": s.style.css_class_name,
                     }

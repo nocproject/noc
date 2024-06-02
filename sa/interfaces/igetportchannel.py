@@ -21,7 +21,7 @@ class IGetPortchannel(BaseInterface):
                 "interface": InterfaceNameParameter(),  # Port-channel name
                 # List of port-channel members
                 "members": ListOfParameter(element=InterfaceNameParameter()),
-                "type": StringParameter()
+                "type": StringParameter(),
                 # choices=["S","L"]. S - for static, L for LACP
             }
         )

@@ -310,8 +310,7 @@ class ServiceProfile(Document):
         return Status.UP
 
     @classmethod
-    def get_alarm_service_filter(cls):
-        ...
+    def get_alarm_service_filter(cls): ...
 
 
 def refresh_interface_profiles(sp_id, ip_id):

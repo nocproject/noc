@@ -92,9 +92,9 @@ class ReportDiscoveryLinks(ReportSource):
                     {
                         "links_count": x,
                         "mo_count": row[x],
-                        "percent_at_all": f'{round(row[x] / row["all"] * 100, 2)} %'
-                        if x != "all"
-                        else "",
+                        "percent_at_all": (
+                            f'{round(row[x] / row["all"] * 100, 2)} %' if x != "all" else ""
+                        ),
                         "detail": url
                         % (
                             f"select * from mo where status = True and enable_ping = True and enable_box = True {condition}",

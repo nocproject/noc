@@ -98,9 +98,9 @@ class AlarmRule(object):
             rule.groups.append(
                 Group(
                     reference_template=Template(group.reference_template),
-                    alarm_class=group.alarm_class
-                    if group.alarm_class
-                    else cls.get_default_alarm_class(),
+                    alarm_class=(
+                        group.alarm_class if group.alarm_class else cls.get_default_alarm_class()
+                    ),
                     title_template=Template(group.title_template),
                     min_threshold=group.min_threshold or 0,
                     max_threshold=group.max_threshold or 0,

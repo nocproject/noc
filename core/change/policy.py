@@ -159,16 +159,13 @@ class BaseChangeTrackerPolicy(object, metaclass=ABCMeta):
     Base class for change tracker policies
     """
 
-    def __init__(self):
-        ...
+    def __init__(self): ...
 
     @abstractmethod
-    def register(self, item: ChangeItem) -> None:
-        ...
+    def register(self, item: ChangeItem) -> None: ...
 
     @abstractmethod
-    def register_ds(self, items: List[Tuple[str, str]]) -> None:
-        ...
+    def register_ds(self, items: List[Tuple[str, str]]) -> None: ...
 
 
 class DropChangeTrackerPolicy(BaseChangeTrackerPolicy):
