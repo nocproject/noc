@@ -10,11 +10,11 @@ import operator
 import datetime
 import logging
 from threading import Lock
-from typing import Optional, Union, Dict
+from typing import Optional, Union, List, FrozenSet
 
 # Third-party modules
 from bson import ObjectId
-from mongoengine.document import Document
+from mongoengine.document import Document, EmbeddedDocument
 from mongoengine.fields import (
     StringField,
     ListField,
@@ -22,13 +22,18 @@ from mongoengine.fields import (
     ReferenceField,
     DateTimeField,
     BooleanField,
+    EmbeddedDocumentListField,
 )
 import cachetools
 
 # NOC modules
 from noc.core.model.decorator import on_delete_check
+from noc.core.mongo.fields import ForeignKeyField
 from noc.core.handler import get_handler
 from noc.core.tt.base import BaseTTSystem
+from noc.core.tt.types import TTAction, TTSystemConfig
+from noc.aaa.models.user import User
+from noc.aaa.models.group import Group
 from noc.main.models.remotesystem import RemoteSystem
 from noc.main.models.label import Label
 
@@ -36,6 +41,15 @@ id_lock = Lock()
 logger = logging.getLogger(__name__)
 
 DEFAULT_TTSYSTEM_SHARD = "default"
+
+
+class TTSystemAction(EmbeddedDocument):
+    user = ForeignKeyField(User)
+    group = ForeignKeyField(Group)
+    ack = BooleanField(default=False)
+    close = BooleanField(default=False)
+    log = BooleanField(default=False)
+    subscribe = BooleanField(default=False)
 
 
 @Label.match_labels("ttsystem", allowed_op={"="})
@@ -75,6 +89,11 @@ class TTSystem(Document):
         ],
         default="a",
     )
+    # Actions
+    actions: List[TTSystemAction] = EmbeddedDocumentListField(TTSystemAction)
+    update_handler = StringField()
+    last_update_ts = DateTimeField()
+    last_update_id = StringField()
     #
     tags = ListField(StringField())
     # Integration with external NRI and TT systems
@@ -124,11 +143,46 @@ class TTSystem(Document):
             raise ValueError
         return h(self.name, self.connection)
 
-    def get_config(self) -> Dict[str, str]:
+    def get_actions(
+            self,
+            user: Optional[User] = None,
+            group: Optional[Group] = None,
+    ) -> FrozenSet[TTAction]:
+        """
+        Getting TT System Action support
+
+        Args:
+            user:
+            group:
+        """
+        r = []
+        for a in self.actions:
+            if user and user != a.user:
+                continue
+            if group and group != a.group:
+                continue
+            if a.ack:
+                r += [TTAction.ACK, TTAction.UN_ACK]
+        return frozenset(r)
+
+    def get_config(self) -> TTSystemConfig:
         """
         Getting TTSystem config
         """
-        return {"login": "correlator"}
+        tts = self.get_system()
+        if tts.actions:
+            actions = set(tts.actions).intersection(self.get_actions())
+        else:
+            actions = None
+        return TTSystemConfig(
+            login="correlator",
+            telemetry_sample=self.telemetry_sample,
+            actions=list(actions),
+            global_limit=self.global_limit,
+            max_escalation_retries=self.max_escalation_retries,
+            promote_item=tts.processed_items,
+            promote_group_tt=tts.promote_group_tt,
+        )
 
     def is_failed(self):
         """
@@ -146,6 +200,16 @@ class TTSystem(Document):
         d = datetime.datetime.now() + datetime.timedelta(seconds=cooldown)
         logger.info("[%s] Setting failure status till %s", self.name, d)
         self._get_collection().update_one({"_id": self.id}, {"$set": {"failed_till": d}})
+
+    def register_update(self, last_update_ts, last_update_id: Optional[str] = None):
+        """
+        Save last fetched update info
+        Args:
+            last_update_ts: Last update timestamp
+            last_update_id: Last update sequence number
+        """
+        logger.info("[%s] Setting last Document fetch info: %s/%s", self.name, last_update_ts, last_update_id)
+        TTSystem.objects.filter(id=self.id).update_one(last_update_ts=last_update_ts, last_update_id=last_update_id)
 
     @classmethod
     def iter_lazy_labels(cls, ttsystem: "TTSystem"):

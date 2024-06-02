@@ -19,6 +19,8 @@ from .types import (
     EscalationItem,
     EscalationStatus,
     EscalationResult,
+    TTChange,
+    TTAction,
 )
 from .error import TTError, TemporaryTTError
 
@@ -35,6 +37,7 @@ class BaseTTSystem(object):
     Attributes:
         promote_group_tt: Supported Group Alarm
         processed_items: Supported processed alarm items
+        actions: List of available actions, for TTSystem
         TTError: Basic error.
         TemporaryTTError: Transient error, escalation
             can be restarted.
@@ -44,11 +47,12 @@ class BaseTTSystem(object):
     TemporaryTTError = TemporaryTTError
     promote_group_tt = True
     processed_items = False
+    actions: List[TTAction] = []
 
     def __init__(self, name: str, connection: str):
         self.connection = connection
         self.name = name
-        self.logger = logging.getLogger("tt.%s" % self.name)
+        self.logger = logging.getLogger(f"tt.{self.name}")
 
     def create(self, ctx: EscalationContext) -> str:
         """
@@ -145,6 +149,23 @@ class BaseTTSystem(object):
 
         Raises:
             TTError: On comment error.
+        """
+        raise NotImplementedError()
+
+    def get_updates(
+            self,
+            last_run: Optional[datetime] = None,
+            last_update: Optional[str] = None,
+            tt_ids: Optional[List[str]] = None,
+    ) -> List[TTChange]:
+        """
+        Getting updates from TT system
+
+        Args:
+            last_run: timestamp last run
+            last_update: Last update sequence number
+            tt_ids: List document id for request changes
+
         """
         raise NotImplementedError()
 
@@ -267,6 +288,16 @@ class TTSystemCtx(object):
                 queue=self.queue,
             )
         )
+
+    def get_updates(self, last_run: Optional[datetime] = None, last_number: Optional[str] = None) -> List[TTChange]:
+        """
+        Getting updates from TT system
+
+        Args:
+            last_run: date before getting update
+            last_number:
+        """
+        raise NotImplementedError()
 
     def __enter__(self):
         if not isinstance(self.tt_system, BaseTTSystem):

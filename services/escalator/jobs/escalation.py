@@ -18,7 +18,12 @@ from noc.services.escalator.jobs.base import SequenceJob
 from noc.core.span import Span, PARENT_SAMPLE
 from noc.core.lock.process import ProcessLock
 from noc.core.change.policy import change_tracker
-from noc.core.tt.types import EscalationItem as ECtxItem, EscalationStatus, EscalationResult
+from noc.core.tt.types import (
+    EscalationItem as ECtxItem,
+    EscalationStatus,
+    EscalationResult,
+    EscalationMember,
+)
 from noc.core.tt.base import TTSystemCtx
 from noc.core.perf import metrics
 from noc.sa.models.action import Action
@@ -35,7 +40,6 @@ class EscalationJob(SequenceJob):
 
     def __init__(self, job, attrs):
         super().__init__(job, attrs)
-        self.object = Escalation()
         self.alarm_log = []
 
     def run_action(self, action: str, key: str) -> EscalationResult:
@@ -87,13 +91,15 @@ class EscalationJob(SequenceJob):
         self.check_escalation_waited()
         # Check maintenances
         # Perform escalations
-        with Span(
-            client="escalator",
-            sample=self.get_span_sample(),
-            context=self.object.ctx_id,
-        ) as span_ctx, self.lock.acquire(
-            self.object.get_lock_items()
-        ), change_tracker.bulk_changes():
+        with (
+            Span(
+                client="escalator",
+                sample=self.get_span_sample(),
+                context=self.object.ctx_id,
+            ) as span_ctx,
+            self.lock.acquire(self.object.get_lock_items()),
+            change_tracker.bulk_changes(),
+        ):
             if not self.object.ctx_id:
                 # span_ctx.span_context
                 self.object.set_escalation_context()
@@ -116,7 +122,7 @@ class EscalationJob(SequenceJob):
                         continue
                     r = self.create_tt(tt_system, subject, body, ctx)
                     self.object.set_escalation(
-                        action="tt_system",
+                        member=EscalationMember.TT_SYSTEM,
                         key=str(tt_system.id),
                         status=r.status,
                         timestamp=datetime.datetime.now().replace(microsecond=0),
@@ -138,7 +144,7 @@ class EscalationJob(SequenceJob):
                     # Save to escalation context
                     self.object.set_escalation(
                         timestamp=datetime.datetime.now().replace(microsecond=0),
-                        action="notification",
+                        member=EscalationMember.NOTIFICATION_GROUP,
                         key=str(esc_item.notification_group.id),
                         status=r.status,
                     )
@@ -164,7 +170,7 @@ class EscalationJob(SequenceJob):
             self.object.sequence_num = num
             if (now - self.object.get_next(num)).total_seconds() < int(item.delay):
                 break
-            escalation = self.object.get_escalation(action=item.action, key=item.get_key())
+            escalation = self.object.get_escalation(member=item.member, key=item.get_key())
             if escalation and escalation.status == EscalationStatus.OK:
                 # Already escalated
                 continue
@@ -184,11 +190,14 @@ class EscalationJob(SequenceJob):
         self.logger.info("Escalation sequence is completed")
         if self.object.profile.end_condition == "CT":
             # Close For Wait TT
+            # Set Escalation to Wait
+            self.object.set_escalation()
             self.remove_job()
             return
         elif self.object.alarm == "A" and self.object.profile.close_alarm:
             # Clear Alarm after End
-            self.close_alarm()
+            self.object.alarm.register_clear()
+            # self.close_alarm()
         if self.object.profile.end_condition == "E":
             # End if end condition
             self.end_escalation()
@@ -221,10 +230,10 @@ class EscalationJob(SequenceJob):
                 EscalationStatus.OK or EscalationStatus.FAIL
             ):
                 continue
-            if item.action == "tt_system" and item.document_id:
+            if item.member == EscalationMember.TT_SYSTEM and item.document_id:
                 tt = TTSystem.get_by_id(item.key)
                 r = self.close_tt(tt, item.document_id)
-            elif item.action == "notification":
+            elif item.member == EscalationMember.NOTIFICATION_GROUP:
                 ng = NotificationGroup.get_by_id(int(item.key))
                 r = self.notify(ng, "Alarm Closed")
             else:
@@ -293,10 +302,10 @@ class EscalationJob(SequenceJob):
             id=tt_id,
             tt_system=tt_system.get_system(),
             queue=self.object.managed_object.tt_queue,
-            reason=cfg.get("pre_reason"),
-            login=cfg.get("login"),
+            reason=None,
+            login=cfg.login,
             timestamp=self.object.timestamp,
-            items=self.get_escalation_items(tt_system),
+            items=self.get_escalation_items(tt_system) if cfg.promote_item else [],
         )
         return ctx
 
@@ -497,11 +506,6 @@ class EscalationJob(SequenceJob):
         Args:
             tt_system: TT System instance
             tt_id: Number of document on TT System
-        """
-
-    def close_alarm(self):
-        """
-        Close Alarm
         """
 
     def alarm_ack(self, tt_system: Optional[TTSystem]):

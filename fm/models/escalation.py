@@ -33,7 +33,8 @@ from bson import ObjectId
 from noc.core.mongo.fields import PlainReferenceField, ForeignKeyField
 from noc.core.span import get_current_span
 from noc.core.fm.enum import RCA_DOWNLINK_MERGE
-from noc.core.tt.types import EscalationStatus
+from noc.core.tt.types import EscalationStatus, TTAction, EscalationMember
+from noc.aaa.models.user import User
 from noc.sa.models.managedobject import ManagedObject
 from noc.sa.models.servicesummary import SummaryItem, ObjectSummaryItem
 from noc.sa.models.service import Service
@@ -80,14 +81,26 @@ class EscalationItem(EmbeddedDocument):
 
 
 class EscalationLog(EmbeddedDocument):
-    timestamp = DateTimeField()  # Execution time
-    # ack_alarm, close_alarm, add_comment ? User
-    action = StringField(choices=["tt_system", "notification", "run_action"], required=True)
-    key: str = StringField(required=True)  # Action key
-    document_id = StringField()  # Document Id on external system
-    # data = BinaryField
-    # User ?
+    """
+    Attributes:
+        timestamp: Escalation Timestamp
+        member: Escalation member
+        key: Member Id
+        document_id: Escalation ID on TTSystem
+        repeat: Escalation runs count
+        status: Escalation Status
+        error: Error when status is not ok
+        deescalation_status: End escalation status on TT System
+        deescalation_error: Error on deescalation process
+    """
+    timestamp = DateTimeField()
+    member = EnumField(EscalationMember, required=True)
+    key: str = StringField(required=True)
+    document_id = StringField()
+    repeat: int = IntField(default=0)
+    # Approve flag (is user Approved Received Message)
     # Notification adapter for sender
+    # Wait handler
     status: EscalationStatus = EnumField(EscalationStatus)
     error = StringField()
     deescalation_status: EscalationStatus = EnumField(EscalationStatus)
@@ -95,8 +108,26 @@ class EscalationLog(EmbeddedDocument):
 
     def __str__(self):
         if self.deescalation_status:
-            return f"{self.timestamp}: {self.action}, {self.status}/{self.deescalation_status}"
-        return f"{self.timestamp}: {self.action}, {self.status}"
+            return f"{self.timestamp}: {self.type}, {self.status}/{self.deescalation_status}"
+        return f"{self.timestamp}: {self.type}, {self.status}"
+
+
+class ActionLog(EmbeddedDocument):
+    """
+    Attributes:
+        status: Action Status
+        action: Action type
+        user: User for action
+        contact: Receiver address
+        message: Notify/comment message
+    """
+    status: EscalationStatus = EnumField(EscalationStatus)
+    # ack_alarm, close_alarm, add_comment ? User
+    action: TTAction = EnumField(TTAction, required=True)
+    # User Actions
+    user: Optional["User"] = ForeignKeyField(User, required=False)
+    contact: Optional[str] = None
+    message: Optional[str] = None
 
 
 class Escalation(Document):
@@ -126,6 +157,7 @@ class Escalation(Document):
     # Escalation Item and Escalation Log
     items: List[EscalationItem] = EmbeddedDocumentListField(EscalationItem)
     escalations: List[EscalationLog] = EmbeddedDocumentListField(EscalationLog)
+    actions: List[ActionLog] = EmbeddedDocumentListField(ActionLog)
     # List of group references, if any
     groups = ListField(BinaryField())
     affected_services = ListField(ObjectIdField())
@@ -367,7 +399,7 @@ class Escalation(Document):
 
     def set_escalation(
         self,
-        action: str,
+        member: EscalationMember,
         key: str,
         status: EscalationStatus,
         timestamp: Optional[datetime.datetime] = None,
@@ -376,7 +408,7 @@ class Escalation(Document):
     ):
         """
         Args:
-            action: Escalation type
+            member: Escalation type
             key: Escalation Key
             status: Escalation result status
             timestamp: Escalation time
@@ -386,32 +418,84 @@ class Escalation(Document):
         timestamp = timestamp or datetime.datetime.now().replace(microsecond=0)
         key = str(key)
         for esc in self.escalations:
-            if action == esc.action and key == esc.key:
+            if member == esc.member and key == esc.key:
                 esc.status = status
                 esc.error = error
                 if document_id:
                     esc.document_id = document_id
+                esc.repeat += 1
         else:
             self.escalations.append(
                 EscalationLog(
                     timestamp=timestamp,
                     key=key,
-                    action=action,
+                    action=member,
                     status=status,
                     document_id=document_id,
                 )
             )
 
-    def get_escalation(self, action: str, key: str) -> Optional[EscalationLog]:
+    def get_escalation(self, member: EscalationMember, key: str) -> Optional[EscalationLog]:
         """
         Getting escalation log for item
 
         Args:
-            action: Escalation action
+            member: Escalation member
             key: Action ky
         """
         for item in self.escalations:
-            if item.action == action and item.key == key:
+            if item.member == member and item.key == key:
+                return item
+        return None
+
+    def set_action(
+        self,
+        action: TTAction,
+        status: EscalationStatus,
+        user: Optional[User] = None,
+        contact: Optional[str] = None,
+        message: Optional[str] = None,
+        timestamp: Optional[datetime.datetime] = None,
+        error: Optional[str] = None,
+    ):
+        """
+        Args:
+            action: Escalation type
+            status: Escalation result status
+            user: User action, set User
+            contact: Notify Action - set recipient
+            message: Message for sent
+            timestamp: Escalation time
+            error: Error message
+        """
+        timestamp = timestamp or datetime.datetime.now().replace(microsecond=0)
+        for a in self.actions:
+            if action == a.action:
+                a.status = status
+                a.error = error
+        else:
+            self.actions.append(
+                ActionLog(
+                    timestamp=timestamp,
+                    user=user,
+                    message=message,
+                    action=action,
+                    status=status,
+                )
+            )
+
+    def get_action(self, action: TTAction, user: Optional[User] = None) -> Optional[ActionLog]:
+        """
+        Getting escalation log for item
+
+        Args:
+            action: Escalation Action
+            user: Action ky
+        """
+        for item in self.actions:
+            if user and item.user != user:
+                continue
+            if item.action == action:
                 return item
         return None
 
