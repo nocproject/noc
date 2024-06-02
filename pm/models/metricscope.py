@@ -201,7 +201,10 @@ class MetricScope(Document):
             default_value = None
             if config.clickhouse.enable_default_value:
                 default_value = getattr(config.clickhouse, f"default_{t.field_type}", None)
-            yield t.field_name, t.field_type, "DEFAULT" if default_value else "", default_value or ""
+            if default_value:
+                yield t.field_name, t.field_type, "DEFAULT", default_value or ""
+            else:
+                yield t.field_name, t.field_type, "", default_value or ""
 
     def iter_fields(self):
         """

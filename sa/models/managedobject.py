@@ -2752,8 +2752,7 @@ class ManagedObject(NOCModel):
         )
         return mo
 
-    def update_template_data(self, data, template=None):
-        ...
+    def update_template_data(self, data, template=None): ...
 
 
 @on_save

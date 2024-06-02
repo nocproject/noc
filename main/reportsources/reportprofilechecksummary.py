@@ -149,8 +149,7 @@ class ReportProfileCheckSummary(ReportSource):
                     }
                 )
                 if row["column"] == "1.2.1":
-                    b.data[
-                        "percent"
-                    ] = f'{round(row["column_0"] / data[-1].data["quantity"] * 100.0, 2)} %'
+                    p = round(row["column_0"] / data[-1].data["quantity"] * 100.0, 2)
+                    b.data["percent"] = f"{p} %"
                 data.append(b)
         return data

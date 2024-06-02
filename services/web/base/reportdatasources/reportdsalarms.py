@@ -342,9 +342,11 @@ class ReportDsAlarms(ReportDataSource):
                 "alarm_id": str(aa["_id"]),
                 "root_id": str(aa["root"]) if aa.get("root") else "",
                 "from_ts": aa["timestamp"].strftime("%Y-%m-%d %H:%M:%S"),
-                "to_ts": aa["clear_timestamp"].strftime("%Y-%m-%d %H:%M:%S")
-                if "clear_timestamp" in aa
-                else "",
+                "to_ts": (
+                    aa["clear_timestamp"].strftime("%Y-%m-%d %H:%M:%S")
+                    if "clear_timestamp" in aa
+                    else ""
+                ),
                 "duration_sec": round(aa["duration"]),
                 "object_name": mo["name"],
                 "object_address": mo["address"],
@@ -360,21 +362,29 @@ class ReportDsAlarms(ReportDataSource):
                 "objects": aa["total_objects_sum"]["sum"],
                 "subscribers": aa["total_subscribers_sum"]["sum"],
                 "tt": aa.get("escalation_tt"),
-                "escalation_ts": aa["escalation_ts"].strftime("%Y-%m-%d %H:%M:%S")
-                if "escalation_ts" in aa
-                else "",
-                "location": ", ".join(
-                    ll
-                    for ll in (
-                        loc.location(aa["container_path"][-1]) if aa.get("container_path") else ""
+                "escalation_ts": (
+                    aa["escalation_ts"].strftime("%Y-%m-%d %H:%M:%S")
+                    if "escalation_ts" in aa
+                    else ""
+                ),
+                "location": (
+                    ", ".join(
+                        ll
+                        for ll in (
+                            loc.location(aa["container_path"][-1])
+                            if aa.get("container_path")
+                            else ""
+                        )
+                        if ll
                     )
-                    if ll
-                )
-                if loc
-                else "",
-                "maintenance": "Yes"
-                if "clear_timestamp" not in aa and aa["managed_object"] in maintenance
-                else "No",
+                    if loc
+                    else ""
+                ),
+                "maintenance": (
+                    "Yes"
+                    if "clear_timestamp" not in aa and aa["managed_object"] in maintenance
+                    else "No"
+                ),
                 "container_address": "",
             }
             for sp_name, sp_id in subscribers_profile:

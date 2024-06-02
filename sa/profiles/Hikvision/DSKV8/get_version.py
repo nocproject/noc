@@ -45,7 +45,7 @@ class Script(BaseScript):
                 # "Boot PROM": match.group("bootprom"),
                 "Build Date": root.find("isapi:firmwareReleasedDate", ns).text,
                 "HW version": root.find("isapi:firmwareVersion", ns).text,
-                "Serial Number": root.find("isapi:serialNumber", ns).text
+                "Serial Number": root.find("isapi:serialNumber", ns).text,
                 # "Firmware Type":
             },
         }

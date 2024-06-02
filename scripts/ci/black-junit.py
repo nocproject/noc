@@ -55,7 +55,7 @@ def process(out: Optional[str] = None, tee: bool = False) -> int:
     r.append("</testsuite>")
     if problems:
         if out:
-            with (open(out, "w")) as f:
+            with open(out, "w") as f:
                 f.write("\n".join(r))
         else:
             sys.stdout.write("\n".join(r))

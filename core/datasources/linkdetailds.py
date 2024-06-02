@@ -142,9 +142,9 @@ class LinkDetailDS(BaseDataSource):
             yield row_num, "object1_segment", get_segment(mo_resolv[s1mo][4])
             yield row_num, "object1_tags", ";".join(mo_resolv[s1mo][5] or [])
             yield row_num, "object1_iface", s1["iface_n"][0]
-            yield row_num, "object1_descr", s1.get("iface_descr")[0] if s1.get(
-                "iface_descr"
-            ) else ""
+            yield row_num, "object1_descr", (
+                s1.get("iface_descr")[0] if s1.get("iface_descr") else ""
+            )
             yield row_num, "object1_speed", s1.get("iface_speed")[0] if s1.get("iface_speed") else 0
             yield row_num, "object2_admin_domain", mo_resolv[s2mo][0]
             yield row_num, "object2_name", mo_resolv[s2mo][1]
@@ -153,9 +153,9 @@ class LinkDetailDS(BaseDataSource):
             yield row_num, "object2_segment", get_segment(mo_resolv[s2mo][4])
             yield row_num, "object2_tags", ";".join(mo_resolv[s2mo][5] or [])
             yield row_num, "object2_iface", s2["iface_n"][0]
-            yield row_num, "object2_descr", s2.get("iface_descr")[0] if s2.get(
-                "iface_descr"
-            ) else ""
+            yield row_num, "object2_descr", (
+                s2.get("iface_descr")[0] if s2.get("iface_descr") else ""
+            )
             yield row_num, "object2_speed", s2.get("iface_speed")[0] if s2.get("iface_speed") else 0
             yield row_num, "link_proto", s2.get("dis_method", "")
             yield row_num, "last_seen", s2.get("last_seen", "")

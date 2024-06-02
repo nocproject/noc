@@ -26,9 +26,11 @@ class RemoteSystemApplication(ExtDocApplication):
             {
                 "id": str(rs.id),
                 "label": rs.name,
-                "last_successful_load": rs.last_successful_load.strftime("%Y-%m-%d %H:%M")
-                if rs.last_successful_load
-                else _("never"),
+                "last_successful_load": (
+                    rs.last_successful_load.strftime("%Y-%m-%d %H:%M")
+                    if rs.last_successful_load
+                    else _("never")
+                ),
             }
             for rs in RemoteSystem.objects.filter()
         ]

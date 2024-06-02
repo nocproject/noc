@@ -81,7 +81,12 @@ class Portal(object):
 class TopologyNode(object):
     id: str
     type: Literal[
-        "objectgroup", "managedobject", "objectsegment", "cpe", "container", "other"
+        "objectgroup",
+        "managedobject",
+        "objectsegment",
+        "cpe",
+        "container",
+        "other",
     ] = "other"
     resource_id: Optional[str] = None
     # Ссылка на node_id группы

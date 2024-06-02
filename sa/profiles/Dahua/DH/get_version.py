@@ -55,7 +55,7 @@ class Script(BaseScript):
             # "Boot PROM": match.group("bootprom"),
             "Build Date": build,
             "HW version": system_info["hardwareVersion"],
-            "Serial Number": system_info["serialNumber"]
+            "Serial Number": system_info["serialNumber"],
             # "Firmware Type":
         }
         vendor = "Dahua"

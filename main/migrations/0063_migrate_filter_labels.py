@@ -103,9 +103,11 @@ class Migration(BaseMigration):
                             {
                                 "vlan_filter": vc_domains[vc_name],
                                 "condition": "any",
-                                "scope": "subinterface_tagged_vlans"
-                                if vc_scope == "tagged"
-                                else "subinterface_untagged_vlan",
+                                "scope": (
+                                    "subinterface_tagged_vlans"
+                                    if vc_scope == "tagged"
+                                    else "subinterface_untagged_vlan"
+                                ),
                             }
                         ],
                         "match_prefixfilter": [],

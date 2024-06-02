@@ -291,9 +291,11 @@ class Sensor(Document):
         return {
             "type": "sensor",
             "bi_id": sensor.bi_id,
-            "fm_pool": sensor.managed_object.get_effective_fm_pool().name
-            if sensor.managed_object
-            else None,
+            "fm_pool": (
+                sensor.managed_object.get_effective_fm_pool().name
+                if sensor.managed_object
+                else None
+            ),
             "labels": labels,
             "metrics": [
                 {"name": "status", "is_stored": True},

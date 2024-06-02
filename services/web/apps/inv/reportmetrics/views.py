@@ -184,9 +184,9 @@ class ReportMetricsDetailApplication(ExtApplication):
                 "object_adm_domain": row[4],
                 "object_segment": NetworkSegment.get_by_id(row[5]).name if row[5] else "",
                 # "object_segment": "",
-                "object_container": containers_address.get(row[6], "")
-                if containers_address and row[6]
-                else "",
+                "object_container": (
+                    containers_address.get(row[6], "") if containers_address and row[6] else ""
+                ),
                 # "object_container": "",
             }
         datasource = self.report_map[reporttype]["datasource"]

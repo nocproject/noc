@@ -263,9 +263,11 @@ class ManagedObjectCard(BaseCard):
                     val = {
                         "name": m_path,
                         "type": "" if m_path == "Object | SysUptime" else metric_type_name[key],
-                        "value": display_time(int(mres[key]))
-                        if m_path == "Object | SysUptime"
-                        else mres[key],
+                        "value": (
+                            display_time(int(mres[key]))
+                            if m_path == "Object | SysUptime"
+                            else mres[key]
+                        ),
                         "threshold": t_v,
                     }
                     if data.get(key):

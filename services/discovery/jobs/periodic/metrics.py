@@ -79,14 +79,16 @@ class MetricsCheck(DiscoveryCheck):
         self.logger.debug("Collecting metrics: %s", metrics)
         result = self.object.scripts.get_metrics(
             collected=metrics,
-            streaming={
-                "stream": "metrics",
-                "partition": self.object.bi_id % metrics_svc_slots,
-                "utc_offset": config.tz_utc_offset,
-                "data": s_data,
-            }
-            if not config.discovery.proxy_metric
-            else None,
+            streaming=(
+                {
+                    "stream": "metrics",
+                    "partition": self.object.bi_id % metrics_svc_slots,
+                    "utc_offset": config.tz_utc_offset,
+                    "data": s_data,
+                }
+                if not config.discovery.proxy_metric
+                else None
+            ),
         )
         # Collect metrics
         if config.discovery.proxy_metric and not result:
