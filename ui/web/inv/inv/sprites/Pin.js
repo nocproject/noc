@@ -23,6 +23,8 @@ Ext.define("NOC.inv.inv.sprites.Pin", {
         hasInternalLabel: "bool",
         remoteId: "string",
         remoteName: "string",
+        remoteSlot: "string",
+        remoteSlotWidth: "number",
         side: "string",
         isSelected: "bool",
         isInternalFixed: "bool",
@@ -47,6 +49,7 @@ Ext.define("NOC.inv.inv.sprites.Pin", {
         labelAlign: "recalculate",
         remoteId: "recalculate",
         remoteName: "recalculate",
+        remoteSlot: "recalculate",
         side: "recalculate",
         allowInternal: "recalculate",
         allowDiscriminators: "recalculate",
@@ -61,8 +64,11 @@ Ext.define("NOC.inv.inv.sprites.Pin", {
         pinColor: "#2c3e50",
         internalColor: "#2c3e50",
         pinName: "Undefined",
+        pinNameWidth: 0,
         remoteId: "none",
         remoteName: "none",
+        remoteSlot: "none",
+        remoteSlotWidth: 0,
         isSelected: false,
         isInternalFixed: false,
         enabled: true,
@@ -90,6 +96,10 @@ Ext.define("NOC.inv.inv.sprites.Pin", {
           me.pinName = attr.pinName;
           me.pinNameOrig = attr.pinNameOrig;
           me.pinNameWidth = me.measureText(attr.pinName) + 0.2 * me.getBoxWidth();
+          me.remoteSlotWidth = 0;
+          if(me.remoteSlot !== "none"){
+            me.remoteSlotWidth = me.measureText(me.remoteSlot) + 0.2 * me.getBoxWidth() + 20;
+          }
           me.enabled = attr.enabled;
           me.internalEnabled = attr.internalEnabled;
           me.pinColor = attr.pinColor;
