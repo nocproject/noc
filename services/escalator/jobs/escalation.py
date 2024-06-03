@@ -89,8 +89,6 @@ class EscalationJob(SequenceJob):
             if not self.error:
                 self.remove_job()
             return
-        # Check retry and waited escalations
-        self.check_escalation_waited()
         # Check maintenances
         # Perform escalations
         with (
@@ -106,6 +104,8 @@ class EscalationJob(SequenceJob):
                 # span_ctx.span_context
                 self.object.set_escalation_context()
             ctx = self.object.get_ctx()
+            # Check retry and waited escalations
+            # self.check_escalation_waited(ctx)
             # Evaluate escalation chain
             for esc_item in self.iter_sequence():
                 # Render TT subject and body
@@ -167,6 +167,7 @@ class EscalationJob(SequenceJob):
             # Set current sequence
             self.object.sequence_num = num
             if (now - self.object.get_next(num)).total_seconds() < -1:
+                # if (now - self.object.get_next(num)).total_seconds() < int(item.delay):
                 break
             self.logger.info("...")
             if not item.member:
@@ -212,15 +213,34 @@ class EscalationJob(SequenceJob):
             if not self.error:
                 self.remove_job()
 
-    def check_escalation_waited(self):
+    def check_escalation_waited(self, e_ctx, changed: bool = False):
         """
         Retry escalation waited and temp error
-        :return:
+        Args:
+            e_ctx: Escalation Context
+            changed: Was Changed
         """
         for item in self.object.escalations:
-            if item.status != EscalationStatus.TEMP:
+            if item.status == EscalationStatus.FAIL:
                 continue
+            s = self.object.g
+            # Render TT subject and body
+            subject = item.template.render_subject(**e_ctx)
+            body = item.template.render_body(**e_ctx)
             # retry action
+            if item.member == EscalationMember.TT_SYSTEM:
+                tt_system = TTSystem.get_by_id(item.key)
+                r = self.create_tt(tt_system, subject, body, e_ctx)
+                self.object.set_escalation(
+                    member=EscalationMember.TT_SYSTEM,
+                    key=str(tt_system.id),
+                    status=r.status,
+                    timestamp=datetime.datetime.now().replace(microsecond=0),
+                    document_id=r.document,
+                    error=r.error,
+                )
+                if r.status == EscalationStatus.TEMP:
+                    self.set_temp_error(r.error)
 
     def check_closed(self, reason: Optional[str] = None):
         """
@@ -234,7 +254,8 @@ class EscalationJob(SequenceJob):
             ):
                 continue
             if item.deescalation_status and item.deescalation_status in (
-                EscalationStatus.OK or EscalationStatus.FAIL
+                EscalationStatus.OK,
+                EscalationStatus.FAIL,
             ):
                 continue
             if item.member == EscalationMember.TT_SYSTEM and item.document_id:
@@ -310,10 +331,12 @@ class EscalationJob(SequenceJob):
         for action in [TTAction.ACK, TTAction.UN_ACK, TTAction.CLOSE]:
             if action == TTAction.ACK and self.object.alarm.ack_user:
                 actions.append(
-                    TTActionContext(action=TTAction.UN_ACK, label=f"Ack by {self.object.alarm.ack_user}")
+                    TTActionContext(
+                        action=TTAction.UN_ACK, label=f"Ack by {self.object.alarm.ack_user}"
+                    )
                 )
                 continue
-            elif action == TTAction.UN_ACK and not self.object.alarm.ack_user:
+            elif action == TTAction.UN_ACK and self.object.alarm.ack_user:
                 continue
             actions.append(TTActionContext(action=action))
         ctx = TTSystemCtx(

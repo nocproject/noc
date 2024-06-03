@@ -120,7 +120,7 @@ class CheckTTJob(Job):
             ):
                 self.processed_changes(doc, changes)
             doc.save()
-        if last_ts:
+        if last_ts or last_id:
             self.object.register_update(last_ts, last_id)
 
     def processed_changes(self, doc: Escalation, changes: List[Tuple[User, TTChange]]):
