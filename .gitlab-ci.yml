@@ -50,7 +50,7 @@ py-lint:
     # Create directory for reports
     - mkdir -p build/reports
     # Check formatting
-    - black --check --diff . 2>&1 | ./scripts/ci/black-junit.py --tee --output=build/reports/junit-black.xml
+    - black --target-version py310 --check --diff . 2>&1 | ./scripts/ci/black-junit.py --tee --output=build/reports/junit-black.xml
     - STATUS_BLACK=$?
     # Ruff linter
     - ruff --format grouped -q . # To see stdout in joblog
