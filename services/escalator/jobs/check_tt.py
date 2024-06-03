@@ -13,7 +13,7 @@ from typing import Optional, Dict, List, Tuple
 
 # NOC modules
 from noc.core.scheduler.job import Job
-from noc.core.tt.types import TTAction, TTChange, EscalationStatus
+from noc.core.tt.types import TTAction, TTChange, EscalationStatus, EscalationMember
 from noc.core.lock.process import ProcessLock
 from noc.core.change.policy import change_tracker
 from noc.core.span import Span
@@ -55,22 +55,25 @@ class CheckTTJob(Job):
         r = {}
         for doc in Escalation.objects.filter(
             escalations__match={
-                "action": TTAction.CREATE.value,
+                "member": EscalationMember.TT_SYSTEM.value,
                 "key": str(self.object.id),
                 "document_id__exists": True,
             },
             end_timestamp__exists=False,
         ):
-            item = doc.get_escalation("tt_system", str(self.object.id))
+            item = doc.get_escalation(EscalationMember.TT_SYSTEM, str(self.object.id))
             if item and item.document_id:
                 r[item.document_id] = doc
         return r
 
-    def resolve_user(self, username) -> Optional[User]:
+    def resolve_user(self, username: str) -> Optional["User"]:
         """
         Resolve user by TT System Credential
 
+        Args:
+            username: User contact id
         """
+        return User.get_by_contact(username)
 
     def handler(self, **kwargs):
         tts = self.object.get_system()
@@ -106,11 +109,15 @@ class CheckTTJob(Job):
             return
         for doc_id, changes in changes.items():
             doc = docs[doc_id]
-            with Span(
+            with (
+                Span(
                     client="escalator",
                     sample=self.object.telemetry_sample,
                     context=doc.ctx_id,
-            ) as span_ctx, self.lock.acquire(doc.get_lock_items()), change_tracker.bulk_changes():
+                ) as span_ctx,
+                self.lock.acquire(doc.get_lock_items()),
+                change_tracker.bulk_changes(),
+            ):
                 self.processed_changes(doc, changes)
             doc.save()
         if last_ts:
@@ -160,7 +167,9 @@ class CheckTTJob(Job):
             self.scheduler.postpone_job(self.attrs[self.ATTR_ID])
         else:
             # Schedule next run
-            ts = self.get_next_timestamp(config.escalator.wait_tt_check_interval, self.attrs[self.ATTR_OFFSET])
+            ts = self.get_next_timestamp(
+                config.escalator.wait_tt_check_interval, self.attrs[self.ATTR_OFFSET]
+            )
         # Error
         if not ts:
             # Remove disabled job

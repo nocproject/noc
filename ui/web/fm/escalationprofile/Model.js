@@ -62,7 +62,7 @@ Ext.define("NOC.fm.escalationprofile.Model", {
             type: "auto"
         },
         {
-            name: "tt_system",
+            name: "tt_system_config",
             type: "auto"
         },
         {

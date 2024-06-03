@@ -204,11 +204,36 @@ class ActiveAlarm(Document):
             if "save_condition" not in kwargs:
                 kwargs["save_condition"] = {"id": self.id}
             try:
+                self.last_update = datetime.datetime.now().replace(microsecond=0)
                 self.save(**kwargs)
+                self.register_changes()
             except SaveConditionError:
                 pass  # Race condition, closed during update
         else:
             self.save()
+            self.register_changes()
+
+    def register_changes(self):
+        from noc.fm.models.escalation import Escalation, ItemStatus, ESCALATION_JOB
+
+        if not self.id:
+            return
+        if not self.escalation_profile:
+            return
+        coll = Escalation._get_collection()
+        r = coll.find_one_and_update(
+            {
+                "items.0.alarm": self.id,
+                "items.0.status__nin": [ItemStatus.NEW.value, ItemStatus.FAIL.value],
+                "is_dirty": False,
+                "end_timestamp": {"$exists": False},
+            },
+            {"$set": {"items.0.status": ItemStatus.CHANGED.value, "is_dirty": True}},
+            projection={"end_timestamp": True, "_id": True},
+        )
+        if r:
+            # Update Job, TTSystem Shard (Set Shard on Profile)
+            Job.submit("escalator", ESCALATION_JOB, key=str(r["_id"]), pool="default")
 
     def change_severity(
         self,
@@ -483,7 +508,7 @@ class ActiveAlarm(Document):
                 source=user.username,
             )
         ]
-        self.save()
+        self.safe_save()
 
     def unacknowledge(self, user: "User", msg=""):
         self.ack_ts = None
@@ -497,7 +522,7 @@ class ActiveAlarm(Document):
                 source=user.username,
             )
         ]
-        self.save()
+        self.safe_save()
 
     def register_clear(
         self, msg: str, user: Optional[User] = None, timestamp: Optional[datetime.datetime] = None

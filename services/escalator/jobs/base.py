@@ -34,7 +34,7 @@ class SequenceJob(Job):
             ts = datetime.datetime.now() + datetime.timedelta(seconds=60)
             self.scheduler.postpone_job(self.attrs[self.ATTR_ID])
         else:
-            ts = self.object.get_next()
+            ts = self.object.get_to()
         # Error
         if not ts:
             # Remove disabled job

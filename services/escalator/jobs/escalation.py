@@ -23,6 +23,8 @@ from noc.core.tt.types import (
     EscalationStatus,
     EscalationResult,
     EscalationMember,
+    TTActionContext,
+    TTAction,
 )
 from noc.core.tt.base import TTSystemCtx
 from noc.core.perf import metrics
@@ -148,10 +150,6 @@ class EscalationJob(SequenceJob):
                         key=str(esc_item.notification_group.id),
                         status=r.status,
                     )
-                # Execute Diagnostic
-                if esc_item.stop_processing:
-                    self.logger.debug("Stopping processing")
-                    break
         self.logger.info("Saving changes on: %s", self.object.sequence_num)
         self.end_sequence()
 
@@ -168,8 +166,12 @@ class EscalationJob(SequenceJob):
                 continue
             # Set current sequence
             self.object.sequence_num = num
-            if (now - self.object.get_next(num)).total_seconds() < int(item.delay):
+            if (now - self.object.get_next(num)).total_seconds() < -1:
                 break
+            self.logger.info("...")
+            if not item.member:
+                self.logger.warning("Unknown escalation member: %s", item.member)
+                continue
             escalation = self.object.get_escalation(member=item.member, key=item.get_key())
             if escalation and escalation.status == EscalationStatus.OK:
                 # Already escalated
@@ -187,23 +189,28 @@ class EscalationJob(SequenceJob):
             if not condition:
                 continue
             yield item
-        self.logger.info("Escalation sequence is completed")
-        if self.object.profile.end_condition == "CT":
-            # Close For Wait TT
-            # Set Escalation to Wait
-            self.object.set_escalation()
-            self.remove_job()
-            return
-        elif self.object.alarm == "A" and self.object.profile.close_alarm:
-            # Clear Alarm after End
-            self.object.alarm.register_clear()
-            # self.close_alarm()
-        if self.object.profile.end_condition == "E":
-            # End if end condition
-            self.end_escalation()
-        # Remove or Suspend
-        if not self.error:
-            self.remove_job()
+            # Execute Diagnostic
+            if item.stop_processing:
+                self.logger.debug("Stopping processing")
+                self.remove_job()
+        else:
+            self.logger.info("Escalation sequence is completed")
+            if self.object.profile.end_condition == "CT":
+                # Close For Wait TT
+                # Set Escalation to Wait
+                self.object.set_escalation()
+                self.remove_job()
+                return
+            elif self.object.alarm == "A" and self.object.profile.close_alarm:
+                # Clear Alarm after End
+                self.object.alarm.register_clear()
+                # self.close_alarm()
+            if self.object.profile.end_condition == "E":
+                # End if end condition
+                self.end_escalation()
+            # Remove or Suspend
+            if not self.error:
+                self.remove_job()
 
     def check_escalation_waited(self):
         """
@@ -272,8 +279,9 @@ class EscalationJob(SequenceJob):
 
     def get_escalation_items(self, tt_system: TTSystem) -> List[ECtxItem]:
         """
+        Args:
+            tt_system: TTSystem for checked item
 
-        :return:
         """
         r = []
         for item in self.object.items:
@@ -298,6 +306,16 @@ class EscalationJob(SequenceJob):
         self, tt_system: TTSystem, tt_id: Optional[str] = None
     ) -> TTSystemCtx:
         cfg = self.object.profile.get_tt_system_config(tt_system)
+        actions = []
+        for action in [TTAction.ACK, TTAction.UN_ACK, TTAction.CLOSE]:
+            if action == TTAction.ACK and self.object.alarm.ack_user:
+                actions.append(
+                    TTActionContext(action=TTAction.UN_ACK, label=f"Ack by {self.object.alarm.ack_user}")
+                )
+                continue
+            elif action == TTAction.UN_ACK and not self.object.alarm.ack_user:
+                continue
+            actions.append(TTActionContext(action=action))
         ctx = TTSystemCtx(
             id=tt_id,
             tt_system=tt_system.get_system(),
@@ -305,6 +323,7 @@ class EscalationJob(SequenceJob):
             reason=None,
             login=cfg.login,
             timestamp=self.object.timestamp,
+            actions=actions,
             items=self.get_escalation_items(tt_system) if cfg.promote_item else [],
         )
         return ctx

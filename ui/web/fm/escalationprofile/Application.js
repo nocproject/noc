@@ -138,6 +138,39 @@ Ext.define("NOC.fm.escalationprofile.Application", {
                     uiStyle: "medium"
                 },
                 {
+                    name: "tt_system_config",
+                    xtype: "gridfield",
+                    fieldLabel: __("TT System Config"),
+                    columns: [
+                        {
+                            text: __("TT System"),
+                            dataIndex: "tt_system",
+                            editor: "fm.ttsystem.LookupField",
+                            renderer: NOC.render.Lookup("tt_system"),
+                            width: 150
+                        },54
+                        {
+                            text: __("Pre Reason"),
+                            dataIndex: "pre_reason",
+                            editor: "textfield",
+                            width: 150
+                        },
+                        {
+                            text: __("Login"),
+                            dataIndex: "login",
+                            editor: "textfield",
+                            width: 150
+                        },
+                        {
+                            text: __("Close Template"),
+                            dataIndex: "close_template",
+                            editor: "main.template.LookupField",
+                            width: 200,
+                            renderer: NOC.render.Lookup("close_template")
+                        }
+                    ]
+                },
+                {
                     name: "escalations",
                     xtype: "gridfield",
                     fieldLabel: __("Escalations"),

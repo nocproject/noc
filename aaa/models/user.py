@@ -110,6 +110,7 @@ class User(NOCModel):
 
     _id_cache = cachetools.TTLCache(maxsize=100, ttl=60)
     _name_cache = cachetools.TTLCache(maxsize=100, ttl=60)
+    _contact_cache = cachetools.TTLCache(maxsize=100, ttl=60)
 
     def __str__(self):
         return self.username
@@ -123,6 +124,15 @@ class User(NOCModel):
     @cachetools.cachedmethod(operator.attrgetter("_name_cache"), lock=lambda _: id_lock)
     def get_by_username(cls, name) -> Optional["User"]:
         return User.objects.filter(username=name).first()
+
+    @classmethod
+    @cachetools.cachedmethod(operator.attrgetter("_contact_cache"), lock=lambda _: id_lock)
+    def get_by_contact(cls, contact) -> Optional["User"]:
+        from .usercontact import UserContact
+        uc = UserContact.objects.filter(params=contact).first()
+        if uc:
+            return uc.user
+        return
 
     def is_authenticated(self) -> bool:
         """

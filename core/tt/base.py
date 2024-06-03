@@ -14,6 +14,7 @@ from typing import Optional, List
 from .types import (
     DeescalationContext,
     EscalationContext,
+    TTActionContext,
     TTInfo,
     TTCommentRequest,
     EscalationItem,
@@ -153,10 +154,10 @@ class BaseTTSystem(object):
         raise NotImplementedError()
 
     def get_updates(
-            self,
-            last_run: Optional[datetime] = None,
-            last_update: Optional[str] = None,
-            tt_ids: Optional[List[str]] = None,
+        self,
+        last_run: Optional[datetime] = None,
+        last_update: Optional[str] = None,
+        tt_ids: Optional[List[str]] = None,
     ) -> List[TTChange]:
         """
         Getting updates from TT system
@@ -182,6 +183,7 @@ class TTSystemCtx(object):
         login: TT system's login
         timestamp: Alarm timestamp.
         id: Document id
+        actions: Available action Context
         items: Managed object references. Leader is first.
     """
 
@@ -193,6 +195,7 @@ class TTSystemCtx(object):
         queue=None,
         reason=None,
         login=None,
+        actions=None,
         items=None,
     ):
         self.tt_system: BaseTTSystem = tt_system
@@ -202,6 +205,7 @@ class TTSystemCtx(object):
         self.reason: Optional[str] = reason
         self.login: Optional[str] = login
         self.items: List[EscalationItem] = items or []
+        self.actions: List[TTActionContext] = actions or []
         self.error_code: Optional[str] = None
         self.error_text: Optional[str] = ""
 
@@ -253,6 +257,7 @@ class TTSystemCtx(object):
                 timestamp=self.timestamp,
                 subject=subject,
                 body=body,
+                actions=self.actions,
                 items=self.items,
             )
         )
@@ -289,7 +294,9 @@ class TTSystemCtx(object):
             )
         )
 
-    def get_updates(self, last_run: Optional[datetime] = None, last_number: Optional[str] = None) -> List[TTChange]:
+    def get_updates(
+        self, last_run: Optional[datetime] = None, last_number: Optional[str] = None
+    ) -> List[TTChange]:
         """
         Getting updates from TT system
 
@@ -307,14 +314,16 @@ class TTSystemCtx(object):
         return self
 
     def __exit__(self, exc_type, exc_val, exc_tb):
-        if isinstance(exc_type, TemporaryTTError):
+        if exc_type is TemporaryTTError:
             # "temp"
             self.set_error("temp", str(exc_val))
-        elif isinstance(exc_type, TTError):
+        elif exc_type is TTError:
             # "fail"
             self.set_error("fail", str(exc_val))
-        elif isinstance(exc_type, NotImplementedError):
+        elif exc_type is NotImplementedError:
             self.set_error("skip", str(exc_val))
+        elif exc_type:
+            self.set_error("fail", str(exc_val))
         return True
 
     def set_error(self, code: Optional[str] = None, text: Optional[str] = None) -> None:

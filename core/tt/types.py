@@ -23,6 +23,7 @@ class EscalationStatus(enum.Enum):
         SKIP: Escalation Skipped
         WAIT: Escalation Wait
     """
+
     OK = "ok"
     TEMP = "temp"
     FAIL = "fail"
@@ -42,6 +43,7 @@ class TTAction(enum.Enum):
         SUBSCRIBE: Subscribe alarm changes
         NOTIFY: Send Notification
     """
+
     CREATE = "create"
     ACK = "ack"
     UN_ACK = "un_ack"
@@ -49,6 +51,11 @@ class TTAction(enum.Enum):
     LOG = "log"
     SUBSCRIBE = "subscribe"
     NOTIFY = "notify"
+
+
+class TTActionContext(BaseModel):
+    action = TTAction
+    label: Optional[str] = None
 
 
 class TTSystemConfig(BaseModel):
@@ -62,6 +69,7 @@ class TTSystemConfig(BaseModel):
         promote_item: Supported Escalation Item
         promote_group_tt: Escalate Group Item (Multiple Item)
     """
+
     login: str
     telemetry_sample: int = 0
     max_escalation_retries: int = 30
@@ -99,6 +107,7 @@ class TTChange(BaseModel):
         timestamp: Action timestamp
         message: Message text
     """
+
     document_id: str
     action: TTAction  # ack, n_ack, log, close, subscribe
     user: str
@@ -165,6 +174,7 @@ class EscalationContext(BaseModel):
         login: TT system's login
         timestamp: Alarm timestamp.
         is_unavailable: Alarm triggered unavailable items
+        actions: Allowed Actions list
         items: Managed object references. Leader is first.
     """
 
@@ -176,7 +186,7 @@ class EscalationContext(BaseModel):
     queue: Optional[str] = None
     reason: Optional[str] = None
     login: Optional[str] = None
-    actions: Optional[List[TTAction]] = None
+    actions: Optional[List[TTActionContext]] = None
     is_unavailable: bool = False
 
     @property
