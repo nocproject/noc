@@ -77,6 +77,12 @@ Ext.define("NOC.fm.alarmseverity.Application", {
             allowBlank: false
         },
         {
+            name: "code",
+            xtype: "textfield",
+            fieldLabel: __("Code"),
+            allowBlank: true
+        },
+        {
             name: "style",
             xtype: "main.style.LookupField",
             fieldLabel: __("Style"),

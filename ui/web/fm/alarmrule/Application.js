@@ -14,7 +14,6 @@ Ext.define("NOC.fm.alarmrule.Application", {
         "NOC.core.ListFormField",
         "NOC.fm.alarmclass.LookupField",
         "NOC.fm.alarmseverity.LookupField",
-        "NOC.fm.escalationprofile.LookupField",
         "NOC.main.notificationgroup.LookupField",
         "NOC.main.handler.LookupField",
         "Ext.ux.form.GridField"
@@ -171,11 +170,11 @@ Ext.define("NOC.fm.alarmrule.Application", {
                             })
                         },
                         {
-                            text: __("Min. Severity"),
-                            dataIndex: "min_severity",
+                            text: __("Severity"),
+                            dataIndex: "severity",
                             editor: "fm.alarmseverity.LookupField",
                             width: 100,
-                            renderer: NOC.render.Lookup("min_severity")
+                            renderer: NOC.render.Lookup("severity")
                         },
                         {
                             text: __("Notification Group"),

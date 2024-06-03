@@ -20,7 +20,6 @@ from typing import (
     runtime_checkable,
     Generic,
     Union,
-    List,
 )
 
 # Third-party modules
@@ -584,7 +583,7 @@ class ActiveAlarm(Document):
 
         """
         policy = policy or self.severity_policy
-        severity = severity.severity or self.base_severity
+        severity = (severity.severity if severity else self.base_severity)
         summary = summary or self.get_summary()
         match policy:
             case "CB":

@@ -1,7 +1,10 @@
 {
     "name": "CRITICAL",
+    "$collection": "fm.alarmseverities",
     "uuid": "1d9c930a-f115-4862-8c91-9d198899784b",
     "description": "Serious impact on services detected. Network is down or operating in degraded mode",
     "severity": 5000,
+    "code": "CRITICAL",
+    "min_weight": 1000,
     "style__name": "FM CRITICAL"
 }
