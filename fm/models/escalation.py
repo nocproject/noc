@@ -39,14 +39,25 @@ from noc.sa.models.managedobject import ManagedObject
 from noc.sa.models.servicesummary import SummaryItem, ObjectSummaryItem
 from noc.sa.models.service import Service
 from noc.fm.models.activealarm import ActiveAlarm
+from noc.fm.models.ttsystem import TTSystem
 from noc.fm.models.utils import get_alarm
 from .escalationprofile import EscalationProfile
 
 logger = logging.getLogger(__name__)
 ESCALATION_JOB = "noc.services.escalator.jobs.escalation.EscalationJob"
+CHECK_TT_JOB = "noc.services.escalator.jobs.check_tt.CheckTTJob"
 
 
 class ItemStatus(enum.Enum):
+    """
+    Attributes:
+        NEW: New items
+        CHANGED: Items was changed
+        FAIL: Failed when add to escalation
+        EXISTS: Escalate over another doc
+        REMOVED: Removed from escalation
+    """
+
     NEW = "new"  # new item
     CHANGED = "changed"  # item changed
     FAIL = "fail"  # escalation fail
@@ -93,6 +104,7 @@ class EscalationLog(EmbeddedDocument):
         deescalation_status: End escalation status on TT System
         deescalation_error: Error on deescalation process
     """
+
     timestamp = DateTimeField()
     member = EnumField(EscalationMember, required=True)
     key: str = StringField(required=True)
@@ -108,8 +120,8 @@ class EscalationLog(EmbeddedDocument):
 
     def __str__(self):
         if self.deescalation_status:
-            return f"{self.timestamp}: {self.type}, {self.status}/{self.deescalation_status}"
-        return f"{self.timestamp}: {self.type}, {self.status}"
+            return f"{self.timestamp}: {self.member}, {self.status}/{self.deescalation_status}"
+        return f"{self.timestamp}: {self.member}, {self.status}"
 
 
 class ActionLog(EmbeddedDocument):
@@ -121,6 +133,8 @@ class ActionLog(EmbeddedDocument):
         contact: Receiver address
         message: Notify/comment message
     """
+
+    timestamp = DateTimeField()
     status: EscalationStatus = EnumField(EscalationStatus)
     # ack_alarm, close_alarm, add_comment ? User
     action: TTAction = EnumField(TTAction, required=True)
@@ -139,7 +153,9 @@ class Escalation(Document):
             "items.alarm",
             "end_timestamp",
             "items.0.alarm",
-            ("end_timestamp", "items.alarm", "escalations.document_id"),
+            "escalations.document_id",
+            ("end_timestamp", "items.0.alarm", "items.0.status", "is_dirty"),
+            ("end_timestamp", "items.alarm", "escalations.member"),
             {"fields": ["expires"], "expireAfterSeconds": 0},
         ],
     }
@@ -178,7 +194,7 @@ class Escalation(Document):
     def get_timestamp(self) -> datetime.datetime:
         if not self.sequence_num:
             return self.timestamp
-        delay = sum(i.delay for i in self.profile.escalations[1 : self.sequence_num])
+        delay = sum(i.delay for i in self.profile.escalations[0 : self.sequence_num])
         return self.timestamp + datetime.timedelta(seconds=delay)
 
     def get_lock_items(self) -> List[str]:
@@ -209,8 +225,10 @@ class Escalation(Document):
         :return:
         """
         # Check end
-        sequence_num = sequence_num or self.sequence_num
-        seq_delay = datetime.timedelta(seconds=int(sequence_num))
+        if sequence_num is None:
+            sequence_num = self.sequence_num
+        next_esc = self.profile.escalations[sequence_num]
+        seq_delay = datetime.timedelta(seconds=int(next_esc.delay))
         return self.timestamp + seq_delay
 
     @staticmethod
@@ -429,7 +447,7 @@ class Escalation(Document):
                 EscalationLog(
                     timestamp=timestamp,
                     key=key,
-                    action=member,
+                    member=member,
                     status=status,
                     document_id=document_id,
                 )
@@ -583,6 +601,18 @@ class Escalation(Document):
         self.total_subscribers = [
             SummaryItem(profile=k, summary=v) for k, v in total_subscribers.items()
         ]
+
+    def get_tt_ids(self) -> str:
+        """
+        Return all escalated Document with TT system
+        :return:
+        """
+        r = []
+        for i in self.escalations:
+            if i.member == EscalationMember.TT_SYSTEM and i.document_id:
+                tt = TTSystem.get_by_id(i.key)
+                r.append(f"{tt.name}:{i.document_id}")
+        return ";".join(r)
 
     def check_end(self) -> bool:
         """
