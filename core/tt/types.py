@@ -54,7 +54,7 @@ class TTAction(enum.Enum):
 
 
 class TTActionContext(BaseModel):
-    action = TTAction
+    action: TTAction
     label: Optional[str] = None
 
 

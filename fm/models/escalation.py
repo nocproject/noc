@@ -140,8 +140,8 @@ class ActionLog(EmbeddedDocument):
     action: TTAction = EnumField(TTAction, required=True)
     # User Actions
     user: Optional["User"] = ForeignKeyField(User, required=False)
-    contact: Optional[str] = None
-    message: Optional[str] = None
+    contact: Optional[str] = StringField()
+    message: Optional[str] = StringField()
 
 
 class Escalation(Document):
