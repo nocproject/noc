@@ -583,7 +583,7 @@ class ActiveAlarm(Document):
 
         """
         policy = policy or self.severity_policy
-        severity = (severity.severity if severity else self.base_severity)
+        severity = severity.severity if severity else self.base_severity
         summary = summary or self.get_summary()
         match policy:
             case "CB":

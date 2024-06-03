@@ -59,6 +59,20 @@ Ext.define("NOC.fm.alarmrule.Application", {
                     uiStyle: 'large'
                 },
                 {
+                    name: "severity_policy",
+                    xtype: "combobox",
+                    fieldLabel: __("Calc Severity Policy"),
+                    allowBlank: true,
+                    store: [
+                        ["CB", __("Class Based Policy")],
+                        ["AB", __("Affected Based Severity Preferred")],
+                        ["AL", __("Affected Limit")],
+                        ["ST", __("By Tokens")]
+                    ],
+                    uiStyle: "medium",
+                    value: "AL",
+                },
+                {
                     name: "groups",
                     xtype: "gridfield",
                     fieldLabel: __("Group Alarm"),
@@ -260,20 +274,6 @@ Ext.define("NOC.fm.alarmrule.Application", {
                             allowBlank: true
                         },
                     ]
-                },
-                {
-                    name: "severity_policy",
-                    xtype: "combobox",
-                    fieldLabel: __("Calc Severity Policy"),
-                    allowBlank: false,
-                    store: [
-                        ["CB", __("Class Based Policy")],
-                        ["AB", __("Affected Based Severity Preferred")],
-                        ["AL", __("Affected Limit")],
-                        ["ST", __("By Tokens")]
-                    ],
-                    uiStyle: "medium",
-                    value: "AL",
                 }
             ]
         });
