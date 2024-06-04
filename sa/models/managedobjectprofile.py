@@ -1013,7 +1013,6 @@ class ManagedObjectProfile(NOCModel):
                 alarm_labels=["noc::access::method::SNMP"],
                 reason="Blocked by AccessPreference" if ac == "C" else None,
             )
-            snmp_cred = o.credentials.get_snmp_credential() if o else None
             yield DiagnosticConfig(
                 PROFILE_DIAG,
                 display_description="Check device profile",
@@ -1032,17 +1031,20 @@ class ManagedObjectProfile(NOCModel):
             # CLI Diagnostic
             if o:
                 blocked |= o.scheme not in {1, 2}
+                cli_cred = o.credentials.get_cli_credential()
+            else:
+                cli_cred = None
             checks = [
                 Check(
                     name="TELNET",
-                    credential=o.credentials.get_cli_credential(),
+                    credential=cli_cred,
                 ),
                 Check(
                     name="SSH",
-                    credential=o.credentials.get_cli_credential(),
+                    credential=cli_cred,
                 ),
             ]
-            if o.scheme == SSH:
+            if o and o.scheme == SSH:
                 checks.reverse()
             yield DiagnosticConfig(
                 CLI_DIAG,
