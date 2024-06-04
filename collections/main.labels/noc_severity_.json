@@ -1,0 +1,19 @@
+{
+    "name": "noc::severity::*",
+    "$collection": "main.labels",
+    "uuid": "88f8158f-e40a-4a89-a5df-b326f4f8bab0",
+    "description": "Wildcard label for scope noc::severity",
+    "bg_color1": 15105570,
+    "fg_color1": 16777215,
+    "bg_color2": 15158332,
+    "fg_color2": 16777215,
+    "display_order": 0,
+    "allow_models": ["fm.ActiveAlarm"],
+    "allow_auto_create": false,
+    "propagate": false,
+    "is_protected": false,
+    "is_matching": false,
+    "expose_metric": false,
+    "expose_datastream": false,
+    "expose_alarm": true
+}

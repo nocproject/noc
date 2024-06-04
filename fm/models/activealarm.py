@@ -101,7 +101,7 @@ class ActiveAlarm(Document):
     # Calculated Severity
     severity = IntField(required=True)
     base_severity = IntField(required=False)
-    severity_policy = StringField(default="AL")
+    severity_policy = StringField(default="AS")
     vars = DictField()
     # Alarm reference is a hash of discriminator
     # for external systems
@@ -148,7 +148,7 @@ class ActiveAlarm(Document):
     direct_objects = ListField(EmbeddedDocumentField(ObjectSummaryItem))
     direct_services = ListField(EmbeddedDocumentField(SummaryItem))
     direct_subscribers = ListField(EmbeddedDocumentField(SummaryItem))
-    # Indirectly affected services summary, groupped by profiles
+    # Indirectly affected services summary, grouped by profiles
     # (covered by this and all inferred alarms)
     total_objects = ListField(EmbeddedDocumentField(ObjectSummaryItem))
     total_services = ListField(EmbeddedDocumentField(SummaryItem))
@@ -576,14 +576,26 @@ class ActiveAlarm(Document):
             severity: Alarm Based Severity
             summary: Alarm Affected Summary
             policy:
+                * AS - Any Severity
                 * CB - Class Based Policy
                 * AB - Affected Based Severity Preferred
                 * AL - Affected Limit
                 * ST - By Tokens
 
         """
-        policy = policy or self.severity_policy
-        severity = severity.severity if severity else self.base_severity
+        if not policy and self.alarm_class.affected_service:
+            policy = "AB"
+        elif not policy:
+            policy = self.severity_policy
+
+        if severity:
+            severity = severity.severity
+        elif self.base_severity:
+            severity = self.base_severity
+        elif self.alarm_class.severity:
+            severity = self.alarm_class.severity.severity
+        else:
+            severity = 1000
         summary = summary or self.get_summary()
         match policy:
             case "CB":
@@ -592,12 +604,14 @@ class ActiveAlarm(Document):
                 return ServiceSummary.get_severity(summary)
             case "AL":
                 ss = ServiceSummary.get_severity(summary)
-                if severity <= ss:
+                if severity and severity <= ss:
                     return severity
                 return ss
             case "ST":
-                return 1
-        return 1
+                sev = AlarmSeverity.get_from_labels(self.effective_labels)
+                if sev:
+                    return sev.severity
+        return severity
 
     def update_summary(self):
         """
