@@ -132,22 +132,26 @@
       get_url:
         url: "{{ noc_python_openssl_url }}"
         dest: "{{ noc_dist }}/openssl.tar.gz"
-      register: python_openssl_download
       environment:
         https_proxy: "{{ http_proxy }}"
         http_proxy: "{{ http_proxy }}"
 
+    - name: Create dirs for Python's archives
+      file:
+        path: "/opt/openssl"
+        state: directory
+        mode: '0755'
+
     - name: "Python{{ noc_py3_ver }} | Uncompress openssl"
       unarchive:
         src: "{{ noc_dist }}/openssl.tar.gz"
-        dest: "/opt/openssl/"
+        dest: "/opt/openssl"
         creates: "/opt/openssl/bin/openssl"
         remote_src: true
-      when: python_openssl_download is changed
 
   when:
     - ansible_distribution in ['RedHat', 'CentOS']
-    - ansible_distribution_version is version(7, '=')
+    - ansible_distribution_version is version(8, '<')
 
 - name: Initialize virtualenv3
   pip:
