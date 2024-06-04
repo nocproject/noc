@@ -248,7 +248,6 @@ def _get_dict_interface_metrics(managed_object: "ManagedObject") -> Dict[str, st
                 "errors_out": "Interface | Errors | Out",
             }
     """
-    INTERFACE_SCOPE = MetricScope.get_by_table_name("interface")
     # Avoid circular references
     from noc.inv.models.interface import Interface
     from noc.inv.models.interfaceprofile import InterfaceProfile
@@ -261,7 +260,7 @@ def _get_dict_interface_metrics(managed_object: "ManagedObject") -> Dict[str, st
         metrics_type = set()
         for ip in InterfaceProfile.objects.filter(id__in=i_profile):
             for metric in ip.metrics:
-                if metric.metric_type.scope == INTERFACE_SCOPE:
+                if metric.metric_type.scope.table_name == "interface":
                     metrics_type.add(metric.metric_type)
         for mt in metrics_type:
             f_n[mt.field_name] = mt.name
