@@ -27,6 +27,7 @@ py_version:
 
 py_rel_name: "{{ py_version['py' ~ noc_py3_ver] }}"
 noc_python_url: "https://cdn.getnoc.com/noc/repo/{{ ansible_os_family }}/{{ ansible_distribution_major_version }}/python{{ py_rel_name }}.tar.gz"
+noc_python_openssl_url: "https://cdn.getnoc.com/noc/repo/RedHat/7/openssl.tar.gz"
 
 noc_sclo_yum_repo: "http://mirror.centos.org/centos/7/sclo/x86_64/rh/"
 noc_sclo_yum_repo_gpgkey: "https://www.centos.org/keys/RPM-GPG-KEY-CentOS-SIG-SCLo"
