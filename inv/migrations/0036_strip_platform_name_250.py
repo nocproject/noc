@@ -23,7 +23,7 @@ class Migration(BaseMigration):
         bulk = []
         duplicates = defaultdict(int)
         for p in platform_coll.find({}, {"name": 1}):
-            m_name = duplicates[p["name"][:MAX_PLATFORM_LENGTH]]
+            m_name = p["name"][:MAX_PLATFORM_LENGTH]
             if p["name"] != m_name:
                 duplicates[m_name] += 1
                 if m_name in duplicates:
