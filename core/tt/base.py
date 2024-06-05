@@ -251,6 +251,7 @@ class TTSystemCtx(object):
         """
         self.id = self.tt_system.create(
             EscalationContext(
+                id=self.id,
                 queue=self.queue,
                 reason=self.reason,
                 login=self.login,

@@ -7,7 +7,7 @@
 
 # Python modules
 import operator
-from typing import Optional, Union, List, Dict
+from typing import Optional, Union, List, FrozenSet
 from threading import Lock
 
 # Third-party modules
@@ -27,10 +27,12 @@ import cachetools
 from noc.core.model.decorator import on_delete_check
 from noc.core.mongo.fields import ForeignKeyField
 from noc.core.models.escalationpolicy import EscalationPolicy
-from noc.core.tt.types import TTSystemConfig, EscalationMember
+from noc.core.tt.types import TTSystemConfig, EscalationMember, TTAction
 from noc.main.models.notificationgroup import NotificationGroup
 from noc.main.models.timepattern import TimePattern
 from noc.main.models.template import Template
+from noc.aaa.models.user import User
+from noc.aaa.models.group import Group
 from noc.fm.models.ttsystem import TTSystem
 from noc.fm.models.alarmseverity import AlarmSeverity
 
@@ -52,6 +54,8 @@ class EscalationItem(EmbeddedDocument):
     min_severity: AlarmSeverity = ReferenceField(AlarmSeverity)
     #
     template: Template = ForeignKeyField(Template)
+    #
+    close_template: Template = ForeignKeyField(Template)
     # Acton
     notification_group: NotificationGroup = ForeignKeyField(NotificationGroup)
     create_tt = BooleanField(default=False)
@@ -91,12 +95,22 @@ class EscalationItem(EmbeddedDocument):
 
 
 class TTSystemItem(EmbeddedDocument):
+    meta = {"strict": False}
     tt_system = ReferenceField(TTSystem)
     pre_reason = StringField()
     login = StringField()
     global_limit = IntField()
-    close_template: Template = ForeignKeyField(Template)
     max_escalation_retries = IntField(default=30)
+
+
+class EscalationAction(EmbeddedDocument):
+    meta = {"strict": False}
+    user = ForeignKeyField(User)
+    group = ForeignKeyField(Group)
+    ack = BooleanField(default=False)
+    close = BooleanField(default=False)
+    log = BooleanField(default=False)
+    subscribe = BooleanField(default=False)
 
 
 @on_delete_check(
@@ -113,6 +127,7 @@ class EscalationProfile(Document):
     #     choices=["never", "rootfirst", "root", "alwaysfirst", "always"], default="root"
     # )
     tt_system_config: List[TTSystemItem] = EmbeddedDocumentListField(TTSystemItem)
+    actions: List[EscalationAction] = EmbeddedDocumentListField(EscalationAction)
     maintenance_policy = StringField(choices=["w", "i", "e"], default="end")
     alarm_consequence_policy = StringField(
         required=True,
@@ -178,6 +193,31 @@ class EscalationProfile(Document):
             if item.wait_ack:
                 return True
         return False
+
+    def get_actions(
+        self,
+        user: Optional[User] = None,
+        group: Optional[Group] = None,
+    ) -> FrozenSet[TTAction]:
+        """
+        Getting TT System Action support
+
+        Args:
+            user:
+            group:
+        """
+        r = []
+        for a in self.actions:
+            if user and user != a.user:
+                # Group
+                continue
+            if group and group != a.group:
+                continue
+            if a.ack:
+                r += [TTAction.ACK, TTAction.UN_ACK]
+            if a.close:
+                r.append(TTAction.CLOSE)
+        return frozenset(r)
 
     def get_tt_system_config(self, tt_system: TTSystem) -> TTSystemConfig:
         r = tt_system.get_config()

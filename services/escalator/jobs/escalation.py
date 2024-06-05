@@ -80,6 +80,7 @@ class EscalationJob(SequenceJob):
 
     def handler(self, **kwargs):
         self.logger.info("Performing escalations")
+        changes = self.object.is_dirty
         if self.object.is_dirty:
             self.object.update_items()
             self.object.is_dirty = False
@@ -105,9 +106,14 @@ class EscalationJob(SequenceJob):
                 self.object.set_escalation_context()
             ctx = self.object.get_ctx()
             # Check retry and waited escalations
-            # self.check_escalation_waited(ctx)
+            if self.object.sequence_num:
+                self.check_escalation_waited(ctx, changes)
             # Evaluate escalation chain
             for esc_item in self.iter_sequence():
+                if not esc_item.template:
+                    self.logger.info("No escalation template, skipping")
+                    self.log_alarm("No escalation template, skipping")
+                    continue
                 # Render TT subject and body
                 subject = esc_item.template.render_subject(**ctx)
                 body = esc_item.template.render_body(**ctx)
@@ -130,6 +136,7 @@ class EscalationJob(SequenceJob):
                         timestamp=datetime.datetime.now().replace(microsecond=0),
                         document_id=r.document,
                         error=r.error,
+                        template=str(esc_item.template.id),
                     )
                     if r.status == EscalationStatus.OK:
                         self.notify_escalated_consequences(tt_system, r.document)
@@ -149,6 +156,7 @@ class EscalationJob(SequenceJob):
                         member=EscalationMember.NOTIFICATION_GROUP,
                         key=str(esc_item.notification_group.id),
                         status=r.status,
+                        template=str(esc_item.template.id),
                     )
         self.logger.info("Saving changes on: %s", self.object.sequence_num)
         self.end_sequence()
@@ -220,27 +228,43 @@ class EscalationJob(SequenceJob):
             e_ctx: Escalation Context
             changed: Was Changed
         """
+        from noc.main.models.template import Template
+
         for item in self.object.escalations:
-            if item.status == EscalationStatus.FAIL:
+            self.logger.info("Check waited: %s/%s", changed, item.status)
+            if (
+                item.status != EscalationStatus.TEMP
+                and not (changed and item.status == EscalationStatus.OK)
+            ) or item.deescalation_status:
                 continue
-            s = self.object.g
             # Render TT subject and body
-            subject = item.template.render_subject(**e_ctx)
-            body = item.template.render_body(**e_ctx)
+            template = Template.get_by_id(item.template)
+            if not template:
+                self.logger.info("No escalation template, skipping")
+                self.log_alarm("No escalation template, skipping")
+                return
+            subject = template.render_subject(**e_ctx)
+            body = template.render_body(**e_ctx)
             # retry action
             if item.member == EscalationMember.TT_SYSTEM:
                 tt_system = TTSystem.get_by_id(item.key)
-                r = self.create_tt(tt_system, subject, body, e_ctx)
-                self.object.set_escalation(
-                    member=EscalationMember.TT_SYSTEM,
-                    key=str(tt_system.id),
-                    status=r.status,
-                    timestamp=datetime.datetime.now().replace(microsecond=0),
-                    document_id=r.document,
-                    error=r.error,
-                )
-                if r.status == EscalationStatus.TEMP:
-                    self.set_temp_error(r.error)
+                if item.status == EscalationStatus.OK and changed:
+                    # Changed
+                    r = self.create_tt(tt_system, subject, body, e_ctx, tt_id=item.document_id)
+                    if r.status != EscalationStatus.OK:
+                        self.logger.info(
+                            "[%s] Error when update message: %s", item.document_id, r.error
+                        )
+                        continue
+                elif item.status == EscalationStatus.TEMP:
+                    # Temporary error, repeat
+                    r = self.create_tt(tt_system, subject, body, e_ctx)
+                    if r.status == EscalationStatus.OK and r.document:
+                        item.status = r.status
+                        item.document_id = r.document
+                else:
+                    self.logger.info("Nothing waited")
+                    return
 
     def check_closed(self, reason: Optional[str] = None):
         """
@@ -322,23 +346,37 @@ class EscalationJob(SequenceJob):
             r.append(ei)
         return r
 
-    # TT System API
-    def get_tt_system_context(
-        self, tt_system: TTSystem, tt_id: Optional[str] = None
-    ) -> TTSystemCtx:
-        cfg = self.object.profile.get_tt_system_config(tt_system)
-        actions = []
-        for action in [TTAction.ACK, TTAction.UN_ACK, TTAction.CLOSE]:
+    def get_action_context(self) -> List[TTActionContext]:
+        """
+        Return Available Action Context for escalation
+
+        """
+        r = []
+        for action in self.object.profile.get_actions():
             if action == TTAction.ACK and self.object.alarm.ack_user:
-                actions.append(
+                r.append(
                     TTActionContext(
                         action=TTAction.UN_ACK, label=f"Ack by {self.object.alarm.ack_user}"
                     )
                 )
                 continue
-            elif action == TTAction.UN_ACK and self.object.alarm.ack_user:
+            elif action == TTAction.UN_ACK and not self.object.alarm.ack_ts:
                 continue
-            actions.append(TTActionContext(action=action))
+            r.append(TTActionContext(action=action))
+        return r
+
+    def get_tt_system_context(
+        self, tt_system: TTSystem, tt_id: Optional[str] = None
+    ) -> TTSystemCtx:
+        """
+        Build TTSystem Context
+        Args:
+            tt_system: TTSystem instance
+            tt_id: Document ID
+
+        """
+        cfg = self.object.profile.get_tt_system_config(tt_system)
+        actions = self.get_action_context()
         ctx = TTSystemCtx(
             id=tt_id,
             tt_system=tt_system.get_system(),
@@ -390,6 +428,7 @@ class EscalationJob(SequenceJob):
         subject: str,
         body: str,
         context: Optional[Dict[str, Any]] = None,
+        tt_id: Optional[str] = None,
     ) -> EscalationResult:
         """
         Create Trouble Ticket on TT System
@@ -399,16 +438,25 @@ class EscalationJob(SequenceJob):
             subject: Message Subject
             body: Message Body
             context: Escalation Context
+            tt_id: If set, do changes
 
         Returns:
             EscalationResult:
         """
-        self.logger.debug("Escalation message:\nSubject: %s\n%s", subject, body)
+        self.logger.debug(
+            "Escalation message:\nSubject: %s\n%s",
+            subject,
+            body,
+        )
         # Build Items for context
         self.check_escalated()
-        self.logger.info("Creating TT in system %s", tt_system.name)
-        self.log_alarm(f"Creating TT in system {tt_system.name}")
-        with self.get_tt_system_context(tt_system) as ctx:
+        if tt_id:
+            self.logger.info("Changed TT in system %s:%s", tt_system.name, tt_id)
+            self.log_alarm(f"Changed TT in system {tt_system.name}")
+        else:
+            self.logger.info("Creating TT in system %s", tt_system.name)
+            self.log_alarm(f"Creating TT in system {tt_system.name}")
+        with self.get_tt_system_context(tt_system, tt_id) as ctx:
             ctx.create(subject=subject, body=body)
         r = ctx.get_result()
         if r.status == EscalationStatus.TEMP:
@@ -419,6 +467,8 @@ class EscalationJob(SequenceJob):
             self.log_alarm(f"Failed to create TT: {r.error}")
             metrics["escalation_tt_fail"] += 1
             # self.object.alarm.log_message(f"Failed to escalate: {r.error}")
+            return r
+        if tt_id:
             return r
         # Project result to escalation items
         ctx_map: Dict[int:ItemStatus] = {}
