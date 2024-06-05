@@ -224,13 +224,14 @@ class ActiveAlarm(Document):
         r = coll.find_one_and_update(
             {
                 "items.0.alarm": self.id,
-                "items.0.status__nin": [ItemStatus.NEW.value, ItemStatus.FAIL.value],
+                "items.0.status": {"$in": [ItemStatus.CHANGED.value, ItemStatus.NEW.value]},
                 "is_dirty": False,
                 "end_timestamp": {"$exists": False},
             },
             {"$set": {"items.0.status": ItemStatus.CHANGED.value, "is_dirty": True}},
             projection={"end_timestamp": True, "_id": True},
         )
+        print("Register Changes", r)
         if r:
             # Update Job, TTSystem Shard (Set Shard on Profile)
             Job.submit("escalator", ESCALATION_JOB, key=str(r["_id"]), pool="default")

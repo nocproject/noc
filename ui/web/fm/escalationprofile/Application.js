@@ -13,6 +13,8 @@ Ext.define("NOC.fm.escalationprofile.Application", {
         "NOC.fm.ttsystem.LookupField",
         "NOC.fm.alarmseverity.LookupField",
         "NOC.main.template.LookupField",
+        "NOC.aaa.user.LookupField",
+        "NOC.aaa.group.LookupField",
         "NOC.main.notificationgroup.LookupField",
         "NOC.main.timepattern.LookupField",
         "Ext.ux.form.GridField"
@@ -148,7 +150,7 @@ Ext.define("NOC.fm.escalationprofile.Application", {
                             editor: "fm.ttsystem.LookupField",
                             renderer: NOC.render.Lookup("tt_system"),
                             width: 150
-                        },54
+                        },
                         {
                             text: __("Pre Reason"),
                             dataIndex: "pre_reason",
@@ -160,13 +162,55 @@ Ext.define("NOC.fm.escalationprofile.Application", {
                             dataIndex: "login",
                             editor: "textfield",
                             width: 150
+                        }
+                    ]
+                },
+                {
+                    name: "actions",
+                    xtype: "gridfield",
+                    fieldLabel: __("Actions"),
+                    columns: [
+                        {
+                            text: __("User"),
+                            dataIndex: "user",
+                            editor: "aaa.user.LookupField",
+                            renderer: NOC.render.Lookup("user"),
+                            width: 150
                         },
                         {
-                            text: __("Close Template"),
-                            dataIndex: "close_template",
-                            editor: "main.template.LookupField",
-                            width: 200,
-                            renderer: NOC.render.Lookup("close_template")
+                            text: __("Group"),
+                            dataIndex: "group",
+                            editor: "aaa.group.LookupField",
+                            renderer: NOC.render.Lookup("group"),
+                            width: 150
+                        },
+                        {
+                            text: __("Ack"),
+                            dataIndex: "ack",
+                            editor: "checkboxfield",
+                            width: 50,
+                            renderer: NOC.render.Bool
+                        },
+                        {
+                            text: __("Add log"),
+                            dataIndex: "log",
+                            editor: "checkboxfield",
+                            width: 50,
+                            renderer: NOC.render.Bool
+                        },
+                        {
+                            text: __("Close"),
+                            dataIndex: "close",
+                            editor: "checkboxfield",
+                            width: 50,
+                            renderer: NOC.render.Bool
+                        },
+                        {
+                            text: __("Subscribe"),
+                            dataIndex: "subscribe",
+                            editor: "checkboxfield",
+                            width: 50,
+                            renderer: NOC.render.Bool
                         }
                     ]
                 },
@@ -232,6 +276,13 @@ Ext.define("NOC.fm.escalationprofile.Application", {
                             editor: "main.template.LookupField",
                             width: 100,
                             renderer: NOC.render.Lookup("template")
+                        },
+                        {
+                            text: __("Close Template"),
+                            dataIndex: "close_template",
+                            editor: "main.template.LookupField",
+                            width: 200,
+                            renderer: NOC.render.Lookup("close_template")
                         },
                         {
                             text: __("TT"),

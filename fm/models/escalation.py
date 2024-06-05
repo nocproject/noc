@@ -112,6 +112,7 @@ class EscalationLog(EmbeddedDocument):
     repeat: int = IntField(default=0)
     # Approve flag (is user Approved Received Message)
     # Notification adapter for sender
+    template = StringField(required=False)
     # Wait handler
     status: EscalationStatus = EnumField(EscalationStatus)
     error = StringField()
@@ -423,6 +424,7 @@ class Escalation(Document):
         timestamp: Optional[datetime.datetime] = None,
         error: Optional[str] = None,
         document_id: Optional[str] = None,
+        template: Optional[str] = None,
     ):
         """
         Args:
@@ -432,6 +434,7 @@ class Escalation(Document):
             timestamp: Escalation time
             error: Error message
             document_id: TT System document ID
+            template: Create TT Template
         """
         timestamp = timestamp or datetime.datetime.now().replace(microsecond=0)
         key = str(key)
@@ -450,6 +453,7 @@ class Escalation(Document):
                     member=member,
                     status=status,
                     document_id=document_id,
+                    template=template,
                 )
             )
 

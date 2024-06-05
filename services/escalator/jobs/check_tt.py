@@ -136,6 +136,10 @@ class CheckTTJob(Job):
             if action:
                 # Already set
                 continue
+            actions = doc.profile.get_actions(user)
+            if change.action not in actions:
+                self.logger.info("[%s] No Permission User for Run Action: %s", user, change.action)
+                continue
             match change.action:
                 case TTAction.CLOSE:
                     alarm.register_clear(
@@ -144,13 +148,9 @@ class CheckTTJob(Job):
                         timestamp=change.timestamp,
                     )
                 case TTAction.ACK:
-                    alarm.acknowledge(
-                        user, f"Acknowledge by TTSystem: {self.object.name}"
-                    )
+                    alarm.acknowledge(user, f"Acknowledge by TTSystem: {self.object.name}")
                 case TTAction.UN_ACK:
-                    alarm.unacknowledge(
-                        user, f"UnAcknowledge by TTSystem: {self.object.name}"
-                    )
+                    alarm.unacknowledge(user, f"UnAcknowledge by TTSystem: {self.object.name}")
                 case TTAction.NOTIFY:
                     alarm.log_message(change.message, source=str(user))
             doc.set_action(
