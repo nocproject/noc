@@ -28,10 +28,6 @@ class Migration(BaseMigration):
                 duplicates[m_name] += 1
                 if m_name in duplicates:
                     m_name += f"_{duplicates[m_name]}"
-                bulk += [
-                    UpdateOne(
-                        {"_id": p["_id"]}, {"$set": {"name": m_name}}
-                    )
-                ]
+                bulk += [UpdateOne({"_id": p["_id"]}, {"$set": {"name": m_name}})]
         if bulk:
             platform_coll.bulk_write(bulk)
