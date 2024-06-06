@@ -98,7 +98,7 @@ class EscalationLog(EmbeddedDocument):
         member: Escalation member
         key: Member Id
         document_id: Escalation ID on TTSystem
-        repeat: Escalation runs count
+        repeats: Escalation runs count
         status: Escalation Status
         error: Error when status is not ok
         deescalation_status: End escalation status on TT System
@@ -109,7 +109,7 @@ class EscalationLog(EmbeddedDocument):
     member = EnumField(EscalationMember, required=True)
     key: str = StringField(required=True)
     document_id = StringField()
-    repeat: int = IntField(default=0)
+    repeats: int = IntField(default=0)
     # Approve flag (is user Approved Received Message)
     # Notification adapter for sender
     template = StringField(required=False)
@@ -217,20 +217,39 @@ class Escalation(Document):
     def consequences(self) -> List[EscalationItem]:
         return self.items[1:]
 
-    def get_next(self, sequence_num: Optional[int] = None) -> datetime.datetime:
+    def get_next(self, sequence_num: Optional[int] = None, repeat: Optional[int] = None) -> datetime.datetime:
         """
         Calculate next step timestamp
 
         Args:
             sequence_num: Number of sequence step
+            repeat: Number of repeats
         :return:
         """
         # Check end
         if sequence_num is None:
             sequence_num = self.sequence_num
+        repeat = repeat or self.get_repeat()
+        # Repeat
+        if repeat:
+            repeat_delay = (self.profile.escalations[-1].delay + self.profile.repeat_delay) * repeat
+        else:
+            repeat_delay = 0
         next_esc = self.profile.escalations[sequence_num]
         seq_delay = datetime.timedelta(seconds=int(next_esc.delay))
-        return self.timestamp + seq_delay
+        return self.timestamp + repeat_delay + seq_delay
+
+    def get_repeat(self) -> int:
+        """
+        Getting Repeat number
+        :return:
+        """
+        r = []
+        for i in self.escalations:
+            if not i.repeats:
+                continue
+            r.append(i.repeats)
+        return min(r) if r else 0
 
     @staticmethod
     def summary_to_list(summary, model):
@@ -435,6 +454,7 @@ class Escalation(Document):
             error: Error message
             document_id: TT System document ID
             template: Create TT Template
+            repeat: Repeat escalation flag
         """
         timestamp = timestamp or datetime.datetime.now().replace(microsecond=0)
         key = str(key)
@@ -444,7 +464,8 @@ class Escalation(Document):
                 esc.error = error
                 if document_id:
                     esc.document_id = document_id
-                esc.repeat += 1
+                if esc.status == EscalationStatus.REPEAT:
+                    esc.repeats += 1
         else:
             self.escalations.append(
                 EscalationLog(

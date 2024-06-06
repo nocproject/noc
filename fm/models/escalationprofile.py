@@ -59,6 +59,9 @@ class EscalationItem(EmbeddedDocument):
     # Acton
     notification_group: NotificationGroup = ForeignKeyField(NotificationGroup)
     create_tt = BooleanField(default=False)
+    # Repeat escalation
+    repeat = BooleanField(default=False)
+    max_repeats = IntField(default=0)
     # TT System that create escalation, Device by default
     tt_system = ReferenceField(TTSystem, required=False)
     # Processed condition
@@ -167,10 +170,9 @@ class EscalationProfile(Document):
         ],
         default="N",
     )
-    max_repeats = IntField(default=0)
+    repeat_delay = IntField(default=60)
     # set_labels ?
     telemetry_sample = IntField(default=0)
-    delay = IntField()
 
     # Caches
     _id_cache = cachetools.TTLCache(maxsize=50, ttl=60)
