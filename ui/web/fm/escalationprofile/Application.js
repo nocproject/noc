@@ -274,14 +274,14 @@ Ext.define("NOC.fm.escalationprofile.Application", {
                             text: __("Open Template"),
                             dataIndex: "template",
                             editor: "main.template.LookupField",
-                            width: 100,
+                            width: 150,
                             renderer: NOC.render.Lookup("template")
                         },
                         {
                             text: __("Close Template"),
                             dataIndex: "close_template",
                             editor: "main.template.LookupField",
-                            width: 200,
+                            width: 150,
                             renderer: NOC.render.Lookup("close_template")
                         },
                         {
@@ -290,6 +290,19 @@ Ext.define("NOC.fm.escalationprofile.Application", {
                             editor: "checkboxfield",
                             width: 50,
                             renderer: NOC.render.Bool
+                        },
+                        {
+                            text: __("Repeat"),
+                            dataIndex: "repeat",
+                            editor: "checkboxfield",
+                            width: 50,
+                            renderer: NOC.render.Bool
+                        },
+                        {
+                            text: __("Max. Repeats"),
+                            dataIndex: "max_repeats",
+                            editor: "numberfield",
+                            width: 75
                         },
                         {
                             text: __("Stop"),
@@ -301,11 +314,11 @@ Ext.define("NOC.fm.escalationprofile.Application", {
                      ]
                 },
                 {
-                    name: "max_repeats",
+                    name: "repeat_delay",
                     xtype: "numberfield",
-                    fieldLabel: __("Max Repeats"),
+                    fieldLabel: __("Repeat Delay"),
                     allowBlank: true,
-                    min: 0,
+                    min: 30,
                     uiStyle: "small"
                 },
                 {

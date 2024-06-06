@@ -64,21 +64,20 @@ class EscalationJob(SequenceJob):
         Stop sequence
         """
         self.logger.info("Escalation sequence is completed")
-        if self.object.profile.repeat_escalations == "D":
+        if (
+            self.object.profile.repeat_escalations == "D"
+            and self.object.profile.max_repeats < self.object.get_repeat()
+        ):
             self.object.sequence_num = 0
-        if self.object.profile.end_condition == "CT":
-            # Close For Wait TT
-            # Set Escalation to Wait, TTSystem ?
-            # self.object.set_escalation()
-            self.remove_job()
             return
         elif self.object.alarm == "A" and self.object.profile.close_alarm:
             # Clear Alarm after End
             self.object.alarm.register_clear("Cleared by End Escalation Sequence")
-            # self.close_alarm()
-        if self.object.profile.end_condition == "E":
+        elif self.object.profile.end_condition == "E":
             # End if end condition
             self.end_escalation()
+            return
+        self.remove_job()
 
     def end_escalation(self, timestamp: Optional[datetime.datetime] = None):
         """

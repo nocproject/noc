@@ -40,6 +40,7 @@ id_lock = Lock()
 
 
 class EscalationItem(EmbeddedDocument):
+    meta = {"strict": False}
     # Delay part
     delay = IntField(min_value=0)
     alarm_ack = StringField(
@@ -93,7 +94,7 @@ class EscalationItem(EmbeddedDocument):
             tt_system = tt_system or self.tt_system.id
             return str(tt_system)
         if self.member == EscalationMember.NOTIFICATION_GROUP:
-            return str(self.notification_group)
+            return str(self.notification_group.id)
         return ""
 
 
@@ -195,6 +196,13 @@ class EscalationProfile(Document):
             if item.wait_ack:
                 return True
         return False
+
+    @property
+    def max_repeats(self) -> int:
+        if not self.escalations:
+            return 0
+        r = (e.max_repeats or 0 for e in self.escalations)
+        return max(r)
 
     def get_actions(
         self,

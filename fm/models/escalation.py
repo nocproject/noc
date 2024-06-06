@@ -105,6 +105,8 @@ class EscalationLog(EmbeddedDocument):
         deescalation_error: Error on deescalation process
     """
 
+    meta = {"strict": False}
+
     timestamp = DateTimeField()
     member = EnumField(EscalationMember, required=True)
     key: str = StringField(required=True)
@@ -217,7 +219,9 @@ class Escalation(Document):
     def consequences(self) -> List[EscalationItem]:
         return self.items[1:]
 
-    def get_next(self, sequence_num: Optional[int] = None, repeat: Optional[int] = None) -> datetime.datetime:
+    def get_next(
+        self, sequence_num: Optional[int] = None, repeat: Optional[int] = None
+    ) -> datetime.datetime:
         """
         Calculate next step timestamp
 
@@ -232,9 +236,11 @@ class Escalation(Document):
         repeat = repeat or self.get_repeat()
         # Repeat
         if repeat:
-            repeat_delay = (self.profile.escalations[-1].delay + self.profile.repeat_delay) * repeat
+            repeat_delay = datetime.timedelta(
+                seconds=(self.profile.escalations[-1].delay + self.profile.repeat_delay) * repeat
+            )
         else:
-            repeat_delay = 0
+            repeat_delay = datetime.timedelta(seconds=0)
         next_esc = self.profile.escalations[sequence_num]
         seq_delay = datetime.timedelta(seconds=int(next_esc.delay))
         return self.timestamp + repeat_delay + seq_delay
@@ -454,7 +460,6 @@ class Escalation(Document):
             error: Error message
             document_id: TT System document ID
             template: Create TT Template
-            repeat: Repeat escalation flag
         """
         timestamp = timestamp or datetime.datetime.now().replace(microsecond=0)
         key = str(key)
@@ -464,8 +469,7 @@ class Escalation(Document):
                 esc.error = error
                 if document_id:
                     esc.document_id = document_id
-                if esc.status == EscalationStatus.REPEAT:
-                    esc.repeats += 1
+                break
         else:
             self.escalations.append(
                 EscalationLog(
@@ -516,6 +520,7 @@ class Escalation(Document):
             if action == a.action:
                 a.status = status
                 a.error = error
+                break
         else:
             self.actions.append(
                 ActionLog(
