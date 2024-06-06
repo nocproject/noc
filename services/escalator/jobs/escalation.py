@@ -42,6 +42,7 @@ class EscalationJob(SequenceJob):
 
     def __init__(self, job, attrs):
         super().__init__(job, attrs)
+        self.object = Escalation()
         self.alarm_log = []
 
     def run_action(self, action: str, key: str) -> EscalationResult:
@@ -62,21 +63,33 @@ class EscalationJob(SequenceJob):
         """
         Stop sequence
         """
-        if self.alarm_log:
-            coll = ActiveAlarm._get_collection()
-            coll.bulk_write(self.alarm_log)
-        self.object.save()
+        self.logger.info("Escalation sequence is completed")
+        if self.object.profile.repeat_escalations == "D":
+            self.object.sequence_num = 0
+        if self.object.profile.end_condition == "CT":
+            # Close For Wait TT
+            # Set Escalation to Wait, TTSystem ?
+            # self.object.set_escalation()
+            self.remove_job()
+            return
+        elif self.object.alarm == "A" and self.object.profile.close_alarm:
+            # Clear Alarm after End
+            self.object.alarm.register_clear("Cleared by End Escalation Sequence")
+            # self.close_alarm()
+        if self.object.profile.end_condition == "E":
+            # End if end condition
+            self.end_escalation()
 
     def end_escalation(self, timestamp: Optional[datetime.datetime] = None):
         """
         Processed end escalation handlers
-        ToDo:
-            Check deescalation error before remove job
         """
         self.check_closed()
         if not self.object.end_timestamp:
             self.object.end_timestamp = datetime.datetime.now().replace(microsecond=0)
-        self.end_sequence()
+        # Remove or Suspend
+        if not self.error:
+            self.remove_job()
 
     def handler(self, **kwargs):
         self.logger.info("Performing escalations")
@@ -159,7 +172,10 @@ class EscalationJob(SequenceJob):
                         template=str(esc_item.template.id),
                     )
         self.logger.info("Saving changes on: %s", self.object.sequence_num)
-        self.end_sequence()
+        if self.alarm_log:
+            coll = ActiveAlarm._get_collection()
+            coll.bulk_write(self.alarm_log)
+        self.object.save()
 
     def iter_sequence(self) -> Iterable[EscalationItem]:
         """
@@ -184,7 +200,10 @@ class EscalationJob(SequenceJob):
             escalation = self.object.get_escalation(member=item.member, key=item.get_key())
             if escalation and escalation.status == EscalationStatus.OK:
                 # Already escalated
-                continue
+                if item.repeat and (not item.max_repeats or escalation.repeats < item.max_repeats):
+                    escalation.repeats += 1
+                else:
+                    continue
             condition = True
             if item.alarm_ack == "ack" and not self.object.alarm.ack_ts:
                 condition = False
@@ -203,23 +222,7 @@ class EscalationJob(SequenceJob):
                 self.logger.debug("Stopping processing")
                 self.remove_job()
         else:
-            self.logger.info("Escalation sequence is completed")
-            if self.object.profile.end_condition == "CT":
-                # Close For Wait TT
-                # Set Escalation to Wait
-                self.object.set_escalation()
-                self.remove_job()
-                return
-            elif self.object.alarm == "A" and self.object.profile.close_alarm:
-                # Clear Alarm after End
-                self.object.alarm.register_clear()
-                # self.close_alarm()
-            if self.object.profile.end_condition == "E":
-                # End if end condition
-                self.end_escalation()
-            # Remove or Suspend
-            if not self.error:
-                self.remove_job()
+            self.end_sequence()
 
     def check_escalation_waited(self, e_ctx, changed: bool = False):
         """
