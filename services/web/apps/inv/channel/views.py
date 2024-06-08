@@ -23,3 +23,5 @@ class ChannelApplication(ExtDocApplication):
     model = Channel
     glyph = "road"
     endpoints = DocInline(Endpoint)
+    parent_model = Channel
+    parent_field = "parent"

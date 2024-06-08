@@ -9,13 +9,19 @@
 from threading import Lock
 from typing import Optional, Union
 import operator
-from enum import Enum
+
 
 # Third-party modules
 from bson import ObjectId
 import cachetools
-from mongoengine.document import Document
-from mongoengine.fields import StringField, LongField, ListField, BooleanField
+from mongoengine.document import Document, EmbeddedDocument
+from mongoengine.fields import (
+    StringField,
+    LongField,
+    ListField,
+    BooleanField,
+    EmbeddedDocumentListField,
+)
 
 # NOC modules
 from noc.core.bi.decorator import bi_sync
@@ -26,25 +32,25 @@ from noc.crm.models.supplier import Supplier
 from noc.main.models.label import Label
 from noc.main.models.remotesystem import RemoteSystem
 from noc.core.model.decorator import on_delete_check
+from noc.core.channel.types import ChannelKind, ChannelTopology
+from .techdomain import TechDomain
 
 id_lock = Lock()
 
 
-class ChannelTopology(Enum):
+class ConstraintItem(EmbeddedDocument):
     """
-    Topology of the channel.
+    Constraint Item.
 
     Attributes:
-        P2P: Point-to-point.
-        P2MP: Point-to-multipoint (unidirectional).
-        TREE: Tree.
-        STAR: Full mesh.
+        type: Constraint type, include of exclude.
+        strict: Generate fault if constraint cannot be met.
+        resource: Resource reference.
     """
 
-    P2P = "p2p"
-    P2MP = "p2mp"
-    TREE = "tree"
-    STAR = "star"
+    type = StringField(choices=["i", "e"])
+    strict = BooleanField()
+    resource = StringField()
 
 
 @bi_sync
@@ -63,13 +69,17 @@ class Channel(Document):
     }
 
     name = StringField(unique=True)
+    parent = PlainReferenceField("self", allow_blank=True)
+    tech_domain = PlainReferenceField(TechDomain)
     description = StringField()
     project = ForeignKeyField(Project)
     supplier = PlainReferenceField(Supplier)
     subscriber = PlainReferenceField(Subscriber)
-    is_free = BooleanField()
+    kind = StringField(choices=[x.value for x in ChannelKind])
+    topology = StringField(choices=[x.value for x in ChannelTopology])
     labels = ListField(StringField())
     effective_labels = ListField(StringField())
+    constraints = EmbeddedDocumentListField(ConstraintItem)
     # Integration with external NRI and TT systems
     # Reference to remote system object has been imported from
     remote_system = PlainReferenceField(RemoteSystem)

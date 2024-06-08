@@ -465,3 +465,5 @@ LABEL_MODELS = {
     #
     "wf.State": "enable_workflowstate",
 }
+
+RESOURCE_MODELS = {"o": "inv.Object"}

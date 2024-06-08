@@ -13,18 +13,14 @@ Ext.define("NOC.inv.endpoint.Application", {
     "NOC.inv.channel.LookupField",
     "NOC.inv.techdomain.LookupField",
     "NOC.core.label.LabelField",
+    "Ext.ux.form.GridField",
   ],
   model: "NOC.inv.endpoint.Model",
   search: true,
-  initComponent: function () {
+  initComponent: function(){
     var me = this;
     Ext.apply(me, {
       columns: [
-        {
-          text: __("Name"),
-          dataIndex: "name",
-          width: 200,
-        },
         {
           text: __("Channel"),
           dataIndex: "channel",
@@ -32,15 +28,8 @@ Ext.define("NOC.inv.endpoint.Application", {
           renderer: NOC.render.Lookup("channel"),
         },
         {
-          text: __("Tech. Domain"),
-          dataIndex: "tech_domain",
-          width: 100,
-          renderer: NOC.render.Lookup("tech_domain"),
-        },
-        // @todo: model + resource
-        {
-          text: __("Slot"),
-          dataIndex: "slot",
+          text: __("Resource"),
+          dataIndex: "resource",
           width: 100,
         },
         {
@@ -57,79 +46,47 @@ Ext.define("NOC.inv.endpoint.Application", {
 
       fields: [
         {
-          name: "name",
-          xtype: "textfield",
-          fieldLabel: __("Name"),
-          uiStyle: "medium",
-        },
-        {
-          name: "description",
-          xtype: "textarea",
-          fieldLabel: __("Description"),
-          allowBlank: true,
-        },
-        {
-          name: "name",
-          xtype: "textfield",
-          fieldLabel: __("Name"),
-          uiStyle: "medium",
-        },
-        {
           name: "channel",
           xtype: "inv.channel.LookupField",
           fieldLabel: __("Channel"),
         },
         {
-          name: "tech_domain",
-          xtype: "inv.techdomain.LookupField",
-          fieldLabel: __("Tech. Domain"),
+          name: "resource",
+          xtype: "textfield",
+          fieldLabel: __("Resource"),
         },
         {
-          xtype: "fieldset",
-          title: __("Resource"),
-          layout: "hbox",
-          defaults: {
-            padding: 4,
-            labelAlign: "top",
-          },
-          items: [
+          name: "is_root",
+          xtype: "checkbox",
+          fieldLabel: __("Is Root"),
+        },
+        {
+          name: "pair",
+          xtype: "numberfield",
+          fieldLabel: __("Pair"),
+          allowBlank: true,
+        },
+        {
+          name: "used_by",
+          xtype: "gridfield",
+          columns: [
             {
-              name: "model",
-              xtype: "combobox",
-              fieldLabel: __("Model"),
-              store: [["inv.Object", "Object"]],
+              text: __("Channel"),
+              dataIndex: "channel",
+              width: 200,
+              renderer: NOC.render.Lookup("channel"),
             },
             {
-              name: "resource_id",
-              xtype: "textfield",
-              fieldLabel: __("Resource"),
-              uiStyle: "medium",
+              text: __("Discrimiator"),
+              dataIndex: "discriminator",
+              width: 200,
             },
             {
-              name: "slot",
-              xtype: "textfield",
-              fieldLabel: __("Slot"),
-              uiStyle: "medium",
-              allowBlank: true,
-            },
-            {
-              name: "discriminator",
-              xtype: "textfield",
-              fieldLabel: __("Discriminator"),
-              uiStyle: "medium",
-              allowBlank: true,
+              text: __("Direction"),
+              dataIndex: "direction",
+              width: 100,
             },
           ],
-        },
-        {
-          name: "labels",
-          fieldLabel: __("Labels"),
-          xtype: "labelfield",
-          allowBlank: true,
-          minWidth: 100,
-          query: {
-            allow_models: ["inv.Enpoint"],
-          },
         },
       ],
     });

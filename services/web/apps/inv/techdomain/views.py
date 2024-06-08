@@ -16,7 +16,7 @@ class TechDomainApplication(ExtDocApplication):
     TechDomain application
     """
 
-    title = "TechDomain"
+    title = _("Tech Domain")
     menu = [_("Setup"), _("Tech Domains")]
     model = TechDomain
     glyph = "flask"

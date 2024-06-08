@@ -11,7 +11,7 @@ Ext.define("NOC.inv.techdomain.Application", {
   requires: ["NOC.inv.techdomain.Model"],
   model: "NOC.inv.techdomain.Model",
   search: true,
-  initComponent: function () {
+  initComponent: function(){
     var me = this;
     // JSON Panel
     me.jsonPanel = Ext.create("NOC.core.JSONPreview", {
@@ -26,6 +26,11 @@ Ext.define("NOC.inv.techdomain.Application", {
         {
           text: __("Name"),
           dataIndex: "name",
+          width: 200,
+        },
+        {
+          text: __("Code"),
+          dataIndex: "code",
           width: 200,
         },
         {
@@ -49,6 +54,13 @@ Ext.define("NOC.inv.techdomain.Application", {
           allowBlank: true,
         },
         {
+          name: "code",
+          xtype: "textfield",
+          fieldLabel: __("Code"),
+          allowBlank: false,
+          uiStyle: "medium",
+        },
+        {
           name: "description",
           xtype: "textarea",
           fieldLabel: __("Description"),
@@ -67,25 +79,63 @@ Ext.define("NOC.inv.techdomain.Application", {
           ],
         },
         {
+          name: "max_endpoints",
+          xtype: "numberfield",
+          fieldLabel: __("Max. Endpoints"),
+          allowBlank: true,
+          uiStyle: "medium",
+        },
+        {
           xtype: "fieldset",
           layout: "hbox",
-          title: __("Settings"),
+          title: __("Hierarchy"),
           items: [
             {
-              name: "max_endpoints",
-              xtype: "numberfield",
-              fieldLabel: __("Max. Endpoints"),
-              allowBlank: true,
+              name: "allow_parent",
+              xtype: "checkbox",
+              boxLabel: __("Allow Parent"),
             },
             {
-              name: "full_mesh",
+              name: "allow_children",
               xtype: "checkbox",
-              boxLabel: __("Full Mesh"),
+              boxLabel: __("Allow Children"),
+            },
+          ],
+        },
+        {
+          xtype: "fieldset",
+          layout: "hbox",
+          title: __("Topology"),
+          items: [
+            {
+              name: "allow_p2p",
+              xtype: "checkbox",
+              boxLabel: __("Allow P2P"),
             },
             {
-              name: "require_unique",
+              name: "allow_up2p",
               xtype: "checkbox",
-              boxLabel: __("Require Unique"),
+              boxLabel: __("Allow Unidirectional P2P"),
+            },
+            {
+              name: "allow_bunch",
+              xtype: "checkbox",
+              boxLabel: __("Allow Bunch"),
+            },
+            {
+              name: "allow_p2mp",
+              xtype: "checkbox",
+              boxLabel: __("Allow P2MP"),
+            },
+            {
+              name: "allow_up2pm",
+              xtype: "checkbox",
+              boxLabel: __("Allow Unidirectional P2MP"),
+            },
+            {
+              name: "allow_star",
+              xtype: "checkbox",
+              boxLabel: __("Allow Star"),
             },
           ],
         },
@@ -98,22 +148,22 @@ Ext.define("NOC.inv.techdomain.Application", {
               text: __("Discriminators"),
               dataIndex: "name",
               editor: "textfield",
-              width: 100
+              width: 100,
             },
             {
               text: __("Required"),
               dataIndex: "is_required",
               renderer: NOC.render.Bool,
               editor: "checkbox",
-              width: 50
+              width: 50,
             },
             {
               text: __("Description"),
               dataIndex: "description",
               editor: "textfield",
-              flex: 1
-            }
-          ]
+              flex: 1,
+            },
+          ],
         },
         {
           name: "bi_id",
@@ -136,7 +186,7 @@ Ext.define("NOC.inv.techdomain.Application", {
     });
     me.callParent();
   },
-  onJSON: function () {
+  onJSON: function(){
     var me = this;
     me.showItem(me.ITEM_JSON);
     me.jsonPanel.preview(me.currentRecord);

@@ -10,12 +10,15 @@ Ext.define("NOC.inv.channel.Application", {
   extend: "NOC.core.ModelApplication",
   requires: [
     "NOC.inv.channel.Model",
+    "NOC.inv.channel.LookupField",
     "NOC.inv.channel.EndpointModel",
+    "NOC.inv.techdomain.LookupField",
     "NOC.core.label.LabelField",
     "NOC.project.project.LookupField",
     "NOC.crm.subscriber.LookupField",
     "NOC.crm.supplier.LookupField",
     "NOC.main.remotesystem.LookupField",
+    "Ext.ux.form.GridField",
   ],
   model: "NOC.inv.channel.Model",
   search: true,
@@ -30,10 +33,16 @@ Ext.define("NOC.inv.channel.Application", {
           width: 200,
         },
         {
-          text: __("Free"),
-          dataIndex: "is_free",
-          render: NOC.render.Bool,
-          width: 50,
+          text: __("Parent"),
+          dataIndex: "parent",
+          width: 200,
+          renderer: NOC.render.Lookup("parent"),
+        },
+        {
+          text: __("Tech Domain"),
+          dataIndex: "tech_domain",
+          width: 200,
+          renderer: NOC.render.Lookup("tech_domain"),
         },
         {
           text: __("Project"),
@@ -67,15 +76,24 @@ Ext.define("NOC.inv.channel.Application", {
           uiStyle: "medium",
         },
         {
+          name: "parent",
+          xtype: "inv.channel.LookupField",
+          fieldLabel: __("Parent"),
+          uiStyle: "medium",
+          allowBlank: true,
+        },
+        {
+          name: "tech_domainn",
+          xtype: "inv.techdomain.LookupField",
+          fieldLabel: __("Tech Domain"),
+          uiStyle: "medium",
+          allowBlank: true,
+        },
+        {
           name: "description",
           xtype: "textarea",
           fieldLabel: __("Description"),
           allowBlank: true,
-        },
-        {
-          name: "is_free",
-          xtype: "checkboxfield",
-          boxLabel: __("Free"),
         },
         {
           name: "project",
@@ -104,6 +122,48 @@ Ext.define("NOC.inv.channel.Application", {
           query: {
             allow_models: ["inv.Channel"],
           },
+        },
+        {
+          name: "constraints",
+          fieldLabel: __("Constraints"),
+          xtype: "gridfield",
+          columns: [
+            {
+              text: __("Type"),
+              dataIndex: "type",
+              width: 50,
+              renderer: function(v){
+                if(v === "i"){
+                  return __("Include");
+                }
+                if(v === "e"){
+                  return __("Exclude");
+                }
+                return "-";
+              },
+              editor: {
+                xtype: "combobox",
+                minWidth: 200,
+                store: [
+                  ["i", __("Include")],
+                  ["e", __("Exclude")],
+                ],
+              },
+            },
+            {
+              text: __("Strict"),
+              dataIndex: "strict",
+              width: 50,
+              renderer: NOC.render.Bool,
+              editor: "checkbox",
+            },
+            {
+              text: __("Resource"),
+              dataIndex: "resource",
+              flex: 1,
+              editor: "textfield",
+            },
+          ],
         },
         /*
         {
@@ -151,30 +211,32 @@ Ext.define("NOC.inv.channel.Application", {
           model: "NOC.inv.channel.EndpointModel",
           columns: [
             {
-              text: __("Tech. Domain"),
-              dataIndex: "tech_domain",
-              width: 100,
-              renderer: NOC.render.Lookup("tech_domain"),
-            },
-            {
-              text: __("Model"),
-              dataIndex: "model",
-              width: 100,
-            },
-            {
               text: __("Resource"),
-              dataIndex: "resource_id",
-              width: 100,
+              dataIndex: "resource",
+              width: 200,
             },
             {
-              text: __("Slot"),
-              dataIndex: "slot",
-              width: 100,
+              text: __("Is Root"),
+              dataIndex: "is_root",
+              width: 50,
+              renderer: NOC.render.Bool,
             },
             {
-              text: __("Discriminator"),
-              dataIndex: "discriminator",
+              text: __("Pair"),
+              dataIndex: "pair",
+              width: 50,
+              editor: {
+                xtype: "numberfield",
+                minWidth: 100,
+              },
+            },
+            {
+              text: __("Used by"),
+              dataIndex: "used_by",
               flex: 1,
+              renderer: function(v){
+                return __("TODO");
+              },
             },
           ],
         },

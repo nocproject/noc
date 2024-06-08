@@ -1,7 +1,7 @@
 //---------------------------------------------------------------------
 // inv.channel EndpointModel
 //---------------------------------------------------------------------
-// Copyright (C) 2007-2014 The NOC Project
+// Copyright (C) 2007-2024 The NOC Project
 // See LICENSE for details
 //---------------------------------------------------------------------
 console.debug("Defining NOC.inv.channel.EndpointModel");
@@ -16,14 +16,6 @@ Ext.define("NOC.inv.channel.EndpointModel", {
       type: "string",
     },
     {
-      name: "name",
-      type: "string",
-    },
-    {
-      name: "description",
-      type: "string",
-    },
-    {
       name: "channel",
       type: "string",
     },
@@ -33,36 +25,28 @@ Ext.define("NOC.inv.channel.EndpointModel", {
       persist: false,
     },
     {
-      name: "tech_domain",
+      name: "resource",
       type: "string",
     },
     {
-      name: "tech_domain__label",
+      name: "resource__label",
       type: "string",
       persist: false,
-    },
-    {
-      name: "model",
-      type: "string",
-    },
-    {
-      name: "resource_id",
-      type: "string",
-    },
-    {
-      name: "slot",
-      type: "string",
     },
     {
       name: "discriminator",
       type: "string",
     },
     {
-      name: "labels",
-      type: "auto",
+      name: "is_root",
+      type: "boolean",
     },
     {
-      name: "effective_labels",
+      name: "pair",
+      type: "integer",
+    },
+    {
+      name: "used_by",
       type: "auto",
       persist: false,
     },
