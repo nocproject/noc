@@ -14,12 +14,11 @@ import operator
 # Third-party modules
 from bson import ObjectId
 import cachetools
-from mongoengine.document import Document, EmbeddedDocument
+from mongoengine.document import Document
 from mongoengine.fields import (
     StringField,
     LongField,
     IntField,
-    EmbeddedDocumentListField,
     UUIDField,
     BooleanField,
 )
