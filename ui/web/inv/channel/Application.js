@@ -96,6 +96,12 @@ Ext.define("NOC.inv.channel.Application", {
           allowBlank: true,
         },
         {
+          name: "discriminator",
+          xtype: "textfield",
+          fieldLabel: __("Discriminator"),
+          allowBlank: true,
+        },
+        {
           name: "project",
           xtype: "project.project.LookupField",
           fieldLabel: __("Project"),
@@ -131,7 +137,7 @@ Ext.define("NOC.inv.channel.Application", {
             {
               text: __("Type"),
               dataIndex: "type",
-              width: 50,
+              width: 100,
               renderer: function(v){
                 if(v === "i"){
                   return __("Include");
@@ -214,12 +220,14 @@ Ext.define("NOC.inv.channel.Application", {
               text: __("Resource"),
               dataIndex: "resource",
               width: 200,
+              editor: "textfield",
             },
             {
               text: __("Is Root"),
               dataIndex: "is_root",
               width: 50,
               renderer: NOC.render.Bool,
+              editor: "checkbox",
             },
             {
               text: __("Pair"),

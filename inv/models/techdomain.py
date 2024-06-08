@@ -36,32 +36,6 @@ from noc.core.channel.types import ChannelKind, ChannelTopology
 id_lock = Lock()
 
 
-class DiscriminatorItem(EmbeddedDocument):
-    """
-    Tech domain discriminator.
-
-    Attributes:
-        name: Discriminator name.
-        description: Discriminator description.
-        is_required: Discriminator is required on endpoint.
-    """
-
-    name = StringField()
-    description = StringField()
-    is_required = BooleanField()
-
-    def __str__(self) -> str:
-        return self.name
-
-    @property
-    def json_data(self) -> Dict[str, Any]:
-        r: Dict[str, Any] = {"name": self.name}
-        if self.description:
-            r["description"] = self.description
-        r["is_required"] = self.is_required
-        return r
-
-
 @bi_sync
 @on_delete_check(check=[("inv.Endpoint", "tech_domain")])
 class TechDomain(Document):
@@ -79,7 +53,9 @@ class TechDomain(Document):
         description: Optional descirption.
         uuid: UUID.
         description: Optional description.
-        discriminators: List of available discriminators.
+        channel_discriminator: If set, discriminator must be defined on channel level.
+        endpoint_discriminator: If set, channnels connected to endpoints
+            must use this kind of discriminator.
         max_endpoints: Limit maximal amount of endpoints, when set.
         allow_parent: Allow parent channels.
         allow_children: Allow nested channels.
@@ -104,7 +80,8 @@ class TechDomain(Document):
     code = StringField(unique=True)
     description = StringField()
     kind = StringField(choices=[x.value for x in ChannelKind])
-    discriminators = EmbeddedDocumentListField(DiscriminatorItem)
+    channel_discrimiator = StringField(required=False)
+    endpoint_discriminator = StringField(required=False)
     max_endpoints = IntField(required=False)
     controller_handler = PlainReferenceField(Handler, required=False)
     allow_parent = BooleanField()
@@ -164,8 +141,10 @@ class TechDomain(Document):
                 "allow_star": self.allow_star,
             }
         )
-        if self.discriminators:
-            r["discriminators"] = [d.json_data for d in self.discriminators]
+        if self.channel_discrimiator:
+            r["channel_discrimiator"] = self.channel_discrimiator
+        if self.endpoint_discriminator:
+            r["endpoint_discriminator"] = self.endpoint_discriminator
         return r
 
     def to_json(self) -> str:

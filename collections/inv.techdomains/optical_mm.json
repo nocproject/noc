@@ -1,0 +1,15 @@
+{
+    "name": "Optical Multi-mode",
+    "$collection": "inv.techdomains",
+    "uuid": "a818e14a-2193-42a3-8a09-aa23bc483365",
+    "description": "Optical multi-mode network",
+    "allow_bunch": true,
+    "allow_children": false,
+    "allow_p2mp": true,
+    "allow_p2p": true,
+    "allow_parent": true,
+    "allow_star": false,
+    "allow_up2mp": false,
+    "allow_up2p": true,
+    "code": "optical_mm"
+}

@@ -1,0 +1,16 @@
+{
+    "name": "VLAN",
+    "$collection": "inv.techdomains",
+    "uuid": "9e22259b-8ae4-43fb-9329-07377f2e3634",
+    "description": "VLAN connectivity",
+    "allow_bunch": false,
+    "allow_children": false,
+    "allow_p2mp": false,
+    "allow_p2p": true,
+    "allow_parent": true,
+    "allow_star": true,
+    "allow_up2mp": false,
+    "allow_up2p": false,
+    "code": "vlan",
+    "channel_discriminator": "vlan"
+}

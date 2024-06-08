@@ -77,6 +77,7 @@ class Channel(Document):
     subscriber = PlainReferenceField(Subscriber)
     kind = StringField(choices=[x.value for x in ChannelKind])
     topology = StringField(choices=[x.value for x in ChannelTopology])
+    discriminator = StringField(required=False)
     labels = ListField(StringField())
     effective_labels = ListField(StringField())
     constraints = EmbeddedDocumentListField(ConstraintItem)

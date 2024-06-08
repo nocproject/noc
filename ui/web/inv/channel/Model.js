@@ -38,6 +38,10 @@ Ext.define("NOC.inv.channel.Model", {
       persist: false,
     },  
     {
+      name: "discriminator",
+      type: "string",
+    },
+    {
       name: "description",
       type: "string",
     },

@@ -77,6 +77,7 @@ Ext.define("NOC.inv.techdomain.Application", {
             ["l3", "Level 3"],
             ["internet", "Internet"],
           ],
+          allowBlank: false,
         },
         {
           name: "max_endpoints",
@@ -140,28 +141,25 @@ Ext.define("NOC.inv.techdomain.Application", {
           ],
         },
         {
-          name: "discriminators",
-          xtype: "gridfield",
-          fieldLabel: __("Discriminators"),
-          columns: [
+          xtype: "fieldset",
+          layout: "hbox",
+          title: __("Discriminators"),
+          defaults: {
+            padding: 4,
+            labelAlign: "top",
+          },
+          items: [
             {
-              text: __("Discriminators"),
-              dataIndex: "name",
-              editor: "textfield",
-              width: 100,
+              name: "channel_discriminator",
+              xtype: "textfield",
+              fieldLabel: __("Channel"),
+              allowBlank: true,
             },
             {
-              text: __("Required"),
-              dataIndex: "is_required",
-              renderer: NOC.render.Bool,
-              editor: "checkbox",
-              width: 50,
-            },
-            {
-              text: __("Description"),
-              dataIndex: "description",
-              editor: "textfield",
-              flex: 1,
+              name: "endpoint_discriminator",
+              xtype: "textfield",
+              fieldLabel: __("Endpoint"),
+              allowBlank: true,
             },
           ],
         },
