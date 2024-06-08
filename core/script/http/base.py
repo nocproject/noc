@@ -191,6 +191,8 @@ class HTTP(object):
         cdata = headers.get("Set-Cookie")
         if not cdata:
             return
+        if isinstance(cdata, bytes):
+            cdata = cdata.decode()
         if not self.cookies:
             self.cookies = SimpleCookie()
         # self.cookies.load(cdata)

@@ -1,4 +1,4 @@
-# ----------------------------------------------------------------------
+    # ----------------------------------------------------------------------
 # HTTP Horizon Auth Middleware
 # ----------------------------------------------------------------------
 # Copyright (C) 2007-2023 The NOC Project
@@ -35,7 +35,6 @@ class HorizonAuthMiddeware(BaseMiddleware):
             }
         )
         with HttpClient(
-            url,
             headers={"Content-Type": b"application/json"},
             timeout=60,
             allow_proxy=False,
@@ -43,7 +42,7 @@ class HorizonAuthMiddeware(BaseMiddleware):
         ) as client:
             code, resp_headers, result = client.post(self.http.get_url("/auth"), b)
             self.http._process_cookies(resp_headers)
-            headers["Cookie"] = self.http.cookies.output(header="", attrs="value").lstrip()
+            headers["Cookie"] = self.http.cookies.output(header="", attrs="value").lstrip().encode()
             self.http.logger.debug(
                 "[%s] Response code %s, headers %s on: %s, body: %s",
                 self.name,
@@ -53,3 +52,4 @@ class HorizonAuthMiddeware(BaseMiddleware):
                 body,
             )
             return url, body, headers
+
