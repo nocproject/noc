@@ -17,7 +17,9 @@ from jinja2 import Template
 # NOC modules
 from noc.fm.models.alarmrule import AlarmRule as CfgAlarmRule
 from noc.fm.models.alarmclass import AlarmClass
+from noc.fm.models.alarmseverity import AlarmSeverity
 from noc.fm.models.activealarm import ActiveAlarm
+from noc.fm.models.escalationprofile import EscalationProfile
 from noc.main.models.notificationgroup import NotificationGroup
 
 DEFAULT_GROUP_CLASS = "Group"
@@ -28,6 +30,7 @@ class Match(object):
     labels: Set[str]
     exclude_labels: Optional[Set[str]]
     alarm_class: Optional[AlarmClass]
+    severity: Optional[AlarmSeverity]
     reference_rx: Optional[Pattern]
 
 
@@ -46,7 +49,8 @@ class Group(object):
 class Action(object):
     policy: str
     notification_group: Optional[NotificationGroup] = None
-    severity_policy: str = "shift"
+    escalation_profile: Optional[EscalationProfile] = None
+    severity_action: str = "set"
     severity: int = 0
     # Sync collection Default ?
     alarm_class: Optional[AlarmClass] = None
@@ -66,11 +70,14 @@ class GroupItem(object):
 @dataclass
 class ActionItem(object):
     severity: Optional[int] = None
+    severity_action: Optional[str] = None
     notification_group: Optional[int] = None
+    escalation_profile: Optional[str] = None
 
 
 class AlarmRule(object):
     _default_alarm_class: Optional[AlarmClass] = None
+    severity_policy: str = "AL"
 
     def __init__(self):
         self.match: List[Match] = []
@@ -83,12 +90,14 @@ class AlarmRule(object):
         Generate rule from config
         """
         rule = AlarmRule()
+        rule.severity_policy = rule_cfg.severity_policy
         # Add matches
         for match in rule_cfg.match:
             rule.match.append(
                 Match(
                     labels=set(match.labels),
                     alarm_class=match.alarm_class,
+                    severity=match.severity,
                     exclude_labels=set(match.exclude_labels) if match.exclude_labels else None,
                     reference_rx=re.compile(match.reference_rx) if match.reference_rx else None,
                 )
@@ -115,7 +124,10 @@ class AlarmRule(object):
             rule.actions.append(
                 Action(
                     policy=action.policy,
-                    severity=action.severity,
+                    notification_group=action.notification_group,
+                    escalation_profile=action.escalation,
+                    severity_action=action.severity_action,
+                    severity=action.severity.severity if action.severity else None,
                 )
             )
         return rule
@@ -135,6 +147,9 @@ class AlarmRule(object):
                 continue
             # Match against alarm class
             if match.alarm_class and match.alarm_class != alarm.alarm_class:
+                continue
+            # Match severity
+            if match.severity and match.severity != AlarmSeverity.get_severity(alarm.severity):
                 continue
             # Match against reference re
             if (
@@ -169,7 +184,7 @@ class AlarmRule(object):
                 window=group.window,
             )
 
-    def iter_actions(self, alarm: ActiveAlarm) -> Iterable[ActionItem]:
+    def iter_actions(self, alarm: ActiveAlarm) -> Iterable[Action]:
         """
         Render Group Item
         :param alarm:

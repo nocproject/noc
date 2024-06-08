@@ -1,7 +1,10 @@
 {
     "name": "IGNORE",
+    "$collection": "fm.alarmseverities",
     "uuid": "cb39ce1d-f6e1-4a97-bb31-fd135d70a31a",
     "description": "Alarm should be easily ignored",
     "severity": 0,
+    "code": "IGNORE",
+    "min_weight": 0,
     "style__name": "FM MINOR"
 }

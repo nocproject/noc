@@ -41,6 +41,16 @@ Ext.define("NOC.fm.alarmrule.Model", {
             type: "auto"
         },
         {
+            name: "severity_policy",
+            type: "string",
+            defaultValue: "AL"
+        },
+        {
+            name: "stop_processing",
+            type: "boolean",
+            defaultValue: false
+        },
+        {
             name: "bi_id",
             type: "string",
             persist: false
