@@ -272,7 +272,7 @@ Ext.define("NOC.main.desktop.Application", {
     var me = this;
     Ext.Ajax.request({
       method: "GET",
-      url: "/main/desktop/is_logged/",
+      url: "/api/login/is_logged/",
       scope: me,
       success: function(response){
         var status = Ext.decode(response.responseText);

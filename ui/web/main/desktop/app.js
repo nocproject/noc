@@ -26,7 +26,7 @@ Ext.application({
     console.log("NOC application starting");
     Ext.Ajax.request({
       method: "GET",
-      url: "/main/desktop/is_logged/",
+      url: "/api/login/is_logged/",
       scope: me,
       success: function(response){
         var status = Ext.decode(response.responseText);

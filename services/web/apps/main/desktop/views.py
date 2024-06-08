@@ -175,16 +175,6 @@ class DesktopApplication(ExtApplication):
         """
         return version.version
 
-    @view(method=["GET"], url="^is_logged/$", access=True, api=True)
-    def api_is_logged(self, request):
-        """
-        Check wrether the session is authenticated.
-
-        :returns: True if session authenticated, False otherwise
-        :rtype: Bool
-        """
-        return request.user.is_authenticated()
-
     @view(method=["GET"], url="^user_settings/$", access=PermitLogged(), api=True)
     def api_user_settings(self, request):
         """
