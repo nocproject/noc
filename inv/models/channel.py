@@ -7,7 +7,7 @@
 
 # Python modules
 from threading import Lock
-from typing import Optional, Union, Dict, Any
+from typing import Optional, Union
 import operator
 from enum import Enum
 
